@@ -1,0 +1,346 @@
+{
+  "schema": "hepta.independent-original-shared-observation-source-review.v1",
+  "reviewer": "runtime_access",
+  "status": "no-confirmed-remaining-static-blocker; final-native-and-original-typed-gates-pending",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+    "registry_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d"
+  },
+  "subject_exact_operations": {
+    "name": "final_ops",
+    "git_blob": "281a559512f0fba4c8584c031101fb854c483908",
+    "bytes": 77223,
+    "sha256": "0fc2d0d77a41f12684b36228d5e1040c7647c6286ddb1db7142a9b347dd2b2ae"
+  },
+  "subject_files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "preimage": "924e4552472038934f665f6acf7a95438294893f",
+      "postimage": "a3495b587fb5d91e8581f5ccb64a84d586523de8",
+      "bytes": 61811,
+      "sha256": "77acda03cf3979ae3b1bebb578770fac2d81c6298c76a2a40a3916a33ca06023",
+      "exact_operations": 9,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "preimage": "b66a4daefc4612f08f44f82ccb899ea9d74e51bd",
+      "postimage": "8691a8725bad4c858589228015ee74cf75c266bb",
+      "bytes": 5176,
+      "sha256": "be8c22a07ade1fcd0a5b1e8023816053a05be16b515c16306c67d76c18b796b8",
+      "exact_operations": 1,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "preimage": "caaae9c941cb76d8a575b7e7ce35defbb0ab0386",
+      "postimage": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+      "bytes": 20614,
+      "sha256": "c76e95d3817ba6e640413100f5cfe51be3b7fcddde7b32bb660580ff965c5c17",
+      "exact_operations": 1,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "preimage": "9ee06141aded0ac3effa8b8e6f716958d463a0e0",
+      "postimage": "8489d6f8e8da15936a9ccd16060d0b434f69e264",
+      "bytes": 14644,
+      "sha256": "d508894e496200f6334398e7cc94f282adbd2cfb58a501b34658bb5f3f28ab81",
+      "exact_operations": 1,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "preimage": "4459afe74818d940acf090966baf3c0da2bd5384",
+      "postimage": "da842adff40dfa5f63403195643d7c49112bdcd3",
+      "bytes": 12575,
+      "sha256": "0ee8c79585d4275b5201a73509e42e4f359ca4c142c4f45f3a2d3bda07705891",
+      "exact_operations": 3,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_tests.rs",
+      "preimage": "81df2398195997681da332ab2ef6e3490269b2a5",
+      "postimage": "d4cc03578f8ae209f53b6285d0a7df5bacb2d304",
+      "bytes": 10102,
+      "sha256": "22d8d85fd667ab34814816781db90915168fe2753f7d9a1eccf524c13b46e097",
+      "exact_operations": 1,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "preimage": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+      "postimage": "ac5ebbfbb4b29e5e74ab7e3f762bd750f2ff0286",
+      "bytes": 657652,
+      "sha256": "dfba3ceb3ff026994f604f7799069ffd6865a8779b88d1340ee203b196abf052",
+      "exact_operations": 4,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "preimage": null,
+      "postimage": "2b7454e9257f0716ecfa62d0bfe5113adaf6f527",
+      "bytes": 5326,
+      "sha256": "5652b09f5238991752ccb54bfb5f138e90cc527408509659fa10579fa430b190",
+      "exact_operations": 0,
+      "forward_reverse_equal": null,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "preimage": null,
+      "postimage": "4b11ddb4433c4f0b8ed82c96091ffa8a12bdd7fb",
+      "bytes": 12981,
+      "sha256": "9a5f0833a1ab4e0d3ac45e5d9d0a136ef9e99f11a6f86d1425202ac7c297859e",
+      "exact_operations": 0,
+      "forward_reverse_equal": null,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs",
+      "preimage": null,
+      "postimage": "79068ad0bf00068c8ed1fc778ad0895840aaf19f",
+      "bytes": 3605,
+      "sha256": "a36829bf0851d56a5de3b9dd36144693e570968e1d0409b95380aa586c61bf5e",
+      "exact_operations": 0,
+      "forward_reverse_equal": null,
+      "source_readback_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke_tests.rs",
+      "preimage": "c8c999d9da8b858d7583a9599c603fb36e5afe9d",
+      "postimage": "df32089dd116c7347beda560f72959d7cd9bc6b1",
+      "bytes": 9920,
+      "sha256": "7261a9ed81bc5785bc55799fa10f30a28e0d20b0c145e2c08a603b68585fbe5d",
+      "exact_operations": 1,
+      "forward_reverse_equal": true,
+      "source_readback_equal": true
+    }
+  ],
+  "independent_related_inventory": {
+    "git_blob": "4421c90d3dbad4bec792ff0ebb419ae9cd998969",
+    "bytes": 16140,
+    "sha256": "d71968402963c843e89234c1d6d91013776956124698d42cce5fae729ac7a684"
+  },
+  "verification": {
+    "all_actual_source_blobs_fetched_and_git_size_sha256_verified": true,
+    "all_21_existing_file_operations_unique_forward_reverse": true,
+    "new_files": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "absent": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "absent": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs",
+        "absent": true
+      }
+    ],
+    "original_method_byte_comparisons": [
+      {
+        "item": "complete original dispatch callback method and suffix",
+        "equal": true
+      },
+      {
+        "item": "complete full-lease live check",
+        "equal": true
+      },
+      {
+        "item": "complete writer proof validation and exact original time validation",
+        "equal": true
+      }
+    ],
+    "registry": {
+      "old_boundaries": 492,
+      "new_boundaries": 498,
+      "required_count": 498,
+      "old_protected": 358,
+      "new_protected": 361,
+      "unique_ids": true,
+      "old_boundary_blocks_unchanged": true,
+      "added_ids": [
+        "authority_original_lease_metadata_observation",
+        "authority_original_lease_metadata_revision",
+        "authority_original_lease_metadata_finish",
+        "root_original_issuer_metadata_observation",
+        "root_original_issuer_metadata_proof",
+        "root_original_issuer_metadata_revocations"
+      ],
+      "changed_old_protected": [
+        {
+          "index": 16,
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs"
+        },
+        {
+          "index": 93,
+          "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs"
+        }
+      ],
+      "required_ids_equal_actual_set": true,
+      "original_required_sequence_preserved": true,
+      "registry_verification_kind": "literal source/table inventory, not original typed scanner"
+    },
+    "old_descendant_source_read": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_entry_clock_tests.rs",
+        "git_blob": "769fb2b9ca49691a372f6de8ab35bb8dda81c41f",
+        "bytes": 3617,
+        "sha256": "4956677f0a24ee0860ea15f6d9f045242f245455b516aef78452f70eea26c330"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+        "git_blob": "d4d9a7436073da67334a8f807d8c51ea738ec02a",
+        "bytes": 7695,
+        "sha256": "ec3820c94760d28596c29302088301c191c478073ad273ae4625721dfd543951"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary_tests.rs",
+        "git_blob": "5922d7d4ba75d10ce4fe3a5dc0b1d0a3098779fe",
+        "bytes": 10131,
+        "sha256": "497767745721983fbd1d4bd10b8d6357783373e4f2b46279810854213ad62860"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_issuer_readback_tests.rs",
+        "git_blob": "6a0081425e112b89526f7b09a6a7862079557012",
+        "bytes": 5397,
+        "sha256": "e089fba716dbfa79ed4ba2a8f0309fb4d6b2e302bbb098c2050fdfd60b1b38d0"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs",
+        "git_blob": "06c97f3f0f8388349685ff8458df9551a2361973",
+        "bytes": 6091,
+        "sha256": "8a4f310bbc8fceaf5f34aa849926ec8d85c13fb15610599694aaa65f1ca9341e"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_pair_boundary_tests.rs",
+        "git_blob": "cacd4b5f96368fba58621cc000591086c3157e0d",
+        "bytes": 10092,
+        "sha256": "095593a621a6770eb8f0804ab83f34168dbedd1a15d960a06d635815809d46c6"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+        "git_blob": "b66a4daefc4612f08f44f82ccb899ea9d74e51bd",
+        "bytes": 5452,
+        "sha256": "a05b90323caec82824c850a34e135e80eeab4d33a42906240b8d31cfcf5126fe"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_revoke_tests.rs",
+        "git_blob": "c8c999d9da8b858d7583a9599c603fb36e5afe9d",
+        "bytes": 9922,
+        "sha256": "38510e9e742c319f6c3156a9fc97fd57633c2f4a29a2b09a5a047a8f293c0576"
+      }
+    ],
+    "method": "Source inspection, exact byte/hash replay and bounded literal inventory. No original typed scanner, compiler, Cargo, OS-process, Root or native tests executed."
+  },
+  "design_and_authority_review": [
+    {
+      "area": "Original dispatch admission and mutation serialization",
+      "finding": "The old shared State Mutex is split into the same original entry Mutex plus State RwLock. Every existing verifier entry takes the original serial mutex before the read fence. Every existing registry mutation takes that same serial mutex before the write fence. Existing state accessors remain serialized; only the new explicit metadata observation bypasses entry serialization.",
+      "evidence": "authority_lease.rs a3495b587fb5d91e8581f5ccb64a84d586523de8 delegates only its private lock helpers; new observation source 2b7454e9257f0716ecfa62d0bfe5113adaf6f527 implements the exact two locks."
+    },
+    {
+      "area": "Original exact lease and time",
+      "finding": "New observe_original_lease validates the original complete lease shape, acquires its observation mutex and actual state read fence, checks failure/poison, then samples the verifier's original clock and calls the byte-identical validate_live. That function still compares actual current complete lease, revision, binding, epoch, revocation and expiry; a caller-provided equal ID/revision cannot extend or replace the record.",
+      "evidence": "The opaque borrow contains no token, witness, new lease, mutable state, serde/Clone or public field constructor. Its public outputs are revision data and a final refusal check."
+    },
+    {
+      "area": "Single issuer record and lock ordering",
+      "finding": "The closed RegisteredWriter::observe is the only new product caller. It keeps the actual lease read fence while acquiring the same serving issuer request_lock. The private issuer guard loads one IssuerState, verifies its actual retained signed proof and original registration/time, and returns proof plus revocations from that one state while retaining the lock. It does not reopen an issuer, mint a key or sign.",
+      "evidence": "writer 8489d6f8e8da15936a9ccd16060d0b434f69e264 and host da842adff40dfa5f63403195643d7c49112bdcd3. Independent inventory4421 establishes original protected order lease -> issuer -> clock for the inspected actual same-instance subtree."
+    },
+    {
+      "area": "Final observed clock and response",
+      "finding": "After all potentially blocking issuer reads and original proof authentication, the host performs the original HostAuthorityClock.refresh_projection and exact validate_observation_lease. Both original owner fences remain held through complete bounded response encoding. It then drops the issuer guard and calls metadata-only finish without another clock sample/renewal. The original500ms request-age/freshness, consumer convergence barrier, peer/pidfd and session-drop fences are outside this patch and unchanged.",
+      "evidence": "No replayed source operation changes root_authority_cache/session, expiry constants, consumer claim/dispatch, current publication or grant logic."
+    },
+    {
+      "area": "Poison and original results",
+      "finding": "All old entry guards declare their serial MutexGuard before the state guard; observation does the same with its own mutex. A panic therefore poisons a mutex before releasing the read/write state fence, including the reader case where RwLock itself would not poison. New/later admissions check both mutex poison states and state.failed. The final metadata-only check can refuse a response after an original dispatch panic.",
+      "evidence": "The complete old with_dispatch_boundary_witness callback -> drop(state) -> Ok(result,witness) method is byte-identical. A concurrent observer panic does not discard an already entered callback result. Pair06c97f3f and pinned-issuer d4d9a743 files are unchanged and retain their original post-callback return behavior."
+    },
+    {
+      "area": "Revocation and durable failure",
+      "finding": "Deadline revoke retains all original checks and exact CAS/persistence order. Its previous one state.try_lock is now the same private dual try-lock (entry try_lock then state try_write) with immediate Unavailable on busy/poison; no unbounded read acquisition is added. Both durable failure sites still set the original state.failed, and a successful replacement still occurs only after the original persistence calls.",
+      "evidence": "revoke8691a8725bad4c858589228015ee74cf75c266bb changes only the lock acquisition expression. Parent mutation helper and new protected function order keep original failure/CAS order."
+    },
+    {
+      "area": "Type/lifetime/private access",
+      "finding": "The borrowed guards are actual MutexGuard/RwLock guards with private fields, no Send/Clone/Serde implementation, and no generic callback admission. DispatchStateGuard supplies read-only Deref; MutationStateGuard supplies the original mutable State view only to private owner methods. The existing Clock/Store and original primitive State remain compatible with shared access. No remaining specific visibility, ownership or obvious Rust type error was identified in this fixed draft.",
+      "evidence": "This is static source review and does not replace the compiler. Existing descendant direct-state accesses were read specifically because the internal field type changed."
+    }
+  ],
+  "found_and_resolved": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke_tests.rs",
+      "preimage": "c8c999d9da8b858d7583a9599c603fb36e5afe9d",
+      "issue": "Existing line80 used registry.0.state.lock(); RwLock has no lock() method.",
+      "resolution": "The final df32089dd116c7347beda560f72959d7cd9bc6b1 changes that one expression to registry.lock_state(), retaining the actual original entry plus state mutation fence. Every other byte, original300ms deadline, clock handshake, durable before/after assertion and expected Unavailable remains unchanged.",
+      "classification": "Necessary old-test representation adaptation, not a weakened guard or production authority change."
+    }
+  ],
+  "caller_boundary_review": {
+    "registry_blob": "ac5ebbfbb4b29e5e74ab7e3f762bd750f2ff0286",
+    "old_492_boundary_tables_retained_byte_for_byte": true,
+    "new_boundaries": 6,
+    "new_total_boundaries": 498,
+    "old_protected": 358,
+    "new_protected": 361,
+    "only_old_protected_adjustments": [
+      "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "codex-rs/hepta-contracts/src/authority_lease_revoke.rs"
+    ],
+    "meaning": "The old revoke try-lock/failed markers move with their implementation into the new strict guard file; they are not dropped from actual source enforcement. The new file also protects poison/fence order, complete lease validation, no token construction and no persistence/clock-renewal shortcut. All six product caller sets contain only actual authority_host_writer.rs, with explicit guard receiver annotations; test helpers are not listed as production callers.",
+    "limitation": "Literal inventory and semantic review only. Exact original Rust-aware scanner and formatter-sensitive marker checks remain required after integration."
+  },
+  "new_component_tests": {
+    "contracts_methods": [
+      "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+      "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+      "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+      "original_dispatch_panic_prevents_pending_metadata_publication",
+      "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+      "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+      "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+    ],
+    "agentd_methods": [
+      "metadata_keeps_one_actual_proof_and_head_until_same_issuer_revoke_can_commit",
+      "original_metadata_refuses_wrong_registration_and_original_clock_expiry_without_a_new_signature"
+    ],
+    "new_methods": 9,
+    "executed_by_reviewer": 0,
+    "root_parent_roster_added": 0,
+    "scope": "Real local component owner/lock behavior with explicit test clocks/frontier fault fixture; not new Root lifecycle or ordinary business qualification. All Root17 and final whole-crate runs remain pending."
+  },
+  "limits_and_next_gate": [
+    "Concurrency is limited to the same original lease registry and same serving issuer instance. Per-operation durable CAS does not make independent Root issuer instances share this memory mutex.",
+    "The API does not guarantee success under arbitrary disk stalls, CPU scheduling, revoked authority or expiry. Observation can still wait on actual clock/storage/issuer work, and the unchanged500ms reader must still refuse stale data.",
+    "No cached reader is revived and no real FinalUse effect moves outside its original dispatch witness. The original issuer keyring, current owner, signed grants, source identity and lifecycle constraints remain.",
+    "Native formatter/fix may change exact literal layout; final CALLERS adjustments must follow actual native postimages without changing the checker or accepting source drift.",
+    "Final original QA/typed/fullcaller and seven changed-crate native coverage, including actualRoot17, must run on the integrated immutable source. No old15 passed result or old component result is inherited."
+  ],
+  "actions": {
+    "source_edits_by_reviewer": 0,
+    "refs_modified": false,
+    "h_calls": 0,
+    "cargo_calls": 0,
+    "native_executed": false
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_or_rollback": 0,
+    "cold_restart_accepted": false
+  }
+}

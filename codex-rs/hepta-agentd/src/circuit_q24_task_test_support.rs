@@ -318,6 +318,8 @@ enum LearningProfile {
     None,
     #[cfg(target_os = "linux")]
     Original(crate::OriginalCellQ24TaskLedgerInputsV1),
+    #[cfg(target_os = "linux")]
+    Successor(crate::OriginalCellQ24TaskLedgerInputsV1),
 }
 
 #[cfg(target_os = "linux")]
@@ -334,6 +336,24 @@ pub(super) async fn start_learning(
         model,
         bundle,
         LearningProfile::Original(inputs),
+    )
+    .await
+}
+
+#[cfg(target_os = "linux")]
+pub(super) async fn start_successor_learning(
+    admission: Admission,
+    published_task: PublishedCircuitFeatureTaskV1,
+    model: Arc<LoadedCellQ24ModelV1>,
+    bundle: CellCompatibilityBundleV1,
+    inputs: crate::OriginalCellQ24TaskLedgerInputsV1,
+) -> anyhow::Result<Session> {
+    start_profile(
+        admission,
+        published_task,
+        model,
+        bundle,
+        LearningProfile::Successor(inputs),
     )
     .await
 }
@@ -440,6 +460,49 @@ async fn start_profile(
             let installed = config.with_q24_learning_task_profile(profile, inputs)?;
             ledger = Some(installed.ledger);
             installed.task
+        }
+        #[cfg(target_os = "linux")]
+        LearningProfile::Successor(inputs) => {
+            // This exercises the original postpublication channel, not Root
+            // publication or a fabricated ready slot. Issuers are fixtures.
+            let CircuitQ24TaskProfileV1 {
+                files,
+                source_mode,
+                published_task,
+                fence,
+                circuit,
+                routes,
+                bundle,
+                model,
+                worker_generation,
+                maximum_cell_records,
+                queue_capacity,
+                clock,
+            } = profile;
+            let execution = crate::OriginalQ24SuccessorExecutionInputsV1 {
+                files,
+                source_mode,
+                feedback: crate::OriginalQ24SuccessorFeedbackV1::OriginalLedger(inputs),
+                fence,
+                circuit,
+                routes,
+                worker_generation,
+                maximum_cell_records,
+                clock,
+            };
+            let (bootstrap, invocation, original) = execution.open_original_successor_channel(
+                &runtime.identity,
+                published_task,
+                bundle,
+                model,
+                queue_capacity,
+            )?;
+            ledger = original.original_task_ledger();
+            crate::AgentdQ24CircuitTaskRuntimeV1 {
+                config: config.with_circuit_task_bootstrap(bootstrap, invocation)?,
+                source: original.source(),
+                cell: original.cell(),
+            }
         }
     };
     let (bootstrap, invocation) = installed

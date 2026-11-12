@@ -106,7 +106,50 @@ impl HostAuthorityWriterRegistration {
     }
 }
 
+/// Borrowed metadata from one original issuer record. The private guard keeps
+/// proof rotation, issuer revocation and signing CAS serialized until the
+/// response's final trusted time and encoding are complete.
+pub(crate) struct OriginalHostWriterObservationV1<'a> {
+    _guard: std::sync::MutexGuard<'a, ()>,
+    proof: HostSignedWriterAuthorizationV1,
+    revocations: FinalUseRevocations,
+}
+
+impl OriginalHostWriterObservationV1<'_> {
+    pub(crate) fn original_writer_proof(&self) -> &HostSignedWriterAuthorizationV1 {
+        &self.proof
+    }
+
+    pub(crate) fn original_writer_revocations(&self) -> &FinalUseRevocations {
+        &self.revocations
+    }
+}
+
 impl DeploymentFinalUseIssuer {
+    /// Read only this issuer's existing proof and head from the same record.
+    /// The caller already holds the original lease observation state fence;
+    /// this method must never reenter that lease registry.
+    pub(crate) fn observe_original_writer_state(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+    ) -> io::Result<OriginalHostWriterObservationV1<'_>> {
+        let guard = self
+            .request_lock
+            .lock()
+            .map_err(|_| io::Error::other("issuer fenced"))?;
+        let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+        let proof = state
+            .writer_authorization
+            .as_ref()
+            .ok_or_else(|| io::Error::other("writer not provisioned"))?;
+        self.validate_writer_proof(&state, registration, proof)?;
+        Ok(OriginalHostWriterObservationV1 {
+            _guard: guard,
+            proof: proof.clone(),
+            revocations: state.head,
+        })
+    }
+
     /// The caller holds both original lease tokens through this local signing
     /// boundary. Check the exact retained proof under the same issuer lock as
     /// the original policy, durable sequence reservation and signature.

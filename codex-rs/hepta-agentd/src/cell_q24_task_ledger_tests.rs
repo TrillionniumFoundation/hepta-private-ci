@@ -30,6 +30,8 @@ mod retained_source;
 
 #[path = "cell_q24_task_comparison_tests.rs"]
 mod comparison;
+#[path = "circuit_q24_successor_feedback_tests.rs"]
+mod successor_feedback;
 
 use fixture::Fixture;
 

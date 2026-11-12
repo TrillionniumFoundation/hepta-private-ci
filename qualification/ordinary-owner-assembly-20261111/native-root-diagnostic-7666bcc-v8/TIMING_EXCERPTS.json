@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.root-freshness-original-timing-excerpts.v1",
+  "source": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+  "junit_git_blob": "7892d20ac8cac71efd9484582980f443ba35ef84",
+  "selector": "Exact per-failure stderr timing lines with reported elapsed_ns >= 100000000, plus original current retained-time lines. Absence is not zero duration.",
+  "tests": [
+    {
+      "test": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+      "original_timing_records_over_100ms": [
+        "ROOT_COMPONENT_TIMING pid=2462734 label=initial.root.wait-original-inputs phase=Publish sequence=5 begin_ns=Some(1479679429109343) end_ns=Some(1479679760487085) elapsed_ns=Some(331377742) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462734 label=writer.with_live phase=\"original-dispatch\" sequence=20 begin_ns=Some(1479680100616455) end_ns=Some(1479680509403256) elapsed_ns=Some(408786801) reported_outcome=Some(\"Ok\") marks=[(\"read-lease-start\", Some(1479680100622584)), (\"read-lease-done\", Some(1479680116193308)), (\"use-verified\", Some(1479680116505979)), (\"callback-entry\", Some(1479680116640605)), (\"callback-exit\", Some(1479680509382456)), (\"dispatch-returned\", Some(1479680509401346)), (\"complete\", Some(1479680509402176))] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462734 label=initial.root.deployment-register phase=Publish sequence=16 begin_ns=Some(1479679760661200) end_ns=Some(1479680510357908) elapsed_ns=Some(749696708) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462734 label=writer.with_live phase=\"original-dispatch\" sequence=21 begin_ns=Some(1479680218486686) end_ns=Some(1479680529111001) elapsed_ns=Some(310624315) reported_outcome=Some(\"Ok\") marks=[(\"read-lease-start\", Some(1479680218495885)), (\"read-lease-done\", Some(1479680509427795)), (\"use-verified\", Some(1479680509589800)), (\"callback-entry\", Some(1479680509713057)), (\"callback-exit\", Some(1479680529101281)), (\"dispatch-returned\", Some(1479680529109071)), (\"complete\", Some(1479680529109911))] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462734 label=writer.with_live phase=\"original-dispatch\" sequence=22 begin_ns=Some(1479680515698765) end_ns=Some(1479680755753493) elapsed_ns=Some(240054728) reported_outcome=Some(\"Ok\") marks=[(\"read-lease-start\", Some(1479680515701595)), (\"read-lease-done\", Some(1479680529141540)), (\"use-verified\", Some(1479680529268176)), (\"callback-entry\", Some(1479680529384573)), (\"callback-exit\", Some(1479680755731513)), (\"dispatch-returned\", Some(1479680755751603)), (\"complete\", Some(1479680755752413))] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462734 label=writer.with_live phase=\"original-dispatch\" sequence=23 begin_ns=Some(1479680631396008) end_ns=Some(1479680776080610) elapsed_ns=Some(144684602) reported_outcome=Some(\"Ok\") marks=[(\"read-lease-start\", Some(1479680631402308)), (\"read-lease-done\", Some(1479680755790081)), (\"use-verified\", Some(1479680755991186)), (\"callback-entry\", Some(1479680756188900)), (\"callback-exit\", Some(1479680776072480)), (\"dispatch-returned\", Some(1479680776078550)), (\"complete\", Some(1479680776079100))] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462747 label=initial.child.five-lane-open phase=Publish sequence=0 begin_ns=Some(1479679432478467) end_ns=Some(1479679593901100) elapsed_ns=Some(161422633) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462747 label=initial.child.artifact-reopen phase=Publish sequence=2 begin_ns=Some(1479679593989798) end_ns=Some(1479679739350401) elapsed_ns=Some(145360603) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462747 label=initial.child.root-enrollment-wait phase=Publish sequence=6 begin_ns=Some(1479679760486345) end_ns=Some(1479680510461725) elapsed_ns=Some(749975380) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462747 label=session.refresh phase=\"original-feed\" sequence=10 begin_ns=Some(1479680218168305) end_ns=Some(1479680529577157) elapsed_ns=Some(311408852) reported_outcome=Some(\"Ok\") marks=[(\"request-started\", Some(1479680218182914)), (\"response-ended\", Some(1479680529534099)), (\"accept-same-head\", Some(1479680529547928)), (\"cache-accepted\", Some(1479680529568458)), (\"consumer-barrier-finished\", Some(1479680529568618)), (\"complete\", Some(1479680529575677))] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462747 label=initial.child.initial-connect phase=Publish sequence=11 begin_ns=Some(1479680510570642) end_ns=Some(1479680759190034) elapsed_ns=Some(248619392) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2462747 label=session.refresh phase=\"original-feed\" sequence=12 begin_ns=Some(1479680631013129) end_ns=Some(1479680759506065) elapsed_ns=Some(128492936) reported_outcome=None marks=[(\"request-started\", Some(1479680631028759))] record_cap=64"
+      ],
+      "original_expiry_records": [
+        "ROOT_OBSERVATION_CACHE phase=current reason=retained-time now=1479680758858324 last_checked=1479680529570648 request_started=1479680218182914 age_ns=Some(540675410) time_regressed=false"
+      ]
+    },
+    {
+      "test": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "original_timing_records_over_100ms": [
+        "ROOT_COMPONENT_TIMING pid=2463222 label=publication.root.wait-learning-ready phase=Publish sequence=9 begin_ns=Some(1479696322271497) end_ns=Some(1479696684442709) elapsed_ns=Some(362171212) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2463222 label=writer.with_live phase=\"original-dispatch\" sequence=30 begin_ns=Some(1479697123894384) end_ns=Some(1479697514610581) elapsed_ns=Some(390716197) reported_outcome=Some(\"Ok\") marks=[(\"read-lease-start\", Some(1479697123900153)), (\"read-lease-done\", Some(1479697123918783)), (\"use-verified\", Some(1479697124082258)), (\"callback-entry\", Some(1479697124225944)), (\"callback-exit\", Some(1479697514586192)), (\"dispatch-returned\", Some(1479697514608072)), (\"complete\", Some(1479697514608782))] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2463222 label=publication.root.deployment-register phase=Publish sequence=26 begin_ns=Some(1479696684471798) end_ns=Some(1479697515859025) elapsed_ns=Some(831387227) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2463222 label=writer.with_live phase=\"original-dispatch\" sequence=31 begin_ns=Some(1479697131293970) end_ns=Some(1479697533988423) elapsed_ns=Some(402694453) reported_outcome=Some(\"Ok\") marks=[(\"read-lease-start\", Some(1479697131298760)), (\"read-lease-done\", Some(1479697514644661)), (\"use-verified\", Some(1479697514752397)), (\"callback-entry\", Some(1479697514857944)), (\"callback-exit\", Some(1479697533980344)), (\"dispatch-returned\", Some(1479697533987223)), (\"complete\", Some(1479697533987663))] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2463231 label=publication.child.five-lane-open phase=Publish sequence=0 begin_ns=Some(1479696324409905) end_ns=Some(1479696496197339) elapsed_ns=Some(171787434) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2463231 label=publication.child.learning-checkpoint phase=Publish sequence=2 begin_ns=Some(1479696496326975) end_ns=Some(1479696684353302) elapsed_ns=Some(188026327) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2463231 label=publication.child.root-enrollment-wait phase=Publish sequence=5 begin_ns=Some(1479696684413140) end_ns=Some(1479697516728490) elapsed_ns=Some(832315350) reported_outcome=None marks=[] record_cap=64",
+        "ROOT_COMPONENT_TIMING pid=2463231 label=session.refresh phase=\"original-feed\" sequence=9 begin_ns=Some(1479697131036928) end_ns=Some(1479697517508088) elapsed_ns=Some(386471160) reported_outcome=None marks=[(\"request-started\", Some(1479697131052477))] record_cap=64"
+      ],
+      "original_expiry_records": [
+        "ROOT_OBSERVATION_CACHE phase=current reason=retained-time now=1479697516935214 last_checked=1479697029569940 request_started=1479697008989663 age_ns=Some(507945551) time_regressed=false"
+      ]
+    }
+  ]
+}

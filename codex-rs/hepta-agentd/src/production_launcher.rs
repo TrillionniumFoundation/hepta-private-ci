@@ -31,6 +31,9 @@ mod inputs;
 #[path = "production_launcher_late_writer.rs"]
 mod late_writer;
 
+#[path = "production_launcher_late_startup.rs"]
+mod late_startup;
+
 use inputs::LaunchInputs;
 use inputs::NotesUiInputs;
 use inputs::PrimaryInputs;
@@ -44,6 +47,7 @@ mod desktop_deployment;
 enum Startup {
     Ordinary(Box<AgentdConfig>),
     Root(Box<RootStartup>),
+    LateWriter(Box<late_startup::OriginalLateWriterStartup>),
 }
 
 struct RootStartup {
@@ -61,8 +65,10 @@ struct RootStartup {
     inputs: RuntimeInputs,
 }
 
-/// Construct only in the original arg0 single-thread preflight. This retains
-/// the original Config and lock FD across Root publication and credential drop.
+/// Construct only in the original arg0 single-thread preflight. The original
+/// paths retain Config and its lock across Root publication and credential drop.
+/// Explicit late-writer startup retains its inherited rights and comparison
+/// identity until the authenticated original Config can be loaded.
 pub struct AgentdProductionStartup(Startup);
 
 /// The authenticated original Root inputs and selected original Runtime input
@@ -88,6 +94,16 @@ impl AgentdProductionStartup {
     pub fn from_process_environment(
         arguments: Vec<OsString>,
     ) -> Result<(Self, Vec<OsString>), AgentdError> {
+        let arguments = match late_startup::select_original_startup_entry(arguments)? {
+            late_startup::OriginalStartupSelection::Existing(arguments) => arguments,
+            late_startup::OriginalStartupSelection::LateWriter(arguments) => {
+                let (startup, ordinary) =
+                    late_startup::OriginalLateWriterStartup::prepare_original_late_writer_startup(
+                        arguments,
+                    )?;
+                return Ok((Self(Startup::LateWriter(Box::new(startup))), ordinary));
+            }
+        };
         let (inputs, ordinary) = inputs::parse(arguments)?;
         let config = AgentdConfig::from_process_environment()?;
         let startup = match inputs {
@@ -178,6 +194,7 @@ impl AgentdProductionStartup {
         match &self.0 {
             Startup::Ordinary(config) => config.identity(),
             Startup::Root(root) => root.config.identity(),
+            Startup::LateWriter(startup) => &startup.identity,
         }
     }
 
@@ -213,6 +230,11 @@ impl AgentdProductionStartup {
     ) -> Result<(AgentdConfig, Option<AgentdProductionLaunch>), AgentdError> {
         match self.0 {
             Startup::Ordinary(config) => Ok((*config, None)),
+            Startup::LateWriter(startup) => {
+                let startup: late_startup::OriginalLateWriterStartup = *startup;
+                let (config, launch) = startup.receive_original_late_writer_startup().await?;
+                Ok((config, Some(launch)))
+            }
             Startup::Root(root) => {
                 let RootStartup {
                     config,

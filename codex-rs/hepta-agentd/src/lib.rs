@@ -328,6 +328,8 @@ pub use circuit_q24_successor::OriginalQ24PreparedSuccessorV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_successor::OriginalQ24SuccessorExecutionInputsV1;
 #[cfg(target_os = "linux")]
+pub use circuit_q24_successor::OriginalQ24SuccessorFeedbackV1;
+#[cfg(target_os = "linux")]
 pub use circuit_q24_successor::OriginalQ24SuccessorHandoffV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_successor::OriginalQ24SuccessorPreparedUncertain;

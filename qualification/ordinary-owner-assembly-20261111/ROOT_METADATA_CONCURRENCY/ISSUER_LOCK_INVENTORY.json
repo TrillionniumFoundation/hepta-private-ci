@@ -1,0 +1,322 @@
+{
+  "schema": "hepta.independent-original-issuer-lock-inventory.v1",
+  "reviewer": "runtime_access",
+  "status": "fixed-source-static-inventory; no-native-claim",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "purpose": "Independently check the original same-instance issuer mutation/read lock closure and possible lock inversion before reviewing the new metadata-only shared lease observation implementation.",
+  "sources": [
+    {
+      "name": "issuer",
+      "git_blob": "caaae9c941cb76d8a575b7e7ce35defbb0ab0386",
+      "bytes": 20558,
+      "sha256": "f1f67b480ae8c1b6633aedbc5df4636e5fe839189cd24ab94f66cbe28f722d97",
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs"
+    },
+    {
+      "name": "lease_with_live",
+      "git_blob": "9ee06141aded0ac3effa8b8e6f716958d463a0e0",
+      "bytes": 12990,
+      "sha256": "3928bc9c99a27b9de0b2d15e986cd3ec2739e89fc0058f1794fcd385ac61cfb3",
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs"
+    },
+    {
+      "name": "registered_writer",
+      "git_blob": "4459afe74818d940acf090966baf3c0da2bd5384",
+      "bytes": 11796,
+      "sha256": "12a673b7c3d260670b53c676d4e89acfb822b34841e270e4c605a3667e2056c0",
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+    },
+    {
+      "name": "host_clock",
+      "git_blob": "c42d9d3c54d741e66ca43ba7a9fcd2bd5e055312",
+      "bytes": 17988,
+      "sha256": "fc6317d8402ab533df5ddbcd4e19235f1845a7403e6f252daedf8ec43c68fc75",
+      "path": "codex-rs/hepta-contracts/src/authority_host_clock.rs"
+    },
+    {
+      "name": "lease",
+      "git_blob": "924e4552472038934f665f6acf7a95438294893f",
+      "bytes": 61661,
+      "sha256": "9f151ac75919c4b901e798b5eb34b74ba2c7a5548e0c72844ec2a02555ea0d10",
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_authbus.rs",
+      "git_blob": "1ea1ab3e8bd07fbe2389631e14b6e0157b109617",
+      "bytes": 7061,
+      "sha256": "6e6f63c707ea12e248e96bdfa9f6898e3b13e34dd7b6fa9124cac764e94cc03f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+      "git_blob": "aecd492457ec089be818c84b7c0bbbec6806ea85",
+      "bytes": 10450,
+      "sha256": "6e6c74e40add49db03fbfbe0175c5c63ccab2d65fb9bb0dfc487f129b7cf1ec3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "git_blob": "d3719d1c1ea28c49e7e4fd9050b23aeffc7dfc95",
+      "bytes": 7063,
+      "sha256": "2f8c9e3111de7dfe2f87ecb4ce15acac0cde99c530660f79408bf2eabfcf6f31"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "git_blob": "289e1f205337ff15d84de4e49cef55166b3f3add",
+      "bytes": 9117,
+      "sha256": "6c9334e43648207a58aa9ec2c9c73f737b557f76235af5f7065ab9439e3932be"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "git_blob": "bfb919dde3e27bb2588cca720d57a84446fbd68f",
+      "bytes": 16043,
+      "sha256": "88bac0da45827654accbd850df23169518efbd01ddccdbf74a0d121e303c06c3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_observation.rs",
+      "git_blob": "16c29bf729a478fef1a1c2fa8c056a76c97e9454",
+      "bytes": 5981,
+      "sha256": "4216757bd72e1ce19144c6202da3ac9f712846082655dd92139e1aee427e68df"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+      "git_blob": "0385101b9eb0f23d6153327ee4794b7400b7b99c",
+      "bytes": 5694,
+      "sha256": "f54c5f71d95b031b02f6e938663caeaffaf207f02411b89b70c762eb5df8d163"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+      "git_blob": "7bff1b0b377126de452880deffb83d6a01472441",
+      "bytes": 4232,
+      "sha256": "a4310bea0e1d470212694b294249f8006c91ea2e7cbc37d672c3cecca48b5c9d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "git_blob": "9e498c1685651f41e970b836de499a7a83f11b68",
+      "bytes": 2945,
+      "sha256": "3bc76f5586d0a72ff4ced1e55058fa97dc33664bb92730cb0356eec3e5bd259c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text.rs",
+      "git_blob": "9568f1a648dc5b49a7060eab1da22b15ae3a6e6b",
+      "bytes": 15897,
+      "sha256": "2c2f7b82f4a2f6c9465bb4ad8259c33d2e3233a2ce4bc8754ba4133754b30448"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text_human.rs",
+      "git_blob": "11002618c08049d8ab65ce6c7fdcd3f7cbb5bf3c",
+      "bytes": 4233,
+      "sha256": "99bd0564466793f545bbc5a1db00bfcba35187de7d621bfd898f971a42fe0cbb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text_recovery.rs",
+      "git_blob": "b7bf8b96f28357beac8471731bd9fe2ceda3d359",
+      "bytes": 2311,
+      "sha256": "080c4ea7658b79ba941d0e9dfc3c6cbc423c3cb543d4795f28a68b369462dd3b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text_retirement.rs",
+      "git_blob": "3f700c3f4f6b0d5c698d57b318960b4028b1de6e",
+      "bytes": 6158,
+      "sha256": "7f44f88ee31a3d8a8c879a1372c4f133bb9bb7db5c1cc502ac93c36b271f5f55"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text_unsigned.rs",
+      "git_blob": "75c47fa4fea5a75db9b232e28c1ac80845f04c10",
+      "bytes": 5147,
+      "sha256": "345cad1476e52980bfe53b42bebd17e17e35307d7bff474338b3ee129e3d3ad9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+      "git_blob": "ff883c9cab51f91d1bd70e10a844ce17d389b415",
+      "bytes": 5485,
+      "sha256": "2e782008e9036f06ae8c77bba11fbf8dff67c277ae8527fce46fdae5e99ec4fd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs",
+      "git_blob": "14d820cf58de5a883cb6fd24a02afbf0b4b675bc",
+      "bytes": 4746,
+      "sha256": "566fa0bc05e93f22b3e50aa3b6dbcde12650353e98b5fafc1987596c4855ff72"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_frontier.rs",
+      "git_blob": "4cc8b9641c8663a8d14c841625c685375cb9039f",
+      "bytes": 12917,
+      "sha256": "7333516b2a64558ee71dab1674fe98a02fb487487c7493b93ef52ef125691241"
+    }
+  ],
+  "original_issuer_state_cas": [
+    {
+      "path": "deployment_issuer.rs",
+      "cas_count": 2,
+      "cas_lines": [
+        392,
+        475
+      ],
+      "guard": "request_lock in issue/revoke; protected issue enters original lease boundary before entering this issuer lock."
+    },
+    {
+      "path": "deployment_writer.rs",
+      "cas_count": 2,
+      "cas_lines": [
+        194,
+        215
+      ],
+      "guard": "retain_writer_authorization is private and its original register/rotate callers hold the same request_lock across sequence reservation, signing and retained-proof CAS."
+    },
+    {
+      "path": "deployment_authbus.rs",
+      "cas_count": 1,
+      "cas_lines": [
+        145
+      ],
+      "guard": "original pinned lease boundary precedes request_lock and the signed Objective CAS."
+    },
+    {
+      "path": "deployment_desktop.rs",
+      "cas_count": 1,
+      "cas_lines": [
+        133
+      ],
+      "guard": "original issuer/writer boundary precedes request_lock and full policy-state CAS."
+    },
+    {
+      "path": "deployment_notes.rs",
+      "cas_count": 1,
+      "cas_lines": [
+        372
+      ],
+      "guard": "original issuer/writer boundary precedes request_lock and exact original Notes policy CAS."
+    },
+    {
+      "path": "deployment_text.rs",
+      "cas_count": 1,
+      "cas_lines": [
+        369
+      ],
+      "guard": "request_lock covers original shared sequence, complete retained signature and same issuer CAS; legacy/protected callers retain their original upstream lease policy."
+    },
+    {
+      "path": "deployment_text_retirement.rs",
+      "cas_count": 1,
+      "cas_lines": [
+        152
+      ],
+      "guard": "original registration.with_live surrounds request_lock and retained reference removal; original signed sequence and highwater are not refunded."
+    },
+    {
+      "path": "deployment_text_unsigned.rs",
+      "cas_count": 1,
+      "cas_lines": [
+        116
+      ],
+      "guard": "original registration.with_live surrounds request_lock and monotonic unsigned-closure CAS."
+    }
+  ],
+  "read_scope": [
+    "Read the main issuer and every non-test module it declares, recursively through issuer dependencies, writer rotation, Notes observation/revocation, and the Text human/recovery/retirement/unsigned modules.",
+    "Read the actual registered writer, original lease callback, original HostAuthorityClock and DeploymentFrontierStore paths. Git object, byte length and SHA256 were checked when retrieved.",
+    "The inventory counts ten existing IssuerState compare_and_set sites. Each runtime site is enclosed by the same DeploymentFinalUseIssuer instance request_lock, either locally or through the private retain helper's actual original caller.",
+    "create_inner/provision initializes new state before the issuer is published; it is not an unlocked replacement operation on an already serving instance."
+  ],
+  "ordering_findings": [
+    "Original protected paths acquire their lease/issuer/writer dependency fence before the issuer request_lock. The new metadata reader must preserve the direction lease state read fence -> same issuer request_lock -> original clock/store.",
+    "Writer rotation explicitly enters the pinned original retired-predecessor boundary before taking request_lock. Its callback does not call back into that lease registry.",
+    "Calculator and Notes install/update paths perform owner lease operations before, or after releasing, the issuer lock; they do not hold request_lock while reentering that registry. Notes's two-owner revoke is sequential and keeps its explicit intermediate/failure semantics.",
+    "Signed-grant and human-replay observations release their request_lock scope before later caller work. The Text recovery path delegates to the same original locked operations; it does not introduce another state writer.",
+    "No request_lock-held call back into the lease registry was found in the inspected production subtree. This is a concrete fixed-source call-path review, not a proof over future callbacks or unrelated owner instances.",
+    "Original HostAuthorityClock now_unix_ms and refresh_projection hold only their own serial lock through exact store/OS-clock work. Neither invokes the issuer or lease registry. refresh_projection performs original durable CAS and post-I/O sample; its future ceiling is not now.",
+    "Existing issuer metadata getters can read separate records independently. A concurrently shared Root observation must hold the same actual request_lock and derive proof plus revocations from one loaded IssuerState through complete final validation/encoding; composing separate getter snapshots would not establish one cut."
+  ],
+  "scope_limit": [
+    "request_lock is instance-local. DeploymentFrontierStore/HostAuthorityFrontierStore retains actual protected records and per-operation publication locks/CAS, but it does not provide a lifetime issuer-instance mutex. This review does not establish cross-process or two-independently-opened-issuer mutual exclusion.",
+    "The actual serving Root service must use its same original issuer Arc. No new authority, signing key, replacement issuer or observer-provided trust is licensed by this inventory.",
+    "Original lease and issuer writer mutations, failed durability fencing, proof rotation and original expiry checks must retain their old scope. Merely using RwLock does not prove these properties."
+  ],
+  "v8_evidence": {
+    "junit": {
+      "name": "v8_junit",
+      "git_blob": "7892d20ac8cac71efd9484582980f443ba35ef84",
+      "bytes": 36886,
+      "sha256": "925e99bec26401e0e41794be7acb3e42b104a32fff1a85056b6b9b96cd11db13"
+    },
+    "observed_ns": {
+      "initial_enrollment_callback": 392741851,
+      "initial_observation_read_lease_wait": 290931910,
+      "initial_following_callback": 226346940,
+      "initial_final_cached_age": 540675410,
+      "publication_enrollment_callback": 390360248,
+      "publication_observation_read_lease_wait": 383345901,
+      "publication_final_cached_age": 507945551
+    },
+    "interpretation": "Original500ms freshness correctly refused. Timings locate substantial original-lease serialization but do not identify the cost of a particular inner Artifact read, cryptographic check, journal read or durable CAS."
+  },
+  "equivalent_shortening_review": {
+    "source_pins": [
+      {
+        "name": "initial_context",
+        "git_blob": "4c7638bd3ffc433dde4cfd8aeb3293b5c57cea11",
+        "bytes": 3950,
+        "sha256": "c208002eedbb031ef13a9e1ed39beba47ba9127359b43934779e5f61cf0d711a"
+      },
+      {
+        "name": "initial_enrollment",
+        "git_blob": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+        "bytes": 9897,
+        "sha256": "9f8613d8a78e7ad0567de8c6adf02410a93e668db5ef19a2a8a20b42b0eaa071"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "git_blob": "93f9e4bc85f79954ed70c2a7b7f5517766a2adee",
+        "bytes": 23079,
+        "sha256": "0568b37f58197ea82fcc4cd91b225cb445975187316d19146c5fdc917a194b0b"
+      },
+      {
+        "name": "initial_inputs",
+        "git_blob": "f4d0b45e19003253eb1e5490f96134b5ae9a96e0",
+        "bytes": 6742,
+        "sha256": "c891ed29e8a311dc4e856def9d59adcb517dba7cc5d0ddb0f1b506e5329d61d3"
+      },
+      {
+        "name": "artifact_read_view",
+        "git_blob": "f656d967b28db2aeda47674d15ee3a119a53bebc",
+        "bytes": 10965,
+        "sha256": "034ba60cb7cb1da1a53c236426a084be941d106fdb1229d382bba606d205a8a1"
+      },
+      {
+        "name": "host_store",
+        "git_blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+        "bytes": 16412,
+        "sha256": "f80799bad7efc8fa349dc88e3ea8a921218d3d98d447b786e1a84e51afa0660e"
+      }
+    ],
+    "finding": "No justified equivalent step was found to remove from the original enrollment callback or move outside its existing witness fence. The original actual Artifact/Selection cut, previous/target journals, consumer nonce/frontier, profile CAS and final source checks participate in custody/recovery semantics. The durable store initialization/load acknowledgement also revalidates original bytes and syncs unknown cached state before success.",
+    "consequence": "Do not shorten by stale-cache substitution, deferred persistence acknowledgement, a larger freshness window, fake time, unbounded retry or an extra artificial refresh. The new closed metadata concurrency approach requires separate source review."
+  },
+  "design_correction": {
+    "design_blob": "5dbee20fd285f48243ea0c5f2d8c2c4fa6f5807d",
+    "issue": "That design's broad suggestion to recheck shared poison after an old effect callback would add a new Err after an irreversible action, discard the original T/witness and obscure whether entry occurred.",
+    "required_resolution": "Keep every old dispatch/pair/pinned callback result path unchanged. Observation panic may poison later admissions; it must not retroactively discard an already entered dispatch result. A new metadata-only finish check may refuse its own response because that branch has no effect.",
+    "status": "Author accepted the correction. This inventory report does not by itself approve the new implementation."
+  },
+  "remaining_verification": [
+    "Original callback/paired boundary byte comparison in final patch.",
+    "Exact closed callers and no nested reentry into state read/write fences.",
+    "Reader-panic poison, original dispatch-panic poison, expiry after waiting, failed durability, nonblocking exact revoke and same-instance issuer mutation tests.",
+    "Original unchanged full typed/QA gates and native tests on the final immutable integrated source; none inherited."
+  ],
+  "actions": {
+    "h_calls": 0,
+    "cargo_calls": 0,
+    "native_tests": 0,
+    "source_edits": 0,
+    "refs_mutated": false
+  },
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_or_rollback": 0
+  }
+}

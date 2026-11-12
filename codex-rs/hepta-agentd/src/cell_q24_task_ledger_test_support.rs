@@ -61,9 +61,30 @@ pub(super) fn witness(
     )?)
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum TaskProfile {
+    NonLearning,
+    Original,
+    SuccessorFeedback,
+    SuccessorRefusedGenerator,
+}
+
 #[cfg(test)]
 impl Fixture {
     pub(super) async fn new(run: &str, lifetime: u64, automatic: bool) -> anyhow::Result<Self> {
+        let profile = if automatic {
+            TaskProfile::Original
+        } else {
+            TaskProfile::NonLearning
+        };
+        Self::new_profile(run, lifetime, profile).await
+    }
+
+    pub(super) async fn new_profile(
+        run: &str,
+        lifetime: u64,
+        profile: TaskProfile,
+    ) -> anyhow::Result<Self> {
         let root = tempfile::tempdir()?;
         let (baseline, bundle, definition) = support::model(root.path())?;
         let admission = support::admission(run).await?;
@@ -164,20 +185,36 @@ impl Fixture {
             signature_witness: witness(root.path(), "signatures.witness", source.objective_digest)?,
             open_mode: crate::CircuitQ24TaskOpenModeV1::Create,
             config: config.clone(),
-            generator_key: SigningKey::from_bytes(&[1; 32]),
+            generator_key: SigningKey::from_bytes(&[match profile {
+                TaskProfile::SuccessorRefusedGenerator => 4,
+                TaskProfile::NonLearning | TaskProfile::Original | TaskProfile::SuccessorFeedback => 1,
+            }; 32]),
         };
-        let session = if automatic {
-            support::start_learning(
-                admission,
-                published,
-                Arc::clone(&baseline),
-                bundle.clone(),
-                inputs,
-            )
-            .await?
-        } else {
-            drop(inputs);
-            support::start(admission, published, Arc::clone(&baseline), bundle.clone()).await?
+        let session = match profile {
+            TaskProfile::Original => {
+                support::start_learning(
+                    admission,
+                    published,
+                    Arc::clone(&baseline),
+                    bundle.clone(),
+                    inputs,
+                )
+                .await?
+            }
+            TaskProfile::NonLearning => {
+                drop(inputs);
+                support::start(admission, published, Arc::clone(&baseline), bundle.clone()).await?
+            }
+            TaskProfile::SuccessorFeedback | TaskProfile::SuccessorRefusedGenerator => {
+                support::start_successor_learning(
+                    admission,
+                    published,
+                    Arc::clone(&baseline),
+                    bundle.clone(),
+                    inputs,
+                )
+                .await?
+            }
         };
         // This is the only task dispatch performed by this fixture.
         let publication = execute(&session, /*request_id*/ 1).await?;

@@ -77,7 +77,7 @@ fn same_registry_busy_or_late_clock_cannot_revoke_after_original_deadline()
         let bytes = std::fs::read(directory.path().join("authority-leases.json"))?;
         let (entered, release) = arm(&clock)?;
         let held = if hold_state {
-            Some(registry.0.state.lock().map_err(|_| "state lock")?)
+            Some(registry.lock_state().map_err(|_| "state lock")?)
         } else {
             None
         };

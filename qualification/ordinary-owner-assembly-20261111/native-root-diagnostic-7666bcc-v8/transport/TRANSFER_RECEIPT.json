@@ -1,0 +1,246 @@
+{
+  "schema": "hepta.original-native-closed-read-transfer.v1",
+  "source": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+  "status": "original-junit-and-full-log-verified; native-failed",
+  "new_execution": false,
+  "retry_native": false,
+  "requests": [
+    {
+      "kind": "junit",
+      "request": {
+        "idempotency_key": "af52-v8-original-root-junit-read-v1",
+        "operation": {
+          "tool": "read_multiple_files",
+          "arguments": {
+            "host": "ai395",
+            "paths": [
+              "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root.junit.xml"
+            ],
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072
+          }
+        }
+      },
+      "request_blob": "361a13dcdf22aea7494dd922b694a9af49826a8c",
+      "sdk_payload": {
+        "git_blob": "1166a3a525aa59a0309cf8f0c0b17ac1e6dde0c5",
+        "bytes": 38381,
+        "sha256": "15d4c6f5412188b3fbf5c824e8ee1824a4cd0ce4a565b1c050d7dcfb6e37a4d7"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 16384,
+          "total_bytes": 38381,
+          "result_sha256": "15d4c6f5412188b3fbf5c824e8ee1824a4cd0ce4a565b1c050d7dcfb6e37a4d7",
+          "page_bytes": 16384,
+          "page_sha256": "b2a74b7074217d0428156dbc4ff747ed26e248d1685f7d3a68d3e8649a352673",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 16384,
+          "next_offset": 32768,
+          "total_bytes": 38381,
+          "result_sha256": "15d4c6f5412188b3fbf5c824e8ee1824a4cd0ce4a565b1c050d7dcfb6e37a4d7",
+          "page_bytes": 16384,
+          "page_sha256": "93e36a6cac87721ffb77dc55b61dd7a1562361911b510593324ed595f886a870",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 32768,
+          "next_offset": 38381,
+          "total_bytes": 38381,
+          "result_sha256": "15d4c6f5412188b3fbf5c824e8ee1824a4cd0ce4a565b1c050d7dcfb6e37a4d7",
+          "page_bytes": 5613,
+          "page_sha256": "cf37fc736472c59d36f30865905a713add80d5c9ffc5338d6c840ee45f2cdb2c",
+          "immutable_snapshot": true,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "kind": "log_chunk_0",
+      "request": {
+        "idempotency_key": "af52-v8-original-root-log-read-0-v1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "ai395",
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root.execution.json.5abcd9b3402e4d48a5d6e9413d45ae9c.log",
+            "offset": 0,
+            "limit": 65536
+          }
+        }
+      },
+      "request_blob": "98926e032da431cb28b8daee97aee9623e20a39c",
+      "sdk_payload": {
+        "git_blob": "cda80a44ca6fb401841d24e9f5f0026ba1524a07",
+        "bytes": 87875,
+        "sha256": "888051e9916d2d831c307137797fe36084a0e02e24b5d1e37ed8a99e05590730"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 16384,
+          "total_bytes": 87875,
+          "result_sha256": "888051e9916d2d831c307137797fe36084a0e02e24b5d1e37ed8a99e05590730",
+          "page_bytes": 16384,
+          "page_sha256": "b1398dc18a66b086d2e52dd804401c1a9c842f05955c529f13c2400c10006cfa",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 16384,
+          "next_offset": 32768,
+          "total_bytes": 87875,
+          "result_sha256": "888051e9916d2d831c307137797fe36084a0e02e24b5d1e37ed8a99e05590730",
+          "page_bytes": 16384,
+          "page_sha256": "2e51ed94988dcef6ce4afea7baeda47626ea0865300b9ab5f59e7e56531b7f01",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 32768,
+          "next_offset": 49152,
+          "total_bytes": 87875,
+          "result_sha256": "888051e9916d2d831c307137797fe36084a0e02e24b5d1e37ed8a99e05590730",
+          "page_bytes": 16384,
+          "page_sha256": "3d57e7781b98a4f02612b3ecb15f92c14834c3ef21e0aec87deba608675d6ffd",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 49152,
+          "next_offset": 65536,
+          "total_bytes": 87875,
+          "result_sha256": "888051e9916d2d831c307137797fe36084a0e02e24b5d1e37ed8a99e05590730",
+          "page_bytes": 16384,
+          "page_sha256": "8ac4a670dbfad456df45ef72de871fd4db9442dafdc52668167bff24d0697fab",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "next_offset": 81920,
+          "total_bytes": 87875,
+          "result_sha256": "888051e9916d2d831c307137797fe36084a0e02e24b5d1e37ed8a99e05590730",
+          "page_bytes": 16384,
+          "page_sha256": "1991a3e63404b156fad00910133f65492bb3fc4d8fed38f087995f4aa2008599",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 81920,
+          "next_offset": 87875,
+          "total_bytes": 87875,
+          "result_sha256": "888051e9916d2d831c307137797fe36084a0e02e24b5d1e37ed8a99e05590730",
+          "page_bytes": 5955,
+          "page_sha256": "95216af3dc9ae0840c629c7c58ab970c428a9478f22c54b8de466246721eaf50",
+          "immutable_snapshot": true,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "kind": "log_chunk_65536",
+      "request": {
+        "idempotency_key": "af52-v8-original-root-log-read-65536-v1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "ai395",
+            "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-7666bcc-root17-diagnostic-v8/records/root.execution.json.5abcd9b3402e4d48a5d6e9413d45ae9c.log",
+            "offset": 65536,
+            "limit": 65536,
+            "expected_version": "66306:58767393:86411:1794453946759492337:1794453948384444310"
+          }
+        }
+      },
+      "request_blob": "4d67fffc257932bd04c6104abe315eef4d055fc0",
+      "sdk_payload": {
+        "git_blob": "4cbf79ee695c78e442907a658a2fa205c4605052",
+        "bytes": 28330,
+        "sha256": "e1ff91db0a30ab220a7084b66d21a180b8c2b398f8cd90114a598b0a91a4496e"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "next_offset": 16384,
+          "total_bytes": 28330,
+          "result_sha256": "e1ff91db0a30ab220a7084b66d21a180b8c2b398f8cd90114a598b0a91a4496e",
+          "page_bytes": 16384,
+          "page_sha256": "e6194d33ef0fc1676b37c0cf419c9250f680814e018c48a189a5a626e1e8a808",
+          "immutable_snapshot": true,
+          "eof": false
+        },
+        {
+          "offset": 16384,
+          "next_offset": 28330,
+          "total_bytes": 28330,
+          "result_sha256": "e1ff91db0a30ab220a7084b66d21a180b8c2b398f8cd90114a598b0a91a4496e",
+          "page_bytes": 11946,
+          "page_sha256": "53671ae103cd35e5301077f2ca292bc6f12cb04a034fb4584c360dfdc0e75c97",
+          "immutable_snapshot": true,
+          "eof": true
+        }
+      ]
+    }
+  ],
+  "original_files": [
+    {
+      "name": "root.execution.json",
+      "bytes": 3969,
+      "sha256": "faf4974b7b737b5f1f9b515d7fd8841c48727456bcdbcac35718f4d053feae33",
+      "git_blob": "012b0b6ea407e2e8bc5a7759552aaefc80bcb65f"
+    },
+    {
+      "name": "root.counts.json",
+      "bytes": 98,
+      "sha256": "3aa7c5c63701c9c42c2ead17ac64a706c7646b96c6133cdc3c46a58fbeb39261",
+      "git_blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8"
+    },
+    {
+      "name": "root.uid.json",
+      "bytes": 47,
+      "sha256": "15a66e11555267f553813ac4ebe6595fb0fcd794757dbf7ee2567413bd9ae8f1",
+      "git_blob": "25b26adfd9a5e73c1b03be4c200ecf224e20480c"
+    },
+    {
+      "name": "root.junit.summary.json",
+      "bytes": 3332,
+      "sha256": "ba859ed0de4dd7cc17652616cbfc8654251cb8975bf444821ad1d07187dde358",
+      "git_blob": "6486cd937347e1cce9306403572e4b5d3d04bfa3"
+    },
+    {
+      "name": "final-source-identity.json",
+      "bytes": 127,
+      "sha256": "38cbe229904f9e93186d40d7be14c0f2dea014ee0089837c587c1b8dffde8a06",
+      "git_blob": "ba174a2688010902cced5219f553939c3faf78f6"
+    },
+    {
+      "name": "root.junit.xml",
+      "bytes": 36886,
+      "sha256": "925e99bec26401e0e41794be7acb3e42b104a32fff1a85056b6b9b96cd11db13",
+      "git_blob": "7892d20ac8cac71efd9484582980f443ba35ef84"
+    },
+    {
+      "name": "root.execution.json.5abcd9b3402e4d48a5d6e9413d45ae9c.log",
+      "bytes": 86411,
+      "sha256": "44be455d3f9da9c493ef23cbe02f376a5d88d1f1e61dddf8b291d0148507caed",
+      "git_blob": "cb2d654ea6ca913fcdf329e134dae6794e9e5b4a"
+    }
+  ],
+  "native_counts": {
+    "selected": 17,
+    "passed": 15,
+    "failed": 2,
+    "skipped": 0
+  },
+  "scope": "Only original immutable SDK payload pages and the original bounded file chunks are reconstructed. No truncated display or generated summary replaces an original.",
+  "separate_delivery_failures": {
+    "junit_direct_read": "Original direct read failed with MCP timeout; closed read successfully recovered the original bytes.",
+    "progress_direct_read": "INVALID_ARGUMENT bounded multi-file read; full progress remains for original archive, not declared verified here."
+  }
+}

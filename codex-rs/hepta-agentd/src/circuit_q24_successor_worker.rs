@@ -175,7 +175,7 @@ impl PendingSuccessorOwner {
     ) -> Result<
         (
             CircuitTaskRuntimeBootstrapV1,
-            Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,
+            Arc<OriginalQ24SuccessorInvocationV1>,
             OriginalQ24InstalledSuccessorV1,
         ),
         Error,

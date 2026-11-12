@@ -1,0 +1,263 @@
+{
+  "schema": "hepta.original-q24-successor-feedback.exact-ops.v2",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+  "source_tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+  "supersedes_draft_ops": "d0643e8d7669c245fc0cf4b383175593a4d0bc69",
+  "operations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "use codex_hepta_neuron::FileAnchorWitnessStore;\n",
+      "new": "use codex_hepta_neuron::FileAnchorWitnessStore;\n\nuse crate::AgentdCircuitTaskInvocationProviderV1;\nuse crate::OriginalCellQ24TaskLedgerInputsV1;\nuse crate::OriginalCellQ24TaskLedgerProducerV1;\n",
+      "reason": "Existing original owner inputs and invocation contract."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "pub struct OriginalQ24SuccessorExecutionInputsV1 {",
+      "new": "/// Learning is explicit. The original host supplies the already enrolled\n/// Generator/Ledger capabilities; a successful task supplies no business label.\npub enum OriginalQ24SuccessorFeedbackV1 {\n    NonLearning,\n    OriginalLedger(OriginalCellQ24TaskLedgerInputsV1),\n}\n\npub struct OriginalQ24SuccessorExecutionInputsV1 {",
+      "reason": "Explicit mode consumed with the original command; no default or implicit role."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "    pub source_mode: CircuitQ24TaskOpenModeV1,\n",
+      "new": "    pub source_mode: CircuitQ24TaskOpenModeV1,\n    pub feedback: OriginalQ24SuccessorFeedbackV1,\n",
+      "reason": "Freeze real feedback inputs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "    task: PublishedCircuitFeatureTaskV1,\n}\n\nimpl OriginalQ24InstalledSuccessorV1",
+      "new": "    task: PublishedCircuitFeatureTaskV1,\n    ledger: Option<Arc<OriginalCellQ24TaskLedgerProducerV1>>,\n}\n\nimpl OriginalQ24InstalledSuccessorV1",
+      "reason": "Retain the actual producer only."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "    pub fn published_task(&self) -> PublishedCircuitFeatureTaskV1 {\n        self.task.clone()\n    }\n",
+      "new": "    pub fn published_task(&self) -> PublishedCircuitFeatureTaskV1 {\n        self.task.clone()\n    }\n\n    /// The original owner can accept an independently signed business Outcome\n    /// and prepare a Dataset. This does not enroll the next Root source or\n    /// authorize task execution; every owner operation retains its live checks.\n    pub fn original_task_ledger(&self) -> Option<Arc<OriginalCellQ24TaskLedgerProducerV1>> {\n        self.ledger.as_ref().map(Arc::clone)\n    }\n",
+      "reason": "Export actual producer for existing Outcome/preparation APIs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "impl OriginalQ24SuccessorExecutionInputsV1 {",
+      "new": "/// Created only with the original channel. No caller can replace its source or\n/// Ledger owner after publication or install an arbitrary invocation provider.\npub(crate) struct OriginalQ24SuccessorInvocationV1 {\n    source: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\n    ledger: Option<Arc<OriginalCellQ24TaskLedgerProducerV1>>,\n}\n\nimpl AgentdCircuitTaskInvocationProviderV1 for OriginalQ24SuccessorInvocationV1 {\n    fn build(\n        &self,\n        identity: &AgentdIdentity,\n        record: &codex_hepta_learning_ledger::RunStartRecordV1,\n    ) -> Result<crate::CircuitTaskRequestV1, AgentdError> {\n        self.source.build(identity, record)\n    }\n\n    fn publish_result(\n        &self,\n        identity: &AgentdIdentity,\n        record: &codex_hepta_learning_ledger::RunStartRecordV1,\n        receipt: &crate::CircuitTaskReceiptV1,\n    ) -> Result<(), AgentdError> {\n        // Task publication is independent of learning readiness. A missing\n        // business Outcome never causes another dispatch of committed C work.\n        self.source.publish_result(identity, record, receipt)\n    }\n\n    fn observe_learning(\n        &self,\n        identity: &AgentdIdentity,\n        record: &codex_hepta_learning_ledger::RunStartRecordV1,\n        trace: &codex_hepta_automation::CircuitCommittedTraceV2,\n    ) -> crate::CircuitTaskLearningReadinessV1 {\n        match &self.ledger {\n            Some(producer) => {\n                let producer: &Arc<OriginalCellQ24TaskLedgerProducerV1> = producer;\n                producer.observe_learning(identity, record, trace)\n            }\n            None => self.source.observe_learning(identity, record, trace),\n        }\n    }\n}\n\nimpl OriginalQ24SuccessorExecutionInputsV1 {",
+      "reason": "Closed concrete original-source/producer composition; no new trait or fabricated readiness."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "            Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\n            OriginalQ24InstalledSuccessorV1,\n",
+      "new": "            Arc<OriginalQ24SuccessorInvocationV1>,\n            OriginalQ24InstalledSuccessorV1,\n",
+      "reason": "Return only the closed original invocation."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "        let installed = OriginalQ24InstalledSuccessorV1 {",
+      "new": "        let ledger = match self.feedback {\n            OriginalQ24SuccessorFeedbackV1::NonLearning => None,\n            OriginalQ24SuccessorFeedbackV1::OriginalLedger(inputs) => {\n                let producer = OriginalCellQ24TaskLedgerProducerV1::open_original(\n                    inputs,\n                    Arc::clone(&runtime.source),\n                    runtime.cell.clone(),\n                    task.clone(),\n                    identity.clone(),\n                )\n                .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?;\n                Some(Arc::new(producer))\n            }\n        };\n        let invocation = Arc::new(OriginalQ24SuccessorInvocationV1 {\n            source: runtime.invocation,\n            ledger: ledger.as_ref().map(Arc::clone),\n        });\n        let installed = OriginalQ24InstalledSuccessorV1 {",
+      "reason": "Bind exact published Task/source/Cell/full identity under unchanged Ledger trust/key/journal checks before Ready."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "            task,\n        };\n        Ok((runtime.bootstrap, runtime.invocation, installed))",
+      "new": "            task,\n            ledger,\n        };\n        Ok((runtime.bootstrap, invocation, installed))",
+      "reason": "Return the same producer and actual channel; no Outcome/outbox synthesized."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "old": "pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;\n",
+      "new": "pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;\npub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorFeedbackV1;\npub(crate) use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorInvocationV1;\n",
+      "reason": "Explicit input export; closed invocation remains crate-private."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "old": "use codex_hepta_neuron::FileAnchorWitnessStore;\nuse tokio::sync::watch;\n",
+      "new": "use tokio::sync::watch;\n",
+      "reason": "Concrete slot type no longer refers to raw generic Source."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "old": "use crate::DurableCircuitTaskSourceV1;\n",
+      "new": "use super::OriginalQ24SuccessorInvocationV1;\n",
+      "reason": "Slot keeps one concrete original invocation."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "old": "struct Installed {\n    handle: CircuitTaskHandleV1,\n    invocation: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\n}",
+      "new": "struct Installed {\n    handle: CircuitTaskHandleV1,\n    invocation: Arc<OriginalQ24SuccessorInvocationV1>,\n}",
+      "reason": "One-shot installed slot and state machine unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "old": "        invocation: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\n",
+      "new": "        invocation: Arc<OriginalQ24SuccessorInvocationV1>,\n",
+      "reason": "Original direct handle and one-shot Ready checks retained."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "old": "    ) -> Result<Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>, CircuitTaskErrorV1> {",
+      "new": "    ) -> Result<Arc<OriginalQ24SuccessorInvocationV1>, CircuitTaskErrorV1> {",
+      "reason": "Read only the actual original installed invocation."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "old": "            Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\n",
+      "new": "            Arc<OriginalQ24SuccessorInvocationV1>,\n",
+      "reason": "Original publication/gates/cancellation/join/order unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "old": "    ) -> Result<CircuitTaskRequestV1, AgentdError> {\n        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> =\n            self.slot.actual_invocation().map_err(refused)?;",
+      "new": "    ) -> Result<CircuitTaskRequestV1, AgentdError> {\n        let source: Arc<OriginalQ24SuccessorInvocationV1> =\n            self.slot.actual_invocation().map_err(refused)?;",
+      "reason": "Explicit closed receiver; existing task and slot guards unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "old": "    ) -> Result<(), AgentdError> {\n        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> =\n            self.slot.actual_invocation().map_err(refused)?;",
+      "new": "    ) -> Result<(), AgentdError> {\n        let source: Arc<OriginalQ24SuccessorInvocationV1> =\n            self.slot.actual_invocation().map_err(refused)?;",
+      "reason": "Explicit closed receiver; existing task and slot guards unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "old": "            Ok(source) => {\n                let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> = source;\n                source.observe_learning(identity, record, trace)",
+      "new": "            Ok(source) => {\n                let source: Arc<OriginalQ24SuccessorInvocationV1> = source;\n                source.observe_learning(identity, record, trace)",
+      "reason": "Explicit closed receiver; existing task and slot guards unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "old": "pub use circuit_q24_successor::OriginalQ24SuccessorExecutionInputsV1;\n",
+      "new": "pub use circuit_q24_successor::OriginalQ24SuccessorExecutionInputsV1;\n#[cfg(target_os = \"linux\")]\npub use circuit_q24_successor::OriginalQ24SuccessorFeedbackV1;\n",
+      "reason": "Explicit Linux-only input mode export."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "old": "    Original(crate::OriginalCellQ24TaskLedgerInputsV1),\n}\n",
+      "new": "    Original(crate::OriginalCellQ24TaskLedgerInputsV1),\n    #[cfg(target_os = \"linux\")]\n    Successor(crate::OriginalCellQ24TaskLedgerInputsV1),\n}\n",
+      "reason": "Explicit component exercise of the postpublication successor channel with original owner inputs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "old": "#[cfg(test)]\nasync fn start_profile(",
+      "new": "#[cfg(target_os = \"linux\")]\npub(super) async fn start_successor_learning(\n    admission: Admission,\n    published_task: PublishedCircuitFeatureTaskV1,\n    model: Arc<LoadedCellQ24ModelV1>,\n    bundle: CellCompatibilityBundleV1,\n    inputs: crate::OriginalCellQ24TaskLedgerInputsV1,\n) -> anyhow::Result<Session> {\n    start_profile(\n        admission,\n        published_task,\n        model,\n        bundle,\n        LearningProfile::Successor(inputs),\n    )\n    .await\n}\n\n#[cfg(test)]\nasync fn start_profile(",
+      "reason": "Reuse actual ordinary ingress fixture, without a Root or pending-slot test constructor."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "old": "            ledger = Some(installed.ledger);\n            installed.task\n        }\n    };",
+      "new": "            ledger = Some(installed.ledger);\n            installed.task\n        }\n        #[cfg(target_os = \"linux\")]\n        LearningProfile::Successor(inputs) => {\n            // This exercises the original postpublication channel, not Root\n            // publication or a fabricated ready slot. Issuers are fixtures.\n            let CircuitQ24TaskProfileV1 {\n                files,\n                source_mode,\n                published_task,\n                fence,\n                circuit,\n                routes,\n                bundle,\n                model,\n                worker_generation,\n                maximum_cell_records,\n                queue_capacity,\n                clock,\n            } = profile;\n            let execution = crate::OriginalQ24SuccessorExecutionInputsV1 {\n                files,\n                source_mode,\n                feedback: crate::OriginalQ24SuccessorFeedbackV1::OriginalLedger(inputs),\n                fence,\n                circuit,\n                routes,\n                worker_generation,\n                maximum_cell_records,\n                clock,\n            };\n            let (bootstrap, invocation, original) = execution.open_original_successor_channel(\n                &runtime.identity,\n                published_task,\n                bundle,\n                model,\n                queue_capacity,\n            )?;\n            ledger = original.original_task_ledger();\n            crate::AgentdQ24CircuitTaskRuntimeV1 {\n                config: config.with_circuit_task_bootstrap(bootstrap, invocation)?,\n                source: original.source(),\n                cell: original.cell(),\n            }\n        }\n    };",
+      "reason": "Install only the actual closed invocation returned by the real successor channel, then execute original ObjectiveStart path."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "old": "#[cfg(test)]\nimpl Fixture {\n    pub(super) async fn new(run: &str, lifetime: u64, automatic: bool) -> anyhow::Result<Self> {\n",
+      "new": "#[derive(Clone, Copy)]\npub(super) enum TaskProfile {\n    NonLearning,\n    Original,\n    SuccessorFeedback,\n}\n\n#[cfg(test)]\nimpl Fixture {\n    pub(super) async fn new(run: &str, lifetime: u64, automatic: bool) -> anyhow::Result<Self> {\n        let profile = if automatic {\n            TaskProfile::Original\n        } else {\n            TaskProfile::NonLearning\n        };\n        Self::new_profile(run, lifetime, profile).await\n    }\n\n    pub(super) async fn new_profile(\n        run: &str,\n        lifetime: u64,\n        profile: TaskProfile,\n    ) -> anyhow::Result<Self> {\n",
+      "reason": "Preserve all existing fixture calls and expose an explicit component profile mode."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "old": "        let session = if automatic {\n            support::start_learning(\n                admission,\n                published,\n                Arc::clone(&baseline),\n                bundle.clone(),\n                inputs,\n            )\n            .await?\n        } else {\n            drop(inputs);\n            support::start(admission, published, Arc::clone(&baseline), bundle.clone()).await?\n        };",
+      "new": "        let session = match profile {\n            TaskProfile::Original => {\n                support::start_learning(\n                    admission,\n                    published,\n                    Arc::clone(&baseline),\n                    bundle.clone(),\n                    inputs,\n                )\n                .await?\n            }\n            TaskProfile::NonLearning => {\n                drop(inputs);\n                support::start(admission, published, Arc::clone(&baseline), bundle.clone()).await?\n            }\n            TaskProfile::SuccessorFeedback => {\n                support::start_successor_learning(\n                    admission,\n                    published,\n                    Arc::clone(&baseline),\n                    bundle.clone(),\n                    inputs,\n                )\n                .await?\n            }\n        };",
+      "reason": "Successor feedback has the same actual owner inputs and one real task dispatch; no synthetic ledger path."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_tests.rs",
+      "old": "#[path = \"cell_q24_task_comparison_tests.rs\"]\nmod comparison;\n",
+      "new": "#[path = \"cell_q24_task_comparison_tests.rs\"]\nmod comparison;\n#[path = \"circuit_q24_successor_feedback_tests.rs\"]\nmod successor_feedback;\n",
+      "reason": "Keep meaningful component regression in a separate test module."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "old": "    SuccessorFeedback,\n}\n",
+      "new": "    SuccessorFeedback,\n    SuccessorRefusedGenerator,\n}\n",
+      "reason": "Exercise real owner rejection without a NonLearning fallback."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "old": "            generator_key: SigningKey::from_bytes(&[1; 32]),\n        };\n        let session = match profile {",
+      "new": "            generator_key: SigningKey::from_bytes(&[match profile {\n                TaskProfile::SuccessorRefusedGenerator => 4,\n                TaskProfile::NonLearning | TaskProfile::Original | TaskProfile::SuccessorFeedback => 1,\n            }; 32]),\n        };\n        let session = match profile {",
+      "reason": "Negative component has a deliberately non-enrolled fixture key; original trust and signed source unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "old": "            TaskProfile::SuccessorFeedback => {\n",
+      "new": "            TaskProfile::SuccessorFeedback | TaskProfile::SuccessorRefusedGenerator => {\n",
+      "reason": "Both cases enter the same actual production successor channel, no replacement test provider."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "old": "//! Execution resources only. Publication, selected bundle and loaded model\n//! enter solely from the original Root driver retained by the supervised worker.\n",
+      "new": "//! Original execution resources and explicitly enrolled feedback capabilities.\n//! Publication, selected bundle and loaded model enter solely from the original\n//! Root driver. Feedback does not enroll the next Root learning source.\n",
+      "reason": "Describe the actual new typed composition and its source-registration limit."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "old": "        match self.slot.actual_invocation() {\n            Ok(source) => {\n                let source: Arc<OriginalQ24SuccessorInvocationV1> = source;\n                source.observe_learning(identity, record, trace)\n            }\n            Err(_) => CircuitTaskLearningReadinessV1::Pending(\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\n            ),\n        }\n",
+      "new": "        let readiness = match self.slot.actual_invocation() {\n            Ok(source) => {\n                let source: Arc<OriginalQ24SuccessorInvocationV1> = source;\n                source.observe_learning(identity, record, trace)\n            }\n            Err(_) => CircuitTaskLearningReadinessV1::Pending(\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\n            ),\n        };\n        // An in-flight original observation may finish durably after close, but\n        // its Ready result cannot be returned through the closed successor slot.\n        if self.slot.require_open().is_err() {\n            return CircuitTaskLearningReadinessV1::Pending(\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\n            );\n        }\n        readiness\n",
+      "reason": "Peer review: preserve actual durable work but refuse a newly positive Ready result after concurrent slot close, matching existing build/publish postchecks."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[boundary]]\nid = \"q24_task_original_ledger_open\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::open_original\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\ndefinition_markers = [\"fn open_original(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs\"]\ncaller_markers = []\n\n",
+      "new": "[[boundary]]\nid = \"q24_task_original_ledger_open\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::open_original\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\ndefinition_markers = [\"fn open_original(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs\",\"codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs\"]\ncaller_markers = []\n\n",
+      "reason": "Add only the actual new original-owner call; keep the original caller and typed receiver proof."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[boundary]]\nid = \"q24_task_original_ready_observe\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::observe_learning\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs\"\ndefinition_markers = [\"fn observe_learning(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs\"]\ncaller_markers = []\n\n",
+      "new": "[[boundary]]\nid = \"q24_task_original_ready_observe\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::observe_learning\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs\"\ndefinition_markers = [\"fn observe_learning(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs\",\"codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs\"]\ncaller_markers = []\n\n",
+      "reason": "Add only the actual new original-owner call; keep the original caller and typed receiver proof."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs\"\nrequired = [\"pub struct OriginalQ24SuccessorExecutionInputsV1\",\"pub struct OriginalQ24InstalledSuccessorV1\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey\",\"pub provider:\",\"pub callback:\",\"pub model:\",\"pub bundle:\",\"pub published_task:\",\"CircuitTaskLearningReadinessV1::Ready\",\"AuthenticatedOutcomeV2\"]\nrequired_function_order = [{ function = \"fn validate_original_successor_execution(\", sequence = [\"TaskFlowFence::new(\",\"self.fence.owner_agent_id != identity.agent_id\",\"identity.spawn_generation.checked_add(1) != Some(self.fence.generation)\",\"self.worker_generation == 0\",\"!(3..=16).contains(&self.maximum_cell_records)\",\"CircuitCellRegistryV1::new(\"] },{ function = \"fn open_original_successor_channel(\", sequence = [\"circuit_q24_task_channel_v1(\\n                identity,\\n                CircuitQ24TaskProfileV1 {\",\"published_task: task.clone()\",\"OriginalQ24InstalledSuccessorV1 {\",\"runtime.source\",\"runtime.cell\",\"runtime.bootstrap, runtime.invocation\"] }]\n\n",
+      "new": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs\"\nrequired = [\"pub struct OriginalQ24SuccessorExecutionInputsV1\",\"pub struct OriginalQ24InstalledSuccessorV1\",\"pub enum OriginalQ24SuccessorFeedbackV1\",\"    NonLearning,\\n    OriginalLedger(OriginalCellQ24TaskLedgerInputsV1),\",\"    pub feedback: OriginalQ24SuccessorFeedbackV1,\",\"pub(crate) struct OriginalQ24SuccessorInvocationV1\",\"    source: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,\",\"    ledger: Option<Arc<OriginalCellQ24TaskLedgerProducerV1>>,\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey\",\"pub provider:\",\"pub callback:\",\"pub model:\",\"pub bundle:\",\"pub published_task:\",\"CircuitTaskLearningReadinessV1::Ready\",\"AuthenticatedOutcomeV2\",\"impl Default for OriginalQ24SuccessorFeedbackV1\",\"LearningIterationObservationV1::Experience {\",\"outcome_signing_payload\"]\nrequired_function_order = [{ function = \"fn validate_original_successor_execution(\", sequence = [\"TaskFlowFence::new(\",\"self.fence.owner_agent_id != identity.agent_id\",\"identity.spawn_generation.checked_add(1) != Some(self.fence.generation)\",\"self.worker_generation == 0\",\"!(3..=16).contains(&self.maximum_cell_records)\",\"CircuitCellRegistryV1::new(\"] },{ function = \"fn open_original_successor_channel(\", sequence = [\"circuit_q24_task_channel_v1(\\n                identity,\\n                CircuitQ24TaskProfileV1 {\",\"published_task: task.clone()\",\"let ledger = match self.feedback\",\"OriginalQ24SuccessorFeedbackV1::NonLearning => None\",\"OriginalQ24SuccessorFeedbackV1::OriginalLedger(inputs)\",\"OriginalCellQ24TaskLedgerProducerV1::open_original(\",\"inputs,\\n                    Arc::clone(&runtime.source),\\n                    runtime.cell.clone(),\\n                    task.clone(),\\n                    identity.clone(),\",\"AgentdError::Io(std::io::Error::other(error))\",\"Some(Arc::new(producer))\",\"let invocation = Arc::new(OriginalQ24SuccessorInvocationV1 {\",\"source: runtime.invocation\",\"ledger: ledger.as_ref().map(Arc::clone)\",\"OriginalQ24InstalledSuccessorV1 {\",\"source: runtime.source\",\"cell: runtime.cell\",\"task,\\n            ledger,\",\"Ok((runtime.bootstrap, invocation, installed))\"] },{ function = \"fn original_task_ledger(\", sequence = [\"self.ledger.as_ref()\",\".map(Arc::clone)\"] },{ function = \"fn build(\", sequence = [\"self.source.build(\",\"identity, record)\"] },{ function = \"fn publish_result(\", sequence = [\"self.source.publish_result(\",\"identity, record, receipt)\"] },{ function = \"fn observe_learning(\", sequence = [\"match &self.ledger\",\"Some(producer)\",\"let producer: &Arc<OriginalCellQ24TaskLedgerProducerV1> = producer;\",\"producer.observe_learning(identity, record, trace)\",\"None => self.source.observe_learning(identity, record, trace)\"] }]\n\n",
+      "reason": "Preserve original task/publication/fence guards, replace the now-closed invocation return marker, and pin original Task/Source/Cell/identity producer binding and exact feedback-only dispatch."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs\"\nrequired = [\"enum Phase {\\n    Pending,\\n    Installing,\\n    Ready,\\n    Closed,\\n}\",\"changed: watch::Sender<()>\",\"active: Arc<AtomicUsize>\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey\",\"Deserialize\",\"impl Clone for SuccessorSlot\",\"impl Default for SuccessorSlot\",\"state.phase = Phase::Pending;\"]\nrequired_function_order = [{ function = \"fn close(\", sequence = [\"self.closed.cancel()\",\"state.phase = Phase::Closed\",\"self.changed.send_replace(())\"] },{ function = \"fn require_installation_open(\", sequence = [\"self.require_open()?\",\"self\\n            .state\\n            .lock()\",\"state.phase != Phase::Installing || self.closed.is_cancelled()\",\"CircuitTaskErrorV1::Unavailable\"] },{ function = \"fn begin_installation(\", sequence = [\"self.require_open()?\",\"state.phase != Phase::Pending\",\"state.decision.is_none()\",\"self.closed.is_cancelled()\",\"self.close()\",\"state.phase = Phase::Installing\",\"self.active.fetch_add(1, Ordering::AcqRel)\"] },{ function = \"fn install_original_owner(\", sequence = [\"self.require_open()?\",\"handle.require_direct_original_handle()?\",\"state.phase != Phase::Installing\",\"state.installed.is_some()\",\"self.closed.is_cancelled()\",\"self.close()\",\"state.installed = Some(Installed { handle, invocation })\",\"state.phase = Phase::Ready\"] },{ function = \"fn actual_handle(\", sequence = [\"self.require_open()?\",\"state.phase != Phase::Ready\",\"state\\n            .installed\\n            .as_ref()\"] },{ function = \"fn actual_invocation(\", sequence = [\"self.require_open()?\",\"state.phase != Phase::Ready\",\"state\\n                .installed\\n                .as_ref()\"] },{ function = \"fn pending_count(\", sequence = [\"self.active.load(Ordering::Acquire)\",\"active.saturating_add\",\"owner.handle.pending_count()\",\"Err(_) => active.max(1)\"] },{ function = \"fn decision(\", sequence = [\"self.changed.subscribe()\",\"self.require_open()\",\"decision\\n                .clone()\",\"self.closed.cancelled()\",\"remaining(expiry)?\"] },{ function = \"fn wait_original_generation(\", sequence = [\"CloseOnDrop::new(self)\",\"self.changed.subscribe()\",\"snapshot.request != original.request\",\"snapshot.owners != original.owners\",\"!snapshot.receipts.starts_with(&original.receipts)\",\"state.decision = Some(snapshot.clone())\",\"self.require_open()\",\"remaining(snapshot.request.envelope.expiry_unix_seconds)?\",\"close.disarm()\",\"self.closed.cancelled()\"] },{ function = \"fn original_generation_installed(\", sequence = [\"self.require_open()\",\"state.phase != Phase::Ready\",\"state.generation\",\"snapshot.request != original.request\",\"snapshot.owners != original.owners\",\"!snapshot.receipts.starts_with(&original.receipts)\",\"self.close()\",\"state.generation = true\"] }]\n\n",
+      "new": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs\"\nrequired = [\"enum Phase {\\n    Pending,\\n    Installing,\\n    Ready,\\n    Closed,\\n}\",\"changed: watch::Sender<()>\",\"active: Arc<AtomicUsize>\",\"invocation: Arc<OriginalQ24SuccessorInvocationV1>\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey\",\"Deserialize\",\"impl Clone for SuccessorSlot\",\"impl Default for SuccessorSlot\",\"state.phase = Phase::Pending;\"]\nrequired_function_order = [{ function = \"fn close(\", sequence = [\"self.closed.cancel()\",\"state.phase = Phase::Closed\",\"self.changed.send_replace(())\"] },{ function = \"fn require_installation_open(\", sequence = [\"self.require_open()?\",\"self\\n            .state\\n            .lock()\",\"state.phase != Phase::Installing || self.closed.is_cancelled()\",\"CircuitTaskErrorV1::Unavailable\"] },{ function = \"fn begin_installation(\", sequence = [\"self.require_open()?\",\"state.phase != Phase::Pending\",\"state.decision.is_none()\",\"self.closed.is_cancelled()\",\"self.close()\",\"state.phase = Phase::Installing\",\"self.active.fetch_add(1, Ordering::AcqRel)\"] },{ function = \"fn install_original_owner(\", sequence = [\"self.require_open()?\",\"handle.require_direct_original_handle()?\",\"state.phase != Phase::Installing\",\"state.installed.is_some()\",\"self.closed.is_cancelled()\",\"self.close()\",\"state.installed = Some(Installed { handle, invocation })\",\"state.phase = Phase::Ready\"] },{ function = \"fn actual_handle(\", sequence = [\"self.require_open()?\",\"state.phase != Phase::Ready\",\"state\\n            .installed\\n            .as_ref()\"] },{ function = \"fn actual_invocation(\", sequence = [\"self.require_open()?\",\"state.phase != Phase::Ready\",\"state\\n                .installed\\n                .as_ref()\"] },{ function = \"fn pending_count(\", sequence = [\"self.active.load(Ordering::Acquire)\",\"active.saturating_add\",\"owner.handle.pending_count()\",\"Err(_) => active.max(1)\"] },{ function = \"fn decision(\", sequence = [\"self.changed.subscribe()\",\"self.require_open()\",\"decision\\n                .clone()\",\"self.closed.cancelled()\",\"remaining(expiry)?\"] },{ function = \"fn wait_original_generation(\", sequence = [\"CloseOnDrop::new(self)\",\"self.changed.subscribe()\",\"snapshot.request != original.request\",\"snapshot.owners != original.owners\",\"!snapshot.receipts.starts_with(&original.receipts)\",\"state.decision = Some(snapshot.clone())\",\"self.require_open()\",\"remaining(snapshot.request.envelope.expiry_unix_seconds)?\",\"close.disarm()\",\"self.closed.cancelled()\"] },{ function = \"fn original_generation_installed(\", sequence = [\"self.require_open()\",\"state.phase != Phase::Ready\",\"state.generation\",\"snapshot.request != original.request\",\"snapshot.owners != original.owners\",\"!snapshot.receipts.starts_with(&original.receipts)\",\"self.close()\",\"state.generation = true\"] }]\n\n",
+      "reason": "Require the concrete original invocation while preserving every original one-shot phase/cancel/drain function guard."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs\"\nrequired = [\"PendingSuccessorInvocation\",\"CircuitTaskLearningPendingV1::OwnerUnavailable\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey\",\"CircuitTaskLearningReadinessV1::Ready\",\"AuthenticatedOutcomeV2\"]\nrequired_function_order = [{ function = \"fn build(\", sequence = [\"self.slot.actual_invocation()\",\"source.build(identity, record)?\",\"self.slot.require_open()\"] },{ function = \"fn publish_result(\", sequence = [\"self.slot.actual_invocation()\",\"source.publish_result(identity, record, receipt)?\",\"self.slot.require_open()\"] },{ function = \"fn observe_learning(\", sequence = [\"self.slot.actual_invocation()\",\"source.observe_learning(identity, record, trace)\",\"CircuitTaskLearningReadinessV1::Pending(\\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\\n            )\"] }]\n\n",
+      "new": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs\"\nrequired = [\"PendingSuccessorInvocation\",\"CircuitTaskLearningPendingV1::OwnerUnavailable\",\"Arc<OriginalQ24SuccessorInvocationV1>\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey\",\"CircuitTaskLearningReadinessV1::Ready\",\"AuthenticatedOutcomeV2\"]\nrequired_function_order = [{ function = \"fn build(\", sequence = [\"self.slot.actual_invocation()\",\"source.build(identity, record)?\",\"self.slot.require_open()\"] },{ function = \"fn publish_result(\", sequence = [\"self.slot.actual_invocation()\",\"source.publish_result(identity, record, receipt)?\",\"self.slot.require_open()\"] },{ function = \"fn observe_learning(\", sequence = [\"self.slot.actual_invocation()\",\"source.observe_learning(identity, record, trace)\",\"CircuitTaskLearningReadinessV1::Pending(\\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\\n            )\"] }]\n\n",
+      "reason": "Preserve all original pending denial/closed-slot function-order guards and pin the new concrete receiver."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "\"q24_successor_slot_new\",\"agentd_original_late_writer_launch\"]",
+      "new": "\"q24_successor_slot_new\",\"agentd_original_late_writer_launch\",\"q24_successor_original_feedback_ledger\"]",
+      "reason": "Register exactly one new opaque feedback owner export; no ignored path or checker change."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "[[boundary]]\nid = \"q24_successor_original_c_ingress\"\n",
+      "new": "[[boundary]]\nid = \"q24_successor_original_feedback_ledger\"\nsymbol = \"OriginalQ24InstalledSuccessorV1::original_task_ledger\"\nreceiver_type = \"OriginalQ24InstalledSuccessorV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs\"\ndefinition_markers = [\"fn original_task_ledger(\", \"self.ledger.as_ref().map(Arc::clone)\"]\nproduct_callers = []\ncaller_markers = []\n\n[[boundary]]\nid = \"q24_successor_original_c_ingress\"\n",
+      "reason": "Only tests/embedded host consume this actual exported owner; do not invent an ordinary product caller."
+    },
+    {
+      "path": "CALLERS.toml",
+      "old": "{ function = \"fn observe_learning(\", sequence = [\"self.slot.actual_invocation()\",\"source.observe_learning(identity, record, trace)\",\"CircuitTaskLearningReadinessV1::Pending(\\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\\n            )\"] }",
+      "new": "{ function = \"fn observe_learning(\", sequence = [\"let readiness = match self.slot.actual_invocation()\",\"source.observe_learning(identity, record, trace)\",\"CircuitTaskLearningReadinessV1::Pending(\\n                CircuitTaskLearningPendingV1::OwnerUnavailable,\\n            )\",\"if self.slot.require_open().is_err()\",\"return CircuitTaskLearningReadinessV1::Pending(\",\"}\\n        readiness\"] }",
+      "reason": "Add the real post-observation cancellation check and preserve original unavailable handling; no closed slot can deliver Ready."
+    }
+  ],
+  "additions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "git_blob": "959b773736e88a272bd61e23b420f8832c928358",
+        "bytes": 4348,
+        "sha256": "651a38f5ecd10025c43e7f7345394243566b4b1a8eba8ce9f37755c89db1f976"
+      },
+      "kind": "add"
+    }
+  ],
+  "verification": {
+    "original_git_blobs_verified": true,
+    "unique_forward_and_reverse_byte_replay": true,
+    "native": false,
+    "formatter": false,
+    "full_caller_guard": false,
+    "branch_ref_changes": false
+  }
+}

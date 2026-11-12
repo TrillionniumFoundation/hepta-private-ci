@@ -51,6 +51,7 @@ use root::ProtectedLease;
 #[path = "deployment_writer.rs"]
 mod writer;
 pub use writer::HostAuthorityWriterRegistration;
+pub(crate) use writer::OriginalHostWriterObservationV1;
 
 #[path = "deployment_desktop.rs"]
 mod desktop;

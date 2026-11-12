@@ -10,13 +10,12 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
-use codex_hepta_neuron::FileAnchorWitnessStore;
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
 
 use crate::CircuitTaskErrorV1;
 use crate::CircuitTaskHandleV1;
-use crate::DurableCircuitTaskSourceV1;
+use super::OriginalQ24SuccessorInvocationV1;
 use crate::LearningIterationRuntimeErrorV1 as LearningError;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -29,7 +28,7 @@ enum Phase {
 
 struct Installed {
     handle: CircuitTaskHandleV1,
-    invocation: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,
+    invocation: Arc<OriginalQ24SuccessorInvocationV1>,
 }
 
 struct State {
@@ -139,7 +138,7 @@ impl SuccessorSlot {
     pub(super) fn install_original_owner(
         &self,
         handle: CircuitTaskHandleV1,
-        invocation: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,
+        invocation: Arc<OriginalQ24SuccessorInvocationV1>,
     ) -> Result<(), CircuitTaskErrorV1> {
         self.require_open()?;
         handle.require_direct_original_handle()?;
@@ -180,7 +179,7 @@ impl SuccessorSlot {
 
     pub(super) fn actual_invocation(
         &self,
-    ) -> Result<Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>, CircuitTaskErrorV1> {
+    ) -> Result<Arc<OriginalQ24SuccessorInvocationV1>, CircuitTaskErrorV1> {
         self.require_open()?;
         let state = self
             .state

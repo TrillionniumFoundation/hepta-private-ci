@@ -27,6 +27,8 @@ mod state;
 mod worker;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24InstalledSuccessorV1;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;
+pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorFeedbackV1;
+pub(crate) use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorInvocationV1;
 use state::CloseOnDrop;
 use state::InstallationWork;
 pub(crate) use state::SuccessorSlot;

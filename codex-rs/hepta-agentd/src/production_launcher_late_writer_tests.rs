@@ -151,3 +151,67 @@ async fn late_writer_requires_actual_credentials_before_receiving_any_root_offer
     );
     Ok(())
 }
+
+#[test]
+fn late_writer_cli_entry_is_explicit_and_preserves_ordinary_bytes() -> anyhow::Result<()> {
+    use super::super::late_startup::OriginalStartupSelection;
+    use super::super::late_startup::select_original_startup_entry;
+    use std::os::unix::ffi::OsStringExt;
+
+    let ordinary = vec![
+        OsString::from("--objective-profile-file"),
+        OsString::from_vec(b"/original/profile-\xff".to_vec()),
+        OsString::from("--original-value"),
+        OsString::from("--root-production-entry"),
+    ];
+    assert_eq!(
+        select_original_startup_entry(ordinary.clone())?,
+        OriginalStartupSelection::Existing(ordinary.clone()),
+    );
+    let mut explicit = vec![OsString::from("--root-production-entry"), OsString::from("late-writer")];
+    explicit.extend(ordinary.clone());
+    assert_eq!(
+        select_original_startup_entry(explicit)?,
+        OriginalStartupSelection::LateWriter(ordinary),
+    );
+    Ok(())
+}
+
+#[test]
+fn late_writer_cli_entry_refuses_duplicate_or_unknown_modes_before_rights() -> anyhow::Result<()> {
+    use super::super::late_startup::select_original_startup_entry;
+
+    let fixture = DescriptorInputs::new()?;
+    for values in [
+        vec!["--root-production-entry"],
+        vec!["--root-production-entry", "fresh"],
+        vec!["--root-production-entry", "late-writer", "--root-production-entry", "late-writer"],
+    ] {
+        let arguments = values.into_iter().map(OsString::from).collect();
+        assert!(select_original_startup_entry(arguments).is_err());
+        for descriptor in &fixture.descriptors {
+            // SAFETY: observe the still-owned original descriptor.
+            assert!(unsafe { libc::fcntl(descriptor.as_raw_fd(), libc::F_GETFD) } >= 0);
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn late_writer_cli_preflight_consumes_failed_owner_attempt_without_default_fallback()
+-> anyhow::Result<()> {
+    let mut fixture = DescriptorInputs::new()?;
+    let mut arguments = vec![OsString::from("--root-production-entry"), OsString::from("late-writer")];
+    arguments.extend(fixture.arguments()?);
+    for descriptor in fixture.descriptors.drain(..) {
+        let _ = descriptor.into_raw_fd();
+    }
+    let result = AgentdProductionStartup::from_process_environment(arguments);
+    let Err(AgentdError::Invalid(reason)) = result else {
+        anyhow::bail!("explicit late-writer owner refusal changed phase or fell back");
+    };
+    assert_eq!(reason, "late writer requires its already dedicated actual non-Root owner");
+    // Observe the retained kernel socket, not a possibly reused numeric FD.
+    assert!(fixture._root_peer.send(b"original-offer").is_err());
+    Ok(())
+}

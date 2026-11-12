@@ -25,6 +25,7 @@ use std::io::Write;
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::RwLock;
 
 #[cfg(windows)]
 #[path = "authority_lease_windows.rs"]
@@ -36,6 +37,10 @@ mod revoke;
 #[path = "authority_lease_pair_boundary.rs"]
 mod pair_boundary;
 pub use pair_boundary::AuthorityLeaseRetirement;
+
+#[path = "authority_lease_observation.rs"]
+mod observation;
+pub use observation::AuthorityLeaseObservationV1;
 
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
@@ -188,7 +193,9 @@ struct Store {
 
 struct Inner {
     owner_id: String,
-    state: Mutex<State>,
+    serial: Mutex<()>,
+    observations: Mutex<()>,
+    state: RwLock<State>,
     store: Store,
     clock: Arc<dyn AuthorityClock>,
     frontier_store: Option<Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>>>,
@@ -266,7 +273,9 @@ impl AuthorityLeaseRegistry {
         let (store, state) = Store::open(directory, &owner_id, trusted_frontier)?;
         Ok(Self(Arc::new(Inner {
             owner_id,
-            state: Mutex::new(state),
+            serial: Mutex::new(()),
+            observations: Mutex::new(()),
+            state: RwLock::new(state),
             store,
             clock: Arc::new(SystemAuthorityClock),
             frontier_store: None,
@@ -307,7 +316,9 @@ impl AuthorityLeaseRegistry {
         let (store, state) = Store::open(directory, &owner_id, trusted_frontier)?;
         Ok(Self(Arc::new(Inner {
             owner_id,
-            state: Mutex::new(state),
+            serial: Mutex::new(()),
+            observations: Mutex::new(()),
+            state: RwLock::new(state),
             store,
             clock,
             frontier_store: None,
@@ -338,7 +349,9 @@ impl AuthorityLeaseRegistry {
         }
         Ok(Self(Arc::new(Inner {
             owner_id,
-            state: Mutex::new(state),
+            serial: Mutex::new(()),
+            observations: Mutex::new(()),
+            state: RwLock::new(state),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -545,21 +558,17 @@ impl AuthorityLeaseRegistry {
         Ok(frontier_for_state(&state))
     }
 
-    fn lock_state(&self) -> Result<std::sync::MutexGuard<'_, State>, AuthorityLeaseError> {
-        let state = self
-            .0
-            .state
-            .lock()
-            .map_err(|_| AuthorityLeaseError::Unavailable)?;
-        if state.failed {
-            return Err(AuthorityLeaseError::Unavailable);
-        }
-        Ok(state)
+    fn lock_state(&self) -> Result<observation::MutationStateGuard<'_>, AuthorityLeaseError> {
+        self.0.lock_mutation_state()
+    }
+
+    fn try_lock_state(&self) -> Result<observation::MutationStateGuard<'_>, AuthorityLeaseError> {
+        self.0.try_lock_mutation_state()
     }
 
     fn persist_or_fence(
         &self,
-        state: &mut std::sync::MutexGuard<'_, State>,
+        state: &mut observation::MutationStateGuard<'_>,
         next: State,
     ) -> Result<(), AuthorityLeaseError> {
         if let Some(frontier_store) = &self.0.frontier_store {
@@ -756,16 +765,8 @@ impl AuthorityLeaseVerifier {
         ))
     }
 
-    fn lock_state(&self) -> Result<std::sync::MutexGuard<'_, State>, AuthorityLeaseError> {
-        let state = self
-            .0
-            .state
-            .lock()
-            .map_err(|_| AuthorityLeaseError::Unavailable)?;
-        if state.failed {
-            return Err(AuthorityLeaseError::Unavailable);
-        }
-        Ok(state)
+    fn lock_state(&self) -> Result<observation::DispatchStateGuard<'_>, AuthorityLeaseError> {
+        self.0.lock_dispatch_state()
     }
 }
 

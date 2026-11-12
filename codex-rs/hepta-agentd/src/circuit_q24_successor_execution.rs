@@ -1,12 +1,25 @@
-//! Execution resources only. Publication, selected bundle and loaded model
-//! enter solely from the original Root driver retained by the supervised worker.
+//! Original execution resources and explicitly enrolled feedback capabilities.
+//! Publication, selected bundle and loaded model enter solely from the original
+//! Root driver. Feedback does not enroll the next Root learning source.
 
 use super::*;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 
+use crate::AgentdCircuitTaskInvocationProviderV1;
+use crate::OriginalCellQ24TaskLedgerInputsV1;
+use crate::OriginalCellQ24TaskLedgerProducerV1;
+
+/// Learning is explicit. The original host supplies the already enrolled
+/// Generator/Ledger capabilities; a successful task supplies no business label.
+pub enum OriginalQ24SuccessorFeedbackV1 {
+    NonLearning,
+    OriginalLedger(OriginalCellQ24TaskLedgerInputsV1),
+}
+
 pub struct OriginalQ24SuccessorExecutionInputsV1 {
     pub files: CircuitQ24TaskFilesV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
     pub source_mode: CircuitQ24TaskOpenModeV1,
+    pub feedback: OriginalQ24SuccessorFeedbackV1,
     pub fence: TaskFlowFence,
     pub circuit: BoundedCircuitDefinitionV2,
     pub routes: Vec<CircuitCellRouteV1>,
@@ -22,6 +35,7 @@ pub struct OriginalQ24InstalledSuccessorV1 {
     pub(crate) source: Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,
     pub(crate) cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
     task: PublishedCircuitFeatureTaskV1,
+    ledger: Option<Arc<OriginalCellQ24TaskLedgerProducerV1>>,
 }
 
 impl OriginalQ24InstalledSuccessorV1 {
@@ -33,6 +47,56 @@ impl OriginalQ24InstalledSuccessorV1 {
     }
     pub fn published_task(&self) -> PublishedCircuitFeatureTaskV1 {
         self.task.clone()
+    }
+
+    /// The original owner can accept an independently signed business Outcome
+    /// and prepare a Dataset. This does not enroll the next Root source or
+    /// authorize task execution; every owner operation retains its live checks.
+    pub fn original_task_ledger(&self) -> Option<Arc<OriginalCellQ24TaskLedgerProducerV1>> {
+        self.ledger.as_ref().map(Arc::clone)
+    }
+}
+
+/// Created only with the original channel. No caller can replace its source or
+/// Ledger owner after publication or install an arbitrary invocation provider.
+pub(crate) struct OriginalQ24SuccessorInvocationV1 {
+    source: Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,
+    ledger: Option<Arc<OriginalCellQ24TaskLedgerProducerV1>>,
+}
+
+impl AgentdCircuitTaskInvocationProviderV1 for OriginalQ24SuccessorInvocationV1 {
+    fn build(
+        &self,
+        identity: &AgentdIdentity,
+        record: &codex_hepta_learning_ledger::RunStartRecordV1,
+    ) -> Result<crate::CircuitTaskRequestV1, AgentdError> {
+        self.source.build(identity, record)
+    }
+
+    fn publish_result(
+        &self,
+        identity: &AgentdIdentity,
+        record: &codex_hepta_learning_ledger::RunStartRecordV1,
+        receipt: &crate::CircuitTaskReceiptV1,
+    ) -> Result<(), AgentdError> {
+        // Task publication is independent of learning readiness. A missing
+        // business Outcome never causes another dispatch of committed C work.
+        self.source.publish_result(identity, record, receipt)
+    }
+
+    fn observe_learning(
+        &self,
+        identity: &AgentdIdentity,
+        record: &codex_hepta_learning_ledger::RunStartRecordV1,
+        trace: &codex_hepta_automation::CircuitCommittedTraceV2,
+    ) -> crate::CircuitTaskLearningReadinessV1 {
+        match &self.ledger {
+            Some(producer) => {
+                let producer: &Arc<OriginalCellQ24TaskLedgerProducerV1> = producer;
+                producer.observe_learning(identity, record, trace)
+            }
+            None => self.source.observe_learning(identity, record, trace),
+        }
     }
 }
 
@@ -91,7 +155,7 @@ impl OriginalQ24SuccessorExecutionInputsV1 {
     ) -> Result<
         (
             CircuitTaskRuntimeBootstrapV1,
-            Arc<DurableCircuitTaskSourceV1<FileAnchorWitnessStore>>,
+            Arc<OriginalQ24SuccessorInvocationV1>,
             OriginalQ24InstalledSuccessorV1,
         ),
         AgentdError,
@@ -114,12 +178,31 @@ impl OriginalQ24SuccessorExecutionInputsV1 {
                     clock: self.clock,
                 },
             )?;
+        let ledger = match self.feedback {
+            OriginalQ24SuccessorFeedbackV1::NonLearning => None,
+            OriginalQ24SuccessorFeedbackV1::OriginalLedger(inputs) => {
+                let producer = OriginalCellQ24TaskLedgerProducerV1::open_original(
+                    inputs,
+                    Arc::clone(&runtime.source),
+                    runtime.cell.clone(),
+                    task.clone(),
+                    identity.clone(),
+                )
+                .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?;
+                Some(Arc::new(producer))
+            }
+        };
+        let invocation = Arc::new(OriginalQ24SuccessorInvocationV1 {
+            source: runtime.invocation,
+            ledger: ledger.as_ref().map(Arc::clone),
+        });
         let installed = OriginalQ24InstalledSuccessorV1 {
             identity: identity.clone(),
             source: runtime.source,
             cell: runtime.cell,
             task,
+            ledger,
         };
-        Ok((runtime.bootstrap, runtime.invocation, installed))
+        Ok((runtime.bootstrap, invocation, installed))
     }
 }

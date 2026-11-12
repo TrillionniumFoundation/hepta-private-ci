@@ -21,7 +21,38 @@ impl AgentdProductionLaunch {
         arguments: Vec<OsString>,
         expected: &AgentdIdentity,
     ) -> Result<(AgentdConfig, Self, Vec<OsString>), AgentdError> {
+        let (inputs, ordinary) = OriginalLateWriterInputs::prepare_original_late_writer_inputs(arguments)?;
+        let (config, launch) = inputs.consume_original_late_writer_inputs(expected).await?;
+        Ok((config, launch, ordinary))
+    }
+}
+
+/// Own every inherited descriptor before arg0 can open helper files. This is
+/// only a pending receive, not a Root session, Config, writer grant or admission.
+pub(super) struct OriginalLateWriterInputs {
+    inputs: LaunchInputs,
+    session_end: Instant,
+}
+
+impl OriginalLateWriterInputs {
+    pub(super) fn prepare_original_late_writer_inputs(
+        arguments: Vec<OsString>,
+    ) -> Result<(Self, Vec<OsString>), AgentdError> {
         let (selected, ordinary) = inputs::parse(arguments)?;
+        let inputs = selected.ok_or_else(|| {
+            AgentdError::Invalid(
+                "original late writer requires a complete production launch".into(),
+            )
+        })?;
+        require_late_owner(inputs.uid, inputs.gid)?;
+        let session_end = Instant::now() + inputs.lifetime;
+        Ok((Self { inputs, session_end }, ordinary))
+    }
+
+    pub(super) async fn consume_original_late_writer_inputs(
+        self,
+        expected: &AgentdIdentity,
+    ) -> Result<(AgentdConfig, AgentdProductionLaunch), AgentdError> {
         let LaunchInputs {
             handoff,
             learning_handoff,
@@ -36,14 +67,10 @@ impl AgentdProductionLaunch {
             bootstrap_deadline,
             notes,
             notes_ui,
-            lifetime,
-        } = selected.ok_or_else(|| {
-            AgentdError::Invalid(
-                "original late writer requires a complete production launch".into(),
-            )
-        })?;
+            lifetime: _,
+        } = self.inputs;
         require_late_owner(uid, gid)?;
-        let session_end = Instant::now() + lifetime;
+        let session_end = self.session_end;
         let (bootstrap, root_pidfd, writer) =
             crate::receive_root_production_writer_handoff(handoff, remaining(bootstrap_deadline)?)?;
         let learning = learning_handoff
@@ -135,7 +162,7 @@ impl AgentdProductionLaunch {
             .map_err(AgentdError::GenerationFenced)?;
         Ok((
             config,
-            Self {
+            AgentdProductionLaunch {
                 root,
                 inputs: RuntimeInputs {
                     primary,
@@ -146,7 +173,6 @@ impl AgentdProductionLaunch {
                 publication,
                 initial_publication,
             },
-            ordinary,
         ))
     }
 }

@@ -1,5 +1,6 @@
 //! Read-only writer proof/observation lane. Registration is root-only and the
-//! original registry dispatch fence covers every response, including I/O.
+//! original registry state and issuer fences cover every response, including I/O.
+//! Only metadata observations share the state fence; effect entry stays serial.
 
 use super::*;
 use crate::HOST_AUTHORITY_OBSERVATION_V2;
@@ -9,7 +10,9 @@ use crate::HostAuthorityWriterObservationV2;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostSignedWriterAuthorizationV1;
 use crate::HostWriterAuthorizationReadResponseV1;
+use crate::deployment_issuer::OriginalHostWriterObservationV1;
 use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseObservationV1;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
 #[path = "authority_host_bootstrap_capture.rs"]
@@ -254,32 +257,39 @@ impl RegisteredWriter {
             (1, HOST_WRITER_AUTHORIZATION_V1) | (2, HOST_AUTHORITY_OBSERVATION_V2) => {}
             _ => return Err(HostIssuerTransportError::InvalidRequest),
         }
-        self.registration
-            .with_live(&self.leases, |store_revision| {
-                let proof = issuer.retained_writer_authorization(&self.registration)?;
-                if proof != self.proof {
-                    return Err(io::Error::other("retained writer proof changed"));
-                }
-                let revocations = issuer.revocations()?;
-                // All blocking reads precede this final projection. Nothing after
-                // it writes a clock or substitutes a durable future ceiling for now.
-                let observation = clock.refresh_projection().map_err(io::Error::other)?;
-                validate_observation_lease(
-                    &self.registration.authority_lease,
-                    &revocations,
-                    observation.observed_unix_ms,
-                )?;
-                if request.operation == HOST_WRITER_AUTHORIZATION_V1 {
-                    return encode_bounded(
-                        &HostWriterAuthorizationReadResponseV1 {
-                            schema_version: 1,
-                            operation: HOST_WRITER_AUTHORIZATION_V1.into(),
-                            proof,
-                        },
-                        16 * 1024,
-                    )
-                    .map_err(io::Error::other);
-                }
+        (|| -> io::Result<Vec<u8>> {
+            self.registration.validate()?;
+            let lease: AuthorityLeaseObservationV1<'_> = self
+                .leases
+                .observe_original_lease(&self.registration.authority_lease)
+                .map_err(io::Error::other)?;
+            let retained: OriginalHostWriterObservationV1<'_> =
+                issuer.observe_original_writer_state(&self.registration)?;
+            let proof = retained.original_writer_proof().clone();
+            if proof != self.proof {
+                return Err(io::Error::other("retained writer proof changed"));
+            }
+            let revocations = retained.original_writer_revocations().clone();
+            // Both original owner fences remain held. All blocking owner reads
+            // precede the actual final projection and lease expiry check.
+            // Do not do another clock-writing verification after this projection.
+            let observation = clock.refresh_projection().map_err(io::Error::other)?;
+            validate_observation_lease(
+                &self.registration.authority_lease,
+                &revocations,
+                observation.observed_unix_ms,
+            )?;
+            let response = if request.operation == HOST_WRITER_AUTHORIZATION_V1 {
+                encode_bounded(
+                    &HostWriterAuthorizationReadResponseV1 {
+                        schema_version: 1,
+                        operation: HOST_WRITER_AUTHORIZATION_V1.into(),
+                        proof,
+                    },
+                    16 * 1024,
+                )
+                .map_err(io::Error::other)?
+            } else {
                 encode_bounded(
                     &HostAuthorityObservationResponseV2 {
                         schema_version: 2,
@@ -292,7 +302,7 @@ impl RegisteredWriter {
                         spawn_generation: identity.spawn_generation,
                         writer: HostAuthorityWriterObservationV2 {
                             authority_lease: self.registration.authority_lease.clone(),
-                            store_revision,
+                            store_revision: lease.original_store_revision(),
                             authority_lease_sha256: proof.claims.authority_lease_sha256.clone(),
                             owner_epoch: self.registration.owner_epoch,
                             local_lease_id: self.registration.local_lease_id.clone(),
@@ -302,8 +312,14 @@ impl RegisteredWriter {
                     },
                     16 * 1024,
                 )
-                .map_err(io::Error::other)
-            })
-            .map_err(unavailable)
+                .map_err(io::Error::other)?
+            };
+            drop(retained);
+            lease
+                .finish_original_observation()
+                .map_err(io::Error::other)?;
+            Ok(response)
+        })()
+        .map_err(unavailable)
     }
 }

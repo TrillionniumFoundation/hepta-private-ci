@@ -1,0 +1,280 @@
+{
+  "schema": "hepta.independent-late-writer-cli-static-review.v2",
+  "reviewer": "runtime_access",
+  "status": "reviewed-correction-no-confirmed-static-blocker; not-native-qualified",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "subject_manifest": {
+    "name": "late_v2_manifest",
+    "git_blob": "694ef36699785cd9ada883c822089cd50f860953",
+    "bytes": 22930,
+    "sha256": "8443562c02f60b762c86532c9a442513d1e386608c2f18c93e19cc2fb829c919"
+  },
+  "subject_exact_operations": {
+    "name": "late_v2_ops",
+    "git_blob": "f28b48d70b4902b7ad49b6496525ddf690fc5a29",
+    "bytes": 117027,
+    "sha256": "7b9b43be8fbb8ca194315f2157081c1299cd28d7075fad9e26ce4cb09aed584e"
+  },
+  "history": {
+    "initial_review": "e3c9f6b65eebe9d4088dbedf8ef9f3cf0483bbd8",
+    "correction_addendum": "c6f6fa1fff4110a69c790bdd9bde70cec2545d9e",
+    "resolution": "This V2 supersedes the initial no-blocker/readonly conclusion. The original open_existing migration defect was real and is preserved in the historical addendum; the new data-only API removes it from preflight. Byte/custody findings on unchanged V1 source remain supported."
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "before": "c6d8337e51ba8708852185feaa89abddf990e254",
+      "git_blob": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+      "bytes": 27305,
+      "sha256": "d82f99428d4f95ae14dad69ed89fb6068d12ddf644e5ff7b8c6b8f907fb5ea68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "before": "9495b04e684c8162caa67e80e5e2840df4e1a837",
+      "git_blob": "8a4932c42201071baf5940d6cb1878539fddc142",
+      "bytes": 8040,
+      "sha256": "e20bc5545592dc973db8928ec2869197b9a0e23c4cfa6a2199866f08a3f04a28"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "before": null,
+      "git_blob": "4581a2604b7a34dcc75c852d34406bbc8f87076c",
+      "bytes": 2987,
+      "sha256": "f0b0be17e51753c6fd5a2ccda80b93fe7d6f17ce9a1fe30d841c6981c204f915"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "before": "6074dfea3af6c7f6862313f08c334bdf6cd60e99",
+      "git_blob": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "bytes": 39198,
+      "sha256": "9fff4256e5275a652cc4eec07bd8f704bbc748fed0f33f80d4684a33c9b94b19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "before": null,
+      "git_blob": "8bbd85bf8af4f18635aff1a092a749a4cc4fc23d",
+      "bytes": 3955,
+      "sha256": "43691c799a8285d8e0a8254d04f39d9b024c2094463dd95cf2b9727d91f47022"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+      "before": null,
+      "git_blob": "2816318bc469ce14cae03a744670b9531fa6f95f",
+      "bytes": 4909,
+      "sha256": "589b4d57d312dd8f1d8eb067f33886328407633abd93e88b5d6ff43fa4e36496"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs",
+      "before": "b9965d0e9a4f2ce5df7dec4494868fb56b91727f",
+      "git_blob": "5260b0e129476365f896979053c14d1a34779004",
+      "bytes": 8569,
+      "sha256": "c98f95e6f619f58ab4d2a87d790ff9b1eeb150b1e0196382fe4d393ed8ed845e"
+    },
+    {
+      "path": "CALLERS.toml",
+      "before": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+      "git_blob": "0261bec63e03861e73013bbbe13d7e12e832f499",
+      "bytes": 658111,
+      "sha256": "b752de25ae4abd66ad260922b76702cc7c964d844c1d941194c5b23caac85f4f"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "before": "cadd646638f8393652b03d70be57b89c55e7da29",
+      "git_blob": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+      "bytes": 24911,
+      "sha256": "6fa250502444563bafb8c2ede7421298e40388a3b5e72ee16d2bc777be04c6cf"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+      "before": null,
+      "git_blob": "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528",
+      "bytes": 1354,
+      "sha256": "ca8cde70f416490323ce4da2dceccfc77833b409e6da042b50d534a2b1855fdb"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_readonly_tests.rs",
+      "before": null,
+      "git_blob": "261fa7401034bbf26cabf410598c2febab66a35d",
+      "bytes": 3427,
+      "sha256": "361f72226d2fe9f6f3fe22d5e6dc37b6e2cde2e0624f8f2b07136a59c1c8b456"
+    }
+  ],
+  "independently_verified": {
+    "paths": 11,
+    "rust_paths": 10,
+    "exact_operations": 18,
+    "originals": "Modified original files fetched at fixed7666; added Fleet paths confirmed absent from its actual src listing. Prior fixed Agentd listing confirms its added paths absent.",
+    "all_pre_post_git_size_sha256_match": true,
+    "all_18_operations_unique_forward_reverse": true,
+    "all_11_actual_final_blob_readbacks_equal": true,
+    "replay": [
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "operations": 6,
+        "preimage": "c6d8337e51ba8708852185feaa89abddf990e254",
+        "postimage": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+        "operations": 1,
+        "preimage": "9495b04e684c8162caa67e80e5e2840df4e1a837",
+        "postimage": "8a4932c42201071baf5940d6cb1878539fddc142",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "operations": 1,
+        "preimage": null,
+        "postimage": "4581a2604b7a34dcc75c852d34406bbc8f87076c",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "operations": 1,
+        "preimage": "6074dfea3af6c7f6862313f08c334bdf6cd60e99",
+        "postimage": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+        "operations": 1,
+        "preimage": null,
+        "postimage": "8bbd85bf8af4f18635aff1a092a749a4cc4fc23d",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+        "operations": 1,
+        "preimage": null,
+        "postimage": "2816318bc469ce14cae03a744670b9531fa6f95f",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs",
+        "operations": 1,
+        "preimage": "b9965d0e9a4f2ce5df7dec4494868fb56b91727f",
+        "postimage": "5260b0e129476365f896979053c14d1a34779004",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "CALLERS.toml",
+        "operations": 3,
+        "preimage": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+        "postimage": "0261bec63e03861e73013bbbe13d7e12e832f499",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/registry.rs",
+        "operations": 1,
+        "preimage": "cadd646638f8393652b03d70be57b89c55e7da29",
+        "postimage": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+        "operations": 1,
+        "preimage": null,
+        "postimage": "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/registry_readonly_tests.rs",
+        "operations": 1,
+        "preimage": null,
+        "postimage": "261fa7401034bbf26cabf410598c2febab66a35d",
+        "forward_reverse_byte_equal": true,
+        "actual_postimage_readback_equal": true
+      }
+    ],
+    "inventory": {
+      "before_boundary_count": 492,
+      "after_boundary_count": 497,
+      "required_count": 497,
+      "unique": true,
+      "old_blocks_unchanged": true,
+      "required_matches_ids": true,
+      "before_protected_count": 358,
+      "after_protected_count": 363,
+      "new_ids": [
+        "agentd_original_late_writer_inputs_prepare",
+        "agentd_original_late_writer_inputs_consume",
+        "agentd_original_late_writer_cli_prepare",
+        "agentd_original_late_writer_cli_consume",
+        "fleet_original_readonly_snapshot"
+      ],
+      "method": "literal ID/block comparison, not original Rust-aware caller scanner"
+    },
+    "unchanged_original_receive_body": {
+      "bytes": 3679,
+      "sha256": "290ff576c04c02ee62507d8162241b0661706a41df3b2eeae574dbbafed1250b"
+    },
+    "unchanged_original_uid_and_remaining_helpers": true,
+    "old_two_test_file_prefix_bytes": 5915,
+    "main_unchanged": "133a0c12daa683e16cdb79f902dea88092ebfb52"
+  },
+  "corrected_access_chain": [
+    "Original config_root_late_writer.rs93f15 calls config.rs6074 load_with_writer_source after actual peer/live/five-lane checks. That original loader still reads FleetRegistry by path before selecting the original writer FD; the FD does not replace Registry reads.",
+    "Original root_agentd_filesystem.rs3ff802cc explicitly establishes Root:dedicated-group02750 Fleet/agent/run/releases control directories and0640 original control records while retaining Root0600 writer custody. registry.rs cadd6466 preserve_root_reader_mode preserves0640 for later immutable generations under that exact original parent. No new permission relaxation is proposed.",
+    "The limitedRoot17 five-lane fixture layout is not a full AgentdConfig/Launch filesystem deployment. An unprovisioned or inaccessible private Registry still refuses.",
+    "The corrected CLI now calls FleetRegistry::read_existing_snapshot, which constructs a private local layout view, performs the same five physical-directory checks, and calls the unchanged full load() reader. It returns only FleetSnapshot data. No migration-performing constructor, writable Registry, writer FD, chmod, create, CAS, or directory fsync escapes or executes in that preflight path.",
+    "Original load_agent, Matrix private-geometry checks, full lifecycle/release-state validation, workspace isolation, canonical paths and resource checks remain. The original release.rs175d6 load_release_state and model.rs4e8 validation paths were independently read; they do not invoke migration. Missing Matrix, unsafe mode or a symlink fails without repair."
+  ],
+  "authority_and_order_review": [
+    "Unchanged main reaches the explicit Startup late-writer selector, then the existing receive and Launch.run. Default arguments, default Root/Ordinary paths, and absence-of-selector behavior remain.",
+    "Private owned OriginalLateWriterInputs keeps the original parser, complete Primary/pair/distinct-FD checks, actual dedicated non-Root credentials and one absolute session_end. Rights are owned before readonly comparison discovery; failure does not restore the slot or fall back.",
+    "Expected identity remains data from the original Supervisor environment and actual exact Starting Registry. It never substitutes for the sealed original Root peer/PID/pidfd/proof/identity and Config checks.",
+    "The original three-right receive and complete five-lane/Root0600 writer/Starting/live-lease suffix remain byte-identical. Optional Learning/Model ordering, final writer verification and elapsed-budget subtraction are unchanged.",
+    "The new Fleet API is a static data reader with private construction and a FleetSnapshot return; it does not expose a second mutable registry or authority capability. No new issuer, key, grant, nonce journal, policy or lifecycle transition is created.",
+    "No confirmed Rust visibility/type/control-order defect was found in the bounded delta. This statement is source review, not compiler evidence."
+  ],
+  "tests": {
+    "new_agentd_methods": 6,
+    "new_fleet_methods": 4,
+    "new_total_methods": 10,
+    "old_agentd_methods_retained": 2,
+    "fleet_methods": [
+      "original_readonly_snapshot_matches_full_registry_without_writer",
+      "original_readonly_snapshot_refuses_missing_matrix_without_migration",
+      "original_readonly_snapshot_refuses_unsafe_matrix_without_chmod",
+      "original_readonly_snapshot_refuses_aliased_control_geometry"
+    ],
+    "fleet_unix_specific_methods": 2,
+    "actual_methods_executed": 0,
+    "scope": "Metadata/access component tests only; none establishes successful default Root+daemon CLI, a new Running process, cross-incarnation retained-A recovery or ordinary C.",
+    "root_roster_unchanged": 17
+  },
+  "qualification_requirements": [
+    "Add codex-hepta-fleet to the actual final maintenance/bin/test changed-package list. Earlier six-crate results do not qualify the new Fleet code.",
+    "Run the unchanged original full caller/typed gates on the final immutable integrated source. Literal review of497 boundaries/363 protected entries is not that gate.",
+    "Merge exact CALLERS semantic additions with the independent C-feedback and shared-observation changes; do not overwrite concurrent rows or weaken checker/large-file rules.",
+    "Final native tests and Root17 results remain wholly pending for this source."
+  ],
+  "remaining_limits": [
+    "Default Root CLI still supplies its original fresh two-right purpose. This consumer requires an actual existing trusted-host three-right sender and complete legitimate Primary/application capabilities.",
+    "The adapter does not retire a predecessor or create Starting, rotate/adopt Root authority, resurrect a fenced session, or recover in-memory retained-A across a real process exit.",
+    "Full filesystem provisioning is an existing required deployment input. The corrected data reader does not confer or repair access.",
+    "No ordinary learning loop, positive adoption, ordinary NoUpdate/rollback chain, independent ordinary C or cold restart is accepted by this review."
+  ],
+  "actions": {
+    "source_edits": 0,
+    "refs_mutated": false,
+    "h_calls": 0,
+    "cargo_calls": 0,
+    "tests_executed": 0
+  }
+}

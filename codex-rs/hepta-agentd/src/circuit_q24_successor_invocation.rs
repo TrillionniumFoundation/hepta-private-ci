@@ -23,7 +23,7 @@ impl AgentdCircuitTaskInvocationProviderV1 for PendingSuccessorInvocation {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<CircuitTaskRequestV1, AgentdError> {
-        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> =
+        let source: Arc<OriginalQ24SuccessorInvocationV1> =
             self.slot.actual_invocation().map_err(refused)?;
         let result = source.build(identity, record)?;
         self.slot.require_open().map_err(refused)?;
@@ -35,7 +35,7 @@ impl AgentdCircuitTaskInvocationProviderV1 for PendingSuccessorInvocation {
         record: &RunStartRecordV1,
         receipt: &CircuitTaskReceiptV1,
     ) -> Result<(), AgentdError> {
-        let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> =
+        let source: Arc<OriginalQ24SuccessorInvocationV1> =
             self.slot.actual_invocation().map_err(refused)?;
         source.publish_result(identity, record, receipt)?;
         self.slot.require_open().map_err(refused)
@@ -46,15 +46,23 @@ impl AgentdCircuitTaskInvocationProviderV1 for PendingSuccessorInvocation {
         record: &RunStartRecordV1,
         trace: &CircuitCommittedTraceV2,
     ) -> CircuitTaskLearningReadinessV1 {
-        match self.slot.actual_invocation() {
+        let readiness = match self.slot.actual_invocation() {
             Ok(source) => {
-                let source: Arc<crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>> = source;
+                let source: Arc<OriginalQ24SuccessorInvocationV1> = source;
                 source.observe_learning(identity, record, trace)
             }
             Err(_) => CircuitTaskLearningReadinessV1::Pending(
                 CircuitTaskLearningPendingV1::OwnerUnavailable,
             ),
+        };
+        // An in-flight original observation may finish durably after close, but
+        // its Ready result cannot be returned through the closed successor slot.
+        if self.slot.require_open().is_err() {
+            return CircuitTaskLearningReadinessV1::Pending(
+                CircuitTaskLearningPendingV1::OwnerUnavailable,
+            );
         }
+        readiness
     }
 }
 fn refused(error: crate::CircuitTaskErrorV1) -> AgentdError {
