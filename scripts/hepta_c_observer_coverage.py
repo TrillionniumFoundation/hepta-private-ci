@@ -328,6 +328,7 @@ CANDIDATE_STAGE_CASES = tuple(
     for name in (
         "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
         "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch",
+        "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
     )
 )
 

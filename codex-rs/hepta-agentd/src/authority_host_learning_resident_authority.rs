@@ -208,6 +208,11 @@ impl ResidentRootAuthorityV3 {
                     }
                     ResidentStoreActionV3::Checkpoint(owner, fresh, predecessor, next) => {
                         owner.checkpoint(fresh, predecessor, next)?;
+                        #[cfg(test)]
+                        tests::checkpoint_expiry::after_checkpoint_for_fixture(
+                            self.profile.binding(),
+                            owner,
+                        )?;
                         ResidentStoreValueV3::Checked
                     }
                 };

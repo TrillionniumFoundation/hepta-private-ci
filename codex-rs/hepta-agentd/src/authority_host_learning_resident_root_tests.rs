@@ -19,6 +19,8 @@ use tokio_util::sync::CancellationToken;
 mod metadata;
 #[path = "authority_host_learning_resident_root_support_tests.rs"]
 mod support;
+#[path = "authority_host_learning_resident_checkpoint_expiry_tests.rs"]
+pub(super) mod checkpoint_expiry;
 
 use metadata::ResidentMetadata;
 use metadata::digest;

@@ -10,6 +10,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_evaluation_host_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -74,10 +76,9 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
         self.assertIsNotNone(end)
         offset = start
         for _ in range(occurrence + 1):
-            selected = source.index(marker, offset, end + 1)
-            offset = selected + len(marker)
+            selected, offset = source_marker_span(source, marker, offset, end + 1)
         self.verifies(path, source)
-        changed = source[:selected] + replacement + source[selected + len(marker):]
+        changed = source[:selected] + replacement + source[offset:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 
@@ -207,20 +208,39 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
                 "if mode == CandidateRead::Dispatch", occurrence=occurrence,
             )
         for marker in (
-            "lane.failed = true", "CandidateRead::Dispatch", "CandidateRead::Readback",
+            "operation.require_owner(self)?",
+            "self.common.origin != Origin::Fresh",
+            "operation.supplied != operation.training_cut",
+            "lane.failed = true",
             "lane.initial.take()", "OriginalCellEvaluationCommandConnectionV1::bind_original_training(",
             "OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await",
             "OriginalCellEvaluationCommandClientV1::readback(client).await",
-            "before.heads() != after.heads()",
-            "self.verify_original_evaluation(snapshot, &training_cut, &training, &original, fresh)?",
-            "lane\n            .retained\n            .as_ref()\n            .is_some_and(|saved| saved != &original)",
+            "self.verify_original_evaluation(",
+            "&operation.supplied, &operation.training_cut, &operation.training, &original, fresh",
+            "lane.retained.as_ref().is_some_and(|saved| saved != &original)",
+        ):
+            self.rejects(EVALUATION, "fn read_evaluation_in_operation(", marker)
+        for marker in (
+            "self.common.origin != Origin::Fresh || snapshot.receipts.len() != 3",
+            "CandidateOriginalOperation::begin(self, snapshot).await?",
+            "before.bundle() != after.bundle()", "before.heads() != after.heads()",
+            "before.receipt() != after.receipt()", "before.attestation() != after.attestation()",
+            "CandidateOriginalOperation::close(operation).await?", "closed.evaluation(original)",
         ):
             self.rejects(EVALUATION, "fn original_evaluation(", marker)
+        for occurrence in (0, 1):
+            self.rejects(EVALUATION, "fn original_evaluation(",
+                         "OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(",
+                         occurrence=occurrence)
+            self.rejects(
+                EVALUATION, "fn original_evaluation(",
+                "gate, &operation.training_cut, &self.common.material.scope",
+                "gate, snapshot, &self.common.material.scope", occurrence=occurrence,
+            )
         for occurrence in (0, 1, 2):
             self.rejects(
                 EVALUATION, "fn original_evaluation(",
-                "gate,\n                &training_cut,\n                &self.common.material.scope",
-                "gate,\n                snapshot,\n                &self.common.material.scope", occurrence=occurrence,
+                "RootResidentLearningEffectGateV3::require_current(", occurrence=occurrence,
             )
 
     def test_full_evaluator_role_payload_and_original_generator_separation_remain_required(self):

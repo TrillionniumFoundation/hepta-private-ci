@@ -99,6 +99,7 @@ ROOT_CASES = [
     "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
     "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
     "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes",
     "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
     "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
     "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
@@ -398,13 +399,25 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             '#[path = "authority_host_learning_resident_model_tests.rs"]\nmod original_model;',
             roots,
         )
+        checkpoint_expiry = (ROOT / (
+            AGENT + "authority_host_learning_resident_checkpoint_expiry_tests.rs"
+        )).read_text()
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_checkpoint_expiry_tests.rs"]\npub(super) mod checkpoint_expiry;',
+            roots,
+        )
         for name in ROOT_CASES:
-            source = model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
+            source = (
+                model if "::original_model::" in name else
+                evaluation if "::evaluation::" in name else
+                checkpoint_expiry if "::checkpoint_expiry::" in name else roots
+            )
             self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
         self.assertEqual(
             roots.count('#[ignore = "explicit actual Root')
             + evaluation.count('#[ignore = "explicit actual Root')
-            + model.count('#[ignore = "explicit actual Root'),
+            + model.count('#[ignore = "explicit actual Root')
+            + checkpoint_expiry.count('#[ignore = "explicit actual Root'),
             len(ROOT_CASES),
         )
         for marker in (
