@@ -1,0 +1,89 @@
+{
+  "identity": "currentstate-expflux-preexecution-static-review-v1",
+  "reviewer": "/root/hcsn_repair/review_transport",
+  "source_freeze_commit": "de3d9372d8bd53bb4c523c6f1a43e3e213d33790",
+  "review_type": "static source and mathematics only; no imports of candidate or oracle",
+  "blocking_findings": [],
+  "conclusion": "No blocking mathematical/source issue remains in the frozen bounded finite-control design. Numerical execution and recovery results remain unverified by this static review.",
+  "reviewer_numerical_evaluations": 0,
+  "reviewer_model_calls": 0,
+  "reviewer_candidate_expm_calls": 0,
+  "reviewer_reference_expm_or_quadrature_calls": 0,
+  "reviewer_old_kernel_or_reference_replays": 0,
+  "source_files_reviewed": 7,
+  "source_sha256_before": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149"
+  },
+  "source_sha256_after": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149"
+  },
+  "matches_local_freeze_roster": true,
+  "source_unchanged": true,
+  "checks": [
+    {
+      "topic": "Continuous-flux closure",
+      "finding": "For each segment, existing source auxiliary rows and two physical active generations form one block Metzler C; source output k drives its target reset law. A child release packet stores alpha=y_left, A=C, output=k_generation and shifted exact support [left+d,right+d]. This preserves continuous density rather than a uniformized per-step hit mass."
+    },
+    {
+      "topic": "Clipping/anchoring",
+      "finding": "Active packet source coordinates are propagated within the same physical exponential and retained with start=right. Future packets are not propagated before their support starts; expired packets are removed only after their released measure was consumed. Dynamic start/end/atom/left+d splits keep new births outside the same segment."
+    },
+    {
+      "topic": "Current physical state",
+      "finding": "Active interior and upper escape are advanced directly and stored. Auxiliary source coordinates are not counted as extra probability. M/H are lower-flux accruals, A is direct discounted active-plus-upper occupation, and R/Z are direct pending-law integrals rather than inversion of totals."
+    },
+    {
+      "topic": "Two-generation boundary",
+      "finding": "Episode-zero and pre-delay checks require all channels of generation2 active/accrual/upper coordinates to be zero before d; initial pending laws target generation1. Pending origin causality enforces generation3 release support >=2d, while the absolute horizon <=.36<2d excludes a third active excursion."
+    },
+    {
+      "topic": "Structural zero",
+      "finding": "Packet reduction uses only ancestors of output in the positive graph and never treats a floating alpha zero as structural proof. Generation2 flux is omitted before d solely by episode-origin logical causality. This avoids amplitude/floor pruning of rare or signed channels."
+    },
+    {
+      "topic": "Signed measures",
+      "finding": "All three channels share the same physical/source linear maps and lower/upper/reset paths. Signed channels can be nonproportional; their signs are retained rather than normalized/clipped. Packet omission and pre-delay causal guards include every channel."
+    },
+    {
+      "topic": "Exact input physics",
+      "finding": "Finite fixture row conservation and reset total use exact Fractions of binary64 values. Constructor generation target/origin fields require exact int types, rejecting floats/bools; pending records require exact packet classes."
+    },
+    {
+      "topic": "Recovery interface",
+      "finding": "Canonical snapshots include every pending generator/alpha/output/support/target/origin, current active/upper/accrual arrays and exact rational time. Arrays are copied/read-only, fingerprints are checked before use, expected physics/operator identities bind load, and canonical reserialization must match bytes. This is transfer integrity, not publisher authority or unique-history proof."
+    },
+    {
+      "topic": "Independent finite oracle",
+      "finding": "reference.py does not import packets.py. It constructs direct serial CTMC blocks, reads generation-specific current active/upper via semigroups, uses positive birth-window integrals for R/Z, and separately integrates upper-inclusive occupation. Initial uniform and atom releases are mixed independently with absolute-time discount for H/A only."
+    },
+    {
+      "topic": "Budgets",
+      "finding": "The fixed roster has six ledgers with <=500 exponentials and <=20 segments each, hence <=3000/120 below plan4000/128. Four oracle instances each cap20000 exponentials and2500 GL nodes, hence <=80000/10000 below plan100000/10000. Parent CPU120/121 plus two children25/26 gives aggregate hard upper173<180; GNU timeout190 is explicitly required externally. No budget claim is made for arbitrary external client-created ledgers."
+    },
+    {
+      "topic": "Negative control",
+      "finding": "The scalar-totals counterexample is mathematically valid for real phase-law coefficients: one middle-time atom and a weighted early/late mixture match R/Z and zero prior accrual/active/upper but differ in future release. It is explicitly a mathematical information counterexample, not a bit-identical binary64 snapshot collision or a checkpoint qualification."
+    }
+  ],
+  "scientific_status": "HOLD_NO_GO",
+  "all_closed": false,
+  "limits": [
+    "Only proposed fixed n1/n2 CTMC fixtures and two active generations; no inherited n1024 or continuum admission.",
+    "Shared SciPy expm backend is not an independent roundoff certificate.",
+    "No numerical pass, cold-process recovery success, finite-grid accuracy or live checkpoint authority is claimed by this static review.",
+    "No filtering, gradients, training, full-network, real-task or complete energy/cost qualification.",
+    "Same-session separate-agent review is not external custody."
+  ]
+}
