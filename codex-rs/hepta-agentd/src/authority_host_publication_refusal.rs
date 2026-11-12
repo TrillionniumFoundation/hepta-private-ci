@@ -12,6 +12,7 @@ use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 
+use super::acceptance::PublicationAcceptance;
 use super::*;
 
 const PURPOSE: &str = "runtime.learning.publication-refusal.v1";
@@ -103,6 +104,9 @@ struct RefusalRecord {
     // None exists only during the first armed registration. Recovery cannot
     // infer or initialize the complete profile from restored primary bytes.
     original: Option<ReservedPublicationProfile>,
+    // Missing in old records is not evidence of a previously accepted Publish.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    publication: Option<PublicationAcceptance>,
 }
 
 pub(super) struct PublicationRefusal {
@@ -136,6 +140,7 @@ impl PublicationRefusal {
                     attempt: 1,
                     phase: Phase::Armed,
                     original: None,
+                    publication: None,
                 },
             ),
             RootGenerationPublicationModeV1::Recover => {
@@ -167,7 +172,10 @@ impl PublicationRefusal {
             }
             RootGenerationPublicationModeV1::Recover => retained.arm_ready(observed)?,
         };
-        retained.complete_armed(&armed, end, || action(Arc::clone(&retained)))
+        retained.complete_armed(&armed, end, || {
+            let (value, original) = action(Arc::clone(&retained))?;
+            Ok((value, original, None))
+        })
     }
 
     /// The complete writer-context call, CURRENT CAS/readback and physical
@@ -177,6 +185,15 @@ impl PublicationRefusal {
         original: &ReservedPublicationProfile,
         end: Instant,
         action: impl FnOnce() -> io::Result<T>,
+    ) -> io::Result<T> {
+        self.inspect_with_acceptance(original, end, || Ok((action()?, None)))
+    }
+
+    pub(super) fn inspect_with_acceptance<T>(
+        &self,
+        original: &ReservedPublicationProfile,
+        end: Instant,
+        action: impl FnOnce() -> io::Result<(T, Option<PublicationAcceptance>)>,
     ) -> io::Result<T> {
         original_root()?;
         let _gate = self
@@ -194,7 +211,10 @@ impl PublicationRefusal {
             return Err(io::Error::other("original publication provenance changed"));
         }
         let armed = self.arm_ready(observed)?;
-        self.complete_armed(&armed, end, || Ok((action()?, original.clone())))
+        self.complete_armed(&armed, end, || {
+            let (value, publication) = action()?;
+            Ok((value, original.clone(), publication))
+        })
     }
 
     fn arm_ready(&self, before: RefusalRecord) -> io::Result<RefusalRecord> {
@@ -226,11 +246,15 @@ impl PublicationRefusal {
         &self,
         armed: &RefusalRecord,
         end: Instant,
-        action: impl FnOnce() -> io::Result<(T, ReservedPublicationProfile)>,
+        action: impl FnOnce() -> io::Result<(
+            T,
+            ReservedPublicationProfile,
+            Option<PublicationAcceptance>,
+        )>,
     ) -> io::Result<T> {
         let result = (|| {
             require_end(end)?;
-            let (value, original) = action()?;
+            let (value, original, publication) = action()?;
             self.binding.require_profile(&original)?;
             if self.poisoned.load(Ordering::Acquire)
                 || armed
@@ -241,6 +265,19 @@ impl PublicationRefusal {
                 return Err(io::Error::other("original publication completion differs"));
             }
             let mut ready = armed.clone();
+            if let Some(publication) = publication {
+                publication.require_original(&original)?;
+                if armed
+                    .publication
+                    .as_ref()
+                    .is_some_and(|old| old != &publication)
+                {
+                    return Err(io::Error::other(
+                        "original publication acceptance cannot be replaced",
+                    ));
+                }
+                ready.publication = Some(publication);
+            }
             ready.original = Some(original);
             ready.phase = Phase::Ready;
             // Actual Root context and receipt checks have already returned Ok.
@@ -301,6 +338,13 @@ impl PublicationRefusal {
             }
             if let Some(original) = &observed.original {
                 self.binding.require_profile(original)?;
+                if let Some(publication) = &observed.publication {
+                    publication.require_original(original)?;
+                }
+            } else if observed.publication.is_some() {
+                return Err(io::Error::other(
+                    "publication acceptance lacks original provenance",
+                ));
             }
             Ok(observed)
         })();

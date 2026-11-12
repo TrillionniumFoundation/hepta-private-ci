@@ -124,12 +124,12 @@ impl HostAuthorityService {
         }
         while channel
             .exchange_with_original_deadline(|bytes, end| {
-                PublicationRefusal::inspect(&slot.refusal, &slot.reserved, end, || {
+                PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, || {
                     let request: Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
                     if matches!(&request.command, Command::IssueFinalUse { .. }) {
                         return HostAuthorityService::issue_generation_publication_grant(
                             self, slot, learning, config, registration, &pin, &request, &mut sequence, end,
-                        );
+                        ).map(|raw| (raw, None));
                     }
                     let mut successor_observed = None;
                     let (raw, expected) = self.with_learning_profile(
@@ -427,7 +427,16 @@ impl HostAuthorityService {
                         end,
                     )?;
                     refusal::require_end(end)?;
-                    Ok(raw)
+                    let accepted = if matches!(&request.command, Command::Publish { .. })
+                        && version == PublicationVersion::DurableV2
+                    {
+                        Some(acceptance::PublicationAcceptance::observe_original_publish(self, slot, &expected, end)?)
+                    } else {
+                        None
+                    };
+                    crate::authority_host_runtime::verify_pinned_process(registration, config.peer_uid, config.peer_gid, &pin, end)?;
+                    refusal::require_end(end)?;
+                    Ok((raw, accepted))
                 })
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
             })
@@ -440,7 +449,7 @@ impl HostAuthorityService {
     }
 }
 
-fn require_fresh_window(
+pub(super) fn require_fresh_window(
     now: u64,
     work_expiry: u64,
     signed: &SignedFinalUseGrant,
