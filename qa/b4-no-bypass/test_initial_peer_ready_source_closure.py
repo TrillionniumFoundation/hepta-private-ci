@@ -33,7 +33,8 @@ CALLERS = {
     "connection_selected": (), "ready_client": (INPUTS,),
     "ready_bootstrap_binding": (SESSION, CLIENT), "ready_request": (CLIENT,),
     "ready_require_request": (PEER,), "ready_response": (PEER,),
-    "ready_require_response": (CLIENT,), "historical_same_root": (CLI,),
+    "ready_require_response": (CLIENT,), "historical_same_root": (SESSION,),
+    "historical_session_root": (CLI,),
 }
 CALLERS = {"root_initial_" + name: callers for name, callers in CALLERS.items()}
 CALLERS["root_initial_profile_check"] = (ENROLLMENT, PEER)
@@ -62,7 +63,7 @@ def structure(path, source):
         begin = body.index("if source_deployment.is_some()", body.index(
             "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment"))
         end = PROOF._rust_item_end(body, begin)
-        if end is None or "require_original_historical_root(&files, &config.state_dir)?" not in body[begin:end]:
+        if end is None or "require_original_historical_deployment(&prepared, &files)?" not in body[begin:end]:
             raise PROOF.VerificationFailure("same Root check must stay in historical opt-in")
 
 
@@ -246,7 +247,10 @@ class InitialPeerReadySourceTests(unittest.TestCase):
         self.check(FILES, "require_original_historical_root", ("original_root()?", "self.data.current_directory == state_dir", "if !same_directory"))
         for occurrence in (0, 1):
             self.reject(FILES, "require_original_historical_root", "self.require_original_initial_files()?", occurrence)
-        self.reject(CLI, "main", "RootGenerationInitialDeploymentFilesV1::require_original_historical_root(&files, &config.state_dir)?")
+        self.reject(CLI, "main", "PreparedHostAuthoritySession::require_original_historical_deployment(&prepared, &files)?")
+        self.check(SESSION, "require_original_historical_deployment", (
+            "RootGenerationInitialDeploymentFilesV1::require_original_historical_root(",
+            "files,", "&self.config.state_dir"))
 
 
 if __name__ == "__main__":

@@ -473,7 +473,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             (Some(path), Some(handoff)) => {
                 let files = codex_hepta_agentd::RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(&path)?;
                 if source_deployment.is_some() {
-                    codex_hepta_agentd::RootGenerationInitialDeploymentFilesV1::require_original_historical_root(&files, &config.state_dir)?;
+                    codex_hepta_agentd::PreparedHostAuthoritySession::require_original_historical_deployment(&prepared, &files)?;
                 }
                 let (capability, offer) =
                     prepared.enable_generation_initial(files.deployment().clone())?;
