@@ -190,3 +190,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 #[cfg(test)]
 #[path = "cell_q24_training_bootstrap_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cell_q24_training_bootstrap_original_ports_tests.rs"]
+pub(crate) mod original_ports;

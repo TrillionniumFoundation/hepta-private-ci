@@ -219,6 +219,7 @@ fn connected_original_evidence(
     });
     Ok((
         crate::LearningIterationEvidenceClientV1 {
+            command: None,
             channel: Mutex::new(Some(EvidenceChannel {
                 transport,
                 next_request_id: 1,

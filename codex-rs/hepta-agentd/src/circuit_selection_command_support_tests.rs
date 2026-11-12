@@ -188,6 +188,7 @@ pub(crate) fn evidence_client(
     )?;
     Ok((
         LearningIterationEvidenceClientV1 {
+            command: None,
             channel: Mutex::new(Some(EvidenceChannel {
                 transport,
                 next_request_id: 1,

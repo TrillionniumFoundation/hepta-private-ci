@@ -602,3 +602,6 @@ mod evaluation_provider;
 
 #[path = "circuit_resident_model_support_tests.rs"]
 mod resident_model;
+
+#[path = "circuit_deep_training_readback_tests.rs"]
+mod deep_readonly;

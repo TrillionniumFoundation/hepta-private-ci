@@ -12,7 +12,7 @@ pub(super) struct Credentials {
     pub(super) evaluator: TrustedLearningSignerV1,
     pub(super) selector: TrustedLearningSignerV1,
     pub(super) unlearning: TrustedLearningSignerV1,
-    observer: TrustedLearningSignerV1,
+    pub(super) observer: TrustedLearningSignerV1,
     experience: TrustedLearningSignerV1,
     dataset: TrustedLearningSignerV1,
 }
@@ -213,16 +213,25 @@ pub(super) fn terminal_outcome(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
 ) -> anyhow::Result<()> {
+    terminal_outcome_with_value(writer, credentials, FixedQ32::from_raw(2_i64 << 32))
+}
+
+// The caller fixes this explicit test measurement before material or Training.
+// It is never computed from the model output or a subsequent training result.
+pub(super) fn terminal_outcome_with_value(
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    value: FixedQ32,
+) -> anyhow::Result<()> {
     let at = now()?;
-    // Explicit independent terminal target 2.0, never inferred from A's output
-    // or the subsequently trained/evaluated candidate.
+    // Explicit independent terminal target, fixed before any material read.
     let outcome = AuthenticatedOutcomeV1 {
         record_id: id("positive-original-outcome-record"),
         outcome_id: id("positive-original-outcome"),
         episode_id: id("positive-original-episode"),
         observer: credentials.observer.principal.clone(),
         observed_at: Some(at),
-        value: Some(FixedQ32::from_raw(2_i64 << 32)),
+        value: Some(value),
         unit_profile_digest: d("explicit-positive-terminal-unit"),
         support_digest: d("explicit-positive-independent-terminal-label"),
         watermark: OutcomeWatermarkV1 {
@@ -275,8 +284,8 @@ pub(super) fn material(
     )
 }
 
-pub(super) fn material_with_profile(
-    root: &std::path::Path,
+pub(super) fn unstarted_material_with_profile(
+    _root: &std::path::Path,
     writer: &mut LedgerWriter,
     credentials: &Credentials,
     source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
@@ -285,7 +294,8 @@ pub(super) fn material_with_profile(
     bundle: &CellCompatibilityBundleV1,
     publication: &CircuitTaskSourcePublicationV1,
     evaluation_profile: Digest32,
-) -> anyhow::Result<Material> {
+    next_use_observer: StableId,
+) -> anyhow::Result<(crate::OriginalCellQ24MaterialReceiptConfigV1, crate::CellQ24SgdRuleV1)> {
     let input = publication.input();
     let initial = LearningIterationCoordinatorV1::new(
         LearningIterationRequestV1 {
@@ -326,7 +336,7 @@ pub(super) fn material_with_profile(
             evaluator: credentials.evaluator.principal.principal_id.clone(),
             proposal: id("positive-original-model"),
             selector: credentials.selector.principal.principal_id.clone(),
-            next_use_observer: id("unused-positive-next-use-role"),
+            next_use_observer,
         },
     )?
     .snapshot()
@@ -380,6 +390,30 @@ pub(super) fn material_with_profile(
         verifier: writer.verifier().clone(),
         maximum_signature_lifetime_seconds: 600,
     };
+    Ok((config, optimizer))
+}
+
+pub(super) fn material_with_profile(
+    root: &std::path::Path,
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+    identity: &crate::AgentdIdentity,
+    baseline: &LoadedCellQ24ModelV1,
+    bundle: &CellCompatibilityBundleV1,
+    publication: &CircuitTaskSourcePublicationV1,
+    evaluation_profile: Digest32,
+) -> anyhow::Result<Material> {
+    let (config, optimizer) = unstarted_material_with_profile(
+        root, writer, credentials, source, identity, baseline, bundle,
+        publication, evaluation_profile, id("unused-positive-next-use-role"),
+    )?;
+    let input = publication.input();
+    let initial = config.initial.clone();
+    let scope = config.scope.clone();
+    let rule = config.rule;
+    let freeze_plan = config.freeze_plan.clone();
+    let freeze_evidence = config.freeze_evidence.clone();
     let mut owners = crate::OriginalCellQ24MaterialReceiptOwnersV1::create(
         crate::OriginalCellQ24MaterialReceiptFilesV1 {
             experience: opened(root, "positive-experience", true)?,

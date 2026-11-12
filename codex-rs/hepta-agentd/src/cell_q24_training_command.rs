@@ -37,6 +37,10 @@ mod connection;
 pub use connection::OriginalCellQ24TrainingCommandConnectionErrorV1;
 pub use connection::OriginalCellQ24TrainingCommandConnectionV1;
 
+#[path = "cell_q24_training_command_readback.rs"]
+pub(super) mod readonly;
+pub use readonly::OriginalCellQ24TrainingReadbackConnectionV1;
+
 #[path = "cell_q24_training_bootstrap.rs"]
 mod bootstrap;
 pub use bootstrap::OriginalCellQ24TrainingBootstrapConfigV1;
@@ -400,3 +404,6 @@ fn now() -> Result<u64, Error> {
 
 #[cfg(test)]
 pub(crate) use serving::command_test_support;
+
+#[cfg(test)]
+pub(crate) use bootstrap::original_ports as original_bootstrap_test_ports;

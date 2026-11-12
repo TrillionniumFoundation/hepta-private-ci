@@ -433,6 +433,8 @@ pub use learning_iteration_evidence_client::OriginalCellQ24TrainingBootstrapOwne
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandClientV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingReadbackConnectionV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionErrorV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandConnectionV1;
@@ -447,6 +449,8 @@ pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandReceip
 
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionReadbackConnectionV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandContextV1;
 #[cfg(target_os = "linux")]

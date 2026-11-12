@@ -58,6 +58,9 @@ pub enum OriginalCircuitSelectionReceiptErrorV1 {
 }
 type Error = OriginalCircuitSelectionReceiptErrorV1;
 
+#[path = "circuit_selection_readback_host.rs"]
+mod readback_host;
+
 /// One original TrainingNoUpdate cut. The complete original Generator signature
 /// is pinned across live reads and cold recovery, including its validity window.
 /// This profile admits no unverified Evaluation or Proposal predecessor.
@@ -93,10 +96,19 @@ pub struct OriginalCircuitSelectionRemoteSourcesV1<'a> {
 trait SelectionSources {
     fn snapshot(&self) -> &LearningIterationSnapshotV1;
     fn trainer(&self) -> &LearningIterationEvidenceClientV1;
+    fn location(&self) -> ObservationLocation;
     async fn observe(
         &self,
         config: &OriginalCircuitSelectionReceiptConfigV1,
     ) -> Result<LearningIterationObservationV1, Error>;
+}
+
+// This is selected only by the two concrete source implementations below.
+// It preserves the existing local-owner read protocol; a remote observation
+// also brackets the original Selector journal with two live Trainer reads.
+enum ObservationLocation {
+    LocalOwner,
+    RemoteOwner,
 }
 
 impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitSelectionReceiptSourcesV1<'_, C> {
@@ -105,6 +117,9 @@ impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitSelectionReceipt
     }
     fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
         self.trainer
+    }
+    fn location(&self) -> ObservationLocation {
+        ObservationLocation::LocalOwner
     }
     async fn observe(
         &self,
@@ -120,6 +135,9 @@ impl SelectionSources for OriginalCircuitSelectionRemoteSourcesV1<'_> {
     }
     fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
         self.trainer
+    }
+    fn location(&self) -> ObservationLocation {
+        ObservationLocation::RemoteOwner
     }
     async fn observe(
         &self,
@@ -150,16 +168,7 @@ async fn read_remote_selection(
         &config.training_evidence,
         None,
     )?;
-    let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
-    let before = trainer
-        .readback(source.snapshot, training_receipt(config)?)
-        .await?;
-    authenticate_training(config, &before, now()?)?;
     let original = live.read_current().await?;
-    let after = trainer
-        .readback(source.snapshot, training_receipt(config)?)
-        .await?;
-    authenticate_training(config, &after, now()?)?;
     Ok(original.observation().clone())
 }
 
@@ -174,6 +183,7 @@ pub struct OriginalCircuitSelectionReceiptOwnerV1<W: AnchorWitnessStore> {
     config: OriginalCircuitSelectionReceiptConfigV1,
     key: SigningKey,
     saved: ProductEvaluationExecutionKeyV1,
+    completion_fenced: bool,
 }
 
 impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
@@ -202,6 +212,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             config,
             key,
             saved,
+            completion_fenced: false,
         })
     }
 
@@ -221,6 +232,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             config,
             key,
             saved,
+            completion_fenced: false,
         })
     }
 
@@ -248,6 +260,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         source: impl SelectionSources,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
+        if self.completion_fenced {
+            return Err(OwnerError::CommitUncertain.into());
+        }
         if source.snapshot().receipts.len() > self.config.decision.receipts.len() {
             return self.readback_source(source).await;
         }
@@ -287,8 +302,13 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             verify_signed_actor_separation(&training, &verified, issued_at)?;
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, true)
-            .await
+        let result = self.finish_original_readback(
+            &source, &observed, &bytes, started_at, /*new_attestation*/ true,
+        ).await;
+        if result.is_err() {
+            self.completion_fenced = true;
+        }
+        result
     }
 
     /// Revalidate the actual version owner, original Generator and original
@@ -314,10 +334,22 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         source: impl SelectionSources,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
+        if self.completion_fenced {
+            return Err(OwnerError::CommitUncertain.into());
+        }
         let observed = self.prepare(&source).await?;
+        if matches!(source.location(), ObservationLocation::RemoteOwner) {
+            let before = self.training_evidence(&source).await?;
+            authenticate_training(&self.config, &before, now()?)?;
+        }
         let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, false)
-            .await
+        let result = self.finish_original_readback(
+            &source, &observed, &bytes, started_at, /*new_attestation*/ false,
+        ).await;
+        if result.is_err() {
+            self.completion_fenced = true;
+        }
+        result
     }
 
     async fn prepare(
@@ -350,7 +382,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             .await?)
     }
 
-    async fn authenticate_completed(
+    async fn finish_original_readback(
         &mut self,
         source: &impl SelectionSources,
         observed: &LearningIterationObservationV1,
@@ -358,6 +390,42 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         started_at: u64,
         new_attestation: bool,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let completed = self.decode_completed(source, observed, bytes)?;
+        // The post-observation covers the publication after the original
+        // journal read or effect. Its predecessor is read once after that I/O;
+        // neither this observation nor authentication recursively reads T.
+        let evidence = match source.location() {
+            ObservationLocation::LocalOwner => {
+                // Preserve the established local-owner order, including
+                // detecting a withdrawal while its Trainer read is in flight.
+                let evidence = self.training_evidence(source).await?;
+                if self.prepare(source).await? != *observed {
+                    return Err(OwnerError::CommitUncertain.into());
+                }
+                evidence
+            }
+            ObservationLocation::RemoteOwner => {
+                if self.prepare(source).await? != *observed {
+                    return Err(OwnerError::CommitUncertain.into());
+                }
+                self.training_evidence(source).await?
+            }
+        };
+        if self.journal.read(&self.saved)? != bytes {
+            return Err(OwnerError::CommitUncertain.into());
+        }
+        let current = now()?;
+        self.authenticate_completed(
+            completed, &evidence, started_at, current, new_attestation,
+        )
+    }
+
+    fn decode_completed(
+        &self,
+        source: &impl SelectionSources,
+        observed: &LearningIterationObservationV1,
+        bytes: &[u8],
+    ) -> Result<(LearningIterationReceiptV1, Vec<u8>, SignedLearningEvidenceV1), Error> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = receipt(&self.config, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
@@ -369,21 +437,25 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         {
             return Err(OwnerError::Binding("changed original Selection receipt").into());
         }
-        let evidence = self.training_evidence(source).await?;
-        if self.prepare(source).await? != *observed {
-            return Err(OwnerError::CommitUncertain.into());
-        }
-        if self.journal.read(&self.saved)? != bytes {
-            return Err(OwnerError::CommitUncertain.into());
-        }
-        let current = now()?;
+        Ok((receipt, payload, signed))
+    }
+
+    fn authenticate_completed(
+        &self,
+        completed: (LearningIterationReceiptV1, Vec<u8>, SignedLearningEvidenceV1),
+        evidence: &SignedLearningEvidenceV1,
+        started_at: u64,
+        current: u64,
+        new_attestation: bool,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let (receipt, payload, signed) = completed;
         if current < started_at {
             return Err(OwnerError::Binding("original Selector clock moved backwards").into());
         }
         if new_attestation {
             require_new_attestation(&self.config, started_at, current)?;
         }
-        let training = authenticate_training(&self.config, &evidence, current)?;
+        let training = authenticate_training(&self.config, evidence, current)?;
         let verified = self.config.verifier.verify(
             LearningEvidenceRoleV1::Selector,
             &signed,
