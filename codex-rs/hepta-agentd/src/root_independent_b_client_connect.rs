@@ -121,13 +121,16 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                 }),
                 candidate_data: Mutex::new(handoff.candidate_data),
                 refused: AtomicBool::new(false),
+                end,
             };
             let observation = client
                 .exchange(Command::Observe)
                 .map_err(|error| AgentdError::Io(std::io::Error::other(error)))?;
             match observation {
                 Observation::Bound { initial } if initial == client.bootstrap.initial => {}
-                Observation::Bound { .. } | Observation::Completed(_) => {
+                Observation::Bound { .. }
+                | Observation::Completed(_)
+                | Observation::Prepared(_) => {
                     return Err(refused("original B observe response differs"));
                 }
             }

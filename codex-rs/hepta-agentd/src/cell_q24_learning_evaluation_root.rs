@@ -53,13 +53,36 @@ impl Q24StageOwners {
             .as_deref()
             .ok_or(Error::OwnerUnavailable("original Root B handoff"))?;
         match action {
-            OriginalRootBEvaluationActionV1::Complete => {
-                original.complete_from_original_training(evidence, scope)
-            }
+            OriginalRootBEvaluationActionV1::Complete => Err(Error::WrongScope),
             OriginalRootBEvaluationActionV1::Readback => {
                 original.read_from_original_training(evidence, scope)
             }
         }
+    }
+
+    /// First execution needs the same live original Generator operation. A
+    /// readonly evidence borrow alone cannot sign the newly realized B plan.
+    pub(super) fn execute_original_root_evaluation(
+        &mut self,
+        operation: &mut OriginalQ24TrainingOperationV1<
+            '_,
+            '_,
+            FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
+        >,
+        evidence: &OriginalQ24TrainingOperationEvidenceV1<'_>,
+        scope: &FrozenLearningScopeV2,
+    ) -> Result<OriginalRootIndependentBEvaluationReadbackV1, Error> {
+        if self.evaluation.is_some() {
+            return Err(Error::WrongScope);
+        }
+        let original = self
+            .root_evaluation
+            .as_deref()
+            .ok_or(Error::OwnerUnavailable("original Root B handoff"))?;
+        original.complete_from_original_training(evidence, scope, |challenge| {
+            OriginalQ24TrainingOperationV1::attest_original_root_b_plan(operation, challenge)
+        })
     }
 
     pub(super) fn original_root_evaluation_action(
@@ -81,11 +104,20 @@ impl Q24StageOwners {
                 {
                     return Err(Error::WrongScope);
                 }
-                let observed = self.complete_original_root_evaluation(
-                    &evidence,
-                    inner.prepared.scope(),
-                    action,
-                )?;
+                let observed = match action {
+                    OriginalRootBEvaluationActionV1::Complete => self
+                        .execute_original_root_evaluation(
+                            original,
+                            &evidence,
+                            inner.prepared.scope(),
+                        ),
+                    OriginalRootBEvaluationActionV1::Readback => self
+                        .complete_original_root_evaluation(
+                            &evidence,
+                            inner.prepared.scope(),
+                            OriginalRootBEvaluationActionV1::Readback,
+                        ),
+                }?;
                 if snapshot
                     .receipts
                     .get(training_cut.receipts.len())

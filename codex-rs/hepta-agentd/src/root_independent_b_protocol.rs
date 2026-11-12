@@ -49,9 +49,14 @@ pub(crate) struct Request {
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum Command {
     Observe,
+    PrepareCandidate {
+        training_head: String,
+        training_attestation: Vec<u8>,
+    },
     Complete {
         training_head: String,
         training_attestation: Vec<u8>,
+        plan_attestation: Vec<u8>,
     },
     Readback {
         training_head: String,
@@ -72,6 +77,7 @@ pub(crate) struct Response {
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum Observation {
     Bound { initial: String },
+    Prepared(Box<PreparedPlanData>),
     Completed(Box<CompletedData>),
 }
 
@@ -82,7 +88,7 @@ pub(crate) struct CompletedData {
     pub(crate) receipt: ReceiptData,
     pub(crate) attestation: Vec<u8>,
     pub(crate) manifest: CellBackendManifestV2,
-    pub(crate) comparison: String,
+    pub(crate) comparison_digest: String,
     pub(crate) plan_digest: String,
     pub(crate) execution_digest: String,
 }
@@ -162,4 +168,17 @@ pub(crate) fn digest(value: &str) -> io::Result<Digest32> {
         return Err(io::Error::other("canonical nonempty B digest required"));
     }
     Ok(result)
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct PreparedPlanData {
+    pub(crate) initial: String,
+    pub(crate) scope: String,
+    pub(crate) training_head: String,
+    pub(crate) candidate_bundle: String,
+    pub(crate) profile: String,
+    pub(crate) plan_digest: String,
+    pub(crate) comparison_digest: String,
+    pub(crate) expires_at_seconds: u64,
 }

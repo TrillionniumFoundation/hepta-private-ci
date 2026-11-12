@@ -9,18 +9,30 @@ impl OriginalRootIndependentBEvaluationClientV1 {
         &self,
         original: &OriginalQ24TrainingOperationEvidenceV1<'_>,
         scope: &FrozenLearningScopeV2,
+        sign_original: impl FnOnce(
+            &OriginalRootBPlanChallengeV1<'_>,
+        ) -> Result<SignedLearningEvidenceV1, Error>,
     ) -> Result<OriginalRootIndependentBEvaluationReadbackV1, Error> {
-        original.require_current_training_source()?;
-        let result = self.original_training(
-            original.snapshot(),
-            scope,
-            original.attestation(),
-            TrainingMode::Complete,
-        );
-        if let Err(error) = original.require_current_training_source() {
+        let result = (|| {
+            original.require_current_training_source()?;
+            let challenge = self.prepare_from_original_training(original, scope)?;
+            let statement = sign_original(&challenge)?;
+            let plan = challenge.require_original_training(original, scope)?;
+            self.original_training(
+                original.snapshot(),
+                scope,
+                original.attestation(),
+                TrainingMode::Complete {
+                    plan,
+                    statement: &statement,
+                },
+            )
+        })();
+        let after = original.require_current_training_source();
+        if result.is_err() || after.is_err() {
             self.refused.store(true, Ordering::Release);
-            return Err(error);
         }
+        after?;
         result
     }
 
