@@ -1,0 +1,228 @@
+{
+  "schema": "hepta.initial-artifact-readview.recovery-checkpoint.v1",
+  "classification": "recovery-only-not-a-build-or-qualification-candidate",
+  "original_workspace_head": "d95c8993b5a80d1636aa74f369586e5b75ef420e",
+  "original_workspace_tree": "c497693c3dafef942e62889b38eb7d3a9baca5df",
+  "manifest_provenance": "Recreated manifest of the recorded original postimage identities. This JSON is not the lost local manifest's original bytes.",
+  "original_postimages": 19,
+  "reconstruction_verification": "All postimages matched their entire previously recorded Git blob SHA before upload; the test fixture additionally used original Windows rustfmt logs for baseline-only formatting.",
+  "execution": {
+    "original_scope_fmt": "recorded successful on original local working source before loss",
+    "native": "not-run-for-these-postimages",
+    "clippy": "not-run-for-these-postimages",
+    "checkpoint_source_qa": "not-run",
+    "ordinary_chain": "not-qualified"
+  },
+  "source_capture_original_manifest_blob": "ae99b7f4454afc91ad2edf09030b20545c67d26b",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+      "mode": "100644",
+      "baseline_blob": "f4d0b45e19003253eb1e5490f96134b5ae9a96e0",
+      "postimage_blob": "4232ec545fb66d1812da1d06f8f126af8d9ea428",
+      "bytes": 7597,
+      "lines": 208,
+      "sha256": "50a6ecbfad1e014f2dc19dc88dff2e2900db297dc2251293a0d10c47560ef6a4",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs",
+      "mode": "100644",
+      "baseline_blob": null,
+      "postimage_blob": "6344957cbe30f72193acc47aa9ccf5f8f8ae6b65",
+      "bytes": 3617,
+      "lines": 102,
+      "sha256": "d6e5ad5b27c469f4b8fbbe9b65796587053f161a5c1530f0af0c930e44bb149c",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs",
+      "mode": "100644",
+      "baseline_blob": null,
+      "postimage_blob": "16c478c6302a37df86e66464450b9340210fd462",
+      "bytes": 4045,
+      "lines": 109,
+      "sha256": "97855a2fd43a7235a2c1b2471ed3be8ed981433f4c5499d305555ff391af64e1",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "mode": "100644",
+      "baseline_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+      "postimage_blob": "0d441dd38b95a1e08b09371e8cc3dd0ec17972c8",
+      "bytes": 8246,
+      "lines": 234,
+      "sha256": "10f154a9a7a73b97194f37b83000ba318f7f5c2493b922dbf7b46af43f60224e",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs",
+      "mode": "100644",
+      "baseline_blob": "d3c5da3501fe4395f8aa8e0ce159a62e9bbc6c34",
+      "postimage_blob": "c25f225b2098c94eef81cc8b1ea9ec7786ded343",
+      "bytes": 6162,
+      "lines": 145,
+      "sha256": "99424ede73d493f47cf3d9ca87a37bbb8e63a86ab2641f43b6b933c1dbe44569",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "mode": "100644",
+      "baseline_blob": "16a9f0c60c56648a94ebc8ff8a7cdca5be1af1ea",
+      "postimage_blob": "afc8fc3a8195701bad57c336177df4798f8dd67a",
+      "bytes": 6168,
+      "lines": 180,
+      "sha256": "5fd947e9750e0d79657a656dc6211b8f0e150d025cede79410222a8228546e31",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs",
+      "mode": "100644",
+      "baseline_blob": "5720c6ef4a73da2f44dc4996023b35978374b372",
+      "postimage_blob": "9853a67ab3a99ffa1119b51eb11c9ae14800f28b",
+      "bytes": 6097,
+      "lines": 162,
+      "sha256": "eb4de4361660790779ddcd620b4aa4eb96e2c9a2d09b8335780c3f08e0ced74b",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs",
+      "mode": "100644",
+      "baseline_blob": "d970542fd254c994ae12510ad3a8c463cacf22c1",
+      "postimage_blob": "bfe0bad70ba83ae654a86a5c6e8e12c79fd11d07",
+      "bytes": 8812,
+      "lines": 251,
+      "sha256": "a09cb26ce11e37f6d162ab0eb4d2ae3e3a2e8521228fa9bf2698494dcd81339f",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs",
+      "mode": "100644",
+      "baseline_blob": "d0b37d73d5720a1d66c6915827eec0b1bcba42c2",
+      "postimage_blob": "f6fc4c3964a8c1db038b1adab279813b90b93c71",
+      "bytes": 7817,
+      "lines": 193,
+      "sha256": "9919fa990cb5351bfc4b68905381ad452f92dc50ae9524a08be270f3bca33c0e",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "mode": "100644",
+      "baseline_blob": "a01cf875af9ff78945e13d73d8c5e519aa9168dc",
+      "postimage_blob": "41668016841160a239f9421417a3d862bbe534f9",
+      "bytes": 9637,
+      "lines": 241,
+      "sha256": "8c4ce8d4862133493d0403a0f1557ac2eec252a956b283f00e0580e2fe1be6db",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "mode": "100644",
+      "baseline_blob": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c",
+      "postimage_blob": "b1087372157ac9951b9df2424f9a981dffedaffb",
+      "bytes": 15416,
+      "lines": 374,
+      "sha256": "408cbd3b19ffbe022b3acb6a368c1ab2784d79bdb9da6316c3e47b6f9f3ddeca",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "mode": "100644",
+      "baseline_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+      "postimage_blob": "3d92923067b9ed83a1ad565ee30d613c08ee939c",
+      "bytes": 15720,
+      "lines": 397,
+      "sha256": "439af4637b0e3a9eebf34f7e930f2b6f308af1b5b420846ad8968c419ae1fad3",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_forward.rs",
+      "mode": "100644",
+      "baseline_blob": "a4bb341e873a106fc681487ff29a4c84dae7a533",
+      "postimage_blob": "e1e88e13b9b9a827f0b3827c68ffc1e321ef7873",
+      "bytes": 4044,
+      "lines": 105,
+      "sha256": "8828f6a14ea8e5dc51d8837823960bfaff3b022119b7a07815dcb607e6696093",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_forward.rs",
+      "mode": "100644",
+      "baseline_blob": "afd8055cc0e57988a82b6efc946d7f6ebf7d7145",
+      "postimage_blob": "3a094b545e6d3fa0ba7dc2e1ea56a126fca70e8a",
+      "bytes": 3346,
+      "lines": 81,
+      "sha256": "885c45288905d1a6714a01f3d5da486a731d5ee3fd33d8fea531146c46a0ef28",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs",
+      "mode": "100644",
+      "baseline_blob": "ec7f167f001c878fff0329a72691a6996fe591a0",
+      "postimage_blob": "110f73a29452912c8312fab7f7454698e38aeb4e",
+      "bytes": 10688,
+      "lines": 294,
+      "sha256": "e5f56adfee363ab7746115a8d5d2382690cccadd909e3e0fddb2370f278030fc",
+      "group": "tests",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "mode": "100644",
+      "baseline_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+      "postimage_blob": "a1f5f1067631169fe8a65750c3b4dbb26956c66a",
+      "bytes": 25086,
+      "lines": 576,
+      "sha256": "fa42e78445ffa149696b6a20e39a6531c00207777f9361facfb0a6cdf739b01b",
+      "group": "tests",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "mode": "100644",
+      "baseline_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+      "postimage_blob": "dbafd52afcf60158c21255e8cb2d34d8a181cedb",
+      "bytes": 14915,
+      "lines": 237,
+      "sha256": "ff8a904ae0873929aa43a5029394e398479ba88ff90c1b267c6cf82ae7e73702",
+      "group": "tests",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_artifacts_tests.rs",
+      "mode": "100644",
+      "baseline_blob": "2363be5133730a592e1c7f5883b82dc2fe7a8230",
+      "postimage_blob": "13e36a6fa8cb891edeb429ff56629a713467fcce",
+      "bytes": 17150,
+      "lines": 429,
+      "sha256": "68a849d3aa73d628054cb0ea2fdffb0507abdfa30fefaa7152176ce96227beb6",
+      "group": "tests",
+      "recovery": "matched-original-frozen-git-sha"
+    },
+    {
+      "path": "qualification/learn-eval-historical-readback-20261112/initial-artifact-readview.md",
+      "mode": "100644",
+      "baseline_blob": null,
+      "postimage_blob": "dbd7361e0cba83d391aae9ffcd415cfe3e5f0b77",
+      "bytes": 3421,
+      "lines": 56,
+      "sha256": "2b8018b237ef7d7789c8f54c2ee7801ae1a0c829be7d902368d7efab8dd8e7aa",
+      "group": "source",
+      "recovery": "matched-original-frozen-git-sha"
+    }
+  ]
+}

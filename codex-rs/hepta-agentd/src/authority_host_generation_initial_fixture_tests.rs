@@ -3,7 +3,6 @@
 //! completion or FileCAS is created.
 
 use super::*;
-use anyhow::Context;
 use crate::DeploymentGrantPolicy;
 use crate::HostAuthorityBootstrap;
 use crate::HostAuthorityConsumerConfig;
@@ -11,6 +10,7 @@ use crate::HostAuthorityConsumersConfig;
 use crate::HostAuthoritySocketPaths;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostIssuerRecordProfile;
+use anyhow::Context;
 use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_fleet::AgentLifecycle;
@@ -37,13 +37,16 @@ pub(super) struct Fixture {
     target_witness: PathBuf,
     model_directory: PathBuf,
     artifacts: artifacts::Transfer,
+    artifact_access: ArtifactAccess,
+    _artifact_writer:
+        Option<Arc<std::sync::Mutex<codex_hepta_learning_artifacts::LearningArtifactOwnerService>>>,
     offer: UnixDatagram,
     pin: OwnedFd,
     drop_ack: bool,
 }
 
 impl Fixture {
-    pub(super) fn new(drop_ack: bool) -> anyhow::Result<Self> {
+    pub(super) fn new(drop_ack: bool, artifact_access: ArtifactAccess) -> anyhow::Result<Self> {
         let parent = PathBuf::from(
             std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT")
                 .ok_or_else(|| anyhow::anyhow!("original protected bind required"))?,
@@ -105,7 +108,10 @@ impl Fixture {
             &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
         )?;
         owned_mode(
-            fleet.as_path(), /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+            fleet.as_path(),
+            /*uid*/ 0,
+            /*gid*/ 60001,
+            /*mode*/ 0o710,
         )?;
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
         registry.register(AgentManifest::new(
@@ -193,8 +199,13 @@ impl Fixture {
             &selected,
         )?;
         let binding = description.final_use_binding().clone();
-        // Release this actual Artifact writer before the child opens the same
-        // original files with its original signed lease and required CURRENT.
+        // The readonly scenario deliberately retains the original writer and
+        // its actual OS lock. The child must use the concrete read view; it
+        // cannot reopen or borrow this writer to make publication succeed.
+        let artifact_writer = match artifact_access {
+            ArtifactAccess::OriginalWriter => None,
+            ArtifactAccess::OriginalReadView => Some(artifacts.retain_original_writer()),
+        };
         let artifacts = artifacts.into_transfer(now_ms()?)?;
         let state = protected.path().join("authority");
         let bootstrap_file = protected.path().join("bootstrap.json");
@@ -330,6 +341,8 @@ impl Fixture {
             target_witness,
             model_directory,
             artifacts,
+            artifact_access,
+            _artifact_writer: artifact_writer,
             offer,
             pin,
             drop_ack,
@@ -415,6 +428,7 @@ impl Fixture {
         let plan = Plan {
             phase,
             lose_ack: self.drop_ack,
+            artifact_access: self.artifact_access,
             model_directory: self.model_directory.clone(),
             artifacts: self.artifacts.clone(),
             target: data::ObserverData::from_original_observer(&self.target_config),
@@ -430,8 +444,9 @@ impl Fixture {
         );
         std::thread::scope(|scope| -> anyhow::Result<()> {
             let registration = scope.spawn(|| -> anyhow::Result<()> {
-                control(&self.offer, b"ORIGINAL_INPUTS_READY")
-                    .with_context(|| format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY"))?;
+                control(&self.offer, b"ORIGINAL_INPUTS_READY").with_context(|| {
+                    format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY")
+                })?;
                 // The original child has now opened both real nonce owners.
                 // The production loader invokes the original same-PID cap.
                 let unchanged = support::protected_files(&self.current_path)?;
@@ -452,14 +467,16 @@ impl Fixture {
                     );
                     send_data(&self.offer, &false)?;
                 } else {
-                    let registered = outcome
-                        .with_context(|| format!("initial parent {phase:?}: registering original deployment"))?;
+                    let registered = outcome.with_context(|| {
+                        format!("initial parent {phase:?}: registering original deployment")
+                    })?;
                     anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
                     send_data(&self.offer, &true)?;
                 }
                 if phase == Phase::RetiredSession {
-                    control(&self.offer, b"RETIRE_READY")
-                        .with_context(|| format!("initial parent {phase:?}: awaiting RETIRE_READY"))?;
+                    control(&self.offer, b"RETIRE_READY").with_context(|| {
+                        format!("initial parent {phase:?}: awaiting RETIRE_READY")
+                    })?;
                     assert_eq!(self.offer.send(b"RETIRE")?, 6);
                 }
                 control(&self.offer, b"STABLE")
@@ -481,7 +498,9 @@ impl Fixture {
             });
             let served = prepared.serve_with_ready(move || {
                 crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)
-                    .with_context(|| format!("initial parent {phase:?}: sending original production handoff"))
+                    .with_context(|| {
+                        format!("initial parent {phase:?}: sending original production handoff")
+                    })
                     .map_err(io::Error::other)?;
                 crate::send_root_generation_initial_handoff(
                     send.try_clone()?,
@@ -489,13 +508,17 @@ impl Fixture {
                     &root_pin,
                     TIMEOUT,
                 )
-                .with_context(|| format!("initial parent {phase:?}: sending original initial handoff"))
+                .with_context(|| {
+                    format!("initial parent {phase:?}: sending original initial handoff")
+                })
                 .map_err(io::Error::other)?;
                 send_data(&send, &plan)
                     .with_context(|| format!("initial parent {phase:?}: sending component plan"))
                     .map_err(io::Error::other)?;
                 send_target_files(&send, target_writer, witness_writer)
-                    .with_context(|| format!("initial parent {phase:?}: sending original target descriptors"))
+                    .with_context(|| {
+                        format!("initial parent {phase:?}: sending original target descriptors")
+                    })
                     .map_err(io::Error::other)
             });
             let registered = registration
@@ -514,7 +537,8 @@ impl Fixture {
                     "source refusal or controlled ACK loss closes original lane"
                 );
             } else {
-                served.with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
+                served
+                    .with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
             }
             // CLOSED alone is insufficient: all original service threads and
             // the original success/refusal result above must also be complete.
