@@ -88,6 +88,10 @@ pub(crate) struct LearningIterationReservationV1<'a> {
 }
 
 impl LearningIterationHandleV1 {
+    /// Accepted submissions belong to the supervised owner even if this
+    /// waiting future is dropped. The original cancellation token, current
+    /// authorization and work deadline still control the remaining stages.
+    /// A lost response requires readback of the same durable operation.
     pub async fn submit(
         &self,
         request: LearningIterationRequestV1,
@@ -330,6 +334,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         self.require_identity(state.identity())?;
         loop {
             let command = tokio::select! {
+                biased;
                 _ = cancellation.cancelled() => return Ok(()),
                 command = self.receiver.recv() => command,
             };
@@ -337,10 +342,16 @@ impl LearningIterationRuntimeBootstrapV1 {
                 cancellation.cancelled().await;
                 return Ok(());
             };
-            if command.response.is_closed() {
+            // A durable outbox claim precedes Submit enqueue. Losing its
+            // response waiter must not strand accepted work before checkpoint
+            // creation. Readback has no work to preserve after its waiter leaves.
+            if command.response.is_closed()
+                && matches!(command.mode, LearningIterationModeV1::Readback)
+            {
                 continue;
             }
             let result = tokio::select! {
+                biased;
                 _ = cancellation.cancelled() => {
                     let _ = command.response.send(Err(LearningIterationRuntimeErrorV1::CommitUncertain));
                     return Ok(());
