@@ -184,7 +184,8 @@ impl OriginalPostAPublicationDeployment {
                 "canonical original publication material required",
             ));
         }
-        let (inputs, artifacts) = self.files.inputs.enrollment_inputs(
+        let (inputs, artifacts) = OriginalInputs::enrollment_inputs(
+            &self.files.inputs,
             &self.files.data,
             &material,
             self.capability.consumer_uid,
@@ -199,7 +200,8 @@ impl OriginalPostAPublicationDeployment {
                 "original publication ended before registration",
             ));
         }
-        let result = self.capability.register(inputs)?;
+        let result =
+            RootGenerationPublicationEnrollmentCapabilityV1::register(self.capability, inputs)?;
         // The same one-shot slot is consumed even when a physical postcheck
         // fails. Never retry enrollment or turn its uncertainty into success.
         self.files
