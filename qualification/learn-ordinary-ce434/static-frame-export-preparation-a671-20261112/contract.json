@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.learn.original-static-frame-export-request.v1",
+  "state": "prepared_not_dispatched",
+  "source": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "checkout": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1"
+  },
+  "successful_exporter_preimage": "e48609203bc9fc60a5142619666875838393759e",
+  "script": {
+    "sha": "ee8881959700608eb43aa391357683818d2ee19a",
+    "bytes": 9976,
+    "sha256": "751a126f75ca563c74fcbdb8b31a745fa67b208720403a2eb0d47cf80a6b9d1a"
+  },
+  "original_diagnostic": {
+    "script": "02936de4e817426367a1e05c565f484e4bed456f",
+    "request": "1b335f44bf16c1b1f381938203f6f4cf74efde47",
+    "job": "1a1d0456c40-2564-1b63",
+    "terminal": "Root reported durable success0, output complete, no timeout/cancel. This exporter does not rerun that job."
+  },
+  "source_files": {
+    "root": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/static-frames-a6717d722804-v1",
+    "fixed": [
+      "result.json",
+      "symbols.json",
+      "nm-demangled.stderr",
+      "nm-raw.stderr"
+    ],
+    "dynamic": "Only nonzero-size result.functions[index] entries for 0<=index<64: exact prologue-NNN.txt and prologue-NNN.stderr. No caller-supplied path, glob, recursive walk or further file discovery.",
+    "txt_gate": "Full stable raw bytes must match the existing result's prologue_sha256 and prologue_bytes; inspected_address_bytes must equal min(symbol size,512).",
+    "stderr_gate": "Same strict derived name, stable owner/type/size checks; its hash is newly recorded because the original result has no stderr hash field.",
+    "result_gate": [
+      "state=observed_static_only",
+      "source_sha/tree=a671/647b",
+      "source_before and source_after exact {head,tree,status:''}",
+      "target_executed/process_attached/signals_sent/authority_created all false",
+      "tests_executed=0",
+      "fixed recorded ELF path",
+      "valid recorded ELF before/after SHA256 equal, no invented preexisting hash pin",
+      "recorded original native/outer paths/hash/byte counts match",
+      "1..64 functions and exact selected count",
+      "symbols.json equals complete function address/size/names/original_mangled_names projection",
+      "both nm exit0 and exact stderr names",
+      "final result/symbols reread byte-equal and directory identity unchanged"
+    ]
+  },
+  "unchanged_original_helpers": [
+    "remote",
+    "sha",
+    "identity",
+    "read",
+    "clean"
+  ],
+  "git_transport": {
+    "inherited_existing_environment": true,
+    "environment_values_not_exported": true,
+    "existing_forward_file": "/home/qian-qi/.config/systemd/user/hepta-pocket4-socks.service",
+    "required_forward": "127.0.0.1:11080",
+    "proxy": "socks5h://127.0.0.1:11080",
+    "low_speed_limit": 1,
+    "low_speed_time_seconds": 30,
+    "private_index_only": true,
+    "no_checkout_or_branch_switch": true,
+    "source_parent_exact": true,
+    "git_helper_delta": "Replace check_output with explicit Popen/communicate and drain/wait on the same handle before rethrowing. No kill/terminate or subprocess.run.",
+    "blob_validation": "Original SHA1 Git blob bytes independently verified; full raw bytes retained as UTF-8 up to524288B, otherwise original base64 chunk scheme (393216 raw bytes) plus manifest original size/SHA256.",
+    "output_branch": "codex/learn-a671-static-frame-evidence-ce434-20261112-v1",
+    "branch_gate": "Must be absent initially and immediately before push, then exact published commit readback. No force push.",
+    "evidence_prefix": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/static-frames-a671/",
+    "own_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/static-frame-export-a6717d722804-full-v1",
+    "replay": "Exclusive output directory; reconcile original idempotency key instead of automatic replay."
+  },
+  "exclusions": {
+    "elf_read": false,
+    "nm_run": false,
+    "objdump_run": false,
+    "tests_run": false,
+    "root29_run": false,
+    "signal_requested": false,
+    "process_attach": false,
+    "rust_or_qa_edit": false,
+    "production_authority": false,
+    "new_timeout": false,
+    "new_dependency": false
+  },
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "python_flags": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "cwd": "/home/qian-qi",
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "idempotency_key": "learn-ce434-a671-static-frame-export-v1",
+    "only_changed_template_fields": [
+      "args[-1]",
+      "idempotency_key"
+    ]
+  },
+  "validation": {
+    "complete_api_readback_of_original_exporter": true,
+    "complete_api_readback_of_new_script": true,
+    "original_helper_block_bytes_equal": true,
+    "python_execution": false,
+    "h_dispatch": false,
+    "may_remain_unused_if_direct_reads_succeed": true
+  }
+}
