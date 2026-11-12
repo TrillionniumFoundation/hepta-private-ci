@@ -21,6 +21,23 @@ impl PendingHandoffs {
         if !matches!(primary, PrimaryInputs::PostAQ24 { .. }) {
             return Ok(None);
         }
+        let count = [
+            learning.is_some(),
+            model.is_some(),
+            independent_b.is_some(),
+            publication.is_some(),
+        ]
+        .into_iter()
+        .filter(|present| *present)
+        .count();
+        if count == 0 {
+            // The sealed deployment must subsequently select completed-only
+            // history. Fresh assembly refuses None before opening any owner.
+            return Ok(None);
+        }
+        if count != 4 {
+            return Err(refused("partial original post-A owner handoffs"));
+        }
         let learning = learning
             .take()
             .ok_or_else(|| refused("post-A learning handoff absent"))?;

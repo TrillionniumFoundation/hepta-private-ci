@@ -31,6 +31,9 @@ pub(super) struct Deployment {
     pub(super) delivery_mode: owners::OpenMode,
     pub(super) queue_capacity: usize,
     pub(super) continuation: ContinuationData,
+    #[serde(default)]
+    pub(super) completed_history:
+        Option<crate::root_completed_learning_history::CompletedHistoryModeV1>,
 }
 
 #[derive(Deserialize)]
