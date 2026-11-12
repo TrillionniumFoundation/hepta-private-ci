@@ -62,14 +62,7 @@ impl OriginalAFilePaths {
     }
 
     pub(super) fn cell_data(&self, objective: Digest32) -> Value {
-        json!({
-            "journal": self.cell,
-            "witness": self.cell_witness,
-            "witness_scope": digest("ordinary-original-cell"),
-            "witness_objective": objective.into_array(),
-            "witness_generation": 1,
-            "witness_records": 128
-        })
+        original_cell_data(&self.cell, &self.cell_witness, objective)
     }
 
     pub(super) fn source_data(
@@ -79,59 +72,91 @@ impl OriginalAFilePaths {
         source: &CircuitTaskSourceInputV1,
         ledger_deployment: &Path,
     ) -> anyhow::Result<Value> {
-        let (mut circuit, mut bindings) = crate::circuit_cell::tests::configuration();
-        let original = bindings
-            .first_mut()
-            .ok_or_else(|| anyhow::anyhow!("original finite route absent"))?;
-        original.cell = definition.clone();
-        circuit.parameter_bundle_digest = Sha256Digest::parse(definition.bundle_digest.to_string())
-            .map_err(anyhow::Error::msg)?;
-        circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
-        let routes = &bindings[0].routes;
-        let mut cell = self.cell_data(source.objective_digest);
-        cell["maximum_records"] = json!(4);
-        Ok(json!({
-            "schema_version": 1,
-            "purpose": "runtime.circuit.single-q24-source-deployment.v1",
-            "source_journal": self.source,
-            "source_witness": self.source_witness,
-            "cell_files": cell,
-            "ledger_deployment": ledger_deployment,
-            "witness_scope": digest("ordinary-original-source"),
-            "witness_objective": source.objective_digest.into_array(),
-            "witness_generation": 1,
-            "witness_records": 128,
-            "fence": {
-                "owner_id": "ordinary-original-circuit-owner",
-                "owner_epoch": 1,
-                "generation": identity.spawn_generation.checked_add(1)
-                    .ok_or_else(|| anyhow::anyhow!("original Circuit generation overflow"))?,
-                "fencing_token": "ordinary-original-circuit-fence"
-            },
-            "circuit": circuit,
-            "routes": routes.iter().map(|route| json!({
-                "candidate_id": route.candidate_id.as_str(),
-                "outcome": route.outcome,
-                "selected_edges": route.selected_edges
-            })).collect::<Vec<_>>(),
-            "definition": definition_data(definition),
-            "source": {
-                "cell_id": source.scope.cell_id.as_str(),
-                "run_id": source.scope.run_id.as_str(),
-                "principal_digest": source.scope.principal_digest.into_array(),
-                "source_frontier": source.source_frontier.into_array(),
-                "objective_digest": source.objective_digest.into_array(),
-                "ndu_snapshot_digest": source.ndu_snapshot_digest.into_array(),
-                "monotonic_micros": source.monotonic_micros,
-                "deadline_micros": source.deadline_micros,
-                "observation": source.observation,
-                "candidates": source.candidates.iter().map(|mask| json!({
-                    "candidate_id": mask.candidate_id.as_str(), "allowed": mask.allowed
-                })).collect::<Vec<_>>(),
-                "lease_duration_ms": source.lease_duration_ms
-            }
-        }))
+        source_data_for_original_files(
+            [
+                &self.source,
+                &self.source_witness,
+                &self.cell,
+                &self.cell_witness,
+            ],
+            identity,
+            definition,
+            source,
+            Some(ledger_deployment),
+        )
     }
+}
+
+pub(super) fn source_data_for_original_files(
+    [source_journal, source_witness, cell, cell_witness]: [&Path; 4],
+    identity: &AgentdIdentity,
+    definition: &CellDefinitionV1,
+    source: &CircuitTaskSourceInputV1,
+    ledger_deployment: Option<&Path>,
+) -> anyhow::Result<Value> {
+    let (mut circuit, mut bindings) = crate::circuit_cell::tests::configuration();
+    let original = bindings
+        .first_mut()
+        .ok_or_else(|| anyhow::anyhow!("original finite route absent"))?;
+    original.cell = definition.clone();
+    circuit.parameter_bundle_digest =
+        Sha256Digest::parse(definition.bundle_digest.to_string()).map_err(anyhow::Error::msg)?;
+    circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
+    let routes = &bindings[0].routes;
+    let mut cell = original_cell_data(cell, cell_witness, source.objective_digest);
+    cell["maximum_records"] = json!(4);
+    Ok(json!({
+        "schema_version": 1,
+        "purpose": "runtime.circuit.single-q24-source-deployment.v1",
+        "source_journal": source_journal,
+        "source_witness": source_witness,
+        "cell_files": cell,
+        "ledger_deployment": ledger_deployment,
+        "witness_scope": digest("ordinary-original-source"),
+        "witness_objective": source.objective_digest.into_array(),
+        "witness_generation": 1,
+        "witness_records": 128,
+        "fence": {
+            "owner_id": "ordinary-original-circuit-owner",
+            "owner_epoch": 1,
+            "generation": identity.spawn_generation.checked_add(1)
+                .ok_or_else(|| anyhow::anyhow!("original Circuit generation overflow"))?,
+            "fencing_token": "ordinary-original-circuit-fence"
+        },
+        "circuit": circuit,
+        "routes": routes.iter().map(|route| json!({
+            "candidate_id": route.candidate_id.as_str(),
+            "outcome": route.outcome,
+            "selected_edges": route.selected_edges
+        })).collect::<Vec<_>>(),
+        "definition": definition_data(definition),
+        "source": {
+            "cell_id": source.scope.cell_id.as_str(),
+            "run_id": source.scope.run_id.as_str(),
+            "principal_digest": source.scope.principal_digest.into_array(),
+            "source_frontier": source.source_frontier.into_array(),
+            "objective_digest": source.objective_digest.into_array(),
+            "ndu_snapshot_digest": source.ndu_snapshot_digest.into_array(),
+            "monotonic_micros": source.monotonic_micros,
+            "deadline_micros": source.deadline_micros,
+            "observation": source.observation,
+            "candidates": source.candidates.iter().map(|mask| json!({
+                "candidate_id": mask.candidate_id.as_str(), "allowed": mask.allowed
+            })).collect::<Vec<_>>(),
+            "lease_duration_ms": source.lease_duration_ms
+        }
+    }))
+}
+
+fn original_cell_data(cell: &Path, witness: &Path, objective: Digest32) -> Value {
+    json!({
+        "journal": cell,
+        "witness": witness,
+        "witness_scope": digest("ordinary-original-cell"),
+        "witness_objective": objective.into_array(),
+        "witness_generation": 1,
+        "witness_records": 128
+    })
 }
 
 pub(super) fn digest(value: &str) -> [u8; 32] {
