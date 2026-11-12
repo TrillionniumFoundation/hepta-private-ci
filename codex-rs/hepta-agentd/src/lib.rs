@@ -207,13 +207,13 @@ pub use authority_host_service::RootQ24ModelFactoryOfferV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::register_host_q24_model_factory;
 #[cfg(target_os = "linux")]
-pub(crate) use root_generation_publication_connection::OriginalRootBEvaluationConnectionV1;
-#[cfg(target_os = "linux")]
 pub use root_independent_b_source_client::OriginalBSourceIngressStatusV1;
 #[cfg(target_os = "linux")]
 pub use root_independent_b_source_client::OriginalBSourceSignedDataV1;
 #[cfg(target_os = "linux")]
 pub use root_independent_b_source_client::submit_original_root_b_source;
+#[cfg(target_os = "linux")]
+pub(crate) use root_production_inputs::OriginalRootBEvaluationConnectionV1;
 #[cfg(target_os = "linux")]
 mod root_independent_b_source_cli;
 #[cfg(target_os = "linux")]

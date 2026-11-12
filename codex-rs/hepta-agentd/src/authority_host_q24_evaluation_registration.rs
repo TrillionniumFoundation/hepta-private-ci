@@ -20,8 +20,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                 "original B registration exceeds its session",
             ));
         }
-        let root =
-            Arc::new(RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?);
+        let root = RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
         let (record, files) = OriginalBRecord::register(root, initial, request_end, || {
             let result = service.with_learning_profile(
                 config,
@@ -133,8 +132,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         if request_end > session_end {
             return Err(io::Error::other("original B reopen exceeds its session"));
         }
-        let root =
-            Arc::new(RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?);
+        let root = RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
         let record = OriginalBRecord::open(root, initial)?;
         let files = record.inspect(request_end, |enrollment| {
             let files = service.with_learning_profile(
