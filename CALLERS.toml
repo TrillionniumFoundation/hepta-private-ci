@@ -2771,7 +2771,7 @@ symbol = "SourceBoundCellQ24TrainingStageV1::readback"
 receiver_type = "SourceBoundCellQ24TrainingStageV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 definition_markers = ["pub async fn readback("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3219,7 +3219,7 @@ id = "learning_original_owner_command_channel"
 symbol = "original_owner_command_channel_v1"
 definition_path = "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
 definition_markers = ["pub(crate) fn original_owner_command_channel_v1("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs", "codex-rs/hepta-agentd/src/artifact_original_head_client.rs", "codex-rs/hepta-agentd/src/artifact_original_head_service.rs", "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3615,7 +3615,7 @@ symbol = "OriginalCircuitSelectionReceiptOwnerV1::readback_remote"
 receiver_type = "OriginalCircuitSelectionReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
 definition_markers = ["pub async fn readback_remote("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_service.rs","codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs"]
 caller_markers = []
 
 
@@ -3648,7 +3648,7 @@ symbol = "OriginalCircuitSelectionCommandContextV1::from_original_training"
 receiver_type = "OriginalCircuitSelectionCommandContextV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_selection_command.rs"
 definition_markers = ["pub fn from_original_training("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"]
 caller_markers = []
 
 
@@ -3681,7 +3681,7 @@ symbol = "OriginalCircuitSelectionCommandOwnerV1::from_original_receipt_owner"
 receiver_type = "OriginalCircuitSelectionCommandOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"
 definition_markers = ["pub(crate) fn from_original_receipt_owner("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs"]
 caller_markers = []
 
 
@@ -3780,7 +3780,7 @@ symbol = "OriginalCellQ24DatasetCommandReadbackV1::readback"
 receiver_type = "OriginalCellQ24DatasetCommandReadbackV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
 definition_markers = ["pub async fn readback("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"]
 caller_markers = []
 
 
@@ -3919,7 +3919,7 @@ symbol = "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initi
 receiver_type = "OriginalCellQ24MaterialReceiptConfigV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
 definition_markers = ["pub(crate) fn require_original_command_initial("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3928,7 +3928,7 @@ symbol = "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_cont
 receiver_type = "OriginalCellQ24MaterialCommandReceiptV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
 definition_markers = ["pub(crate) fn require_original_dataset_context("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3970,7 +3970,7 @@ symbol = "OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner"
 receiver_type = "OriginalCircuitNextUseCommandOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"
 definition_markers = ["pub(crate) fn from_original_receipt_owner("]
-product_callers = ["codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs"]
 caller_markers = []
 
 
@@ -9086,7 +9086,7 @@ symbol = "OriginalCellEvaluationReceiptOwnerV1::original_host_profile"
 receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
 definition_markers = ["pub(crate) fn original_host_profile("]
-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"]
 caller_markers = []
 
 
@@ -9098,7 +9098,7 @@ symbol = "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed"
 receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
 definition_markers = ["pub(crate) fn require_original_host_completed("]
-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs"]
 caller_markers = []
 
 
@@ -9110,7 +9110,7 @@ symbol = "OriginalCellEvaluationHostV1::from_original_receipt_owner"
 receiver_type = "OriginalCellEvaluationHostV1"
 definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
 definition_markers = ["pub(crate) fn from_original_receipt_owner("]
-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"]
 caller_markers = []
 
 

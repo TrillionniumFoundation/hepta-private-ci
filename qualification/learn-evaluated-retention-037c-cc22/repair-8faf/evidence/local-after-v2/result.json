@@ -1,0 +1,25 @@
+{
+  "kind": "local repaired six affected suites plus evaluated-C guards, not whole-tree/native",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_evaluated_next_use_source_closure",
+    "test_cell_learning_evaluation_source_closure",
+    "test_generation_learning_evidence_source_closure",
+    "test_original_circuit_observer_source_closure",
+    "test_original_evaluation_receipt_owner_source_closure",
+    "test_original_published_read_source_closure",
+    "test_original_no_update_stage_source_closure"
+  ],
+  "cwd": "/workspace/scratch/037c0371c195/source-8faf-repair-v1/work",
+  "started_at": "2026-11-12T10:18:27.441046+00:00",
+  "finished_at": "2026-11-12T10:18:47.909257+00:00",
+  "returncode": 1,
+  "log_bytes": 19843,
+  "log_sha256": "cee9f4b37f59e6fcf6164628c0231b58645553dfe745c7f8d027be5124505da1",
+  "source_files": 95,
+  "source_before_after_equal": true,
+  "test_queue": "local Python only"
+}

@@ -1,0 +1,11 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-u",
+    "-c",
+    "import datetime,difflib,hashlib,json,subprocess\nfrom pathlib import Path\nsource=Path('/home/qian-qi/hepta-learn-037c-evidence/maintenance-8faf92e260e1-v2/postimages/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs')\nraw=source.read_bytes()\nassert len(raw)==5722 and hashlib.sha256(raw).hexdigest()=='a93abb8a3e51347696c666e47cdd0da6f34f48cf856d71f6baf5ca14f034aaff'\nroot=Path('/home/qian-qi/hepta-learn-037c-evidence/format-s-readback-maintenance-v1');root.mkdir(parents=True,exist_ok=False)\np=root/source.name;p.write_bytes(raw)\ndef meta(b):return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nfmt='/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt'\ncmd=[fmt,'--edition','2024','--config','imports_granularity=Item,skip_children=true',str(p)]\nstart=datetime.datetime.now(datetime.timezone.utc).isoformat()\nr=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(root/'rustfmt.raw.log').write_bytes(r.stdout)\nafter=p.read_bytes();patch=''.join(difflib.unified_diff(raw.decode().splitlines(True),after.decode().splitlines(True),fromfile='before/'+source.name,tofile='after/'+source.name)).encode();(root/'rustfmt.patch').write_bytes(patch)\nresult={'before':meta(raw),'after':meta(after),'command':cmd,'exit_code':r.returncode,'changed':raw!=after,'started_at':start,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'patch':meta(patch),'rustfmt_version':subprocess.check_output([fmt,'--version'],text=True).strip(),'original_input':str(source),'scope':'isolated original maintenance postimage; native and caller checkouts untouched'}\n(root/'result.json').write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result),flush=True);print('POSTIMAGE_BEGIN',flush=True);print(after.decode(),end='',flush=True);print('POSTIMAGE_END',flush=True)\nraise SystemExit(r.returncode)\n"
+  ],
+  "cwd": "/home/qian-qi",
+  "idempotency_key": "learn-037c-format-s-readback-maintenance-v1"
+}
