@@ -19,10 +19,10 @@ class InitialLearningTrustSourceTests(unittest.TestCase):
     def test_only_actual_root_files_and_the_original_lane_create_authorities(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         expected = {
-            "root_initial_learning_trust_files": ["authority_host_initial_deployment.rs"],
-            "root_initial_learning_trust_bind": ["authority_host_generation_initial_enrollment.rs"],
-            "root_initial_learning_trust_payload": ["authority_host_initial_learning_trust_transport.rs"],
-            "root_initial_learning_trust_activation": ["authority_host_initial_learning_trust_files.rs", "root_generation_initial_learning_trust.rs"],
+            "root_initial_learning_trust_files": ["authority_host_initial_deployment.rs", "authority_host_initial_ledger_files.rs"],
+            "root_initial_learning_trust_bind": ["authority_host_generation_initial_enrollment.rs", "authority_host_historical_ledger_registration.rs", "authority_host_historical_ledger_history.rs"],
+            "root_initial_learning_trust_payload": ["authority_host_initial_learning_trust_transport.rs", "authority_host_historical_ledger_registration.rs", "authority_host_historical_ledger_pin.rs", "authority_host_historical_ledger_history.rs"],
+            "root_initial_learning_trust_activation": ["authority_host_initial_learning_trust_files.rs", "root_generation_initial_learning_trust.rs", "authority_host_historical_ledger_registration.rs", "authority_host_historical_ledger_pin.rs", "authority_host_historical_ledger_history.rs"],
             "root_initial_learning_trust_exchange": ["authority_host_generation_initial_transport.rs"],
             "root_initial_learning_trust_client": ["neuron_generation_current_initial_learning_trust.rs"],
             "root_initial_learning_trust_current": ["neuron_generation_update_live.rs"],
