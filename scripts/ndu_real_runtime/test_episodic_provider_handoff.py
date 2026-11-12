@@ -8,6 +8,7 @@ from pathlib import Path
 import socket
 import tempfile
 import threading
+import time
 import unittest
 
 from .episodic_provider_handoff import HandoffProfile, handoff
@@ -28,6 +29,16 @@ class RecordingHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         body = self.rfile.read(int(self.headers["Content-Length"]))
         self.server.calls.append((self.path, dict(self.headers), body))
+        if self.server.behavior == "slow_headers":
+            try:
+                self.connection.sendall(b"HTTP/1.1 200 OK\r\nX-Trickle: ")
+                for _ in range(60):
+                    self.connection.sendall(b"x")
+                    time.sleep(0.03)
+                self.connection.sendall(b"\r\nContent-Length: 0\r\n\r\n")
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            return
         if self.server.behavior == "disconnect":
             self.connection.shutdown(socket.SHUT_RDWR)
             self.connection.close()
@@ -190,7 +201,12 @@ class ProviderHandoffTests(unittest.TestCase):
     def test_lost_response_or_headers_remain_unknown_without_another_send(self):
         result = self.send()
         self.assertEqual(result["status"], "RECEIVED")
-        for filename in ("response-headers.json", "response.bin"):
+        for filename in (
+            "response-headers.json",
+            "response.bin",
+            "worker-stdout.bin",
+            "worker-stderr.bin",
+        ):
             path = self.attempt() / filename
             original = path.read_bytes()
             path.write_bytes(b"changed retained transport evidence")
@@ -205,7 +221,14 @@ class ProviderHandoffTests(unittest.TestCase):
         self.assertEqual(result["status"], "RECEIVED")
         terminal = self.attempt() / "RECEIPT.json"
         original = terminal.read_bytes()
-        for field in ("response", "response_headers"):
+        for field in (
+            "response",
+            "response_headers",
+            "worker-stdout.bin",
+            "worker-stderr.bin",
+            "worker_reaped",
+            "worker_returncode",
+        ):
             terminal.write_text(json.dumps({**result, field: None}))
             with self.subTest(field=field):
                 try:
@@ -311,6 +334,8 @@ class ProviderHandoffTests(unittest.TestCase):
             "ftp://127.0.0.1/v1/responses",
             "http://credential@127.0.0.1/v1/responses",
             self.endpoint + "#fragment",
+            self.endpoint + "/" + "x" * 4096,
+            self.endpoint + "/" + "界" * 2048,
         ):
             with self.subTest(endpoint=endpoint), self.assertRaises(ValueError):
                 self.send(profile=self.profile(endpoint=endpoint))
@@ -391,6 +416,43 @@ class ProviderHandoffTests(unittest.TestCase):
         self.assertEqual(self.send()["status"], "RECEIVED")
         (self.attempt() / "RECEIPT.json").write_bytes(b"[" * 2000 + b"0" + b"]" * 2000)
         self.assertEqual(self.send()["status"], "UNKNOWN")
+        self.assertEqual(len(self.server.calls), 1)
+
+    def test_slow_response_headers_hit_parent_deadline_and_never_retry(self):
+        self.server.behavior = "slow_headers"
+        profile = self.profile(timeout_seconds=0.25)
+        started = time.monotonic()
+        result = self.send(profile=profile)
+        elapsed = time.monotonic() - started
+        self.assertLess(elapsed, 1.0)
+        self.assertEqual(result["status"], "UNKNOWN")
+        self.assertEqual(result.get("reason"), "TRANSPORT_DEADLINE")
+        self.assertTrue(result["worker_reaped"])
+        self.assertEqual(len(self.server.calls), 1)
+        self.assertEqual(self.send(profile=profile), result)
+        self.assertEqual(len(self.server.calls), 1)
+
+    def test_journal_is_synced_before_transport_child_is_started(self):
+        from unittest.mock import patch
+        import subprocess
+
+        original = subprocess.Popen
+
+        def checked_start(*args, **kwargs):
+            self.assertTrue((self.attempt() / "ADMISSION.json").is_file())
+            self.assertEqual(
+                (self.attempt() / "request.bin").read_bytes(), self.request
+            )
+            self.assertTrue(kwargs["close_fds"])
+            self.assertTrue(kwargs["start_new_session"])
+            self.assertIn("-I", args[0])
+            self.assertIn("-S", args[0])
+            return original(*args, **kwargs)
+
+        with patch("subprocess.Popen", side_effect=checked_start):
+            result = self.send()
+        self.assertEqual(result["status"], "RECEIVED")
+        self.assertTrue(result["worker_reaped"])
         self.assertEqual(len(self.server.calls), 1)
 
 
