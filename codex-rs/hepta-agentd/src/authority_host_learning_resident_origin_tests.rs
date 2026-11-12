@@ -150,7 +150,7 @@ async fn resident_root_consuming_origins_match_before_cas_issuance_and_dispatch(
                     let (candidate, mut peer) = match pairing {
                         Pairing::FreshRegistrationRecoveredChannels
                         | Pairing::RecoveredRegistrationRecoveredChannels => {
-                            original_bootstrap_test_ports::recovered_candidate_channel(
+                            original_bootstrap_test_ports::recovered_command_channel(
                                 material.config.clone(),
                                 /*expected*/ None,
                                 Duration::from_secs(300),
@@ -158,7 +158,7 @@ async fn resident_root_consuming_origins_match_before_cas_issuance_and_dispatch(
                         }
                         Pairing::RecoveredRegistrationFreshChannels
                         | Pairing::FreshRegistrationFreshChannels => {
-                            original_bootstrap_test_ports::fresh_candidate_channel(
+                            original_bootstrap_test_ports::fresh_command_channel(
                                 material.config.clone(),
                                 Duration::from_secs(300),
                             )?
