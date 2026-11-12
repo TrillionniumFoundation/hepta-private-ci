@@ -57,9 +57,9 @@ impl OriginalCircuitModelTaskInputsV1 {
     ) -> Result<(), Error> {
         let expected = completed.source_publication();
         let run = &expected.input().scope.run_id;
-        let before = self
-            .original_a
-            .read_run_publication(&self.original_a_identity, run)?;
+        let before = CircuitTaskSourceReadbackV1::read_run_publication(
+            &self.original_a, &self.original_a_identity, run,
+        )?;
         let c = self.config.identity();
         let a = &self.original_a_identity;
         if &before != expected
@@ -68,7 +68,7 @@ impl OriginalCircuitModelTaskInputsV1 {
             || c.fleet_root == a.fleet_root && c.spawn_generation <= a.spawn_generation
             || c.fleet_root != a.fleet_root
                 && (c.run_root == a.run_root || c.home_root == a.home_root)
-            || self.original_a.read_run_publication(a, run)? != before
+            || CircuitTaskSourceReadbackV1::read_run_publication(&self.original_a, a, run)? != before
         {
             return Err(Error::Binding(
                 "actual completed A and a separate original C session",
@@ -126,7 +126,8 @@ impl OriginalCircuitModelTaskInputsV1 {
             intent,
         };
         installed.observe(context)?;
-        if original_a.read_run_publication(
+        if CircuitTaskSourceReadbackV1::read_run_publication(
+            &original_a,
             &original_a_identity,
             &original_a_publication.input().scope.run_id,
         )? != original_a_publication
@@ -146,7 +147,7 @@ impl ModelVersionInstalledTaskV1 {
     ) -> Result<OriginalCircuitModelVersionReadbackV1, Error> {
         let coordinator = context.authenticate(super::now()?, /*new_work*/ false)?;
         let candidate = coordinator.candidate().ok_or(Error::Binding("original changed Model"))?;
-        let task = &self.cell.task;
+        let task: &PublishedCircuitFeatureTaskV1 = &self.cell.task;
         super::super::binding::require_published(context, task, /*new_work*/ false)?;
         task.require_current()?;
         CircuitTaskSourceReadbackV1::require_original_input(

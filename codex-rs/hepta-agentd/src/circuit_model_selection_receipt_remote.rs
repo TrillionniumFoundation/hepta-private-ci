@@ -6,6 +6,10 @@ use codex_hepta_neuron::AnchorWitnessStore;
 
 use super::*;
 use crate::OriginalCellQ24ModelCommandClientV1;
+use crate::OriginalCellQ24ModelReadV1;
+use crate::OriginalCellQ24ModelReadCompletionV1;
+use crate::OriginalCellEvaluationModelMaterialV1;
+use crate::OriginalCircuitModelPublicationContextV1;
 use crate::OriginalCircuitCandidateLearningReadClientV1;
 use crate::OriginalCircuitCandidateLearningReadContextV1;
 
@@ -67,9 +71,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         execute: bool,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started = binding::now()?;
-        let context = source.context.model_publication_context();
+        let context: &OriginalCircuitModelPublicationContextV1 = source.context.model_publication_context();
         source.context.authenticate(started).map_err(unavailable)?;
-        source.live.require_original_context(source.context).map_err(unavailable)?;
+        OriginalCircuitCandidateLearningReadClientV1::require_original_context(source.live, source.context).map_err(unavailable)?;
         if source.context.prefix() != source.context.decision()
             || context.decision() != &self.config.decision
             || context.scope() != &self.config.scope
@@ -81,15 +85,18 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         {
             return Err(OwnerError::Binding("same original positive Model Selector context").into());
         }
-        let operation = source.model.begin_original_model_read().await.map_err(unavailable)?;
+        let operation: OriginalCellQ24ModelReadV1<'_> =
+            OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model).await.map_err(unavailable)?;
         if operation.model() != context.model() {
             return Err(OwnerError::Binding("same actual original Model").into());
         }
         operation.require_current(started).map_err(unavailable)?;
         context.authenticate_material(operation.material(), started, execute).map_err(unavailable)?;
-        operation.material().require_original_selector_material(&self.config, binding::now()?)
+        OriginalCellEvaluationModelMaterialV1::require_original_selector_material(
+            operation.material(), &self.config, binding::now()?,
+        )
             .map_err(unavailable)?;
-        let before = source.live.read_current().await.map_err(unavailable)?;
+        let before = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?;
         let original = (
             context.signatures()[2].clone(),
             context.signatures()[3].clone(),
@@ -108,7 +115,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
                     .map_err(|_| OwnerError::Binding("current complete original Model panel"))?
                     .min(config.decision.request.envelope.expiry_unix_seconds)
                     .min(binding::signature_expiry(config, issued_at)?);
-                operation.material().require_original_selector_material(config, issued_at)
+                OriginalCellEvaluationModelMaterialV1::require_original_selector_material(
+                    operation.material(), config, issued_at,
+                )
                     .map_err(|_| OwnerError::Binding("same original Selector primary material"))?;
                 binding::authenticate_roles(config, &original, issued_at)
                     .map_err(|_| OwnerError::Binding("current independent original Selector roles"))?;
@@ -125,11 +134,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)? {
             return Err(OwnerError::Binding("exact original positive Selector receipt").into());
         }
-        let after = source.live.read_current().await.map_err(unavailable)?;
+        let after = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?;
         if after != before {
             return Err(OwnerError::CommitUncertain.into());
         }
-        let completed = operation.finish().await.map_err(unavailable)?;
+        let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await.map_err(unavailable)?;
         if completed.model() != context.model() || self.journal.read(&self.saved)? != bytes {
             return Err(OwnerError::CommitUncertain.into());
         }
@@ -143,7 +152,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
             .map_err(unavailable)?
             .min(config.decision.request.envelope.expiry_unix_seconds)
             .min(binding::signature_expiry(config, signed.issued_at)?);
-        completed.material().require_original_selector_material(config, current).map_err(unavailable)?;
+        OriginalCellEvaluationModelMaterialV1::require_original_selector_material(
+            completed.material(), config, current,
+        ).map_err(unavailable)?;
         let (training, evaluation) = binding::authenticate_roles(config, &original, current)?;
         let selector = config.verifier.verify(
             LearningEvidenceRoleV1::Selector, &signed, &payload, current,

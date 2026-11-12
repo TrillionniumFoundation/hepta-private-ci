@@ -12,6 +12,7 @@ use super::now;
 use super::require_clock;
 use super::wire;
 use crate::OriginalCircuitCandidateLearningReadContextV1 as Context;
+use crate::OriginalCircuitModelPublicationContextV1 as PublicationContext;
 
 struct Channel {
     peer: HostAuthorityPeerChannel,
@@ -43,12 +44,12 @@ impl OriginalCircuitModelVersionClientV1 {
         if context.prefix() != context.decision() || context.decision().receipts.len() != 5 {
             return Err(Error::Binding("exact original Model before positive Version"));
         }
-        context.model_publication_context().authenticate(started, /*new_work*/ false)?;
-        let expected = context.model_publication_context().original_version_binding(started)?;
+        PublicationContext::authenticate(context.model_publication_context(), started, /*new_work*/ false)?;
+        let expected = PublicationContext::original_version_binding(context.model_publication_context(), started)?;
         peer.check_peer_lifetime()?;
         let fresh = now()?;
         require_clock(started, fresh)?;
-        if context.model_publication_context().original_version_binding(fresh)? != expected {
+        if PublicationContext::original_version_binding(context.model_publication_context(), fresh)? != expected {
             return Err(Error::Binding("unchanged original Version late binding"));
         }
         Ok(Self {
@@ -69,8 +70,8 @@ impl OriginalCircuitModelVersionClientV1 {
         let action = if original_cancellation.is_some() {
             wire::Action::Publish
         } else { wire::Action::Readback };
-        self.context.model_publication_context().authenticate(
-            started, action == wire::Action::Publish,
+        PublicationContext::authenticate(
+            self.context.model_publication_context(), started, action == wire::Action::Publish,
         )?;
         if original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire)) {
             return Err(Error::Cancelled);
@@ -117,7 +118,7 @@ impl OriginalCircuitModelVersionClientV1 {
         if response.request != request { return Err(Error::Binding("same positive Version response")); }
         let fresh = now()?;
         require_clock(started, fresh).map_err(|_| Error::CommitUncertain)?;
-        self.context.model_publication_context().authenticate(fresh, /*new_work*/ false)
+        PublicationContext::authenticate(self.context.model_publication_context(), fresh, /*new_work*/ false)
             .map_err(|_| Error::CommitUncertain)?;
         let structured = matches!(&response.result, wire::Outcome::Busy
             | wire::Outcome::ReadbackRequired | wire::Outcome::Uncertain

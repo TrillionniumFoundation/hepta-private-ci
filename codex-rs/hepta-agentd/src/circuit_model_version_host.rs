@@ -26,6 +26,7 @@ use crate::AgentdUnixFinalUseGrantProvider;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::OriginalCellQ24ModelCommandClientV1;
+use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCircuitModelPublicationContextV1 as Context;
 use crate::OriginalCircuitModelPublicationInputsV1;
 use crate::OriginalCircuitModelPublicationPredecessorsV1 as Predecessors;
@@ -110,14 +111,14 @@ impl OriginalCircuitModelVersionHostV1 {
         issuer: AgentdUnixFinalUseGrantProvider,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        let (initial_binding, _) = predecessors.material.require_original_command_initial()?;
+        let (initial_binding, _) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?;
         task.require_completed_a(&inputs.completed)?;
         let artifacts = ModelVersionArtifactOwner::new(
             Arc::clone(&inputs.authorities.artifacts), checkpoint,
             inputs.selection.signed.clone(), inputs.selection.verifier.clone(),
         )?;
         let control = Arc::clone(&inputs.current);
-        let issuer = issuer.into_original_model_version_issuer()?;
+        let issuer = AgentdUnixFinalUseGrantProvider::into_original_model_version_issuer(issuer)?;
         Self::new(predecessors, initial_binding, model, control, artifacts, Origin::Fresh,
             State { awaiting: Some(Awaiting { inputs: Box::new(inputs), task, issuer }),
                 context: None, intent: None, installed: None, config: None }, lifetime)
@@ -132,7 +133,7 @@ impl OriginalCircuitModelVersionHostV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         if original.intent_digest.is_zero() { return Err(Error::Binding("original Version intent")); }
-        let (initial_binding, _) = predecessors.material.require_original_command_initial()?;
+        let (initial_binding, _) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?;
         let artifacts = ModelVersionArtifactOwner::new(
             original.artifacts, original.artifact_checkpoint,
             original.artifact_selection, original.artifact_verifier,

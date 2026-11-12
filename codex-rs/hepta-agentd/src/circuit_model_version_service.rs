@@ -16,6 +16,7 @@ use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCircuitCandidateLearningReadContextV1 as ReadContext;
 use crate::OriginalCircuitCandidateLearningReadOwnerV1 as ReadOwner;
 use crate::OriginalCircuitModelSelectionCommandReceiptV1 as Selection;
+use crate::OriginalCircuitModelPublicationContextV1 as PublicationContext;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
 impl Host {
@@ -121,7 +122,7 @@ impl Host {
             require_not_cancelled(&cancelled).map_err(|_| Error::CommitUncertain)?;
             let mut state = owner.state.try_lock().map_err(|_| Error::Busy)?;
             let context = state.context.as_ref().ok_or(Error::CommitUncertain)?;
-            context.authenticate(super::super::now()?, /*new_work*/ true)?;
+            PublicationContext::authenticate(context.as_ref(), super::super::now()?, /*new_work*/ true)?;
             if state.intent != Some(current.intent_digest()) {
                 return Err(Error::CommitUncertain);
             }
@@ -181,7 +182,7 @@ impl Host {
             let context = ReadContext::from_original_model(context.duplicate_response_pin())?;
             let reader = ReadOwner::from_original_owners(installed.cell,
                 installed.source.as_ref().clone(), installed.identity, context)?;
-            reader.serve_original_candidate_channel(&mut channel).map_err(Error::Published)
+            ReadOwner::serve_original_candidate_channel(&reader, &mut channel).map_err(Error::Published)
         }).await.map_err(|_| Error::CommitUncertain)?;
         drop(queued);
         result
@@ -210,7 +211,7 @@ impl Host {
             if cancelled.load(Ordering::Acquire) { return Err(Error::Cancelled); }
             channel.check_peer_lifetime()?;
             let reader = self.original_next_use_reader(&selection)?;
-            reader.serve_original_next_use_channel(&mut channel).map_err(Error::Published)
+            ReadOwner::serve_original_next_use_channel(&reader, &mut channel).map_err(Error::Published)
         }).await.map_err(|_| Error::CommitUncertain)?;
         drop(queued);
         result
@@ -235,7 +236,7 @@ impl Host {
             if cancelled.load(Ordering::Acquire) { return Err(Error::Cancelled); }
             channel.check_peer_lifetime()?;
             let reader = self.original_next_use_reader(&selection)?;
-            reader.serve_original_readiness_channel(&mut channel).map_err(Error::Published)
+            ReadOwner::serve_original_readiness_channel(&reader, &mut channel).map_err(Error::Published)
         }).await.map_err(|_| Error::CommitUncertain)?;
         drop(queued);
         result
@@ -253,8 +254,8 @@ impl Host {
         let context = ReadContext::from_original_selection(selection)?;
         let current = super::super::now()?;
         if context.model() != original.model()
-            || context.model_publication_context().original_version_binding(current)?
-                != original.original_version_binding(current)?
+            || PublicationContext::original_version_binding(context.model_publication_context(), current)?
+                != PublicationContext::original_version_binding(original.as_ref(), current)?
         {
             return Err(Error::Binding("same actual selected Model for C reader"));
         }

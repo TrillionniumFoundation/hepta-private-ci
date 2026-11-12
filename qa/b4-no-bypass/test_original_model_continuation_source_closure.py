@@ -196,7 +196,7 @@ class OriginalModelContinuationClosureTests(unittest.TestCase):
             "OriginalCellQ24TrainingCommandOwnerV1::create_original_model(",
             "OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(",
             "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
-            "evaluation.require_original_operation_current(inputs.started)?",
+            "OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?",
             "state.retained.as_ref().is_some_and(|previous| previous != &model)",
         ):
             self.rejects(HOST, "fn begin_original_read(", marker)
@@ -220,7 +220,7 @@ class OriginalModelContinuationClosureTests(unittest.TestCase):
             "request.nonce != self.transfer + 1 + pages as u64",
             "OriginalCellEvaluationModelReadV1::finish(",
             "self.evaluation.take().ok_or(Error::CommitUncertain)?",
-            "after.original_model_transfer_body() != self.body.as_slice()",
+            "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()",
             "after.original_evaluation() != &self.context.evaluation",
             "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
             "after.authenticate_current(fresh)?",
