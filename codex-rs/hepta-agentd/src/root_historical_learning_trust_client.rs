@@ -28,6 +28,7 @@ pub(crate) struct OriginalHistoricalStageAuthoritiesV1 {
     pub(crate) dataset: TrustedLearningSignerV1,
     pub(crate) trainer: TrustedLearningSignerV1,
     pub(crate) selector: TrustedLearningSignerV1,
+    pub(crate) next_use_observer: TrustedLearningSignerV1,
 }
 
 impl OriginalHistoricalTaskReadReceiptV1 {
@@ -112,6 +113,10 @@ impl OriginalHistoricalLearningTrustV1 {
                 dataset: select(&owners.dataset, LearningEvidenceRoleV1::Observer)?,
                 trainer: select(&owners.trainer, LearningEvidenceRoleV1::Generator)?,
                 selector: select(&owners.selector, LearningEvidenceRoleV1::Selector)?,
+                next_use_observer: select(
+                    &owners.next_use_observer,
+                    LearningEvidenceRoleV1::Observer,
+                )?,
             })
         })
     }

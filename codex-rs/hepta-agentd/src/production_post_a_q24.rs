@@ -15,6 +15,8 @@ use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
 mod artifacts;
 #[path = "production_post_a_q24_deployment.rs"]
 mod deployment;
+#[path = "production_post_a_generation.rs"]
+mod generation;
 #[path = "production_post_a_q24_handoff.rs"]
 mod handoff;
 #[path = "production_post_a_late_input.rs"]
