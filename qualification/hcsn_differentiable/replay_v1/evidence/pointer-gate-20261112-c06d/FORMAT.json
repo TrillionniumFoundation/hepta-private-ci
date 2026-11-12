@@ -1,0 +1,30 @@
+{
+  "commands": [
+    {
+      "name": "ruff",
+      "returncode": 0,
+      "wall_seconds": 0.03396521600006963,
+      "stdout": "2 files reformatted\n",
+      "stderr": ""
+    },
+    {
+      "name": "just-fmt",
+      "returncode": 0,
+      "wall_seconds": 0.19620924099945114,
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+      "stderr": ""
+    }
+  ],
+  "normalized_ast_unchanged": true,
+  "final_sources": {
+    "qualification/hcsn_differentiable/replay_v1/artifact_pointer.py": {
+      "bytes": 2379,
+      "sha256": "bff5848f3faf796f0a8104b744f36d8fe8141cc0ffa6080d61a73f0a7c127a83"
+    },
+    "qualification/hcsn_differentiable/replay_v1/test_artifact_pointer.py": {
+      "bytes": 4427,
+      "sha256": "f7675950deec542458c1eb83adfb332dee0a2f066ea53226c3a215053260b11e"
+    }
+  },
+  "tests_rerun_after_format": false
+}
