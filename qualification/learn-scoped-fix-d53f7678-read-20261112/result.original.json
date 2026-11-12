@@ -1,0 +1,105 @@
+{
+  "status": "completed",
+  "expected_head": "d53f7678860d6f2ab6b3a6143ea1ceb37bdb2c9f",
+  "expected_tree": "abc89d1ce05ba27f3a56a7601ccfd22de3051b47",
+  "command": [
+    "/home/qq/hepta-learn-ff41-tools/bin/just",
+    "fix",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-learning-artifacts"
+  ],
+  "cwd": "/home/qq/hepta-learn-ff41-native-root-279deb99-v1/codex-rs",
+  "target": "/home/qq/hepta-learn-ff41-target-f73704ac-v1",
+  "started": "2026-11-12T23:04:27.995011+00:00",
+  "uid": 1000,
+  "scope": "Actual seven-package scoped just fix, including test compilation; no test execution, JUnit, UID0 custody or whole-chain qualification.",
+  "target_owner_lock": "held exclusive .hepta-root-native-owner.lock",
+  "cargo_lock_probe": "nonblocking probe released before Cargo launch",
+  "occupied_target_processes": [],
+  "disk_free": 332132560896,
+  "source_library": {
+    "path": "/home/qq/hepta-learn-ff41-root-source-integration-v1",
+    "head": "2e807cc1cf152c24715f2b3fc15cc63c4527f687",
+    "tree": "abc89d1ce05ba27f3a56a7601ccfd22de3051b47",
+    "status": ""
+  },
+  "stable_worktree_reuse": {
+    "original_head": "7bb0fa86fd3588c7711fe1ed6e361962c8d11741",
+    "original_archive": "/home/qq/hepta-learn-ff41-archived-source-7bb0fa86-before-d53f7678-v1",
+    "reason": "Preserve compiler source paths; original clean source and all original run evidence remain retained."
+  },
+  "before": {
+    "head": "d53f7678860d6f2ab6b3a6143ea1ceb37bdb2c9f",
+    "tree": "abc89d1ce05ba27f3a56a7601ccfd22de3051b47",
+    "status": "",
+    "tracked_files": 15494,
+    "tracked_sha256": "d5949de0790d5c19e36fc322687e91e7086737fe73e8465a304258f32bd3765e",
+    "hash_format": "mode NUL path NUL SHA256(content), git index order"
+  },
+  "environment": {
+    "PATH": "/home/qq/hepta-learn-ff41-tools/bin:/home/qq/.cargo/bin:/home/qq/hepta-learn-ff41-tools/bin:/home/qq/hepta-learn-ff41-tools/python/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "CARGO_HOME": null,
+    "RUSTUP_HOME": null,
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/home/qq/hepta-learn-ff41-target-f73704ac-v1",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "LIBCLANG_PATH": "/home/qq/hepta-learn-ff41-tools/lib",
+    "RUSTFLAGS": null
+  },
+  "profile_overrides": [],
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "just": "just 1.51.0",
+  "driver_sha256": "20191a2da2c2606aff600a812a4e41618f712796c135b12111a04c9e042df664",
+  "compile_started": "2026-11-12T23:04:29.369856+00:00",
+  "cargo_recipe_pid": 1986256,
+  "exit_code": 0,
+  "after": {
+    "head": "d53f7678860d6f2ab6b3a6143ea1ceb37bdb2c9f",
+    "tree": "abc89d1ce05ba27f3a56a7601ccfd22de3051b47",
+    "status": "",
+    "tracked_files": 15494,
+    "tracked_sha256": "d5949de0790d5c19e36fc322687e91e7086737fe73e8465a304258f32bd3765e",
+    "hash_format": "mode NUL path NUL SHA256(content), git index order"
+  },
+  "source_unchanged": true,
+  "finished": "2026-11-12T23:06:20.876011+00:00",
+  "elapsed": 112.8809201340191,
+  "logs": {
+    "bundle-verify-import.log": {
+      "bytes": 395,
+      "sha256": "6ad9da5dce9f9ad92f1b88de54abcd8660d33e190cf12d6f99332eab9486c909"
+    },
+    "fix.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-import.log": {
+      "bytes": 454,
+      "sha256": "b1a013c2d5f43ecfd89cfb20e7e528f6595ff52ec90a2cfd54a5009bb4ba5350"
+    },
+    "stderr.log": {
+      "bytes": 82013,
+      "sha256": "9e3bc922352fc7b7c26f01d798e5ee7120bffe25b059755bd056dd25a34f7ab8"
+    },
+    "stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

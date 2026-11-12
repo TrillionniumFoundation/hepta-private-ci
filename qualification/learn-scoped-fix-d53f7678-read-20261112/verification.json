@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "expected_head": "d53f7678860d6f2ab6b3a6143ea1ceb37bdb2c9f",
+  "expected_tree": "abc89d1ce05ba27f3a56a7601ccfd22de3051b47",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "started": "2026-11-12T23:04:27.995011+00:00",
+  "compile_started": "2026-11-12T23:04:29.369856+00:00",
+  "finished": "2026-11-12T23:06:20.876011+00:00",
+  "elapsed": 112.8809201340191,
+  "before": {
+    "head": "d53f7678860d6f2ab6b3a6143ea1ceb37bdb2c9f",
+    "tree": "abc89d1ce05ba27f3a56a7601ccfd22de3051b47",
+    "status": "",
+    "tracked_files": 15494,
+    "tracked_sha256": "d5949de0790d5c19e36fc322687e91e7086737fe73e8465a304258f32bd3765e",
+    "hash_format": "mode NUL path NUL SHA256(content), git index order"
+  },
+  "after": {
+    "head": "d53f7678860d6f2ab6b3a6143ea1ceb37bdb2c9f",
+    "tree": "abc89d1ce05ba27f3a56a7601ccfd22de3051b47",
+    "status": "",
+    "tracked_files": 15494,
+    "tracked_sha256": "d5949de0790d5c19e36fc322687e91e7086737fe73e8465a304258f32bd3765e",
+    "hash_format": "mode NUL path NUL SHA256(content), git index order"
+  },
+  "logs": {
+    "bundle-verify-import.log": {
+      "bytes": 395,
+      "sha256": "6ad9da5dce9f9ad92f1b88de54abcd8660d33e190cf12d6f99332eab9486c909"
+    },
+    "fix.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source-import.log": {
+      "bytes": 454,
+      "sha256": "b1a013c2d5f43ecfd89cfb20e7e528f6595ff52ec90a2cfd54a5009bb4ba5350"
+    },
+    "stderr.log": {
+      "bytes": 82013,
+      "sha256": "9e3bc922352fc7b7c26f01d798e5ee7120bffe25b059755bd056dd25a34f7ab8"
+    },
+    "stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "result_bytes": 4018,
+  "result_sha256": "7913a3bc803b0c79ff4b50b0db69bbe6a999d11d34e3b81854844a7a5065d82c",
+  "h_version": "66306:63749949:4018:1794524780876407458:1794524780876407458",
+  "observation": "read-only completed result; no Rust/process launch by ci_evidence",
+  "read_at_utc": "2026-11-12T23:10:59.035836+00:00"
+}
