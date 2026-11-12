@@ -4,6 +4,9 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
+#[path = "product_execution_image_data_tests.rs"]
+mod image_data;
+
 fn readonly(
     temp: &TempJournal,
     exact: ProductEvaluationExecutionAnchorV1,
