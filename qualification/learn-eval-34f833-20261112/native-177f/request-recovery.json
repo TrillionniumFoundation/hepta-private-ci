@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "controller_failure": "Pending functions.exec cells became inaccessible after a code-mode host generation change. Original in-process stores were absent. No unknown launch is classified as failed or not-started.",
+  "requests": [
+    {
+      "host": "desktop",
+      "cwd": "/home/qian-qi/hepta-learn-eval-recovery-20261112-34f833",
+      "shell": "/bin/bash",
+      "original_command_bytes_retained": false,
+      "reconstructed_text_is_not_an_original_receipt": true,
+      "launch_status": "UNKNOWN",
+      "job_id": null,
+      "execution_complete": false,
+      "idempotency_key": "learn-eval-34f833-source-closure-177f",
+      "timeout_seconds": 1800,
+      "command_reconstructed": "set -euo pipefail\ntask_evidence=/home/qian-qi/learn-eval-34f833-evidence/closure-177f\nmkdir -p \"$task_evidence\"\ngit rev-parse HEAD > \"$task_evidence/before-commit.txt\"\ngit rev-parse HEAD^{tree} > \"$task_evidence/before-tree.txt\"\ngit status --porcelain > \"$task_evidence/before-dirty.txt\"\ntest ! -s \"$task_evidence/before-dirty.txt\"\nset +e\npython3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py' > \"$task_evidence/source-closure.log\" 2>&1\ntask_source_status=$?\npython3 scripts/verify_hepta_callers.py --self-test > \"$task_evidence/caller-self-test.log\" 2>&1\ntask_self_status=$?\nset -e\necho \"$task_source_status\" > \"$task_evidence/source.exit\"\necho \"$task_self_status\" > \"$task_evidence/caller-self-test.exit\"\ngit rev-parse HEAD > \"$task_evidence/after-commit.txt\"\ngit rev-parse HEAD^{tree} > \"$task_evidence/after-tree.txt\"\ngit status --porcelain > \"$task_evidence/after-dirty.txt\"\ntail -n 8 \"$task_evidence/source-closure.log\"\ncat \"$task_evidence/caller-self-test.log\"\necho \"SOURCE_EXIT=$task_source_status SELF_TEST_EXIT=$task_self_status\"\ntest \"$task_source_status\" -eq 0\ntest \"$task_self_status\" -eq 0\n",
+      "source_commit": "177f7f4d975f06fbf7dd01c87cc0f75b3a73a5d6",
+      "same_key_same_args_reconciliation_attempted": true,
+      "last_observation": "Original shell_start timed out; identical-key reconciliation had no receipt before host generation changed. Log file existed but no terminal summary was read."
+    },
+    {
+      "host": "desktop",
+      "cwd": "/home/qian-qi/hepta-learn-eval-recovery-20261112-34f833",
+      "shell": "/bin/bash",
+      "original_command_bytes_retained": false,
+      "reconstructed_text_is_not_an_original_receipt": true,
+      "launch_status": "UNKNOWN",
+      "job_id": null,
+      "execution_complete": false,
+      "idempotency_key": "learn-eval-34f833-list-learning-177f",
+      "timeout_seconds": 600,
+      "command_reconstructed": "set -euo pipefail\nexport PATH=\"/home/qian-qi/.cargo/bin:$PATH\"\ntask_evidence=/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3\ncd codex-rs\ncargo nextest list --locked --offline -p codex-hepta-agentd -p codex-hepta-intelligence-eval --lib --message-format json > \"$task_evidence/test-list.json\" 2> \"$task_evidence/test-list.log\"\npython3 - <<'PY'\nimport json\nd=json.load(open('/home/qian-qi/learn-eval-34f833-evidence/compile-native-v3/test-list.json'))\nfor b in d['rust-suites'].values():\n    for name in b['testcases']:\n        if any(s in name for s in ['insufficient_evidence_keeps_the_original_training_cut','signed_decisions_map_to_original_iteration_without_new_authority','repeated_current_checks_keep_original_bytes_and_expiry_is_an_error']):\n            print(b['package-name'],name)\nPY\n",
+      "source_commit": "177f7f4d975f06fbf7dd01c87cc0f75b3a73a5d6",
+      "last_observation": "Read-only nextest-list shell_start timed out. Seven intended learning test names were later located in source; this list request never supplied a roster receipt."
+    },
+    {
+      "host": "desktop",
+      "cwd": "/home/qian-qi/hepta-learn-eval-recovery-20261112-34f833",
+      "shell": "/bin/bash",
+      "original_command_bytes_retained": false,
+      "reconstructed_text_is_not_an_original_receipt": true,
+      "launch_status": "UNKNOWN",
+      "job_id": null,
+      "execution_complete": false,
+      "idempotency_key": "learn-eval-34f833-admission-native-v4",
+      "timeout_seconds": 3600,
+      "command_reconstructed": "set -euo pipefail\nexport PATH=\"/home/qian-qi/.cargo/bin:$PATH\"\ntask_old=/home/qian-qi/hepta-learn-eval-recovery-20261112-34f833\ntask_new=/home/qian-qi/hepta-learn-eval-admission-recovery-20261112-34f833\ntask_evidence=/home/qian-qi/learn-eval-34f833-evidence/admission-native-v4\nmkdir -p \"$task_evidence\"\ngit -C \"$task_old\" rev-parse HEAD > \"$task_evidence/old-source-commit.txt\"\ngrep -q '^177f7f4d' \"$task_evidence/old-source-commit.txt\"\ntest ! -e \"$task_new\"\ngit -C \"$task_old\" worktree add -b codex/learn-eval-admission-recovery-20261112-34f833-v4 \"$task_new\" 177f7f4d\ncd \"$task_new\"\npython3 - <<'PY'\nimport base64,gzip,pathlib,hashlib,subprocess\npatch=gzip.decompress(base64.b64decode('H4sIAAAAAAACA61VTVPbMBC951cIDow9lpxCmJaaAin9uBboTC8M41HsTaJWlowkx6Sd/vdKjr9CIE2n6ODYWe3b3bdPK0IIosNEpvBAlB7OITeU0BkIkw61SoYJU0nBTCwVmzFBeQwLygtqmBRxruSCpaBiA9roUOlBEARo8mJo4zEiR0f4LQrs8wSNxwPk1uVn9mAKBXj1mShqIIq+1JAfgPNPLeoVFcBvYMa0UdUf3w6tm3+Ofg2Ic+ZgUK5gwaBEZ0gXeS6ViSKaZkxru93bb1Ill8RmOGUcSO2w74e0pMxcnA6C3bByqZlhCyBaFioBAmIBXOZAFNwXtuoeImoQ5eQ7JM6pj7ny9w7qcBjdXmN0jYbo+M6/CFuXOGUzC3u6qjVVMvdqD78XgRoLLWTp+f24uWIZVUtraviOIgFln5B93GWHLcyavwJj227L3oLQ7nkKyXV/NMJvUDA6ss+m+24tINm7bZ1DQ/UPm/xdLYi1NJpY6GxFgltXdRvarBTQdBmXzMzjusee6mkmXFdpZferNNcF8DfsTgk7oeNGTY9UQbUGZWK43/M6Spo6w0SKKZuFKSTMhQpraYWN1jbUgXsgjWlAdhwLmd3BYw3c+dkCZCnsCa51+u9zYUc4J43D4xE+fIWC6vdkTR6bhEboY1WrVVK3zahCW1CWWXPx+rhRDyLniIrlXJZRdAO64ObdV+BTNzLaLlfHpunm/x/2FtcFekYym0XhXgW4S6eGXYH+HgSrF6qXIkFTgZ4E7zLYzl3wLHetJSssNVHHyPsmSL1nG7+oz2/KlFWBrEaQgSyvconcm7V0s6qdN1K6OdZ6hTk1c88PEyqkYAnl7CdsenkTatXGhCVwUojUkZrClAlWMUD9fm8rcXoHLpDDIX2cquoXmvpb7pJm7tP1if+4KJdNqZgBhe31CKmbk5RrV01mL0tlP6KIQzqzh4ua3hRxqyoQD/4ACwAnABkIAAA='))\nassert hashlib.sha256(patch).hexdigest()=='1777195c6c9430ddc6d0758d8c5c07babfec2697625edc13b5884f5d5f7d26f7'\npathlib.Path('/home/qian-qi/learn-eval-34f833-evidence/admission-native-v4/applied.diff').write_bytes(patch)\nsubprocess.run(['git','apply','--check','-'],input=patch,check=True)\nsubprocess.run(['git','apply','-'],input=patch,check=True)\nPY\ncd codex-rs\njust fmt > \"$task_evidence/fmt.log\" 2>&1\ncd ..\ngit diff --check\ngit add -- codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\ngit commit -m 'test(learn): retain one admitted objective through evaluation preregistration'\ngit rev-parse HEAD > \"$task_evidence/tested-commit.txt\"\ngit rev-parse HEAD^{tree} > \"$task_evidence/tested-tree.txt\"\ngit status --porcelain > \"$task_evidence/tested-dirty.txt\"\ntest ! -s \"$task_evidence/tested-dirty.txt\"\ncd codex-rs\nexport CARGO_TARGET_DIR=\"$task_old/codex-rs/target\"\nset +e\njust test --locked --offline -p codex-hepta-agentd -p codex-hepta-intelligence-eval --lib --retries 0 -E 'test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(circuit_experience_intake) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::)' > \"$task_evidence/native.log\" 2>&1\ntask_native_status=$?\nset -e\necho \"$task_native_status\" > \"$task_evidence/native.exit\"\nif test -f \"$CARGO_TARGET_DIR/nextest/local/junit.xml\"; then cp \"$CARGO_TARGET_DIR/nextest/local/junit.xml\" \"$task_evidence/native.junit.xml\"; fi\ncd ..\ngit rev-parse HEAD > \"$task_evidence/after-commit.txt\"\ngit rev-parse HEAD^{tree} > \"$task_evidence/after-tree.txt\"\ngit status --porcelain > \"$task_evidence/after-dirty.txt\"\necho \"NATIVE_EXIT=$task_native_status\"\ntail -n 45 \"$task_evidence/native.log\"\nexit \"$task_native_status\"\n",
+      "source_base_commit": "177f7f4d975f06fbf7dd01c87cc0f75b3a73a5d6",
+      "source_patch_sha256": "1777195c6c9430ddc6d0758d8c5c07babfec2697625edc13b5884f5d5f7d26f7",
+      "last_observation": "Original shell_start had no job receipt before host generation changed. Subsequent evidence-directory/native-log reads returned Path not found; this does not establish non-execution. Do not launch again under a new key.",
+      "expected_learning_case_basenames_from_source": [
+        "signed_decisions_map_to_original_iteration_without_new_authority",
+        "insufficient_evidence_keeps_the_original_training_cut",
+        "repeated_current_checks_keep_original_bytes_and_expiry_is_an_error",
+        "wrong_signatures_context_and_protocol_never_become_no_update",
+        "changed_original_predecessors_and_bundles_are_refused",
+        "unsigned_profile_cannot_be_added_to_a_non_learning_plan",
+        "direct_or_wrong_evaluator_execution_cannot_enter_learning_evaluation"
+      ],
+      "case_roster_is_not_execution_evidence": true
+    }
+  ],
+  "known_execution": {
+    "job_id": "1a1ce46368f-2564-15e8",
+    "idempotency_key": "learn-eval-34f833-compile-fix-native-v3",
+    "request_digest": "05b92306ffb8884719ed34571c6532842762709a2defcd87fab6511b87c14e2a",
+    "state": "failed",
+    "exit_code": 100,
+    "timed_out": false,
+    "original_command_bytes_retained": false,
+    "canonical_test_command": "just test --locked --offline -p codex-hepta-agentd -p codex-hepta-intelligence-eval --lib --retries 0 -E 'test(original_execution_owner_) | test(neuron_cell_learning_evaluation::tests) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(circuit_experience_intake) | test(original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes)'"
+  }
+}
