@@ -1,4 +1,4 @@
-"""Protect the Root data-pin component without inventing an ordinary caller.
+"""Protect the Root data pin and the exact registered terminal Root callers.
 
 These are source mutation checks. They do not establish an A execution,
 authenticated experience, retirement, historical grant or native receipt.
@@ -27,18 +27,39 @@ PIN = AGENT + "authority_host_historical_source_pin.rs"
 INPUTS = AGENT + "authority_host_historical_source_inputs.rs"
 SESSION = AGENT + "authority_host_historical_source_session.rs"
 RUNTIME = AGENT + "authority_host_generation_initial_runtime.rs"
+TRANSPORT = AGENT + "authority_host_historical_source_transport.rs"
+HANDOFF = AGENT + "authority_host_historical_source_handoff.rs"
+DEPLOYMENT = AGENT + "authority_host_historical_source_deployment.rs"
 CALLERS = {
     "root_initial_original_writer_context": (
         AGENT + "authority_host_generation_initial_session.rs",
         AGENT + "authority_host_generation_initial_enrollment.rs",
         AGENT + "authority_host_generation_initial_transport.rs",
-        PIN, SESSION,
+        PIN, SESSION, TRANSPORT,
     ),
     "root_historical_source_fixed_inputs": (SESSION,),
     "root_historical_source_registered_inputs": (PIN,),
     "root_historical_source_original_capture": (SESSION,),
-    "root_historical_source_enable_unconnected": (),
-    "root_historical_source_request_unconnected": (),
+    "root_historical_source_enable_unconnected": (DEPLOYMENT,),
+    "root_historical_source_request_unconnected": (TRANSPORT,),
+    "root_historical_source_deployment_enable": (AGENT + "bin/hepta-authority-host.rs",),
+    "root_historical_source_handoff_begin": (TRANSPORT,),
+    "root_historical_source_handoff_ack": (TRANSPORT,),
+    "root_historical_source_handoff_finalize": (TRANSPORT,),
+    "root_historical_source_handoff_existing": (TRANSPORT,),
+    "root_historical_source_handoff_fence": (TRANSPORT,),
+    "root_historical_source_pin_publisher": (HANDOFF,),
+    "root_generation_current_original_broker_head": (
+        AGENT + "authority_host_generation_publication_enrollment.rs",
+        AGENT + "authority_host_generation_publication_transport.rs",
+        AGENT + "authority_host_generation_initial_enrollment.rs",
+        AGENT + "authority_host_generation_initial_transport.rs", PIN,
+    ),
+    "root_initial_exact_retained_record": (
+        AGENT + "authority_host_generation_initial_enrollment.rs",
+        AGENT + "authority_host_generation_initial_transport.rs",
+        AGENT + "root_generation_initial_client.rs", PIN, TRANSPORT,
+    ),
 }
 
 
@@ -252,7 +273,7 @@ class RootHistoricalSourceCallerClosureTests(unittest.TestCase):
         cls.sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
             (ROOT / path).read_text())) for path in paths}
 
-    def test_component_edges_are_exact_and_ordinary_entrypoints_remain_unconnected(self):
+    def test_component_and_terminal_root_callers_are_exact(self):
         for identifier, expected in CALLERS.items():
             with self.subTest(identifier=identifier):
                 self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
@@ -275,6 +296,8 @@ class RootHistoricalSourceCallerClosureTests(unittest.TestCase):
              "fn unregistered(host: &mut PreparedHostAuthoritySession) { host.enable_initial_source_capture(inputs); }"),
             ("root_historical_source_request_unconnected",
              "fn unregistered(cap: RootHistoricalSourceCaptureCapabilityV1) { cap.capture(); }"),
+            ("root_historical_source_deployment_enable",
+             "fn unregistered(host: &mut PreparedHostAuthoritySession) { host.enable_initial_source_capture_from_deployment(path); }"),
         ):
             sources = dict(self.sources)
             sources[AGENT + "unregistered_source_capture.rs"] = call
