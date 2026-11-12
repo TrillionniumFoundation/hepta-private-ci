@@ -1,10 +1,10 @@
 {
   "schema": "hcsn-n128-engineering-run-receipt-v1",
-  "source_commit": "8926a9a62443ddcdc1828fd836004b353df0de77",
+  "source_commit": "76e1f5ab353106a83a4d161c2a1d6ee838c78b37",
   "small_fixture": {
     "command": "python -m unittest -v qualification.hcsn_currentstate_n128_engineering.test_engineering",
-    "tests": 5,
-    "passed": 5,
+    "tests": 6,
+    "passed": 6,
     "failed": 0,
     "scope": "bounded fixture implementations and negative controls",
     "timing_relation": "executed before the formatting-only source freeze; no test rerun after format per AGENTS.md"
@@ -18,9 +18,9 @@
   "frozen_source_static_audit": {
     "status": "PASS_SOURCE_BOUND_HOLD",
     "wall_seconds_shell_builtin": 0.128,
-    "user_cpu_seconds": 0.102,
-    "system_cpu_seconds": 0.025,
-    "output_sha256": "dba3d770ec35409df1b53ab505a5bbc59cea6bb539c97c4069e69dce52f8774e"
+    "user_cpu_seconds": 0.113,
+    "system_cpu_seconds": 0.012,
+    "output_sha256": "719ed0ec0e8141a9e4792e3e8c166c6d0845b34a252c7f580f183639da2ca763"
   },
   "dynamic_runs": 0,
   "matrix_exponentials": 0,
