@@ -106,6 +106,7 @@ impl RootHistoricalTaskReadHandoffV1 {
                 connection,
                 bundle.profile.binding,
                 initial,
+                bundle.profile.learning_trust,
             )?,
         ))
     }
