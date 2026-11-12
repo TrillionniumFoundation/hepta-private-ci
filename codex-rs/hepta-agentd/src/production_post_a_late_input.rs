@@ -9,6 +9,8 @@ use std::os::unix::fs::FileExt;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use tokio_util::sync::CancellationToken;
@@ -35,6 +37,20 @@ pub(super) struct OriginalLateValue {
     locked: File,
     stamp: Stamp,
     bytes: Vec<u8>,
+    fenced: AtomicBool,
+}
+
+struct FenceOnDrop<'a> {
+    value: &'a OriginalLateValue,
+    armed: bool,
+}
+
+impl Drop for FenceOnDrop<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.value.fenced.store(true, Ordering::Release);
+        }
+    }
 }
 
 impl OriginalLateInput {
@@ -107,6 +123,7 @@ impl OriginalLateInput {
                         locked,
                         stamp: stamp(&physical),
                         bytes,
+                        fenced: AtomicBool::new(false),
                     };
                     value.require_unchanged()?;
                     return Ok(value);
@@ -125,11 +142,38 @@ impl OriginalLateInput {
 }
 
 impl OriginalLateValue {
-    pub(super) fn bytes(&self) -> &[u8] {
-        &self.bytes
+    /// Parsing the producer's data is enclosed by the same two physical
+    /// observations. A failed parse, changed file or panic consumes this
+    /// handle's admission permanently, even if old bytes are later restored.
+    pub(super) fn with_original_bytes<T>(
+        &self,
+        read: impl FnOnce(&[u8]) -> Result<T, AgentdError>,
+    ) -> Result<T, AgentdError> {
+        let mut fence = FenceOnDrop {
+            value: self,
+            armed: true,
+        };
+        Self::require_unchanged(self)?;
+        let result = read(&self.bytes);
+        Self::require_unchanged(self)?;
+        if result.is_ok() {
+            fence.armed = false;
+        }
+        result
     }
 
     pub(super) fn require_unchanged(&self) -> Result<(), AgentdError> {
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(refused("original late value is fenced"));
+        }
+        let result = self.require_physical_value();
+        if result.is_err() {
+            self.fenced.store(true, Ordering::Release);
+        }
+        result
+    }
+
+    fn require_physical_value(&self) -> Result<(), AgentdError> {
         self.original.require_original()?;
         if identity(&self.locked.metadata()?)? != self.original.identity {
             return Err(refused("original late value description differs"));
