@@ -306,8 +306,20 @@
       }
     ],
     "runner_unchanged": true,
-    "status": "ADMITTED_RESULT_PENDING",
-    "native_or_rust_tests_requested": false
+    "status": "DRIVER_FAILED_FETCH_TIMEOUT_REGISTRY_READBACK_UNKNOWN",
+    "native_or_rust_tests_requested": false,
+    "driver_exit": 2,
+    "stages": [],
+    "fetch_original": "fatal: early EOF\n",
+    "finished_at": "2026-11-12T14:15:04.611014+00:00"
   },
-  "owner_decision": null
+  "owner_decision": null,
+  "v3": {
+    "request_blob": "0ed989b1d8db82218153fc67efaca78337892635",
+    "runner_blob": "f244442aaceb05e5f34b0263affc68fa90089548",
+    "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v3",
+    "status": "EXACT_REQUEST_REVIEWED_ADMISSION_NOT_YET_OBSERVED",
+    "change": "Clone validated1026 local objects and separately resolve the same original network origin; one runner key substitution; all source/tool/gate/resource pins unchanged",
+    "root_review": "../evaluated-current-read-20261112/ebe6723-format-source-v3/ROOT_TRANSPORT_REVIEW.json"
+  }
 }

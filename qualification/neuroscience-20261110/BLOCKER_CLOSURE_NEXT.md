@@ -1,4 +1,4 @@
-# Blocker 闭合清单与当前证据（2026-11-12 14:12:00 UTC）
+# Blocker 闭合清单与当前证据（2026-11-12 14:19:36 UTC）
 
 **整体仍为 RESEARCH_ONLY / SHADOW_ONLY / HOLD；owner_decision=null，adoption=NOT_REQUESTED。**
 本页以原始证据区分“子项已闭合”和“完整资格尚未通过”。缺件、失败、未启动和 UNKNOWN 都不是原 owner 的 NoUpdate。原始报告中的研究标签保持原样。
@@ -56,7 +56,7 @@ content receipt 证明实际完成60 optimizer steps、12 epochs、每轮142 row
 
 CALLERS共541边界、541权限清单项、389保护项；相对a96只改12个调用行，22条累计新边均与原源码/符号对应，其余约1.1 MiB逐行相同。22包含旧620诊断后21条修复和更早1条readback_owner，不改写历史21。allowlist保持双方原条目的次序，仅补新CALLERS的精确SHA；显式assert_eq import和collector8个实际方法名修复一并保留。详见[三方整合root审查](../evaluated-current-read-20261112/merge-a96-review/ROOT_INTEGRATION_REVIEW.json)。
 
-新candidate短验证v1在准备阶段因object_source的origin是本地路径而拒绝，exit2、stages=[]，没有fetch或fmt结果。[原失败](../evaluated-current-read-20261112/ebe6723-format-source-v1-failure/RESULT.original.json)保持不变。v2只恢复已用原mirror路径并换隔离checkout/evidence/key；原9235 B runner、候选源码/tree和各门不变。v2原job1a1d01383ed-2564-1b22已受理，结果待回读；先fmt，再source/parser/self-test，不请求native/Rust测试。旧1026成功不转给新candidate，较早4ab候选也未执行。
+新candidate短验证v1在准备阶段因object_source的origin是本地路径而拒绝，exit2、stages=[]，没有fetch或fmt结果。[原失败](../evaluated-current-read-20261112/ebe6723-format-source-v1-failure/RESULT.original.json)保持不变。v2只恢复已用原mirror路径并换隔离checkout/evidence/key；原9235 B runner、候选源码/tree和各门不变。v2原job1a1d01383ed-2564-1b22在14:15:04因600秒fetch超时终止，原RESULT exit2/stages=[]，17 B fetch.log为fatal: early EOF；监督器状态查询的MCP timeout另保留。新v3请求已精确审查：clone复用已验证1026本地对象，网络origin单独取原ctrl-macro；runner仅替换origin查找的一个配置键。源码/tree、URL/credential检查、600秒上限及fmt/source/parser/self-test均未改，受理尚待原件，不请求native/Rust测试。旧1026成功不转给新candidate，较早4ab候选也未执行。
 
 ### ACT：原六方法及receipt通过，唯一格式失败已修复
 
@@ -64,7 +64,7 @@ CALLERS共541边界、541权限清单项、389保护项；相对a96只改12个�
 
 同一5fc的hosted run43217423865/job131198882642实际完成caller、双binary build、原launcher1方法和新5回归，六个精确方法各一次PASS。root从Git读回原59,125 B ZIP，独立核18个成员的central/local header、原大小、CRC32和SHA256，原两个named-case receipt均passed；唯一失败为format.log要求将一个ensure!扩成四行。原source-before/after相同、最终patch/status均0 B；整体CI仍failure。完整641,754 B原job日志与18个原成员都保留，见[完整ZIP独立核验](../notes-seed-profile-20261112/hosted-5fc-format-failure-20261112/ROOT_ZIP_VERIFICATION.json)。原hosted命令未显式传retries0，不能套用ordinary备用请求的配置。
 
-只按原formatter差异修复一处，+4/-1，表达式、错误文字及其余文件字节均相同。新head bb8ac6fe22d1314c36643b0cab95eb031cd86832 / tree383351558b0f15c5995fd94cdc2ae7ebe6fa9878已推并核ref。新run43231943175/job131229238631截至14:08已in_progress、有实际runner，前置步骤成功、caller审计执行中；新source的测试结果尚未取得。未派发的5fc v4备用请求保留为superseded，不启动重复native。详见[最小格式修复审查](../notes-seed-profile-20261112/bb8-format-fix/ROOT_STATIC_REVIEW.json)。
+只按原formatter差异修复一处，+4/-1，表达式、错误文字及其余文件字节均相同。新head bb8ac6fe22d1314c36643b0cab95eb031cd86832 / tree383351558b0f15c5995fd94cdc2ae7ebe6fa9878已推并核ref。新run43231943175/job131229238631截至14:19已in_progress；caller在14:15:38成功，两个实际binary正在编译，六方法与最终格式尚待运行。未派发的5fc v4备用请求保留为superseded，不启动重复native。详见[最小格式修复审查](../notes-seed-profile-20261112/bb8-format-fix/ROOT_STATIC_REVIEW.json)。
 
 ### 原执行与尚未取得的身份
 

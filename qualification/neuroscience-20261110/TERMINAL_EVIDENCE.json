@@ -1,6 +1,6 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 14:12:00 UTC",
+  "observed_at_utc": "2026-11-12 14:19:36 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "publication_parent": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
   "scope": "Evidence and documentation only. Four pre-frozen B/C development macro executions reconciled; original failures and UNKNOWN records retained. Exact-source native/source test outcomes remain separately bound.",
@@ -600,7 +600,7 @@
         "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
         "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
         "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-        "status": "STATIC_REVIEW_COMPLETE_SHORT_GATES_ADMITTED_NOT_PUBLISHED",
+        "status": "STATIC_REVIEW_COMPLETE_FETCH_RECOVERY_IN_PROGRESS_NOT_PUBLISHED",
         "canonical_upstream": "Opaque Evaluated read profile for original 4-cut Selection / 5-cut NextUse; independent wire operation/domain; read profiles actively attenuate to Readback.",
         "retain": "Actual T/E and 2x2 CURRENT positive observations, original bytes unchanged, equivalent original refusal conditions, exact source-bound caller registration.",
         "minimal_compile_fix_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
@@ -627,12 +627,26 @@
           "job": "1a1d01383ed-2564-1b22",
           "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v2",
           "digest": "997e54fb636ae7913372b84dbacaf6d58eb883a0561cd11534aa1a02e25a32a7",
-          "status": "ADMITTED_RESULT_PENDING",
+          "status": "DRIVER_FAILED_FETCH_TIMEOUT_REGISTRY_READBACK_UNKNOWN",
           "request_blob": "b73248a78526fc0d0adfbb6be64686742f5ce0d3",
           "changed_only": "original object mirror path and isolated checkout/evidence/key",
-          "rust_tests_requested": false
+          "rust_tests_requested": false,
+          "driver_exit": 2,
+          "finished_at": "2026-11-12T14:15:04.611014+00:00",
+          "error_type": "TimeoutExpired",
+          "fetch_original": "fatal: early EOF\n",
+          "gates_started": 0,
+          "evidence": "../evaluated-current-read-20261112/ebe6723-format-source-v2-failure/RESULT.original.json"
         },
-        "new_source_gates_proven": false
+        "new_source_gates_proven": false,
+        "third_short_attempt": {
+          "request_blob": "0ed989b1d8db82218153fc67efaca78337892635",
+          "runner_blob": "f244442aaceb05e5f34b0263affc68fa90089548",
+          "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v3",
+          "status": "EXACT_REQUEST_REVIEWED_ADMISSION_NOT_YET_OBSERVED",
+          "change": "Clone validated1026 local objects and separately resolve the same original network origin; one runner key substitution; all source/tool/gate/resource pins unchanged",
+          "root_review": "../evaluated-current-read-20261112/ebe6723-format-source-v3/ROOT_TRANSPORT_REVIEW.json"
+        }
       }
     }
   ],
@@ -751,12 +765,15 @@
             "tree": "383351558b0f15c5995fd94cdc2ae7ebe6fa9878",
             "status": "in_progress",
             "conclusion": null,
-            "observed_at_utc": "2026-11-12 14:08:27 UTC",
+            "observed_at_utc": "2026-11-12 14:19:36 UTC",
             "runner": "GitHub Actions 1000131571",
-            "stage": "Verify the original caller boundaries",
+            "stage": "Build both actual executable entries with the original lock",
             "prior_setup_steps": "success",
             "tests_proven": 0,
-            "previous_source_results_inherited": false
+            "previous_source_results_inherited": false,
+            "caller": "success",
+            "caller_started_at": "2026-11-12T14:07:20Z",
+            "caller_completed_at": "2026-11-12T14:15:38Z"
           }
         ],
         "ordinary_native": "V3_FAILED_BUILD_MISSING_CLANG_BUILTIN_HEADER; CALLER_PASSED",
@@ -898,7 +915,7 @@
     "owner_current_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
     "owner_current_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
     "fixed_upstream_integration_target": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-    "status": "STATIC_INTEGRATION_COMPLETE_SHORT_GATES_ADMITTED",
+    "status": "STATIC_REVIEW_COMPLETE_FETCH_RECOVERY_IN_PROGRESS_NOT_PUBLISHED",
     "pr_api_base_sha_is_stale": true,
     "actual_branch_ref_used": true,
     "previous_completed_integration": "620235b + 639f894 -> 1026bd09",
@@ -965,7 +982,7 @@
     "evidence": "evidence/rv-v2-entry-assets-20261112/",
     "source_confirmation": false
   },
-  "latest_act_admission_observed_at_utc": "2026-11-12 14:08:27 UTC",
+  "latest_act_admission_observed_at_utc": "2026-11-12 14:19:36 UTC",
   "wrapper_actor_calls_scope": "Four pre-frozen native macro effects completed, all STOP and no READ. The original controller actor_calls_this_request remains null; total model/provider/tool contacts are not inferred.",
   "wrapper_development_execution": {
     "scope": "Existing exposed development sources; not independent B/C qualification",
@@ -1064,7 +1081,7 @@
     "root_completed_review": "evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json"
   },
   "current_source_results_transfer": false,
-  "latest_followup_observed_at_utc": "2026-11-12 14:12:00 UTC",
+  "latest_followup_observed_at_utc": "2026-11-12 14:19:36 UTC",
   "wrapper_completed_macro_executions": 4,
   "latest_binary_readback": {
     "staged_commit": "96801ded9111449a3c337438bd325ffcdbc89cf6",

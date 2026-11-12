@@ -42,7 +42,7 @@
     }
   ],
   "base64_text_git_readback_verified": true,
-  "binary_git_readback": "PENDING_NEXT_STAGED_COMMIT",
+  "binary_git_readback": "COMPLETE_VERIFIED",
   "direct_blob_fetch_errors_preserved": [
     {
       "part": 0,
@@ -82,5 +82,32 @@
   ],
   "qualification": "Original1026 ordinary source-after inventory only; not native hosted inventories and not newebe source results.",
   "source_results_transferred": false,
-  "new_jobs_or_tests_started": false
+  "new_jobs_or_tests_started": false,
+  "binary_git_readback_commit": "75fd7ede1e768379ec0ceb54d6865e4f6fc25fe6",
+  "binary_git_readback_parts": [
+    {
+      "path": "original/source-after.files.json.gz.part000",
+      "bytes": 294912,
+      "sha256": "ff96aafe129dd511f30f33366f84a5fa187468e09b2c226df41690b842da5116",
+      "git_blob": "536e3bcc150c33d72ffaae1246c75493d6c7120c",
+      "returned_sha": "536e3bcc150c33d72ffaae1246c75493d6c7120c",
+      "verified": true
+    },
+    {
+      "path": "original/source-after.files.json.gz.part001",
+      "bytes": 147456,
+      "sha256": "9f11a75bef33f25db5480285f6f29caa54199eec96e8fa193308142ef57bf58e",
+      "git_blob": "0d542a8c604e0c7a88c3a8ee0e4268e3ebedc5cb",
+      "returned_sha": "0d542a8c604e0c7a88c3a8ee0e4268e3ebedc5cb",
+      "verified": true
+    },
+    {
+      "path": "original/source-after.files.json.gz.part002",
+      "bytes": 335336,
+      "sha256": "13860f36c11b7d4be99b125172461917198d8cbcea5a6ef723ec902796c83b2b",
+      "git_blob": "bef6a98ad1dc8ba0c179d6e5433a8d48195a3cc8",
+      "returned_sha": "bef6a98ad1dc8ba0c179d6e5433a8d48195a3cc8",
+      "verified": true
+    }
+  ]
 }

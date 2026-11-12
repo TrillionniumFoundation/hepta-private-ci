@@ -1,0 +1,96 @@
+import gzip, hashlib, json, os, pathlib, shutil, subprocess, sys
+from datetime import datetime, timezone
+from urllib.parse import urlsplit
+cfg=json.loads(sys.argv[1])
+repo=pathlib.Path(cfg["checkout"]); out=pathlib.Path(cfg["evidence"])
+out.mkdir(parents=True,exist_ok=False)
+result={"schema_version":2,"source_sha":cfg["sha"],"source_tree":cfg["tree"],"status":"preparing","format_check_only":True,"native_build_or_test_started":False,"root_qualification_attempted":False,"sudo_or_escalation_attempted":False,"started_at":datetime.now(timezone.utc).isoformat(),"stages":[]}
+def save(name,value):
+ data=(json.dumps(value,indent=2,sort_keys=True)+"\n").encode();(out/name).write_bytes(data)
+ return {"path":name,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
+def emit(value):print(json.dumps(value,sort_keys=True),flush=True)
+def git(*args):return subprocess.check_output(["git","-C",str(repo),*args],stderr=subprocess.PIPE).decode().strip()
+def command(cmd,log,cwd=None,timeout=600,env=None):
+ with (out/log).open("xb") as stream:
+  p=subprocess.run(cmd,cwd=cwd,stdout=stream,stderr=subprocess.STDOUT,timeout=timeout,env=env,check=False)
+ if p.returncode:raise RuntimeError(log+" failed: exit "+str(p.returncode))
+def snapshot(label):
+ names=subprocess.check_output(["git","-C",str(repo),"ls-files","-z"]).split(b"\0")
+ rows=[]
+ for raw in names:
+  if not raw:continue
+  name=os.fsdecode(raw);p=repo/name
+  data=os.fsencode(os.readlink(p)) if p.is_symlink() else p.read_bytes()
+  rows.append({"path":name,"bytes":len(data),"mode":"120000" if p.is_symlink() else ("100755" if p.stat().st_mode&0o111 else "100644"),"sha256":hashlib.sha256(data).hexdigest()})
+ data=json.dumps(rows,sort_keys=True,separators=(",",":")).encode()
+ compressed=gzip.compress(data,mtime=0);(out/(label+".files.json.gz")).write_bytes(compressed)
+ identity={"head":git("rev-parse","HEAD"),"tree":git("rev-parse","HEAD^{tree}"),"status":git("status","--porcelain=v1","--untracked-files=all"),"files":len(rows),"inventory_sha256":hashlib.sha256(data).hexdigest(),"inventory_compressed_sha256":hashlib.sha256(compressed).hexdigest(),"inventory_compressed_bytes":len(compressed)}
+ save(label+".json",identity);return identity
+exit_code=2
+before=None
+try:
+ if os.getuid()!=1000 or os.geteuid()!=1000:raise RuntimeError("ordinary uid1000 required")
+ if repo.exists():raise RuntimeError("fresh owner checkout path already exists")
+ command(["git","clone","--no-checkout","--no-hardlinks","--no-tags",cfg["object_source"],str(repo)],"clone.log")
+ present=subprocess.run(["git","-C",str(repo),"cat-file","-e",cfg["sha"]+"^{commit}"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=False).returncode==0
+ if not present:
+  origin=subprocess.check_output(["git","-C",cfg["origin_source"],"remote","get-url","origin"],stderr=subprocess.PIPE).decode().strip()
+  parsed=urlsplit(origin)
+  if parsed.username is not None or parsed.password is not None:raise RuntimeError("origin URL credentials present; refused logging or fetch")
+  if parsed.scheme not in ("https","ssh") and not origin.startswith("git@"):raise RuntimeError("unsupported origin transport")
+  command(["git","-C",str(repo),"fetch","--no-tags",origin,cfg["sha"]],"fetch.log")
+ command(["git","-C",str(repo),"checkout","--detach",cfg["sha"]],"checkout.log")
+ if git("rev-parse","HEAD")!=cfg["sha"] or git("rev-parse","HEAD^{tree}")!=cfg["tree"] or git("status","--porcelain","--untracked-files=all"):raise RuntimeError("source identity mismatch")
+ for path,expected in cfg["source_pins"].items():
+  if git("hash-object",path)!=expected:raise RuntimeError("reviewed source tool differs: "+path)
+ if git("hash-object","AGENTS.md")!="faa57cc0db48123e1011f1eb47692cd3bbbcfc3a":raise RuntimeError("root rules changed")
+ unknown=[p for p in cfg["scope_rules"] if (repo/p).exists()]
+ if unknown:result["rules_requiring_read"]=unknown;raise RuntimeError("additional scope rules require read before tests")
+ env=os.environ.copy()
+ env["PATH"]=os.pathsep.join(["/home/qq/neuro-owner-tools-862531d11598/v1/bin","/home/qq/neuro-owner-tools-862531d11598/dotslash-0.5.9-v1/bin","/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin","/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin","/home/qq/.cargo/bin","/home/qq/.local/bin","/home/qq/bin",env.get("PATH","")])
+ env["PYTHONPATH"]=os.pathsep.join([str(repo/"scripts"),str(repo),cfg["dependencies"]])
+ env["PYTHONDONTWRITEBYTECODE"]="1";env["SOURCE_SHA"]=cfg["sha"];env["TESTED_SHA"]=cfg["sha"];env["HEPTA_CI_LANE"]="source-head"
+ env["RUSTUP_TOOLCHAIN"]="1.96.0";env["CARGO_BUILD_JOBS"]="2";env["CARGO_INCREMENTAL"]="0"
+ tool_records=[]
+ for tool in cfg["tools"]:
+  path=pathlib.Path(tool["path"]);data=path.read_bytes()
+  if len(data)!=tool["bytes"] or hashlib.sha256(data).hexdigest()!=tool["sha256"]:raise RuntimeError("prepared tool bytes changed: "+str(path))
+  tool_records.append(tool)
+ rustbin=pathlib.Path("/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin")
+ for name in ["rustc","rustfmt"]:
+  path=rustbin/name;data=path.read_bytes()
+  p=subprocess.run([str(path),"--version"],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=30,check=False)
+  if p.returncode or (name=="rustc" and not p.stdout.startswith(b"rustc 1.96.0 ")):raise RuntimeError("actual pinned Rust tool version differs")
+  tool_records.append({"path":str(path),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),"version":p.stdout.decode(),"version_exit_code":p.returncode})
+ save("format-tools.json",tool_records)
+ if git("rev-parse","--verify",cfg["format_base"]+"^{commit}")!=cfg["format_base"]:raise RuntimeError("exact format base is missing")
+ format_paths=subprocess.check_output(["git","-C",str(repo),"diff","--name-only","--diff-filter=ACDMRT","--no-renames","-z",cfg["format_base"],"--"]).split(b"\0")
+ format_paths=[os.fsdecode(p) for p in format_paths if p]
+ if not any(p.endswith(".rs") for p in format_paths) or "scripts/hepta_c_observer_coverage.py" not in format_paths:raise RuntimeError("format scope unexpectedly empty or incomplete")
+ save("format-scope.json",{"base":cfg["format_base"],"head":cfg["sha"],"paths":format_paths,"command":["just","fmt","--base",cfg["format_base"],"--check"],"native_build_started":False})
+ result["prerequisites_reference"]={"job_id":"1a1cf2c103b-2564-19b9","path":"/home/qq/neuro-owner-evidence-862531d11598/pr6213-7ef-source/prerequisites.json","sha256":"666329272ead6e634b3bd4ba8e9a18ee98500930cc5a1f8161102e3465771fa5","uid":os.getuid(),"euid":os.geteuid(),"python":sys.version}
+ before=snapshot("source-before")
+ if before["head"]!=cfg["sha"] or before["status"]:raise RuntimeError("source not clean before tests")
+ planned=[("format-check",["just","fmt","--base",cfg["format_base"],"--check"],600,0),("source-closure",[sys.executable,"-B","-m","unittest","discover","-s","qa/b4-no-bypass","-p","*source_closure.py","-v"],600,1),("owner-evidence-parser",[sys.executable,"-B","-m","unittest","discover","-s","scripts","-p","test_hepta_c_observer_coverage.py","-v"],600,1),("caller-self-test",[sys.executable,"-B","scripts/verify_hepta_callers.py","self-test"],300,0)]
+ result["planned_stages"]=[name for name,_,_,_ in planned]
+ for name,arguments,deadline,minimum in planned:
+  if result["stages"] and result["stages"][0]["record"]["status"]!="passed":break
+  if name.startswith("caller-") and any(s["runner_exit_code"]!=0 or s["record"]["status"]!="passed" for s in result["stages"]):break
+  destination=out/(name+".json")
+  cmd=[sys.executable,"-B",str(repo/"scripts/hepta_ci_exec.py"),"--timeout-seconds",str(deadline),"--minimum-tests",str(minimum),"--output",str(destination),"--",*arguments]
+  with (out/(name+".runner.log")).open("xb") as stream:
+   p=subprocess.run(cmd,cwd=repo,env=env,stdout=stream,stderr=subprocess.STDOUT,timeout=deadline+60,check=False)
+  record=json.loads(destination.read_bytes()) if destination.exists() else {"status":"no_record","exit_code":p.returncode}
+  result["stages"].append({"name":name,"runner_exit_code":p.returncode,"record":record})
+  emit({"phase":"stage_completed","name":name,"status":record["status"],"exit_code":p.returncode,"passed":record.get("observed_passed_tests"),"failed":record.get("observed_failed_tests"),"log_file":record.get("log_file")})
+ after=snapshot("source-after")
+ result["source_before"]=before;result["source_after"]=after;result["source_unchanged"]=before==after
+ success=len(result["stages"])==len(planned) and before==after and all(s["runner_exit_code"]==0 and s["record"]["status"]=="passed" for s in result["stages"])
+ result["status"]="passed" if success else "failed";exit_code=0 if success else 1
+except Exception as error:
+ result["status"]="preparation_or_execution_failed";result["error_type"]=type(error).__name__;result["error"]=str(error) if isinstance(error,RuntimeError) else "Exception detail omitted to avoid command arguments";exit_code=2
+finally:
+ result["finished_at"]=datetime.now(timezone.utc).isoformat();result["exit_code"]=exit_code
+ result["evidence_files"]=[{"path":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(out.iterdir()) if p.is_file()]
+ save("RESULT.json",result);emit(result)
+raise SystemExit(exit_code)
