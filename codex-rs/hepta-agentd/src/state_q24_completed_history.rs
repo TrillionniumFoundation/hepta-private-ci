@@ -54,7 +54,10 @@ impl AgentdState {
     fn require_original_completed_history_current(&self) -> Result<(), AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if runtime.current_generation != self.identity.spawn_generation
+        // The fixed startup identity precedes the actual Starting -> Running
+        // Fleet transition. Overflow cannot denote a current incarnation.
+        let running_generation = self.identity.spawn_generation.checked_add(1);
+        if Some(runtime.current_generation) != running_generation
             || runtime.lifecycle != AgentLifecycle::Running
             || !runtime.app_server_ready
             || !runtime.critical_stores_ready

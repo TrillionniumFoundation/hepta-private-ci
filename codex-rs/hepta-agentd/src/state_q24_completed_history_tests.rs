@@ -19,6 +19,10 @@ async fn current_ready_daemon_cannot_promote_missing_completed_history() -> anyh
             AgentdMethod::OriginalQ24CompletedHistory {},
         )
         .await?;
+    assert_eq!(
+        Some(response.current_generation),
+        state.identity().spawn_generation.checked_add(1)
+    );
     assert!(matches!(
         response.payload,
         AgentdPayload::OriginalQ24CompletedHistory { data: None }
@@ -40,9 +44,15 @@ fn completed_history_missing_still_requires_current_running_recipient() -> anyho
     let (_directory, registry, state) = fixture()?;
     state.mark_runtime_prerequisites_ready()?;
     assert!(state.read_original_q24_completed_history()?.is_none());
+    let running = registry.load_agent(&state.identity().agent_id)?.lifecycle;
+    assert_eq!(running.lifecycle, AgentLifecycle::Running);
+    assert_eq!(
+        Some(running.generation),
+        state.identity().spawn_generation.checked_add(1)
+    );
     registry.compare_and_transition(
         &state.identity().agent_id,
-        /*expected_generation*/ 1,
+        running.generation,
         AgentLifecycle::Draining,
     )?;
     assert!(matches!(
