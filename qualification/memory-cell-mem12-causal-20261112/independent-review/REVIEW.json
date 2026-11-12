@@ -1,0 +1,3912 @@
+{
+  "archive": {
+    "bytes": 159620,
+    "sha256": "29ab6cde66622dd76ebee5cf65ae51c6c17dbbbbe0a66b7b7626d77358782e05"
+  },
+  "checks_by_category": {
+    "80_fresh_actor_sessions_processes": 1,
+    "A_C_chronology": 80,
+    "A_chronology": 8,
+    "A_database_snapshot": 8,
+    "A_facts": 8,
+    "A_pins": 8,
+    "A_process_exit": 8,
+    "A_snapshot_digest": 8,
+    "A_source_only_request": 8,
+    "actor_execution": 80,
+    "actor_frozen_inputs": 80,
+    "actor_isolation": 80,
+    "actor_memory_bytes": 72,
+    "actor_output_pins": 80,
+    "actor_pin": 1,
+    "actor_raw_request": 80,
+    "actor_source": 80,
+    "actual_model_input_bytes": 80,
+    "archive_index_bytes": 1,
+    "archive_member_hash": 1420,
+    "archive_members": 2,
+    "archive_pin": 1,
+    "common_A_cost": 1,
+    "delivered_current_records": 72,
+    "empty_delivery": 32,
+    "execution_terminal": 80,
+    "fixed_chat_wrapper": 80,
+    "four_empty_arms_identical": 8,
+    "frozen_arm_order": 8,
+    "frozen_denominator": 1,
+    "frozen_truth": 8,
+    "full_off_no_store_or_memory_file": 8,
+    "helper_pin": 1,
+    "independent_cost_sum": 40,
+    "independent_panel_sum": 10,
+    "independent_primary_score": 80,
+    "independent_regex_matches_frozen_primary": 1,
+    "independent_request_reconstruction": 80,
+    "independent_token_count": 80,
+    "indexed_original_hash": 1420,
+    "log_pin": 80,
+    "log_receipt_consistency": 80,
+    "memory_arm_binding": 80,
+    "memory_budget": 80,
+    "memory_delivered_bytes": 80,
+    "memory_receipt_hash": 80,
+    "memory_stage_execution": 80,
+    "model_request_binding": 80,
+    "one_logged_generation": 80,
+    "one_provider_operation": 80,
+    "originals_unchanged_after_review": 1420,
+    "plan_pin": 1,
+    "protocol_identity": 1,
+    "provider_admission": 80,
+    "provider_isolation": 80,
+    "provider_original_bytes": 80,
+    "provider_python": 80,
+    "public_task_no_truth": 8,
+    "reader_database_receipt": 72,
+    "relevant_delete": 8,
+    "relevant_replace": 8,
+    "retention_discard": 8,
+    "returned_generation": 80,
+    "row_evidence_pins": 80,
+    "row_identity": 80,
+    "source_identity": 2,
+    "source_pin": 11,
+    "stable_runtime_source": 80,
+    "tensor_keys": 80,
+    "tensor_shape_values": 160,
+    "token_budget_mask": 80,
+    "unchanged_reader_copy": 48,
+    "wall_timestamp": 80,
+    "worker_pin": 1
+  },
+  "cost_totals": {
+    "archive_and_readback_wall_seconds": null,
+    "common_A_wall_seconds": 0.449167,
+    "output_tokens": 1102,
+    "peak_rss_kib": 1203180,
+    "prepare_wall_seconds": 13.333157198,
+    "prompt_tokens": 9545,
+    "provider_wall_seconds_with_setup": 372.32690226403065,
+    "read_cpu_seconds": 0.024797829000009833,
+    "read_wall_seconds": 0.025059558218345046,
+    "run_wall_seconds": 375.179778736,
+    "system_cpu_seconds": 20.216431999999998,
+    "user_cpu_seconds": 455.914174,
+    "wall_seconds": 374.529525754
+  },
+  "costs_by_arm": {
+    "delete": {
+      "output_tokens": 94,
+      "peak_rss_kib": 1203060,
+      "prompt_tokens": 1092,
+      "provider_wall_seconds_with_setup": 36.92347050597891,
+      "read_cpu_seconds": 0.0031945619999991237,
+      "read_wall_seconds": 0.0032264452893286943,
+      "system_cpu_seconds": 2.058413,
+      "user_cpu_seconds": 43.212464,
+      "wall_seconds": 37.154779198
+    },
+    "delivery_off": {
+      "output_tokens": 152,
+      "peak_rss_kib": 1202280,
+      "prompt_tokens": 785,
+      "provider_wall_seconds_with_setup": 38.318651041947305,
+      "read_cpu_seconds": 0.0032205210000144646,
+      "read_wall_seconds": 0.0032467739656567574,
+      "system_cpu_seconds": 1.990843,
+      "user_cpu_seconds": 50.36156,
+      "wall_seconds": 38.535368466
+    },
+    "exact_kv": {
+      "output_tokens": 80,
+      "peak_rss_kib": 1203180,
+      "prompt_tokens": 938,
+      "provider_wall_seconds_with_setup": 36.20718430611305,
+      "read_cpu_seconds": 0.002811784000002149,
+      "read_wall_seconds": 0.0028374679386615753,
+      "system_cpu_seconds": 1.96273,
+      "user_cpu_seconds": 41.334955,
+      "wall_seconds": 36.426738275
+    },
+    "finite_icl": {
+      "output_tokens": 80,
+      "peak_rss_kib": 1202324,
+      "prompt_tokens": 1094,
+      "provider_wall_seconds_with_setup": 36.27240379783325,
+      "read_cpu_seconds": 0.002879041999987564,
+      "read_wall_seconds": 0.0029048770666122437,
+      "system_cpu_seconds": 1.9850279999999998,
+      "user_cpu_seconds": 41.474764,
+      "wall_seconds": 36.492905804
+    },
+    "off": {
+      "output_tokens": 152,
+      "peak_rss_kib": 1202584,
+      "prompt_tokens": 785,
+      "provider_wall_seconds_with_setup": 38.37965256930329,
+      "read_cpu_seconds": 0.00012944999999575657,
+      "read_wall_seconds": 0.00015214341692626476,
+      "system_cpu_seconds": 2.102093,
+      "user_cpu_seconds": 49.437107,
+      "wall_seconds": 38.579673246
+    },
+    "on_bm25": {
+      "output_tokens": 80,
+      "peak_rss_kib": 1202616,
+      "prompt_tokens": 1094,
+      "provider_wall_seconds_with_setup": 36.27912919805385,
+      "read_cpu_seconds": 0.0033048719999744236,
+      "read_wall_seconds": 0.0033315778709948063,
+      "system_cpu_seconds": 1.9488699999999999,
+      "user_cpu_seconds": 43.163296,
+      "wall_seconds": 36.495889789
+    },
+    "replace": {
+      "output_tokens": 80,
+      "peak_rss_kib": 1202884,
+      "prompt_tokens": 1094,
+      "provider_wall_seconds_with_setup": 36.40964442817494,
+      "read_cpu_seconds": 0.0034607430000098832,
+      "read_wall_seconds": 0.0034858938306570053,
+      "system_cpu_seconds": 2.01055,
+      "user_cpu_seconds": 42.853255,
+      "wall_seconds": 36.640295171
+    },
+    "retention_off": {
+      "output_tokens": 152,
+      "peak_rss_kib": 1201944,
+      "prompt_tokens": 785,
+      "provider_wall_seconds_with_setup": 38.62188111571595,
+      "read_cpu_seconds": 0.0011550210000024208,
+      "read_wall_seconds": 0.00117977662011981,
+      "system_cpu_seconds": 2.021856,
+      "user_cpu_seconds": 50.512119,
+      "wall_seconds": 38.850918138
+    },
+    "retrieval_off": {
+      "output_tokens": 152,
+      "peak_rss_kib": 1202352,
+      "prompt_tokens": 785,
+      "provider_wall_seconds_with_setup": 38.42232900368981,
+      "read_cpu_seconds": 0.0015990410000341626,
+      "read_wall_seconds": 0.0016250123735517263,
+      "system_cpu_seconds": 2.108199,
+      "user_cpu_seconds": 50.698257,
+      "wall_seconds": 38.640511291
+    },
+    "uniform_replay": {
+      "output_tokens": 80,
+      "peak_rss_kib": 1202596,
+      "prompt_tokens": 1093,
+      "provider_wall_seconds_with_setup": 36.49255629722029,
+      "read_cpu_seconds": 0.003042792999989885,
+      "read_wall_seconds": 0.0030695898458361626,
+      "system_cpu_seconds": 2.02785,
+      "user_cpu_seconds": 42.866397,
+      "wall_seconds": 36.712446376
+    }
+  },
+  "failures": [],
+  "four_empty_arm_equality": [
+    {
+      "case_id": "source-01",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    },
+    {
+      "case_id": "source-02",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    },
+    {
+      "case_id": "source-03",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    },
+    {
+      "case_id": "source-04",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    },
+    {
+      "case_id": "source-05",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    },
+    {
+      "case_id": "source-06",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    },
+    {
+      "case_id": "source-07",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    },
+    {
+      "case_id": "source-08",
+      "model_input_bytes": true,
+      "output_text": true,
+      "output_tokens": true,
+      "rendered_prompt": true,
+      "request_bytes": true,
+      "tensors": true
+    }
+  ],
+  "indexed_members": 1420,
+  "known_returned_generation_rows": 80,
+  "limitations": [
+    "One generated task template, eight paired sources; 80 rows are not 80 independent episodes.",
+    "All primary responses violate the frozen full-output format. No primary memory benefit is established.",
+    "Post hoc lexical observations do not replace primary scoring or support adoption.",
+    "Deterministic A ingestion; research Python SQLite, not production native owner.",
+    "Local retained-byte consistency does not authenticate physical host or production owner.",
+    "Recorded tokenizer tensors are verified against logs and receipt pins but not recomputed with tokenizer assets.",
+    "Model.generate input is recorded; internal forward calls/cache accesses are not observed.",
+    "Read-only system roots and frozen runtime remain mounted; isolation concerns known task-state paths.",
+    "Equal limits do not imply equal actual cost; zero primary successes prevent cost-per-correct comparisons.",
+    "No learned association or parameter consolidation was evaluated."
+  ],
+  "method": "Independent stdlib-only code; no campaign imports; SQLite read-only immutable; no re-tokenization or model execution.",
+  "new_model_calls": 0,
+  "originals_modified": false,
+  "paired_contrasts": [
+    {
+      "a": "on_bm25",
+      "b": "off",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 0,
+        "mean_difference": 0.375,
+        "ties": 5,
+        "wins": 3
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "delete",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 0,
+        "mean_difference": 0.375,
+        "ties": 5,
+        "wins": 3
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "replace",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 0,
+        "mean_difference": 0.375,
+        "ties": 5,
+        "wins": 3
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "retrieval_off",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 0,
+        "mean_difference": 0.375,
+        "ties": 5,
+        "wins": 3
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "delivery_off",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 0,
+        "mean_difference": 0.375,
+        "ties": 5,
+        "wins": 3
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "exact_kv",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 5,
+        "mean_difference": -0.625,
+        "ties": 3,
+        "wins": 0
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "finite_icl",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 1,
+        "mean_difference": 0.25,
+        "ties": 4,
+        "wins": 3
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "uniform_replay",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 0,
+        "mean_difference": 0.125,
+        "ties": 7,
+        "wins": 1
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    },
+    {
+      "a": "on_bm25",
+      "b": "retention_off",
+      "planned_pairs": 8,
+      "posthoc_truth_mentioned": {
+        "losses": 0,
+        "mean_difference": 0.375,
+        "ties": 5,
+        "wins": 3
+      },
+      "primary_correct": {
+        "losses": 0,
+        "mean_difference": 0.0,
+        "ties": 8,
+        "wins": 0
+      }
+    }
+  ],
+  "paired_sources": 8,
+  "panels": {
+    "delete": {
+      "delivered_records": 16,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 0,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 0,
+      "retrieved_records": 16,
+      "scored": 8
+    },
+    "delivery_off": {
+      "delivered_records": 0,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 0,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 0,
+      "retrieved_records": 16,
+      "scored": 8
+    },
+    "exact_kv": {
+      "delivered_records": 8,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 8,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 8,
+      "retrieved_records": 8,
+      "scored": 8
+    },
+    "finite_icl": {
+      "delivered_records": 16,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 1,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 3,
+      "retrieved_records": 16,
+      "scored": 8
+    },
+    "off": {
+      "delivered_records": 0,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 0,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 0,
+      "retrieved_records": 0,
+      "scored": 8
+    },
+    "on_bm25": {
+      "delivered_records": 16,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 3,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 8,
+      "retrieved_records": 16,
+      "scored": 8
+    },
+    "replace": {
+      "delivered_records": 16,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 0,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 8,
+      "retrieved_records": 16,
+      "scored": 8
+    },
+    "retention_off": {
+      "delivered_records": 0,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 0,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 0,
+      "retrieved_records": 0,
+      "scored": 8
+    },
+    "retrieval_off": {
+      "delivered_records": 0,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 0,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 0,
+      "retrieved_records": 0,
+      "scored": 8
+    },
+    "uniform_replay": {
+      "delivered_records": 16,
+      "missing": 0,
+      "planned": 8,
+      "posthoc_truth_mentions": 2,
+      "primary_format_valid": 0,
+      "primary_successes": 0,
+      "relevant_key_delivered": 3,
+      "retrieved_records": 16,
+      "scored": 8
+    }
+  },
+  "posthoc": {
+    "changes_primary_score": false,
+    "new_replacement_mentions": 2,
+    "output_changes": 3,
+    "pre_registered": false,
+    "replacement_mentions": 3,
+    "replacements": [
+      {
+        "case_id": "source-01",
+        "newly_mentioned_replacement": true,
+        "on_text": "The courier must use a yellow badge.",
+        "output_changed": true,
+        "replace_text": "The courier must use a green badge.",
+        "replacement": "green",
+        "replacement_mentioned": true,
+        "truth": "yellow",
+        "truth_to_replacement_change": true
+      },
+      {
+        "case_id": "source-02",
+        "newly_mentioned_replacement": false,
+        "on_text": "The courier must use a blue badge.",
+        "output_changed": false,
+        "replace_text": "The courier must use a blue badge.",
+        "replacement": "red",
+        "replacement_mentioned": false,
+        "truth": "white",
+        "truth_to_replacement_change": false
+      },
+      {
+        "case_id": "source-03",
+        "newly_mentioned_replacement": false,
+        "on_text": "The courier must use a blue badge.",
+        "output_changed": false,
+        "replace_text": "The courier must use a blue badge.",
+        "replacement": "pink",
+        "replacement_mentioned": false,
+        "truth": "purple",
+        "truth_to_replacement_change": false
+      },
+      {
+        "case_id": "source-04",
+        "newly_mentioned_replacement": false,
+        "on_text": "The courier must use a blue badge.",
+        "output_changed": false,
+        "replace_text": "The courier must use a blue badge.",
+        "replacement": "yellow",
+        "replacement_mentioned": false,
+        "truth": "orange",
+        "truth_to_replacement_change": false
+      },
+      {
+        "case_id": "source-05",
+        "newly_mentioned_replacement": false,
+        "on_text": "The courier must use a purple badge.",
+        "output_changed": true,
+        "replace_text": "The courier must use a red badge.",
+        "replacement": "pink",
+        "replacement_mentioned": false,
+        "truth": "purple",
+        "truth_to_replacement_change": false
+      },
+      {
+        "case_id": "source-06",
+        "newly_mentioned_replacement": false,
+        "on_text": "The courier must use a purple badge.",
+        "output_changed": false,
+        "replace_text": "The courier must use a purple badge.",
+        "replacement": "green",
+        "replacement_mentioned": false,
+        "truth": "yellow",
+        "truth_to_replacement_change": false
+      },
+      {
+        "case_id": "source-07",
+        "newly_mentioned_replacement": true,
+        "on_text": "The courier must use a purple badge.",
+        "output_changed": true,
+        "replace_text": "The courier must use a pink badge.",
+        "replacement": "pink",
+        "replacement_mentioned": true,
+        "truth": "purple",
+        "truth_to_replacement_change": true
+      },
+      {
+        "case_id": "source-08",
+        "newly_mentioned_replacement": false,
+        "on_text": "The courier must use a purple badge.",
+        "output_changed": false,
+        "replace_text": "The courier must use a purple badge.",
+        "replacement": "purple",
+        "replacement_mentioned": true,
+        "truth": "blue",
+        "truth_to_replacement_change": false
+      }
+    ],
+    "rule": "Case-insensitive whole-word palette color mention in complete output; exploratory only, not a replacement success selector.",
+    "truth_to_replacement_changes": 2
+  },
+  "primary_regex": "(?:answer:\\s*)?(red|orange|yellow|green|blue|purple|pink|white|unknown)[.!]?",
+  "production_adoption": false,
+  "protocol_sha256": "f623a23197fe94b3d5434ffac1f02cb3d99398ca4c69aad18716dbeeef1b2d82",
+  "remote_calls": 0,
+  "rows": [
+    {
+      "actor_launcher_pid": 3862955,
+      "actor_session_id": "91b838d61b0e42f7a09a1cb05c0e2aaa",
+      "arm": "on_bm25",
+      "case_id": "source-01",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-01/on_bm25",
+      "max_rss_kib": 1201360,
+      "model_input_pin": {
+        "bytes": 1613,
+        "sha256": "4982cd3fc907ca886a5470637ed26481dc17895021b2f4007323cca9e770725b"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.57483212207444,
+      "read_cpu_seconds": 0.0004031700000002303,
+      "read_wall_seconds": 0.0004064049571752548,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 471,
+        "sha256": "edaa372daf958273b0e736a83b9c7b23b9412d89114dccce04ad50b0b8ae8444"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.226984,
+      "tensor_pin": {
+        "bytes": 973,
+        "sha256": "f35559ea5d46654e60bffc0f70666b750878a2a515277c236e9f456970808315"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.378799,
+      "wall_seconds": 4.598816893
+    },
+    {
+      "actor_launcher_pid": 3860362,
+      "actor_session_id": "da006251a4d24b8a948b0ce6b66189f6",
+      "arm": "off",
+      "case_id": "source-01",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-01/off",
+      "max_rss_kib": 1202540,
+      "model_input_pin": {
+        "bytes": 1298,
+        "sha256": "6c797ef506c8ec9812a53bab2b14727718d9815df3361dbae9484c3b627e5e7f"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.588582689175382,
+      "read_cpu_seconds": 1.4600000000086766e-05,
+      "read_wall_seconds": 1.739896833896637e-05,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "80c9717172b280634f97637e710a4485c79981a7c771100e5d23490ccbb62003"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.25711,
+      "tensor_pin": {
+        "bytes": 748,
+        "sha256": "9f0c0809eeefc93872958491da4c91b7a68c162bb2e84935150e64c261ac1139"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.636417,
+      "wall_seconds": 4.612326059
+    },
+    {
+      "actor_launcher_pid": 3855235,
+      "actor_session_id": "35c0190af94347cda3f4cb8d0743bd00",
+      "arm": "delete",
+      "case_id": "source-01",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-01/delete",
+      "max_rss_kib": 1201352,
+      "model_input_pin": {
+        "bytes": 1613,
+        "sha256": "73ca6c0df863277e55525604e9c953387839ecc2fd64d10ecc902e8db9eab9e8"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "white"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.556559471879154,
+      "read_cpu_seconds": 0.0003898600000002972,
+      "read_wall_seconds": 0.0003934251144528389,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 470,
+        "sha256": "dff434b4cfc09abf8112807322ae21c33dfdbbeaa64b97ee853ce5d234c29a83"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24425999999999998,
+      "tensor_pin": {
+        "bytes": 974,
+        "sha256": "d463d92aa7d31e186c19e9e793eca08c592df817904c959abdaed3e2a5443d9c"
+      },
+      "text": "The courier must use a white badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.301057,
+      "wall_seconds": 4.586572778
+    },
+    {
+      "actor_launcher_pid": 3845087,
+      "actor_session_id": "d0b9d665383045de974714abf7982b4a",
+      "arm": "replace",
+      "case_id": "source-01",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-01/replace",
+      "max_rss_kib": 1202884,
+      "model_input_pin": {
+        "bytes": 1612,
+        "sha256": "a889822c8b8eb61c2855ecd847a2792263248e3a65d5d1f7c4c5feb5aa934377"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "green"
+      ],
+      "posthoc_replacement_mentioned": true,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.600933809066191,
+      "read_cpu_seconds": 0.0005368399999999968,
+      "read_wall_seconds": 0.0005399310030043125,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 470,
+        "sha256": "9a394b8215ffae5a6e45543e36efae5b6292c9ff65d951ebf5ed3e0d3f6bf11e"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.23388299999999998,
+      "tensor_pin": {
+        "bytes": 973,
+        "sha256": "dd1834244906f0644edb4a3c2dab01c31501660b4a1af898357a23765e96d139"
+      },
+      "text": "The courier must use a green badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.252832,
+      "wall_seconds": 4.629365931
+    },
+    {
+      "actor_launcher_pid": 3852690,
+      "actor_session_id": "0334cdd00aac4170bb109ababbb928fc",
+      "arm": "retrieval_off",
+      "case_id": "source-01",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-01/retrieval_off",
+      "max_rss_kib": 1202264,
+      "model_input_pin": {
+        "bytes": 1298,
+        "sha256": "6c797ef506c8ec9812a53bab2b14727718d9815df3361dbae9484c3b627e5e7f"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.589408444939181,
+      "read_cpu_seconds": 0.00019192999999972926,
+      "read_wall_seconds": 0.0001950729638338089,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "80c9717172b280634f97637e710a4485c79981a7c771100e5d23490ccbb62003"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.257691,
+      "tensor_pin": {
+        "bytes": 748,
+        "sha256": "9f0c0809eeefc93872958491da4c91b7a68c162bb2e84935150e64c261ac1139"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.627935,
+      "wall_seconds": 4.615919205
+    },
+    {
+      "actor_launcher_pid": 3850183,
+      "actor_session_id": "56f41ccdd03241208b66818ff0e36060",
+      "arm": "delivery_off",
+      "case_id": "source-01",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-01/delivery_off",
+      "max_rss_kib": 1201424,
+      "model_input_pin": {
+        "bytes": 1298,
+        "sha256": "6c797ef506c8ec9812a53bab2b14727718d9815df3361dbae9484c3b627e5e7f"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.590526703046635,
+      "read_cpu_seconds": 0.00040615000000077117,
+      "read_wall_seconds": 0.00040895608253777027,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "80c9717172b280634f97637e710a4485c79981a7c771100e5d23490ccbb62003"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.234645,
+      "tensor_pin": {
+        "bytes": 748,
+        "sha256": "9f0c0809eeefc93872958491da4c91b7a68c162bb2e84935150e64c261ac1139"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.622479,
+      "wall_seconds": 4.616824193
+    },
+    {
+      "actor_launcher_pid": 3868005,
+      "actor_session_id": "463f6a31a28e4e268e16500e844a07a8",
+      "arm": "exact_kv",
+      "case_id": "source-01",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-01/exact_kv",
+      "max_rss_kib": 1201608,
+      "model_input_pin": {
+        "bytes": 1453,
+        "sha256": "35ab7bc73f4188d313e83606814887387f40a8a43a1223dbbd6bd988b36c8b7a"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 117,
+      "provider_wall_seconds_with_setup": 4.522229117108509,
+      "read_cpu_seconds": 0.00035090099999735003,
+      "read_wall_seconds": 0.00035398686304688454,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 425,
+        "sha256": "10b358d9f9f6f6d2401309ed1c4afed2c41c3d8341bc9dc325c620ecaeca625e"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.244111,
+      "tensor_pin": {
+        "bytes": 859,
+        "sha256": "2e880dadb4219b3f5e6e5b61c933f0b26553ba196d890b73484143fe84bc15d1"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.191639,
+      "wall_seconds": 4.548048923
+    },
+    {
+      "actor_launcher_pid": 3857855,
+      "actor_session_id": "70a46b54bd794e838dad4ff2e79309cb",
+      "arm": "finite_icl",
+      "case_id": "source-01",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-01/finite_icl",
+      "max_rss_kib": 1201372,
+      "model_input_pin": {
+        "bytes": 1613,
+        "sha256": "73ca6c0df863277e55525604e9c953387839ecc2fd64d10ecc902e8db9eab9e8"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "white"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.540180559968576,
+      "read_cpu_seconds": 0.00035880999999982066,
+      "read_wall_seconds": 0.0003622169606387615,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 470,
+        "sha256": "dff434b4cfc09abf8112807322ae21c33dfdbbeaa64b97ee853ce5d234c29a83"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.256164,
+      "tensor_pin": {
+        "bytes": 974,
+        "sha256": "d463d92aa7d31e186c19e9e793eca08c592df817904c959abdaed3e2a5443d9c"
+      },
+      "text": "The courier must use a white badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.217443,
+      "wall_seconds": 4.570515714
+    },
+    {
+      "actor_launcher_pid": 3847635,
+      "actor_session_id": "8c9d70cf58f548d5bfebb065df588ff0",
+      "arm": "uniform_replay",
+      "case_id": "source-01",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-01/uniform_replay",
+      "max_rss_kib": 1201868,
+      "model_input_pin": {
+        "bytes": 1613,
+        "sha256": "4982cd3fc907ca886a5470637ed26481dc17895021b2f4007323cca9e770725b"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.590215684147552,
+      "read_cpu_seconds": 0.0004003309999998095,
+      "read_wall_seconds": 0.00040375604294240475,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 471,
+        "sha256": "edaa372daf958273b0e736a83b9c7b23b9412d89114dccce04ad50b0b8ae8444"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24090599999999998,
+      "tensor_pin": {
+        "bytes": 973,
+        "sha256": "f35559ea5d46654e60bffc0f70666b750878a2a515277c236e9f456970808315"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.314169,
+      "wall_seconds": 4.617192978
+    },
+    {
+      "actor_launcher_pid": 3865502,
+      "actor_session_id": "23a2033ae7d5456cb65b52851512e936",
+      "arm": "retention_off",
+      "case_id": "source-01",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-01/retention_off",
+      "max_rss_kib": 1201512,
+      "model_input_pin": {
+        "bytes": 1298,
+        "sha256": "6c797ef506c8ec9812a53bab2b14727718d9815df3361dbae9484c3b627e5e7f"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.660615551983938,
+      "read_cpu_seconds": 0.00014924999999976762,
+      "read_wall_seconds": 0.00015232502482831478,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "80c9717172b280634f97637e710a4485c79981a7c771100e5d23490ccbb62003"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.261551,
+      "tensor_pin": {
+        "bytes": 748,
+        "sha256": "9f0c0809eeefc93872958491da4c91b7a68c162bb2e84935150e64c261ac1139"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.600216,
+      "wall_seconds": 4.687809338
+    },
+    {
+      "actor_launcher_pid": 3891331,
+      "actor_session_id": "bfa410455f8b4f08a5e1a0a75ec6208e",
+      "arm": "on_bm25",
+      "case_id": "source-02",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-02/on_bm25",
+      "max_rss_kib": 1202056,
+      "model_input_pin": {
+        "bytes": 1608,
+        "sha256": "d8e68396649dcad2373b0bdf53d8aaa14819562ec884c12d529601705b84dd1a"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.495117716956884,
+      "read_cpu_seconds": 0.00041314999999997326,
+      "read_wall_seconds": 0.0004163850098848343,
+      "relevant_key_delivered": true,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 468,
+        "sha256": "055f8120bf8d098a48fecef102c3eaecc4f5d494184ff1626ac500a4a7f4aaa0"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.236926,
+      "tensor_pin": {
+        "bytes": 971,
+        "sha256": "bf173e05fe17a7740f1b6419c56100271336c849b01c94062d1ee4d8fd338ec4"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "white",
+      "user_cpu_seconds": 5.4523019999999995,
+      "wall_seconds": 4.520780329
+    },
+    {
+      "actor_launcher_pid": 3873309,
+      "actor_session_id": "f1caa6ad9f804997a785a603f5edd16b",
+      "arm": "off",
+      "case_id": "source-02",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-02/off",
+      "max_rss_kib": 1202520,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "02053ad7799438f018ea41ea02374e0a7b54b07799992c20e5aba233eb29862b"
+      },
+      "output_tokens": 26,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 5.0069302569609135,
+      "read_cpu_seconds": 1.4769999999941774e-05,
+      "read_wall_seconds": 1.7778947949409485e-05,
+      "relevant_key_delivered": false,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "cd5e52dca1bc50ea83805072495db70d21e7ae0a4de088af1e37056b66e40cf9"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.256748,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "5b57aec826e46107b8d40912674c665955a52e5fed41c7f0f0f5775c7baa3176"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-24147a685ed8",
+      "truth": "white",
+      "user_cpu_seconds": 7.16989,
+      "wall_seconds": 5.030664787
+    },
+    {
+      "actor_launcher_pid": 3886238,
+      "actor_session_id": "35f380da25684d838fab7523af388929",
+      "arm": "delete",
+      "case_id": "source-02",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-02/delete",
+      "max_rss_kib": 1201060,
+      "model_input_pin": {
+        "bytes": 1602,
+        "sha256": "d77787f6be9faa8574c88a78fe9410cab571afb28d5f29041c053b39261ea783"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 133,
+      "provider_wall_seconds_with_setup": 4.526514631928876,
+      "read_cpu_seconds": 0.0003985899999960907,
+      "read_wall_seconds": 0.0004018358886241913,
+      "relevant_key_delivered": false,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "012fabd657f3b31037f98d88a33e211a41864ad64f8af77777c399bb59864ca3"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.248991,
+      "tensor_pin": {
+        "bytes": 964,
+        "sha256": "44400bce82d149d7deb3b34ca8ddb17b3f81d3ea0f64f0f8ace1e11550b51573"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "white",
+      "user_cpu_seconds": 5.224963,
+      "wall_seconds": 4.553133049
+    },
+    {
+      "actor_launcher_pid": 3875861,
+      "actor_session_id": "cfeaf64402a441bbaea5f54e9aa2adab",
+      "arm": "replace",
+      "case_id": "source-02",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-02/replace",
+      "max_rss_kib": 1201620,
+      "model_input_pin": {
+        "bytes": 1606,
+        "sha256": "7e0603896abc12faeb13ff25677f461a5cb501a0c7918c13f0974da777ce5122"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.5623366551008075,
+      "read_cpu_seconds": 0.00042562099999798875,
+      "read_wall_seconds": 0.0004286139737814665,
+      "relevant_key_delivered": true,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 466,
+        "sha256": "39ef2a267aa2b2be79326b1749689824a945d5195096eecfa913014c9ceb82a6"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.266191,
+      "tensor_pin": {
+        "bytes": 971,
+        "sha256": "34b2180cf204b849448d9a78adef24ea2bea9457d377f8b902aaf499e408a5b3"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "white",
+      "user_cpu_seconds": 5.335889,
+      "wall_seconds": 4.592316181
+    },
+    {
+      "actor_launcher_pid": 3880987,
+      "actor_session_id": "a0917f7544ce477fb08f4bad4df02448",
+      "arm": "retrieval_off",
+      "case_id": "source-02",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-02/retrieval_off",
+      "max_rss_kib": 1201984,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "02053ad7799438f018ea41ea02374e0a7b54b07799992c20e5aba233eb29862b"
+      },
+      "output_tokens": 26,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 5.0494127899874,
+      "read_cpu_seconds": 0.0002497400000009975,
+      "read_wall_seconds": 0.00025303103029727936,
+      "relevant_key_delivered": false,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "cd5e52dca1bc50ea83805072495db70d21e7ae0a4de088af1e37056b66e40cf9"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.26267599999999997,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "5b57aec826e46107b8d40912674c665955a52e5fed41c7f0f0f5775c7baa3176"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-24147a685ed8",
+      "truth": "white",
+      "user_cpu_seconds": 7.149377,
+      "wall_seconds": 5.076623825
+    },
+    {
+      "actor_launcher_pid": 3888780,
+      "actor_session_id": "d10c22e53c04474bae72842f2048d792",
+      "arm": "delivery_off",
+      "case_id": "source-02",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-02/delivery_off",
+      "max_rss_kib": 1201784,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "02053ad7799438f018ea41ea02374e0a7b54b07799992c20e5aba233eb29862b"
+      },
+      "output_tokens": 26,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.955292093101889,
+      "read_cpu_seconds": 0.00039586999999841055,
+      "read_wall_seconds": 0.0003986959345638752,
+      "relevant_key_delivered": false,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "cd5e52dca1bc50ea83805072495db70d21e7ae0a4de088af1e37056b66e40cf9"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.239507,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "5b57aec826e46107b8d40912674c665955a52e5fed41c7f0f0f5775c7baa3176"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-24147a685ed8",
+      "truth": "white",
+      "user_cpu_seconds": 7.01546,
+      "wall_seconds": 4.979813725
+    },
+    {
+      "actor_launcher_pid": 3883772,
+      "actor_session_id": "1b8fd0839d014d14843a508d99229771",
+      "arm": "exact_kv",
+      "case_id": "source-02",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-02/exact_kv",
+      "max_rss_kib": 1202660,
+      "model_input_pin": {
+        "bytes": 1450,
+        "sha256": "157c4c8f8e3beed25fc7c4fa6109ee35dfd07d14cd8d17a88d6548a5196a801b"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "white"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 117,
+      "provider_wall_seconds_with_setup": 4.528232868993655,
+      "read_cpu_seconds": 0.00035138100000153827,
+      "read_wall_seconds": 0.0003544068895280361,
+      "relevant_key_delivered": true,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 424,
+        "sha256": "84dcc9715ae379dee66b4babe7d52af242535cc904c8653e8d11f531cc77166d"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.218413,
+      "tensor_pin": {
+        "bytes": 857,
+        "sha256": "ef5dfae46a14e8c2259663615d61ee2ac4c2d90ed47e4bf7ba04b93c6587f3bc"
+      },
+      "text": "The courier must use a white badge.",
+      "truth": "white",
+      "user_cpu_seconds": 5.372176,
+      "wall_seconds": 4.556792597
+    },
+    {
+      "actor_launcher_pid": 3870724,
+      "actor_session_id": "304ff7f780024541bd68e48b77432579",
+      "arm": "finite_icl",
+      "case_id": "source-02",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-02/finite_icl",
+      "max_rss_kib": 1201384,
+      "model_input_pin": {
+        "bytes": 1603,
+        "sha256": "6164cff71ce330769fd7be8b0070fd9b1c4f0297a686d32bee143e6d6cc5c91f"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 134,
+      "provider_wall_seconds_with_setup": 4.532014287775382,
+      "read_cpu_seconds": 0.00035272099999872353,
+      "read_wall_seconds": 0.0003554578870534897,
+      "relevant_key_delivered": true,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 470,
+        "sha256": "88b835ccf6e24ceb337ed29e7c048b5640b258e7b7db530f91cb22ca2a443fa9"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.251307,
+      "tensor_pin": {
+        "bytes": 964,
+        "sha256": "d0e8383086485991ec89d993171f3eb5f10d27ae7dcb3dc7ae4d6f1703d9e26e"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "white",
+      "user_cpu_seconds": 5.264238,
+      "wall_seconds": 4.558469491
+    },
+    {
+      "actor_launcher_pid": 3878406,
+      "actor_session_id": "a68a726ad35c4c6cab30c57d95fd5611",
+      "arm": "uniform_replay",
+      "case_id": "source-02",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-02/uniform_replay",
+      "max_rss_kib": 1201236,
+      "model_input_pin": {
+        "bytes": 1602,
+        "sha256": "d77787f6be9faa8574c88a78fe9410cab571afb28d5f29041c053b39261ea783"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 133,
+      "provider_wall_seconds_with_setup": 4.600127752870321,
+      "read_cpu_seconds": 0.0003678100000001905,
+      "read_wall_seconds": 0.0003711369354277849,
+      "relevant_key_delivered": false,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "012fabd657f3b31037f98d88a33e211a41864ad64f8af77777c399bb59864ca3"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.25290799999999997,
+      "tensor_pin": {
+        "bytes": 964,
+        "sha256": "44400bce82d149d7deb3b34ca8ddb17b3f81d3ea0f64f0f8ace1e11550b51573"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "white",
+      "user_cpu_seconds": 5.338385,
+      "wall_seconds": 4.628848415
+    },
+    {
+      "actor_launcher_pid": 3893762,
+      "actor_session_id": "cad0ee374cc74ba8baafc38c46bfbe83",
+      "arm": "retention_off",
+      "case_id": "source-02",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-02/retention_off",
+      "max_rss_kib": 1201628,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "02053ad7799438f018ea41ea02374e0a7b54b07799992c20e5aba233eb29862b"
+      },
+      "output_tokens": 26,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 5.007538303965703,
+      "read_cpu_seconds": 0.00013950000000306773,
+      "read_wall_seconds": 0.00014245393685996532,
+      "relevant_key_delivered": false,
+      "replacement": "red",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "cd5e52dca1bc50ea83805072495db70d21e7ae0a4de088af1e37056b66e40cf9"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.24409399999999998,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "5b57aec826e46107b8d40912674c665955a52e5fed41c7f0f0f5775c7baa3176"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-24147a685ed8",
+      "truth": "white",
+      "user_cpu_seconds": 7.171146,
+      "wall_seconds": 5.034366055
+    },
+    {
+      "actor_launcher_pid": 3899076,
+      "actor_session_id": "34aa88a6b3494571bb3017a88758b9cd",
+      "arm": "on_bm25",
+      "case_id": "source-03",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-03/on_bm25",
+      "max_rss_kib": 1201032,
+      "model_input_pin": {
+        "bytes": 1619,
+        "sha256": "d50a9529f06fca4b51f34c933c9d5295736a2168f3f2558e8abe4b84d2691555"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.529850908089429,
+      "read_cpu_seconds": 0.0004212799999976369,
+      "read_wall_seconds": 0.0004245140589773655,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "fad0c5623a6d9182448f35f1b9ed88bf8e8dcabcec7b7e4e99d9b263eb1b23c3"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.260142,
+      "tensor_pin": {
+        "bytes": 981,
+        "sha256": "219e6e05f705adc4ed1f141714c97779f54d50a078f5975bc03f57955f3d3a22"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.396691,
+      "wall_seconds": 4.558157504
+    },
+    {
+      "actor_launcher_pid": 3905497,
+      "actor_session_id": "c3cc2e32adc540f385f48accc5f0cc57",
+      "arm": "off",
+      "case_id": "source-03",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-03/off",
+      "max_rss_kib": 1202128,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "1e9a566cccff242b79e6d867072eb94d87ec7beae1b2f73c76ac652d38ae5ddb"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.464233743026853,
+      "read_cpu_seconds": 1.5430000004812428e-05,
+      "read_wall_seconds": 1.8159160390496254e-05,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "9ea306aca70c80c52912d913a787963d6eef2077dc8c1d76ca0d918240de3c33"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.24828799999999998,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "2aead8dcc26729e674d85c0dd1cf1695d4bfe840a3c8db8c93c04ccbd2ccd0b3"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.606507,
+      "wall_seconds": 4.490423085
+    },
+    {
+      "actor_launcher_pid": 3901618,
+      "actor_session_id": "8a973f5748a04a3a87854b3f0ad7da6b",
+      "arm": "delete",
+      "case_id": "source-03",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-03/delete",
+      "max_rss_kib": 1201872,
+      "model_input_pin": {
+        "bytes": 1617,
+        "sha256": "661fba9077cbf1458f22fddaad08bfd22d7cdd460dbccdc6ccd7bb4060d798e5"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.5302658539731055,
+      "read_cpu_seconds": 0.0004002400000047146,
+      "read_wall_seconds": 0.00040371506474912167,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 468,
+        "sha256": "85a473614b85eed7ae357c6f3ea831579f03af31c893f1f2c9a7a73f70947c03"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.248936,
+      "tensor_pin": {
+        "bytes": 980,
+        "sha256": "d2a479ad9d8fbfeb0367488e4a2116b1747ac938e8b779cf013ad41658f0494d"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.327245,
+      "wall_seconds": 4.55914849
+    },
+    {
+      "actor_launcher_pid": 3905351,
+      "actor_session_id": "8a4dc804376e4c0d95b60eaa2bb356f4",
+      "arm": "replace",
+      "case_id": "source-03",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-03/replace",
+      "max_rss_kib": 1202108,
+      "model_input_pin": {
+        "bytes": 1617,
+        "sha256": "2f670ffb5c85e5764952b933f355beee438e82d9db7d493995cf155b8c8a2c67"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.404486957937479,
+      "read_cpu_seconds": 0.000415570999997783,
+      "read_wall_seconds": 0.00041876500472426414,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 467,
+        "sha256": "567227d6002536011c649293fa9435ccc9ab6d0df5057eff6fc3a8513d6ac8ee"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.222349,
+      "tensor_pin": {
+        "bytes": 981,
+        "sha256": "87c13b44ae5c0cb8c81aad63b0ebd6c6a3de8aae3bc398ff260dfa2aeed81f98"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.379457,
+      "wall_seconds": 4.43376872
+    },
+    {
+      "actor_launcher_pid": 3905597,
+      "actor_session_id": "9dffab189e6d4c36a032141fa98744b8",
+      "arm": "retrieval_off",
+      "case_id": "source-03",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-03/retrieval_off",
+      "max_rss_kib": 1202352,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "1e9a566cccff242b79e6d867072eb94d87ec7beae1b2f73c76ac652d38ae5ddb"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.451075735967606,
+      "read_cpu_seconds": 0.00019312000000581975,
+      "read_wall_seconds": 0.00019661313854157925,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "9ea306aca70c80c52912d913a787963d6eef2077dc8c1d76ca0d918240de3c33"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.236926,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "2aead8dcc26729e674d85c0dd1cf1695d4bfe840a3c8db8c93c04ccbd2ccd0b3"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.582275,
+      "wall_seconds": 4.478524173
+    },
+    {
+      "actor_launcher_pid": 3905445,
+      "actor_session_id": "8beb4413e240472d8de6308611da630e",
+      "arm": "delivery_off",
+      "case_id": "source-03",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-03/delivery_off",
+      "max_rss_kib": 1202112,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "1e9a566cccff242b79e6d867072eb94d87ec7beae1b2f73c76ac652d38ae5ddb"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.481988965999335,
+      "read_cpu_seconds": 0.0004079700000048092,
+      "read_wall_seconds": 0.00041161500848829746,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "9ea306aca70c80c52912d913a787963d6eef2077dc8c1d76ca0d918240de3c33"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24623399999999998,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "2aead8dcc26729e674d85c0dd1cf1695d4bfe840a3c8db8c93c04ccbd2ccd0b3"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.612352,
+      "wall_seconds": 4.510168907
+    },
+    {
+      "actor_launcher_pid": 3905547,
+      "actor_session_id": "9055c2d31afd495b9a7f8d153f5760dc",
+      "arm": "exact_kv",
+      "case_id": "source-03",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-03/exact_kv",
+      "max_rss_kib": 1200848,
+      "model_input_pin": {
+        "bytes": 1460,
+        "sha256": "7b024536c37cfcd3f7ab4b4f6fca6bc0c5fe943c65c695b046649b8eb8e23567"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 119,
+      "provider_wall_seconds_with_setup": 4.382455800892785,
+      "read_cpu_seconds": 0.0003463910000007786,
+      "read_wall_seconds": 0.000349818030372262,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 425,
+        "sha256": "c3b826ca2170516a03e8d1614c1a093188ad27d2a638631defc959c3e7c67f48"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.250404,
+      "tensor_pin": {
+        "bytes": 866,
+        "sha256": "3a0d3b3fa61c9c7c3e94f79312eddbefff72f35dad6438eb100f280360873fcc"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.284541,
+      "wall_seconds": 4.409512252
+    },
+    {
+      "actor_launcher_pid": 3905395,
+      "actor_session_id": "51cadd1b1486421796e1e002d64e05a9",
+      "arm": "finite_icl",
+      "case_id": "source-03",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-03/finite_icl",
+      "max_rss_kib": 1202324,
+      "model_input_pin": {
+        "bytes": 1619,
+        "sha256": "9c27de44c1fcc32dfa9f9490650740419fcf46fd57a093e9d9e0aec8805d150e"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.421524930046871,
+      "read_cpu_seconds": 0.00034658999999948037,
+      "read_wall_seconds": 0.0003499079030007124,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "b8083cf1f5969c37a4105b9f7499962f5b257277001f29d05aa168cf580387fd"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.25635199999999997,
+      "tensor_pin": {
+        "bytes": 981,
+        "sha256": "2112687ac91ecab4f1f8fad50660b1cdb17a4c1bb3cbd299297a45abf915b912"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.32954,
+      "wall_seconds": 4.449489848
+    },
+    {
+      "actor_launcher_pid": 3904086,
+      "actor_session_id": "e35bac2074b840178b33b18b7a46ef71",
+      "arm": "uniform_replay",
+      "case_id": "source-03",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-03/uniform_replay",
+      "max_rss_kib": 1201116,
+      "model_input_pin": {
+        "bytes": 1617,
+        "sha256": "661fba9077cbf1458f22fddaad08bfd22d7cdd460dbccdc6ccd7bb4060d798e5"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.46020242292434,
+      "read_cpu_seconds": 0.00039479099999795153,
+      "read_wall_seconds": 0.00039784517139196396,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 468,
+        "sha256": "85a473614b85eed7ae357c6f3ea831579f03af31c893f1f2c9a7a73f70947c03"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24062899999999998,
+      "tensor_pin": {
+        "bytes": 980,
+        "sha256": "d2a479ad9d8fbfeb0367488e4a2116b1747ac938e8b779cf013ad41658f0494d"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.405133,
+      "wall_seconds": 4.4859891
+    },
+    {
+      "actor_launcher_pid": 3896564,
+      "actor_session_id": "9f87f4a696bb46aebfb5917b017b669b",
+      "arm": "retention_off",
+      "case_id": "source-03",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-03/retention_off",
+      "max_rss_kib": 1201944,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "1e9a566cccff242b79e6d867072eb94d87ec7beae1b2f73c76ac652d38ae5ddb"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.591351205017418,
+      "read_cpu_seconds": 0.00013308999999850357,
+      "read_wall_seconds": 0.00013542501255869865,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "9ea306aca70c80c52912d913a787963d6eef2077dc8c1d76ca0d918240de3c33"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.250988,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "2aead8dcc26729e674d85c0dd1cf1695d4bfe840a3c8db8c93c04ccbd2ccd0b3"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.520732,
+      "wall_seconds": 4.61801636
+    },
+    {
+      "actor_launcher_pid": 3906085,
+      "actor_session_id": "fb1487377ac34e60a22e4a9641bb7c46",
+      "arm": "on_bm25",
+      "case_id": "source-04",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-04/on_bm25",
+      "max_rss_kib": 1201772,
+      "model_input_pin": {
+        "bytes": 1607,
+        "sha256": "235cd14d378631d0591857c8c0fefe5bc58e035e1e462538eba1e4103626b419"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.359796060016379,
+      "read_cpu_seconds": 0.00041024099999731334,
+      "read_wall_seconds": 0.0004133349284529686,
+      "relevant_key_delivered": true,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "30bfd1d2e2ec651695e397d4cf1740a0c22ffffec3b80fefa879c930bebf8f81"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.251537,
+      "tensor_pin": {
+        "bytes": 969,
+        "sha256": "cda56f0d43985299a439ce35488736d349206343852097c1c686b5c7cfb5c057"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "orange",
+      "user_cpu_seconds": 5.31035,
+      "wall_seconds": 4.388756763
+    },
+    {
+      "actor_launcher_pid": 3905795,
+      "actor_session_id": "16a7e16aa82149a0a29b55b447928941",
+      "arm": "off",
+      "case_id": "source-04",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-04/off",
+      "max_rss_kib": 1202148,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "a57f3327329af45372af0480e29cfb9061c173cf49054271149a80cc077f278e"
+      },
+      "output_tokens": 27,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.922074157977477,
+      "read_cpu_seconds": 1.4859999993177553e-05,
+      "read_wall_seconds": 1.7519108951091766e-05,
+      "relevant_key_delivered": false,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "02a4845f1370e3777f402515c1b50a4b174a1b229ea3987f48110c1ff9b93fa2"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.252178,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "96faf88653ef76f5629ddc333dcd5b39332eae0676a623cf9297c69cbd19cd83"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-192b3ff4c2f1.",
+      "truth": "orange",
+      "user_cpu_seconds": 6.039281,
+      "wall_seconds": 4.948782721
+    },
+    {
+      "actor_launcher_pid": 3905895,
+      "actor_session_id": "78accb366b634c08af6d43312d413190",
+      "arm": "delete",
+      "case_id": "source-04",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-04/delete",
+      "max_rss_kib": 1203060,
+      "model_input_pin": {
+        "bytes": 1603,
+        "sha256": "01926c978c383fc3b9103e8ff21d32f5b0265dc588dcb9a05746b0ffb3a90d3f"
+      },
+      "output_tokens": 24,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 135,
+      "provider_wall_seconds_with_setup": 4.858215075917542,
+      "read_cpu_seconds": 0.00038087999999447675,
+      "read_wall_seconds": 0.0003842068836092949,
+      "relevant_key_delivered": false,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "e3d036dce481cc04c3286094228b534262290d8028d021a2d8cfcf5443d81693"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.27388399999999996,
+      "tensor_pin": {
+        "bytes": 965,
+        "sha256": "17b7d0525d783cff46bd9f72791bb473d10c48e5f6cede43e3bd4ef8d82d4861"
+      },
+      "text": "The courier must use a blue badge for parcel-192b3ff4c2f1.",
+      "truth": "orange",
+      "user_cpu_seconds": 6.941076,
+      "wall_seconds": 4.887414941
+    },
+    {
+      "actor_launcher_pid": 3906431,
+      "actor_session_id": "c02c3fe2ddb84d358af553cb22659069",
+      "arm": "replace",
+      "case_id": "source-04",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-04/replace",
+      "max_rss_kib": 1201888,
+      "model_input_pin": {
+        "bytes": 1606,
+        "sha256": "5a6598820ea8fc2eca8e4a53016c1d4d3bf7772fe748194205ac11009ff7d285"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.406839948147535,
+      "read_cpu_seconds": 0.00041379000001029453,
+      "read_wall_seconds": 0.00041715498082339764,
+      "relevant_key_delivered": true,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "a80eda401e7e3aae21313eb45921b6bc65e7adda82d814180fdb295f8b778071"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.230893,
+      "tensor_pin": {
+        "bytes": 968,
+        "sha256": "68ce6928562520d7fef7c721cb10f53d1b8cad51d5f8cdae470f333071a92876"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "orange",
+      "user_cpu_seconds": 5.361523,
+      "wall_seconds": 4.434882944
+    },
+    {
+      "actor_launcher_pid": 3905744,
+      "actor_session_id": "58cc5759175646b0b1c578945f84ba09",
+      "arm": "retrieval_off",
+      "case_id": "source-04",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-04/retrieval_off",
+      "max_rss_kib": 1201804,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "a57f3327329af45372af0480e29cfb9061c173cf49054271149a80cc077f278e"
+      },
+      "output_tokens": 27,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.93575185793452,
+      "read_cpu_seconds": 0.00019337000000518856,
+      "read_wall_seconds": 0.00019620312377810478,
+      "relevant_key_delivered": false,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "02a4845f1370e3777f402515c1b50a4b174a1b229ea3987f48110c1ff9b93fa2"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.256905,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "96faf88653ef76f5629ddc333dcd5b39332eae0676a623cf9297c69cbd19cd83"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-192b3ff4c2f1.",
+      "truth": "orange",
+      "user_cpu_seconds": 7.323316,
+      "wall_seconds": 4.962913295
+    },
+    {
+      "actor_launcher_pid": 3905845,
+      "actor_session_id": "0625f1e6a285497fad4fceb93a6085d0",
+      "arm": "delivery_off",
+      "case_id": "source-04",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-04/delivery_off",
+      "max_rss_kib": 1200656,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "a57f3327329af45372af0480e29cfb9061c173cf49054271149a80cc077f278e"
+      },
+      "output_tokens": 27,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.908275842899457,
+      "read_cpu_seconds": 0.0004041400000005524,
+      "read_wall_seconds": 0.0004079949576407671,
+      "relevant_key_delivered": false,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "02a4845f1370e3777f402515c1b50a4b174a1b229ea3987f48110c1ff9b93fa2"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.258123,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "96faf88653ef76f5629ddc333dcd5b39332eae0676a623cf9297c69cbd19cd83"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-192b3ff4c2f1.",
+      "truth": "orange",
+      "user_cpu_seconds": 7.210416,
+      "wall_seconds": 4.936451895
+    },
+    {
+      "actor_launcher_pid": 3905947,
+      "actor_session_id": "15b03941357548bba97ccaee75c8c75e",
+      "arm": "exact_kv",
+      "case_id": "source-04",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-04/exact_kv",
+      "max_rss_kib": 1202708,
+      "model_input_pin": {
+        "bytes": 1452,
+        "sha256": "9f67e93265071f8f3a4f5ec2c7c6f1835e6c49e313088deff4d99ac6d840237b"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "orange"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 117,
+      "provider_wall_seconds_with_setup": 4.43438853812404,
+      "read_cpu_seconds": 0.0003442599999914364,
+      "read_wall_seconds": 0.00034721801057457924,
+      "relevant_key_delivered": true,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 425,
+        "sha256": "2d983335a21157c89f981ff6f46e5c69148aab572bf24c9d9d73b6a1f6338bbe"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.235394,
+      "tensor_pin": {
+        "bytes": 858,
+        "sha256": "74daea13122158108fd24c3198d716e8e0dcbb480703d0d8ce39b6ea3298aee6"
+      },
+      "text": "The courier must use the orange badge.",
+      "truth": "orange",
+      "user_cpu_seconds": 4.083849,
+      "wall_seconds": 4.461675041
+    },
+    {
+      "actor_launcher_pid": 3905694,
+      "actor_session_id": "1e3cf319798e4d27b8880b41e1c63dc9",
+      "arm": "finite_icl",
+      "case_id": "source-04",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-04/finite_icl",
+      "max_rss_kib": 1201508,
+      "model_input_pin": {
+        "bytes": 1603,
+        "sha256": "ff64033615bd6817aa0300de793cb22bcd34c82509adca5207f8812bb69682d3"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 135,
+      "provider_wall_seconds_with_setup": 4.423895409097895,
+      "read_cpu_seconds": 0.0003830400000026657,
+      "read_wall_seconds": 0.00038580596446990967,
+      "relevant_key_delivered": false,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "17451562fd7256ef42985a4d153f4bea4f4ad8cccad0db0b859432ead2fe33a4"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.230734,
+      "tensor_pin": {
+        "bytes": 965,
+        "sha256": "6b3a0c9d7756dfa9226ceccb3c55f2fe388988173e70ce1ae8b99ba07f1925c8"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "orange",
+      "user_cpu_seconds": 5.3778179999999995,
+      "wall_seconds": 4.449155315
+    },
+    {
+      "actor_launcher_pid": 3906280,
+      "actor_session_id": "3818641f455a44e499ef47f5bd37f03f",
+      "arm": "uniform_replay",
+      "case_id": "source-04",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-04/uniform_replay",
+      "max_rss_kib": 1202180,
+      "model_input_pin": {
+        "bytes": 1603,
+        "sha256": "ff64033615bd6817aa0300de793cb22bcd34c82509adca5207f8812bb69682d3"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 135,
+      "provider_wall_seconds_with_setup": 4.375880264909938,
+      "read_cpu_seconds": 0.00036901099998942755,
+      "read_wall_seconds": 0.0003721369430422783,
+      "relevant_key_delivered": false,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "17451562fd7256ef42985a4d153f4bea4f4ad8cccad0db0b859432ead2fe33a4"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.23279,
+      "tensor_pin": {
+        "bytes": 965,
+        "sha256": "6b3a0c9d7756dfa9226ceccb3c55f2fe388988173e70ce1ae8b99ba07f1925c8"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "orange",
+      "user_cpu_seconds": 5.35517,
+      "wall_seconds": 4.404699314
+    },
+    {
+      "actor_launcher_pid": 3906034,
+      "actor_session_id": "c910182293304af888505ccefca5d7b4",
+      "arm": "retention_off",
+      "case_id": "source-04",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-04/retention_off",
+      "max_rss_kib": 1201468,
+      "model_input_pin": {
+        "bytes": 1297,
+        "sha256": "a57f3327329af45372af0480e29cfb9061c173cf49054271149a80cc077f278e"
+      },
+      "output_tokens": 27,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 98,
+      "provider_wall_seconds_with_setup": 4.936740417033434,
+      "read_cpu_seconds": 0.00014283100000511695,
+      "read_wall_seconds": 0.0001458250917494297,
+      "relevant_key_delivered": false,
+      "replacement": "yellow",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "02a4845f1370e3777f402515c1b50a4b174a1b229ea3987f48110c1ff9b93fa2"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.262328,
+      "tensor_pin": {
+        "bytes": 747,
+        "sha256": "96faf88653ef76f5629ddc333dcd5b39332eae0676a623cf9297c69cbd19cd83"
+      },
+      "text": "The courier must use the color badge \"Blue\" for parcel-192b3ff4c2f1.",
+      "truth": "orange",
+      "user_cpu_seconds": 7.208027,
+      "wall_seconds": 4.966652046
+    },
+    {
+      "actor_launcher_pid": 3908371,
+      "actor_session_id": "0f274c04d97446749843f62ca93058fe",
+      "arm": "on_bm25",
+      "case_id": "source-05",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-05/on_bm25",
+      "max_rss_kib": 1202040,
+      "model_input_pin": {
+        "bytes": 1614,
+        "sha256": "9772b1e3c88bab3b1c14b6cb982e8646af71a9d5c016163dde010f7feaf89ebe"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.4238139658700675,
+      "read_cpu_seconds": 0.000408390000004033,
+      "read_wall_seconds": 0.0004117449279874563,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 468,
+        "sha256": "293f91a5b3f19d0e3c6040692eb437a6dd4cfd8c42695de0388e28065ccc3147"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24628999999999998,
+      "tensor_pin": {
+        "bytes": 977,
+        "sha256": "98e7aae7014d11db04ed3855f422094d780a1b7a8b792c4ae0442e1b6aaabe7a"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.36833,
+      "wall_seconds": 4.450646616
+    },
+    {
+      "actor_launcher_pid": 3906524,
+      "actor_session_id": "e3b9041482154b4f8067a026238f4a5e",
+      "arm": "off",
+      "case_id": "source-05",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-05/off",
+      "max_rss_kib": 1201436,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "ab57d66d026505be5dfb421fc59a0f45a76e7cc7ff531db44294cfe9857b4fe1"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.465663053095341,
+      "read_cpu_seconds": 2.162000001248998e-05,
+      "read_wall_seconds": 2.4489127099514008e-05,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "0baef1319a589d0edceb3ec55510c22fbe3fb8f828229eb0700d96b7194c5d93"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.267651,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "0c0af58c507f32da6f5e83c746d0fbc4b1af24d65c5c49d3588f47bdf7f63987"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.588596,
+      "wall_seconds": 4.488986198
+    },
+    {
+      "actor_launcher_pid": 3908841,
+      "actor_session_id": "a5d0eeab272e42b9a368f3143a8226d7",
+      "arm": "delete",
+      "case_id": "source-05",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-05/delete",
+      "max_rss_kib": 1201604,
+      "model_input_pin": {
+        "bytes": 1609,
+        "sha256": "74173583b09ecfbbd9f75d9d819b21ea9d35ced7feea45655741fa245fe5ed95"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "red"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 137,
+      "provider_wall_seconds_with_setup": 4.385933174053207,
+      "read_cpu_seconds": 0.00038880999998980315,
+      "read_wall_seconds": 0.0003919361624866724,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 468,
+        "sha256": "8b1f49e5bfbddd7fcc60cda413d7cad8f0e52053468706a3ff85ddb9da911ca7"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.250362,
+      "tensor_pin": {
+        "bytes": 972,
+        "sha256": "9f2b52bfd32e945c090303e52e00be6ddb3683be4f00949162f516fbd0d8823b"
+      },
+      "text": "The courier must use a red badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.309685,
+      "wall_seconds": 4.412606769
+    },
+    {
+      "actor_launcher_pid": 3908577,
+      "actor_session_id": "60be9e188a834927b04733d556c6c18e",
+      "arm": "replace",
+      "case_id": "source-05",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-05/replace",
+      "max_rss_kib": 1202076,
+      "model_input_pin": {
+        "bytes": 1612,
+        "sha256": "e540be5830886d9760a9f7f7b9b13c8c35d7999ab62926652ee0e4013ba4e067"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "red"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.396362829953432,
+      "read_cpu_seconds": 0.00042959000001019376,
+      "read_wall_seconds": 0.00043292390182614326,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 466,
+        "sha256": "113601780a4ee1e295da464640a3adf86c8322878297cfa67a6cb2264d84d715"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.21631799999999998,
+      "tensor_pin": {
+        "bytes": 977,
+        "sha256": "10dac0fb15aad138c842b951f24120c7accb3d7bd798fcf1ff1e06ccc4a5d6d3"
+      },
+      "text": "The courier must use a red badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.361894,
+      "wall_seconds": 4.424817951
+    },
+    {
+      "actor_launcher_pid": 3908029,
+      "actor_session_id": "787c5ba303484205b8384b75036ed700",
+      "arm": "retrieval_off",
+      "case_id": "source-05",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-05/retrieval_off",
+      "max_rss_kib": 1202292,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "ab57d66d026505be5dfb421fc59a0f45a76e7cc7ff531db44294cfe9857b4fe1"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.476035902975127,
+      "read_cpu_seconds": 0.0001915010000033135,
+      "read_wall_seconds": 0.00019457307644188404,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "0baef1319a589d0edceb3ec55510c22fbe3fb8f828229eb0700d96b7194c5d93"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.25559499999999996,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "0c0af58c507f32da6f5e83c746d0fbc4b1af24d65c5c49d3588f47bdf7f63987"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.616087,
+      "wall_seconds": 4.503841318
+    },
+    {
+      "actor_launcher_pid": 3908082,
+      "actor_session_id": "ecb280faa9f949568d01e30bbf30890a",
+      "arm": "delivery_off",
+      "case_id": "source-05",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-05/delivery_off",
+      "max_rss_kib": 1201876,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "ab57d66d026505be5dfb421fc59a0f45a76e7cc7ff531db44294cfe9857b4fe1"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.487930818926543,
+      "read_cpu_seconds": 0.0003945800000053623,
+      "read_wall_seconds": 0.00039776600897312164,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "0baef1319a589d0edceb3ec55510c22fbe3fb8f828229eb0700d96b7194c5d93"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.248913,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "0c0af58c507f32da6f5e83c746d0fbc4b1af24d65c5c49d3588f47bdf7f63987"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.577051,
+      "wall_seconds": 4.516599922
+    },
+    {
+      "actor_launcher_pid": 3908133,
+      "actor_session_id": "ec2fbc49a3b745a3a7bfd2757fa6ab99",
+      "arm": "exact_kv",
+      "case_id": "source-05",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-05/exact_kv",
+      "max_rss_kib": 1203180,
+      "model_input_pin": {
+        "bytes": 1460,
+        "sha256": "0a4d4b84e8b27aad4ca76f68bcc41b8976630e514e24338722d5bb86a7792caa"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 119,
+      "provider_wall_seconds_with_setup": 4.376399802044034,
+      "read_cpu_seconds": 0.00035029000000008637,
+      "read_wall_seconds": 0.0003536469303071499,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 425,
+        "sha256": "f86b0240a87f34c5e4bd8e886e92a3fbb05ba7247fdafc748452b8378b23548d"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.258529,
+      "tensor_pin": {
+        "bytes": 866,
+        "sha256": "4db5c95075b45d4a88f272638159783a3a2c3aa03988346ba741839a2602a4ed"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.305858,
+      "wall_seconds": 4.403582358
+    },
+    {
+      "actor_launcher_pid": 3908278,
+      "actor_session_id": "122674f494be4ad197fe70bf48a35aa6",
+      "arm": "finite_icl",
+      "case_id": "source-05",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-05/finite_icl",
+      "max_rss_kib": 1200984,
+      "model_input_pin": {
+        "bytes": 1609,
+        "sha256": "74173583b09ecfbbd9f75d9d819b21ea9d35ced7feea45655741fa245fe5ed95"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "red"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 137,
+      "provider_wall_seconds_with_setup": 4.381681582890451,
+      "read_cpu_seconds": 0.00034236999999848194,
+      "read_wall_seconds": 0.00034561706706881523,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 468,
+        "sha256": "8b1f49e5bfbddd7fcc60cda413d7cad8f0e52053468706a3ff85ddb9da911ca7"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.246445,
+      "tensor_pin": {
+        "bytes": 972,
+        "sha256": "9f2b52bfd32e945c090303e52e00be6ddb3683be4f00949162f516fbd0d8823b"
+      },
+      "text": "The courier must use a red badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.273141,
+      "wall_seconds": 4.408208093
+    },
+    {
+      "actor_launcher_pid": 3906619,
+      "actor_session_id": "25fff93690fc474c872ddaea5cee0095",
+      "arm": "uniform_replay",
+      "case_id": "source-05",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-05/uniform_replay",
+      "max_rss_kib": 1202200,
+      "model_input_pin": {
+        "bytes": 1614,
+        "sha256": "9772b1e3c88bab3b1c14b6cb982e8646af71a9d5c016163dde010f7feaf89ebe"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.416403117123991,
+      "read_cpu_seconds": 0.00038649999999051943,
+      "read_wall_seconds": 0.0003901459276676178,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 468,
+        "sha256": "293f91a5b3f19d0e3c6040692eb437a6dd4cfd8c42695de0388e28065ccc3147"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.231337,
+      "tensor_pin": {
+        "bytes": 977,
+        "sha256": "98e7aae7014d11db04ed3855f422094d780a1b7a8b792c4ae0442e1b6aaabe7a"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.326754,
+      "wall_seconds": 4.44452397
+    },
+    {
+      "actor_launcher_pid": 3908328,
+      "actor_session_id": "2e0e2fc83cd34826908a3a09e1f1f1a6",
+      "arm": "retention_off",
+      "case_id": "source-05",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-05/retention_off",
+      "max_rss_kib": 1201584,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "ab57d66d026505be5dfb421fc59a0f45a76e7cc7ff531db44294cfe9857b4fe1"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.49305577785708,
+      "read_cpu_seconds": 0.0001483900000067706,
+      "read_wall_seconds": 0.00015174387954175472,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "0baef1319a589d0edceb3ec55510c22fbe3fb8f828229eb0700d96b7194c5d93"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.24307299999999998,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "0c0af58c507f32da6f5e83c746d0fbc4b1af24d65c5c49d3588f47bdf7f63987"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.625709,
+      "wall_seconds": 4.522576091
+    },
+    {
+      "actor_launcher_pid": 3910178,
+      "actor_session_id": "ffcac34858b84f53a388646dea0e5026",
+      "arm": "on_bm25",
+      "case_id": "source-06",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-06/on_bm25",
+      "max_rss_kib": 1201516,
+      "model_input_pin": {
+        "bytes": 1622,
+        "sha256": "c87ecaa20523ae76dd8a56e1c765d4f53d75c6138b4de4f637f9f9a4f6bb17bb"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.508381454041228,
+      "read_cpu_seconds": 0.00043404099999122536,
+      "read_wall_seconds": 0.0004376641009002924,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 471,
+        "sha256": "c36570ccae79b3d3ed314033fafbcad2808327a93ce5cc8c24e8576f41af7134"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.23604899999999998,
+      "tensor_pin": {
+        "bytes": 982,
+        "sha256": "dc31f55b862f2fc614ac856c8ffe5e7efbcef0fc5e0b6090e35e72746d08b63e"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.428127,
+      "wall_seconds": 4.53669026
+    },
+    {
+      "actor_launcher_pid": 3912767,
+      "actor_session_id": "069031c29b0b4881802c9457046788a1",
+      "arm": "off",
+      "case_id": "source-06",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-06/off",
+      "max_rss_kib": 1201828,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "63ffbef51a026e945a2e811ae2f964b1a82be1d99f2a547282a8c44f3fcb3256"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.728207491105422,
+      "read_cpu_seconds": 1.6570000013871322e-05,
+      "read_wall_seconds": 1.9739149138331413e-05,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "928cc51d6ae2247552bb2dc4bd8c7912c84e291dcbde1665ede3d8b7c271e6d8"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.279733,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "19e51af0e32b98f186f764d249cd9ae9ef4f4dee0beb129d0c99f23340200cc6"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.641616,
+      "wall_seconds": 4.75196667
+    },
+    {
+      "actor_launcher_pid": 3911282,
+      "actor_session_id": "0a936feab18347efa49ab2beb0bab8da",
+      "arm": "delete",
+      "case_id": "source-06",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-06/delete",
+      "max_rss_kib": 1202176,
+      "model_input_pin": {
+        "bytes": 1618,
+        "sha256": "2ee2f747ab38aec518aa89805a38c12fb9517d58371205c4db8784997f2185d9"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "white"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.665159564930946,
+      "read_cpu_seconds": 0.00037391099999695143,
+      "read_wall_seconds": 0.00037729693576693535,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 470,
+        "sha256": "ea0c52e985ac631980bd77cb6c4049145e9a89b0f94cc19a6b8588dee108171f"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.247906,
+      "tensor_pin": {
+        "bytes": 979,
+        "sha256": "c3b6a862481069ff011a3db17d61d1df90b400611cb81f86842c762866b0b2cb"
+      },
+      "text": "The courier must use a white badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.394976,
+      "wall_seconds": 4.69408014
+    },
+    {
+      "actor_launcher_pid": 3910543,
+      "actor_session_id": "da621e05b8d645c99ab43f5e29df6f37",
+      "arm": "replace",
+      "case_id": "source-06",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-06/replace",
+      "max_rss_kib": 1200816,
+      "model_input_pin": {
+        "bytes": 1621,
+        "sha256": "3289bba7051df43fdbbfb2112e0cb0092ce6dd4a53363f792c1a8cc54f7b17c4"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.623197044944391,
+      "read_cpu_seconds": 0.0004129399999897032,
+      "read_wall_seconds": 0.0004160548560321331,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 470,
+        "sha256": "1ef8508e4dc34ff59567ebd86a025f1cd35f01726cccc1a825f0692b88c6322c"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.28682199999999997,
+      "tensor_pin": {
+        "bytes": 982,
+        "sha256": "44964940db969ede024813c9d5143dea2a1e70ddfe1b0792145fc8a89173f428"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.339313,
+      "wall_seconds": 4.652428319
+    },
+    {
+      "actor_launcher_pid": 3910937,
+      "actor_session_id": "ae378e7b18a443fbbb8aff115dfd3b84",
+      "arm": "retrieval_off",
+      "case_id": "source-06",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-06/retrieval_off",
+      "max_rss_kib": 1201916,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "63ffbef51a026e945a2e811ae2f964b1a82be1d99f2a547282a8c44f3fcb3256"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.7468969388864934,
+      "read_cpu_seconds": 0.00019174000000532487,
+      "read_wall_seconds": 0.0001951628364622593,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "928cc51d6ae2247552bb2dc4bd8c7912c84e291dcbde1665ede3d8b7c271e6d8"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.303417,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "19e51af0e32b98f186f764d249cd9ae9ef4f4dee0beb129d0c99f23340200cc6"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.637755,
+      "wall_seconds": 4.773873183
+    },
+    {
+      "actor_launcher_pid": 3909381,
+      "actor_session_id": "c64eda90a78b4aa3bbec1a12c9871d25",
+      "arm": "delivery_off",
+      "case_id": "source-06",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-06/delivery_off",
+      "max_rss_kib": 1202280,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "63ffbef51a026e945a2e811ae2f964b1a82be1d99f2a547282a8c44f3fcb3256"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.664970237994567,
+      "read_cpu_seconds": 0.00039289100000416965,
+      "read_wall_seconds": 0.00039610592648386955,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "928cc51d6ae2247552bb2dc4bd8c7912c84e291dcbde1665ede3d8b7c271e6d8"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.251919,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "19e51af0e32b98f186f764d249cd9ae9ef4f4dee0beb129d0c99f23340200cc6"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.615208,
+      "wall_seconds": 4.692266051
+    },
+    {
+      "actor_launcher_pid": 3908972,
+      "actor_session_id": "663fc397af344466beca9eea71a83c73",
+      "arm": "exact_kv",
+      "case_id": "source-06",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-06/exact_kv",
+      "max_rss_kib": 1201560,
+      "model_input_pin": {
+        "bytes": 1459,
+        "sha256": "0b96e1fda7a139d10eebfc76ba52da652ee1fc22d7f2061e61dd8fb1ebefdab0"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 119,
+      "provider_wall_seconds_with_setup": 4.576324790017679,
+      "read_cpu_seconds": 0.0003370000000018081,
+      "read_wall_seconds": 0.0003396179527044296,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 425,
+        "sha256": "f5cd53ba3b9adfc522023d4cb22d2f960c13428ab1980983d13a5244ebaf6729"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.23665499999999998,
+      "tensor_pin": {
+        "bytes": 865,
+        "sha256": "2d75b44b6a9a961e97a7635d5887c428ba11b6c8207c2f87635d0b18cd0f0df0"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.389157,
+      "wall_seconds": 4.604564509
+    },
+    {
+      "actor_launcher_pid": 3912318,
+      "actor_session_id": "eff58b3723484cb9be70abd093a839fa",
+      "arm": "finite_icl",
+      "case_id": "source-06",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-06/finite_icl",
+      "max_rss_kib": 1201972,
+      "model_input_pin": {
+        "bytes": 1622,
+        "sha256": "87fde51e1791201ee55a9da2fbbac9c115f8ea0446c38e92b0f540de1bf9517d"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 139,
+      "provider_wall_seconds_with_setup": 4.660185164073482,
+      "read_cpu_seconds": 0.0003674900000021353,
+      "read_wall_seconds": 0.00037132715806365013,
+      "relevant_key_delivered": true,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 471,
+        "sha256": "81a8e28a20c977fc74ceaa482514fe244fe47bca4d84ee9e06c1a0d69e487749"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.248965,
+      "tensor_pin": {
+        "bytes": 982,
+        "sha256": "cb0a964e44ba17b3a25675b71f764bc7c1d88f594a1cd08bb9aa063f137038bc"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.397938,
+      "wall_seconds": 4.687851904
+    },
+    {
+      "actor_launcher_pid": 3909686,
+      "actor_session_id": "a2c6300998f24ddc9a2cefedce82b331",
+      "arm": "uniform_replay",
+      "case_id": "source-06",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-06/uniform_replay",
+      "max_rss_kib": 1202596,
+      "model_input_pin": {
+        "bytes": 1618,
+        "sha256": "8e86680e37bfbb6bbafd4993538c20b88d73de4c741d2efd0e7dd57f515df1a7"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.636847485089675,
+      "read_cpu_seconds": 0.00036532000000022435,
+      "read_wall_seconds": 0.0003685669507831335,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 470,
+        "sha256": "30b9e239df639862d7a1f16a6c27ae26239f1683377ba226459acc3bfc5842d3"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.278099,
+      "tensor_pin": {
+        "bytes": 979,
+        "sha256": "9996954f67e5c7e1fcdd6001ea0b31e0cc0dee357fc78c2b8a286205a2910ab1"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.368928,
+      "wall_seconds": 4.662363622
+    },
+    {
+      "actor_launcher_pid": 3911735,
+      "actor_session_id": "f46ec47583a44d84a0694758c194e385",
+      "arm": "retention_off",
+      "case_id": "source-06",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-06/retention_off",
+      "max_rss_kib": 1201552,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "63ffbef51a026e945a2e811ae2f964b1a82be1d99f2a547282a8c44f3fcb3256"
+      },
+      "output_tokens": 13,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 4.710958116920665,
+      "read_cpu_seconds": 0.000137080000001788,
+      "read_wall_seconds": 0.00014007487334311008,
+      "relevant_key_delivered": false,
+      "replacement": "green",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "928cc51d6ae2247552bb2dc4bd8c7912c84e291dcbde1665ede3d8b7c271e6d8"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.224578,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "19e51af0e32b98f186f764d249cd9ae9ef4f4dee0beb129d0c99f23340200cc6"
+      },
+      "text": "The courier must use the color badge of the carrier.",
+      "truth": "yellow",
+      "user_cpu_seconds": 5.651567,
+      "wall_seconds": 4.74077487
+    },
+    {
+      "actor_launcher_pid": 3913585,
+      "actor_session_id": "286d8b95052649fcb5fe4be04cdfa1bd",
+      "arm": "on_bm25",
+      "case_id": "source-07",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-07/on_bm25",
+      "max_rss_kib": 1202616,
+      "model_input_pin": {
+        "bytes": 1593,
+        "sha256": "b641ec80ea5bb7aa9a773ab091e1d8ab52acefb2643b17f4bdda408457d4f3e5"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 132,
+      "provider_wall_seconds_with_setup": 4.663954633055255,
+      "read_cpu_seconds": 0.0004220099999940885,
+      "read_wall_seconds": 0.0004258737899363041,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "a32dbaea79c79032ca54671bc764f09c272838d90561ddf5a163f648fde458b8"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24620799999999998,
+      "tensor_pin": {
+        "bytes": 955,
+        "sha256": "3d0ea04a33d7e6ec8d6d995919379918aca200545c0248de3635b915d10d47dc"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.406587,
+      "wall_seconds": 4.690709446
+    },
+    {
+      "actor_launcher_pid": 3915964,
+      "actor_session_id": "67a4c2eede69495d8e8cc318af657b70",
+      "arm": "off",
+      "case_id": "source-07",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-07/off",
+      "max_rss_kib": 1202268,
+      "model_input_pin": {
+        "bytes": 1286,
+        "sha256": "ae0da7342a745cd14aabf8ee9c2405d13661b89342866c4825043e371b403da8"
+      },
+      "output_tokens": 19,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 95,
+      "provider_wall_seconds_with_setup": 4.914087875979021,
+      "read_cpu_seconds": 1.7249999984869646e-05,
+      "read_wall_seconds": 2.008909359574318e-05,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "271e2e2a1c59408920648eff57363af9dd7384d10c0f6dad767729677abafad1"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.25443499999999997,
+      "tensor_pin": {
+        "bytes": 736,
+        "sha256": "f94440709a1ed12136fefca1a1f438119a16097eda270a7ab86298481336735f"
+      },
+      "text": "The courier must use the color badge of the \"Saved Dispatch\" badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 6.35187,
+      "wall_seconds": 4.938815531
+    },
+    {
+      "actor_launcher_pid": 3913895,
+      "actor_session_id": "b53002e078dd4f65bd7af47178acaa49",
+      "arm": "delete",
+      "case_id": "source-07",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-07/delete",
+      "max_rss_kib": 1202168,
+      "model_input_pin": {
+        "bytes": 1607,
+        "sha256": "e31557f6cf89cffe3a254c5d37ce1534ea0ad3fa499afb6b6116d9256b8279ce"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.728132747113705,
+      "read_cpu_seconds": 0.00039614100001017505,
+      "read_wall_seconds": 0.00039905612356960773,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "d2b831391f8af966ca807d74b02a4b11bbf5ad5082f8d3adf8e002a640a676ab"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.274159,
+      "tensor_pin": {
+        "bytes": 969,
+        "sha256": "bba433ebcfaf08c315fa34786a4552c1a3dfa85f6964b9bcf6ed3cf127978075"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.392813,
+      "wall_seconds": 4.758425033
+    },
+    {
+      "actor_launcher_pid": 3913719,
+      "actor_session_id": "6ec0e2c7b6954943b5515da89e70c1ad",
+      "arm": "replace",
+      "case_id": "source-07",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-07/replace",
+      "max_rss_kib": 1201440,
+      "model_input_pin": {
+        "bytes": 1591,
+        "sha256": "a32b102c29db103775d7f3ee4cab016b8c67b41074c25cf619dc74d782c170c3"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "pink"
+      ],
+      "posthoc_replacement_mentioned": true,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 132,
+      "provider_wall_seconds_with_setup": 4.660270304884762,
+      "read_cpu_seconds": 0.0004270310000151767,
+      "read_wall_seconds": 0.00042999512515962124,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 467,
+        "sha256": "fe55f535b40c7fa1075e2c4eb3a04532650eb12c4b3dbde22e8d4e00ce7922b3"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.273651,
+      "tensor_pin": {
+        "bytes": 955,
+        "sha256": "540a436f7b25f072b9e3e9fcd0709aaf325766a4ed8394a422cf545a496a70e1"
+      },
+      "text": "The courier must use a pink badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.39412,
+      "wall_seconds": 4.688176816
+    },
+    {
+      "actor_launcher_pid": 3915094,
+      "actor_session_id": "003e50b0598445009c62e75ed5ba62cc",
+      "arm": "retrieval_off",
+      "case_id": "source-07",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-07/retrieval_off",
+      "max_rss_kib": 1201788,
+      "model_input_pin": {
+        "bytes": 1286,
+        "sha256": "ae0da7342a745cd14aabf8ee9c2405d13661b89342866c4825043e371b403da8"
+      },
+      "output_tokens": 19,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 95,
+      "provider_wall_seconds_with_setup": 4.918263634899631,
+      "read_cpu_seconds": 0.0001968699999963519,
+      "read_wall_seconds": 0.00020013307221233845,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "271e2e2a1c59408920648eff57363af9dd7384d10c0f6dad767729677abafad1"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.250347,
+      "tensor_pin": {
+        "bytes": 736,
+        "sha256": "f94440709a1ed12136fefca1a1f438119a16097eda270a7ab86298481336735f"
+      },
+      "text": "The courier must use the color badge of the \"Saved Dispatch\" badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 6.371834,
+      "wall_seconds": 4.946981707
+    },
+    {
+      "actor_launcher_pid": 3913239,
+      "actor_session_id": "955c4f41edcd4399a6d5a195ea7f8aab",
+      "arm": "delivery_off",
+      "case_id": "source-07",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-07/delivery_off",
+      "max_rss_kib": 1201492,
+      "model_input_pin": {
+        "bytes": 1286,
+        "sha256": "ae0da7342a745cd14aabf8ee9c2405d13661b89342866c4825043e371b403da8"
+      },
+      "output_tokens": 19,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 95,
+      "provider_wall_seconds_with_setup": 4.925197222037241,
+      "read_cpu_seconds": 0.00040561000000138847,
+      "read_wall_seconds": 0.000408985186368227,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "271e2e2a1c59408920648eff57363af9dd7384d10c0f6dad767729677abafad1"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.25221,
+      "tensor_pin": {
+        "bytes": 736,
+        "sha256": "f94440709a1ed12136fefca1a1f438119a16097eda270a7ab86298481336735f"
+      },
+      "text": "The courier must use the color badge of the \"Saved Dispatch\" badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 6.323271,
+      "wall_seconds": 4.951318237
+    },
+    {
+      "actor_launcher_pid": 3914116,
+      "actor_session_id": "460bf9ad5a004e328ee8fabe1fb0643d",
+      "arm": "exact_kv",
+      "case_id": "source-07",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-07/exact_kv",
+      "max_rss_kib": 1202148,
+      "model_input_pin": {
+        "bytes": 1430,
+        "sha256": "3a5d5a3dee14f78d4d76f9b3a409715a3b1840960963ce2e7f45cc00e3d0d591"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 111,
+      "provider_wall_seconds_with_setup": 4.694719264050946,
+      "read_cpu_seconds": 0.00035517000000595544,
+      "read_wall_seconds": 0.00035845721140503883,
+      "relevant_key_delivered": true,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 425,
+        "sha256": "327ce3aa73792267c241be5a3f60ccdd2883e09a7e1212a46dd42ecf935480d1"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.245779,
+      "tensor_pin": {
+        "bytes": 836,
+        "sha256": "e0cb5216788d1e347227edf435819301f6be936dd2b15c3d14ad5b06d14a149a"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.368029,
+      "wall_seconds": 4.721494726
+    },
+    {
+      "actor_launcher_pid": 3914506,
+      "actor_session_id": "a9f5dc5cc2f2427bb0b8a4a05b09cd9b",
+      "arm": "finite_icl",
+      "case_id": "source-07",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-07/finite_icl",
+      "max_rss_kib": 1202044,
+      "model_input_pin": {
+        "bytes": 1607,
+        "sha256": "e31557f6cf89cffe3a254c5d37ce1534ea0ad3fa499afb6b6116d9256b8279ce"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.645445347996429,
+      "read_cpu_seconds": 0.00036765999999488486,
+      "read_wall_seconds": 0.0003709271550178528,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "d2b831391f8af966ca807d74b02a4b11bbf5ad5082f8d3adf8e002a640a676ab"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24498299999999998,
+      "tensor_pin": {
+        "bytes": 969,
+        "sha256": "bba433ebcfaf08c315fa34786a4552c1a3dfa85f6964b9bcf6ed3cf127978075"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 4.222949,
+      "wall_seconds": 4.672572777
+    },
+    {
+      "actor_launcher_pid": 3912916,
+      "actor_session_id": "b673f1e706644e9dbf60fc423ff5e7fa",
+      "arm": "uniform_replay",
+      "case_id": "source-07",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-07/uniform_replay",
+      "max_rss_kib": 1201968,
+      "model_input_pin": {
+        "bytes": 1607,
+        "sha256": "e31557f6cf89cffe3a254c5d37ce1534ea0ad3fa499afb6b6116d9256b8279ce"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 136,
+      "provider_wall_seconds_with_setup": 4.675872624153271,
+      "read_cpu_seconds": 0.0003830500000105985,
+      "read_wall_seconds": 0.00038702599704265594,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "d2b831391f8af966ca807d74b02a4b11bbf5ad5082f8d3adf8e002a640a676ab"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.28074699999999997,
+      "tensor_pin": {
+        "bytes": 969,
+        "sha256": "bba433ebcfaf08c315fa34786a4552c1a3dfa85f6964b9bcf6ed3cf127978075"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 5.335195,
+      "wall_seconds": 4.703816634
+    },
+    {
+      "actor_launcher_pid": 3915534,
+      "actor_session_id": "f8d760206fc34a8b8be769ab9b8b6301",
+      "arm": "retention_off",
+      "case_id": "source-07",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-07/retention_off",
+      "max_rss_kib": 1201760,
+      "model_input_pin": {
+        "bytes": 1286,
+        "sha256": "ae0da7342a745cd14aabf8ee9c2405d13661b89342866c4825043e371b403da8"
+      },
+      "output_tokens": 19,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 95,
+      "provider_wall_seconds_with_setup": 4.967436976032332,
+      "read_cpu_seconds": 0.00016490999999518863,
+      "read_wall_seconds": 0.00016844389028847218,
+      "relevant_key_delivered": false,
+      "replacement": "pink",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "271e2e2a1c59408920648eff57363af9dd7384d10c0f6dad767729677abafad1"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.267808,
+      "tensor_pin": {
+        "bytes": 736,
+        "sha256": "f94440709a1ed12136fefca1a1f438119a16097eda270a7ab86298481336735f"
+      },
+      "text": "The courier must use the color badge of the \"Saved Dispatch\" badge.",
+      "truth": "purple",
+      "user_cpu_seconds": 6.310614,
+      "wall_seconds": 4.995940886
+    },
+    {
+      "actor_launcher_pid": 3919202,
+      "actor_session_id": "d7afb0ba3e3f4d5fa24a524aaab930b7",
+      "arm": "on_bm25",
+      "case_id": "source-08",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-08/on_bm25",
+      "max_rss_kib": 1201748,
+      "model_input_pin": {
+        "bytes": 1617,
+        "sha256": "8b18ecc07b73163fa1b28bf2e843deed696fa0edc5312b6ad3a4ce60597c8617"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": true,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.72338233795017,
+      "read_cpu_seconds": 0.00039258999998992294,
+      "read_wall_seconds": 0.0003956560976803303,
+      "relevant_key_delivered": true,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "f99c59205352d3886fbc65b344d1037b3824f65e1cc18b4613dcda6ec5b31093"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.24473399999999998,
+      "tensor_pin": {
+        "bytes": 979,
+        "sha256": "7636f4d6c44a1221db28809c7fadc122d09b0c60227ca8fc0b83d7555274944e"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "blue",
+      "user_cpu_seconds": 5.42211,
+      "wall_seconds": 4.751331978
+    },
+    {
+      "actor_launcher_pid": 3918271,
+      "actor_session_id": "2c283e3446f94b17939aaa616b184546",
+      "arm": "off",
+      "case_id": "source-08",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-08/off",
+      "max_rss_kib": 1202584,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "7200cf576d02ee69075708e4b431f634e0cecf7e8f08dd42ceec0ac23e08f2d7"
+      },
+      "output_tokens": 28,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 5.28987330198288,
+      "read_cpu_seconds": 1.43499999865071e-05,
+      "read_wall_seconds": 1.6969861462712288e-05,
+      "relevant_key_delivered": false,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "fddff30382a6a2cab977ce0b6cb0b4104055f058cbb5813881d39699001f1a59"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.28595,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "3a21aeaf683886e78afc5dbab09a219bb25cda4dd6045b615eefa4bf0a27f43e"
+      },
+      "text": "The courier must use the color badge \"B\" for parcel-3b0c3f886e9a.",
+      "truth": "blue",
+      "user_cpu_seconds": 7.40293,
+      "wall_seconds": 5.317708195
+    },
+    {
+      "actor_launcher_pid": 3916601,
+      "actor_session_id": "4ffb35911cf541b688aee6e368168179",
+      "arm": "delete",
+      "case_id": "source-08",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-08/delete",
+      "max_rss_kib": 1201988,
+      "model_input_pin": {
+        "bytes": 1619,
+        "sha256": "89b09570be38cf304facac022c4a603b38965cb8816bb920ceee3a602eee88a9"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "yellow"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.672689986182377,
+      "read_cpu_seconds": 0.00046613000000661486,
+      "read_wall_seconds": 0.0004749731160700321,
+      "relevant_key_delivered": false,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 471,
+        "sha256": "c7dbd94b933a37cf4f933f0b49ade84ba3425201cab63b204b8010b9153be2a1"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.26991499999999996,
+      "tensor_pin": {
+        "bytes": 979,
+        "sha256": "d63c74f0477424946e39b7b95b442044c5333160c6b720cc2090301eff10fe25"
+      },
+      "text": "The courier must use a yellow badge.",
+      "truth": "blue",
+      "user_cpu_seconds": 4.3206489999999995,
+      "wall_seconds": 4.703397998
+    },
+    {
+      "actor_launcher_pid": 3918966,
+      "actor_session_id": "03559579d59246219c8cd357bea75a46",
+      "arm": "replace",
+      "case_id": "source-08",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-08/replace",
+      "max_rss_kib": 1202684,
+      "model_input_pin": {
+        "bytes": 1620,
+        "sha256": "d5fa1dc2ee9a25d2a5f341b9973181be271cfc74a0234c88d852863a7bf77b73"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": true,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.755216878140345,
+      "read_cpu_seconds": 0.0003993599999887465,
+      "read_wall_seconds": 0.0004024549853056669,
+      "relevant_key_delivered": true,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 471,
+        "sha256": "006a573b027c51982d16f185feadb5e49e38adfa05f5af82df3dcab32e568a71"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.280443,
+      "tensor_pin": {
+        "bytes": 980,
+        "sha256": "724c84f76dde1914b316c095eb36edc746364c9576b3790b6521bafd67493b66"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "blue",
+      "user_cpu_seconds": 5.428227,
+      "wall_seconds": 4.784538309
+    },
+    {
+      "actor_launcher_pid": 3916430,
+      "actor_session_id": "fbfe4d67fb0446248667108f710c0302",
+      "arm": "retrieval_off",
+      "case_id": "source-08",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-08/retrieval_off",
+      "max_rss_kib": 1201912,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "7200cf576d02ee69075708e4b431f634e0cecf7e8f08dd42ceec0ac23e08f2d7"
+      },
+      "output_tokens": 28,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 5.255483698099852,
+      "read_cpu_seconds": 0.00019077000001743727,
+      "read_wall_seconds": 0.00019422313198447227,
+      "relevant_key_delivered": false,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "fddff30382a6a2cab977ce0b6cb0b4104055f058cbb5813881d39699001f1a59"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.284642,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "3a21aeaf683886e78afc5dbab09a219bb25cda4dd6045b615eefa4bf0a27f43e"
+      },
+      "text": "The courier must use the color badge \"B\" for parcel-3b0c3f886e9a.",
+      "truth": "blue",
+      "user_cpu_seconds": 7.389678,
+      "wall_seconds": 5.281834585
+    },
+    {
+      "actor_launcher_pid": 3917928,
+      "actor_session_id": "d5208762ea1245939f991b835a564dbd",
+      "arm": "delivery_off",
+      "case_id": "source-08",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-08/delivery_off",
+      "max_rss_kib": 1201328,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "7200cf576d02ee69075708e4b431f634e0cecf7e8f08dd42ceec0ac23e08f2d7"
+      },
+      "output_tokens": 28,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 5.304469157941639,
+      "read_cpu_seconds": 0.00041330999999900087,
+      "read_wall_seconds": 0.0004166548606008291,
+      "relevant_key_delivered": false,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "fddff30382a6a2cab977ce0b6cb0b4104055f058cbb5813881d39699001f1a59"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.25929199999999997,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "3a21aeaf683886e78afc5dbab09a219bb25cda4dd6045b615eefa4bf0a27f43e"
+      },
+      "text": "The courier must use the color badge \"B\" for parcel-3b0c3f886e9a.",
+      "truth": "blue",
+      "user_cpu_seconds": 7.385323,
+      "wall_seconds": 5.331925536
+    },
+    {
+      "actor_launcher_pid": 3918789,
+      "actor_session_id": "d8230a8a7dd2424bbfc1a6ef1df41f82",
+      "arm": "exact_kv",
+      "case_id": "source-08",
+      "delivered_records": 1,
+      "evidence_directory": "cohort/source-08/exact_kv",
+      "max_rss_kib": 1202420,
+      "model_input_pin": {
+        "bytes": 1457,
+        "sha256": "e83cfaf64ef6dd6828a027adc0b2c301132f984f039d196aeaa6240c331e80ab"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "blue"
+      ],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": true,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 119,
+      "provider_wall_seconds_with_setup": 4.692434124881402,
+      "read_cpu_seconds": 0.0003763910000031956,
+      "read_wall_seconds": 0.0003803160507231951,
+      "relevant_key_delivered": true,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 423,
+        "sha256": "1d1831df094aecc0c0e4e728b93802c56bcd1c185d2dfeafa3c53c780d05a2f6"
+      },
+      "retrieved_records": 1,
+      "system_cpu_seconds": 0.273445,
+      "tensor_pin": {
+        "bytes": 865,
+        "sha256": "a8178fdf0614668cabd16f620937ee3da1694584ad2cbff5146d8792d448d706"
+      },
+      "text": "The courier must use a blue badge.",
+      "truth": "blue",
+      "user_cpu_seconds": 5.339706,
+      "wall_seconds": 4.721067869
+    },
+    {
+      "actor_launcher_pid": 3917347,
+      "actor_session_id": "8fedd5148dbe4866b3e89eac431cc3e8",
+      "arm": "finite_icl",
+      "case_id": "source-08",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-08/finite_icl",
+      "max_rss_kib": 1201592,
+      "model_input_pin": {
+        "bytes": 1619,
+        "sha256": "9dcfcb85749c9c0b94a28665e5e47d5c438b0f34514241cebb64d80f9ecbe5ea"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": true,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.667476515984163,
+      "read_cpu_seconds": 0.0003603609999913715,
+      "read_wall_seconds": 0.00036361697129905224,
+      "relevant_key_delivered": false,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 471,
+        "sha256": "a952714715aca39932de423edfb4d87d939454270a936131879d306807e27ad1"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.25007799999999997,
+      "tensor_pin": {
+        "bytes": 979,
+        "sha256": "d3187eeff5a6a0e6550c9d7ebdfdad361818ccc2d53a5340d7a7d00c449837b7"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "blue",
+      "user_cpu_seconds": 5.391697,
+      "wall_seconds": 4.696642662
+    },
+    {
+      "actor_launcher_pid": 3917029,
+      "actor_session_id": "b95c99ee96474b79958b12d35102e3ae",
+      "arm": "uniform_replay",
+      "case_id": "source-08",
+      "delivered_records": 2,
+      "evidence_directory": "cohort/source-08/uniform_replay",
+      "max_rss_kib": 1201228,
+      "model_input_pin": {
+        "bytes": 1617,
+        "sha256": "8b18ecc07b73163fa1b28bf2e843deed696fa0edc5312b6ad3a4ce60597c8617"
+      },
+      "output_tokens": 10,
+      "posthoc_color_mentions": [
+        "purple"
+      ],
+      "posthoc_replacement_mentioned": true,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 138,
+      "provider_wall_seconds_with_setup": 4.737006946001202,
+      "read_cpu_seconds": 0.0003759800000011637,
+      "read_wall_seconds": 0.0003789758775383234,
+      "relevant_key_delivered": true,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 469,
+        "sha256": "f99c59205352d3886fbc65b344d1037b3824f65e1cc18b4613dcda6ec5b31093"
+      },
+      "retrieved_records": 2,
+      "system_cpu_seconds": 0.270434,
+      "tensor_pin": {
+        "bytes": 979,
+        "sha256": "7636f4d6c44a1221db28809c7fadc122d09b0c60227ca8fc0b83d7555274944e"
+      },
+      "text": "The courier must use a purple badge.",
+      "truth": "blue",
+      "user_cpu_seconds": 5.422663,
+      "wall_seconds": 4.765012343
+    },
+    {
+      "actor_launcher_pid": 3917543,
+      "actor_session_id": "f5b58c1e5b3241fb9cf53152dad8ff70",
+      "arm": "retention_off",
+      "case_id": "source-08",
+      "delivered_records": 0,
+      "evidence_directory": "cohort/source-08/retention_off",
+      "max_rss_kib": 1200516,
+      "model_input_pin": {
+        "bytes": 1301,
+        "sha256": "7200cf576d02ee69075708e4b431f634e0cecf7e8f08dd42ceec0ac23e08f2d7"
+      },
+      "output_tokens": 28,
+      "posthoc_color_mentions": [],
+      "posthoc_replacement_mentioned": false,
+      "posthoc_truth_mentioned": false,
+      "primary_correct": false,
+      "primary_selected": null,
+      "prompt_tokens": 99,
+      "provider_wall_seconds_with_setup": 5.254184766905382,
+      "read_cpu_seconds": 0.0001399699999922177,
+      "read_wall_seconds": 0.00014348491095006466,
+      "relevant_key_delivered": false,
+      "replacement": "purple",
+      "request_pin": {
+        "bytes": 381,
+        "sha256": "fddff30382a6a2cab977ce0b6cb0b4104055f058cbb5813881d39699001f1a59"
+      },
+      "retrieved_records": 0,
+      "system_cpu_seconds": 0.267436,
+      "tensor_pin": {
+        "bytes": 751,
+        "sha256": "3a21aeaf683886e78afc5dbab09a219bb25cda4dd6045b615eefa4bf0a27f43e"
+      },
+      "text": "The courier must use the color badge \"B\" for parcel-3b0c3f886e9a.",
+      "truth": "blue",
+      "user_cpu_seconds": 7.424108,
+      "wall_seconds": 5.284782492
+    }
+  ],
+  "schema": "hepta.mem12.independent-readback-review.v1",
+  "scientific_acceptance": "HOLD",
+  "shared_templates": 1,
+  "source_commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+  "source_tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+  "status": "VERIFIED_CONSISTENT"
+}
