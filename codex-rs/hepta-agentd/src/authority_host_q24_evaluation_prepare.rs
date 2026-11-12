@@ -106,7 +106,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         )
                         .map_err(io::Error::other)?;
                         let actual_work =
-                            benchmark::original_training_work(files, enrollment, &training)?;
+                            benchmark::read_original_b_training_work(files, enrollment, &training)?;
                         let (comparison, candidate_temporal, baseline_temporal) =
                             protocol.plans(&training, &actual_work)?;
                         let plan = observers

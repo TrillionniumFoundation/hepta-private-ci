@@ -86,8 +86,15 @@ impl OriginalBModelFiles {
         let model = original_baseline
             .read_single_head_candidate_data(baseline, candidate, self.head, heads)
             .map_err(io::Error::other)?;
-        let observed = work
-            .verify_original_training(training, &original_baseline, &model, self.head, heads)
+        let observed =
+            crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1::verify_original_training(
+                work,
+                training,
+                &original_baseline,
+                &model,
+                self.head,
+                heads,
+            )
             .map_err(io::Error::other)?;
         self.require_baseline(baseline)?;
         Ok(observed)

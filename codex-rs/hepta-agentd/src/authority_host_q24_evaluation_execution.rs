@@ -77,7 +77,8 @@ impl OriginalBExecution {
             files.fixed_expert.manifest().clone(),
         )
         .map_err(io::Error::other)?;
-        let actual_work = super::benchmark::original_training_work(files, enrollment, training)?;
+        let actual_work =
+            super::benchmark::read_original_b_training_work(files, enrollment, training)?;
         let (registration, candidate_plan, baseline_plan) =
             protocol.plans(training, &actual_work)?;
         let plan = observers

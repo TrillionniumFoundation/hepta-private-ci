@@ -44,7 +44,7 @@ pub(super) fn prepare_original_cells(
         .candidate()
         .ok_or_else(|| io::Error::other("original candidate missing"))?;
     let baseline = &training.request.selected_bundle;
-    let work = original_training_work(files, enrollment, training)?;
+    let work = read_original_b_training_work(files, enrollment, training)?;
     let (registration, _, _) = protocol.plans(training, &work)?;
     if registration
         .comparison
@@ -197,7 +197,7 @@ pub(super) fn require_original_cells(
         .model
         .require_baseline(&training.request.selected_bundle)?;
     files.model.input(protocol.benchmark_input())?;
-    let work = original_training_work(files, enrollment, training)?;
+    let work = read_original_b_training_work(files, enrollment, training)?;
     protocol.plans(training, &work)?;
     if enrollment.cell_images.as_ref() != Some(&physical_images(files)?) {
         return Err(io::Error::other("original B component images changed"));
@@ -214,7 +214,7 @@ pub(super) fn require_original_cells(
     Ok(())
 }
 
-pub(super) fn original_training_work(
+pub(super) fn read_original_b_training_work(
     files: &OriginalBInputs,
     enrollment: &OriginalBEnrollment,
     training: &LearningIterationSnapshotV1,
@@ -231,9 +231,12 @@ pub(super) fn original_training_work(
     let heads = files
         .candidate_data
         .require_digest(candidate.components.heads, 32_780)?;
-    let actual = files
-        .model
-        .observe_original_training_work(work, training, &heads)?;
+    let actual = super::model_data::OriginalBModelFiles::observe_original_training_work(
+        &files.model,
+        work,
+        training,
+        &heads,
+    )?;
     files
         .candidate_data
         .require_digest(candidate.components.heads, 32_780)?;

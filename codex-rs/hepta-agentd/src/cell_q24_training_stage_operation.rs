@@ -100,11 +100,12 @@ impl<'read, TW: AnchorWitnessStore, RW: AnchorWitnessStore>
             completed.receipt.clone(),
             completed.receipt.observed_unix_seconds,
         )?;
-        let work = self
-            .owners
-            .training
-            .read_original_work_with_source(self.dataset, self.source)
-            .map_err(owner_error)?;
+        let work = CellQ24TrainingOwnerV1::read_original_work_with_source(
+            &mut self.owners.training,
+            self.dataset,
+            self.source,
+        )
+        .map_err(owner_error)?;
         Ok(OriginalQ24TrainingOperationEvidenceV1 {
             completed,
             work,
