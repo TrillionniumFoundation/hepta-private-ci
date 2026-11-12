@@ -69,7 +69,7 @@ impl<'a> OriginalSourceCaptureExchange<'a> {
         self.begun
             || matches!(
                 &request.command,
-                Command::CaptureSource | Command::CaptureAck
+                Command::CaptureSource {} | Command::CaptureAck {}
             )
     }
 
@@ -92,7 +92,7 @@ impl<'a> OriginalSourceCaptureExchange<'a> {
             .checked_add(1)
             .ok_or_else(|| io::Error::other("original source capture sequence exhausted"))?;
         let phase = match &request.command {
-            Command::CaptureSource if self.receipt.is_none() => {
+            Command::CaptureSource {} if self.receipt.is_none() => {
                 let capability: RootHistoricalSourceCaptureCapabilityV1 = self
                     .capability
                     .ok_or_else(|| io::Error::other("Root source capture was not enabled"))?
@@ -105,7 +105,7 @@ impl<'a> OriginalSourceCaptureExchange<'a> {
                 self.receipt = Some(capability.capture()?);
                 SourceCapturePhase::Captured
             }
-            Command::CaptureAck if self.receipt.is_some() => SourceCapturePhase::Acknowledged,
+            Command::CaptureAck {} if self.receipt.is_some() => SourceCapturePhase::Acknowledged,
             _ => {
                 return Err(io::Error::other(
                     "source capture requires its one terminal ACK",
