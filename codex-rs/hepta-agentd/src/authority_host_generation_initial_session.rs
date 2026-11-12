@@ -139,6 +139,18 @@ impl RootGenerationInitialEnrollmentCapabilityV1 {
 }
 
 impl PreparedHostAuthoritySession {
+    /// Check the original deployment against this retained session's validated
+    /// Root configuration. A CLI config pathname is never an authority root.
+    pub fn require_original_historical_deployment(
+        &self,
+        files: &RootGenerationInitialDeploymentFilesV1,
+    ) -> io::Result<()> {
+        RootGenerationInitialDeploymentFilesV1::require_original_historical_root(
+            files,
+            &self.config.state_dir,
+        )
+    }
+
     /// Enable one independent initial-purpose route before A exists. The Root
     /// host retains the enrollment capability and supplies actual capabilities
     /// after the original consumer has opened its two nonce owners.
