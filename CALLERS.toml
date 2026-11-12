@@ -2537,7 +2537,7 @@ id = "root_original_private_sealed_bytes"
 symbol = "seal_bytes"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs"
 definition_markers = ["pub(crate) fn seal_bytes(", "require_root()?", "bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND", "libc::memfd_create(", "libc::F_ADD_SEALS", "validate_sealed(&file, bytes.len() as u64)?", "retained != bytes"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_registration.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs", "codex-rs/hepta-agentd/src/authority_host_original_publication_route.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs", "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_registration.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs", "codex-rs/hepta-agentd/src/authority_host_original_publication_route.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs", "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_route.rs", "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_route.rs"]
 caller_markers = []
 
 [[protected_file]]
