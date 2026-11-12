@@ -37,6 +37,13 @@ pub(super) struct OriginalBAuthorities {
     pub(super) evaluator: TrustedLearningSignerV1,
 }
 
+pub(super) struct OriginalBAdmittedSource {
+    pub(super) data: OriginalHoldoutSourceData,
+    pub(super) source_digest: Digest32,
+    pub(super) observed_digest: Digest32,
+    pub(super) policy_digest: Digest32,
+}
+
 impl RootIndependentBTrustData {
     pub(super) fn decode(bytes: &[u8]) -> io::Result<Self> {
         if bytes.is_empty() || bytes.len() > 65_536 {
@@ -158,7 +165,7 @@ impl OriginalBAuthorities {
         policy: &OriginalBFile,
         registered_at: u64,
         now: u64,
-    ) -> io::Result<OriginalHoldoutSourceData> {
+    ) -> io::Result<OriginalBAdmittedSource> {
         let bytes = source.read_stable(1_048_576)?;
         let data = OriginalHoldoutSourceData::decode(&bytes)?;
         let payload = [
@@ -168,10 +175,11 @@ impl OriginalBAuthorities {
         .concat();
         let observed =
             self.require_statement(observed, LearningEvidenceRoleV1::Observer, &payload, now)?;
+        let policy_payload = data.policy_payload()?;
         let policy = self.require_statement(
             policy,
             LearningEvidenceRoleV1::Generator,
-            &data.policy_payload()?,
+            &policy_payload,
             now,
         )?;
         data.require_original_times(registered_at, policy.issued_at, observed.issued_at, now)?;
@@ -182,6 +190,17 @@ impl OriginalBAuthorities {
                 "original B source changed during admission",
             ));
         }
-        Ok(data)
+        Ok(OriginalBAdmittedSource {
+            data,
+            source_digest: Digest32::of_bytes(&bytes),
+            observed_digest: Digest32::of_bytes(
+                &crate::learning_owner_evidence::encode(&payload, &observed)
+                    .map_err(io::Error::other)?,
+            ),
+            policy_digest: Digest32::of_bytes(
+                &crate::learning_owner_evidence::encode(&policy_payload, &policy)
+                    .map_err(io::Error::other)?,
+            ),
+        })
     }
 }
