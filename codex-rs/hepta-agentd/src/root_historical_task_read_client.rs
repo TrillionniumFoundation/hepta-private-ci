@@ -161,6 +161,31 @@ impl OriginalHistoricalTaskReadReceiptV1 {
         &self.client.initial
     }
 
+    /// Return only data from another complete physical read by the same Root.
+    /// No consumer-side Source or Cell file is opened after the refusal arms
+    /// return; pure decoding cannot hide a second physical read failure.
+    pub(crate) fn read_original_publication(
+        &self,
+    ) -> io::Result<(
+        crate::CircuitTaskSourcePublicationV1,
+        codex_hepta_neuron::CellDecisionReceiptV1,
+    )> {
+        let result = (|| {
+            let observed = self.client.observe()?;
+            if observed != self.data {
+                return Err(refused());
+            }
+            observed
+                .publication
+                .validate_against(&observed.ledger)
+                .map_err(io::Error::other)
+        })();
+        if result.is_err() {
+            self.client.fence();
+        }
+        result
+    }
+
     /// The caller performs real readonly file validation in this callback.
     /// No caller-supplied cut can replace either live original Root reply.
     pub(crate) fn with_current_read<T>(
