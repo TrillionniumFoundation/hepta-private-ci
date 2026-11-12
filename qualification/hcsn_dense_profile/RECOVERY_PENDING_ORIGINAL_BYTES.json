@@ -1,0 +1,131 @@
+{
+  "schema": "hcsn-v3-observed-recovery-pending-original-bytes-v1",
+  "all_closed": false,
+  "scientific_admission": "HOLD_NO_GO",
+  "v3_complete_raw_uploaded": false,
+  "v3_executed_source_uploaded": false,
+  "parent_complete_artifact_commit": "fa25828fc4faee625c10db1f70add43f0074ff41",
+  "environment_status": "unavailable",
+  "explanation": "Metadata-only recovery record. Values below were observed in completed local receipts before the managed environment disconnected again. No placeholder is presented as complete raw evidence or as source-qualified publication.",
+  "workspace_root": "/workspace/scratch/c06d659c1e72/dense-v3",
+  "observed": {
+    "finite_profile1": {
+      "directory": "evidence/finite-attempt001",
+      "wall_seconds": 16.536213479000253,
+      "raw_bytes": 56598,
+      "summary_bytes": 37643,
+      "profile": "1024 total, 800 uniform nodes to .5, 224 exponential far nodes to 8"
+    },
+    "normalized_profile1_dde": {
+      "directory": "evidence/dde-attempt001",
+      "wall_seconds": 39.19865132800078,
+      "cpu_seconds": 27.242962433,
+      "peak_rss_kib_linux": 449268,
+      "steps": 1890,
+      "reset": 0.32,
+      "time": 0.02,
+      "M": 4.82187912216847e-12,
+      "relative_M_error": 0.013307499930351845
+    },
+    "stricter_controls": [
+      {
+        "directory": "evidence/dde-atol16-attempt001",
+        "confirmed_exit": 0,
+        "wall_seconds": 26.772008876001564,
+        "steps": 2630,
+        "reset": 0.32,
+        "time": 0.02,
+        "M": 4.821765344694548e-12,
+        "relative_M_error": 0.013283589839549607
+      },
+      {
+        "directory": "evidence/dde-atol18-attempt001",
+        "confirmed_exit": 0,
+        "wall_seconds": 33.39678836100029,
+        "steps": 3401,
+        "reset": 0.32,
+        "time": 0.02,
+        "M": 4.821753670055285e-12,
+        "relative_M_error": 0.013281136439282916
+      }
+    ],
+    "positive_uniformization": {
+      "directory": "evidence/uniformization-attempt001",
+      "confirmed_exit": 0,
+      "wall_seconds": 2.3154572949988506,
+      "reset": 0.32,
+      "time": 0.02,
+      "M": 4.8217519231354735e-12,
+      "relative_M_error": 0.013280769327851489,
+      "poisson_truncation_bound": 3.758115002189558e-27,
+      "roundoff_certified": false,
+      "correction": "The persistent spectral/JF discrepancy was not dominated by DDE time integration. Positive series agrees with the tighter DDE; the rare spectral/JF result had cancellation error."
+    },
+    "profile2": {
+      "directory": "evidence/profile2-attempt001",
+      "confirmed_exit": 0,
+      "wall_seconds": 26.73347491200002,
+      "fixed_mesh": "1024 total: near960 on [0,.48], far64 to 8",
+      "original_reset_count": 184,
+      "supplemental_literal_resets": [
+        0.32,
+        0.327,
+        0.32025,
+        0.32725
+      ],
+      "time_002_maximum_relative_M": 0.009849900297919352,
+      "worst_reset": 0.32725,
+      "original_posteriors": 14336,
+      "maximum_scaled_continuation_error": 0.00003593897457556947,
+      "original_one_percent_value_failures": 0,
+      "v2_n512_maximum_scaled_value_error": 0.000004009563388424706,
+      "warning": "Right-tail coarsening worsens retained value accuracy. This was a fixed post-failure development profile, not a new scientific finite-risk gate."
+    },
+    "profile2_worst_actual_dde": {
+      "directory": "evidence/profile2-worst-dde-attempt001",
+      "confirmed_exit": 0,
+      "wall_seconds": 41.22974369199983,
+      "reset": 0.32725,
+      "time": 0.02,
+      "atol": 1e-18,
+      "M": 1.7458127713766878e-12,
+      "positive_M": 1.7458119698910728e-12,
+      "dde_minus_positive_M": 8.014856150244219e-19,
+      "relative_M_error": 0.009850363910371892
+    },
+    "worst_continuum_reference": {
+      "directory": "evidence/rare-continuum-reference-attempt001",
+      "confirmed_exit": 0,
+      "wall_seconds": 4.693745550999665,
+      "model_executions": 0,
+      "kernel_executions": 0,
+      "optimizer_executions": 0,
+      "exact_binary_float_inputs_100digit_M": "0.000000000001728783623562190402466486064112420855726862836353984306505282884411844371081811449251144566920300002",
+      "gl64_M": 1.7287836235621647e-12,
+      "gl128_M": 1.7287836235623077e-12,
+      "gl64_relative_vs_highprecision": -1.4859602515716875e-14,
+      "gl128_relative_vs_highprecision": 6.784563566492145e-14
+    },
+    "engineering_tests": {
+      "stdout": "tests001.stdout",
+      "stderr": "tests001.stderr",
+      "tests": 5,
+      "observed_exit": 0,
+      "not_yet_published_as_v3_source_test_evidence": true
+    },
+    "additional_same1024_value_audit": {
+      "directory": "evidence/value-tradeoff-attempt001",
+      "session": 33774,
+      "observed_exit": 1,
+      "stderr_read": false,
+      "mathematical_failure_inferred": false
+    }
+  },
+  "pending": [
+    "Recover and hash original source, all SUMMARY/RAW arrays, stdout/stderr and CONTROLLED_CORE_ORIGIN.json; compare to the recorded executing source guards before uploading.",
+    "Read value-tradeoff001.stderr for the terminal exit 1; do not infer a mathematical rejection or relabel an unknown error.",
+    "Publish the authentic source/raw stages with original identities; retain all older controls and the profile1 failure.",
+    "Keep exact v2 gradient/source qualifications separate from new profiles; do not claim relative precision below the absolute positive-series truncation bound.",
+    "No full filtered trajectory, independent future-task benefit, full costs/energy, original C2 replay, merge or production authority is established."
+  ]
+}
