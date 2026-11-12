@@ -394,7 +394,7 @@ impl PreparedHostAuthoritySession {
                         "initial publication requires a distinct lane",
                     ));
                 }
-                generation_initial::BoundInitial::bind(runtime, &config)
+                generation_initial::BoundInitial::bind(runtime, &config, session_end)
             })
             .transpose()?;
         if text_ui.is_some()

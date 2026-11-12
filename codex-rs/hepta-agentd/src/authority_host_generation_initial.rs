@@ -44,6 +44,8 @@ mod data_refusal;
 mod enrollment;
 #[path = "authority_host_historical_source_pin.rs"]
 pub(crate) mod historical_source_pin;
+#[path = "root_generation_initial_ready_data.rs"]
+pub(crate) mod ready;
 pub use historical_source_pin::RootHistoricalSourceInputsV1;
 pub(crate) use historical_source_pin::cell as cell_retention;
 #[path = "authority_host_historical_source_handoff.rs"]

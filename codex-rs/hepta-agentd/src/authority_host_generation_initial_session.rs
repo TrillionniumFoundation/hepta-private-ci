@@ -4,6 +4,7 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicU8;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
@@ -52,6 +53,10 @@ pub(super) struct InitialRuntime {
     source_capture: Option<source_capture::HistoricalSourceRuntime>,
     peer_source_capture: Mutex<Option<RootHistoricalSourceCaptureCapabilityV1>>,
     run_start: Option<Arc<RootInitialRunStartFilesV1>>,
+    original_end: Arc<OnceLock<Instant>>,
+    peer_deployment: Option<RootGenerationInitialDeploymentV1>,
+    ready_binding: String,
+    writer: String,
 }
 
 /// A consumed original Root registration acknowledgement. The digest is a
@@ -77,6 +82,7 @@ pub struct RootGenerationInitialEnrollmentCapabilityV1 {
     boot_id: String,
     process_start_ticks: u64,
     lifetime: Duration,
+    original_end: Arc<OnceLock<Instant>>,
 }
 
 impl RootGenerationInitialEnrollmentCapabilityV1 {
@@ -88,9 +94,13 @@ impl RootGenerationInitialEnrollmentCapabilityV1 {
         inputs: crate::RootGenerationInitialEnrollmentV1,
     ) -> io::Result<RootGenerationInitialRegistrationV1> {
         crate::authority_host_service::generation_initial::original_root()?;
+        let end = *self.original_end.get().ok_or_else(|| {
+            io::Error::other("original Initial listeners have not established their deadline")
+        })?;
         if std::process::id() != self.root_pid
             || std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim() != self.boot_id
             || root_start()? != self.process_start_ticks
+            || Instant::now() >= end
             || self
                 .phase
                 .compare_exchange(ACTIVE, CONSUMED, Ordering::AcqRel, Ordering::Acquire)
@@ -107,11 +117,19 @@ impl RootGenerationInitialEnrollmentCapabilityV1 {
                 acknowledgement,
             })
             .map_err(|_| io::Error::other("original initial enrollment channel unavailable"))?;
-        let binding = receiver
-            .recv_timeout(self.lifetime)
-            .map_err(|_| io::Error::other("initial enrollment acknowledgement uncertain"))?
-            .map_err(io::Error::other)?;
-        if self.phase.load(Ordering::Acquire) != CONSUMED {
+        let binding =
+            receiver
+                .recv_timeout(end.checked_duration_since(Instant::now()).ok_or_else(|| {
+                    io::Error::other("original Initial enrollment deadline expired")
+                })?)
+                .map_err(|_| io::Error::other("initial enrollment acknowledgement uncertain"))?
+                .map_err(io::Error::other)?;
+        if self.phase.load(Ordering::Acquire) != CONSUMED
+            || Instant::now() >= end
+            || std::process::id() != self.root_pid
+            || root_start()? != self.process_start_ticks
+            || std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim() != self.boot_id
+        {
             return Err(io::Error::other(
                 "original initial session ended during enrollment",
             ));
@@ -192,6 +210,9 @@ impl PreparedHostAuthoritySession {
             captured.ok_or_else(|| io::Error::other("original initial route capture missing"))?;
         let (sender, receiver) = mpsc::sync_channel(1);
         let phase = Arc::new(AtomicU8::new(PREPARED));
+        let original_end = Arc::new(OnceLock::new());
+        let ready_binding =
+            crate::authority_host_service::generation_initial::ready::bootstrap_binding(&bundle)?;
         self.initial_publication = Some(InitialRuntime {
             receiver: Mutex::new(receiver),
             phase: Arc::clone(&phase),
@@ -200,6 +221,10 @@ impl PreparedHostAuthoritySession {
             source_capture: None,
             peer_source_capture: Mutex::new(None),
             run_start: None,
+            original_end: Arc::clone(&original_end),
+            peer_deployment: None,
+            ready_binding,
+            writer: bundle.writer,
         });
         Ok((
             RootGenerationInitialEnrollmentCapabilityV1 {
@@ -210,6 +235,7 @@ impl PreparedHostAuthoritySession {
                 boot_id: bundle.root.boot_id,
                 process_start_ticks: bundle.root.process_start_ticks,
                 lifetime: Duration::from_millis(self.config.lifetime_ms),
+                original_end,
             },
             crate::RootGenerationInitialOfferV1 { bootstrap },
         ))
