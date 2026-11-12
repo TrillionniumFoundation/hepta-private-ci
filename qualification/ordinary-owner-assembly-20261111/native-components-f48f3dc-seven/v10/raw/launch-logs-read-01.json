@@ -1,0 +1,22 @@
+{
+  "request": {
+    "host": "ai395",
+    "paths": [
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/original-rust-idle-preflight.launch.log",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/isolated-clone.launch.log",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/fetch-exact-source.launch.log"
+    ],
+    "max_file_bytes": 65536,
+    "max_response_bytes": 65536
+  },
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/original-rust-idle-preflight.launch.log\",\"sha256\":\"b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3\",\"size\":47,\"text\":\"{\\\"actual_preflight_uid\\\": 0, \\\"active_rust\\\": []}\\n\",\"version\":\"66306:75807584:47:1794483547073812859:1794483547073812859\"},{\"eof\":true,\"path\":\"/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/isolated-clone.launch.log\",\"sha256\":\"b11d5027e4bc3331e5cff269d029f28e566e1c8092f2b30af500290166ab6dc2\",\"size\":105,\"text\":\"Cloning into '/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/source'...\\n\",\"version\":\"66306:75807585:105:1794483547107811634:1794483547107811634\"},{\"eof\":true,\"path\":\"/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/fetch-exact-source.launch.log\",\"sha256\":\"63600b9c97d67b79480687a89acd23a8274f38e048daabf7816874b37f16115b\",\"size\":237,\"text\":\"error: RPC failed; curl 56 Recv failure: Connection reset by peer\\nerror: 7628 bytes of body are still expected\\nfetch-pack: unexpected disconnect while reading sideband packet\\nfatal: early EOF\\nfatal: fetch-pack: invalid index-pack output\\n\",\"version\":\"66306:75807607:237:1794483742662762720:1794483742662762720\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

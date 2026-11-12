@@ -1,0 +1,291 @@
+{
+  "schema": "hepta.original-native-exact-source-fetch-failure.v1",
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "status": "FAILED_BEFORE_CHECKOUT_AND_ALL_MAINTENANCE_OR_NATIVE_GATES",
+  "source": {
+    "head": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+    "tree": "384222cf500019cb1293723dd8668eeb35a1e4cb",
+    "change": "Six diagnostic Rust files only; diagnosis, not semantic repair or phase assembly",
+    "callers": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "allowlist": "8fd9bd5dde2f4b57fd7c3d44c41c47c46d93059b"
+  },
+  "original_entry": {
+    "harness": {
+      "git_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+      "bytes": 50167,
+      "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+    },
+    "request": {
+      "git_blob": "20911e9bcdaaf618eb3465dddb18664673e86833",
+      "bytes": 56729,
+      "sha256": "e8076899a41b0295fa8b8645ce401238421ed428ed87a87fff89f66f453f5b6b"
+    },
+    "config": {
+      "head": "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8",
+      "tree": "384222cf500019cb1293723dd8668eeb35a1e4cb",
+      "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+      "work_root": "/home/qq/af52-learning-local-decision-20261111",
+      "work_name": "ordinary-f48f3dc-seven-final-v10",
+      "attempt": "ordinary-f48f3dc-seven-final-v10",
+      "reference_repository": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+      "operator_target": "/home/qq/af52-learning-20261111/target",
+      "root_target": "/var/tmp/hepta-af52-root-component-target-20261111",
+      "just_path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "rustc_path": "/home/qq/.cargo/bin/rustc",
+      "cargo_home": "/home/qq/.cargo",
+      "rustup_home": "/home/qq/.rustup",
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+      "ordinary_packages": [
+        "codex-hepta-agentd",
+        "codex-hepta-learning-artifacts",
+        "codex-hepta-intelligence-eval",
+        "codex-hepta-contracts",
+        "codex-hepta-neuron",
+        "codex-hepta-learning-ledger",
+        "codex-hepta-fleet"
+      ],
+      "root_packages": [
+        "codex-hepta-agentd",
+        "codex-hepta-contracts"
+      ],
+      "expected_root_parents": [
+        "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+        "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+        "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+        "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+        "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+        "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+        "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+        "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+        "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+        "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+        "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+        "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+        "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+        "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+        "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+        "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+        "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+      ],
+      "overall_timeout_seconds": 27000,
+      "full_caller_timeout_seconds": 3600
+    },
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "retries": 0,
+    "full_caller_timeout_seconds": 3600,
+    "total_timeout_seconds": 27000,
+    "request_freshness_ms": 500,
+    "deadline_origin": "original request_started_ns; unchanged"
+  },
+  "session": {
+    "id": "dpty-23f66631257216f02525273717f055e22098d26d907cb1680566e054fc23d4a5",
+    "admission": {
+      "git_blob": "fe8aa04e4bfa82bf13dd6d89393fceef39fb8b4a",
+      "bytes": 582,
+      "sha256": "d2236d309e9c8ff91fcc098e3a493434e90ece2160211e9abbba73a7d5cb578d"
+    },
+    "terminal_status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 1631,
+      "bytes_stored": 1631,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794483547021,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 347254,
+      "pid": 347255,
+      "state": "exited"
+    },
+    "terminal": {
+      "git_blob": "f7385a36c17932f4a7758df015bf088f6bea3503",
+      "bytes": 1631,
+      "sha256": "c78d3de084bfb24e7a9bed65f9a6b8ce165adf857e76b651426f9e4a1e916701"
+    },
+    "full_original_bytes_independently_fetched": true,
+    "all_cursors_contiguous": true
+  },
+  "observed_failure": {
+    "stage": "fetch-exact-source",
+    "exit_code": 128,
+    "timed_out": false,
+    "elapsed_seconds": 194.74196172691882,
+    "original_log": {
+      "git_blob": "f5809f7fdde11b3cb4572d70c5272751558e0541",
+      "bytes": 237,
+      "sha256": "63600b9c97d67b79480687a89acd23a8274f38e048daabf7816874b37f16115b"
+    },
+    "error_text": "error: RPC failed; curl 56 Recv failure: Connection reset by peer\nerror: 7628 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\n",
+    "interpretation": "The original git fetch reported connection reset, unexpected disconnect and early EOF. The cause beyond those messages is not established."
+  },
+  "executed_steps": [
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.03306069993413985,
+      "exit_code": 0,
+      "launcher_pid": 347257,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "--no-hardlinks",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/source"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.821242710808292,
+      "exit_code": 0,
+      "launcher_pid": 347284,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/isolated-clone.launch.log",
+        "sha256": "b11d5027e4bc3331e5cff269d029f28e566e1c8092f2b30af500290166ab6dc2"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/source",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "f48f3dc42602f28d8e7e6ab8845d3a02547d1cd8"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 194.74196172691882,
+      "exit_code": 128,
+      "launcher_pid": 347345,
+      "log": {
+        "bytes": 237,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f48f3dc-seven-final-v10/records/fetch-exact-source.launch.log",
+        "sha256": "63600b9c97d67b79480687a89acd23a8274f38e048daabf7816874b37f16115b"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    }
+  ],
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_unchanged": true,
+  "gates": {
+    "exact_checkout": "NOT_REACHED",
+    "format_and_fix": "NOT_REACHED",
+    "original_full_caller": "NOT_REACHED",
+    "same_source_typed_helper": "NOT_REACHED",
+    "ordinary_all_seven_packages": "NOT_REACHED",
+    "exact_root_seventeen": "NOT_REACHED",
+    "qa": "NOT_REACHED",
+    "source_clean_after_native": "NOT_REACHED"
+  },
+  "acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "predecessor_pass_inherited": false,
+    "exemptions": false,
+    "fetch_or_native_retries": 0
+  },
+  "limits": [
+    "Only the original read-only-reference cleanup was reached and passed. No nine-check cleanup or source-checkout verification is claimed for this attempt.",
+    "All three original launch logs and the complete final progress and PTY bytes were independently fetched and hash checked. No native results or archive were produced by the reached stages.",
+    "The failed isolated checkout remains preserved. No network, credentials, permissions, source substitution or harness repair was performed.",
+    "V34 remains a separate FAILED native qualification for d9737937, with its own 1950/1950 ordinary and 16/17 Root results. None is attributed to f48f3dc."
+  ],
+  "supersedes": "LIVE_CHECKPOINT.json only for this attempt's now-terminal status; the original checkpoint and all prior evidence remain retained.",
+  "artifacts": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/progress.final.json",
+      "git_blob": "634410f3ad2d225f0286d9dbf64eabda5aa7705a",
+      "bytes": 7821,
+      "sha256": "fbc6e12b7744a1b82ea301344c728b62dd009be57ce8799c5860069c88f68524"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/terminal.complete.log",
+      "git_blob": "f7385a36c17932f4a7758df015bf088f6bea3503",
+      "bytes": 1631,
+      "sha256": "c78d3de084bfb24e7a9bed65f9a6b8ce165adf857e76b651426f9e4a1e916701"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/logs/original-rust-idle-preflight.launch.log",
+      "git_blob": "390f40f872279f9dbb386a38d392d2bb3d021f4c",
+      "bytes": 47,
+      "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/logs/isolated-clone.launch.log",
+      "git_blob": "d34ce2ab6571a3e6a5460aa859a9027124685271",
+      "bytes": 105,
+      "sha256": "b11d5027e4bc3331e5cff269d029f28e566e1c8092f2b30af500290166ab6dc2"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/logs/fetch-exact-source.launch.log",
+      "git_blob": "f5809f7fdde11b3cb4572d70c5272751558e0541",
+      "bytes": 237,
+      "sha256": "63600b9c97d67b79480687a89acd23a8274f38e048daabf7816874b37f16115b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/raw/pty-read-02.json",
+      "git_blob": "4232d21aa8b7ce9382a044973990369ceec5a793",
+      "bytes": 1227,
+      "sha256": "112447298abb848f89402d467adb180f7b811e2f9c1ffbcb995be93eb5c82c2c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/raw/pty-read-03.json",
+      "git_blob": "7d4a89186d9c47942269a5f49639ddd2273c14fc",
+      "bytes": 3096,
+      "sha256": "b7044544ce7b4255d09a9e6fabe997984555e157ff4ab46fc8aa6669c6a502df"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/raw/progress-read-01.json",
+      "git_blob": "ac3726c980b9ed08f530d29cbbb0ccb0fc5d77ee",
+      "bytes": 10049,
+      "sha256": "7e6105e609b204edbc545639823770b6e0645c70575168737c1fb90ba8121102"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-f48f3dc-seven/v10/raw/launch-logs-read-01.json",
+      "git_blob": "edb5f47b248fddfae208a66fb83c052e3db86446",
+      "bytes": 2194,
+      "sha256": "b1fc969e93eb8c9007095220c0ccd725d2ecf2ce472a1d7713bfb4d8c9d6e21e"
+    }
+  ]
+}
