@@ -1,0 +1,302 @@
+{
+  "schema": "hepta.root-source-terminal.reconstruction.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_ref": "d95c8993",
+  "local_git_object_freeze_completed": false,
+  "ref_updated": false,
+  "source_status": "new-unqualified-candidate",
+  "exact_recovered_original_files": 17,
+  "final_exact_original_files": 15,
+  "final_new_candidate_files": 4,
+  "verification": {
+    "old_local_source_qa_methods_passed": 21,
+    "old_result_applies_to_new_candidate": false,
+    "new_full_caller_checker": "pending",
+    "new_rustfmt": "pending",
+    "new_native_compile": "pending",
+    "new_native_tests": "pending",
+    "whole_ordinary_A_B_C_cold": "not established"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs",
+      "git_blob": "3d735fca85697897979d7730572868bc89882eda",
+      "bytes": 10896,
+      "lines": 310,
+      "sha256": "a70ff23d4a5b9ef39718209ad7a87da337f69c8864fc5579bc72d2a5e34c553f",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "a70ff23d4a5b9ef39718209ad7a87da337f69c8864fc5579bc72d2a5e34c553f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "git_blob": "d6024ad3be82adc60ef934d399db261f4977d0c0",
+      "bytes": 8401,
+      "lines": 224,
+      "sha256": "7f1939d2c58f7d3572c50a67545e4a4f24349d84a8f610e0c124dedfd98c8463",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "7f1939d2c58f7d3572c50a67545e4a4f24349d84a8f610e0c124dedfd98c8463"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs",
+      "git_blob": "239c9fefc4d2661d886fe5ab57510b3e282aa01b",
+      "bytes": 8926,
+      "lines": 226,
+      "sha256": "96c877fdaf1b2c8c677d2f81a5afbff025a14c8adfefbd80c3a33570d195db31",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "96c877fdaf1b2c8c677d2f81a5afbff025a14c8adfefbd80c3a33570d195db31"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "git_blob": "619aafa26783e6a01bcdc6905281da8c4c950b99",
+      "bytes": 18581,
+      "lines": 403,
+      "sha256": "2c960b42d7390ad6fd620fb377523fc5b6704962d3922fe84be835cc4037ea17",
+      "exact_last_local_bytes": false,
+      "last_local_sha256": "b8d8ac945ac33d7630a8db6d45cbb7c783362244d7dd70d2df577cedf8ecc325"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs",
+      "git_blob": "f55963844e5c23e9315f2fa5e63cb2316787f0a1",
+      "bytes": 19922,
+      "lines": 487,
+      "sha256": "d19517cace2076d80364b3798ea36675d46b37e364f252c77c4878987906f6ab",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "d19517cace2076d80364b3798ea36675d46b37e364f252c77c4878987906f6ab"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_session.rs",
+      "git_blob": "5387406516ea7f995ad43414b41a4ea30ba52705",
+      "bytes": 12782,
+      "lines": 345,
+      "sha256": "f4bd75f51bf25fcbe73c026135e9c1e1e6ab2d36406efee193dcce39d062f4c4",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "f4bd75f51bf25fcbe73c026135e9c1e1e6ab2d36406efee193dcce39d062f4c4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs",
+      "git_blob": "05c20b4d45d518d03b0f060ed3bcf8e5e66d880d",
+      "bytes": 8963,
+      "lines": 243,
+      "sha256": "54d8243707f2e81e09bee713ea8206cd43af7025026325d9fa6b4972cea852d0",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "54d8243707f2e81e09bee713ea8206cd43af7025026325d9fa6b4972cea852d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_handoff_tests.rs",
+      "git_blob": "e5a9600a632e7d37b84e30524e6ed0c8bfdbbe78",
+      "bytes": 6226,
+      "lines": 133,
+      "sha256": "79ed90581e3ffe654e60e378d34c32a932e4094308cc386e968de4051b3510fe",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "79ed90581e3ffe654e60e378d34c32a932e4094308cc386e968de4051b3510fe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs",
+      "git_blob": "17d4621866be541aa3a7aa80ec6409bcdaca9847",
+      "bytes": 11007,
+      "lines": 269,
+      "sha256": "2dcbd6457ef15512eae501464c1f9454c93db361379852ddb0c6a930f6a11319",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "2dcbd6457ef15512eae501464c1f9454c93db361379852ddb0c6a930f6a11319"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_transport_tests.rs",
+      "git_blob": "7593a266e0b700c084fbf6e96165de0570dd0661",
+      "bytes": 1353,
+      "lines": 35,
+      "sha256": "41f84f60dcabbcbc0c85678c5d5f888c245370f025ec7551b24f26c0600c63d5",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "41f84f60dcabbcbc0c85678c5d5f888c245370f025ec7551b24f26c0600c63d5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment.rs",
+      "git_blob": "4ff0fb30d06fd947cfca3349eb0c0ec018029f15",
+      "bytes": 3209,
+      "lines": 73,
+      "sha256": "e9086039bb5b5f1b405dc2526aa45a0d5f5417b38b2e6b9d77f96fb9fa7bf2e4",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "e9086039bb5b5f1b405dc2526aa45a0d5f5417b38b2e6b9d77f96fb9fa7bf2e4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs",
+      "git_blob": "2b9b6d51015f9d4f338f32bfdd6ad1a8cd9af785",
+      "bytes": 5795,
+      "lines": 169,
+      "sha256": "3f62d2c1c2d5a7f168b82a87718c3a1587f28856a51927adc8e07bbd099e05c1",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "3f62d2c1c2d5a7f168b82a87718c3a1587f28856a51927adc8e07bbd099e05c1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_cell.rs",
+      "git_blob": "3a1d1fa027b954a7c19d6cb5c3670ea6b9316ef3",
+      "bytes": 9398,
+      "lines": 238,
+      "sha256": "084eadf94c5ff69809e42fed2b14a88baa243963be8e9c8364fb767071a428fa",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "084eadf94c5ff69809e42fed2b14a88baa243963be8e9c8364fb767071a428fa"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "git_blob": "b18a09de79a1e0afdc0fb800a93a020efdbe6eaa",
+      "bytes": 24492,
+      "lines": 529,
+      "sha256": "b0edbeb23f62c7e6acc3fa58d9d53937684f4babe2438d6626bb0ec665168286",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "b0edbeb23f62c7e6acc3fa58d9d53937684f4babe2438d6626bb0ec665168286"
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "5f9946763dca5292358ee8b12ab64dd66490963b",
+      "bytes": 693791,
+      "lines": 7250,
+      "sha256": "4ecacf6c2b7640c9f0a2370adc2c440774425402a56a9cf79429691c51be4faa",
+      "exact_last_local_bytes": false,
+      "last_local_sha256": "8929f1d2bbb901566f48a031b2a6f942099c76e5189ff50bb86cb642dd6cef13"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "git_blob": "aca0f0df6a3627b630d5a82b63733158c932ce51",
+      "bytes": 11742,
+      "lines": 93,
+      "sha256": "58ed6f4eb91cdd48fd77fd189ffa22876e2ab85b3004146e86fa144569794a89",
+      "exact_last_local_bytes": false,
+      "last_local_sha256": "98081ad41b4b3c29b872047f1eea22d02e86373c667dfa7e5aef7a99f9788643"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_historical_capture_source_closure.py",
+      "git_blob": "503eb8f56698c9d3ec0aba456f2f1b28d48d4461",
+      "bytes": 16273,
+      "lines": 310,
+      "sha256": "0946d67536c87c2beacdf9175b9d212fc118653ece19294939079ad9f534cad2",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "0946d67536c87c2beacdf9175b9d212fc118653ece19294939079ad9f534cad2"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_historical_handoff_source_closure.py",
+      "git_blob": "353dad3bf4e5766d03bda8bf0e65fb2799aa328e",
+      "bytes": 11763,
+      "lines": 209,
+      "sha256": "8c3d51864927093e81f364e43faef41edc836d1c91713d0957d286923daf374c",
+      "exact_last_local_bytes": true,
+      "last_local_sha256": "8c3d51864927093e81f364e43faef41edc836d1c91713d0957d286923daf374c"
+    },
+    {
+      "path": "qualification/learn-eval-historical-readback-20261112/root-source-terminal-handoff.md",
+      "git_blob": "324f2390c7f7cb4fe1d5bf9c84e8e56210d37155",
+      "bytes": 8452,
+      "lines": 127,
+      "sha256": "56ea797005e2a127fe5ceb09302b7cc25161918958539a77786e2bd7b9bc4d4f",
+      "exact_last_local_bytes": false,
+      "last_local_sha256": "921fa868574dbacb3368f9c06faa25fcfbd5972914ccc7ef8c57203488cb7c63"
+    }
+  ],
+  "callers_audit": {
+    "baseBoundaries": 497,
+    "baseProtected": 364,
+    "finalBoundaries": 504,
+    "finalProtected": 369,
+    "oldTableOrderPreserved": true,
+    "oldRows": 861,
+    "unchangedOldRows": 851,
+    "changedOldRows": [
+      {
+        "index": 342,
+        "type": "protected_file",
+        "id": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+      },
+      {
+        "index": 599,
+        "type": "boundary",
+        "id": "root_generation_current_original_broker_head"
+      },
+      {
+        "index": 741,
+        "type": "boundary",
+        "id": "root_initial_original_writer_context"
+      },
+      {
+        "index": 758,
+        "type": "boundary",
+        "id": "root_initial_exact_retained_record"
+      },
+      {
+        "index": 772,
+        "type": "protected_file",
+        "id": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+      },
+      {
+        "index": 774,
+        "type": "protected_file",
+        "id": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"
+      },
+      {
+        "index": 856,
+        "type": "boundary",
+        "id": "root_historical_source_enable_unconnected"
+      },
+      {
+        "index": 857,
+        "type": "boundary",
+        "id": "root_historical_source_request_unconnected"
+      },
+      {
+        "index": 858,
+        "type": "protected_file",
+        "id": "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs"
+      },
+      {
+        "index": 860,
+        "type": "protected_file",
+        "id": "codex-rs/hepta-agentd/src/authority_host_historical_source_session.rs"
+      }
+    ],
+    "missingOrOrderMismatch": [],
+    "unexpectedChanges": [],
+    "newRows": [
+      "root_historical_source_deployment_enable",
+      "root_historical_source_handoff_begin",
+      "root_historical_source_handoff_ack",
+      "root_historical_source_handoff_existing",
+      "root_historical_source_handoff_fence",
+      "root_historical_source_pin_publisher",
+      "codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs",
+      "codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs",
+      "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment.rs",
+      "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs",
+      "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_cell.rs",
+      "root_historical_source_handoff_finalize"
+    ]
+  },
+  "forbidden_audit": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_session.rs",
+      "forbiddenUnchanged": true,
+      "oldRequiredRetained": true,
+      "oldOrderRetained": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "forbiddenUnchanged": true,
+      "oldRequiredRetained": true,
+      "oldOrderRetained": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs",
+      "forbiddenUnchanged": true,
+      "oldRequiredRetained": true,
+      "oldOrderRetained": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs",
+      "forbiddenUnchanged": true,
+      "oldRequiredRetained": true,
+      "oldOrderRetained": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "forbiddenUnchanged": true,
+      "oldRequiredRetained": true,
+      "oldOrderRetained": true
+    }
+  ]
+}
