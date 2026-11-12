@@ -38,10 +38,10 @@ impl PublishedCircuitFeatureTaskV1 {
         mode: OriginalSuccessorRecoveryModeV1,
     ) -> Result<OriginalHistoricalCircuitFeatureSourcesV1, AgentdError> {
         self.require_current()?;
-        let current = self
-            .0
-            .current
-            .original_historical_successor_current(&original_a)?;
+        let current = LiveGenerationCurrent::original_historical_successor_current(
+            &self.0.current,
+            &original_a,
+        )?;
         let data = NeuronGenerationCurrentOwnerV1::read_original_completed_successor(
             &current,
             &original_a,
@@ -95,7 +95,7 @@ impl OriginalHistoricalCircuitFeatureSourcesV1 {
             let data = NeuronGenerationCurrentOwnerV1::read_original_completed_successor(
                 &held.current,
                 &held.original_a,
-                false,
+                /*capture_retired*/ false,
             )?;
             if data != held.data
                 || data.cut.definition
@@ -108,10 +108,10 @@ impl OriginalHistoricalCircuitFeatureSourcesV1 {
             {
                 return Err(invalid("historical C differs from the original Root cut"));
             }
-            let (source, decision) = data
-                .cut
-                .publication
-                .decode_original_successor_data()
+            let (source, decision) =
+                crate::circuit_task::RootHistoricalTaskPublicationDataV1::decode_original_successor_data(
+                    &data.cut.publication,
+                )
                 .map_err(invalid)?;
             let input = source.input();
             if input != &source_input(held.task.source(), input.operation_id.clone())

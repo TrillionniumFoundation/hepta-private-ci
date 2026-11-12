@@ -98,6 +98,7 @@ pub(crate) struct LiveGenerationCurrent {
 }
 
 impl LiveGenerationCurrent {
+    #[cfg(target_os = "linux")]
     pub(crate) fn original_historical_successor_current(
         &self,
         original_a: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
