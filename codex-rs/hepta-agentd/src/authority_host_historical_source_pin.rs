@@ -167,7 +167,7 @@ impl HostAuthorityService {
             Arc::clone(&slot.root),
             &slot.profile.deployment.target,
             |access| {
-                OriginalSourceDataCaptureV1::with_original_capture(data, |mut cell, mut ledger| {
+                OriginalSourceDataCaptureV1::with_original_capture(data, |cell, ledger| {
                     let mut retained = None;
                     self.with_initial_publication_context(
                         config,

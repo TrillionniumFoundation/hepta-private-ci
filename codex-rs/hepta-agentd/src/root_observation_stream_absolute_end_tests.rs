@@ -1,5 +1,6 @@
 //! Real same-UID socket/pidfd component; this does not stand in for Root.
 
+use std::io;
 use std::os::fd::FromRawFd;
 
 use super::*;
