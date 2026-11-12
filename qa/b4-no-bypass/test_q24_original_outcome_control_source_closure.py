@@ -208,7 +208,8 @@ class OriginalQ24OutcomeControlSourceTests(unittest.TestCase):
     def test_current_readiness_and_generation_fence_are_all_required(self):
         self.rejects_removal(STATE, "require_original_q24_outcome_current", (
             "self.refresh_generation()?;", "self.runtime.lock().map_err(poisoned_state)?",
-            "runtime.current_generation != self.identity.spawn_generation",
+            "let running_generation = self.identity.spawn_generation.checked_add(1);",
+            "Some(runtime.current_generation) != running_generation",
             "runtime.lifecycle != AgentLifecycle::Running", "!runtime.app_server_ready",
             "!runtime.critical_stores_ready", "!runtime.revocation_ready",
             "!runtime.required_ports_ready", "!runtime.admission_open",
