@@ -163,6 +163,8 @@ pub(crate) use authority_host_runtime::serve_independent_b_until;
 #[cfg(target_os = "linux")]
 mod root_independent_b_protocol;
 #[cfg(target_os = "linux")]
+mod root_independent_b_source_protocol;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootNotesPolicyPredecessor;

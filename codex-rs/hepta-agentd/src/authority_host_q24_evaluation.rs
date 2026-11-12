@@ -43,3 +43,6 @@ mod model_data;
 
 #[path = "authority_host_q24_evaluation_benchmark.rs"]
 mod benchmark;
+
+#[path = "authority_host_q24_evaluation_source_peer.rs"]
+mod source_peer;

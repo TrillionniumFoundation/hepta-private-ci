@@ -34,6 +34,7 @@ struct Deployment {
     trust: PathBuf,
     protocol_statement: PathBuf,
     source: PathBuf,
+    source_peer: codex_hepta_memory::CognitiveCheckpointPeerLifetime,
     candidate_data: PathBuf,
     observed_statement: PathBuf,
     policy_statement: PathBuf,
@@ -92,6 +93,7 @@ pub(super) struct OriginalBInputs {
     protocol_statement: OriginalBFile,
     protocol_statement_digest: Digest32,
     pub(super) source: OriginalBFile,
+    pub(super) source_peer: codex_hepta_memory::CognitiveCheckpointPeerLifetime,
     pub(super) candidate_data: OriginalBFile,
     pub(super) observed_statement: OriginalBFile,
     pub(super) policy_statement: OriginalBFile,
@@ -149,12 +151,13 @@ impl OriginalBInputs {
             trust_digest,
             protocol_statement,
             protocol_statement_digest,
-            source: tracker.open(&data.source, OriginalBFileAccess::ReadOnly)?,
+            source: tracker.open(&data.source, OriginalBFileAccess::OwnerWriter)?,
+            source_peer: data.source_peer,
             candidate_data: tracker.open(&data.candidate_data, OriginalBFileAccess::OwnerWriter)?,
             observed_statement: tracker
-                .open(&data.observed_statement, OriginalBFileAccess::ReadOnly)?,
+                .open(&data.observed_statement, OriginalBFileAccess::OwnerWriter)?,
             policy_statement: tracker
-                .open(&data.policy_statement, OriginalBFileAccess::ReadOnly)?,
+                .open(&data.policy_statement, OriginalBFileAccess::OwnerWriter)?,
             realized_plan_statement: tracker.open(
                 &data.realized_plan_statement,
                 OriginalBFileAccess::OwnerWriter,
