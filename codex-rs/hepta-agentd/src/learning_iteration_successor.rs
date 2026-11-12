@@ -1,6 +1,7 @@
 //! The waiting C service can be selected only from this assembled original
 //! Root/Q24 bootstrap and its registered historical A source.
 
+use super::historical_source::RegisteredHistoricalLearningSourceV1;
 use super::*;
 use crate::circuit_q24_successor::SuccessorSlot;
 use crate::root_production_inputs::OriginalQ24SuccessorSession;
@@ -45,7 +46,10 @@ impl OriginalQ24SuccessorContext {
                 retained.observe_retained_learning(&self.identity).await?;
             }
             OriginalSuccessorSourceV1::Historical(source) => {
-                source.require_current_historical_source(&self.identity)?;
+                RegisteredHistoricalLearningSourceV1::require_current_historical_source(
+                    source,
+                    &self.identity,
+                )?;
             }
         }
         let owners: &crate::OriginalCellQ24LearningStageOwnersV1 = self.owners.as_ref();
@@ -75,7 +79,9 @@ impl LearningIterationRuntimeBootstrapV1 {
                 OriginalSuccessorSourceV1::Retained(Arc::clone(retained))
             }
             (None, Some(historical)) if historical.request() == &prepared.initial().request => {
-                historical.require_prepared_historical_source(prepared)?;
+                RegisteredHistoricalLearningSourceV1::require_prepared_historical_source(
+                    historical, prepared,
+                )?;
                 OriginalSuccessorSourceV1::Historical(Arc::clone(historical))
             }
             _ => return Err(successor_refused("one actual original A source required")),

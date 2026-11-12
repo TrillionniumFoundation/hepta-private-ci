@@ -95,12 +95,12 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
             "match (&self.retained_source, &self.historical_source)",
             "(Some(retained), None) if retained.request() == &prepared.initial().request",
             "(None, Some(historical)) if historical.request() == &prepared.initial().request",
-            "historical.require_prepared_historical_source(prepared)?",
+            "RegisteredHistoricalLearningSourceV1::require_prepared_historical_source(\n                    historical, prepared,\n                )?",
             "session.identity() != identity", "self.scope.as_ref() != Some(prepared.scope())",
             "self.owners != prepared.initial().owners", "context.require_current_successor_context().await?"))
         self.check_markers(path, "fn require_current_successor_context(", (
             "retained.observe_retained_learning(&self.identity).await?",
-            "source.require_current_historical_source(&self.identity)?",
+            "RegisteredHistoricalLearningSourceV1::require_current_historical_source(\n                    source,\n                    &self.identity,\n                )?",
             "owners\n            .require_current()\n            .await"))
         for occurrence in (0, 1):
             self.reject_removal(path, "fn require_current_successor_context(",
