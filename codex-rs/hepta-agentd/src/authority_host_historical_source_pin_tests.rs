@@ -9,6 +9,16 @@ use pretty_assertions::assert_eq;
 use super::*;
 use crate::circuit_cell::tests::support as cell;
 
+fn retain_pin(
+    root: Arc<RootAuthorityDirectory>,
+    pin: SourcePin,
+) -> io::Result<RootHistoricalSourcePinV1> {
+    let target = pin.target.clone();
+    RootHistoricalSourcePinV1::capture(Arc::clone(&root), &target, |access| {
+        RootHistoricalSourcePinV1::retain_unchecked(root, pin, access)
+    })
+}
+
 fn target() -> anyhow::Result<(
     CellGenerationOwnerBindingV1,
     CellDefinitionV1,
@@ -121,25 +131,28 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
         completed_task: "component-completion".into(),
         fence_digest: Digest32::of_bytes(b"component-fence-digest").to_string(),
     };
-    let retained = RootHistoricalSourcePinV1::retain(root.clone(), pin.clone())?;
+    let retained = retain_pin(root.clone(), pin.clone())?;
     let digest = retained.readback_digest()?;
     assert_eq!(
-        RootHistoricalSourcePinV1::retain(root.clone(), pin.clone())?.readback_digest()?,
+        retain_pin(root.clone(), pin.clone())?.readback_digest()?,
         digest
     );
-    let mut changed = pin;
-    changed.publication = "different-publication".into();
-    assert!(RootHistoricalSourcePinV1::retain(root.clone(), changed).is_err());
     assert_eq!(
         RootHistoricalSourcePinV1::open_existing(root.clone(), &target)?.readback_digest()?,
         digest
     );
+    let original = retained.store.load(&retained.owner)?;
+    let mut changed = pin;
+    changed.publication = "different-publication".into();
+    assert!(retain_pin(root.clone(), changed).is_err());
+    // A mismatching observed capture cannot replace the original bytes, and
+    // now also leaves an independent durable refusal for this scope.
+    assert_eq!(retained.store.load(&retained.owner)?, original);
+    assert!(RootHistoricalSourcePinV1::open_existing(root.clone(), &target).is_err());
     retained.fence()?;
     retained.fence()?;
     assert!(retained.readback_digest().is_err());
-    assert!(
-        RootHistoricalSourcePinV1::retain(root.clone(), retained.expected.pin.clone()).is_err()
-    );
+    assert!(retain_pin(root.clone(), retained.expected.pin.clone()).is_err());
     assert!(RootHistoricalSourcePinV1::open_existing(root, &target).is_err());
     Ok(())
 }
