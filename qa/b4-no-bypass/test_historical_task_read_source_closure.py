@@ -34,7 +34,8 @@ CALLERS = {
     "connection_slot": (LAUNCH, LATE), "original_session": (CLIENT, INPUTS),
     "same_session": (CLIENT,), "send": (CLI,), "receive": (LAUNCH, LATE),
     "connect": (LAUNCH, LATE), "from_stream": (INPUTS,),
-    "client_session": (LAUNCH, LATE), "observe": (), "receipt_client": (),
+    "client_session": (LAUNCH, LATE), "observe": (),
+    "receipt_client": (A + "cell_q24_dataset_historical_task.rs",),
     "receipt_read": (), "enable": (CLI,), "seal": (CLI,), "provider": (PREPARED,),
     "exchange": (RUNTIME,), "cold_source": (PROVIDER,), "cold_cell": (PROVIDER,),
     "reply": (CLIENT,), "profile": (PROVIDER, PREPARED, INPUTS),
@@ -276,7 +277,7 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             "require_original_target(", "observe_original_task(",
             "RootHistoricalSourceInputsV1::open_original_source_deployment(",
             "RootInitialRunStartFilesV1::open_original_deployment(",
-            "ledger: observed.ledger_read_data()?", "reply.is_empty() || reply.len() > WIRE_BOUND",
+            "ledger: RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?", "reply.is_empty() || reply.len() > WIRE_BOUND",
         ))
         for occurrence in (0, 1):
             self.reject(PROVIDER, "observe_complete_task", "self.metadata.require_metadata_unchanged()?", occurrence)
@@ -311,12 +312,12 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             "historical_deployment.is_some() != historical_handoff.is_some()",
             "historical_deployment.is_some() && root_fd.is_none()",
             "historical_deployment.is_some() && initial_deployment.is_some()",
-            "prepared.enable_original_historical_task_read_from_deployment(&path)?",
-            "prepared.seal_original_historical_task_read()?", "send_root_historical_task_read_handoff(",
+            "PreparedHostAuthoritySession::enable_original_historical_task_read_from_deployment(&mut prepared, &path)?",
+            "PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)?", "send_root_historical_task_read_handoff(",
         ))
         self.mutate(CLI, lambda s: s.replace('"--historical-task-deployment"', '"--incorrect-historical-input" /* "--historical-task-deployment" */', 1))
         for path, name in ((LAUNCH, "receive"), (LATE, "receive_original_late_writer")):
-            self.check(path, name, ("root.take_historical_task_read_connection()?", "connect_original(", "client.require_same_original_session(&root.session)?"))
+            self.check(path, name, ("AgentdRootProductionInputs::take_historical_task_read_connection(", "connect_original(", "RootHistoricalTaskReadClientV1::require_same_original_session(&client, &root.session)?"))
 
 
 if __name__ == "__main__":
