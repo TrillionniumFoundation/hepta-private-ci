@@ -88,6 +88,20 @@ impl RootGenerationPublicationConnectionV1 {
         (&self.original, &self.identity)
     }
 
+    /// Bind a read-only Initial consumer to this exact live five-lane session.
+    /// Public identity or equal bootstrap bytes cannot substitute another
+    /// verifier object. The existing check still observes the original lease.
+    pub(crate) fn require_same_original_session(
+        &self,
+        session: &AgentdRootAuthoritySession,
+    ) -> Result<(), AgentdError> {
+        self.require_original_publication_session()?;
+        if !Arc::ptr_eq(&self.verifier, &session.verifier()) {
+            return Err(refused("Initial Artifact reader uses another Root session"));
+        }
+        self.require_original_publication_session()
+    }
+
     /// This invokes only the original read-only verifier/cache. It must not
     /// enter either FinalUse owner: publication runs inside its dispatch lock.
     pub(crate) fn require_original_publication_session(&self) -> Result<(), AgentdError> {

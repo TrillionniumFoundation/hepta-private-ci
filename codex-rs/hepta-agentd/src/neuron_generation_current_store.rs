@@ -19,7 +19,7 @@ pub(super) struct CurrentStore {
 
 enum Store {
     #[cfg(target_os = "linux")]
-    RootInitial(crate::root_generation_initial_client::RootGenerationInitialClient),
+    RootInitial(Arc<crate::root_generation_initial_client::RootGenerationInitialClient>),
     #[cfg(target_os = "linux")]
     Root(crate::root_generation_current_client::RootGenerationCurrentClient),
     Host(HostAuthorityFrontierStore<CurrentHead>),
@@ -67,7 +67,7 @@ impl CurrentStore {
 
     #[cfg(target_os = "linux")]
     pub(super) fn from_original_initial(
-        original: crate::root_generation_initial_client::RootGenerationInitialClient,
+        original: Arc<crate::root_generation_initial_client::RootGenerationInitialClient>,
     ) -> Result<Self, AgentdError> {
         Ok(Self {
             owner_id: owner_id(original.scope())?,
@@ -78,6 +78,17 @@ impl CurrentStore {
     #[cfg(target_os = "linux")]
     pub(super) fn is_original_host(&self) -> bool {
         matches!(&self.store, Store::Host(_))
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn original_initial_client(
+        &self,
+    ) -> Result<&Arc<crate::root_generation_initial_client::RootGenerationInitialClient>, AgentdError>
+    {
+        match &self.store {
+            Store::RootInitial(original) => Ok(original),
+            _ => Err(invalid("same original Root Initial client required")),
+        }
     }
 
     #[cfg(target_os = "linux")]
