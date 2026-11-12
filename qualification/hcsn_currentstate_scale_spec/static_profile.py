@@ -157,7 +157,10 @@ def main():
               "candidate_imports": 0, "scipy_imports": 0, "numpy_imports": 0, "dynamic_runs": 0,
               "matrix_exponentials_executed": 0, "reference_evaluations": 0, "optimizer_steps": 0,
               "largegrid_qualification": False, "admission": "HOLD_INTENT_ONLY", "all_closed": False}
-    (out/"STATIC_PROFILE.json").write_text(json.dumps(result, indent=2, allow_nan=False)+"\n")
+    encoded = (json.dumps(result, indent=2, allow_nan=False)+"\n").encode()
+    if len(encoded) > 100000:
+        raise ValueError("static output byte cap exceeded")
+    (out/"STATIC_PROFILE.json").write_bytes(encoded)
     print(json.dumps({"identity": result["identity"], "source_files": 10, "input_files": 5,
         "profile_rows": 3, "dynamic_runs": 0, "admission": result["admission"], "all_closed": False}))
 
