@@ -172,8 +172,9 @@ impl OriginalHoldoutSourceData {
         .concat())
     }
 
-    /// The manifest names the original held-out cohort and action universe,
-    /// without allowing its labels to enter preregistration or fitting.
+    /// The manifest names the preregistered cohort and action universe. Actual
+    /// future decision times belong to the later Generator policy statement;
+    /// registration must not pretend to have observed those future events.
     pub(super) fn manifest_digest(&self) -> io::Result<Digest32> {
         let cohort: Vec<_> = self
             .heldout
@@ -185,7 +186,6 @@ impl OriginalHoldoutSourceData {
                     &row.episode_lineage,
                     &row.window_id,
                     &row.cluster_id,
-                    row.decision_at_seconds,
                     row.actions
                         .iter()
                         .map(|action| &action.action_id)
@@ -194,7 +194,7 @@ impl OriginalHoldoutSourceData {
             })
             .collect();
         Ok(Digest32::of_parts(&[
-            b"hepta.root.independent-b.original-cohort.v1\0",
+            b"hepta.root.independent-b.original-cohort.v2\0",
             &serde_json::to_vec(&(self.objective, self.unit_profile, cohort))
                 .map_err(io::Error::other)?,
         ]))

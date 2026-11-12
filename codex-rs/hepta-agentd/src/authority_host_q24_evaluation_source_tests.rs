@@ -161,3 +161,42 @@ fn independent_b_source_rejects_zero_probability_chosen_action_even_with_valid_t
     });
     assert!(original.inputs().is_err());
 }
+
+#[test]
+fn independent_b_preregistered_cohort_does_not_predict_later_observation_times() -> io::Result<()> {
+    let mut original = source();
+    let cohort = original.manifest_digest()?;
+    let policy = original.policy_payload()?;
+    original.require_original_times(
+        /*registered_at*/ 20, /*policy_issued_at*/ 45, /*observation_issued_at*/ 60,
+        /*now*/ 60,
+    )?;
+    original.heldout[0].decision_at_seconds = 41;
+    assert_eq!(original.manifest_digest()?, cohort);
+    assert_ne!(original.policy_payload()?, policy);
+    original.require_original_times(
+        /*registered_at*/ 20, /*policy_issued_at*/ 45, /*observation_issued_at*/ 60,
+        /*now*/ 60,
+    )?;
+    original.heldout[0].decision_at_seconds = 46;
+    assert_eq!(original.manifest_digest()?, cohort);
+    assert!(
+        original
+            .require_original_times(
+                /*registered_at*/ 20, /*policy_issued_at*/ 45,
+                /*observation_issued_at*/ 60, /*now*/ 60
+            )
+            .is_err()
+    );
+    original.heldout[0].decision_at_seconds = 40;
+    original.heldout[0].observed_at_seconds = 44;
+    assert!(
+        original
+            .require_original_times(
+                /*registered_at*/ 20, /*policy_issued_at*/ 45,
+                /*observation_issued_at*/ 60, /*now*/ 60
+            )
+            .is_err()
+    );
+    Ok(())
+}
