@@ -1,0 +1,264 @@
+{
+  "schema": "hepta.learn.post-a671.full-validation-rebinding.draft.v1",
+  "status": "unbound-template-only-not-a-frozen-request",
+  "final_source_sha": null,
+  "final_source_tree": null,
+  "dispatched": false,
+  "purpose": "Prepare the exact minimum rebinding of the original full source/native runners after the real a671 failure; retain existing gates and wait for Root's final repaired source.",
+  "original_package": {
+    "request_commit": "9b5c24468f10f6ee0e0636fa924d7f88f79bae9b",
+    "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "outer": {
+      "git_blob": "b5838b5f994f112f85b0bf93566174e8ab8ee18f",
+      "bytes": 93522,
+      "sha256": "467ea92a15aae6c646418c9fa08f27246e577d771d45a2a5b17cedb7c752cd58"
+    },
+    "native": {
+      "git_blob": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+      "bytes": 13257,
+      "sha256": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1",
+      "full_inline_equal": true
+    },
+    "source": {
+      "git_blob": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+      "bytes": 71126,
+      "sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+      "full_inline_equal": true
+    },
+    "inventory_git_blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87"
+  },
+  "prepared_template": {
+    "git_blob": "eac867f6f897657c7019489936373b7f08a3d50a",
+    "bytes": 93566,
+    "sha256": "66d49e7e9ae81b10e6bc39cab807dee7589efdb3b53a0e2fdf16f16774dd4d6e",
+    "exact_edit_count": 7,
+    "full_inverse_rebuilds_original_outer": true
+  },
+  "unresolved_stamps": [
+    {
+      "sentinel": "__FINAL_SOURCE_SHA__",
+      "occurrences": 1,
+      "replacement": "A JSON-quoted exact 40-hex final commit, supplied and verified by Root."
+    },
+    {
+      "sentinel": "__FINAL_SOURCE_TREE__",
+      "occurrences": 1,
+      "replacement": "A JSON-quoted exact 40-hex canonical tree of that commit."
+    },
+    {
+      "sentinel": "__FINAL_SOURCE_SHORT__",
+      "occurrences": 2,
+      "replacement": "Exactly the first12 characters of that same verified final commit; both exclusive evidence directory names."
+    }
+  ],
+  "template_safety": "Source and tree use bare undefined sentinel names, so this unbound template stops before preflight, directory creation, Git fetch or execution if mistakenly run. It is not a typed H request and has no idempotency key yet.",
+  "required_previous_run": {
+    "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "checkout": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "clean_before_fetch": true,
+    "clean_rechecked_after_fetch": true,
+    "outer": {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1/result.json",
+      "bytes": 2396,
+      "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60"
+    },
+    "native": {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/result.json",
+      "bytes": 51057,
+      "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71"
+    },
+    "actual_fields_preserved": [
+      "source_sha",
+      "source_tree",
+      "state",
+      "source_after",
+      "source_status_after"
+    ],
+    "both_original_state": "failed",
+    "no_schema_field_required": true,
+    "provenance": "Root supplied these complete actual a671 terminal hashes and lengths. The template requires them against the real original files before changing the checkout. This agent has not performed H reads or executed the template.",
+    "no_failed_run_erasure": "The prior failure is retained as an immutable precondition; no failed result is relabelled or replaced."
+  },
+  "source_runner_analysis": {
+    "original_sha": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+    "bytes": 71126,
+    "contains_embedded_manifest": false,
+    "absent_probes": [
+      {
+        "value": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+        "absent": true
+      },
+      {
+        "value": "361e7a05153f8205e8e5f3ab75dd68291757de54b7add2d7115cf61d9ad675da",
+        "absent": true
+      },
+      {
+        "value": "CALLERS.toml",
+        "absent": true
+      },
+      {
+        "value": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+        "absent": true
+      },
+      {
+        "value": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+        "absent": true
+      }
+    ],
+    "actual_loader": "unittest.TestLoader().discover('qa/b4-no-bypass',pattern='test_*source_closure.py')",
+    "exact_methods": 443,
+    "raw_sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+    "new_manifest_bound_by": "The exact new checkout tree and imported current source QA; outer records its actual CALLERS.toml SHA256 dynamically.",
+    "source_edits_required": 0
+  },
+  "manifest_rebinding": {
+    "expected_repaired_git_blob": "898948f9b75147f9d758a88bdebbb99fc2529d88",
+    "expected_repaired_sha256": "e4f12ac5efe26e375609aefde7c59769f5a4acb72f435f3934a101315db5202e",
+    "expected_bytes": 1619732,
+    "authority_peer_blob": "cd160cdd03dbc3173a9d33d94976feb3d0ad685f",
+    "scope": "Before freezing, Root must read CALLERS.toml from the exact final candidate and verify this full blob. The unchanged source runner contains no embedded old manifest, old manifest hash, or fixed source SHA; tests import the current checked-out source. The outer already records actual manifest_sha256 dynamically.",
+    "outer_or_source_manifest_constant_to_rewrite": false,
+    "fullcaller_manifest_constant_to_rewrite": true
+  },
+  "unchanged_checks": {
+    "source_modules": 62,
+    "source_methods": 443,
+    "source_exact_ids": 443,
+    "source_id_order_and_multiplicity_byte_preserved": true,
+    "native_groups": 43,
+    "native_cases": 201,
+    "original_190_plus_existing_metadata11": true,
+    "native_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-neuron"
+    ],
+    "complete_unchanged_native_driver": true,
+    "complete_unchanged_source_runner": true,
+    "whole_repository_tracked_rust_expected": 6777,
+    "source_count_final_tree_confirmation_required": true,
+    "just_test": true,
+    "test_threads": 2,
+    "retries": 0,
+    "native_parent_timeout_seconds": 3600,
+    "original_nextest_per_test_watchdog_seconds": 60,
+    "original_parent_output_limit_bytes": 8388608,
+    "no_new_timeout_or_resource_budget": true,
+    "no_test_case_removed_or_added": true,
+    "original_self_test_after_full_source_and_native": true,
+    "original_full_coverage_and_failure_criteria": true,
+    "no_formatter": true,
+    "no_fullcaller_in_outer": true,
+    "ordinary_acceptance": 0
+  },
+  "unchanged_build_and_dependency_history": {
+    "actual_target": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+    "actual_target_creation_record": {
+      "git_blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+      "bytes": 2506,
+      "sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-e5c7-v2/result.json",
+      "source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+      "source_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76"
+    },
+    "creation_source_is_only_directory_provenance": true,
+    "original_dependency_recovery_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/result.json",
+    "original_dependency_recovery_sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+    "original_recovery_target_literal": "/data/hepta-learn-ce434-runtime-20261112-v1/target",
+    "retained_private_v8_inputs": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins",
+    "original_v8_manifest_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/manifest.json",
+    "original_v8_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+    "no_dependency_recovery_record_or_pin_rewrite": true,
+    "no_target_recreation_or_new_dependency_fetch": true
+  },
+  "exact_outer_edits": [
+    {
+      "label": "new_exclusive_outer_directory",
+      "before": "out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1\")",
+      "after": "out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-__FINAL_SOURCE_SHORT__-validation-v1\")"
+    },
+    {
+      "label": "new_exclusive_native_directory",
+      "before": "native_out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1\")",
+      "after": "native_out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-__FINAL_SOURCE_SHORT__-v1\")"
+    },
+    {
+      "label": "await_exact_final_source",
+      "before": "fixed=\"a6717d7228045e6cb60532966f06e6e02c4a6abe\"",
+      "after": "fixed=__FINAL_SOURCE_SHA__"
+    },
+    {
+      "label": "await_exact_final_tree",
+      "before": "tree=\"647b9e78151299c1e7de455eae9c530ca93b28c9\"",
+      "after": "tree=__FINAL_SOURCE_TREE__"
+    },
+    {
+      "label": "actual_previous_completed_source",
+      "before": "before=\"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\"",
+      "after": "before=\"a6717d7228045e6cb60532966f06e6e02c4a6abe\""
+    },
+    {
+      "label": "bind_complete_actual_a671_outer_and_native_terminal",
+      "before": "prior_outer=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-e5c7dbd90938-diagnostic-v2/result.json\")\nprior_native=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-e5c7dbd90938-diagnostic-v2/result.json\")\nfor path,expected in [(prior_outer,\"da3f8bb898c38472c38aeb2b3a78582f2cce8becd1c64c5721099f9fa98427ff\"),(prior_native,\"4b8ed4aafcee5ec6e192e45e5c1ce1efb3eb0f3c74fba55759c6e9ab0a523e93\")]:\n    if digest(path)!=expected:raise RuntimeError(\"original e5c diagnostic terminal differs; do not change the worktree\")\n    previous=json.loads(path.read_bytes())\n    if previous[\"source_sha\"]!=before or previous[\"source_tree\"]!=\"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\" or previous[\"state\"]!=\"failed\" or previous[\"source_after\"]!=before or previous[\"source_status_after\"]:raise RuntimeError(\"original e5c diagnostic completion not established\")",
+      "after": "prior_outer=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1/result.json\")\nprior_native=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/result.json\")\nfor path,expected_bytes,expected in [(prior_outer,2396,\"3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60\"),(prior_native,51057,\"98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71\")]:\n    if path.stat().st_size!=expected_bytes or digest(path)!=expected:raise RuntimeError(\"original a671 full validation terminal differs; do not change the worktree\")\n    previous=json.loads(path.read_bytes())\n    if previous[\"source_sha\"]!=before or previous[\"source_tree\"]!=\"647b9e78151299c1e7de455eae9c530ca93b28c9\" or previous[\"state\"]!=\"failed\" or previous[\"source_after\"]!=before or previous[\"source_status_after\"]:raise RuntimeError(\"original a671 full validation completion not established\")"
+    },
+    {
+      "label": "require_actual_a671_checkout_tree",
+      "before": "if git(\"rev-parse\",\"HEAD^{tree}\")!=\"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\":raise RuntimeError(\"observed original e5c tree differs\")",
+      "after": "if git(\"rev-parse\",\"HEAD^{tree}\")!=\"647b9e78151299c1e7de455eae9c530ca93b28c9\":raise RuntimeError(\"observed original a671 tree differs\")"
+    }
+  ],
+  "final_freeze_procedure": [
+    "Root supplies final source/tree; read canonical commit/tree and all six source pins, including repaired manifest, from that exact ref.",
+    "Confirm the final tree retains the original443 method IDs,201 native tuples/43groups, inventory blob and expected6777 tracked Rust members.",
+    "Stamp only the four explicit occurrences; full-forward and inverse comparison retains every other template byte. No unresolved sentinel may remain.",
+    "Read back full stamped outer blob and both embedded runner bodies; recompute bytes/SHA256 and require unchanged dd7d/0397 hashes.",
+    "Create a distinct reviewed typed request and idempotency key for the final candidate; do not reuse a671's run key or evidence directories.",
+    "Root dispatches only after reconciling prior jobs; this preparation creates no runtime result and makes no success claim."
+  ],
+  "fullcaller_pending_rebinding": {
+    "original_frozen_package_commit": "d60a5e73653f5c1df29067017a5fcb75049c54ae",
+    "original_recorder_blob": "51a2a836d2b7fdddb25183674669e1426ae7222c",
+    "pending_exact_recorder_edits": [
+      {
+        "before": "SOURCE_SHA = \"a6717d7228045e6cb60532966f06e6e02c4a6abe\"",
+        "after": "SOURCE_SHA = <Root-confirmed exact final SHA literal>"
+      },
+      {
+        "before": "SOURCE_TREE = \"647b9e78151299c1e7de455eae9c530ca93b28c9\"",
+        "after": "SOURCE_TREE = <Root-confirmed canonical final tree literal>"
+      },
+      {
+        "before": "    \"CALLERS.toml\": \"dc445dd052620bb07ebd7b2eee9640d4d4172234\",",
+        "after": "    \"CALLERS.toml\": \"898948f9b75147f9d758a88bdebbb99fc2529d88\","
+      }
+    ],
+    "final_other_five_pins_must_be_reconfirmed": true,
+    "wrapper_request_changes": "After actual final stamping only: update their exact source/tree, new exclusive launch/record directories and distinct key, embedded full recorder, recorder byte/hash pins and dependent wrapper/request hashes. Preserve unique direct child/wait/no-kill semantics.",
+    "unchanged_limits": {
+      "self_test_seconds": 300,
+      "verify_seconds": 4800,
+      "output_bytes": 67108864,
+      "active_observation_seconds": 10800
+    },
+    "unchanged_inventory": {
+      "source_root": "codex-rs",
+      "rust_files": 6655,
+      "boundaries": 736,
+      "protected_records": 506
+    },
+    "no_base_flag_added": true,
+    "no_target_or_v8_gate_added_to_pure_python_fullcaller": true,
+    "fullcaller_not_modified_or_dispatched": true
+  },
+  "validation": {
+    "static_v8_complete_byte_comparison": true,
+    "full_git_api_pins_verified": true,
+    "python_or_h_execution": false,
+    "runtime_result_created": false,
+    "no_final_source_frozen": true
+  }
+}
