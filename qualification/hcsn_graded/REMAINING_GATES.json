@@ -14,6 +14,17 @@
       "maximum_content_residual": 4.7e-14,
       "maximum_mass_residual": 1.5e-14,
       "scope": "256/512 grids x four disclosed cases, six original gaps; original worst-first-cell posterior includes original signed content; raw arrays retained"
+    },
+    {
+      "evidence": "evidence/actual-migrated-continuation-attempt002/SUMMARY.json",
+      "failures": 0,
+      "gate": "v2_retained_continuation_after_actual_migration",
+      "n512_maximum_non_cancelling_scaled_error": 4.009592859123869e-06,
+      "original_limit": 0.01,
+      "required": "recompute same-law continuation using the actual lower-fold migration and actual graded nodes; do not inherit the v1 backward-function integral certificate",
+      "scope": "Actual lower-fold migration and actual graded nodes/reset; same-law continuation only, not finite-risk or filtering.",
+      "state": "CLOSED_BOUNDED_ON_14336_EXPOSED_POSTERIORS",
+      "threshold_unchanged": true
     }
   ],
   "interpretation": "These are exposed development diagnostics. Nothing here grants prospective scientific, security, product or production authority.",
@@ -48,11 +59,6 @@
       "existing_evidence": "independent post-failure graded exploration is informative but is not a prospective new pass gate or full executed DDE trajectory",
       "gate": "v2_full_recorded_finite_domain",
       "required": "source-bind actual v2 geometry and actual-node adapter to every one of the 14336 original prior/posterior cases; independent continuum M/H/A and explicit threshold provenance",
-      "state": "OPEN"
-    },
-    {
-      "gate": "v2_retained_continuation_after_actual_migration",
-      "required": "recompute same-law continuation using the actual lower-fold migration and actual graded nodes; do not inherit the v1 backward-function integral certificate",
       "state": "OPEN"
     },
     {

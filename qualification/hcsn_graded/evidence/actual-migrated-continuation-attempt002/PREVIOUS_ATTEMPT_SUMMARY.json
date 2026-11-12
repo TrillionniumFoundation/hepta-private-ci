@@ -1,0 +1,65 @@
+{
+  "all_original_positions": 14336,
+  "basis_solves": 368,
+  "cpu_seconds": 4.653998695,
+  "input_sha256": {
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_joint_dde/evidence/all-visits-attempt002/ALL_VISITS_128.npz": "a0984f1a06fd47a803259e570f47aed07a48f0d44e44598a25a77a85782016c3",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/SUMMARY.json": "12fa561e6b5e6f710d1239d2a00bcf596da9d0060bf4691473ff337b7b5d0822",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c0_b0.derived.jsonl": "7c3ec231c245674ad8d57a6e1cf6d1ce1449a635eae82e30a924890539fb647b",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c0_b1.derived.jsonl": "13189239900b94f17e6d27d0f8437f99159ec0c935d598b0f8be64362104a825",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c1_b0.derived.jsonl": "571fff21dd3570af0a1184e6ba0faeae85054d4b906601fa0dfc3206cfb071f3",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed11-c1_b1.derived.jsonl": "8a593fee2921afad7e5c41131a45988efa6506e13119472f13640cf6231ff723",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c0_b0.derived.jsonl": "8717d2bbe5cba00ca185fad0eb4cf6b429d82b37d8900ae24f51e1357a4f00a8",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c0_b1.derived.jsonl": "c4b06bbeb452bfca8df800d3a6c22754428211bcaff2ee945626d263416a760f",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c1_b0.derived.jsonl": "78aba9e581783e5cd8ba17ca66b26dec2e98c684f9790735ff733177228d3d4a",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed23-c1_b1.derived.jsonl": "b556c392b9213e8e69b24c0bc558efe20fcb6ce313ce51b552252816317a01ed",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c0_b0.derived.jsonl": "a81624fc72f024b5e59aeb1bc8c797aa6dbd4399e8a77dae285f6eef57512a37",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c0_b1.derived.jsonl": "4ae6aa0980a387c20621b44dad599f13f66ebaa1bf37380518eca16fbea624f4",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c1_b0.derived.jsonl": "89a7978a26fe043871ed74bb5dac2d3c767ed2639549c19653d06e8029ff8a0d",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit/seed37-c1_b1.derived.jsonl": "ab3dc70461374e19c6b98a2f42fb837d3bbe08236d78928873a83fbacb38b3b7"
+  },
+  "inputs_unchanged": true,
+  "lift_geometry_count": 2,
+  "original_threshold": 0.01,
+  "output_sha256": {
+    "ALL_VISITS_n256.npz": "e09b8dc976cabfe253ecd35cf2015c02e5cfe3fe2b8ce67afe509b40b911e75f",
+    "ALL_VISITS_n512.npz": "af6bb4f42bc4a89f1e9fa4a42f824544b230e8342b5585f88d9459ead4292af9"
+  },
+  "panels": [
+    {
+      "failures_at_original_0_01": 0,
+      "intervals": 256,
+      "maximum_non_cancelling_scaled_error": 1.5874908044083096e-05,
+      "maximum_scaled_error": 1.5874878671907167e-05,
+      "non_cancelling_failures_at_0_01": 0,
+      "positions": 14336
+    },
+    {
+      "failures_at_original_0_01": 0,
+      "intervals": 512,
+      "maximum_non_cancelling_scaled_error": 4.009592859123869e-06,
+      "maximum_scaled_error": 4.009563388424706e-06,
+      "non_cancelling_failures_at_0_01": 0,
+      "positions": 14336
+    }
+  ],
+  "schema": "hcsn-graded-actual-migration-continuation-v1",
+  "scope": "perpetual continuation of actual lower-fold/graded migration on exposed original posteriors; not filtering, finite rare-risk, gradients or new training",
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/audit_continuation.py": "f67c203bbb39e34de1394b200391ef3e6c98411d73208eba74df3e72900100e3",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+  },
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/audit_continuation.py": "f67c203bbb39e34de1394b200391ef3e6c98411d73208eba74df3e72900100e3",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+  },
+  "status": "HOLD_NO_GO",
+  "threshold_unchanged": true,
+  "wall_seconds": 4.67664923600023
+}
