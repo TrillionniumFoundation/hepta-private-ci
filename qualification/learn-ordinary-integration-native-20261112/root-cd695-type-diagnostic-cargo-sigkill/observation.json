@@ -1,0 +1,56 @@
+{
+  "source": "cd69577d08cd90937f70ebd8719b44a24b1ee91f",
+  "tree": "5e60c42aa19d7150bcc8d117ca5479a65a083085",
+  "source_before_after_equal_clean": true,
+  "uid": 1000,
+  "executor": "74d784910ce8",
+  "scope": "cargo check --lib --bins for Agentd, Agent Protocol and Learning Ledger; static type diagnostic only",
+  "outer_exit": 247,
+  "cargo_process_exit": -9,
+  "elapsed_seconds": 256.022348081,
+  "actual_error": "Cargo subprocess terminated with SIGKILL; stderr has no rustc signal or Rust type-error diagnostic and ended during dependency checking",
+  "last_stderr_progress": "Checking codex-file-system",
+  "tests": 0,
+  "junit": 0,
+  "type_check_completed": false,
+  "profile": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "1"
+  },
+  "cause_oom_or_enospc_proven": false,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 44882,
+    "sha256": "d4db34074e143629872c24d207482fa26b3f71738a518788582cece7014e6e69",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "diagnostic/compiler.jsonl",
+      "bytes": 570350,
+      "sha256": "9ff310954bf931dc1d46c24a4f6e87c1ab44c13325bce0d2ea7f67af0d2dffbf"
+    },
+    {
+      "path": "diagnostic/run.json",
+      "bytes": 1827,
+      "sha256": "d5863cede26ce5daa26be6b6b78e881d39b85b861b11f1ecdc381cfc970daed7"
+    },
+    {
+      "path": "diagnostic/stderr.log",
+      "bytes": 16249,
+      "sha256": "c0ab031d2a17a8938d35f7c1454e72e6746338fb9f8ef387a43d287cbef8da52"
+    },
+    {
+      "path": "run_cd69577d_type_diagnostic.py",
+      "bytes": 2963,
+      "sha256": "46df351d9ec526bf9b222eecab83864107bf2c339e0705adeed603735528cdfa"
+    }
+  ]
+}
