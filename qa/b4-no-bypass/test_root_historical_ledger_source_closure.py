@@ -115,7 +115,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "retained.expected.pin.target != baseline.target", "source.original_identity() != identity",
             "(ledger.device, ledger.inode) == (source.device, source.inode)",
             "generator != original.config.generator || observer != original.config.observer",
-            "held.observe_original_terminal(", ".compare_and_set(&original.owner, baseline, &next)",
+            "OriginalLedgerReadGuard::observe_original_terminal(", ".compare_and_set(&original.owner, baseline, &next)",
             "held.require_unchanged(&observed)?"))
 
     def test_complete_cut_binds_real_cell_and_every_original_file(self):

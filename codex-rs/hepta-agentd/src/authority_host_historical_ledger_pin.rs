@@ -197,7 +197,8 @@ impl PendingOriginalLedgerCaptureV1<'_> {
         let mut held = original
             .files
             .open_original_terminal(&context, OriginalLedgerReadModeV1::Capture)?;
-        let observed = held.observe_original_terminal(
+        let observed = OriginalLedgerReadGuard::observe_original_terminal(
+            &mut held,
             &context,
             source.publication(),
             cell,
