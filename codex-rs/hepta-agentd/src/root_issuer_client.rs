@@ -115,7 +115,11 @@ impl AgentdUnixFinalUseGrantProvider {
             AgentdFinalUseIssuerPeer { uid, pid: root_pid },
             timeout,
         )?;
-        provider.protected_root = Some(ProtectedRootIssuer { channel, end, original_uid: uid });
+        provider.protected_root = Some(ProtectedRootIssuer {
+            channel,
+            end,
+            original_uid: uid,
+        });
         Ok(provider)
     }
 

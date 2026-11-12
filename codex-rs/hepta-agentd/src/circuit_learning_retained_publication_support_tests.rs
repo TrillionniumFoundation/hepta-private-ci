@@ -35,7 +35,10 @@ pub(super) struct RetainedPublicationFixture {
     _source_root: tempfile::TempDir,
 }
 
-enum RetainedPublicationFixtureClockV1 { OriginalTestClock, LiveArtifactClock }
+enum RetainedPublicationFixtureClockV1 {
+    OriginalTestClock,
+    LiveArtifactClock,
+}
 
 impl RetainedPublicationFixture {
     pub(super) async fn ready() -> anyhow::Result<Self> {
@@ -49,10 +52,15 @@ impl RetainedPublicationFixture {
         let source_a = support::source(&a, [Q, Q / 4])?;
         let config_a = support::configuration(&model, &bundle, &definition, &source_a, 1)?;
         let version = match clock {
-            RetainedPublicationFixtureClockV1::OriginalTestClock =>
-                VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?,
-            RetainedPublicationFixtureClockV1::LiveArtifactClock =>
-                VersionFixture::new_initial_with_live_artifacts(config_a.clone(), "ordinary-q24-initial")?,
+            RetainedPublicationFixtureClockV1::OriginalTestClock => {
+                VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?
+            }
+            RetainedPublicationFixtureClockV1::LiveArtifactClock => {
+                VersionFixture::new_initial_with_live_artifacts(
+                    config_a.clone(),
+                    "ordinary-q24-initial",
+                )?
+            }
         };
         let task = support::publish_initial(&version, definition.clone(), source_a.clone())?;
         let mut a = support::start(a, task, Arc::clone(&model), bundle.clone()).await?;

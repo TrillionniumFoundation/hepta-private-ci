@@ -8,7 +8,10 @@ use super::AgentdUnixFinalUseGrantProvider;
 
 const ORIGINAL_RETAINED_VERSION_DESTINATION: &str = "agentd.cell-generation.next-task-same-model";
 
-enum OriginalVersionIssuerAccessV1 { Available, ReadbackOnly }
+enum OriginalVersionIssuerAccessV1 {
+    Available,
+    ReadbackOnly,
+}
 
 pub(crate) struct OriginalRootRetainedVersionIssuerV1 {
     provider: AgentdUnixFinalUseGrantProvider,
@@ -19,7 +22,9 @@ impl AgentdUnixFinalUseGrantProvider {
     pub(crate) fn into_original_retained_version_issuer(
         self,
     ) -> Result<OriginalRootRetainedVersionIssuerV1, AgentdFinalUseIssuerError> {
-        let root = self.protected_root.as_ref()
+        let root = self
+            .protected_root
+            .as_ref()
             .ok_or(AgentdFinalUseIssuerError::InvalidConfiguration)?;
         if root.original_uid != 0 {
             return Err(AgentdFinalUseIssuerError::PeerDenied);
@@ -27,8 +32,13 @@ impl AgentdUnixFinalUseGrantProvider {
         self.check_root()?;
         super::super::remaining(root.end)?;
         {
-            let slot = self.stream.try_lock().map_err(|_| AgentdFinalUseIssuerError::Busy)?;
-            if slot.is_none() { return Err(AgentdFinalUseIssuerError::ChannelClosed); }
+            let slot = self
+                .stream
+                .try_lock()
+                .map_err(|_| AgentdFinalUseIssuerError::Busy)?;
+            if slot.is_none() {
+                return Err(AgentdFinalUseIssuerError::ChannelClosed);
+            }
         }
         Ok(OriginalRootRetainedVersionIssuerV1 {
             provider: self,

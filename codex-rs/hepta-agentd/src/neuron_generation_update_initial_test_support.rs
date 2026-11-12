@@ -17,7 +17,12 @@ impl Fixture {
         config: CellGenerationConfigV2,
         operation_id: &str,
     ) -> anyhow::Result<Self> {
-        Self::create_with_clock(config.clone(), config, Some(operation_id), /*research*/ true)
+        Self::create_with_clock(
+            config.clone(),
+            config,
+            Some(operation_id),
+            /*research*/ true,
+        )
     }
 
     pub(crate) fn new_initial(

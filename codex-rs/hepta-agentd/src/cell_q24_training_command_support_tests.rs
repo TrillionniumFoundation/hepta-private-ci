@@ -279,7 +279,10 @@ pub(crate) fn retained_publication_training_peer(
     std::thread::JoinHandle<anyhow::Result<usize>>,
 )> {
     let (client, channel) = client(context.clone(), /*readback_only*/ true, None)?;
-    Ok((client, serve_retained_training_fixture(channel, context, receipt, signature)?))
+    Ok((
+        client,
+        serve_retained_training_fixture(channel, context, receipt, signature)?,
+    ))
 }
 
 /// Explicit signed metadata on the existing initial connection. This is not
@@ -293,10 +296,12 @@ pub(crate) fn retained_version_training_connection(
     crate::OriginalCellQ24TrainingCommandConnectionV1,
     std::thread::JoinHandle<anyhow::Result<usize>>,
 )> {
-    let (connection, channel) = super::super::connection::fresh_peer(
-        material, Duration::from_secs(300),
-    )?;
-    Ok((connection, serve_retained_training_fixture(channel, context, receipt, signature)?))
+    let (connection, channel) =
+        super::super::connection::fresh_peer(material, Duration::from_secs(300))?;
+    Ok((
+        connection,
+        serve_retained_training_fixture(channel, context, receipt, signature)?,
+    ))
 }
 
 fn serve_retained_training_fixture(
