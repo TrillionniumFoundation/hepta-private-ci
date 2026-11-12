@@ -96,7 +96,8 @@ impl OriginalSameActorLearningWork {
         installation: OriginalEvaluationInstallation<'_>,
     ) -> Result<(), Error> {
         self.require_training_context(snapshot, self.prepared.scope())?;
-        self.evaluation.complete_installation(snapshot, installation)
+        self.evaluation
+            .complete_installation(snapshot, installation)
     }
 }
 
@@ -113,7 +114,9 @@ impl OriginalEvaluationExchange {
     }
 
     fn require_entry(&self, snapshot: &LearningIterationSnapshotV1) -> Result<(), Error> {
-        self.gate.require_open().map_err(|_| Error::CommitUncertain)?;
+        self.gate
+            .require_open()
+            .map_err(|_| Error::CommitUncertain)?;
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_err(|_| {
@@ -157,7 +160,9 @@ impl OriginalEvaluationExchange {
 
     async fn training_snapshot(&self) -> Result<LearningIterationSnapshotV1, Error> {
         loop {
-            self.gate.require_open().map_err(|_| Error::CommitUncertain)?;
+            self.gate
+                .require_open()
+                .map_err(|_| Error::CommitUncertain)?;
             let notified = self.changed.notified();
             tokio::pin!(notified);
             notified.as_mut().enable();
@@ -187,8 +192,7 @@ impl OriginalEvaluationExchange {
         self.require_entry(snapshot)?;
         let mut state = self.locked()?;
         self.require_entry(snapshot)?;
-        if state.training.as_ref() != Some(snapshot)
-            || state.installation != Installation::Awaiting
+        if state.training.as_ref() != Some(snapshot) || state.installation != Installation::Awaiting
         {
             return Err(Error::WrongScope);
         }

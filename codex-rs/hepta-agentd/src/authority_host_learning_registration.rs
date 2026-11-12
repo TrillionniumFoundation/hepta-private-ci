@@ -59,7 +59,11 @@ impl HostAuthorityService {
     ) -> io::Result<HostAuthorityLearningRegistrationV1> {
         let profile = read_root_json(profile_file)?;
         HostAuthorityService::reserve_original_learning_profile(
-            self, config, registration, owner_pidfd, &profile,
+            self,
+            config,
+            registration,
+            owner_pidfd,
+            &profile,
         )
     }
 
@@ -74,7 +78,11 @@ impl HostAuthorityService {
         profile: &HostAuthorityLearningProfileV1,
     ) -> io::Result<HostAuthorityLearningRegistrationV1> {
         self.reserve_original_learning_profile_in_phase(
-            config, registration, owner_pidfd, profile, None,
+            config,
+            registration,
+            owner_pidfd,
+            profile,
+            None,
         )
     }
 
@@ -84,7 +92,11 @@ impl HostAuthorityService {
         registration: &HostAuthorityRegistration,
         owner_pidfd: &OwnedFd,
         profile: &HostAuthorityLearningProfileV1,
-        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,
+        phase: Option<
+            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<
+                '_,
+            >,
+        >,
     ) -> io::Result<HostAuthorityLearningRegistrationV1> {
         self.with_learning_profile(
             config,
@@ -95,9 +107,13 @@ impl HostAuthorityService {
                 let _admission = phase.map(|phase| phase.enter_claimed()).transpose()?;
                 let scope = profile.frozen_scope(&initial)?;
                 let binding = scope.as_ref().map(|scope| scope.binding().to_string());
-                if let Some(phase) = phase { phase.require_claimed()?; }
+                if let Some(phase) = phase {
+                    phase.require_claimed()?;
+                }
                 learning_store(&config.state_dir, &initial, StoreMode::Register, scope)?;
-                if let Some(phase) = phase { phase.require_claimed()?; }
+                if let Some(phase) = phase {
+                    phase.require_claimed()?;
+                }
                 Ok(HostAuthorityLearningRegistrationV1 {
                     schema_version: profile.schema_version,
                     initial_head: initial.head_digest.to_string(),
@@ -118,7 +134,11 @@ impl HostAuthorityService {
     ) -> io::Result<RegisteredHostLearningCheckpointV1> {
         let profile = read_root_json(profile_file)?;
         HostAuthorityService::open_original_learning_profile(
-            self, config, registration, owner_pidfd, profile,
+            self,
+            config,
+            registration,
+            owner_pidfd,
+            profile,
         )
     }
 
@@ -130,7 +150,11 @@ impl HostAuthorityService {
         profile: HostAuthorityLearningProfileV1,
     ) -> io::Result<RegisteredHostLearningCheckpointV1> {
         self.open_original_learning_profile_in_phase(
-            config, registration, owner_pidfd, profile, None,
+            config,
+            registration,
+            owner_pidfd,
+            profile,
+            None,
         )
     }
 
@@ -140,7 +164,11 @@ impl HostAuthorityService {
         registration: &HostAuthorityRegistration,
         owner_pidfd: &OwnedFd,
         profile: HostAuthorityLearningProfileV1,
-        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,
+        phase: Option<
+            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<
+                '_,
+            >,
+        >,
     ) -> io::Result<RegisteredHostLearningCheckpointV1> {
         let backend = self.with_learning_profile(
             config,
@@ -155,7 +183,9 @@ impl HostAuthorityService {
                     StoreMode::Reopen,
                     profile.frozen_scope(&initial)?,
                 )?;
-                if let Some(phase) = phase { phase.require_claimed()?; }
+                if let Some(phase) = phase {
+                    phase.require_claimed()?;
+                }
                 Ok(store)
             },
         )?;
@@ -171,7 +201,9 @@ impl HostAuthorityService {
             .collect();
         paths.push(&socket_path);
         crate::authority_host_runtime::validate_lane_paths(&paths, config.peer_gid)?;
-        if let Some(phase) = phase { phase.require_claimed()?; }
+        if let Some(phase) = phase {
+            phase.require_claimed()?;
+        }
         Ok(RegisteredHostLearningCheckpointV1 {
             backend,
             profile,

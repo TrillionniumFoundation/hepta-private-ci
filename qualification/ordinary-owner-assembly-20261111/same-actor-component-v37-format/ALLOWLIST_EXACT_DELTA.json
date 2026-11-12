@@ -1,0 +1,28 @@
+{
+  "path": ".github/blob-size-allowlist.txt",
+  "pre": {
+    "blob": "aff5b41d0f98434ac853ae11a1440e41d8882050",
+    "bytes": 12066,
+    "sha256": "feb0a72dbbee8c869970eced79460654f01397abffa5a7063584ded0235c8469"
+  },
+  "post": {
+    "blob": "0ae46052c7efd945f6ce3a7e217997f8a89e316a",
+    "bytes": 12066,
+    "sha256": "b162baba28d8f20436bf08ff6d01a86ea4b1cb86aaa39217ef3805a6f5b51b0c"
+  },
+  "operations": [
+    {
+      "old_text": "sha256:1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4 CALLERS.toml",
+      "new_text": "sha256:9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da CALLERS.toml",
+      "expected_matches": 1
+    }
+  ],
+  "unique_forward_reverse": true,
+  "existing_exception_only": true,
+  "other_paths_bytes_and_500KiB_threshold_unchanged": true,
+  "bound_callers": {
+    "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+    "bytes": 890345,
+    "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+  }
+}

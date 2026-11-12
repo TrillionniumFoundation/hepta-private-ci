@@ -47,7 +47,10 @@ async fn absolute_root_observation_end_keeps_original_framing_and_end() {
 async fn absolute_root_observation_end_refuses_late_read_without_rearm() {
     let end = Instant::now() + Duration::from_secs(2);
     let (client, mut server) = stream_until(end);
-    tokio::time::sleep_until(tokio::time::Instant::from_std(end + Duration::from_millis(1))).await;
+    tokio::time::sleep_until(tokio::time::Instant::from_std(
+        end + Duration::from_millis(1),
+    ))
+    .await;
     assert_eq!(
         client.read::<u64>(&request()).await,
         Err(AgentdRootAuthorityError::Unavailable)

@@ -214,15 +214,22 @@ impl BoundFactory {
         verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
         gate.require_open()?;
         service.serve_q24_model_factory_until(
-            &self.factory, config, registration, stream,
+            &self.factory,
+            config,
+            registration,
+            stream,
             HostAuthorityPeerPolicy {
-                peer: HostIssuerPeer { uid: config.peer_uid, pid: registration.peer_pid },
+                peer: HostIssuerPeer {
+                    uid: config.peer_uid,
+                    pid: registration.peer_pid,
+                },
                 timeout: Duration::from_millis(config.timeout_ms),
                 lifetime: Duration::from_millis(config.lifetime_ms),
                 request_bound: 16 * 1024,
                 response_bound: 16 * 1024,
             },
-            owner.try_clone()?, gate,
+            owner.try_clone()?,
+            gate,
         )
     }
 }

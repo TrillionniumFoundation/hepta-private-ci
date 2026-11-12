@@ -5,8 +5,8 @@
 use std::collections::BTreeMap;
 use std::io;
 use std::net::Shutdown;
-use std::os::unix::net::UnixStream;
 use std::os::unix::net::UnixDatagram;
+use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Condvar;
 use std::sync::Mutex;
@@ -40,7 +40,10 @@ impl SameActorPhaseDeadline {
         let boottime_ns = boot
             .checked_add(u64::try_from(lifetime.as_nanos()).map_err(io::Error::other)?)
             .ok_or_else(|| refused("original phase BOOTTIME overflow"))?;
-        Ok(Self { instant, boottime_ns })
+        Ok(Self {
+            instant,
+            boottime_ns,
+        })
     }
 
     /// Data pins captured by the actual receiver and original LiveRoot, plus
@@ -72,11 +75,15 @@ impl SameActorPhaseDeadline {
     }
 
     fn remaining_at(&self, now: u64) -> io::Result<Duration> {
-        let boot = self.boottime_ns.checked_sub(now)
+        let boot = self
+            .boottime_ns
+            .checked_sub(now)
             .filter(|remaining| *remaining != 0)
             .map(Duration::from_nanos)
             .ok_or_else(|| refused("original phase BOOTTIME end elapsed"))?;
-        let local = self.instant.checked_duration_since(Instant::now())
+        let local = self
+            .instant
+            .checked_duration_since(Instant::now())
             .filter(|remaining| !remaining.is_zero())
             .ok_or_else(|| refused("original phase Instant end elapsed"))?;
         Ok(boot.min(local))
@@ -91,8 +98,12 @@ enum OriginalPhaseEndpoint {
 impl OriginalPhaseEndpoint {
     fn shutdown(&self) {
         match self {
-            Self::Stream(stream) => { let _ = stream.shutdown(Shutdown::Both); }
-            Self::Datagram(socket) => { let _ = socket.shutdown(Shutdown::Both); }
+            Self::Stream(stream) => {
+                let _ = stream.shutdown(Shutdown::Both);
+            }
+            Self::Datagram(socket) => {
+                let _ = socket.shutdown(Shutdown::Both);
+            }
         }
     }
 }
@@ -155,7 +166,9 @@ pub(crate) struct CloseSameActorPhaseOnDrop {
 }
 
 impl SameActorPhaseGate {
-    pub(crate) fn from_original_deadline(deadline: SameActorPhaseDeadline) -> io::Result<Arc<Self>> {
+    pub(crate) fn from_original_deadline(
+        deadline: SameActorPhaseDeadline,
+    ) -> io::Result<Arc<Self>> {
         let now = crate::root_observation_cache::boottime_ns().map_err(io::Error::other)?;
         deadline.remaining_at(now)?;
         Ok(Arc::new(Self {
@@ -193,7 +206,9 @@ impl SameActorPhaseGate {
     }
 
     pub(crate) fn require_open(&self) -> io::Result<Duration> {
-        let checked = self.state.lock()
+        let checked = self
+            .state
+            .lock()
             .map_err(|_| refused("original phase gate is poisoned"))
             .and_then(|mut state| self.check_locked(&mut state));
         if checked.is_err() {
@@ -204,12 +219,18 @@ impl SameActorPhaseGate {
 
     pub(crate) fn enter_original_lane(self: &Arc<Self>) -> io::Result<SameActorPhaseAdmission> {
         let admitted = (|| {
-            let mut state = self.state.lock()
+            let mut state = self
+                .state
+                .lock()
                 .map_err(|_| refused("original phase gate is poisoned"))?;
             self.check_locked(&mut state)?;
-            state.active = state.active.checked_add(1)
+            state.active = state
+                .active
+                .checked_add(1)
                 .ok_or_else(|| refused("original phase active count overflow"))?;
-            Ok(SameActorPhaseAdmission { gate: Arc::clone(self) })
+            Ok(SameActorPhaseAdmission {
+                gate: Arc::clone(self),
+            })
         })();
         if admitted.is_err() {
             self.close();
@@ -225,17 +246,23 @@ impl SameActorPhaseGate {
     ) -> io::Result<SameActorPhaseStream> {
         let retained = (|| {
             let alias = OriginalPhaseEndpoint::Stream(stream.try_clone()?);
-            let mut state = self.state.lock()
+            let mut state = self
+                .state
+                .lock()
                 .map_err(|_| refused("original phase gate is poisoned"))?;
             self.check_locked(&mut state)?;
             if state.streams.len() >= MAX_STREAMS {
                 return Err(refused("original phase stream bound exceeded"));
             }
             let id = state.next_stream;
-            state.next_stream = id.checked_add(1)
+            state.next_stream = id
+                .checked_add(1)
                 .ok_or_else(|| refused("original phase stream identity exhausted"))?;
             state.streams.insert(id, alias);
-            Ok(SameActorPhaseStream { gate: Arc::clone(self), id })
+            Ok(SameActorPhaseStream {
+                gate: Arc::clone(self),
+                id,
+            })
         })();
         if retained.is_err() {
             self.close();
@@ -250,7 +277,10 @@ impl SameActorPhaseGate {
         let closing = CloseSameActorPhaseOnDrop::new(self);
         let stream = self.retain_original_stream(stream)?;
         self.require_open()?;
-        Ok(RequiredSameActorPhaseChannel { closing, _stream: stream })
+        Ok(RequiredSameActorPhaseChannel {
+            closing,
+            _stream: stream,
+        })
     }
 
     pub(crate) fn retain_original_datagram(
@@ -259,17 +289,23 @@ impl SameActorPhaseGate {
     ) -> io::Result<SameActorPhaseStream> {
         let retained = (|| {
             let alias = OriginalPhaseEndpoint::Datagram(stream.try_clone()?);
-            let mut state = self.state.lock()
+            let mut state = self
+                .state
+                .lock()
                 .map_err(|_| refused("original phase gate is poisoned"))?;
             self.check_locked(&mut state)?;
             if state.streams.len() >= MAX_STREAMS {
                 return Err(refused("original phase stream bound exceeded"));
             }
             let id = state.next_stream;
-            state.next_stream = id.checked_add(1)
+            state.next_stream = id
+                .checked_add(1)
                 .ok_or_else(|| refused("original phase stream identity exhausted"))?;
             state.streams.insert(id, alias);
-            Ok(SameActorPhaseStream { gate: Arc::clone(self), id })
+            Ok(SameActorPhaseStream {
+                gate: Arc::clone(self),
+                id,
+            })
         })();
         if retained.is_err() {
             self.close();
@@ -307,18 +343,30 @@ impl SameActorPhaseGate {
         loop {
             let mut state = match self.state.lock() {
                 Ok(state) => state,
-                Err(poisoned) => { drop(poisoned); self.close(); return; }
+                Err(poisoned) => {
+                    drop(poisoned);
+                    self.close();
+                    return;
+                }
             };
             if state.closed || self.closed.is_cancelled() {
                 return;
             }
             let remaining = match self.check_locked(&mut state) {
                 Ok(remaining) => remaining,
-                Err(_) => { drop(state); self.close(); return; }
+                Err(_) => {
+                    drop(state);
+                    self.close();
+                    return;
+                }
             };
             match self.changed.wait_timeout(state, remaining.min(STOP_PROBE)) {
                 Ok((next, _)) => drop(next),
-                Err(poisoned) => { drop(poisoned); self.close(); return; }
+                Err(poisoned) => {
+                    drop(poisoned);
+                    self.close();
+                    return;
+                }
             }
         }
     }
@@ -347,30 +395,41 @@ impl SameActorPhaseGate {
     /// response before notifying; comparing this epoch prevents a lost wakeup.
     pub(crate) fn original_wait_epoch(&self) -> io::Result<u64> {
         let result = (|| {
-            let mut state = self.state.lock()
+            let mut state = self
+                .state
+                .lock()
                 .map_err(|_| refused("original phase gate is poisoned"))?;
             self.check_locked(&mut state)?;
             Ok(state.epoch)
         })();
-        if result.is_err() { self.close(); }
+        if result.is_err() {
+            self.close();
+        }
         result
     }
 
     pub(crate) fn wait_original_change(&self, epoch: u64) -> io::Result<()> {
         let result = (|| {
-            let mut state = self.state.lock()
+            let mut state = self
+                .state
+                .lock()
                 .map_err(|_| refused("original phase gate is poisoned"))?;
             let remaining = self.check_locked(&mut state)?;
             if state.epoch == epoch {
                 // This is only a wait budget; the two retained absolute ends
                 // are checked again after wakeup and are never recomputed.
-                state = self.changed.wait_timeout(state, remaining.min(STOP_PROBE))
-                    .map_err(|_| refused("original phase wait is poisoned"))?.0;
+                state = self
+                    .changed
+                    .wait_timeout(state, remaining.min(STOP_PROBE))
+                    .map_err(|_| refused("original phase wait is poisoned"))?
+                    .0;
             }
             self.check_locked(&mut state)?;
             Ok(())
         })();
-        if result.is_err() { self.close(); }
+        if result.is_err() {
+            self.close();
+        }
         result
     }
 }
@@ -396,7 +455,10 @@ impl Drop for SameActorPhaseAdmission {
     fn drop(&mut self) {
         let valid = match self.gate.state.lock() {
             Ok(mut state) => match state.active.checked_sub(1) {
-                Some(active) => { state.active = active; true }
+                Some(active) => {
+                    state.active = active;
+                    true
+                }
                 None => false,
             },
             Err(_) => false,
@@ -411,7 +473,10 @@ impl Drop for SameActorPhaseAdmission {
 
 impl CloseSameActorPhaseOnDrop {
     pub(crate) fn new(gate: &Arc<SameActorPhaseGate>) -> Self {
-        Self { gate: Arc::clone(gate), armed: true }
+        Self {
+            gate: Arc::clone(gate),
+            armed: true,
+        }
     }
 
     pub(crate) fn disarm(&mut self) {
@@ -430,7 +495,6 @@ impl Drop for CloseSameActorPhaseOnDrop {
 fn refused(message: &'static str) -> io::Error {
     io::Error::other(message)
 }
-
 
 /// Own the daemon's watcher from original receive until the last context
 /// owner is dropped. The thread captures only Gate and its close guard, never
@@ -453,7 +517,10 @@ impl OriginalSameActorPhaseWatch {
                 let _closing = closing;
                 watched.watch_original_deadline();
             })?;
-        Ok(Self { gate: Arc::clone(gate), worker: Some(worker) })
+        Ok(Self {
+            gate: Arc::clone(gate),
+            worker: Some(worker),
+        })
     }
 }
 

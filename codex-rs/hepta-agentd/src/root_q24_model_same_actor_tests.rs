@@ -141,12 +141,14 @@ fn receive(server: &mut UnixStream) -> Request {
 }
 
 #[tokio::test]
-async fn phase_model_wrong_semantic_ack_closes_shared_gate_before_any_reuse()
--> anyhow::Result<()> {
+async fn phase_model_wrong_semantic_ack_closes_shared_gate_before_any_reuse() -> anyhow::Result<()>
+{
     let mut fixture = Fixture::new()?;
     let mut server = fixture.server.take().unwrap();
     let worker = std::thread::spawn(move || {
-        server.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+        server
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .unwrap();
         let request = receive(&mut server);
         let response = Response {
             schema: 1,
@@ -163,7 +165,9 @@ async fn phase_model_wrong_semantic_ack_closes_shared_gate_before_any_reuse()
             },
         };
         let bytes = serde_json::to_vec(&response).unwrap();
-        server.write_all(&(bytes.len() as u32).to_be_bytes()).unwrap();
+        server
+            .write_all(&(bytes.len() as u32).to_be_bytes())
+            .unwrap();
         server.write_all(&bytes).unwrap();
         assert_eq!(server.read(&mut [0]).unwrap(), 0);
     });
@@ -177,14 +181,15 @@ async fn phase_model_wrong_semantic_ack_closes_shared_gate_before_any_reuse()
 }
 
 #[tokio::test]
-async fn phase_model_cancelled_borrowed_observation_closes_all_lanes()
--> anyhow::Result<()> {
+async fn phase_model_cancelled_borrowed_observation_closes_all_lanes() -> anyhow::Result<()> {
     let mut fixture = Fixture::new()?;
     let mut server = fixture.server.take().unwrap();
     let (sent, seen) = tokio::sync::oneshot::channel();
     let (release, released) = std::sync::mpsc::channel();
     let worker = std::thread::spawn(move || {
-        server.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+        server
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .unwrap();
         let request = receive(&mut server);
         assert!(matches!(request.command, Command::Observe));
         sent.send(()).unwrap();
@@ -209,8 +214,8 @@ async fn phase_model_cancelled_borrowed_observation_closes_all_lanes()
 }
 
 #[tokio::test]
-async fn phase_model_constructor_rejects_foreign_files_before_first_observe()
--> anyhow::Result<()> {
+async fn phase_model_constructor_rejects_foreign_files_before_first_observe() -> anyhow::Result<()>
+{
     let mut fixture = Fixture::new()?;
     let transport = fixture.factory.transport.take().unwrap();
     let phase = fixture.factory.phase.take().unwrap();

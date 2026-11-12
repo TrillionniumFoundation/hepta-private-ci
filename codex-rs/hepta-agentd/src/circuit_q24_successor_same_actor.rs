@@ -24,7 +24,10 @@ impl OriginalSameActorSuccessorTaskParts {
         identity: &AgentdIdentity,
         gate: &Arc<SameActorPhaseGate>,
     ) -> Result<
-        (Arc<SuccessorSlot>, Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>),
+        (
+            Arc<SuccessorSlot>,
+            Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>,
+        ),
         AgentdError,
     > {
         if self.context.identity() != identity || !Arc::ptr_eq(&self.gate, gate) {
@@ -32,9 +35,14 @@ impl OriginalSameActorSuccessorTaskParts {
                 "successor task parts differ from their original phase or full identity".into(),
             ));
         }
-        self.context.session().require_original_same_actor_phase(gate)?;
-        self.slot.require_open().map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
-        gate.require_open().map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        self.context
+            .session()
+            .require_original_same_actor_phase(gate)?;
+        self.slot
+            .require_open()
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        gate.require_open()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         self.phase_close.disarm();
         self.slot_close.disarm();
         Ok((self.slot, self.invocation))
@@ -66,13 +74,14 @@ pub(crate) async fn prepare_original_same_actor_successor(
     }
     let slot = SuccessorSlot::new_pending_slot();
     let mut slot_close = CloseOnDrop::new(&slot);
-    let context = learning.prepare_original_successor_context(identity, session, &slot).await?;
+    let context = learning
+        .prepare_original_successor_context(identity, session, &slot)
+        .await?;
     context.session().require_original_same_actor_phase(&gate)?;
     let (sender, receiver) = oneshot::channel();
     let invocation = original_pending_successor_invocation(Arc::clone(&slot));
-    let pending = PendingSuccessorOwner::new(
-        Arc::clone(&context), Arc::clone(&slot), receiver, capacity,
-    );
+    let pending =
+        PendingSuccessorOwner::new(Arc::clone(&context), Arc::clone(&slot), receiver, capacity);
     let handoff = OriginalQ24SuccessorHandoffV1 {
         context: Arc::clone(&context),
         slot: Arc::clone(&slot),
@@ -87,7 +96,8 @@ pub(crate) async fn prepare_original_same_actor_successor(
         phase_close: CloseSameActorPhaseOnDrop::new(&gate),
         slot_close: CloseOnDrop::new(&slot),
     };
-    gate.require_open().map_err(|error| AgentdError::Protocol(error.to_string()))?;
+    gate.require_open()
+        .map_err(|error| AgentdError::Protocol(error.to_string()))?;
     slot_close.disarm();
     phase_close.disarm();
     Ok((learning, pending, handoff, parts))

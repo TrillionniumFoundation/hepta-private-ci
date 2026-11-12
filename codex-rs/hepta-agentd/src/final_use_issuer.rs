@@ -107,15 +107,25 @@ impl AgentdUnixFinalUseGrantProvider {
     ) -> Result<Self, AgentdFinalUseIssuerError> {
         let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
         if self.phase.is_some()
-            || self.protected_root.as_ref().is_none_or(|root| root.end != gate.deadline().instant())
+            || self
+                .protected_root
+                .as_ref()
+                .is_none_or(|root| root.end != gate.deadline().instant())
         {
             return Err(AgentdFinalUseIssuerError::InvalidConfiguration);
         }
-        let stream = self.stream.get_mut().map_err(|_| AgentdFinalUseIssuerError::ChannelClosed)?
-            .as_ref().ok_or(AgentdFinalUseIssuerError::ChannelClosed)?;
-        let phase = gate.retain_required_original_stream(stream)
+        let stream = self
+            .stream
+            .get_mut()
+            .map_err(|_| AgentdFinalUseIssuerError::ChannelClosed)?
+            .as_ref()
+            .ok_or(AgentdFinalUseIssuerError::ChannelClosed)?;
+        let phase = gate
+            .retain_required_original_stream(stream)
             .map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
-        phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+        phase
+            .require_open()
+            .map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
         self.phase = Some(phase);
         closing.disarm();
         Ok(self)
@@ -127,7 +137,9 @@ impl AgentdUnixFinalUseGrantProvider {
     ) -> Result<SignedFinalUseGrant, AgentdFinalUseIssuerError> {
         let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
         if let Some(phase) = &self.phase {
-            phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+            phase
+                .require_open()
+                .map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
         }
         // Bound allocation before serialization even for a non-owner caller.
         if binding.subject_id.len() > 128 || binding.destination_id.len() > 128 {
@@ -145,7 +157,9 @@ impl AgentdUnixFinalUseGrantProvider {
         self.exchange_guarded(|stream, deadline| exchange(stream, &request, binding, deadline))?
             .ok_or(AgentdFinalUseIssuerError::Denied)
             .inspect(|_| {
-                if let Some(closing) = &mut phase_close { closing.disarm(); }
+                if let Some(closing) = &mut phase_close {
+                    closing.disarm();
+                }
             })
     }
 
@@ -155,7 +169,9 @@ impl AgentdUnixFinalUseGrantProvider {
     ) -> Result<T, AgentdFinalUseIssuerError> {
         let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
         if let Some(phase) = &self.phase {
-            phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+            phase
+                .require_open()
+                .map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
         }
         let mut slot = self.stream.try_lock().map_err(|error| match error {
             std::sync::TryLockError::WouldBlock => AgentdFinalUseIssuerError::Busy,
@@ -176,7 +192,9 @@ impl AgentdUnixFinalUseGrantProvider {
             self.check_root()?;
             remaining(deadline)?;
             if let Some(phase) = &self.phase {
-                phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+                phase
+                    .require_open()
+                    .map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
             }
             Ok(response)
         })();
@@ -184,9 +202,13 @@ impl AgentdUnixFinalUseGrantProvider {
             Ok(response) => {
                 *slot = Some(stream);
                 if let Some(phase) = &self.phase {
-                    phase.require_open().map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
+                    phase
+                        .require_open()
+                        .map_err(|_| AgentdFinalUseIssuerError::Unavailable)?;
                 }
-                if let Some(closing) = &mut phase_close { closing.disarm(); }
+                if let Some(closing) = &mut phase_close {
+                    closing.disarm();
+                }
                 Ok(response)
             }
             Err(error) => {

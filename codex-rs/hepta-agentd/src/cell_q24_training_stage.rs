@@ -60,7 +60,8 @@ pub struct OriginalCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitn
     owners: Arc<Mutex<Owners<TW, RW>>>,
     lane: Arc<Semaphore>,
     #[cfg(target_os = "linux")]
-    same_actor_work: Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
+    same_actor_work:
+        Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
 }
 
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
@@ -122,7 +123,9 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         #[cfg(target_os = "linux")]
         if let Some(phase) = &self.same_actor_work {
-            return self.execute_original_same_actor_training(dataset, cancellation, phase).await;
+            return self
+                .execute_original_same_actor_training(dataset, cancellation, phase)
+                .await;
         }
         self.require_dataset(dataset)?;
         self.in_lane(
@@ -234,7 +237,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             &mut CellQ24TrainingOwnerV1<TW>,
         ) -> Result<T, crate::LearningIterationRuntimeErrorV1>,
     ) -> Result<T, crate::LearningIterationRuntimeErrorV1> {
-        let mut closing = self.same_actor_work.as_ref().map(|phase| phase.original_failure_scope());
+        let mut closing = self
+            .same_actor_work
+            .as_ref()
+            .map(|phase| phase.original_failure_scope());
         self.require_dataset(dataset)
             .map_err(|_| crate::LearningIterationRuntimeErrorV1::WrongScope)?;
         let _permit = Arc::clone(&self.lane)

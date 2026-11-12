@@ -6,7 +6,7 @@ This candidate assembles the original Root service and the same live daemon thro
 
 The source includes:
 - Original descriptor admission and five mandatory Root lanes under the captured phase deadline.
-- Actual A admission closure, task/work quiescence, retained Prepared source and physical A generation drain before the Root Scoped transition.
+- Actual A admission closure, task/work quiescence and authenticated task-local durable journal drain. The controller then awaits the original A Direct-owner loop and releases its active owner custody before the second phase ACK; Root validates and consumes the original Initial CURRENT owner before entering Learning/Model.
 - Registered blocking-work ownership: cleanup keeps the real JoinHandle and output custody until physical completion; dropping an unjoined job does not fabricate an empty registry.
 - Candidate Training notification only after the real checkpoint and authenticated readback, followed by once-only installation of real independent Evaluation inputs against the same Training cut.
 - One retained original decision future across the B wait, so losing a select branch does not prematurely close its successor.

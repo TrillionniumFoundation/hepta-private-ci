@@ -21,18 +21,18 @@ use crate::learning_iteration::OriginalQ24SuccessorContext;
 
 #[path = "circuit_q24_successor_invocation.rs"]
 mod invocation;
+#[path = "circuit_q24_successor_same_actor.rs"]
+mod same_actor;
 #[path = "circuit_q24_successor_state.rs"]
 mod state;
 #[path = "circuit_q24_successor_worker.rs"]
 mod worker;
-#[path = "circuit_q24_successor_same_actor.rs"]
-mod same_actor;
-pub(crate) use same_actor::OriginalSameActorSuccessorTaskParts;
-pub(crate) use same_actor::prepare_original_same_actor_successor;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24InstalledSuccessorV1;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorExecutionInputsV1;
 pub use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorFeedbackV1;
 pub(crate) use crate::circuit_q24_task_profile::successor::OriginalQ24SuccessorInvocationV1;
+pub(crate) use same_actor::OriginalSameActorSuccessorTaskParts;
+pub(crate) use same_actor::prepare_original_same_actor_successor;
 use state::CloseOnDrop;
 use state::InstallationWork;
 pub(crate) use state::SuccessorSlot;

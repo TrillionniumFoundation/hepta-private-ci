@@ -50,7 +50,11 @@ pub fn send_root_same_actor_phase_handoff(
     root_pidfd: &OwnedFd,
     timeout: Duration,
 ) -> Result<(), AgentdError> {
-    let RootSameActorPhaseOfferV1 { bootstrap, gate, mut closing } = offer;
+    let RootSameActorPhaseOfferV1 {
+        bootstrap,
+        gate,
+        mut closing,
+    } = offer;
     let budget = bounded_timeout(timeout, gate.deadline().instant())?;
     gate.require_open()?;
     let _stop = gate.retain_original_datagram(&socket)?;
@@ -58,8 +62,13 @@ pub fn send_root_same_actor_phase_handoff(
     validate_bootstrap(&bootstrap)?;
     validate_bootstrap(&initial.bootstrap)?;
     send_packet(
-        &socket, START_FRAME,
-        &[bootstrap.as_raw_fd(), root_pidfd.as_raw_fd(), initial.bootstrap.as_raw_fd()],
+        &socket,
+        START_FRAME,
+        &[
+            bootstrap.as_raw_fd(),
+            root_pidfd.as_raw_fd(),
+            initial.bootstrap.as_raw_fd(),
+        ],
         bounded_timeout(timeout, gate.deadline().instant())?,
     )?;
     gate.require_open()?;
@@ -76,23 +85,32 @@ pub fn send_root_same_actor_scoped_handoff(
     timeout: Duration,
 ) -> Result<crate::RootSameActorPublicationEnrollmentCapabilityV1, AgentdError> {
     let crate::RootSameActorScopedEnrollmentV1 {
-        offer, publication, gate, mut closing,
+        offer,
+        publication,
+        gate,
+        mut closing,
     } = enrolled;
     gate.require_open()?;
     let _stop = gate.retain_original_datagram(&socket)?;
     require_original_sender(
-        &socket, root_pidfd, bounded_timeout(timeout, gate.deadline().instant())?,
+        &socket,
+        root_pidfd,
+        bounded_timeout(timeout, gate.deadline().instant())?,
     )?;
     validate_bootstrap(&offer.bootstrap)?;
     validate_bootstrap(&offer.learning)?;
     validate_bootstrap(&offer.model.bootstrap)?;
     validate_bootstrap(&offer.publication.bootstrap)?;
     send_packet(
-        &socket, SCOPED_FRAME,
+        &socket,
+        SCOPED_FRAME,
         &[
-            offer.bootstrap.as_raw_fd(), root_pidfd.as_raw_fd(),
-            offer.learning.as_raw_fd(), offer.model.bootstrap.as_raw_fd(),
-            offer.model.journal.as_raw_fd(), offer.model.witness.as_raw_fd(),
+            offer.bootstrap.as_raw_fd(),
+            root_pidfd.as_raw_fd(),
+            offer.learning.as_raw_fd(),
+            offer.model.bootstrap.as_raw_fd(),
+            offer.model.journal.as_raw_fd(),
+            offer.model.witness.as_raw_fd(),
             offer.publication.bootstrap.as_raw_fd(),
         ],
         bounded_timeout(timeout, gate.deadline().instant())?,
@@ -109,11 +127,24 @@ pub(crate) fn receive_original_phase_start(
 ) -> Result<OriginalSameActorPhaseHandoff, AgentdError> {
     let peer = root_pair(&socket, bounded_timeout(timeout, original_receiver_end)?)?;
     let mut rights = receive_phase_packet(
-        &socket, START_FRAME, 3, bounded_timeout(timeout, original_receiver_end)?,
+        &socket,
+        START_FRAME,
+        3,
+        bounded_timeout(timeout, original_receiver_end)?,
     )?;
-    let initial = File::from(rights.pop().ok_or_else(|| refused("phase Initial offer missing"))?);
-    let root_pidfd = rights.pop().ok_or_else(|| refused("phase Root pin missing"))?;
-    let bootstrap = File::from(rights.pop().ok_or_else(|| refused("phase descriptor missing"))?);
+    let initial = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase Initial offer missing"))?,
+    );
+    let root_pidfd = rights
+        .pop()
+        .ok_or_else(|| refused("phase Root pin missing"))?;
+    let bootstrap = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase descriptor missing"))?,
+    );
     validate_bootstrap(&bootstrap)?;
     validate_bootstrap(&initial)?;
     require_root_pin(&root_pidfd, peer.pid as u32)?;
@@ -124,7 +155,10 @@ pub(crate) fn receive_original_phase_start(
         root_pid: peer.pid as u32,
     };
     Ok(OriginalSameActorPhaseHandoff {
-        bootstrap, root_pidfd, root_pid: peer.pid as u32, initial,
+        bootstrap,
+        root_pidfd,
+        root_pid: peer.pid as u32,
+        initial,
     })
 }
 
@@ -136,17 +170,49 @@ pub(crate) fn receive_original_scoped_phase(
     let mut closing = CloseSameActorPhaseOnDrop::new(gate);
     gate.require_open()?;
     let _stop = gate.retain_original_datagram(&socket)?;
-    let peer = root_pair(&socket, bounded_timeout(timeout, gate.deadline().instant())?)?;
-    let mut rights = receive_phase_packet(
-        &socket, SCOPED_FRAME, 7, bounded_timeout(timeout, gate.deadline().instant())?,
+    let peer = root_pair(
+        &socket,
+        bounded_timeout(timeout, gate.deadline().instant())?,
     )?;
-    let publication = File::from(rights.pop().ok_or_else(|| refused("phase publication offer missing"))?);
-    let witness = File::from(rights.pop().ok_or_else(|| refused("phase Model witness missing"))?);
-    let journal = File::from(rights.pop().ok_or_else(|| refused("phase Model journal missing"))?);
-    let model = File::from(rights.pop().ok_or_else(|| refused("phase Model offer missing"))?);
-    let learning = File::from(rights.pop().ok_or_else(|| refused("phase Learning offer missing"))?);
-    let root_pidfd = rights.pop().ok_or_else(|| refused("phase original Root pin missing"))?;
-    let bootstrap = File::from(rights.pop().ok_or_else(|| refused("phase scoped descriptor missing"))?);
+    let mut rights = receive_phase_packet(
+        &socket,
+        SCOPED_FRAME,
+        7,
+        bounded_timeout(timeout, gate.deadline().instant())?,
+    )?;
+    let publication = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase publication offer missing"))?,
+    );
+    let witness = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase Model witness missing"))?,
+    );
+    let journal = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase Model journal missing"))?,
+    );
+    let model = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase Model offer missing"))?,
+    );
+    let learning = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase Learning offer missing"))?,
+    );
+    let root_pidfd = rights
+        .pop()
+        .ok_or_else(|| refused("phase original Root pin missing"))?;
+    let bootstrap = File::from(
+        rights
+            .pop()
+            .ok_or_else(|| refused("phase scoped descriptor missing"))?,
+    );
     for sealed in [&bootstrap, &learning, &model, &publication] {
         validate_bootstrap(sealed)?;
     }
@@ -155,14 +221,21 @@ pub(crate) fn receive_original_scoped_phase(
         bootstrap,
         root_pid: peer.pid as u32,
         learning: RootLearningHandoffV1 {
-            bootstrap: learning, root_pidfd: root_pidfd.try_clone()?, root_pid: peer.pid as u32,
+            bootstrap: learning,
+            root_pidfd: root_pidfd.try_clone()?,
+            root_pid: peer.pid as u32,
         },
         model: RootQ24ModelFactoryHandoffV1 {
-            bootstrap: model, root_pidfd: root_pidfd.try_clone()?, root_pid: peer.pid as u32,
-            journal, witness,
+            bootstrap: model,
+            root_pidfd: root_pidfd.try_clone()?,
+            root_pid: peer.pid as u32,
+            journal,
+            witness,
         },
         publication: RootGenerationPublicationHandoffV1 {
-            bootstrap: publication, root_pidfd, root_pid: peer.pid as u32,
+            bootstrap: publication,
+            root_pidfd,
+            root_pid: peer.pid as u32,
         },
     };
     gate.require_open()?;
@@ -208,7 +281,10 @@ fn receive_phase_packet(
     socket.set_read_timeout(Some(timeout))?;
     let mut bytes = [0_u8; 128];
     let mut control = [0_usize; 32];
-    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: frame.len() + 1 };
+    let mut vector = libc::iovec {
+        iov_base: bytes.as_mut_ptr().cast(),
+        iov_len: frame.len() + 1,
+    };
     // SAFETY: every pointer is initialized below to a bounded live buffer.
     let mut message: libc::msghdr = unsafe { mem::zeroed() };
     message.msg_iov = &mut vector;
@@ -218,15 +294,21 @@ fn receive_phase_packet(
     // SAFETY: recvmsg writes only the retained bounded buffers and marks all
     // received rights CLOEXEC atomically.
     let size = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
-    if size < 0 { return Err(io::Error::last_os_error().into()); }
+    if size < 0 {
+        return Err(io::Error::last_os_error().into());
+    }
     // SAFETY: the original ancillary parser immediately owns every returned
     // descriptor; the completed aligned message remains live here.
     let (rights, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
-    if !valid || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
-        || rights.len() != count || size as usize != frame.len()
+    if !valid
+        || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
+        || rights.len() != count
+        || size as usize != frame.len()
         || &bytes[..frame.len()] != frame
     {
-        return Err(refused("exact original phase marker and ordered rights required"));
+        return Err(refused(
+            "exact original phase marker and ordered rights required",
+        ));
     }
     Ok(rights)
 }

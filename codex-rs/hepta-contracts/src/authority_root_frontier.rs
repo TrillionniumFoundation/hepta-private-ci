@@ -172,7 +172,10 @@ impl RootFinalUseFrontierClient {
         }
         // Concurrent original-owner misuse never queues an unbounded wait or
         // interleaves bytes. It emits no request and grants no authority.
-        let mut slot = self.channel.try_lock().inspect_err(|error| {
+        let mut slot = self
+            .channel
+            .try_lock()
+            .inspect_err(|error| {
                 let kind = match error {
                     std::sync::TryLockError::WouldBlock => std::io::ErrorKind::WouldBlock,
                     std::sync::TryLockError::Poisoned(_) => std::io::ErrorKind::Other,
@@ -218,14 +221,15 @@ impl RootFinalUseFrontierClient {
                     request_id: id,
                 },
             };
-            let bytes = serde_json::to_vec(&request).inspect_err(|_error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.encode-request",
-                    crate::final_use::FinalUseError::Unavailable,
-                    None,
-                );
-            })
-            .map_err(unavailable)?;
+            let bytes = serde_json::to_vec(&request)
+                .inspect_err(|_error| {
+                    crate::final_use::diagnostic::record(
+                        "frontier.encode-request",
+                        crate::final_use::FinalUseError::Unavailable,
+                        None,
+                    );
+                })
+                .map_err(unavailable)?;
             if bytes.is_empty() || bytes.len() > FRAME_LIMIT {
                 crate::final_use::diagnostic::record(
                     "frontier.request-frame-length",
@@ -235,14 +239,16 @@ impl RootFinalUseFrontierClient {
                 return Err(AuthorityTrustError::Unavailable);
             }
             let deadline = self.root.deadline(self.timeout);
-            self.root.check(deadline).inspect_err(|error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.owner-before",
-                    crate::final_use::FinalUseError::Unavailable,
-                    Some(error.kind()),
-                );
-            })
-            .map_err(unavailable)?;
+            self.root
+                .check(deadline)
+                .inspect_err(|error| {
+                    crate::final_use::diagnostic::record(
+                        "frontier.owner-before",
+                        crate::final_use::FinalUseError::Unavailable,
+                        Some(error.kind()),
+                    );
+                })
+                .map_err(unavailable)?;
             self.root
                 .write_until(
                     &mut channel.stream,
@@ -250,34 +256,34 @@ impl RootFinalUseFrontierClient {
                     deadline,
                 )
                 .inspect_err(|error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.write-prefix",
-                    crate::final_use::FinalUseError::Unavailable,
-                    Some(error.kind()),
-                );
-            })
-            .map_err(unavailable)?;
+                    crate::final_use::diagnostic::record(
+                        "frontier.write-prefix",
+                        crate::final_use::FinalUseError::Unavailable,
+                        Some(error.kind()),
+                    );
+                })
+                .map_err(unavailable)?;
             self.root
                 .write_until(&mut channel.stream, &bytes, deadline)
                 .inspect_err(|error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.write-body",
-                    crate::final_use::FinalUseError::Unavailable,
-                    Some(error.kind()),
-                );
-            })
-            .map_err(unavailable)?;
+                    crate::final_use::diagnostic::record(
+                        "frontier.write-body",
+                        crate::final_use::FinalUseError::Unavailable,
+                        Some(error.kind()),
+                    );
+                })
+                .map_err(unavailable)?;
             let mut prefix = [0; 4];
             self.root
                 .read_until(&mut channel.stream, &mut prefix, deadline)
                 .inspect_err(|error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.read-prefix",
-                    crate::final_use::FinalUseError::Unavailable,
-                    Some(error.kind()),
-                );
-            })
-            .map_err(unavailable)?;
+                    crate::final_use::diagnostic::record(
+                        "frontier.read-prefix",
+                        crate::final_use::FinalUseError::Unavailable,
+                        Some(error.kind()),
+                    );
+                })
+                .map_err(unavailable)?;
             let length = u32::from_be_bytes(prefix) as usize;
             if length == 0 || length > FRAME_LIMIT {
                 crate::final_use::diagnostic::record(
@@ -291,29 +297,32 @@ impl RootFinalUseFrontierClient {
             self.root
                 .read_until(&mut channel.stream, &mut bytes, deadline)
                 .inspect_err(|error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.read-body",
-                    crate::final_use::FinalUseError::Unavailable,
-                    Some(error.kind()),
-                );
-            })
-            .map_err(unavailable)?;
-            let response: Response = serde_json::from_slice(&bytes).inspect_err(|_error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.decode-response",
-                    crate::final_use::FinalUseError::Unavailable,
-                    None,
-                );
-            })
-            .map_err(unavailable)?;
-            self.root.check(deadline).inspect_err(|error| {
-                crate::final_use::diagnostic::record(
-                    "frontier.owner-after",
-                    crate::final_use::FinalUseError::Unavailable,
-                    Some(error.kind()),
-                );
-            })
-            .map_err(unavailable)?;
+                    crate::final_use::diagnostic::record(
+                        "frontier.read-body",
+                        crate::final_use::FinalUseError::Unavailable,
+                        Some(error.kind()),
+                    );
+                })
+                .map_err(unavailable)?;
+            let response: Response = serde_json::from_slice(&bytes)
+                .inspect_err(|_error| {
+                    crate::final_use::diagnostic::record(
+                        "frontier.decode-response",
+                        crate::final_use::FinalUseError::Unavailable,
+                        None,
+                    );
+                })
+                .map_err(unavailable)?;
+            self.root
+                .check(deadline)
+                .inspect_err(|error| {
+                    crate::final_use::diagnostic::record(
+                        "frontier.owner-after",
+                        crate::final_use::FinalUseError::Unavailable,
+                        Some(error.kind()),
+                    );
+                })
+                .map_err(unavailable)?;
             if response.schema_version != 1 || response.request_id != id {
                 crate::final_use::diagnostic::record(
                     "frontier.response-binding",

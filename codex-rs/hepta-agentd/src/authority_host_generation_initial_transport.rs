@@ -58,7 +58,15 @@ impl HostAuthorityService {
         let pin = owner.try_clone()?;
         let channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
             .map_err(io::Error::other)?;
-        self.serve_initial_original_channel(slot, config, registration, pin, channel, sequence, None)
+        self.serve_initial_original_channel(
+            slot,
+            config,
+            registration,
+            pin,
+            channel,
+            sequence,
+            None,
+        )
     }
 
     pub(crate) fn serve_generation_initial_until(
@@ -77,10 +85,20 @@ impl HostAuthorityService {
         let sequence = 1_u64;
         let pin = owner.try_clone()?;
         let channel = HostAuthorityPeerChannel::from_stream_until(
-            stream, policy, owner, phase.deadline().instant(),
-        ).map_err(io::Error::other)?;
+            stream,
+            policy,
+            owner,
+            phase.deadline().instant(),
+        )
+        .map_err(io::Error::other)?;
         self.serve_initial_original_channel(
-            slot, config, registration, pin, channel, sequence, Some(phase),
+            slot,
+            config,
+            registration,
+            pin,
+            channel,
+            sequence,
+            Some(phase),
         )?;
         phase.require_open()?;
         closing.disarm();
@@ -105,7 +123,9 @@ impl HostAuthorityService {
                     .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
                 let mut encoded_response = None;
                 self.with_initial_publication_context(config, registration, &pin, |proof| {
-                    if let Some(gate) = phase { gate.require_open()?; }
+                    if let Some(gate) = phase {
+                        gate.require_open()?;
+                    }
                     if slot.profile.writer != proof
                         || slot.profile.identity
                             != crate::neuron_generation_process_identity_digest_v1(&self.identity)
@@ -232,7 +252,9 @@ impl HostAuthorityService {
                                 ));
                             }
                             slot.require_target(/*fresh*/ true)?;
-                            if let Some(gate) = phase { gate.require_open()?; }
+                            if let Some(gate) = phase {
+                                gate.require_open()?;
+                            }
                             let (owner, prepared) =
                                 NeuronGenerationCurrentOwnerV1::prepare_initial(
                                     slot.root.clone(),
@@ -255,7 +277,9 @@ impl HostAuthorityService {
                         Command::Publish {
                             signed, witness, ..
                         } => {
-                            if let Some(gate) = phase { gate.require_open()?; }
+                            if let Some(gate) = phase {
+                                gate.require_open()?;
+                            }
                             current
                                 .as_ref()
                                 .ok_or_else(|| {
@@ -319,8 +343,9 @@ impl HostAuthorityService {
                 let encoded = encoded_response
                     .ok_or(codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
                 if let Some(gate) = phase {
-                    gate.require_open()
-                        .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                    gate.require_open().map_err(|_| {
+                        codex_hepta_contracts::HostIssuerTransportError::Unavailable
+                    })?;
                 }
                 Ok(encoded)
             })

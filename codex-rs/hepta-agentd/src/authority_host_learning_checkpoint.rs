@@ -56,7 +56,9 @@ impl HostAuthorityService {
         let _closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase);
         phase.require_open().map_err(unavailable)?;
         let _stream_stop = phase.retain_original_stream(&stream).map_err(unavailable)?;
-        let writer: &RegisteredWriter = self.writer.as_ref()
+        let writer: &RegisteredWriter = self
+            .writer
+            .as_ref()
             .ok_or(HostIssuerTransportError::Unavailable)?;
         if backend.registered_agent_id() != self.identity.agent_id.to_string() {
             return Err(HostIssuerTransportError::PeerDenied);
@@ -64,14 +66,22 @@ impl HostAuthorityService {
         policy.request_bound = 16 * 1024;
         policy.response_bound = 16 * 1024;
         let mut channel = HostAuthorityPeerChannel::from_stream_until(
-            stream, policy, owner_pidfd, phase.deadline().instant(),
+            stream,
+            policy,
+            owner_pidfd,
+            phase.deadline().instant(),
         )?;
         let mut next_request_id = 1;
         while channel.exchange(|bytes| {
             let _admission = phase.enter_original_lane().map_err(unavailable)?;
             self.check_logind_lifetime().map_err(unavailable)?;
             let response = writer.exchange_same_actor_learning_checkpoint(
-                &self.issuer, &self.clock, backend, bytes, &mut next_request_id, phase,
+                &self.issuer,
+                &self.clock,
+                backend,
+                bytes,
+                &mut next_request_id,
+                phase,
             )?;
             self.check_logind_lifetime().map_err(unavailable)?;
             phase.require_open().map_err(unavailable)?;

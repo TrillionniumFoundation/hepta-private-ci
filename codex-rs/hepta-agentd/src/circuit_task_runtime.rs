@@ -275,8 +275,7 @@ where
                                 phase.require_original_queue_admission()?;
                             }
                             Ok(())
-                        })
-                    {
+                        }) {
                         Err(error) => Err(error),
                         Ok(()) => {
                             driver

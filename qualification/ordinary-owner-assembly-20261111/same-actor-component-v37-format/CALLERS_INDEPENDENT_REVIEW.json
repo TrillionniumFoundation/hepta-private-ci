@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.v36.native-format.independent-final-metadata-review.v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "verdict": "No confirmed weakening or local marker blocker in the final native-layout CALLERS adaptation. This is bounded static review, not original checker or native qualification.",
+  "source": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152",
+    "actual_native_patch": "3ce5cb2e8dff735ec5e0ad0ca174385c09ede675",
+    "corrected_actual_inventory": "705a75d848290e994d95c75c27de8fd549fdf2d4"
+  },
+  "artifacts": {
+    "pre_callers": {
+      "git": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+      "bytes": 885351,
+      "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+    },
+    "post_callers": {
+      "git": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+      "bytes": 890345,
+      "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+    },
+    "canonical_65_operations": {
+      "git": "c8044259486e789b7ce3f079dd8fa17b36e78051",
+      "bytes": 257374,
+      "sha256": "46d7986a82f5ad89b5d380ebbbff4202b9d401d3bf6e5b9573101e79e95a8ac4"
+    },
+    "author_manifest": {
+      "git": "d6200bceef99c9b1233e3b0c9b5c97c983a99608",
+      "bytes": 7540,
+      "sha256": "e61846bea554cb060301c2e1a5c71c4dd5f13892e368459713fcf4e27bcf90e5"
+    },
+    "author_mapping_receipt": {
+      "git": "173f9c7c1830acade63ce01cc6ccd41603da06ca",
+      "bytes": 253834,
+      "sha256": "5debbfaf566ed2e540ccc65478dd33cadbfdf65bbff787fca644b292121dfda3"
+    },
+    "independent_structure_and_field_detail": {
+      "git": "b2dea95b48a943bb47ba94261ffb2919e8237cef",
+      "bytes": 135826,
+      "sha256": "e43824636adae35e18895f7498f988988de470970305afeed5b0fa0fafc8218c"
+    },
+    "independent_bounded_projection": {
+      "git": "4b907cd5061587160feebf08ea8d09cb2f1f28a9",
+      "bytes": 439762,
+      "sha256": "0154baa2d86352ab8ef32123e56b8d8e6b0e34b5e1fe0f355842861e50267075"
+    },
+    "independent_full_76_source_review": {
+      "git": "d6f39ebde567629bebb1dce3a08221c320501eba",
+      "bytes": 8790,
+      "sha256": "a6b1f322811be349bc7b0ece9e4c9311ecf9fb0af7b3bd51e8006dca7834e3d1"
+    }
+  },
+  "reconstruction": {
+    "old_and_new_rows_unique_at_each_applicable_step": true,
+    "forward_exact_to_separately_GET_postimage": true,
+    "reverse_exact_to_dbB7": true,
+    "complete_bytes_sizes_sha256_git_checked": true,
+    "operations": 65,
+    "rows": {
+      "boundary_changed": 14,
+      "boundary_byte_identical": 624,
+      "protected_changed": 51,
+      "protected_byte_identical": 389
+    },
+    "strings": {
+      "total": 168,
+      "definition_markers": 15,
+      "required_function_order_sequence": 142,
+      "required_order": 6,
+      "required": 5
+    },
+    "layout_classes": {
+      "whitespace_only_with_identical_lexed_tokens_and_comments": 157,
+      "actual_native_optional_comma_layout": 10,
+      "actual_None_comma_to_call_closer": 1
+    }
+  },
+  "strict_preservation": [
+    "638 declared boundary IDs are unique and equal the 638 unique required IDs. Header, source roots, ignored paths, all ID ordering and inventory bytes are unchanged.",
+    "Every original product caller, symbol, receiver type/method, call_pattern, caller_marker and definition_path is unchanged. Only the 15 definition-marker strings in 14 rows track native layout.",
+    "All 440 protected rows and their order remain. All forbidden arrays, function markers, literal_calls, top_level restrictions, sequence lengths and relative guard order are unchanged.",
+    "Every changed string is matched to actual native bytes. All 157 whitespace cases have identical lexer tokens and comments; none conceals a literal/identifier/operator substitution.",
+    "Ten punctuation cases preserve the complete actual argument/type/field/destructuring expression apart from optional native commas. The remaining publication None case keeps all six exact arguments and now also requires the actual closing parenthesis.",
+    "No caller, method or checker exemption was added; no marker was replaced by a shorter generic identifier, comment or fabricated guard."
+  ],
+  "precise_cases": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "function": "fn enroll_generation_publication(",
+      "old": "config, registration, owner, learning, inputs, None,",
+      "new": "config, registration, owner, learning, inputs, None)",
+      "finding": "The actual formatter collapsed the original same six-argument delegate and removed its optional trailing comma. The new marker preserves the final None and requires the call closer; it does not omit an argument or weaken the old None branch."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "function": "fn exchange_guarded<T>(",
+      "finding": "All three phase checks remain at their actual distinct positions: before stream take, after the real exchange/root/deadline checks, and after stream reinsertion. Their different native indentation was taken from those positions. Independent extent 5807..7896 encloses them; the final fn check_root marker is the following declaration. The original rule remains required_order, not a fabricated required_function_order claim."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "finding": "The three actual C grant/publication execution checks remain ordered around request_grant and publish. Their full masked matches are separate, and none is substituted by a same-named check in another function."
+    },
+    {
+      "topic": "Original Boolean comment mask",
+      "finding": "The existing slot.require_target marker spaces produced by the original non-code comment mask remain unchanged and match the masked actual source."
+    },
+    {
+      "topic": "Generic/UFCS/owner custody",
+      "finding": "The exact phase Option<&OriginalPhaseNamespaceContext<'_>> parameter, Startup &mut root UFCS, capture_original_phase calls, returned Self field order and consumed-owner destructures remain protected with their actual native optional comma layouts."
+    }
+  ],
+  "independent_projection": {
+    "method": "Pure JS transcription of the unchanged original 7a670 comment/literal/cfg(test) masking, function extent/nested-function exclusion, minimum-two ordered markers, exact single-literal calls, top-level depth and forbidden word boundaries. This does not run the original checker or typed helper.",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "actual_source_paths": 76,
+    "protected_rows": 98,
+    "function_scoped_sequences": 287,
+    "ordered_markers": 2949,
+    "raw_required": 291,
+    "forbidden": 275,
+    "top_level": 7,
+    "literal_calls": 3,
+    "raw_boundary_markers": {
+      "definition": 473,
+      "caller": 37,
+      "total": 510
+    },
+    "before_failures": 0,
+    "after_failures": 0,
+    "unprojected_protected_rows": 342,
+    "full_repository_caller_set_or_receiver_scan": false,
+    "all_168_actual_field_differences_equal_author_mapping": true
+  },
+  "execution_limits": {
+    "native_or_cargo": 0,
+    "h_or_PTY": 0,
+    "original_checker_or_helper": 0,
+    "source_modifications": 0,
+    "ref_updates": 0,
+    "no_test_PASS": true,
+    "no_prior_result_inheritance": true,
+    "ordinary_business_loop": 0,
+    "independent_controller_C": 0,
+    "real_daemon_and_Root_cold_restart": 0,
+    "future_deployment_or_completion_excluded": true
+  },
+  "integration": "Apply c8044259's 65 exact whole-row replacements once directly to dbb7 alongside the 76 exact actual native postimages. Do not first apply the superseded first-13 partial packet e1bed951. Root separately updates only the existing CALLERS allowlist digest to 9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da, freezes the new source and runs the unchanged complete qualification entry. This review does not inspect an unspecified allowlist postimage or predict its next result.",
+  "retained_history": "V36 formatter child exit0 followed by dirty-source gate exit1 remains a failed native attempt with no inherited qualification."
+}

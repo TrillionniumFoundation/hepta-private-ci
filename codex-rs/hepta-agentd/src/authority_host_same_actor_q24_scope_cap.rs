@@ -10,7 +10,8 @@ const CONSUMED: u8 = 2;
 
 pub(super) struct ScopeSubmission {
     pub(super) profile: crate::HostAuthorityLearningProfileV1,
-    pub(super) acknowledgement: std::sync::mpsc::SyncSender<Result<RootSameActorScopedEnrollmentV1, String>>,
+    pub(super) acknowledgement:
+        std::sync::mpsc::SyncSender<Result<RootSameActorScopedEnrollmentV1, String>>,
 }
 
 pub(super) struct ScopeRuntime {
@@ -43,18 +44,28 @@ impl ScopeRuntime {
         let (sender, receiver) = std::sync::mpsc::sync_channel(1);
         let phase = Arc::new(std::sync::atomic::AtomicU8::new(PREPARED));
         (
-            Self { receiver, phase: Arc::clone(&phase) },
+            Self {
+                receiver,
+                phase: Arc::clone(&phase),
+            },
             RootSameActorScopeEnrollmentCapabilityV1 {
-                sender, phase, root, gate: Arc::clone(gate),
+                sender,
+                phase,
+                root,
+                gate: Arc::clone(gate),
             },
         )
     }
 
     pub(super) fn activate(&self) -> io::Result<()> {
-        self.phase.compare_exchange(
-            PREPARED, ACTIVE, std::sync::atomic::Ordering::AcqRel,
-            std::sync::atomic::Ordering::Acquire,
-        ).map_err(|_| io::Error::other("original phase scope was already activated"))?;
+        self.phase
+            .compare_exchange(
+                PREPARED,
+                ACTIVE,
+                std::sync::atomic::Ordering::AcqRel,
+                std::sync::atomic::Ordering::Acquire,
+            )
+            .map_err(|_| io::Error::other("original phase scope was already activated"))?;
         Ok(())
     }
 }
@@ -72,32 +83,50 @@ impl RootSameActorScopeEnrollmentCapabilityV1 {
         crate::authority_host_service::generation_initial::original_root()?;
         if self.root.uid != 0
             || self.root.pid != std::process::id()
-            || self.root.boot_id != std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim()
+            || self.root.boot_id
+                != std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim()
             || self.root.process_start_ticks != original_root_start()?
-            || self.phase.compare_exchange(
-                ACTIVE, CONSUMED, std::sync::atomic::Ordering::AcqRel,
-                std::sync::atomic::Ordering::Acquire,
-            ).is_err()
+            || self
+                .phase
+                .compare_exchange(
+                    ACTIVE,
+                    CONSUMED,
+                    std::sync::atomic::Ordering::AcqRel,
+                    std::sync::atomic::Ordering::Acquire,
+                )
+                .is_err()
         {
-            return Err(io::Error::other("original Root phase capability is unavailable"));
+            return Err(io::Error::other(
+                "original Root phase capability is unavailable",
+            ));
         }
         let (acknowledgement, receiver) = std::sync::mpsc::sync_channel(1);
-        self.sender.try_send(ScopeSubmission { profile, acknowledgement })
+        self.sender
+            .try_send(ScopeSubmission {
+                profile,
+                acknowledgement,
+            })
             .map_err(|_| io::Error::other("original phase scope handoff unavailable"))?;
         self.gate.notify_original_waiters();
         let enrolled = loop {
             let epoch = self.gate.original_wait_epoch()?;
             match receiver.try_recv() {
                 Ok(result) => break result.map_err(io::Error::other)?,
-                Err(std::sync::mpsc::TryRecvError::Empty) => self.gate.wait_original_change(epoch)?,
+                Err(std::sync::mpsc::TryRecvError::Empty) => {
+                    self.gate.wait_original_change(epoch)?
+                }
                 Err(std::sync::mpsc::TryRecvError::Disconnected) => {
-                    return Err(io::Error::other("original phase scope acknowledgement uncertain"));
+                    return Err(io::Error::other(
+                        "original phase scope acknowledgement uncertain",
+                    ));
                 }
             }
         };
         self.gate.require_open()?;
         if !Arc::ptr_eq(&enrolled.gate, &self.gate) {
-            return Err(io::Error::other("original phase scope acknowledgement changed its gate"));
+            return Err(io::Error::other(
+                "original phase scope acknowledgement changed its gate",
+            ));
         }
         closing.disarm();
         Ok(enrolled)

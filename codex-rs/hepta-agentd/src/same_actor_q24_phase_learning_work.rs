@@ -182,9 +182,10 @@ impl OriginalSameActorLearningWork {
     }
 
     pub(crate) async fn close_and_join_original_work(&self) -> Result<(), AgentdError> {
-        self.jobs.close_and_join().await.map_err(|_| {
-            AgentdError::GenerationFenced("original learning work join failed".into())
-        })
+        self.jobs
+            .close_and_join()
+            .await
+            .map_err(|_| AgentdError::GenerationFenced("original learning work join failed".into()))
     }
 }
 
@@ -213,7 +214,9 @@ impl OriginalLearningJobs {
             self.gate.close();
             Error::CommitUncertain
         })?;
-        self.gate.require_open().map_err(|_| Error::CommitUncertain)?;
+        self.gate
+            .require_open()
+            .map_err(|_| Error::CommitUncertain)?;
         self.pending
             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {
                 value.checked_add(1)

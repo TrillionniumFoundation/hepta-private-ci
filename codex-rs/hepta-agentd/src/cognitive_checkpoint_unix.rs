@@ -129,10 +129,12 @@ impl AgentdUnixCognitiveCheckpointTransport {
         timeout: Duration,
         phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
     ) -> Result<Self, ObjectiveSenderCheckpointError> {
-        let held = phase.retain_required_original_stream(&stream)
+        let held = phase
+            .retain_required_original_stream(&stream)
             .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         let end = phase.deadline().instant();
-        let lifetime = end.checked_duration_since(Instant::now())
+        let lifetime = end
+            .checked_duration_since(Instant::now())
             .ok_or(ObjectiveSenderCheckpointError::Unavailable)?;
         if peer.pid == 0
             || peer.pid > i32::MAX as u32
@@ -179,7 +181,8 @@ impl AgentdUnixCognitiveCheckpointTransport {
             unsafe { AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE) }
                 .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         check_lifetime(root.get_ref())?;
-        held.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+        held.require_open()
+            .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         Ok(Self {
             exchange: tokio::sync::Semaphore::new(1),
             stream: Mutex::new(Some(stream)),
@@ -198,7 +201,9 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
     ) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
         let mut phase_close = self.phase.as_ref().map(|phase| phase.failure_scope());
         if let Some(phase) = &self.phase {
-            phase.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+            phase
+                .require_open()
+                .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         }
         if request_json.is_empty() || request_json.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
             return Err(ObjectiveSenderCheckpointError::Refused);
@@ -243,7 +248,9 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
             return Err(ObjectiveSenderCheckpointError::Unavailable);
         }
         if let Some(phase) = &self.phase {
-            phase.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+            phase
+                .require_open()
+                .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         }
         // None remains the exclusive token through framing and complete
         // response validation. No slot guard spans I/O or an await.
@@ -252,9 +259,13 @@ impl CognitiveCheckpointTransport for AgentdUnixCognitiveCheckpointTransport {
             .try_lock()
             .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)? = Some(stream);
         if let Some(phase) = &self.phase {
-            phase.require_open().map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
+            phase
+                .require_open()
+                .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;
         }
-        if let Some(closing) = &mut phase_close { closing.disarm(); }
+        if let Some(closing) = &mut phase_close {
+            closing.disarm();
+        }
         Ok(response)
     }
 }

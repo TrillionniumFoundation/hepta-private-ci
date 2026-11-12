@@ -79,8 +79,8 @@ fn metadata() -> anyhow::Result<LearningIterationSnapshotV1> {
 }
 
 #[tokio::test]
-async fn original_notification_requires_installed_state_before_releasing_wait()
--> anyhow::Result<()> {
+async fn original_notification_requires_installed_state_before_releasing_wait() -> anyhow::Result<()>
+{
     let exchange = exchange()?;
     let snapshot = metadata()?;
     exchange.announce_original_training(&snapshot)?;
@@ -103,8 +103,7 @@ async fn original_notification_requires_installed_state_before_releasing_wait()
 }
 
 #[tokio::test]
-async fn cancelling_registered_installation_wait_closes_all_later_entries()
--> anyhow::Result<()> {
+async fn cancelling_registered_installation_wait_closes_all_later_entries() -> anyhow::Result<()> {
     let exchange = exchange()?;
     let snapshot = metadata()?;
     exchange.announce_original_training(&snapshot)?;

@@ -21,7 +21,9 @@ impl AdmittedOriginalTask {
 }
 
 impl SameActorTaskAdmission {
-    pub(crate) fn build_original_task_request(&mut self) -> Result<CircuitTaskRequestV1, AgentdError> {
+    pub(crate) fn build_original_task_request(
+        &mut self,
+    ) -> Result<CircuitTaskRequestV1, AgentdError> {
         self.original
             .require_original_admission()
             .map_err(task_error)?;
@@ -103,12 +105,10 @@ impl SameActorTaskAdmission {
             self.original.route.close();
             return result;
         }
-        self.original
-            .require_original_admission()
-            .map_err(|_| {
-                self.original.route.close();
-                Error::CommitUncertain
-            })?;
+        self.original.require_original_admission().map_err(|_| {
+            self.original.route.close();
+            Error::CommitUncertain
+        })?;
         close.disarm();
         result
     }
@@ -164,11 +164,9 @@ impl SameActorTaskAdmission {
                 // A stopped callback has an unknown effect/acknowledgement
                 // state. This differs from a live owner awaiting an Outcome.
                 self.original.route.close();
-                CircuitTaskLearningReadinessV1::Pending(
-                    CircuitTaskLearningPendingV1::Refused(format!(
-                        "original learning owner observation stopped: {error}"
-                    )),
-                )
+                CircuitTaskLearningReadinessV1::Pending(CircuitTaskLearningPendingV1::Refused(
+                    format!("original learning owner observation stopped: {error}"),
+                ))
             }
         }
     }
@@ -248,4 +246,3 @@ impl AgentdCircuitTaskInvocationProviderV1 for PhaseInvocation {
         CircuitTaskLearningReadinessV1::Pending(CircuitTaskLearningPendingV1::OwnerUnavailable)
     }
 }
-

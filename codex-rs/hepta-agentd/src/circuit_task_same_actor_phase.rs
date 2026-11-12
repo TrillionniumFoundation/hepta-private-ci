@@ -59,7 +59,8 @@ pub(crate) struct SameActorTaskRoute {
     state: Mutex<RouteState>,
     invocation: OnceLock<Weak<dyn AgentdCircuitTaskInvocationProviderV1>>,
     changed: watch::Sender<()>,
-    learning_work: OnceLock<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
+    learning_work:
+        OnceLock<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
 }
 
 struct PhaseInvocation {
@@ -161,7 +162,9 @@ impl SameActorTaskRoute {
             parts.into_task_parts(&self.identity, &self.gate)?;
         bootstrap.require_identity(&self.identity)?;
         let handle = bootstrap.handle();
-        handle.require_direct_original_handle().map_err(task_error)?;
+        handle
+            .require_direct_original_handle()
+            .map_err(task_error)?;
         let original = Arc::new(OriginalTask {
             handle: handle.original_direct_handle().map_err(task_error)?,
             invocation,
@@ -195,7 +198,9 @@ impl SameActorTaskRoute {
                 ));
             };
             if state.closed {
-                return Err(AgentdError::Protocol("same-actor task route is closed".into()));
+                return Err(AgentdError::Protocol(
+                    "same-actor task route is closed".into(),
+                ));
             }
             state.phase = Phase::ClosingA {
                 original: Arc::clone(original),
@@ -222,7 +227,9 @@ impl SameActorTaskRoute {
                     ));
                 };
                 if state.closed {
-                    return Err(AgentdError::Protocol("same-actor task route is closed".into()));
+                    return Err(AgentdError::Protocol(
+                        "same-actor task route is closed".into(),
+                    ));
                 }
                 state.tickets == 0 && original.handle.pending.load(Ordering::Acquire) == 0
             };
@@ -405,13 +412,14 @@ impl SameActorTaskRoute {
             Phase::C { slot, .. } => slot.pending_count(),
             Phase::PendingA | Phase::AwaitingC => 0,
         };
-        state.tickets.saturating_add(work).saturating_add(
-            self.learning_work.get().map_or(0, |original| {
+        state
+            .tickets
+            .saturating_add(work)
+            .saturating_add(self.learning_work.get().map_or(0, |original| {
                 crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork::pending_count(
                     original,
                 )
-            }),
-        )
+            }))
     }
 
     pub(crate) fn close(&self) {

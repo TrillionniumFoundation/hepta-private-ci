@@ -56,7 +56,12 @@ impl HostAuthorityService {
         reservation: &HostAuthorityQ24ModelFactoryReservationV1,
     ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {
         self.reserve_original_phase_q24_model_factory(
-            config, registration, owner_pidfd, learning, reservation, None,
+            config,
+            registration,
+            owner_pidfd,
+            learning,
+            reservation,
+            None,
         )
     }
 
@@ -67,7 +72,11 @@ impl HostAuthorityService {
         owner_pidfd: &OwnedFd,
         learning: &HostAuthorityLearningProfileV1,
         reservation: &HostAuthorityQ24ModelFactoryReservationV1,
-        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,
+        phase: Option<
+            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<
+                '_,
+            >,
+        >,
     ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {
         self.with_learning_profile(
             config,
@@ -90,7 +99,9 @@ impl HostAuthorityService {
                 }
                 let domain = witness_domain(config, reservation)?;
                 let directory = config.state_dir.join(DIRECTORY);
-                if let Some(phase) = phase { phase.require_claimed()?; }
+                if let Some(phase) = phase {
+                    phase.require_claimed()?;
+                }
                 std::fs::DirBuilder::new().mode(0o700).create(&directory)?;
                 File::open(&config.state_dir)?.sync_all()?;
                 let journal = new_file(&directory.join("proposal.journal"))?;
@@ -143,7 +154,9 @@ impl HostAuthorityService {
                         "factory reservation crossed its original work deadline",
                     ));
                 }
-                if let Some(phase) = phase { phase.require_claimed()?; }
+                if let Some(phase) = phase {
+                    phase.require_claimed()?;
+                }
                 Ok(profile)
             },
         )
@@ -160,7 +173,12 @@ impl HostAuthorityService {
         let reservation: HostAuthorityQ24ModelFactoryReservationV1 =
             read_root_json(reservation_file)?;
         HostAuthorityService::open_original_q24_model_reservation(
-            self, config, registration, owner_pidfd, learning, reservation,
+            self,
+            config,
+            registration,
+            owner_pidfd,
+            learning,
+            reservation,
         )
     }
 
@@ -173,7 +191,12 @@ impl HostAuthorityService {
         reservation: HostAuthorityQ24ModelFactoryReservationV1,
     ) -> io::Result<RegisteredQ24ModelFactory> {
         self.open_original_phase_q24_model_reservation(
-            config, registration, owner_pidfd, learning, reservation, None,
+            config,
+            registration,
+            owner_pidfd,
+            learning,
+            reservation,
+            None,
         )
     }
 
@@ -184,7 +207,11 @@ impl HostAuthorityService {
         owner_pidfd: &OwnedFd,
         learning: &HostAuthorityLearningProfileV1,
         reservation: HostAuthorityQ24ModelFactoryReservationV1,
-        phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>,
+        phase: Option<
+            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<
+                '_,
+            >,
+        >,
     ) -> io::Result<RegisteredQ24ModelFactory> {
         self.with_learning_profile(
             config,
@@ -206,7 +233,9 @@ impl HostAuthorityService {
                 retained.validate()?;
                 let journal_path = directory.join("proposal.journal");
                 let witness_path = witness_path(&reservation);
-                if let Some(phase) = phase { phase.require_claimed()?; }
+                if let Some(phase) = phase {
+                    phase.require_claimed()?;
+                }
                 let journal = open_file(&journal_path)?;
                 let witness = open_file(&witness_path)?;
                 let profile = HostAuthorityQ24ModelFactoryProfileV1::new(
@@ -242,7 +271,9 @@ impl HostAuthorityService {
                     socket_path,
                 };
                 factory.current(config)?;
-                if let Some(phase) = phase { phase.require_claimed()?; }
+                if let Some(phase) = phase {
+                    phase.require_claimed()?;
+                }
                 Ok(factory)
             },
         )

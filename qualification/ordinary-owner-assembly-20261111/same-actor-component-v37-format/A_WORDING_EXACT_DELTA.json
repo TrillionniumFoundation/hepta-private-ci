@@ -1,0 +1,32 @@
+{
+  "ops": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/same-actor-component-v36/README.md",
+      "pre": "e542ec184959fdd63cd6d672fe9e28f0d1d46fd2",
+      "post": "c9ecfed5436e5ee928f10e9f45e74b8ad5bc0e64",
+      "bytes": 5488,
+      "sha256": "9f629d8b2fa70c67a72135e78e20990c7b7c70e2d7bf7fd07665966e6f664db1",
+      "old_text": "- Actual A admission closure, task/work quiescence, retained Prepared source and physical A generation drain before the Root Scoped transition.",
+      "new_text": "- Actual A admission closure, task/work quiescence and authenticated task-local durable journal drain. The controller then awaits the original A Direct-owner loop and releases its active owner custody before the second phase ACK; Root validates and consumes the original Initial CURRENT owner before entering Learning/Model.",
+      "expected_matches": 1
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/same-actor-component-v36/ROOT_REVIEW.json",
+      "pre": "61c4580a907dc83a50d9c37ac16397bf2b21d347",
+      "post": "e85ba03acce7ce2a1465fa792bff492f4229c17f",
+      "bytes": 46927,
+      "sha256": "ffb0c905c9574325e296cbc8589bbd2c931dec01a2065b14741c24a4e900f069",
+      "old_text": "mandatory five-lane receive, actual A admission close/quiescence, retained source and durable GenV2 drain precede scoped registration.",
+      "new_text": "mandatory five-lane receive, actual A admission close/quiescence, retained source and authenticated task-local durable GenV2 journal drain precede scoped registration. The original A Direct-owner future returns and its active custody is released before the second phase ACK; this does not prove outer blocking-task or all Root-worker joins.",
+      "expected_matches": 1
+    }
+  ],
+  "json_delta": [
+    {
+      "path": "source_findings.0.finding",
+      "before": "Same original authority, mandatory five-lane receive, actual A admission close/quiescence, retained source and durable GenV2 drain precede scoped registration. Independent C and cross-incarnation recovery are outside this same-actor contract.",
+      "after": "Same original authority, mandatory five-lane receive, actual A admission close/quiescence, retained source and authenticated task-local durable GenV2 journal drain precede scoped registration. The original A Direct-owner future returns and its active custody is released before the second phase ACK; this does not prove outer blocking-task or all Root-worker joins. Independent C and cross-incarnation recovery are outside this same-actor contract."
+    }
+  ],
+  "historical_source_and_native_run_not_rewritten": true
+}

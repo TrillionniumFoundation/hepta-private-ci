@@ -72,7 +72,13 @@ impl HostAuthorityService {
         let channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
             .map_err(io::Error::other)?;
         self.serve_original_q24_model_channel(
-            factory, config, registration, pin, channel, next_request_id, None,
+            factory,
+            config,
+            registration,
+            pin,
+            channel,
+            next_request_id,
+            None,
         )
     }
 
@@ -92,10 +98,20 @@ impl HostAuthorityService {
         let next_request_id = 1;
         let pin = owner_pidfd.try_clone()?;
         let channel = HostAuthorityPeerChannel::from_stream_until(
-            stream, policy, owner_pidfd, phase.deadline().instant(),
-        ).map_err(io::Error::other)?;
+            stream,
+            policy,
+            owner_pidfd,
+            phase.deadline().instant(),
+        )
+        .map_err(io::Error::other)?;
         self.serve_original_q24_model_channel(
-            factory, config, registration, pin, channel, next_request_id, Some(phase),
+            factory,
+            config,
+            registration,
+            pin,
+            channel,
+            next_request_id,
+            Some(phase),
         )?;
         Err(io::Error::other("required original phase Model lane ended"))
     }
@@ -112,88 +128,98 @@ impl HostAuthorityService {
     ) -> io::Result<()> {
         while channel
             .exchange(|bytes| {
-                let _admission = phase.map(|gate| gate.enter_original_lane()).transpose()
+                let _admission = phase
+                    .map(|gate| gate.enter_original_lane())
+                    .transpose()
                     .map_err(|_| HostIssuerTransportError::Unavailable)?;
-                let response = self.with_learning_profile(
-                    config,
-                    registration,
-                    &pin,
-                    &factory.learning,
-                    |initial, proof| {
-                        if let Some(gate) = phase { gate.require_open()?; }
-                        factory.profile.require_context(
-                            &self.identity,
-                            &proof,
-                            &initial,
-                            &factory.learning.require_cell_scope(&initial)?,
-                        )?;
-                        let request: Request =
-                            serde_json::from_slice(bytes).map_err(io::Error::other)?;
-                        if request.schema != 1
-                            || request.operation != PURPOSE
-                            || request.binding != factory.profile.binding()
-                            || request.request_id != next_request_id
-                        {
-                            return Err(io::Error::other("factory purpose/scope/sequence differs"));
-                        }
-                        next_request_id = next_request_id
-                            .checked_add(1)
-                            .ok_or_else(|| io::Error::other("factory sequence exhausted"))?;
-                        let before = factory.current(config)?;
-                        let revocations = Digest32::of_parts(&[
-                            b"hepta.root.q24-factory-revocations.v1\0",
-                            &serde_json::to_vec(&self.issuer.revocations()?)
-                                .map_err(io::Error::other)?,
-                        ])
-                        .to_string();
-                        let lease = FactoryLease {
-                            epoch: before.epoch,
-                            material: before.material.clone(),
-                            revocations,
-                        };
-                        let now = self
-                            .clock
-                            .refresh_projection()
-                            .map_err(io::Error::other)?
-                            .observed_unix_ms
-                            / 1000;
-                        let (after, reply) = transition(&before, lease, request.command, now)?;
-                        if after != before {
-                            if let Some(gate) = phase { gate.require_open()?; }
-                            factory
-                                .store
-                                .compare_and_set(OWNER, &before, &after)
-                                .map_err(io::Error::other)?;
-                        }
-                        if factory.current(config)? != after {
-                            return Err(io::Error::other("factory registry outcome uncertain"));
-                        }
-                        if reply.newly_bound
-                            && self
+                let response = self
+                    .with_learning_profile(
+                        config,
+                        registration,
+                        &pin,
+                        &factory.learning,
+                        |initial, proof| {
+                            if let Some(gate) = phase {
+                                gate.require_open()?;
+                            }
+                            factory.profile.require_context(
+                                &self.identity,
+                                &proof,
+                                &initial,
+                                &factory.learning.require_cell_scope(&initial)?,
+                            )?;
+                            let request: Request =
+                                serde_json::from_slice(bytes).map_err(io::Error::other)?;
+                            if request.schema != 1
+                                || request.operation != PURPOSE
+                                || request.binding != factory.profile.binding()
+                                || request.request_id != next_request_id
+                            {
+                                return Err(io::Error::other(
+                                    "factory purpose/scope/sequence differs",
+                                ));
+                            }
+                            next_request_id = next_request_id
+                                .checked_add(1)
+                                .ok_or_else(|| io::Error::other("factory sequence exhausted"))?;
+                            let before = factory.current(config)?;
+                            let revocations = Digest32::of_parts(&[
+                                b"hepta.root.q24-factory-revocations.v1\0",
+                                &serde_json::to_vec(&self.issuer.revocations()?)
+                                    .map_err(io::Error::other)?,
+                            ])
+                            .to_string();
+                            let lease = FactoryLease {
+                                epoch: before.epoch,
+                                material: before.material.clone(),
+                                revocations,
+                            };
+                            let now = self
                                 .clock
                                 .refresh_projection()
                                 .map_err(io::Error::other)?
                                 .observed_unix_ms
-                                / 1000
-                                >= factory.profile.expiry()
-                        {
-                            return Err(io::Error::other(
-                                "factory binding crossed the original work deadline",
-                            ));
-                        }
-                        serde_json::to_vec(&Response {
-                            schema: 1,
-                            operation: PURPOSE.into(),
-                            request_id: request.request_id,
-                            binding: request.binding,
-                            reply,
-                        })
-                        .map_err(io::Error::other)
-                    },
-                )
-                .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                                / 1000;
+                            let (after, reply) = transition(&before, lease, request.command, now)?;
+                            if after != before {
+                                if let Some(gate) = phase {
+                                    gate.require_open()?;
+                                }
+                                factory
+                                    .store
+                                    .compare_and_set(OWNER, &before, &after)
+                                    .map_err(io::Error::other)?;
+                            }
+                            if factory.current(config)? != after {
+                                return Err(io::Error::other("factory registry outcome uncertain"));
+                            }
+                            if reply.newly_bound
+                                && self
+                                    .clock
+                                    .refresh_projection()
+                                    .map_err(io::Error::other)?
+                                    .observed_unix_ms
+                                    / 1000
+                                    >= factory.profile.expiry()
+                            {
+                                return Err(io::Error::other(
+                                    "factory binding crossed the original work deadline",
+                                ));
+                            }
+                            serde_json::to_vec(&Response {
+                                schema: 1,
+                                operation: PURPOSE.into(),
+                                request_id: request.request_id,
+                                binding: request.binding,
+                                reply,
+                            })
+                            .map_err(io::Error::other)
+                        },
+                    )
+                    .map_err(|_| HostIssuerTransportError::Unavailable)?;
                 if let Some(gate) = phase {
-                    gate.require_open().map_err(|_| HostIssuerTransportError::Unavailable)?;
+                    gate.require_open()
+                        .map_err(|_| HostIssuerTransportError::Unavailable)?;
                 }
                 Ok(response)
             })

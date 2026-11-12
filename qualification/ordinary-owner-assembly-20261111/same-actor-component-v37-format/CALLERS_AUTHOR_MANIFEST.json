@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "kind": "V36 final native-format-only CALLERS adaptation",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "Frozen metadata candidate; no original checker/helper/compiler or test executed by this author.",
+  "source_base": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152",
+    "callers": {
+      "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+      "bytes": 885351,
+      "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+    }
+  },
+  "actual_native_format": {
+    "patch": {
+      "blob": "3ce5cb2e8dff735ec5e0ad0ca174385c09ede675",
+      "bytes": 407063,
+      "sha256": "983ab97735ee06d4bff21a22660c443133720bda5ce93daad9ea7f527351d040"
+    },
+    "final_inventory_blob": "705a75d848290e994d95c75c27de8fd549fdf2d4",
+    "files": 76,
+    "hunks": 327,
+    "reconstruction": "All preimages and actual postimages were reconstructed in both directions with each original hunk's positions, full context and full Git blob hashes. Repeated textual contexts are disambiguated by their original positions and whole-file hashes; no claim that all context text is intrinsically unique.",
+    "attempt": "Root-owned V36: fetch succeeded, rustfmt child exited 0 and changed source; original executor rejected dirty identity with exit 1. Fix/Cargo/checker/QA/native tests were not reached."
+  },
+  "deliverable": {
+    "path": "CALLERS.toml",
+    "post": {
+      "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+      "bytes": 890345,
+      "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+    },
+    "exact_ops": {
+      "blob": "c8044259486e789b7ce3f079dd8fa17b36e78051",
+      "bytes": 257374,
+      "sha256": "46d7986a82f5ad89b5d380ebbbff4202b9d401d3bf6e5b9573101e79e95a8ac4"
+    },
+    "mapping_and_projection_receipt": {
+      "blob": "173f9c7c1830acade63ce01cc6ccd41603da06ca",
+      "bytes": 253834,
+      "sha256": "5debbfaf566ed2e540ccc65478dd33cadbfdf65bbff787fca644b292121dfda3"
+    },
+    "apply_order": "Apply the 65 exact row replacements directly and once to the dbb7 CALLERS preimage. The earlier first-13-file partial adaptation is historical evidence only and must not be applied first.",
+    "reversible": "Every old and new whole-row fragment occurs exactly once at its applicable step. Forward reconstruction equals the final postimage byte for byte; reverse reconstruction equals the base byte for byte."
+  },
+  "changes": {
+    "file_count": 1,
+    "exact_operations": 65,
+    "boundary_rows_changed": 14,
+    "protected_rows_changed": 51,
+    "changed_marker_strings": 168,
+    "fields": {
+      "definition_markers": 15,
+      "required_function_order": 142,
+      "required_order": 6,
+      "required": 5
+    },
+    "whitespace_only": 157,
+    "native_trailing_comma_layout": 11,
+    "punctuation_limit": "Only native syntactic trailing commas are reflected. The one short publication call loses its optional trailing comma; its marker now includes the actual closing ')' instead of weakening to an unbounded None prefix. No non-punctuation token changes.",
+    "changes_to_rust_source_by_this_packet": 0,
+    "changes_to_checker_or_typed_helper": 0,
+    "changes_to_caller_receiver_id_sets": 0,
+    "changes_to_forbidden_literal_calls_top_level": 0
+  },
+  "invariants": {
+    "boundaries": 638,
+    "required_ids": 638,
+    "protected_rows": 440,
+    "boundary_rows_byte_identical": 624,
+    "boundary_rows_changed": 14,
+    "protected_rows_byte_identical": 389,
+    "protected_rows_changed": 51,
+    "field_counts": {
+      "definition_markers": 15,
+      "required_function_order": 142,
+      "required_order": 6,
+      "required": 5
+    },
+    "whitespace_only": 157,
+    "native_trailing_comma_cases": 11,
+    "all_other_boundary_fields_equal": true,
+    "all_forbidden_function_literal_top_level_markers_equal": true,
+    "all_marker_cardinalities_equal": true,
+    "required_ids_byte_value_identical": true
+  },
+  "static_verification": {
+    "method": "Pure V8 bounded inspection against the actual native postimages, using the original non-code/cfg(test) mask semantics, function extent and nesting, required sequence ordering, raw required/forbidden checks and literal/top-level projections. This is not execution of the original checker, typed helper or global receiver index.",
+    "actual_postimage_paths": 76,
+    "protected_rows": 98,
+    "functions": 287,
+    "ordered_markers": 2949,
+    "raw_required": 291,
+    "forbidden": 275,
+    "top_level": 7,
+    "literal_calls": 3,
+    "boundary_raw_definition_and_caller_checks": 510,
+    "missing_or_conflicting_checks": 0,
+    "scope_note": "Only markers for the 76 actually formatted source paths were re-projected. All other rows and every non-layout metadata field were checked for exact preservation; this does not claim a whole-repository caller proof."
+  },
+  "precise_cases": [
+    "Five old compact markers still existed elsewhere in their file after formatting but were missing from their protected function. Each was repaired against the actual unique function body; no whole-file occurrence substituted for function order.",
+    "The three phase checks in final_use_issuer::exchange_guarded retain their distinct pre-stream, post-exchange and post-reinsertion positions with actual indentation. The existing same-name gate check in a different function cannot satisfy these positions.",
+    "The original slot.require_target Boolean marker contains spaces generated by the non-code comment mask. It remained correct and was not modified.",
+    "All ordinary/caller/receiver/boundary inventory fields, forbidden lists, literal-call/top-level markers, function names, marker cardinalities and ordering remain unchanged."
+  ],
+  "independent_review": {
+    "actual_76_rust_files": {
+      "blob": "d6f39ebde567629bebb1dce3a08221c320501eba",
+      "bytes": 8790,
+      "sha256": "a6b1f322811be349bc7b0ece9e4c9311ecf9fb0af7b3bd51e8006dca7834e3d1"
+    },
+    "actual_76_rust_files_detail": {
+      "blob": "e44e12fde5493d2d3520c577e64aaeff69360b6e",
+      "bytes": 360931,
+      "sha256": "8841e883c9b69ecb02b6ebdd2db9c6b0acd7cef5a16a88e998ca634e88d252b7"
+    },
+    "rust_review_verdict": "No confirmed semantic blocker in the actual 76-file native formatter delta; this is not compiler/checker/test qualification.",
+    "final_metadata_review": "Pending independent review of this exact 525988/c804/173f9 candidate; its resulting review blob is evidence-only unless a concrete correction is found.",
+    "prior_first_13_metadata_review": "063aef85ceef8a6c8ca7bbbff5af905269e0c6aa",
+    "prior_first_13_rust_review": "8a528e51a76e5c98d9c177c74964bdae9eaba846"
+  },
+  "integration_boundaries": {
+    "root_responsibilities": [
+      "Exact CALLERS size/SHA allowlist update",
+      "Fixed source/ref integration",
+      "Original full harness/checker/native execution"
+    ],
+    "author_executions": {
+      "h": 0,
+      "pty": 0,
+      "native": 0,
+      "cargo": 0,
+      "checker": 0,
+      "typed_helper": 0
+    },
+    "ref_updates": 0,
+    "permissions_lifetimes": "No permission, owner, guard, 500 ms request bound, absolute session deadline, unknown-effect or retry behavior changed.",
+    "excluded": "Future daemon/Root deployment entry work, completion protocol changes, business acceptance and unrelated refactoring.",
+    "qualification": "No new native PASS, ordinary A/B/C business PASS, independent C adoption or physical-restart acceptance is claimed."
+  }
+}

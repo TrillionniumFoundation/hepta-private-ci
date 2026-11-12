@@ -86,28 +86,43 @@ impl OriginalPhaseRecord {
             state: PhaseState::Reserved,
         };
         let store = HostAuthorityFrontierStore::initialize_bounded(
-            root, owner.clone(), initial.clone(), RECORD_BOUND,
-        ).map_err(io::Error::other)?;
+            root,
+            owner.clone(),
+            initial.clone(),
+            RECORD_BOUND,
+        )
+        .map_err(io::Error::other)?;
         if store.load(&owner).map_err(io::Error::other)? != initial {
-            return Err(io::Error::other("original phase reservation readback differs"));
+            return Err(io::Error::other(
+                "original phase reservation readback differs",
+            ));
         }
-        Ok(Self { store, owner, expected: Some(initial) })
+        Ok(Self {
+            store,
+            owner,
+            expected: Some(initial),
+        })
     }
 
     pub(crate) fn identity(&self) -> io::Result<&PhaseIdentity> {
-        self.expected.as_ref().map(|record| &record.identity)
+        self.expected
+            .as_ref()
+            .map(|record| &record.identity)
             .ok_or_else(|| io::Error::other("original phase record is uncertain"))
     }
 
     pub(crate) fn binding(&self) -> io::Result<String> {
         let bytes = serde_json::to_vec(self.identity()?).map_err(io::Error::other)?;
-        Ok(Digest32::of_parts(&[
-            b"hepta.same-actor-q24-phase.original-session.v1\0", &bytes,
-        ]).to_string())
+        Ok(
+            Digest32::of_parts(&[b"hepta.same-actor-q24-phase.original-session.v1\0", &bytes])
+                .to_string(),
+        )
     }
 
     pub(crate) fn claim_before_namespaces(&mut self, claim: PhaseClaim) -> io::Result<()> {
-        let before = self.expected.take()
+        let before = self
+            .expected
+            .take()
             .ok_or_else(|| io::Error::other("original phase claim is already uncertain"))?;
         if !matches!(before.state, PhaseState::Reserved) {
             return Err(io::Error::other("original phase was already claimed"));
@@ -120,10 +135,13 @@ impl OriginalPhaseRecord {
             identity: before.identity.clone(),
             state: PhaseState::Claimed { claim },
         };
-        self.store.compare_and_set(&self.owner, &before, &next)
+        self.store
+            .compare_and_set(&self.owner, &before, &next)
             .map_err(io::Error::other)?;
         if self.store.load(&self.owner).map_err(io::Error::other)? != next {
-            return Err(io::Error::other("original phase claim acknowledgement uncertain"));
+            return Err(io::Error::other(
+                "original phase claim acknowledgement uncertain",
+            ));
         }
         self.expected = Some(next);
         Ok(())
@@ -137,18 +155,24 @@ impl OriginalPhaseRecord {
     }
 
     pub(crate) fn require_claimed(&self) -> io::Result<()> {
-        let expected = self.expected.as_ref()
+        let expected = self
+            .expected
+            .as_ref()
             .ok_or_else(|| io::Error::other("original phase record is uncertain"))?;
         if !matches!(expected.state, PhaseState::Claimed { .. })
             || self.store.load(&self.owner).map_err(io::Error::other)? != *expected
         {
-            return Err(io::Error::other("original durable phase claim changed before namespace"));
+            return Err(io::Error::other(
+                "original durable phase claim changed before namespace",
+            ));
         }
         Ok(())
     }
 
     pub(crate) fn mark_scoped_before_rights(&mut self, factory: String) -> io::Result<()> {
-        let before = self.expected.take()
+        let before = self
+            .expected
+            .take()
             .ok_or_else(|| io::Error::other("original phase scope is uncertain"))?;
         let PhaseState::Claimed { claim } = &before.state else {
             return Err(io::Error::other("original durable phase claim required"));
@@ -159,19 +183,27 @@ impl OriginalPhaseRecord {
         let next = PhaseRecord {
             schema_version: 1,
             identity: before.identity.clone(),
-            state: PhaseState::Scoped { claim: claim.clone(), factory },
+            state: PhaseState::Scoped {
+                claim: claim.clone(),
+                factory,
+            },
         };
-        self.store.compare_and_set(&self.owner, &before, &next)
+        self.store
+            .compare_and_set(&self.owner, &before, &next)
             .map_err(io::Error::other)?;
         if self.store.load(&self.owner).map_err(io::Error::other)? != next {
-            return Err(io::Error::other("original phase scope acknowledgement uncertain"));
+            return Err(io::Error::other(
+                "original phase scope acknowledgement uncertain",
+            ));
         }
         self.expected = Some(next);
         Ok(())
     }
 
     pub(crate) fn require_scoped(&self) -> io::Result<()> {
-        let expected = self.expected.as_ref()
+        let expected = self
+            .expected
+            .as_ref()
             .ok_or_else(|| io::Error::other("original phase record is uncertain"))?;
         if !matches!(expected.state, PhaseState::Scoped { .. })
             || self.store.load(&self.owner).map_err(io::Error::other)? != *expected

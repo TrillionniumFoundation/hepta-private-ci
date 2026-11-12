@@ -25,7 +25,10 @@ impl OriginalPhasePublicationContext<'_> {
         Ok(())
     }
 
-    pub(crate) fn require_original(&self, slot: &RegisteredGenerationPublication) -> io::Result<()> {
+    pub(crate) fn require_original(
+        &self,
+        slot: &RegisteredGenerationPublication,
+    ) -> io::Result<()> {
         self.gate.require_open()?;
         self.record.require_scoped()?;
         self.original.require_retained_predecessor()?;
@@ -38,7 +41,9 @@ impl OriginalPhasePublicationContext<'_> {
             || profile.consumer_trust != self.original.consumer_trust
             || profile.local_consumer != self.original.local_consumer
         {
-            return Err(io::Error::other("same-actor publication replaced its original A or consumer"));
+            return Err(io::Error::other(
+                "same-actor publication replaced its original A or consumer",
+            ));
         }
         self.gate.require_open().map(|_| ())
     }

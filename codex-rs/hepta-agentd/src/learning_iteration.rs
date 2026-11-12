@@ -31,11 +31,11 @@ use crate::PlasticityRuntimeCallErrorV1;
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
 #[cfg(target_os = "linux")]
-#[path = "learning_iteration_same_actor.rs"]
-mod same_actor;
-#[cfg(target_os = "linux")]
 #[path = "learning_iteration_retained_source.rs"]
 mod retained_source;
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_same_actor.rs"]
+mod same_actor;
 pub(crate) use delivery::CircuitLearningDeliveryRuntimeV1;
 pub(crate) use delivery::CircuitLearningSourceV1;
 #[path = "circuit_learning_delivery_registry.rs"]

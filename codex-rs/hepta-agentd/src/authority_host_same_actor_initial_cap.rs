@@ -39,14 +39,23 @@ impl RootSameActorInitialEnrollmentCapabilityV1 {
             || std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim()
                 != self.original.boot_id
             || root_start()? != self.original.process_start_ticks
-            || self.original.phase.compare_exchange(
-                ACTIVE, CONSUMED, Ordering::AcqRel, Ordering::Acquire,
-            ).is_err()
+            || self
+                .original
+                .phase
+                .compare_exchange(ACTIVE, CONSUMED, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
         {
-            return Err(io::Error::other("original live phase Initial admission required"));
+            return Err(io::Error::other(
+                "original live phase Initial admission required",
+            ));
         }
         let (acknowledgement, receiver) = mpsc::sync_channel(1);
-        self.original.sender.try_send(Submission { inputs, acknowledgement })
+        self.original
+            .sender
+            .try_send(Submission {
+                inputs,
+                acknowledgement,
+            })
             .map_err(|_| io::Error::other("original phase Initial channel unavailable"))?;
         self.gate.notify_original_waiters();
         let binding = loop {
@@ -55,13 +64,17 @@ impl RootSameActorInitialEnrollmentCapabilityV1 {
                 Ok(reply) => break reply.map_err(io::Error::other)?,
                 Err(mpsc::TryRecvError::Empty) => self.gate.wait_original_change(epoch)?,
                 Err(mpsc::TryRecvError::Disconnected) => {
-                    return Err(io::Error::other("original phase Initial acknowledgement uncertain"));
+                    return Err(io::Error::other(
+                        "original phase Initial acknowledgement uncertain",
+                    ));
                 }
             }
         };
         self.gate.require_open()?;
         if self.original.phase.load(Ordering::Acquire) != CONSUMED {
-            return Err(io::Error::other("original phase Initial session ended during enrollment"));
+            return Err(io::Error::other(
+                "original phase Initial session ended during enrollment",
+            ));
         }
         closing.disarm();
         Ok(RootGenerationInitialRegistrationV1 { binding })

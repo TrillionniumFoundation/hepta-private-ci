@@ -79,14 +79,17 @@ async fn original_job_checks_gate_after_actual_owner_lock_wait() -> anyhow::Resu
     tokio::time::timeout(WAIT, cleanup)
         .await??
         .map_err(|_| anyhow::anyhow!("join"))?;
-    holder.join().map_err(|_| anyhow::anyhow!("holder panicked"))?;
+    holder
+        .join()
+        .map_err(|_| anyhow::anyhow!("holder panicked"))?;
     assert_eq!(*owner.lock().unwrap(), 0);
     assert_eq!(jobs.pending.load(Ordering::Acquire), 0);
     Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn cancelled_waiter_retains_actual_blocking_handle_and_original_output() -> anyhow::Result<()> {
+async fn cancelled_waiter_retains_actual_blocking_handle_and_original_output() -> anyhow::Result<()>
+{
     let jobs = jobs()?;
     let lane = Arc::new(Semaphore::new(1));
     let permit = Arc::clone(&lane).acquire_owned().await?;

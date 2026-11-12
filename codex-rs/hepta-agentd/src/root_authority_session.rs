@@ -15,6 +15,9 @@ use crate::root_observation_cache::boottime_ns;
 use crate::root_observation_stream::RootObservationStream;
 use crate::root_observation_stream::check_lifetime;
 use crate::root_writer_proof::VerifiedRootWriterProof;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use crate::same_actor_q24_phase_gate::SameActorPhaseStream;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
@@ -35,9 +38,6 @@ use std::sync::atomic::Ordering;
 use std::task::Context;
 use std::task::Poll;
 use std::time::Duration;
-use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
-use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
-use crate::same_actor_q24_phase_gate::SameActorPhaseStream;
 use tokio::io::unix::AsyncFd;
 
 struct LiveRoot {
@@ -116,9 +116,13 @@ impl LiveRoot {
             return self.current_original();
         };
         let mut closing = CloseSameActorPhaseOnDrop::new(phase);
-        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        phase
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         let value = self.current_original()?;
-        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        phase
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         closing.disarm();
         Ok(value)
     }
@@ -360,23 +364,37 @@ impl AgentdRootAuthoritySession {
         // attempt closes all existing phase lanes too.
         let mut closing = CloseSameActorPhaseOnDrop::new(&phase);
         async move {
-            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            phase
+                .require_open()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
             if original_session_end_boottime_ns == 0
                 || phase.deadline().boottime_ns() > original_session_end_boottime_ns
             {
                 return Err(AgentdRootAuthorityError::Refused);
             }
-            let stop = phase.retain_original_stream(&stream)
+            let stop = phase
+                .retain_original_stream(&stream)
                 .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
             let boot_id = peer.boot_id.clone();
             let stream = RootObservationStream::from_stream_until(
-                stream, peer, root_pidfd, timeout, phase.deadline().instant(),
+                stream,
+                peer,
+                root_pidfd,
+                timeout,
+                phase.deadline().instant(),
             )?;
             let session = Self::connect_original_phase_stream(
-                stream, boot_id, original_session_end_boottime_ns, trust,
-                Arc::clone(&phase), stop,
-            ).await?;
-            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+                stream,
+                boot_id,
+                original_session_end_boottime_ns,
+                trust,
+                Arc::clone(&phase),
+                stop,
+            )
+            .await?;
+            phase
+                .require_open()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
             closing.disarm();
             Ok(session)
         }
@@ -396,7 +414,9 @@ impl AgentdRootAuthoritySession {
                 operation: HOST_WRITER_AUTHORIZATION_V1.into(),
             })
             .await?;
-        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        phase
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         if response.schema_version != 1 || response.operation != HOST_WRITER_AUTHORIZATION_V1 {
             return Err(AgentdRootAuthorityError::Refused);
         }
@@ -445,7 +465,11 @@ impl AgentdRootAuthoritySession {
             }),
             _writer_file: Arc::clone(&writer_file),
         });
-        Ok(Self { live, worker, writer_file })
+        Ok(Self {
+            live,
+            worker,
+            writer_file,
+        })
     }
 
     /// The wrapper captures cancellation before polling and covers every
@@ -456,11 +480,21 @@ impl AgentdRootAuthoritySession {
     ) -> impl Future<Output = Result<(), AgentdRootAuthorityError>> + '_ {
         let mut closing = self.live.phase.as_ref().map(CloseSameActorPhaseOnDrop::new);
         async move {
-            let phase = self.live.phase.as_ref().ok_or(AgentdRootAuthorityError::Refused)?;
-            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            let phase = self
+                .live
+                .phase
+                .as_ref()
+                .ok_or(AgentdRootAuthorityError::Refused)?;
+            phase
+                .require_open()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
             self.activate_final_use_owners(consumers).await?;
-            phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-            if let Some(closing) = &mut closing { closing.disarm(); }
+            phase
+                .require_open()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            if let Some(closing) = &mut closing {
+                closing.disarm();
+            }
             Ok(())
         }
     }
@@ -502,10 +536,17 @@ impl AgentdRootAuthoritySession {
         &self,
         phase: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdRootAuthorityError> {
-        if !self.live.phase.as_ref().is_some_and(|original| Arc::ptr_eq(original, phase)) {
+        if !self
+            .live
+            .phase
+            .as_ref()
+            .is_some_and(|original| Arc::ptr_eq(original, phase))
+        {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
-        phase.require_open().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+        phase
+            .require_open()
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
         Ok(())
     }
 
@@ -572,7 +613,9 @@ impl AgentdRootAuthoritySession {
         self.live.current()?;
         self.live.active.store(true, Ordering::Release);
         attempt.complete = true;
-        if let Some(closing) = &mut phase_closing { closing.disarm(); }
+        if let Some(closing) = &mut phase_closing {
+            closing.disarm();
+        }
         Ok(())
     }
 }
@@ -581,7 +624,9 @@ impl Drop for AgentdRootAuthoritySession {
         #[cfg(test)]
         eprintln!("ROOT_SESSION_DIAGNOSTIC phase=session-drop");
         self.live.cache.fence();
-        if let Some(phase) = &self.live.phase { phase.close(); }
+        if let Some(phase) = &self.live.phase {
+            phase.close();
+        }
         self.worker.abort();
         // Each original consumer holds this SAME LiveRoot as its clock. Break
         // the strong cycle after fencing; external owners remain independently
@@ -599,7 +644,9 @@ impl Drop for FenceOnDrop {
         #[cfg(test)]
         eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-drop");
         self.0.cache.fence();
-        if let Some(phase) = &self.0.phase { phase.close(); }
+        if let Some(phase) = &self.0.phase {
+            phase.close();
+        }
     }
 }
 struct ActivationAttempt<'a> {
@@ -610,7 +657,9 @@ impl Drop for ActivationAttempt<'_> {
     fn drop(&mut self) {
         if !self.complete {
             self.live.cache.fence();
-            if let Some(phase) = &self.live.phase { phase.close(); }
+            if let Some(phase) = &self.live.phase {
+                phase.close();
+            }
         }
     }
 }

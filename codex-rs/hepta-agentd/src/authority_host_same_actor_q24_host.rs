@@ -52,18 +52,30 @@ impl PreparedRootSameActorQ24PhaseV1 {
     ) -> io::Result<()> {
         self.gate.require_open()?;
         if inputs.timeout.is_zero() || inputs.timeout > std::time::Duration::from_millis(500) {
-            return Err(io::Error::other("bounded original phase handoff timeout required"));
+            return Err(io::Error::other(
+                "bounded original phase handoff timeout required",
+            ));
         }
         crate::authority_host_service::generation_initial::original_root()?;
         let bootstrap = self.seal_bootstrap(&inputs.consumer_state_root)?;
         let start = self.take_start()?;
         let gate = Arc::clone(&self.gate);
         let RootSameActorHostInputsV1 {
-            writer_handoff, phase_handoff, scoped_handoff, registered_writer,
-            root_pidfd, consumer_state_root: _, timeout, commands, acknowledgements,
+            writer_handoff,
+            phase_handoff,
+            scoped_handoff,
+            registered_writer,
+            root_pidfd,
+            consumer_state_root: _,
+            timeout,
+            commands,
+            acknowledgements,
         } = inputs;
         let RootSameActorPhaseStartV1 {
-            initial_capability, initial_offer, phase_offer, scope_capability,
+            initial_capability,
+            initial_offer,
+            phase_offer,
+            scope_capability,
         } = start;
         // Retain aliases before a wait or thread can begin. Closing this one
         // gate interrupts the actual descriptor handoffs, including ACK loss.
@@ -82,36 +94,58 @@ impl PreparedRootSameActorQ24PhaseV1 {
                 let RootSameActorHostCommandV1::Initial(initial) =
                     receive_host_value(&commands, &worker_gate)?
                 else {
-                    return Err(io::Error::other("original Initial host command required first"));
+                    return Err(io::Error::other(
+                        "original Initial host command required first",
+                    ));
                 };
-                let original = crate::RootSameActorInitialEnrollmentCapabilityV1::register(initial_capability, initial)?;
+                let original = crate::RootSameActorInitialEnrollmentCapabilityV1::register(
+                    initial_capability,
+                    initial,
+                )?;
                 worker_gate.require_open()?;
-                acknowledgements.try_send(RootSameActorHostAcknowledgementV1::InitialRegistered {
-                    binding: original.binding().to_string(),
-                }).map_err(|_| io::Error::other("original Initial host acknowledgement lost"))?;
+                acknowledgements
+                    .try_send(RootSameActorHostAcknowledgementV1::InitialRegistered {
+                        binding: original.binding().to_string(),
+                    })
+                    .map_err(|_| io::Error::other("original Initial host acknowledgement lost"))?;
                 let RootSameActorHostCommandV1::Scoped(profile) =
                     receive_host_value(&commands, &worker_gate)?
                 else {
-                    return Err(io::Error::other("actual original Prepared profile required next"));
+                    return Err(io::Error::other(
+                        "actual original Prepared profile required next",
+                    ));
                 };
-                let scoped = RootSameActorScopeEnrollmentCapabilityV1::register(scope_capability, profile)?;
+                let scoped =
+                    RootSameActorScopeEnrollmentCapabilityV1::register(scope_capability, profile)?;
                 worker_gate.require_open()?;
                 let publication = crate::send_root_same_actor_scoped_handoff(
-                    scoped_handoff, scoped, &scoped_root, timeout.min(worker_gate.require_open()?),
-                ).map_err(io::Error::other)?;
+                    scoped_handoff,
+                    scoped,
+                    &scoped_root,
+                    timeout.min(worker_gate.require_open()?),
+                )
+                .map_err(io::Error::other)?;
                 worker_gate.require_open()?;
-                acknowledgements.try_send(RootSameActorHostAcknowledgementV1::ScopedRightsSent)
+                acknowledgements
+                    .try_send(RootSameActorHostAcknowledgementV1::ScopedRightsSent)
                     .map_err(|_| io::Error::other("original scoped host acknowledgement lost"))?;
                 let RootSameActorHostCommandV1::Current(current) =
                     receive_host_value(&commands, &worker_gate)?
                 else {
-                    return Err(io::Error::other("actual original CURRENT host enrollment required last"));
+                    return Err(io::Error::other(
+                        "actual original CURRENT host enrollment required last",
+                    ));
                 };
-                let original = crate::RootSameActorPublicationEnrollmentCapabilityV1::register(publication, current)?;
+                let original = crate::RootSameActorPublicationEnrollmentCapabilityV1::register(
+                    publication,
+                    current,
+                )?;
                 worker_gate.require_open()?;
-                acknowledgements.try_send(RootSameActorHostAcknowledgementV1::CurrentRegistered {
-                    binding: original.binding().to_string(),
-                }).map_err(|_| io::Error::other("original CURRENT host acknowledgement lost"))?;
+                acknowledgements
+                    .try_send(RootSameActorHostAcknowledgementV1::CurrentRegistered {
+                        binding: original.binding().to_string(),
+                    })
+                    .map_err(|_| io::Error::other("original CURRENT host acknowledgement lost"))?;
                 worker_gate.require_open()?;
                 closing.disarm();
                 Ok(())
@@ -123,23 +157,33 @@ impl PreparedRootSameActorQ24PhaseV1 {
                 // the daemon's five-lane requests, so serving can now proceed.
                 ready_gate.require_open()?;
                 crate::send_root_production_writer_handoff(
-                    writer_handoff, &bootstrap, &root_pidfd, registered_writer,
+                    writer_handoff,
+                    &bootstrap,
+                    &root_pidfd,
+                    registered_writer,
                     timeout.min(ready_gate.require_open()?),
-                ).map_err(io::Error::other)?;
+                )
+                .map_err(io::Error::other)?;
                 ready_gate.require_open()?;
                 crate::send_root_same_actor_phase_handoff(
-                    phase_handoff, phase_offer, initial_offer, &root_pidfd,
+                    phase_handoff,
+                    phase_offer,
+                    initial_offer,
+                    &root_pidfd,
                     timeout.min(ready_gate.require_open()?),
-                ).map_err(io::Error::other)?;
+                )
+                .map_err(io::Error::other)?;
                 ready_gate.require_open()?;
-                ready.try_send(())
+                ready
+                    .try_send(())
                     .map_err(|_| io::Error::other("original Root host startup receiver lost"))?;
                 ready_gate.notify_original_waiters();
                 ready_gate.require_open()?;
                 Ok(())
             });
             gate.close();
-            let registered = registration.join()
+            let registered = registration
+                .join()
                 .map_err(|_| io::Error::other("original Root host registration worker lost"))?;
             // An original service/owner error is never hidden by host output.
             served.and(registered)

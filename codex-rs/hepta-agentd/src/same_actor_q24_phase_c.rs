@@ -11,12 +11,12 @@ use crate::AgentdError;
 use crate::AgentdGenerationUpdateAuthoritiesV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::circuit_task::SameActorTaskRoute;
-use crate::same_actor_q24_phase_join_client::OriginalJoinedSameActorA;
 use crate::root_production_learning_inputs::same_actor_phase::receive_original_same_actor_scoped_owners;
 use crate::same_actor_q24_phase::OriginalSameActorPhaseCommandV1;
 use crate::same_actor_q24_phase::OriginalSameActorPhaseHostV1;
 use crate::same_actor_q24_phase::phase_owner_error;
 use crate::same_actor_q24_phase::phase_refused;
+use crate::same_actor_q24_phase_join_client::OriginalJoinedSameActorA;
 use crate::same_actor_q24_phase_learning::OriginalSameActorLearningCleanup;
 use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWorker;
 use crate::same_actor_q24_phase_learning::PreparedLearningActivation;
@@ -45,7 +45,9 @@ impl OriginalPhaseExecution {
         let prepared = Arc::clone(OriginalJoinedSameActorA::prepared(&original.joined));
         let scoped = {
             let receive = receive_original_same_actor_scoped_owners(
-                socket, original.joined, Duration::from_millis(500),
+                socket,
+                original.joined,
+                Duration::from_millis(500),
             );
             tokio::pin!(receive);
             tokio::select! {
@@ -64,10 +66,14 @@ impl OriginalPhaseExecution {
         let OriginalSameActorPhaseCommandV1::Learning(inputs) =
             host.receive_original(&self.context).await?
         else {
-            return Err(phase_refused("original scoped owners require actual Learning materials"));
+            return Err(phase_refused(
+                "original scoped owners require actual Learning materials",
+            ));
         };
         if !Arc::ptr_eq(&inputs.original.prepared, &prepared) {
-            return Err(phase_refused("Learning materials differ from the actual joined Prepared"));
+            return Err(phase_refused(
+                "Learning materials differ from the actual joined Prepared",
+            ));
         }
         let capacity = inputs.successor_queue_capacity;
         let builder = PreparedLearningBuilder::new(scoped, inputs.original)?;
@@ -75,7 +81,8 @@ impl OriginalPhaseExecution {
         // The task route counts real retained jobs, not a worker-present flag.
         let cleanup = builder.cleanup();
         let result = SameActorTaskRoute::attach_original_learning_work(
-            self.route.as_ref(), Arc::clone(cleanup.work()),
+            self.route.as_ref(),
+            Arc::clone(cleanup.work()),
         );
         if let Err(error) = result {
             self.close_original_execution();
@@ -108,9 +115,9 @@ impl OriginalPhaseExecution {
                 return preserve_scoped_result(Err(error), joined, "assembly blocking work");
             }
         };
-        let result = self.run_original_activated(
-            activation, &cleanup, original.completion, authorities, host,
-        ).await;
+        let result = self
+            .run_original_activated(activation, &cleanup, original.completion, authorities, host)
+            .await;
         self.close_original_execution();
         // The concrete lane worker and the publication future have both ended
         // before this final cleanup can wait for their last retained job Arc.
@@ -134,10 +141,17 @@ impl OriginalPhaseExecution {
         let stop = self.cancellation.child_token();
         let _cancel_on_drop = stop.clone().drop_guard();
         let mut work = Box::pin(OriginalSameActorLearningWorker::run(
-            worker, self.store.clone(), Arc::clone(&self.state), stop.clone(),
+            worker,
+            self.store.clone(),
+            Arc::clone(&self.state),
+            stop.clone(),
         ));
         let flow = OriginalCFlow {
-            owners, publication, handoff, completion, authorities,
+            owners,
+            publication,
+            handoff,
+            completion,
+            authorities,
             work: Arc::clone(cleanup.work()),
         };
         let first = {
@@ -172,7 +186,8 @@ impl OriginalPhaseExecution {
                 // Already completed and internally joined by the concrete
                 // worker. Never poll its future a second time.
                 drop(work);
-                return result.and_then(|()| Err(phase_refused("original required C worker stopped")));
+                return result
+                    .and_then(|()| Err(phase_refused("original required C worker stopped")));
             }
             OriginalScopedExit::Progress(result) => result,
             OriginalScopedExit::Cancelled => Err(phase_refused("original C phase was cancelled")),
@@ -193,7 +208,9 @@ fn preserve_scoped_result(
         (Ok(()), result) => result,
         (Err(error), Ok(())) => Err(error),
         (Err(original), Err(cleanup)) => Err(phase_owner_error(OriginalScopedCleanupFailure {
-            stage, original, cleanup,
+            stage,
+            original,
+            cleanup,
         })),
     }
 }

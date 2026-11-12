@@ -116,7 +116,8 @@ pub struct DeploymentFinalUseIssuer {
     clock: Arc<dyn AuthorityClock>,
     request_lock: Mutex<()>,
     lease: Option<ProtectedLease>,
-    same_actor_phase: std::sync::OnceLock<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
+    same_actor_phase:
+        std::sync::OnceLock<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
 }
 
 /// Read-only view of the independently retained issuer revocation head.
@@ -316,13 +317,15 @@ impl DeploymentFinalUseIssuer {
         phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
     ) -> io::Result<()> {
         phase.require_open()?;
-        let _request = self.request_lock.lock()
+        let _request = self
+            .request_lock
+            .lock()
             .map_err(|_| io::Error::other("issuer fenced"))?;
         phase.require_open()?;
-        if self.lease.is_none()
-            || self.same_actor_phase.set(Arc::clone(phase)).is_err()
-        {
-            return Err(io::Error::other("original protected issuer phase was already bound or absent"));
+        if self.lease.is_none() || self.same_actor_phase.set(Arc::clone(phase)).is_err() {
+            return Err(io::Error::other(
+                "original protected issuer phase was already bound or absent",
+            ));
         }
         phase.require_open()?;
         Ok(())

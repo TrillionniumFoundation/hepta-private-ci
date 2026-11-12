@@ -53,7 +53,15 @@ impl OriginalSameActorTaskWorker {
         host: OriginalSameActorPhaseHostV1,
     ) -> Self {
         let closing = CloseSameActorPhaseOnDrop::new(context.gate());
-        Self { context, route, owners, authorities, scoped, host, _closing: closing }
+        Self {
+            context,
+            route,
+            owners,
+            authorities,
+            scoped,
+            host,
+            _closing: closing,
+        }
     }
 
     pub(crate) async fn run(
@@ -62,12 +70,28 @@ impl OriginalSameActorTaskWorker {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
-        let Self { context, route, owners, authorities, scoped, mut host, _closing } = self;
-        let execution = OriginalPhaseExecution { context, route, store, state, cancellation };
+        let Self {
+            context,
+            route,
+            owners,
+            authorities,
+            scoped,
+            mut host,
+            _closing,
+        } = self;
+        let execution = OriginalPhaseExecution {
+            context,
+            route,
+            store,
+            state,
+            cancellation,
+        };
         execution.require_original_execution()?;
         let original = execution.run_original_a(owners, &mut host).await?;
         execution.require_original_execution()?;
-        execution.run_original_scoped(original, authorities, scoped, &mut host).await
+        execution
+            .run_original_scoped(original, authorities, scoped, &mut host)
+            .await
     }
 }
 
@@ -81,7 +105,9 @@ impl OriginalPhaseExecution {
             || self.store.path().parent() != Some(self.context.identity().layout.automation_root())
         {
             self.close_original_execution();
-            return Err(phase_refused("original phase worker differs from its actual daemon owner"));
+            return Err(phase_refused(
+                "original phase worker differs from its actual daemon owner",
+            ));
         }
         Ok(())
     }

@@ -60,9 +60,7 @@ impl PreparedLearningBuilder {
         OriginalSameActorRootContext::require_current(&context)?;
         let (same_context, learning, factory, publication, prepared, retained) =
             scoped.into_original_parts()?;
-        if !Arc::ptr_eq(&context, &same_context)
-            || !Arc::ptr_eq(&original.prepared, &prepared)
-        {
+        if !Arc::ptr_eq(&context, &same_context) || !Arc::ptr_eq(&original.prepared, &prepared) {
             return Err(AgentdError::GenerationFenced(
                 "learning inputs differ from the actual scoped Prepared capability".into(),
             ));
@@ -125,15 +123,14 @@ impl PreparedLearningBuilder {
             self.retained,
             self.context.identity(),
         )?;
-        let (mut learning, pending, handoff, successor) =
-            prepare_original_same_actor_successor(
-                learning,
-                self.context.identity(),
-                self.context.successor_session(),
-                Arc::clone(self.context.gate()),
-                successor_capacity,
-            )
-            .await?;
+        let (mut learning, pending, handoff, successor) = prepare_original_same_actor_successor(
+            learning,
+            self.context.identity(),
+            self.context.successor_session(),
+            Arc::clone(self.context.gate()),
+            successor_capacity,
+        )
+        .await?;
         let delivery = learning.take_circuit_delivery().ok_or_else(|| {
             AgentdError::GenerationFenced("actual retained A delivery is missing".into())
         })?;

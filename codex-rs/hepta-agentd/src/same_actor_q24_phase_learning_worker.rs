@@ -89,7 +89,9 @@ impl OriginalSameActorLearningWorker {
             stopped.clone(),
             Arc::clone(&self.work),
         );
-        let delivery = self.delivery.run(store.clone(), Arc::clone(&state), stopped.clone());
+        let delivery = self
+            .delivery
+            .run(store.clone(), Arc::clone(&state), stopped.clone());
         let successor = self.pending.run(store, state, stopped.clone());
         tokio::pin!(learning, delivery, successor);
         let first = tokio::select! {

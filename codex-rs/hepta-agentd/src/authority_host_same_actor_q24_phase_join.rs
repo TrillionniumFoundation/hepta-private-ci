@@ -59,20 +59,26 @@ pub(crate) struct OriginalPhaseJoined {
 
 impl OriginalInitialRetirement {
     pub(crate) fn new(gate: &Arc<SameActorPhaseGate>, phase: &str) -> Self {
-        Self { state: AtomicU8::new(UNUSED), gate: Arc::clone(gate), phase: phase.into() }
+        Self {
+            state: AtomicU8::new(UNUSED),
+            gate: Arc::clone(gate),
+            phase: phase.into(),
+        }
     }
 
     /// Initial EOF transfers only the held owner; it does not grant a phase.
     /// A separate completed join and the real durable Claim are still required.
-    pub(crate) fn require_expected_eof(
-        &self,
-        gate: &Arc<SameActorPhaseGate>,
-    ) -> io::Result<()> {
+    pub(crate) fn require_expected_eof(&self, gate: &Arc<SameActorPhaseGate>) -> io::Result<()> {
         gate.require_open()?;
         if !Arc::ptr_eq(gate, &self.gate)
-            || !matches!(self.state.load(Ordering::Acquire), RETIRE_ACCEPTED | JOIN_ACCEPTED)
+            || !matches!(
+                self.state.load(Ordering::Acquire),
+                RETIRE_ACCEPTED | JOIN_ACCEPTED
+            )
         {
-            return Err(io::Error::other("original Initial retired without an accepted intent"));
+            return Err(io::Error::other(
+                "original Initial retired without an accepted intent",
+            ));
         }
         Ok(())
     }
@@ -117,58 +123,89 @@ pub(crate) fn accept_original_phase_join(
     let mut closing = CloseSameActorPhaseOnDrop::new(gate);
     let _stream_stop = gate.retain_original_stream(&stream)?;
     if retirement.phase != phase || !Arc::ptr_eq(gate, &retirement.gate) {
-        return Err(io::Error::other("original phase retirement belongs to another gate"));
+        return Err(io::Error::other(
+            "original phase retirement belongs to another gate",
+        ));
     }
     let exact_profile = serde_json::to_string(profile).map_err(io::Error::other)?;
     let mut channel = HostAuthorityPeerChannel::from_stream_until(
-        stream, policy, owner.try_clone()?, gate.deadline().instant(),
-    ).map_err(io::Error::other)?;
+        stream,
+        policy,
+        owner.try_clone()?,
+        gate.deadline().instant(),
+    )
+    .map_err(io::Error::other)?;
     for sequence in [1_u8, 2_u8] {
-        let received = channel.exchange(|bytes| {
-            let _admission = gate.enter_original_lane().map_err(unavailable)?;
-            service.with_learning_profile(config, registration, owner, profile, |initial, _proof| {
-                profile.require_cell_scope(&initial)?;
-                let request: PhaseJoinRequest =
-                    serde_json::from_slice(bytes).map_err(io::Error::other)?;
-                if request.schema != 1
-                    || request.purpose != PURPOSE
-                    || request.sequence != sequence
-                    || request.phase != phase
-                    || request.profile != exact_profile
-                {
-                    return Err(io::Error::other("original phase intent and host profile differ"));
-                }
-                let (before, after) = if sequence == 1 {
-                    (UNUSED, RETIRE_ACCEPTED)
-                } else {
-                    (RETIRE_ACCEPTED, JOIN_ACCEPTED)
-                };
-                retirement.state.compare_exchange(
-                    before, after, Ordering::AcqRel, Ordering::Acquire,
-                ).map_err(|_| io::Error::other("original phase intent was already consumed"))?;
-                let reply = PhaseJoinResponse {
-                    schema: 1,
-                    purpose: PURPOSE.into(),
-                    sequence,
-                    phase: phase.into(),
-                    profile: exact_profile.clone(),
-                };
-                let raw = serde_json::to_vec(&reply).map_err(io::Error::other)?;
-                if raw.len() > 16 * 1024 {
-                    return Err(io::Error::other("original phase reply bound"));
-                }
-                gate.require_open()?;
-                Ok(raw)
-            }).map_err(unavailable)
-        }).map_err(io::Error::other)?;
+        let received = channel
+            .exchange(|bytes| {
+                let _admission = gate.enter_original_lane().map_err(unavailable)?;
+                service
+                    .with_learning_profile(
+                        config,
+                        registration,
+                        owner,
+                        profile,
+                        |initial, _proof| {
+                            profile.require_cell_scope(&initial)?;
+                            let request: PhaseJoinRequest =
+                                serde_json::from_slice(bytes).map_err(io::Error::other)?;
+                            if request.schema != 1
+                                || request.purpose != PURPOSE
+                                || request.sequence != sequence
+                                || request.phase != phase
+                                || request.profile != exact_profile
+                            {
+                                return Err(io::Error::other(
+                                    "original phase intent and host profile differ",
+                                ));
+                            }
+                            let (before, after) = if sequence == 1 {
+                                (UNUSED, RETIRE_ACCEPTED)
+                            } else {
+                                (RETIRE_ACCEPTED, JOIN_ACCEPTED)
+                            };
+                            retirement
+                                .state
+                                .compare_exchange(
+                                    before,
+                                    after,
+                                    Ordering::AcqRel,
+                                    Ordering::Acquire,
+                                )
+                                .map_err(|_| {
+                                    io::Error::other("original phase intent was already consumed")
+                                })?;
+                            let reply = PhaseJoinResponse {
+                                schema: 1,
+                                purpose: PURPOSE.into(),
+                                sequence,
+                                phase: phase.into(),
+                                profile: exact_profile.clone(),
+                            };
+                            let raw = serde_json::to_vec(&reply).map_err(io::Error::other)?;
+                            if raw.len() > 16 * 1024 {
+                                return Err(io::Error::other("original phase reply bound"));
+                            }
+                            gate.require_open()?;
+                            Ok(raw)
+                        },
+                    )
+                    .map_err(unavailable)
+            })
+            .map_err(io::Error::other)?;
         if !received {
-            return Err(io::Error::other("original phase peer closed before the join"));
+            return Err(io::Error::other(
+                "original phase peer closed before the join",
+            ));
         }
         // Successful framing is not enough across suspend or a concurrent
         // phase close. This check follows each actual ACK write.
         gate.require_open()?;
     }
-    let joined = OriginalPhaseJoined { phase: phase.into(), profile: exact_profile };
+    let joined = OriginalPhaseJoined {
+        phase: phase.into(),
+        profile: exact_profile,
+    };
     joined.require_original_profile(phase, profile, retirement, gate)?;
     closing.disarm();
     Ok(joined)

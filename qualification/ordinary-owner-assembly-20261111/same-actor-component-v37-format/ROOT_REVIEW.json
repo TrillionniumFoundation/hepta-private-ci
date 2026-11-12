@@ -1,0 +1,670 @@
+{
+  "schema": "hepta.format-repair-root-review.v1",
+  "parent": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152",
+    "source_inventory": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27"
+  },
+  "status": "Fixed source proposal after complete exact-byte/source-layout and independent metadata review. Original full qualification is pending on the new commit.",
+  "scope": {
+    "actual_native_rust_postimages": 76,
+    "callers_file": 1,
+    "existing_exact_allowlist_entry": 1,
+    "A_wording_document_corrections": 2,
+    "future_entry_code_included": false,
+    "new_tests_added": 0,
+    "original_harness_changed": false,
+    "original_checker_or_helper_changed": false
+  },
+  "native_basis": {
+    "attempt": "ordinary-b4960fe-seven-final-v11",
+    "fixed_source": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "status": "FAILED_FORMAT_SOURCE_CHANGED",
+    "child_exit": 0,
+    "executor_exit": 1,
+    "complete_evidence_commit": "f9d82d4831fe40e46a21e2ada77e66a1e062e735",
+    "complete_evidence_path": "qualification/ordinary-owner-assembly-20261111/native-components-b4960fe-seven/v11",
+    "patch": "3ce5cb2e8dff735ec5e0ad0ca174385c09ede675",
+    "patch_bytes": 407063,
+    "patch_sha256": "983ab97735ee06d4bff21a22660c443133720bda5ce93daad9ea7f527351d040",
+    "hunks": 327,
+    "full_source_reconstruction": {
+      "source": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+      "source_tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152",
+      "files": 76,
+      "hunks": 327,
+      "exact_native_status_path_set": true,
+      "native_status_representation": "JSON inside Python RuntimeError repr; status contains literal backslash-n separators, shape verified before split.",
+      "full_patch_sha256": "983ab97735ee06d4bff21a22660c443133720bda5ce93daad9ea7f527351d040",
+      "every_native_old_new_full_git_and_reverse": true,
+      "post_bytes": 947234,
+      "native_source_rerun": false
+    },
+    "context_disambiguation": "Each hunk is applied at its native line positions, verifies all context and line counts, and is bound to full old/new Git hashes and exact reverse reconstruction. Two hunks in final_use_retained.rs have repeated context text; no claim that every context string occurs only once."
+  },
+  "source_review": {
+    "review": "d6f39ebde567629bebb1dce3a08221c320501eba",
+    "details": "e44e12fde5493d2d3520c577e64aaeff69360b6e",
+    "verdict": "No confirmed semantic blocker in the actual 76-file native formatter delta; this is not compiler/checker/test qualification.",
+    "measurements": {
+      "exact_comment_sequence_count": 1016,
+      "unchanged_value_literal_count": 2288,
+      "function_name_count": 627,
+      "assertion_refusal_macro_count": 234,
+      "pure_whitespace_token_files": 21,
+      "other_layout_or_item_order_files": 55,
+      "body_punctuation_layout_files": 48,
+      "item_reordering_files": 15
+    }
+  },
+  "callers": {
+    "pre": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+    "post": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+    "post_sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da",
+    "exact_ops": "c8044259486e789b7ce3f079dd8fa17b36e78051",
+    "author_manifest": "d6200bceef99c9b1233e3b0c9b5c97c983a99608",
+    "author_mapping": "173f9c7c1830acade63ce01cc6ccd41603da06ca",
+    "root_reversible": {
+      "path": "CALLERS.toml",
+      "pre": {
+        "blob": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+        "bytes": 885351,
+        "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+      },
+      "post": {
+        "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+        "bytes": 890345,
+        "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+      },
+      "operations": [
+        {
+          "index": 0,
+          "scope": "boundary:root_q24_factory_serve_original",
+          "old_bytes": 620,
+          "new_bytes": 650
+        },
+        {
+          "index": 1,
+          "scope": "boundary:q24_same_actor_learning_terminal_join",
+          "old_bytes": 722,
+          "new_bytes": 750
+        },
+        {
+          "index": 2,
+          "scope": "boundary:q24_same_actor_evaluation_install_complete",
+          "old_bytes": 640,
+          "new_bytes": 654
+        },
+        {
+          "index": 3,
+          "scope": "boundary:q24_same_actor_evaluation_aggregate_install",
+          "old_bytes": 682,
+          "new_bytes": 696
+        },
+        {
+          "index": 4,
+          "scope": "boundary:root_same_actor_phase_start",
+          "old_bytes": 409,
+          "new_bytes": 437
+        },
+        {
+          "index": 5,
+          "scope": "boundary:root_same_actor_durable_claim",
+          "old_bytes": 508,
+          "new_bytes": 536
+        },
+        {
+          "index": 6,
+          "scope": "boundary:root_same_actor_durable_scope",
+          "old_bytes": 517,
+          "new_bytes": 565
+        },
+        {
+          "index": 7,
+          "scope": "boundary:root_same_actor_initial_register",
+          "old_bytes": 475,
+          "new_bytes": 503
+        },
+        {
+          "index": 8,
+          "scope": "boundary:root_same_actor_publication_register",
+          "old_bytes": 491,
+          "new_bytes": 519
+        },
+        {
+          "index": 9,
+          "scope": "boundary:root_same_actor_scope_register",
+          "old_bytes": 491,
+          "new_bytes": 505
+        },
+        {
+          "index": 10,
+          "scope": "boundary:root_same_actor_join_accept",
+          "old_bytes": 430,
+          "new_bytes": 498
+        },
+        {
+          "index": 11,
+          "scope": "boundary:root_same_actor_learning_reserve",
+          "old_bytes": 637,
+          "new_bytes": 695
+        },
+        {
+          "index": 12,
+          "scope": "boundary:root_same_actor_ticket_session",
+          "old_bytes": 491,
+          "new_bytes": 527
+        },
+        {
+          "index": 13,
+          "scope": "boundary:root_same_actor_scoped_stream",
+          "old_bytes": 439,
+          "new_bytes": 465
+        },
+        {
+          "index": 14,
+          "scope": "protected:2",
+          "old_bytes": 5226,
+          "new_bytes": 5286
+        },
+        {
+          "index": 15,
+          "scope": "protected:152",
+          "old_bytes": 4223,
+          "new_bytes": 4431
+        },
+        {
+          "index": 16,
+          "scope": "protected:235",
+          "old_bytes": 3998,
+          "new_bytes": 4193
+        },
+        {
+          "index": 17,
+          "scope": "protected:236",
+          "old_bytes": 1007,
+          "new_bytes": 1033
+        },
+        {
+          "index": 18,
+          "scope": "protected:265",
+          "old_bytes": 1460,
+          "new_bytes": 1460
+        },
+        {
+          "index": 19,
+          "scope": "protected:266",
+          "old_bytes": 1846,
+          "new_bytes": 1937
+        },
+        {
+          "index": 20,
+          "scope": "protected:267",
+          "old_bytes": 1472,
+          "new_bytes": 1500
+        },
+        {
+          "index": 21,
+          "scope": "protected:319",
+          "old_bytes": 1239,
+          "new_bytes": 1304
+        },
+        {
+          "index": 22,
+          "scope": "protected:320",
+          "old_bytes": 1880,
+          "new_bytes": 1983
+        },
+        {
+          "index": 23,
+          "scope": "protected:368",
+          "old_bytes": 4748,
+          "new_bytes": 4812
+        },
+        {
+          "index": 24,
+          "scope": "protected:370",
+          "old_bytes": 6826,
+          "new_bytes": 6882
+        },
+        {
+          "index": 25,
+          "scope": "protected:371",
+          "old_bytes": 4635,
+          "new_bytes": 4657
+        },
+        {
+          "index": 26,
+          "scope": "protected:374",
+          "old_bytes": 2712,
+          "new_bytes": 3091
+        },
+        {
+          "index": 27,
+          "scope": "protected:375",
+          "old_bytes": 5026,
+          "new_bytes": 5054
+        },
+        {
+          "index": 28,
+          "scope": "protected:377",
+          "old_bytes": 2793,
+          "new_bytes": 2807
+        },
+        {
+          "index": 29,
+          "scope": "protected:379",
+          "old_bytes": 1901,
+          "new_bytes": 1980
+        },
+        {
+          "index": 30,
+          "scope": "protected:381",
+          "old_bytes": 2214,
+          "new_bytes": 2242
+        },
+        {
+          "index": 31,
+          "scope": "protected:383",
+          "old_bytes": 1602,
+          "new_bytes": 1629
+        },
+        {
+          "index": 32,
+          "scope": "protected:384",
+          "old_bytes": 1861,
+          "new_bytes": 1948
+        },
+        {
+          "index": 33,
+          "scope": "protected:385",
+          "old_bytes": 963,
+          "new_bytes": 1276
+        },
+        {
+          "index": 34,
+          "scope": "protected:388",
+          "old_bytes": 1039,
+          "new_bytes": 1090
+        },
+        {
+          "index": 35,
+          "scope": "protected:389",
+          "old_bytes": 5566,
+          "new_bytes": 5644
+        },
+        {
+          "index": 36,
+          "scope": "protected:390",
+          "old_bytes": 1588,
+          "new_bytes": 1658
+        },
+        {
+          "index": 37,
+          "scope": "protected:395",
+          "old_bytes": 2251,
+          "new_bytes": 2359
+        },
+        {
+          "index": 38,
+          "scope": "protected:396",
+          "old_bytes": 1520,
+          "new_bytes": 1660
+        },
+        {
+          "index": 39,
+          "scope": "protected:399",
+          "old_bytes": 1221,
+          "new_bytes": 1257
+        },
+        {
+          "index": 40,
+          "scope": "protected:400",
+          "old_bytes": 1069,
+          "new_bytes": 1173
+        },
+        {
+          "index": 41,
+          "scope": "protected:401",
+          "old_bytes": 697,
+          "new_bytes": 779
+        },
+        {
+          "index": 42,
+          "scope": "protected:402",
+          "old_bytes": 705,
+          "new_bytes": 787
+        },
+        {
+          "index": 43,
+          "scope": "protected:403",
+          "old_bytes": 530,
+          "new_bytes": 580
+        },
+        {
+          "index": 44,
+          "scope": "protected:404",
+          "old_bytes": 1670,
+          "new_bytes": 1712
+        },
+        {
+          "index": 45,
+          "scope": "protected:406",
+          "old_bytes": 1036,
+          "new_bytes": 1076
+        },
+        {
+          "index": 46,
+          "scope": "protected:407",
+          "old_bytes": 4421,
+          "new_bytes": 4735
+        },
+        {
+          "index": 47,
+          "scope": "protected:408",
+          "old_bytes": 1870,
+          "new_bytes": 1970
+        },
+        {
+          "index": 48,
+          "scope": "protected:409",
+          "old_bytes": 1262,
+          "new_bytes": 1280
+        },
+        {
+          "index": 49,
+          "scope": "protected:410",
+          "old_bytes": 2667,
+          "new_bytes": 2777
+        },
+        {
+          "index": 50,
+          "scope": "protected:411",
+          "old_bytes": 1097,
+          "new_bytes": 1181
+        },
+        {
+          "index": 51,
+          "scope": "protected:412",
+          "old_bytes": 2266,
+          "new_bytes": 2512
+        },
+        {
+          "index": 52,
+          "scope": "protected:413",
+          "old_bytes": 592,
+          "new_bytes": 620
+        },
+        {
+          "index": 53,
+          "scope": "protected:414",
+          "old_bytes": 967,
+          "new_bytes": 1089
+        },
+        {
+          "index": 54,
+          "scope": "protected:415",
+          "old_bytes": 1407,
+          "new_bytes": 1491
+        },
+        {
+          "index": 55,
+          "scope": "protected:417",
+          "old_bytes": 1172,
+          "new_bytes": 1234
+        },
+        {
+          "index": 56,
+          "scope": "protected:418",
+          "old_bytes": 1076,
+          "new_bytes": 1160
+        },
+        {
+          "index": 57,
+          "scope": "protected:419",
+          "old_bytes": 1650,
+          "new_bytes": 1705
+        },
+        {
+          "index": 58,
+          "scope": "protected:421",
+          "old_bytes": 463,
+          "new_bytes": 578
+        },
+        {
+          "index": 59,
+          "scope": "protected:423",
+          "old_bytes": 1246,
+          "new_bytes": 1260
+        },
+        {
+          "index": 60,
+          "scope": "protected:424",
+          "old_bytes": 2883,
+          "new_bytes": 3046
+        },
+        {
+          "index": 61,
+          "scope": "protected:428",
+          "old_bytes": 1453,
+          "new_bytes": 1497
+        },
+        {
+          "index": 62,
+          "scope": "protected:430",
+          "old_bytes": 1094,
+          "new_bytes": 1138
+        },
+        {
+          "index": 63,
+          "scope": "protected:432",
+          "old_bytes": 1019,
+          "new_bytes": 1085
+        },
+        {
+          "index": 64,
+          "scope": "protected:434",
+          "old_bytes": 941,
+          "new_bytes": 978
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    "root_structure": {
+      "rowCounts": {
+        "privileged_inventory": {
+          "total": 1,
+          "changed": 0,
+          "byte_equal": 1
+        },
+        "boundary": {
+          "total": 638,
+          "changed": 14,
+          "byte_equal": 624
+        },
+        "protected_file": {
+          "total": 440,
+          "changed": 51,
+          "byte_equal": 389
+        }
+      },
+      "field_changes": 168,
+      "counts": {
+        "whitespace": 157,
+        "comma_layout": 10,
+        "review": 1
+      },
+      "field_paths": [
+        "required_function_order[].sequence[]",
+        "definition_markers[]",
+        "required_order[][]",
+        "required[]"
+      ],
+      "all_other_fields_value_and_order_equal": true,
+      "marker_cardinalities_unchanged": true,
+      "precise_field_schema_validated": true,
+      "non_whitespace_review": {
+        "optional_trailing_comma_cases": 10,
+        "one_optional_call_comma_removed_and_actual_closing_parenthesis_added": {
+          "row": "protected_file:codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+          "path": "required_function_order[0].sequence[1]",
+          "kind": "review",
+          "before": "config, registration, owner, learning, inputs, None,",
+          "after": "config, registration, owner, learning, inputs, None)"
+        },
+        "operands_all_preserved": true,
+        "note": "The original six argument values including None remain exact. Native formatting removes the optional final comma. Matching the actual closing parenthesis retains the complete call ending instead of a loose None prefix."
+      }
+    },
+    "independent_review": {
+      "blob": "f125c9126d6e4111f216612471c3ab9b4fd8e46a",
+      "details": "b2dea95b48a943bb47ba94261ffb2919e8237cef",
+      "projection": "4b907cd5061587160feebf08ea8d09cb2f1f28a9",
+      "verdict": "No confirmed weakening or local marker blocker in the final native-layout CALLERS adaptation. This is bounded static review, not original checker or native qualification.",
+      "scope": {
+        "method": "Pure JS transcription of the unchanged original 7a670 comment/literal/cfg(test) masking, function extent/nested-function exclusion, minimum-two ordered markers, exact single-literal calls, top-level depth and forbidden word boundaries. This does not run the original checker or typed helper.",
+        "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+        "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+        "actual_source_paths": 76,
+        "protected_rows": 98,
+        "function_scoped_sequences": 287,
+        "ordered_markers": 2949,
+        "raw_required": 291,
+        "forbidden": 275,
+        "top_level": 7,
+        "literal_calls": 3,
+        "raw_boundary_markers": {
+          "definition": 473,
+          "caller": 37,
+          "total": 510
+        },
+        "before_failures": 0,
+        "after_failures": 0,
+        "unprojected_protected_rows": 342,
+        "full_repository_caller_set_or_receiver_scan": false,
+        "all_168_actual_field_differences_equal_author_mapping": true
+      }
+    }
+  },
+  "allowlist": {
+    "path": ".github/blob-size-allowlist.txt",
+    "pre": {
+      "blob": "aff5b41d0f98434ac853ae11a1440e41d8882050",
+      "bytes": 12066,
+      "sha256": "feb0a72dbbee8c869970eced79460654f01397abffa5a7063584ded0235c8469"
+    },
+    "post": {
+      "blob": "0ae46052c7efd945f6ce3a7e217997f8a89e316a",
+      "bytes": 12066,
+      "sha256": "b162baba28d8f20436bf08ff6d01a86ea4b1cb86aaa39217ef3805a6f5b51b0c"
+    },
+    "operations": [
+      {
+        "old_text": "sha256:1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4 CALLERS.toml",
+        "new_text": "sha256:9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da CALLERS.toml",
+        "expected_matches": 1
+      }
+    ],
+    "unique_forward_reverse": true,
+    "existing_exception_only": true,
+    "other_paths_bytes_and_500KiB_threshold_unchanged": true,
+    "bound_callers": {
+      "blob": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+      "bytes": 890345,
+      "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+    }
+  },
+  "wording": {
+    "review": "2b180dcd3554cebbdaa72068bebb7b11d58d61ee",
+    "exact_ops": [
+      {
+        "path": "qualification/ordinary-owner-assembly-20261111/same-actor-component-v36/README.md",
+        "pre": "e542ec184959fdd63cd6d672fe9e28f0d1d46fd2",
+        "post": "c9ecfed5436e5ee928f10e9f45e74b8ad5bc0e64",
+        "bytes": 5488,
+        "sha256": "9f629d8b2fa70c67a72135e78e20990c7b7c70e2d7bf7fd07665966e6f664db1",
+        "old_text": "- Actual A admission closure, task/work quiescence, retained Prepared source and physical A generation drain before the Root Scoped transition.",
+        "new_text": "- Actual A admission closure, task/work quiescence and authenticated task-local durable journal drain. The controller then awaits the original A Direct-owner loop and releases its active owner custody before the second phase ACK; Root validates and consumes the original Initial CURRENT owner before entering Learning/Model.",
+        "expected_matches": 1
+      },
+      {
+        "path": "qualification/ordinary-owner-assembly-20261111/same-actor-component-v36/ROOT_REVIEW.json",
+        "pre": "61c4580a907dc83a50d9c37ac16397bf2b21d347",
+        "post": "e85ba03acce7ce2a1465fa792bff492f4229c17f",
+        "bytes": 46927,
+        "sha256": "ffb0c905c9574325e296cbc8589bbd2c931dec01a2065b14741c24a4e900f069",
+        "old_text": "mandatory five-lane receive, actual A admission close/quiescence, retained source and durable GenV2 drain precede scoped registration.",
+        "new_text": "mandatory five-lane receive, actual A admission close/quiescence, retained source and authenticated task-local durable GenV2 journal drain precede scoped registration. The original A Direct-owner future returns and its active custody is released before the second phase ACK; this does not prove outer blocking-task or all Root-worker joins.",
+        "expected_matches": 1
+      }
+    ],
+    "json_change": [
+      {
+        "path": "source_findings.0.finding",
+        "before": "Same original authority, mandatory five-lane receive, actual A admission close/quiescence, retained source and durable GenV2 drain precede scoped registration. Independent C and cross-incarnation recovery are outside this same-actor contract.",
+        "after": "Same original authority, mandatory five-lane receive, actual A admission close/quiescence, retained source and authenticated task-local durable GenV2 journal drain precede scoped registration. The original A Direct-owner future returns and its active custody is released before the second phase ACK; this does not prove outer blocking-task or all Root-worker joins. Independent C and cross-incarnation recovery are outside this same-actor contract."
+      }
+    ],
+    "meaning": "Authenticated task-local journal drain, actual A Direct-owner future return, active custody release before ACK2 and original Initial CURRENT owner consumption. No outer blocking-worker/all Root-worker/OS-process join claim."
+  },
+  "required_next_qualification": {
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "harness_bytes": 50167,
+    "harness_sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2",
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "freshness_ms_from_original_request_started_ns": 500,
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "exact_root_parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+      "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+      "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+      "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+      "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+      "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+      "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    ],
+    "retries": 0,
+    "full_caller_seconds": 3600,
+    "overall_seconds": 27000,
+    "known_failure_exemptions": false,
+    "predecessor_pass_inherited": false
+  },
+  "open_assembly": {
+    "ordinary_host_entry_and_trusted_materials": true,
+    "independent_B_execution_holdout_cost_journals": true,
+    "complete_normal_owner_join_protocol": true,
+    "independent_C_enrollment": true,
+    "real_daemon_and_Root_OS_restart": true
+  },
+  "business_acceptance": {
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_C": false,
+    "physical_daemon_and_Root_restart": false
+  },
+  "publication": {
+    "draft_only": true,
+    "main_merge": false,
+    "public_pr_head_not_advanced": true
+  }
+}

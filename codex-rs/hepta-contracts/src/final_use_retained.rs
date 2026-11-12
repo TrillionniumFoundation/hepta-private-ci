@@ -32,11 +32,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .inspect_err(|_| {
-                super::diagnostic::record(
-                    "retained.state-lock",
-                    FinalUseError::Unavailable,
-                    None,
-                );
+                super::diagnostic::record("retained.state-lock", FinalUseError::Unavailable, None);
             })
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
@@ -70,11 +66,7 @@ impl FinalUseAuthority {
             .state
             .lock()
             .inspect_err(|_| {
-                super::diagnostic::record(
-                    "retained.state-lock",
-                    FinalUseError::Unavailable,
-                    None,
-                );
+                super::diagnostic::record("retained.state-lock", FinalUseError::Unavailable, None);
             })
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;

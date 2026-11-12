@@ -165,14 +165,25 @@ impl Q24StageOwners {
                 Action::CommitDecision => {
                     let result = if let Some(phase) = &inner.same_actor_work {
                         runtime.block_on(local.attest_original_same_actor_decision(
-                            factory, trainer, &inner.dataset_cut, &inputs, snapshot, phase,
+                            factory,
+                            trainer,
+                            &inner.dataset_cut,
+                            &inputs,
+                            snapshot,
+                            phase,
                         ))
                     } else {
                         runtime.block_on(local.attest_original_decision(
-                            factory, trainer, &inner.dataset_cut, &inputs, snapshot,
+                            factory,
+                            trainer,
+                            &inner.dataset_cut,
+                            &inputs,
+                            snapshot,
                         ))
                     };
-                    result.map(|(receipt, signed)| (receipt, Some(signed))).map_err(unavailable)
+                    result
+                        .map(|(receipt, signed)| (receipt, Some(signed)))
+                        .map_err(unavailable)
                 }
                 Action::ReadDecision => runtime
                     .block_on(local.readback(

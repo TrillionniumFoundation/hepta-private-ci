@@ -41,7 +41,10 @@ impl HostAuthorityService {
             checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
         }
         let mut channel = HostAuthorityPeerChannel::from_stream_until(
-            stream, policy, owner_pidfd, gate.deadline().instant(),
+            stream,
+            policy,
+            owner_pidfd,
+            gate.deadline().instant(),
         )?;
         while channel.exchange(|bytes| {
             let _admission = gate.enter_original_lane().map_err(unavailable)?;
@@ -100,12 +103,17 @@ impl HostAuthorityService {
                 self.writer
                     .as_ref()
                     .ok_or(HostIssuerTransportError::Unavailable)?
-                    .exchange_consumer_in_same_actor_phase(&self.issuer, &self.clock, backend, bytes, phase)
+                    .exchange_consumer_in_same_actor_phase(
+                        &self.issuer,
+                        &self.clock,
+                        backend,
+                        bytes,
+                        phase,
+                    )
             }
         };
         self.check_logind_lifetime().map_err(unavailable)?;
         phase.require_open().map_err(unavailable)?;
         result
     }
-
 }

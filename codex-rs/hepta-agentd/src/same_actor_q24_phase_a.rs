@@ -58,17 +58,36 @@ impl OriginalPhaseExecution {
         host: &mut OriginalSameActorPhaseHostV1,
     ) -> Result<JoinedOriginalA, AgentdError> {
         self.require_original_execution()?;
-        let OriginalSameActorAOwners { bootstrap, source, cell, ledger, published } = owners;
-        let readback = OriginalAReadback { source, cell, ledger, published };
-        host.notify_original(&self.context, OriginalSameActorPhaseEventV1::OriginalAOwnersInstalled)?;
+        let OriginalSameActorAOwners {
+            bootstrap,
+            source,
+            cell,
+            ledger,
+            published,
+        } = owners;
+        let readback = OriginalAReadback {
+            source,
+            cell,
+            ledger,
+            published,
+        };
+        host.notify_original(
+            &self.context,
+            OriginalSameActorPhaseEventV1::OriginalAOwnersInstalled,
+        )?;
         let stop = self.cancellation.child_token();
         let _cancel_on_drop = stop.clone().drop_guard();
         // The outer original bootstrap already owns this required blocking
         // lane. Reuse the real Direct-owner loop and its exact store/identity
         // checks; do not spawn another discardable blocking handle for A.
-        let mut work = Box::pin(CircuitTaskRuntimeBootstrapV1::run_in_original_successor_lane(
-            bootstrap, self.store.clone(), Arc::clone(&self.state), stop.clone(),
-        ));
+        let mut work = Box::pin(
+            CircuitTaskRuntimeBootstrapV1::run_in_original_successor_lane(
+                bootstrap,
+                self.store.clone(),
+                Arc::clone(&self.state),
+                stop.clone(),
+            ),
+        );
         let exit = {
             let prepare = self.prepare_original_a(&readback, host);
             tokio::pin!(prepare);
@@ -123,7 +142,10 @@ impl OriginalPhaseExecution {
         self.require_original_execution()?;
         let joined = prepared.retirement.join_after_original_a_drop().await?;
         self.require_original_execution()?;
-        Ok(JoinedOriginalA { joined, completion: prepared.completion })
+        Ok(JoinedOriginalA {
+            joined,
+            completion: prepared.completion,
+        })
     }
 
     async fn prepare_original_a(
@@ -134,10 +156,14 @@ impl OriginalPhaseExecution {
         let OriginalSameActorPhaseCommandV1::CompleteOriginalA(inputs) =
             host.receive_original(&self.context).await?
         else {
-            return Err(phase_refused("original A requires its independent terminal Outcome"));
+            return Err(phase_refused(
+                "original A requires its independent terminal Outcome",
+            ));
         };
         if !matches!(inputs.freeze.open_mode, CircuitQ24TaskOpenModeV1::Create) {
-            return Err(phase_refused("this fresh phase requires a new original Evaluator claim"));
+            return Err(phase_refused(
+                "this fresh phase requires a new original Evaluator claim",
+            ));
         }
         // Existing exact-A tickets may finish. No new request can be built or
         // queued, and no old ticket can later resolve to C.
@@ -145,42 +171,73 @@ impl OriginalPhaseExecution {
         SameActorTaskRoute::wait_original_a_quiescent(self.route.as_ref()).await?;
         self.require_original_execution()?;
         let status = OriginalCellQ24TaskLedgerProducerV1::submit_original_terminal_outcome(
-            &original.ledger, inputs.outcome, &inputs.signed,
-        ).map_err(phase_owner_error)?;
+            &original.ledger,
+            inputs.outcome,
+            &inputs.signed,
+        )
+        .map_err(phase_owner_error)?;
         if !matches!(status, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
-            return Err(phase_refused("original independent Outcome is not complete"));
+            return Err(phase_refused(
+                "original independent Outcome is not complete",
+            ));
         }
         self.require_original_execution()?;
-        let prepared = Arc::new(OriginalCellQ24TaskLedgerProducerV1::prepare_learning(
-            &original.ledger, inputs.preparation, inputs.history, inputs.freeze,
-        ).map_err(phase_owner_error)?);
+        let prepared = Arc::new(
+            OriginalCellQ24TaskLedgerProducerV1::prepare_learning(
+                &original.ledger,
+                inputs.preparation,
+                inputs.history,
+                inputs.freeze,
+            )
+            .map_err(phase_owner_error)?,
+        );
         self.require_original_execution()?;
         let retained = OriginalCellQ24TaskLedgerProducerV1::retained_learning_source(
-            &original.ledger, Arc::clone(&prepared), self.store.clone(),
-        ).await?;
+            &original.ledger,
+            Arc::clone(&prepared),
+            self.store.clone(),
+        )
+        .await?;
         self.require_original_execution()?;
         let completion = PublishedCircuitFeatureTaskV1::drain_completed_task(
-            &original.published, &original.cell, original.source.as_ref(), self.context.identity(),
+            &original.published,
+            &original.cell,
+            original.source.as_ref(),
+            self.context.identity(),
         )?;
         self.require_original_execution()?;
         let profile = CellQ24PreparedLearningV1::root_profile(
-            &prepared, self.context.identity(),
-            self.context.bootstrap().writer_proof.sha256()?.as_str()
+            &prepared,
+            self.context.identity(),
+            self.context
+                .bootstrap()
+                .writer_proof
+                .sha256()?
+                .as_str()
                 .parse::<codex_hepta_types::Digest32>()
                 .map_err(|error| phase_refused(&format!("original writer proof digest: {error}")))?
                 .into_array(),
-        ).map_err(phase_owner_error)?;
+        )
+        .map_err(phase_owner_error)?;
         host.notify_original(
             &self.context,
             OriginalSameActorPhaseEventV1::OriginalAPrepared {
-                prepared: Arc::clone(&prepared), profile: Box::new(profile),
+                prepared: Arc::clone(&prepared),
+                profile: Box::new(profile),
             },
         )?;
         let retirement = OriginalDaemonPhaseRetirement::begin_original_retirement(
-            Arc::clone(&self.context), prepared, retained, Duration::from_millis(500),
-        ).await?;
+            Arc::clone(&self.context),
+            prepared,
+            retained,
+            Duration::from_millis(500),
+        )
+        .await?;
         self.require_original_execution()?;
-        Ok(PreparedOriginalA { retirement, completion })
+        Ok(PreparedOriginalA {
+            retirement,
+            completion,
+        })
     }
 }
 
@@ -190,7 +247,10 @@ fn preserve_original_failure(
 ) -> Result<JoinedOriginalA, AgentdError> {
     match joined {
         Ok(()) => Err(error),
-        Err(join) => Err(phase_owner_error(OriginalAJoinFailure { original: error, join })),
+        Err(join) => Err(phase_owner_error(OriginalAJoinFailure {
+            original: error,
+            join,
+        })),
     }
 }
 

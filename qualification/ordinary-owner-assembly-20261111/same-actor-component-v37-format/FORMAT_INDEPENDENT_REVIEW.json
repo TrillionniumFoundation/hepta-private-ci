@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.v36.native-format.independent-full-source-review.v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "verdict": "No confirmed semantic blocker in the actual 76-file native formatter delta; this is not compiler/checker/test qualification.",
+  "source": {
+    "commit": "b4960fe4a0577bd69a5341934bb38cb2715601d8",
+    "tree": "fde23ee5f1f651023af2b6acb76d62cc049a9152"
+  },
+  "actual_attempt": {
+    "name": "ordinary-b4960fe-seven-final-v11",
+    "formatter_child_exit": 0,
+    "executor_exit": 1,
+    "reason": "source identity or bytes changed during execution",
+    "test_qualification_inherited": false,
+    "source_of_status": "Root's immutable native inventories; this review independently checks the actual complete native patch, not a new runtime execution"
+  },
+  "evidence": {
+    "complete_native_patch": {
+      "git": "3ce5cb2e8dff735ec5e0ad0ca174385c09ede675",
+      "bytes": 407063,
+      "sha256": "983ab97735ee06d4bff21a22660c443133720bda5ce93daad9ea7f527351d040"
+    },
+    "original_full_inventory": {
+      "git": "bf51066be9661aa5414c4290890223a0c850fc56",
+      "bytes": 39596,
+      "sha256": "12b692d55805a4712b9abf6f5e31d363272f97f018f94f8e3bef52570ee1ab80"
+    },
+    "corrected_complete_root_inventory": {
+      "git": "705a75d848290e994d95c75c27de8fd549fdf2d4",
+      "bytes": 40519,
+      "sha256": "365f7134c39dda93d1436734764ce6d4e7af98432b2a633a1318c2dd958356ab"
+    },
+    "detailed_independent_source_receipt": {
+      "git": "e44e12fde5493d2d3520c577e64aaeff69360b6e",
+      "bytes": 360931,
+      "sha256": "8841e883c9b69ecb02b6ebdd2db9c6b0acd7cef5a16a88e998ca634e88d252b7"
+    },
+    "parent_graph": "5258bab4e5b1adde40d2f010a1d811e5f22cfa27",
+    "earlier_first_13_source_review": {
+      "git": "8a528e51a76e5c98d9c177c74964bdae9eaba846",
+      "bytes": 13154,
+      "sha256": "0b1b4cfa7c0493b5be2866ad29b7f7948b4342c87cb415872fed7fd4333ae677"
+    },
+    "earlier_first_13_metadata_review": {
+      "git": "063aef85ceef8a6c8ca7bbbff5af905269e0c6aa",
+      "bytes": 19197,
+      "sha256": "38ecedcde4809407d30193d34e58254f84111b9bc63db7d047969ea92d7a2f84"
+    }
+  },
+  "scope": {
+    "actual_formatted_paths": 76,
+    "actual_full_index_hunks": 327,
+    "actual_postimage_bytes": 947234,
+    "product_paths": 70,
+    "test_paths": 6,
+    "prior_immutable_product_preimages_hash_rechecked": 70,
+    "newly_get_test_preimages": 6,
+    "independently_get_postimage_blobs": 13,
+    "additional_independently_reconstructed_postimages": 63,
+    "all_76_paths_preimage_equal_to_parent_graph": true,
+    "full_runtime_postimages_json_independently_read": false,
+    "no_h_or_remote_execution": true,
+    "no_native_or_formatter": true,
+    "no_original_checker_or_typed_helper_execution": true,
+    "no_source_or_ref_mutation": true
+  },
+  "reconstruction": {
+    "positioned_full_context_forward_reverse": true,
+    "all_old_and_new_full_git_ids": true,
+    "all_postimage_sha256_and_sizes": true,
+    "every_hunk_count_and_declared_line_position": true,
+    "exact_reverse_to_all_preimages": true,
+    "corrected_inventory_keeps_exact_same_76_path_pre_post_hashes": true,
+    "repeated_context_exception": {
+      "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "forward_hunks": [
+        {
+          "index": 0,
+          "line": 32,
+          "count": 11,
+          "context_occurrences": 2
+        },
+        {
+          "index": 1,
+          "line": 70,
+          "count": 11,
+          "context_occurrences": 2
+        }
+      ],
+      "reverse_hunks": [
+        {
+          "index": 0,
+          "line": 32,
+          "count": 7,
+          "context_occurrences": 2
+        },
+        {
+          "index": 1,
+          "line": 66,
+          "count": 7,
+          "context_occurrences": 2
+        }
+      ],
+      "conclusion": "Both positions are resolved by the actual hunk line coordinates, full file identity and exact reverse replay. The textual context is not naturally unique; this is not a blocker."
+    },
+    "provenance_limit": "Root reports all 76 postimages CREATE/GET in 705a75. This reviewer separately GET 13 and reconstructs the other 63 from the complete actual patch, validating each full postimage Git/SHA/size. These are deliberately different evidence claims."
+  },
+  "semantic_findings": [
+    {
+      "topic": "Whole-source tokens",
+      "finding": "All 76 complete bodies have equal token sequences after only the explicitly enumerated native formatting changes and attributed header-item reorderings. No unexplained token, literal, call, guard, return, await, ownership, Drop or assertion change remains."
+    },
+    {
+      "topic": "Imports and modules",
+      "finding": "15 files reorder use/pub use or external mod declarations. Complete item tokens, visibility and attached cfg/path/doc attributes remain equal, with the same non-declaration anchor. No moved item carries macro_use or changes its attached doc comment, and no item crosses executable/non-declaration source. These declarations introduce no runtime initializer or additional effect."
+    },
+    {
+      "topic": "Four path-literal order differences",
+      "paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+        "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/lib.rs"
+      ],
+      "finding": "The #[path] strings move with the same module names and original cfg attributes, including the explicit phase record path. A literal multiset alone was not used as proof."
+    },
+    {
+      "topic": "Closure and arm layout",
+      "finding": "11 single-tail-expression closure blocks are added and 3 removed; 4 single-tail-expression match-arm blocks are added. Each contains the exact original expression, no new binding, semicolon or jump. The original map_err/ok_or_else/spawn/is_some_and/is_ok_and bodies, two selection awaits, required-lane wait and assertion stay in place. Scope/capture and original guard ownership are not moved."
+    },
+    {
+      "topic": "Punctuation",
+      "finding": "Only actual optional trailing comma layouts, six nested generic layouts and the single nested Pending(Refused(format!())) alignment require token projection. All changed comma contexts were inspected; no one-element tuple conversion, argument/field permutation, operator change or type/receiver substitution is present."
+    },
+    {
+      "topic": "Safety and behavior",
+      "finding": "All original value tests, masks, deadline formulas, 500 ms freshness/budgets, absolute-end bounds, request-age accounting, authority/actor comparisons, effect checks, call order, named-owner declaration/drop order, field declaration order and error propagation remain as in the preimages. This review does not alter or newly prove the pre-existing phase design."
+    },
+    {
+      "topic": "Diagnostics",
+      "finding": "final_use_diagnostic preserves nested first-refusal propagation, the outer-only emission point, original guard/drop ordering, the 64-entry bound and error behavior. final_use_retained's two repeated hunks change layout only."
+    },
+    {
+      "topic": "Tests",
+      "finding": "Six actual test files are formatted. Function names and all assertion/refusal macro occurrences remain in order; no test is added, deleted, ignored or weakened by this delta. No tests were run in this review."
+    }
+  ],
+  "measurements": {
+    "exact_comment_sequence_count": 1016,
+    "unchanged_value_literal_count": 2288,
+    "function_name_count": 627,
+    "assertion_refusal_macro_count": 234,
+    "pure_whitespace_token_files": 21,
+    "other_layout_or_item_order_files": 55,
+    "body_punctuation_layout_files": 48,
+    "item_reordering_files": 15
+  },
+  "metadata_status": "Final CALLERS layout proposal 5259882c9ba162b2dfdb7ccbf5aceaf429cba950 and c8044259486e789b7ce3f079dd8fa17b36e78051 are being independently reviewed separately. This source review does not assert the original checker passed.",
+  "preserved_boundaries": {
+    "ordinary_business_loop": 0,
+    "independent_controller_C": 0,
+    "real_daemon_and_Root_cold_restart": 0,
+    "phase_completion_normal_return_ack_implemented": false,
+    "journal_task_drain_is_not_thread_join": true,
+    "completion_design": "68312097dd32f0aae6b81c4ac04d35dd08cfa5a2",
+    "A_wording_correction": "2b180dcd3554cebbdaa72068bebb7b11d58d61ee",
+    "future_CLI_excluded": true
+  },
+  "next_step": "Root may compose these exact native postimages with the separately reviewed precise CALLERS/allowlist update, freeze a new candidate and run the unchanged full qualification entry. V36 remains a retained failed formatting-drift attempt; no previous result is promoted or inherited."
+}

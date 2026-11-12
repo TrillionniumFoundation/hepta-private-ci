@@ -3,10 +3,10 @@
 //! Host data cannot set Ready, provide a completed receipt, revive a phase,
 //! authorize another principal, or attest an operating-system restart.
 
+use std::os::unix::net::UnixDatagram;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::os::unix::net::UnixDatagram;
 
 use codex_hepta_automation::BoundedCircuitDefinitionV2;
 use codex_hepta_automation::TaskFlowFence;
@@ -21,10 +21,10 @@ use tokio::sync::mpsc;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
-use crate::AgentdIdentity;
+use crate::AgentdGenerationUpdateAuthoritiesV1;
 use crate::AgentdGenerationUpdatePredecessorFilesV1;
 use crate::AgentdGenerationUpdateTargetV1;
-use crate::AgentdGenerationUpdateAuthoritiesV1;
+use crate::AgentdIdentity;
 use crate::AgentdSelectedGenerationV1;
 use crate::AgentdUnixFinalUseGrantProvider;
 use crate::CellQ24DatasetTaskV1;
@@ -42,11 +42,11 @@ use crate::CircuitTaskSourceReadbackV1;
 use crate::HostAuthorityLearningProfileV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellQ24LearningInputsV1;
+use crate::OriginalCellQ24SelectionInputsV1;
 use crate::OriginalCellQ24TaskDatasetFreezeInputsV1;
 use crate::OriginalCellQ24TaskLedgerInputsV1;
 use crate::OriginalCellQ24TaskLedgerProducerV1;
 use crate::OriginalCellQ24TaskLedgerStatusV1;
-use crate::OriginalCellQ24SelectionInputsV1;
 use crate::OriginalQ24SuccessorExecutionInputsV1;
 use crate::OriginalRootGenerationInitialV1;
 use crate::OriginalRootInitialFeatureTargetV1;
@@ -149,7 +149,10 @@ pub enum OriginalSameActorPhaseCommandV1 {
 /// These are observations, not Ready/admission capabilities or native test
 /// results. The real ordinary ingress still checks its own readiness.
 pub enum OriginalSameActorPhaseEventV1 {
-    InputsOpened { identity: Box<AgentdIdentity>, phase: String },
+    InputsOpened {
+        identity: Box<AgentdIdentity>,
+        phase: String,
+    },
     OriginalAOwnersInstalled,
     OriginalAPrepared {
         prepared: Arc<CellQ24PreparedLearningV1>,
@@ -165,7 +168,9 @@ pub enum OriginalSameActorPhaseEventV1 {
     },
     OriginalDecision(Box<LearningIterationSnapshotV1>),
     OriginalArtifactAvailable,
-    OriginalSelectionObserved { selection: Digest32 },
+    OriginalSelectionObserved {
+        selection: Digest32,
+    },
     OriginalCOwnersInstalled,
     OriginalCOutcomeAccepted(Box<OriginalCellQ24TaskLedgerStatusV1>),
 }
@@ -179,26 +184,38 @@ pub struct OriginalSameActorPhaseHostV1 {
 
 pub fn original_same_actor_phase_host_channel_v1(
     capacity: usize,
-) -> Result<(
-    mpsc::Sender<OriginalSameActorPhaseCommandV1>,
-    mpsc::Receiver<OriginalSameActorPhaseEventV1>,
-    OriginalSameActorPhaseHostV1,
-), AgentdError> {
+) -> Result<
+    (
+        mpsc::Sender<OriginalSameActorPhaseCommandV1>,
+        mpsc::Receiver<OriginalSameActorPhaseEventV1>,
+        OriginalSameActorPhaseHostV1,
+    ),
+    AgentdError,
+> {
     if !(1..=64).contains(&capacity) {
-        return Err(AgentdError::Invalid("original phase host capacity must be 1..64".into()));
+        return Err(AgentdError::Invalid(
+            "original phase host capacity must be 1..64".into(),
+        ));
     }
     let (send, commands) = mpsc::channel(capacity);
     let (events, receive) = mpsc::channel(capacity);
-    Ok((send, receive, OriginalSameActorPhaseHostV1 { commands, events }))
+    Ok((
+        send,
+        receive,
+        OriginalSameActorPhaseHostV1 { commands, events },
+    ))
 }
 
 impl OriginalSameActorPhaseHostV1 {
     pub(crate) fn notify_original(
-        &self, context: &OriginalSameActorRootContext, event: OriginalSameActorPhaseEventV1,
+        &self,
+        context: &OriginalSameActorRootContext,
+        event: OriginalSameActorPhaseEventV1,
     ) -> Result<(), AgentdError> {
         let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
         OriginalSameActorRootContext::require_current(&context)?;
-        self.events.try_send(event)
+        self.events
+            .try_send(event)
             .map_err(|_| phase_refused("original phase host notification lost"))?;
         OriginalSameActorRootContext::require_current(&context)?;
         closing.disarm();
@@ -206,14 +223,16 @@ impl OriginalSameActorPhaseHostV1 {
     }
 
     pub(crate) async fn receive_original(
-        &mut self, context: &OriginalSameActorRootContext,
+        &mut self,
+        context: &OriginalSameActorRootContext,
     ) -> Result<OriginalSameActorPhaseCommandV1, AgentdError> {
         let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
         OriginalSameActorRootContext::require_current(&context)?;
         let received = tokio::select! {
             _ = context.gate().cancelled() => return Err(phase_refused("original phase is closed")),
             received = self.commands.recv() => received,
-        }.ok_or_else(|| phase_refused("original phase host command stream closed"))?;
+        }
+        .ok_or_else(|| phase_refused("original phase host command stream closed"))?;
         OriginalSameActorRootContext::require_current(&context)?;
         closing.disarm();
         Ok(received)

@@ -156,7 +156,9 @@ impl OriginalCellQ24RetainedLearningSourceV1 {
         identity: &AgentdIdentity,
     ) -> Result<(), AgentdError> {
         if !Arc::ptr_eq(&self.prepared, prepared) || &self.producer.identity != identity {
-            return Err(refused("same-actor phase differs from its actual retained source"));
+            return Err(refused(
+                "same-actor phase differs from its actual retained source",
+            ));
         }
         self.read_original().await?;
         Ok(())

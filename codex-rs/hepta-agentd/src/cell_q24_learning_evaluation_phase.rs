@@ -26,9 +26,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             )
             .await?;
         OriginalSameActorLearningWork::wait_original_evaluation_installation(
-            phase,
-            snapshot,
-            &original,
+            phase, snapshot, &original,
         )
         .await?;
         closing.disarm();
@@ -40,13 +38,18 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         snapshot: &LearningIterationSnapshotV1,
         original: OriginalCellQ24EvaluationInputsV1,
     ) -> Result<(), Error> {
-        let phase = self.inner.same_actor_work.as_ref().ok_or(Error::WrongScope)?;
+        let phase = self
+            .inner
+            .same_actor_work
+            .as_ref()
+            .ok_or(Error::WrongScope)?;
         let mut closing = phase.original_failure_scope();
         OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(self, phase)?;
         self.inner.require_snapshot(snapshot)?;
         let installation =
             OriginalSameActorLearningWork::begin_original_evaluation_installation(phase, snapshot)?;
-        OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original).await?;
+        OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original)
+            .await?;
         // Installation retains the actual supplied inputs. The original
         // Evaluation complete path must still validate its independent roles,
         // signed evidence, holdout and complete costs before any B receipt.

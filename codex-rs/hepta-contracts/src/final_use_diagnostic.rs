@@ -76,11 +76,7 @@ impl RefusalScope {
     }
 }
 
-pub(crate) fn record(
-    stage: &'static str,
-    error: FinalUseError,
-    io_kind: Option<ErrorKind>,
-) {
+pub(crate) fn record(stage: &'static str, error: FinalUseError, io_kind: Option<ErrorKind>) {
     #[cfg(debug_assertions)]
     {
         let _ = CURRENT.try_with(|current| {
@@ -114,8 +110,7 @@ impl Drop for RefusalScope {
                 let active = current.replace(None);
                 if let Some(mut previous) = self.previous {
                     if previous.first_refusal.is_none() {
-                        previous.first_refusal =
-                            active.and_then(|scope| scope.first_refusal);
+                        previous.first_refusal = active.and_then(|scope| scope.first_refusal);
                     }
                     current.set(Some(previous));
                     None
@@ -131,11 +126,11 @@ impl Drop for RefusalScope {
             let Some(refusal) = active.first_refusal else {
                 return;
             };
-            let Ok(sequence) = EMITTED.fetch_update(
-                Ordering::Relaxed,
-                Ordering::Relaxed,
-                |count| (count < 64).then_some(count + 1),
-            ) else {
+            let Ok(sequence) =
+                EMITTED.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |count| {
+                    (count < 64).then_some(count + 1)
+                })
+            else {
                 return;
             };
             // Failure to write a diagnostic cannot replace the original error.

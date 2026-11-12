@@ -1,0 +1,3764 @@
+{
+  "schema": "hepta.v36.native-format.independent-final-metadata-detail.v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "65 exact whole-row substitutions directly from dbb7 to 525988; only actual native layout markers",
+  "base": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+  "post": {
+    "git": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+    "bytes": 890345,
+    "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+  },
+  "exact_ops": {
+    "git": "c8044259486e789b7ce3f079dd8fa17b36e78051",
+    "bytes": 257374,
+    "sha256": "46d7986a82f5ad89b5d380ebbbff4202b9d401d3bf6e5b9573101e79e95a8ac4"
+  },
+  "author_manifest": {
+    "git": "d6200bceef99c9b1233e3b0c9b5c97c983a99608",
+    "bytes": 7540,
+    "sha256": "e61846bea554cb060301c2e1a5c71c4dd5f13892e368459713fcf4e27bcf90e5"
+  },
+  "author_mapping": {
+    "git": "173f9c7c1830acade63ce01cc6ccd41603da06ca",
+    "bytes": 253834,
+    "sha256": "5debbfaf566ed2e540ccc65478dd33cadbfdf65bbff787fca644b292121dfda3"
+  },
+  "independent_source_review": {
+    "git": "d6f39ebde567629bebb1dce3a08221c320501eba",
+    "bytes": 8790,
+    "sha256": "a6b1f322811be349bc7b0ece9e4c9311ecf9fb0af7b3bd51e8006dca7834e3d1"
+  },
+  "positioned_replay_and_structure": {
+    "steps": [
+      {
+        "index": 0,
+        "scope": "boundary:root_q24_factory_serve_original",
+        "old_bytes": 620,
+        "new_bytes": 650,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 1,
+        "scope": "boundary:q24_same_actor_learning_terminal_join",
+        "old_bytes": 722,
+        "new_bytes": 750,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 2,
+        "scope": "boundary:q24_same_actor_evaluation_install_complete",
+        "old_bytes": 640,
+        "new_bytes": 654,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 3,
+        "scope": "boundary:q24_same_actor_evaluation_aggregate_install",
+        "old_bytes": 682,
+        "new_bytes": 696,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 4,
+        "scope": "boundary:root_same_actor_phase_start",
+        "old_bytes": 409,
+        "new_bytes": 437,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 5,
+        "scope": "boundary:root_same_actor_durable_claim",
+        "old_bytes": 508,
+        "new_bytes": 536,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 6,
+        "scope": "boundary:root_same_actor_durable_scope",
+        "old_bytes": 517,
+        "new_bytes": 565,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 7,
+        "scope": "boundary:root_same_actor_initial_register",
+        "old_bytes": 475,
+        "new_bytes": 503,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 8,
+        "scope": "boundary:root_same_actor_publication_register",
+        "old_bytes": 491,
+        "new_bytes": 519,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 9,
+        "scope": "boundary:root_same_actor_scope_register",
+        "old_bytes": 491,
+        "new_bytes": 505,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 10,
+        "scope": "boundary:root_same_actor_join_accept",
+        "old_bytes": 430,
+        "new_bytes": 498,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 11,
+        "scope": "boundary:root_same_actor_learning_reserve",
+        "old_bytes": 637,
+        "new_bytes": 695,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 12,
+        "scope": "boundary:root_same_actor_ticket_session",
+        "old_bytes": 491,
+        "new_bytes": 527,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 13,
+        "scope": "boundary:root_same_actor_scoped_stream",
+        "old_bytes": 439,
+        "new_bytes": 465,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 14,
+        "scope": "protected:2",
+        "old_bytes": 5226,
+        "new_bytes": 5286,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 15,
+        "scope": "protected:152",
+        "old_bytes": 4223,
+        "new_bytes": 4431,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 16,
+        "scope": "protected:235",
+        "old_bytes": 3998,
+        "new_bytes": 4193,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 17,
+        "scope": "protected:236",
+        "old_bytes": 1007,
+        "new_bytes": 1033,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 18,
+        "scope": "protected:265",
+        "old_bytes": 1460,
+        "new_bytes": 1460,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 19,
+        "scope": "protected:266",
+        "old_bytes": 1846,
+        "new_bytes": 1937,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 20,
+        "scope": "protected:267",
+        "old_bytes": 1472,
+        "new_bytes": 1500,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 21,
+        "scope": "protected:319",
+        "old_bytes": 1239,
+        "new_bytes": 1304,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 22,
+        "scope": "protected:320",
+        "old_bytes": 1880,
+        "new_bytes": 1983,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 23,
+        "scope": "protected:368",
+        "old_bytes": 4748,
+        "new_bytes": 4812,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 24,
+        "scope": "protected:370",
+        "old_bytes": 6826,
+        "new_bytes": 6882,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 25,
+        "scope": "protected:371",
+        "old_bytes": 4635,
+        "new_bytes": 4657,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 26,
+        "scope": "protected:374",
+        "old_bytes": 2712,
+        "new_bytes": 3091,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 27,
+        "scope": "protected:375",
+        "old_bytes": 5026,
+        "new_bytes": 5054,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 28,
+        "scope": "protected:377",
+        "old_bytes": 2793,
+        "new_bytes": 2807,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 29,
+        "scope": "protected:379",
+        "old_bytes": 1901,
+        "new_bytes": 1980,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 30,
+        "scope": "protected:381",
+        "old_bytes": 2214,
+        "new_bytes": 2242,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 31,
+        "scope": "protected:383",
+        "old_bytes": 1602,
+        "new_bytes": 1629,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 32,
+        "scope": "protected:384",
+        "old_bytes": 1861,
+        "new_bytes": 1948,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 33,
+        "scope": "protected:385",
+        "old_bytes": 963,
+        "new_bytes": 1276,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 34,
+        "scope": "protected:388",
+        "old_bytes": 1039,
+        "new_bytes": 1090,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 35,
+        "scope": "protected:389",
+        "old_bytes": 5566,
+        "new_bytes": 5644,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 36,
+        "scope": "protected:390",
+        "old_bytes": 1588,
+        "new_bytes": 1658,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 37,
+        "scope": "protected:395",
+        "old_bytes": 2251,
+        "new_bytes": 2359,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 38,
+        "scope": "protected:396",
+        "old_bytes": 1520,
+        "new_bytes": 1660,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 39,
+        "scope": "protected:399",
+        "old_bytes": 1221,
+        "new_bytes": 1257,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 40,
+        "scope": "protected:400",
+        "old_bytes": 1069,
+        "new_bytes": 1173,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 41,
+        "scope": "protected:401",
+        "old_bytes": 697,
+        "new_bytes": 779,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 42,
+        "scope": "protected:402",
+        "old_bytes": 705,
+        "new_bytes": 787,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 43,
+        "scope": "protected:403",
+        "old_bytes": 530,
+        "new_bytes": 580,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 44,
+        "scope": "protected:404",
+        "old_bytes": 1670,
+        "new_bytes": 1712,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 45,
+        "scope": "protected:406",
+        "old_bytes": 1036,
+        "new_bytes": 1076,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 46,
+        "scope": "protected:407",
+        "old_bytes": 4421,
+        "new_bytes": 4735,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 47,
+        "scope": "protected:408",
+        "old_bytes": 1870,
+        "new_bytes": 1970,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 48,
+        "scope": "protected:409",
+        "old_bytes": 1262,
+        "new_bytes": 1280,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 49,
+        "scope": "protected:410",
+        "old_bytes": 2667,
+        "new_bytes": 2777,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 50,
+        "scope": "protected:411",
+        "old_bytes": 1097,
+        "new_bytes": 1181,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 51,
+        "scope": "protected:412",
+        "old_bytes": 2266,
+        "new_bytes": 2512,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 52,
+        "scope": "protected:413",
+        "old_bytes": 592,
+        "new_bytes": 620,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 53,
+        "scope": "protected:414",
+        "old_bytes": 967,
+        "new_bytes": 1089,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 54,
+        "scope": "protected:415",
+        "old_bytes": 1407,
+        "new_bytes": 1491,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 55,
+        "scope": "protected:417",
+        "old_bytes": 1172,
+        "new_bytes": 1234,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 56,
+        "scope": "protected:418",
+        "old_bytes": 1076,
+        "new_bytes": 1160,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 57,
+        "scope": "protected:419",
+        "old_bytes": 1650,
+        "new_bytes": 1705,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 58,
+        "scope": "protected:421",
+        "old_bytes": 463,
+        "new_bytes": 578,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 59,
+        "scope": "protected:423",
+        "old_bytes": 1246,
+        "new_bytes": 1260,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 60,
+        "scope": "protected:424",
+        "old_bytes": 2883,
+        "new_bytes": 3046,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 61,
+        "scope": "protected:428",
+        "old_bytes": 1453,
+        "new_bytes": 1497,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 62,
+        "scope": "protected:430",
+        "old_bytes": 1094,
+        "new_bytes": 1138,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 63,
+        "scope": "protected:432",
+        "old_bytes": 1019,
+        "new_bytes": 1085,
+        "unique_forward": true,
+        "unique_reverse": true
+      },
+      {
+        "index": 64,
+        "scope": "protected:434",
+        "old_bytes": 941,
+        "new_bytes": 978,
+        "unique_forward": true,
+        "unique_reverse": true
+      }
+    ],
+    "reverse_exact": true,
+    "post_exact": true,
+    "base": {
+      "git": "dbb7b66239f5425f68d2b8ffc1ed6952680ea5a0",
+      "bytes": 885351,
+      "sha256": "1be3a2478aacfd7bfaa4bf63f96fb2a3202097aa470c0ddcf12260975adb91b4"
+    },
+    "post": {
+      "git": "5259882c9ba162b2dfdb7ccbf5aceaf429cba950",
+      "bytes": 890345,
+      "sha256": "9f4b62111b5cbf7c632fa4bb47f0253165bc0a64a783af2ac1e976405d3473da"
+    },
+    "rows": [
+      {
+        "row": 4,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "diff": [
+          {
+            "field": "required_function_order[3].sequence[1]",
+            "old": "self.exchange(Command::Restore",
+            "new": "self\n            .exchange(Command::Restore",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[3]",
+            "old": "scope\n                            .validate_snapshot(&snapshot)",
+            "new": "scope\n                                .validate_snapshot(&snapshot)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[5]",
+            "old": "self.exchange(command",
+            "new": "self\n            .exchange(command",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[9].sequence[4]",
+            "old": "let result = self.exchange(Command::Restore",
+            "new": "let result = self\n            .exchange(Command::Restore",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[10].sequence[8]",
+            "old": "let result = self.exchange(command",
+            "new": "let result = self\n            .exchange(command",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 331,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "self, config, registration, owner_pidfd, &profile,",
+            "new": "self,\n            config,\n            registration,\n            owner_pidfd,\n            &profile,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[2]",
+            "old": "self, config, registration, owner_pidfd, profile,",
+            "new": "self,\n            config,\n            registration,\n            owner_pidfd,\n            profile,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[1]",
+            "old": "config, registration, owner_pidfd, profile, None,",
+            "new": "config,\n            registration,\n            owner_pidfd,\n            profile,\n            None,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[6].sequence[1]",
+            "old": "config, registration, owner_pidfd, profile, None,",
+            "new": "config,\n            registration,\n            owner_pidfd,\n            profile,\n            None,",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 482,
+        "kind": "boundary",
+        "key": "root_q24_factory_serve_original",
+        "diff": [
+          {
+            "field": "definition_markers[2]",
+            "old": "self.with_learning_profile(",
+            "new": "self\n                    .with_learning_profile(",
+            "whitespace_only": true
+          },
+          {
+            "field": "definition_markers[3]",
+            "old": "factory\n                                .store\n                                .compare_and_set(",
+            "new": "factory\n                                    .store\n                                    .compare_and_set(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 493,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[1]",
+            "old": "config, registration, owner_pidfd, learning, reservation, None,",
+            "new": "config,\n            registration,\n            owner_pidfd,\n            learning,\n            reservation,\n            None,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[2]",
+            "old": "self, config, registration, owner_pidfd, learning, reservation,",
+            "new": "self,\n            config,\n            registration,\n            owner_pidfd,\n            learning,\n            reservation,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[1]",
+            "old": "config, registration, owner_pidfd, learning, reservation, None,",
+            "new": "config,\n            registration,\n            owner_pidfd,\n            learning,\n            reservation,\n            None,",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 494,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "diff": [
+          {
+            "field": "required_order[0][3]",
+            "old": "self.with_learning_profile(",
+            "new": "self\n                    .with_learning_profile(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_order[0][6]",
+            "old": "next_request_id\n                            .checked_add(1)",
+            "new": "next_request_id\n                                .checked_add(1)",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 633,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[1]",
+            "old": "config, registration, owner, learning, inputs, None,",
+            "new": "config, registration, owner, learning, inputs, None)",
+            "whitespace_only": false
+          }
+        ]
+      },
+      {
+        "row": 634,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[5]",
+            "old": "slot, learning, config, registration, pin, channel, sequence, None,",
+            "new": "slot,\n            learning,\n            config,\n            registration,\n            pin,\n            channel,\n            sequence,\n            None,",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 635,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+        "diff": [
+          {
+            "field": "required[6]",
+            "old": "learning\n                    .backend\n                    .restore(&initial.request)",
+            "new": "learning\n                .backend\n                .restore(&initial.request)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[4]",
+            "old": "&self.service, &self.config, &self.registration, &self.owner_pidfd, learning,",
+            "new": "&self.service,\n            &self.config,\n            &self.registration,\n            &self.owner_pidfd,\n            learning,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[2]",
+            "old": "let before = learning\n                    .backend\n                    .restore(",
+            "new": "let before = learning\n                .backend\n                .restore(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[4]",
+            "old": "learning\n                    .backend\n                    .restore(&initial.request)",
+            "new": "learning\n                .backend\n                .restore(&initial.request)",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 771,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[1]",
+            "old": "config, registration, owner, deployment, inputs, None,",
+            "new": "config,\n            registration,\n            owner,\n            deployment,\n            inputs,\n            None,",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 772,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[4]",
+            "old": "self.serve_initial_original_channel(slot, config, registration, pin, channel, sequence, None)",
+            "new": "self.serve_initial_original_channel(\n            slot,\n            config,\n            registration,\n            pin,\n            channel,\n            sequence,\n            None,\n        )",
+            "whitespace_only": false
+          }
+        ]
+      },
+      {
+        "row": 876,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+        "diff": [
+          {
+            "field": "required_function_order[4].sequence[2]",
+            "old": "self.channel.try_lock()",
+            "new": "self\n            .channel\n            .try_lock()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[13]",
+            "old": "self.root.check(deadline)",
+            "new": "self.root\n                .check(deadline)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[21]",
+            "old": "self.root.check(deadline)",
+            "new": "self.root\n                .check(deadline)",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 892,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+        "diff": [
+          {
+            "field": "required_function_order[2].sequence[3]",
+            "old": "handle.require_direct_original_handle().map_err(task_error)?",
+            "new": "handle\n            .require_direct_original_handle()\n            .map_err(task_error)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[9].sequence[5]",
+            "old": "state.tickets.saturating_add(work)",
+            "new": "state\n            .tickets\n            .saturating_add(work)",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 893,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+        "diff": [
+          {
+            "field": "required_function_order[4].sequence[14]",
+            "old": "CircuitTaskLearningPendingV1::Refused(format!(",
+            "new": "CircuitTaskLearningPendingV1::Refused(\n                    format!(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 898,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[5]",
+            "old": "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)",
+            "new": "Self::capture_original_phase(\n            original,\n            config,\n            deadline,\n            current_directory,\n            initial,\n            model,\n        )",
+            "whitespace_only": false
+          },
+          {
+            "field": "required_function_order[1].sequence[4]",
+            "old": "config_file, registration_file, owner_pidfd",
+            "new": "config_file,\n            registration_file,\n            owner_pidfd",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[5]",
+            "old": ").await?",
+            "new": ")\n        .await?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[6]",
+            "old": "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)",
+            "new": "Self::capture_original_phase(\n            original,\n            config,\n            deadline,\n            current_directory,\n            initial,\n            model,\n        )",
+            "whitespace_only": false
+          },
+          {
+            "field": "required_function_order[2].sequence[11]",
+            "old": "original.service.bind_original_same_actor_phase_issuer(&gate)?",
+            "new": "original\n            .service\n            .bind_original_same_actor_phase_issuer(&gate)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[17]",
+            "old": "Arc::clone(&current_directory), phase_identity.clone()",
+            "new": "Arc::clone(&current_directory),\n                    phase_identity.clone()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[27]",
+            "old": "Ok(Self { original, gate, record, descriptor, model, scope, start: Some(start), closing })",
+            "new": "Ok(Self {\n            original,\n            gate,\n            record,\n            descriptor,\n            model,\n            scope,\n            start: Some(start),\n            closing,\n        })",
+            "whitespace_only": false
+          }
+        ]
+      },
+      {
+        "row": 910,
+        "kind": "boundary",
+        "key": "q24_same_actor_learning_terminal_join",
+        "diff": [
+          {
+            "field": "definition_markers[3]",
+            "old": "self.jobs.close_and_join().await",
+            "new": "self.jobs\n            .close_and_join()\n            .await",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 923,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+        "diff": [
+          {
+            "field": "required_function_order[5].sequence[2]",
+            "old": "self.gate.require_open().map_err(|_| Error::CommitUncertain)?",
+            "new": "self.gate\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 925,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[2]",
+            "old": "self.in_lane(",
+            "new": "self\n            .in_lane(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 927,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[3]",
+            "old": "original.require_original_same_actor_work(phase)",
+            "new": "original\n            .require_original_same_actor_work(phase)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[10]",
+            "old": "LearningIterationCommandV1 { mode, request, mut response }",
+            "new": "LearningIterationCommandV1 {\n                mode,\n                request,\n                mut response,\n            }",
+            "whitespace_only": false
+          }
+        ]
+      },
+      {
+        "row": 929,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+        "diff": [
+          {
+            "field": "required_function_order[2].sequence[5]",
+            "old": "self.delivery.run(",
+            "new": "self\n            .delivery\n            .run(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 931,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+        "diff": [
+          {
+            "field": "required[1]",
+            "old": "same_actor_work: Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>",
+            "new": "same_actor_work:\n        Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[3]",
+            "old": "self.open_original_same_actor_generation(original, phase).await?",
+            "new": "self.open_original_same_actor_generation(original, phase)\n                .await?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 932,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "diff": [
+          {
+            "field": "required[1]",
+            "old": "same_actor_work: Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>",
+            "new": "same_actor_work:\n        Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_order[0][1]",
+            "old": "self.same_actor_work.as_ref().map(|phase| phase.original_failure_scope())",
+            "new": "self\n            .same_actor_work\n            .as_ref()\n            .map(|phase| phase.original_failure_scope())",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[1]",
+            "old": "return self.execute_original_same_actor_training(dataset, cancellation, phase).await",
+            "new": "return self\n                .execute_original_same_actor_training(dataset, cancellation, phase)\n                .await",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 933,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[7]",
+            "old": "factory, trainer, &inner.dataset_cut, &inputs, snapshot, phase,",
+            "new": "factory,\n                            trainer,\n                            &inner.dataset_cut,\n                            &inputs,\n                            snapshot,\n                            phase,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[10]",
+            "old": "factory, trainer, &inner.dataset_cut, &inputs, snapshot,",
+            "new": "factory,\n                            trainer,\n                            &inner.dataset_cut,\n                            &inputs,\n                            snapshot,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[11]",
+            "old": "result.map(|(receipt, signed)| (receipt, Some(signed))).map_err(unavailable)",
+            "new": "result\n                        .map(|(receipt, signed)| (receipt, Some(signed)))\n                        .map_err(unavailable)",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 936,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+        "diff": [
+          {
+            "field": "required[1]",
+            "old": "learning_work: OnceLock<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>",
+            "new": "learning_work:\n        OnceLock<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[4]",
+            "old": "state.tickets.saturating_add(work).saturating_add(",
+            "new": "state\n            .tickets\n            .saturating_add(work)\n            .saturating_add(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 941,
+        "kind": "boundary",
+        "key": "q24_same_actor_evaluation_install_complete",
+        "diff": [
+          {
+            "field": "definition_markers[2]",
+            "old": "self.evaluation.complete_installation(snapshot, installation)",
+            "new": "self.evaluation\n            .complete_installation(snapshot, installation)",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 943,
+        "kind": "boundary",
+        "key": "q24_same_actor_evaluation_aggregate_install",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original).await?",
+            "new": "OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original)\n            .await?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 945,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+        "diff": [
+          {
+            "field": "required_function_order[4].sequence[2]",
+            "old": "self.evaluation.complete_installation(snapshot, installation)",
+            "new": "self.evaluation\n            .complete_installation(snapshot, installation)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[6].sequence[0]",
+            "old": "self.gate.require_open().map_err(|_| Error::CommitUncertain)?",
+            "new": "self.gate\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[9].sequence[1]",
+            "old": "self.gate.require_open().map_err(|_| Error::CommitUncertain)?",
+            "new": "self.gate\n                .require_open()\n                .map_err(|_| Error::CommitUncertain)?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 946,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[0]",
+            "old": "self.inner.same_actor_work.as_ref().ok_or(Error::WrongScope)?",
+            "new": "self\n            .inner\n            .same_actor_work\n            .as_ref()\n            .ok_or(Error::WrongScope)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[6]",
+            "old": "OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original).await?",
+            "new": "OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original)\n            .await?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 953,
+        "kind": "boundary",
+        "key": "root_same_actor_phase_start",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "self.start.take()",
+            "new": "self\n            .start\n            .take()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 961,
+        "kind": "boundary",
+        "key": "root_same_actor_durable_claim",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "self.expected.take()",
+            "new": "self\n            .expected\n            .take()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 962,
+        "kind": "boundary",
+        "key": "root_same_actor_durable_scope",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "state: PhaseState::Scoped { claim: claim.clone(), factory }",
+            "new": "state: PhaseState::Scoped {\n                claim: claim.clone(),\n                factory,\n            }",
+            "whitespace_only": false
+          }
+        ]
+      },
+      {
+        "row": 966,
+        "kind": "boundary",
+        "key": "root_same_actor_initial_register",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "self.original.sender.try_send(",
+            "new": "self.original\n            .sender\n            .try_send(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 968,
+        "kind": "boundary",
+        "key": "root_same_actor_publication_register",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "self.original.sender.try_send(",
+            "new": "self.original\n            .sender\n            .try_send(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 969,
+        "kind": "boundary",
+        "key": "root_same_actor_scope_register",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "self.sender.try_send(ScopeSubmission",
+            "new": "self.sender\n            .try_send(ScopeSubmission",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 970,
+        "kind": "boundary",
+        "key": "root_same_actor_join_accept",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "retirement.state.compare_exchange(",
+            "new": "retirement\n                                .state\n                                .compare_exchange(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 975,
+        "kind": "boundary",
+        "key": "root_same_actor_learning_reserve",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>",
+            "new": "phase: Option<\n            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<\n                '_,\n            >,\n        >",
+            "whitespace_only": false
+          }
+        ]
+      },
+      {
+        "row": 1003,
+        "kind": "boundary",
+        "key": "root_same_actor_ticket_session",
+        "diff": [
+          {
+            "field": "definition_markers[2]",
+            "old": "self.consumed.compare_exchange(",
+            "new": "self\n                .consumed\n                .compare_exchange(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1008,
+        "kind": "boundary",
+        "key": "root_same_actor_scoped_stream",
+        "diff": [
+          {
+            "field": "definition_markers[1]",
+            "old": "gate.deadline().instant(), gate, None,",
+            "new": "gate.deadline().instant(),\n            gate,\n            None,",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1033,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+        "diff": [
+          {
+            "field": "required_function_order[3].sequence[0]",
+            "old": "self.state.lock()",
+            "new": "self\n                .state\n                .lock()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[2]",
+            "old": "state.active.checked_add(1)",
+            "new": "state\n                .active\n                .checked_add(1)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[1]",
+            "old": "self.state.lock()",
+            "new": "self\n                .state\n                .lock()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1034,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[0]",
+            "old": "self.expected.take()",
+            "new": "self\n            .expected\n            .take()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[5]",
+            "old": "self.store.compare_and_set(&self.owner, &before, &next)",
+            "new": "self.store\n            .compare_and_set(&self.owner, &before, &next)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[0]",
+            "old": "self.expected.take()",
+            "new": "self\n            .expected\n            .take()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[5]",
+            "old": "self.store.compare_and_set(&self.owner, &before, &next)",
+            "new": "self.store\n            .compare_and_set(&self.owner, &before, &next)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[0]",
+            "old": "self.expected.as_ref()",
+            "new": "self\n            .expected\n            .as_ref()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[0]",
+            "old": "self.expected.as_ref()",
+            "new": "self\n            .expected\n            .as_ref()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1037,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[4]",
+            "old": "self.current.try_lock()",
+            "new": "self\n                .current\n                .try_lock()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1038,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+        "diff": [
+          {
+            "field": "required_function_order[2].sequence[6]",
+            "old": "channel.exchange(",
+            "new": "channel\n            .exchange(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[8]",
+            "old": "service.with_learning_profile(",
+            "new": "service\n                    .with_learning_profile(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[10]",
+            "old": "retirement.state.compare_exchange(",
+            "new": "retirement\n                                .state\n                                .compare_exchange(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1039,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[3]",
+            "old": "self.original.phase.compare_exchange(",
+            "new": "self\n                .original\n                .phase\n                .compare_exchange(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[4]",
+            "old": "self.original.sender.try_send(",
+            "new": "self.original\n            .sender\n            .try_send(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1040,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[3]",
+            "old": "self.original.phase.compare_exchange(",
+            "new": "self\n                .original\n                .phase\n                .compare_exchange(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[4]",
+            "old": "self.original.sender.try_send(",
+            "new": "self.original\n            .sender\n            .try_send(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1041,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "self.phase.compare_exchange(",
+            "new": "self\n                .phase\n                .compare_exchange(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[3]",
+            "old": "self.sender.try_send(ScopeSubmission",
+            "new": "self.sender\n            .try_send(ScopeSubmission",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1042,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[16]",
+            "old": "first.join()",
+            "new": "first\n            .join()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[17]",
+            "old": "scoped.join()",
+            "new": "scoped\n            .join()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[18]",
+            "old": "watcher.join()",
+            "new": "watcher\n            .join()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1044,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[19]",
+            "old": "ready.try_send(())",
+            "new": "ready\n                    .try_send(())",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[21]",
+            "old": "registration.join()",
+            "new": "registration\n                .join()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1045,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "Ok(Self { instant, boottime_ns })",
+            "new": "Ok(Self {\n            instant,\n            boottime_ns,\n        })",
+            "whitespace_only": false
+          },
+          {
+            "field": "required_function_order[1].sequence[2]",
+            "old": "self.instant.checked_add(lifetime)",
+            "new": "self\n            .instant\n            .checked_add(lifetime)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[3]",
+            "old": "self.boottime_ns.checked_add(",
+            "new": "self\n            .boottime_ns\n            .checked_add(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[3]",
+            "old": "self.boottime_ns.checked_sub(now)",
+            "new": "self\n            .boottime_ns\n            .checked_sub(now)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[5].sequence[1]",
+            "old": "self.scoped_consumed.compare_exchange(",
+            "new": "self\n            .scoped_consumed\n            .compare_exchange(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[5].sequence[5]",
+            "old": "prepared.require_profile(",
+            "new": "prepared\n            .require_profile(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[6].sequence[7]",
+            "old": "receiver.instant, receiver.boottime_ns, descriptor.original.root_end_boottime_ns",
+            "new": "receiver.instant,\n            receiver.boottime_ns,\n            descriptor.original.root_end_boottime_ns",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[6].sequence[16]",
+            "old": "root_pidfd.try_clone()?, timeout, receiver.boottime_ns, trust, Arc::clone(&gate)",
+            "new": "root_pidfd.try_clone()?,\n        timeout,\n        receiver.boottime_ns,\n        trust,\n        Arc::clone(&gate)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[6].sequence[20]",
+            "old": "issuer, bundle.root.pid, root_pidfd.try_clone()?, timeout, end,",
+            "new": "issuer,\n                bundle.root.pid,\n                root_pidfd.try_clone()?,\n                timeout,\n                end,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[6].sequence[23]",
+            "old": "into_protected_inputs(bundle.checkpoint.clone()).await",
+            "new": "into_protected_inputs(bundle.checkpoint.clone())\n    .await",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[6].sequence[26]",
+            "old": "session.activate_original_phase_final_use_owners(",
+            "new": "session\n        .activate_original_phase_final_use_owners(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[8].sequence[9]",
+            "old": "}).await",
+            "new": "})\n    .await",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1046,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[3]",
+            "old": "self.accepted.compare_exchange(false, true",
+            "new": "self\n                .accepted\n                .compare_exchange(false, true",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[3]",
+            "old": "require_same_actor_phase_prepared(&prepared, context.identity()).await?",
+            "new": "require_same_actor_phase_prepared(&prepared, context.identity())\n                .await?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[7]",
+            "old": "require_same_actor_phase_prepared(&prepared, context.identity()).await?",
+            "new": "require_same_actor_phase_prepared(&prepared, context.identity())\n                .await?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[1]",
+            "old": "require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?",
+            "new": "require_same_actor_phase_prepared(&self.prepared, self.context.identity())\n            .await?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[3]",
+            "old": "require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?",
+            "new": "require_same_actor_phase_prepared(&self.prepared, self.context.identity())\n            .await?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1047,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "START_FRAME, 3",
+            "new": "START_FRAME,\n        3",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[5]",
+            "old": "SCOPED_FRAME, 7",
+            "new": "SCOPED_FRAME,\n        7",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1048,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[3]",
+            "old": "self.consumed.compare_exchange(",
+            "new": "self\n                .consumed\n                .compare_exchange(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[8]",
+            "old": "prepared.require_initial(&initial, &scope)",
+            "new": "prepared\n                .require_initial(&initial, &scope)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[10]",
+            "old": "client.restore(&initial.request).await",
+            "new": "client\n                .restore(&initial.request)\n                .await",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[4].sequence[4]",
+            "old": "bundle.profile.require_files(&handoff.journal, &handoff.witness)?",
+            "new": "bundle\n        .profile\n        .require_files(&handoff.journal, &handoff.witness)?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1049,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[1]",
+            "old": "session.require_original_same_actor_phase_origin(phase)",
+            "new": "session\n            .require_original_same_actor_phase_origin(phase)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[0]",
+            "old": "phase.require_open()",
+            "new": "phase\n            .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[1]",
+            "old": "self.phase.as_ref().is_some_and(|original| Arc::ptr_eq(original, phase))",
+            "new": "self\n            .phase\n            .as_ref()\n            .is_some_and(|original| Arc::ptr_eq(original, phase))",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[3]",
+            "old": "phase.require_open()",
+            "new": "phase\n            .require_open()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1050,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "phase.require_open()",
+            "new": "phase\n                .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[5]",
+            "old": "phase.retain_original_stream(&stream)",
+            "new": "phase\n                .retain_original_stream(&stream)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[10]",
+            "old": "phase.require_open()",
+            "new": "phase\n                .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[2]",
+            "old": "phase.require_open()",
+            "new": "phase\n            .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[2]",
+            "old": "self.live.phase.as_ref().ok_or(",
+            "new": "self\n                .live\n                .phase\n                .as_ref()\n                .ok_or(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[3]",
+            "old": "phase.require_open()",
+            "new": "phase\n                .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[5]",
+            "old": "phase.require_open()",
+            "new": "phase\n                .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[0]",
+            "old": "self.live.phase.as_ref().is_some_and(|original| Arc::ptr_eq(original, phase))",
+            "new": "self\n            .live\n            .phase\n            .as_ref()\n            .is_some_and(|original| Arc::ptr_eq(original, phase))",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[3].sequence[2]",
+            "old": "phase.require_open()",
+            "new": "phase\n            .require_open()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1051,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[0]",
+            "old": "phase.retain_required_original_stream(&stream)",
+            "new": "phase\n            .retain_required_original_stream(&stream)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "end.checked_duration_since(Instant::now())",
+            "new": "end\n            .checked_duration_since(Instant::now())",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1052,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+        "diff": [
+          {
+            "field": "required_order[0][2]",
+            "old": "phase.require_open()",
+            "new": "phase\n                .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_order[0][13]",
+            "old": "phase.require_open()",
+            "new": "phase\n                    .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_order[0][16]",
+            "old": "phase.require_open()",
+            "new": "phase\n                        .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[3]",
+            "old": "self.stream.get_mut()",
+            "new": "self\n            .stream\n            .get_mut()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[4]",
+            "old": "gate.retain_required_original_stream(stream)",
+            "new": "gate\n            .retain_required_original_stream(stream)",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[5]",
+            "old": "phase.require_open()",
+            "new": "phase\n            .require_open()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1053,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[1]",
+            "old": "gate.deadline().instant(), gate, Some(retirement),",
+            "new": "gate.deadline().instant(),\n            gate,\n            Some(retirement),",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[1]",
+            "old": "gate.deadline().instant(), gate, None,",
+            "new": "gate.deadline().instant(),\n            gate,\n            None,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[3]",
+            "old": "end.checked_duration_since(Instant::now())",
+            "new": "end\n            .checked_duration_since(Instant::now())",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[2].sequence[11]",
+            "old": "retirement.require_original_gate(gate)",
+            "new": "retirement\n                .require_original_gate(gate)",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1055,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "self.context.session().require_original_same_actor_phase(gate)?",
+            "new": "self.context\n            .session()\n            .require_original_same_actor_phase(gate)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[3]",
+            "old": "self.slot.require_open()",
+            "new": "self.slot\n            .require_open()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[6]",
+            "old": "learning.prepare_original_successor_context(identity, session, &slot).await?",
+            "new": "learning\n        .prepare_original_successor_context(identity, session, &slot)\n        .await?",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1056,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[2]",
+            "old": "self.original.owners.require_original_same_actor_work(&work)?",
+            "new": "self.original\n                .owners\n                .require_original_same_actor_work(&work)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[6]",
+            "old": "owners.with_original_publication(",
+            "new": "owners\n                .with_original_publication(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[8]",
+            "old": "effect_gate.require_open()",
+            "new": "effect_gate\n                            .require_open()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1057,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[10]",
+            "old": "start.finish(inputs.lifetime)?",
+            "new": "start\n            .finish(inputs.lifetime)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[14]",
+            "old": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+            "new": "crate::AgentdRootProductionInputs::take_generation_publication_connection(\n                    &mut root,\n                )?",
+            "whitespace_only": false
+          }
+        ]
+      },
+      {
+        "row": 1059,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[0]",
+            "old": "let Self { context, route, owners, authorities, scoped, mut host, _closing } = self",
+            "new": "let Self {\n            context,\n            route,\n            owners,\n            authorities,\n            scoped,\n            mut host,\n            _closing,\n        } = self",
+            "whitespace_only": false
+          },
+          {
+            "field": "required_function_order[0].sequence[4]",
+            "old": "execution.run_original_scoped(",
+            "new": "execution\n            .run_original_scoped(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1061,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[9]",
+            "old": "self.run_original_activated(",
+            "new": "self\n            .run_original_activated(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1062,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+        "diff": [
+          {
+            "field": "required_function_order[0].sequence[1]",
+            "old": "owners.require_original_same_actor_work(&work).map_err(phase_owner_error)?",
+            "new": "owners\n            .require_original_same_actor_work(&work)\n            .map_err(phase_owner_error)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[17]",
+            "old": "driver.publish_original_same_actor_candidate(",
+            "new": "driver\n                        .publish_original_same_actor_candidate(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[26]",
+            "old": "&inputs.execution.source_mode, CircuitQ24TaskOpenModeV1::Create",
+            "new": "&inputs.execution.source_mode,\n            CircuitQ24TaskOpenModeV1::Create",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[30]",
+            "old": "selected.connect_original_same_actor_current(",
+            "new": "selected\n            .connect_original_same_actor_current(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[33]",
+            "old": "driver.prepare_original_successor(",
+            "new": "driver\n            .prepare_original_successor(",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[35]",
+            "old": "self.require_original_execution().map_err(uncertain_original_c)?",
+            "new": "self.require_original_execution()\n            .map_err(uncertain_original_c)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[38]",
+            "old": "self.require_original_execution().map_err(uncertain_original_c)?",
+            "new": "self.require_original_execution()\n            .map_err(uncertain_original_c)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[40]",
+            "old": "self.require_original_execution().map_err(uncertain_original_c)?",
+            "new": "self.require_original_execution()\n            .map_err(uncertain_original_c)?",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[46]",
+            "old": "ledger.as_ref(), input.outcome, &input.signed",
+            "new": "ledger.as_ref(),\n            input.outcome,\n            &input.signed",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1066,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[12]",
+            "old": "slot.current.original_broker_head()",
+            "new": "slot\n                    .current\n                    .original_broker_head()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1068,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[0]",
+            "old": "phase.map(|context| context.gate.enter_original_lane()).transpose()",
+            "new": "phase\n                    .map(|context| context.gate.enter_original_lane())\n                    .transpose()",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1070,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "diff": [
+          {
+            "field": "required_function_order[1].sequence[0]",
+            "old": "phase.map(|gate| gate.enter_original_lane()).transpose()",
+            "new": "phase\n                    .map(|gate| gate.enter_original_lane())\n                    .transpose()",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[1].sequence[1]",
+            "old": "self.with_learning_profile(",
+            "new": "self\n                    .with_learning_profile(",
+            "whitespace_only": true
+          }
+        ]
+      },
+      {
+        "row": 1072,
+        "kind": "protected_file",
+        "key": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+        "diff": [
+          {
+            "field": "required[0]",
+            "old": "same_actor_phase: std::sync::OnceLock<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,",
+            "new": "same_actor_phase:\n        std::sync::OnceLock<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,",
+            "whitespace_only": true
+          },
+          {
+            "field": "required_function_order[0].sequence[1]",
+            "old": "self.request_lock.lock()",
+            "new": "self\n            .request_lock\n            .lock()",
+            "whitespace_only": true
+          }
+        ]
+      }
+    ],
+    "header_exact": true,
+    "header_identity": {
+      "bytes": 25132,
+      "sha256": "1b6f573a4360d3c1a02f1d2d5330636021a30719d10b310ed41d7978321fb493"
+    }
+  },
+  "required_inventory": {
+    "required_count": 638,
+    "required_unique": 638,
+    "boundary_count": 638,
+    "boundary_unique": 638,
+    "exact_sets": true,
+    "unchanged_header": true
+  },
+  "whitespace_string_proof": [
+    {
+      "row": 4,
+      "key": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 4,
+      "key": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 4,
+      "key": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 4,
+      "key": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[9].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 4,
+      "key": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[10].sequence[8]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 331,
+      "key": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 331,
+      "key": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 331,
+      "key": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 331,
+      "key": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[6].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 482,
+      "key": "root_q24_factory_serve_original",
+      "kind": "boundary",
+      "field": "definition_markers[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 482,
+      "key": "root_q24_factory_serve_original",
+      "kind": "boundary",
+      "field": "definition_markers[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 493,
+      "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 493,
+      "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 493,
+      "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 494,
+      "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "kind": "protected_file",
+      "field": "required_order[0][3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 494,
+      "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "kind": "protected_file",
+      "field": "required_order[0][6]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 634,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 635,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "kind": "protected_file",
+      "field": "required[6]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 635,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 635,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 635,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 771,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 876,
+      "key": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 876,
+      "key": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[13]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 876,
+      "key": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[21]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 892,
+      "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 892,
+      "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[9].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 893,
+      "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[14]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 898,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 898,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 898,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[11]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 898,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[17]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 910,
+      "key": "q24_same_actor_learning_terminal_join",
+      "kind": "boundary",
+      "field": "definition_markers[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 923,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[5].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 925,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 927,
+      "key": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 929,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 931,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "kind": "protected_file",
+      "field": "required[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 931,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 932,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "kind": "protected_file",
+      "field": "required[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 932,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "kind": "protected_file",
+      "field": "required_order[0][1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 932,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 933,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[7]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 933,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[10]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 933,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[11]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 936,
+      "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "kind": "protected_file",
+      "field": "required[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 936,
+      "key": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 941,
+      "key": "q24_same_actor_evaluation_install_complete",
+      "kind": "boundary",
+      "field": "definition_markers[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 943,
+      "key": "q24_same_actor_evaluation_aggregate_install",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 945,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 945,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[6].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 945,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[9].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 946,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 946,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[6]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 953,
+      "key": "root_same_actor_phase_start",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 961,
+      "key": "root_same_actor_durable_claim",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 966,
+      "key": "root_same_actor_initial_register",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 968,
+      "key": "root_same_actor_publication_register",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 969,
+      "key": "root_same_actor_scope_register",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 970,
+      "key": "root_same_actor_join_accept",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1003,
+      "key": "root_same_actor_ticket_session",
+      "kind": "boundary",
+      "field": "definition_markers[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1008,
+      "key": "root_same_actor_scoped_stream",
+      "kind": "boundary",
+      "field": "definition_markers[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1033,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1033,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1033,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1034,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1034,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1034,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1034,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1034,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1034,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1037,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1038,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[6]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1038,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[8]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1038,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[10]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1039,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1039,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1040,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1040,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1041,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1041,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1042,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[16]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1042,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[17]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1042,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[18]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1044,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[19]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1044,
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[21]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[5].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[5].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[6].sequence[7]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[6].sequence[16]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[6].sequence[20]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[6].sequence[23]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[6].sequence[26]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1045,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[8].sequence[9]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1046,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1046,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1046,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[7]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1046,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1046,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1047,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1047,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1048,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1048,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[8]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1048,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[10]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1048,
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[4].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1049,
+      "key": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1049,
+      "key": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1049,
+      "key": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1049,
+      "key": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[10]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1050,
+      "key": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[3].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1051,
+      "key": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1051,
+      "key": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1052,
+      "key": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "kind": "protected_file",
+      "field": "required_order[0][2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1052,
+      "key": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "kind": "protected_file",
+      "field": "required_order[0][13]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1052,
+      "key": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "kind": "protected_file",
+      "field": "required_order[0][16]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1052,
+      "key": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1052,
+      "key": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1052,
+      "key": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[5]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1053,
+      "key": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1053,
+      "key": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1053,
+      "key": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1053,
+      "key": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[2].sequence[11]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1055,
+      "key": "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1055,
+      "key": "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[3]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1055,
+      "key": "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[6]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1056,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[2]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1056,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[6]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1056,
+      "key": "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[8]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1057,
+      "key": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[10]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1059,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[4]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1061,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[9]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[17]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[26]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[30]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[33]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[35]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[38]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[40]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1062,
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[46]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1066,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[12]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1068,
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1070,
+      "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1070,
+      "key": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[1].sequence[1]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1072,
+      "key": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "kind": "protected_file",
+      "field": "required[0]",
+      "tokens_and_comments_exact": true
+    },
+    {
+      "row": 1072,
+      "key": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "kind": "protected_file",
+      "field": "required_function_order[0].sequence[1]",
+      "tokens_and_comments_exact": true
+    }
+  ],
+  "actual_punctuation_cases": [
+    {
+      "field": "required_function_order[0].sequence[1]",
+      "old": "config, registration, owner, learning, inputs, None,",
+      "new": "config, registration, owner, learning, inputs, None)",
+      "whitespace_only": false,
+      "row": 633,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "source": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "old_position": 4074,
+      "new_position": 4061,
+      "old_function": "fn enroll_generation_publication(",
+      "new_function": "fn enroll_generation_publication(",
+      "noncomma_tokens_equal": false,
+      "bounded_None_call_closer_strengthening": true,
+      "reason": "Original exact six arguments retained; actual formatter removes optional trailing comma and marker now also requires the closing call parenthesis."
+    },
+    {
+      "field": "required_function_order[0].sequence[4]",
+      "old": "self.serve_initial_original_channel(slot, config, registration, pin, channel, sequence, None)",
+      "new": "self.serve_initial_original_channel(\n            slot,\n            config,\n            registration,\n            pin,\n            channel,\n            sequence,\n            None,\n        )",
+      "whitespace_only": false,
+      "row": 772,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "source": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "old_position": 1857,
+      "new_position": 1857,
+      "old_function": "fn serve_generation_initial(",
+      "new_function": "fn serve_generation_initial(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "required_function_order[0].sequence[5]",
+      "old": "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)",
+      "new": "Self::capture_original_phase(\n            original,\n            config,\n            deadline,\n            current_directory,\n            initial,\n            model,\n        )",
+      "whitespace_only": false,
+      "row": 898,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "source": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "old_position": 3013,
+      "new_position": 3002,
+      "old_function": "fn open(",
+      "new_function": "fn open(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "required_function_order[1].sequence[6]",
+      "old": "Self::capture_original_phase(original, config, deadline, current_directory, initial, model)",
+      "new": "Self::capture_original_phase(\n            original,\n            config,\n            deadline,\n            current_directory,\n            initial,\n            model,\n        )",
+      "whitespace_only": false,
+      "row": 898,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "source": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "old_position": 3858,
+      "new_position": 3963,
+      "old_function": "fn prepare_fresh_from_registered(",
+      "new_function": "fn prepare_fresh_from_registered(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "required_function_order[2].sequence[27]",
+      "old": "Ok(Self { original, gate, record, descriptor, model, scope, start: Some(start), closing })",
+      "new": "Ok(Self {\n            original,\n            gate,\n            record,\n            descriptor,\n            model,\n            scope,\n            start: Some(start),\n            closing,\n        })",
+      "whitespace_only": false,
+      "row": 898,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "source": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs",
+      "old_position": 8633,
+      "new_position": 9075,
+      "old_function": "fn capture_original_phase(",
+      "new_function": "fn capture_original_phase(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "required_function_order[1].sequence[10]",
+      "old": "LearningIterationCommandV1 { mode, request, mut response }",
+      "new": "LearningIterationCommandV1 {\n                mode,\n                request,\n                mut response,\n            }",
+      "whitespace_only": false,
+      "row": 927,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "source": "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs",
+      "old_position": 3236,
+      "new_position": 3288,
+      "old_function": "fn run_original_same_actor_commands(",
+      "new_function": "fn run_original_same_actor_commands(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "definition_markers[1]",
+      "old": "state: PhaseState::Scoped { claim: claim.clone(), factory }",
+      "new": "state: PhaseState::Scoped {\n                claim: claim.clone(),\n                factory,\n            }",
+      "whitespace_only": false,
+      "row": 962,
+      "kind": "boundary",
+      "key": "root_same_actor_durable_scope",
+      "source": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs",
+      "old_position": 6504,
+      "new_position": 6821,
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "definition_markers[1]",
+      "old": "phase: Option<&crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<'_>>",
+      "new": "phase: Option<\n            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<\n                '_,\n            >,\n        >",
+      "whitespace_only": false,
+      "row": 975,
+      "kind": "boundary",
+      "key": "root_same_actor_learning_reserve",
+      "source": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "old_position": 3096,
+      "new_position": 3192,
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "required_function_order[0].sequence[2]",
+      "old": "Ok(Self { instant, boottime_ns })",
+      "new": "Ok(Self {\n            instant,\n            boottime_ns,\n        })",
+      "whitespace_only": false,
+      "row": 1045,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "source": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "old_position": 1591,
+      "new_position": 1591,
+      "old_function": "fn capture(",
+      "new_function": "fn capture(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "required_function_order[1].sequence[14]",
+      "old": "crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?",
+      "new": "crate::AgentdRootProductionInputs::take_generation_publication_connection(\n                    &mut root,\n                )?",
+      "whitespace_only": false,
+      "row": 1057,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "source": "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs",
+      "old_position": 7833,
+      "new_position": 8449,
+      "old_function": "fn run_original_phase(",
+      "new_function": "fn run_original_phase(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    },
+    {
+      "field": "required_function_order[0].sequence[0]",
+      "old": "let Self { context, route, owners, authorities, scoped, mut host, _closing } = self",
+      "new": "let Self {\n            context,\n            route,\n            owners,\n            authorities,\n            scoped,\n            mut host,\n            _closing,\n        } = self",
+      "whitespace_only": false,
+      "row": 1059,
+      "kind": "protected_file",
+      "key": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "source": "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs",
+      "old_position": 2271,
+      "new_position": 2364,
+      "old_function": "fn run(",
+      "new_function": "fn run(",
+      "noncomma_tokens_equal": true,
+      "bounded_None_call_closer_strengthening": false,
+      "reason": "Exact original identifiers, operators, operands, arguments/fields and order; only actual formatter optional comma/generic layout."
+    }
+  ],
+  "author_mapping_equals_all_168_actual_diffs": true,
+  "actual_grant_sequence": {
+    "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+    "source": "423c69f01f26e38478f3170826f72fdb318dd662",
+    "extent": {
+      "start": 5807,
+      "end": 7896
+    },
+    "checks": [
+      {
+        "marker": "fn exchange_guarded<T>(",
+        "start": 5807,
+        "end": 5830,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "self.phase.as_ref().map(|phase| phase.failure_scope())",
+        "start": 6021,
+        "end": 6075,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "phase\n                .require_open()",
+        "start": 6132,
+        "end": 6169,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "self.stream.try_lock()",
+        "start": 6274,
+        "end": 6296,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "let mut stream = slot",
+        "start": 6526,
+        "end": 6547,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "take()",
+        "start": 6561,
+        "end": 6567,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "let deadline = (Instant::now() + self.timeout).min(",
+        "start": 6639,
+        "end": 6690,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "let result =",
+        "start": 6849,
+        "end": 6861,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "self.check_root()?",
+        "start": 6880,
+        "end": 6898,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "remaining(deadline)?",
+        "start": 6912,
+        "end": 6932,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "exchange(&mut stream, deadline)?",
+        "start": 6961,
+        "end": 6993,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "self.check_root()?",
+        "start": 7007,
+        "end": 7025,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "remaining(deadline)?",
+        "start": 7039,
+        "end": 7059,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "phase\n                    .require_open()",
+        "start": 7124,
+        "end": 7165,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "match result",
+        "start": 7302,
+        "end": 7314,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "*slot = Some(stream)",
+        "start": 7363,
+        "end": 7383,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "phase\n                        .require_open()",
+        "start": 7456,
+        "end": 7501,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "closing.disarm()",
+        "start": 7677,
+        "end": 7693,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "stream.shutdown(Shutdown::Both)",
+        "start": 7808,
+        "end": 7839,
+        "insideActualFunction": true
+      },
+      {
+        "marker": "fn check_root(",
+        "start": 7903,
+        "end": 7917,
+        "insideActualFunction": false
+      }
+    ],
+    "field_scope": "Original required_order remains whole-file from generic exchange_guarded header through the next check_root declaration. The original rule is not upgraded or represented as a required_function_order rule. Independent actual extent confirms the three guarded positions are inside exchange_guarded."
+  },
+  "actual_C_grant_publication_sequence": [
+    {
+      "table_row": 1062,
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs",
+      "raw": [],
+      "file_order": [],
+      "functions": [
+        {
+          "function": "fn publish_and_observe_original_c(",
+          "top_level": [],
+          "literal_calls": [],
+          "extent": {
+            "start": 2418,
+            "end": 14081,
+            "nestedCount": 0
+          },
+          "order": {
+            "ok": true,
+            "matches": [
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 171,
+                "end": 205
+              },
+              {
+                "marker": "owners\n            .require_original_same_actor_work(&work)\n            .map_err(phase_owner_error)?",
+                "start": 394,
+                "end": 494
+              },
+              {
+                "marker": "let mut decision = Box::pin(",
+                "start": 989,
+                "end": 1017
+              },
+              {
+                "marker": "OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff)",
+                "start": 1017,
+                "end": 1075
+              },
+              {
+                "marker": "decision.as_mut()",
+                "start": 1147,
+                "end": 1164
+              },
+              {
+                "marker": "OriginalSameActorLearningWork::original_training_snapshot(",
+                "start": 1287,
+                "end": 1345
+              },
+              {
+                "marker": "OriginalCellQ24LearningStageOwnersV1::read_original_training_material(",
+                "start": 1992,
+                "end": 2062
+              },
+              {
+                "marker": "OriginalCellQ24LearningStageOwnersV1::original_training_readback(",
+                "start": 2373,
+                "end": 2438
+              },
+              {
+                "marker": "OriginalSameActorPhaseEventV1::OriginalTraining",
+                "start": 2802,
+                "end": 2849
+              },
+              {
+                "marker": "OriginalSameActorPhaseCommandV1::Evaluation",
+                "start": 3109,
+                "end": 3152
+              },
+              {
+                "marker": "OriginalCellQ24LearningStageOwnersV1::install_original_same_actor_evaluation(",
+                "start": 3863,
+                "end": 3940
+              },
+              {
+                "marker": "decision.as_mut().await.map_err(phase_owner_error)?",
+                "start": 4225,
+                "end": 4276
+              },
+              {
+                "marker": "OriginalSameActorPhaseEventV1::OriginalDecision",
+                "start": 4433,
+                "end": 4480
+              },
+              {
+                "marker": "OriginalSameActorPhaseCommandV1::Artifact",
+                "start": 4534,
+                "end": 4575
+              },
+              {
+                "marker": "OriginalSameActorArtifactInputsV1::PublishQualified",
+                "start": 4850,
+                "end": 4901
+              },
+              {
+                "marker": "OriginalCellQ24ArtifactPublicationDriverV1::for_qualified_adoption(",
+                "start": 5009,
+                "end": 5076
+              },
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 5295,
+                "end": 5329
+              },
+              {
+                "marker": "driver\n                        .publish_original_same_actor_candidate(",
+                "start": 5396,
+                "end": 5466
+              },
+              {
+                "marker": "OriginalSameActorArtifactInputsV1::RetainOriginal",
+                "start": 5611,
+                "end": 5660
+              },
+              {
+                "marker": "OriginalCellQ24RetainedArtifactForRootV1::from_original_result(",
+                "start": 5886,
+                "end": 5949
+              },
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 6203,
+                "end": 6237
+              },
+              {
+                "marker": "OriginalSameActorPhaseCommandV1::Selection",
+                "start": 6390,
+                "end": 6432
+              },
+              {
+                "marker": "OriginalCellQ24PublishedArtifactForRootV1::accept_selection(",
+                "start": 6803,
+                "end": 6863
+              },
+              {
+                "marker": "OriginalCellQ24RetainedArtifactForRootV1::accept_selection(",
+                "start": 7041,
+                "end": 7100
+              },
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 7227,
+                "end": 7261
+              },
+              {
+                "marker": "OriginalSameActorPhaseCommandV1::PublishOriginalC",
+                "start": 7500,
+                "end": 7549
+              },
+              {
+                "marker": "&inputs.execution.source_mode,\n            CircuitQ24TaskOpenModeV1::Create",
+                "start": 7810,
+                "end": 7885
+              },
+              {
+                "marker": "OriginalQ24SuccessorFeedbackV1::OriginalLedger(ledger)",
+                "start": 7962,
+                "end": 8016
+              },
+              {
+                "marker": "ledger.open_mode == CircuitQ24TaskOpenModeV1::Create",
+                "start": 8036,
+                "end": 8088
+              },
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 8256,
+                "end": 8290
+              },
+              {
+                "marker": "selected\n            .connect_original_same_actor_current(",
+                "start": 8509,
+                "end": 8567
+              },
+              {
+                "marker": "Duration::from_millis(500)",
+                "start": 8580,
+                "end": 8606
+              },
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 8677,
+                "end": 8711
+              },
+              {
+                "marker": "driver\n            .prepare_original_successor(",
+                "start": 9013,
+                "end": 9060
+              },
+              {
+                "marker": "handoff, inputs.predecessor, target, inputs.execution",
+                "start": 9060,
+                "end": 9113
+              },
+              {
+                "marker": "self.require_original_execution()\n            .map_err(uncertain_original_c)?",
+                "start": 9335,
+                "end": 9412
+              },
+              {
+                "marker": "AgentdUnixFinalUseGrantProvider::request_grant(",
+                "start": 9517,
+                "end": 9564
+              },
+              {
+                "marker": "OriginalQ24PreparedSuccessorV1::final_use_binding(&prepared)",
+                "start": 9606,
+                "end": 9666
+              },
+              {
+                "marker": "self.require_original_execution()\n            .map_err(uncertain_original_c)?",
+                "start": 9763,
+                "end": 9840
+              },
+              {
+                "marker": "OriginalQ24PreparedSuccessorV1::publish(prepared, signed)",
+                "start": 9911,
+                "end": 9968
+              },
+              {
+                "marker": "self.require_original_execution()\n            .map_err(uncertain_original_c)?",
+                "start": 10046,
+                "end": 10123
+              },
+              {
+                "marker": "OriginalSameActorPhaseEventV1::OriginalCOwnersInstalled",
+                "start": 10339,
+                "end": 10394
+              },
+              {
+                "marker": "OriginalSameActorPhaseCommandV1::ObserveOriginalC",
+                "start": 10420,
+                "end": 10469
+              },
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 10704,
+                "end": 10738
+              },
+              {
+                "marker": "OriginalQ24InstalledSuccessorV1::original_task_ledger(&installed)",
+                "start": 10815,
+                "end": 10880
+              },
+              {
+                "marker": "OriginalCellQ24TaskLedgerProducerV1::submit_original_terminal_outcome(",
+                "start": 11029,
+                "end": 11099
+              },
+              {
+                "marker": "ledger.as_ref(),\n            input.outcome,\n            &input.signed",
+                "start": 11112,
+                "end": 11181
+              },
+              {
+                "marker": "OriginalCellQ24TaskLedgerStatusV1::Complete",
+                "start": 11260,
+                "end": 11303
+              },
+              {
+                "marker": "self.require_original_execution()?",
+                "start": 11452,
+                "end": 11486
+              },
+              {
+                "marker": "OriginalSameActorPhaseEventV1::OriginalCOutcomeAccepted",
+                "start": 11557,
+                "end": 11612
+              }
+            ]
+          }
+        }
+      ],
+      "forbidden": []
+    }
+  ],
+  "independent_projection": {
+    "git": "4b907cd5061587160feebf08ea8d09cb2f1f28a9",
+    "bytes": 439762,
+    "sha256": "0154baa2d86352ab8ef32123e56b8d8e6b0e34b5e1fe0f355842861e50267075"
+  },
+  "unchanged_scope": [
+    "All 638 boundary IDs/order and required IDs",
+    "Every receiver type/method, call pattern, symbol, definition_path, product caller set, caller_markers and ignored/source rules",
+    "All 440 protected paths/order, forbidden arrays, function names, literal_calls and top_level constraints",
+    "Every sequence length, item count and guard order",
+    "All metadata bytes outside the exact 65 row replacements"
+  ],
+  "historical_partial": "First-13 packet e1bed9517c0af6b6df0b30008771815fc812568f is superseded and must not be applied before the final65.",
+  "qualifications": {
+    "original_checker_executed": false,
+    "typed_helper_executed": false,
+    "full_source_index_scanned": false,
+    "compiler_or_native_executed": false,
+    "h_or_PTY": false,
+    "source_or_ref_writes": false,
+    "business_loop": 0,
+    "independent_controller_C": 0,
+    "daemon_Root_cold_restart": 0
+  }
+}

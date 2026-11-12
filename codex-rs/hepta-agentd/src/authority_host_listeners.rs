@@ -240,13 +240,15 @@ pub(super) fn serve_bound_phase_lanes_until(
             };
             workers.push(scope.spawn(move || {
                 let _stream_stop = stream_stop;
-                service.serve_original_phase_lane_until(lane, stream, policy, pidfd, gate)
+                service
+                    .serve_original_phase_lane_until(lane, stream, policy, pidfd, gate)
                     .map_err(io::Error::other)
             }));
         }
         let mut result = Ok(());
         for worker in workers {
-            let joined = worker.join()
+            let joined = worker
+                .join()
                 .map_err(|_| io::Error::other("original phase authority lane panicked"))
                 .and_then(|served| served);
             if joined.is_err() {

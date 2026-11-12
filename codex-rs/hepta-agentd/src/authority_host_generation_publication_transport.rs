@@ -61,7 +61,14 @@ impl HostAuthorityService {
         let channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
             .map_err(io::Error::other)?;
         self.serve_original_publication_channel(
-            slot, learning, config, registration, pin, channel, sequence, None,
+            slot,
+            learning,
+            config,
+            registration,
+            pin,
+            channel,
+            sequence,
+            None,
         )
     }
 
@@ -81,12 +88,25 @@ impl HostAuthorityService {
         let _stream_stop = phase.gate.retain_original_stream(&stream)?;
         let pin = owner.try_clone()?;
         let channel = HostAuthorityPeerChannel::from_stream_until(
-            stream, policy, owner, phase.gate.deadline().instant(),
-        ).map_err(io::Error::other)?;
+            stream,
+            policy,
+            owner,
+            phase.gate.deadline().instant(),
+        )
+        .map_err(io::Error::other)?;
         self.serve_original_publication_channel(
-            slot, learning, config, registration, pin, channel, 1, Some(phase),
+            slot,
+            learning,
+            config,
+            registration,
+            pin,
+            channel,
+            1,
+            Some(phase),
         )?;
-        Err(io::Error::other("required original phase publication lane ended"))
+        Err(io::Error::other(
+            "required original phase publication lane ended",
+        ))
     }
 
     fn serve_original_publication_channel(
@@ -102,11 +122,14 @@ impl HostAuthorityService {
     ) -> io::Result<()> {
         while channel
             .exchange(|bytes| {
-                let _admission = phase.map(|context| context.gate.enter_original_lane()).transpose()
+                let _admission = phase
+                    .map(|context| context.gate.enter_original_lane())
+                    .transpose()
                     .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
                 if let Some(context) = phase {
-                    context.require_original(slot)
-                        .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                    context.require_original(slot).map_err(|_| {
+                        codex_hepta_contracts::HostIssuerTransportError::Unavailable
+                    })?;
                 }
                 let response = self.with_learning_profile(
                     config,
@@ -341,8 +364,9 @@ impl HostAuthorityService {
                 )
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
                 if let Some(context) = phase {
-                    context.require_original(slot)
-                        .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)?;
+                    context.require_original(slot).map_err(|_| {
+                        codex_hepta_contracts::HostIssuerTransportError::Unavailable
+                    })?;
                 }
                 Ok(response)
             })

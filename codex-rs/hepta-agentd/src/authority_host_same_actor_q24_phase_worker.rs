@@ -19,7 +19,10 @@ struct BoundPhaseControl {
 
 impl BoundPhaseControl {
     fn bind(config: &HostAuthorityServiceConfig, path: &Path, initial: &Path) -> io::Result<Self> {
-        let mut paths: Vec<_> = validate_runtime_lanes(config)?.into_iter().map(|(_, path)| path).collect();
+        let mut paths: Vec<_> = validate_runtime_lanes(config)?
+            .into_iter()
+            .map(|(_, path)| path)
+            .collect();
         let initial_path = initial.to_path_buf();
         let control_path = path.to_path_buf();
         paths.push(&initial_path);
@@ -27,9 +30,16 @@ impl BoundPhaseControl {
         validate_lane_paths(&paths, config.peer_gid)?;
         let listener = UnixListener::bind(path)?;
         let metadata = std::fs::symlink_metadata(path)?;
-        let bound = Self { listener, path: path.into(), device: metadata.dev(), inode: metadata.ino() };
+        let bound = Self {
+            listener,
+            path: path.into(),
+            device: metadata.dev(),
+            inode: metadata.ino(),
+        };
         if metadata.uid() != 0 || metadata.gid() != config.peer_gid {
-            return Err(io::Error::other("original phase control listener custody differs"));
+            return Err(io::Error::other(
+                "original phase control listener custody differs",
+            ));
         }
         std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o660))?;
         bound.listener.set_nonblocking(true)?;
@@ -49,7 +59,13 @@ impl BoundPhaseControl {
             owner_alive(owner, end)?;
             match self.listener.accept() {
                 Ok((stream, _)) => {
-                    verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
+                    verify_pinned_process(
+                        registration,
+                        config.peer_uid,
+                        config.peer_gid,
+                        owner,
+                        end,
+                    )?;
                     gate.require_open()?;
                     return Ok(stream);
                 }
@@ -77,18 +93,30 @@ pub(super) fn serve_original_phase(
     ready: impl FnOnce() -> io::Result<()>,
 ) -> io::Result<()> {
     let PreparedRootSameActorQ24PhaseV1 {
-        mut original, gate, record, descriptor, model, scope: scope_runtime, start, closing,
+        mut original,
+        gate,
+        record,
+        descriptor,
+        model,
+        scope: scope_runtime,
+        start,
+        closing,
     } = phase;
     if start.is_some() {
-        return Err(io::Error::other("original phase start capabilities must be taken before serving"));
+        return Err(io::Error::other(
+            "original phase start capabilities must be taken before serving",
+        ));
     }
     gate.require_open()?;
     let initial = generation_initial::BoundInitial::bind(
-        original.initial_publication.take()
+        original
+            .initial_publication
+            .take()
             .ok_or_else(|| io::Error::other("original phase Initial route missing"))?,
         &original.config,
     )?;
-    let control = BoundPhaseControl::bind(&original.config, &descriptor.control_socket, initial.path())?;
+    let control =
+        BoundPhaseControl::bind(&original.config, &descriptor.control_socket, initial.path())?;
     initial.activate_same_actor_phase()?;
     scope_runtime.activate()?;
     // Binding publishes no external ready notification. Required workers and
@@ -108,11 +136,16 @@ pub(super) fn serve_original_phase(
         let first = threads.spawn(move || {
             let mut phase_close = CloseSameActorPhaseOnDrop::new(gate_ref);
             let result = initial_ref.serve_same_actor_phase_initial(
-                &original_ref.service, &original_ref.config, &original_ref.registration,
-                &original_ref.owner_pidfd, gate_ref, retirement_ref,
+                &original_ref.service,
+                &original_ref.config,
+                &original_ref.registration,
+                &original_ref.owner_pidfd,
+                gate_ref,
+                retirement_ref,
             );
             let transferred = match result {
-                Ok(slot) => initial_sender.try_send(slot)
+                Ok(slot) => initial_sender
+                    .try_send(slot)
                     .map_err(|_| io::Error::other("original Initial owner handoff was lost")),
                 Err(error) => Err(error),
             };
@@ -122,10 +155,19 @@ pub(super) fn serve_original_phase(
             }
             transferred
         });
-        let scoped = threads.spawn(|| run_original_scoped_phase(
-            &original, &gate, record, &descriptor, &model,
-            scope_runtime, &control, &retirement, initial_receiver,
-        ));
+        let scoped = threads.spawn(|| {
+            run_original_scoped_phase(
+                &original,
+                &gate,
+                record,
+                &descriptor,
+                &model,
+                scope_runtime,
+                &control,
+                &retirement,
+                initial_receiver,
+            )
+        });
         let announced = (|| {
             gate.require_open()?;
             ready()?;
@@ -134,16 +176,26 @@ pub(super) fn serve_original_phase(
         })();
         let served = match announced {
             Ok(()) => listeners::serve_bound_phase_lanes_until(
-                &original.service, &original.config, &original.registration,
-                &original.owner_pidfd, five, &gate,
+                &original.service,
+                &original.config,
+                &original.registration,
+                &original.owner_pidfd,
+                five,
+                &gate,
             ),
             Err(error) => Err(error),
         };
         drop(scope_close);
         drop(closing);
-        let first = first.join().map_err(|_| io::Error::other("original Initial phase worker panicked"))?;
-        let scoped = scoped.join().map_err(|_| io::Error::other("original scoped phase worker panicked"))?;
-        watcher.join().map_err(|_| io::Error::other("original phase deadline worker panicked"))?;
+        let first = first
+            .join()
+            .map_err(|_| io::Error::other("original Initial phase worker panicked"))?;
+        let scoped = scoped
+            .join()
+            .map_err(|_| io::Error::other("original scoped phase worker panicked"))?;
+        watcher
+            .join()
+            .map_err(|_| io::Error::other("original phase deadline worker panicked"))?;
         served.and(first).and(scoped)
     })
 }
@@ -157,7 +209,9 @@ fn run_original_scoped_phase(
     scope: scope_cap::ScopeRuntime,
     control: &BoundPhaseControl,
     retirement: &OriginalInitialRetirement,
-    initial_receiver: mpsc::Receiver<crate::authority_host_service::generation_initial::RegisteredGenerationInitial>,
+    initial_receiver: mpsc::Receiver<
+        crate::authority_host_service::generation_initial::RegisteredGenerationInitial,
+    >,
 ) -> io::Result<()> {
     let _closing = CloseSameActorPhaseOnDrop::new(gate);
     let submission = loop {
@@ -167,24 +221,38 @@ fn run_original_scoped_phase(
             Ok(value) => break value,
             Err(mpsc::TryRecvError::Empty) => gate.wait_original_change(epoch)?,
             Err(mpsc::TryRecvError::Disconnected) => {
-                return Err(io::Error::other("original Root scope capability was dropped"));
+                return Err(io::Error::other(
+                    "original Root scope capability was dropped",
+                ));
             }
         }
     };
     let stream = control.accept_original(
-        &original.config, &original.registration, &original.owner_pidfd, gate,
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        gate,
     )?;
     let joined = accept_original_phase_join(
-        &original.service, &original.config, &original.registration,
-        &original.owner_pidfd, stream,
+        &original.service,
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        stream,
         HostAuthorityPeerPolicy {
-            peer: HostIssuerPeer { uid: original.config.peer_uid, pid: original.registration.peer_pid },
+            peer: HostIssuerPeer {
+                uid: original.config.peer_uid,
+                pid: original.registration.peer_pid,
+            },
             timeout: std::time::Duration::from_millis(original.config.timeout_ms),
             lifetime: std::time::Duration::from_millis(original.config.lifetime_ms),
             request_bound: 16 * 1024,
             response_bound: 16 * 1024,
         },
-        &descriptor.phase, &submission.profile, retirement, gate,
+        &descriptor.phase,
+        &submission.profile,
+        retirement,
+        gate,
     )?;
     // A transport EOF can only transfer this actual held owner. It cannot
     // replace the independently completed original join above.
@@ -194,14 +262,21 @@ fn run_original_scoped_phase(
             Ok(slot) => break slot,
             Err(mpsc::TryRecvError::Empty) => gate.wait_original_change(epoch)?,
             Err(mpsc::TryRecvError::Disconnected) => {
-                return Err(io::Error::other("original Initial owner was not transferred"));
+                return Err(io::Error::other(
+                    "original Initial owner was not transferred",
+                ));
             }
         }
     };
     joined.require_original_profile(&descriptor.phase, &submission.profile, retirement, gate)?;
     let claim = original.service.claim_same_actor_phase_after_original_a(
-        &original.config, &original.registration, &original.owner_pidfd,
-        &initial, &submission.profile, &mut record, gate,
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        &initial,
+        &submission.profile,
+        &mut record,
+        gate,
     )?;
     // Any failure above leaves a claimed/partial record closed. No fallthrough
     // can open a Learning/Model namespace or convert this attempt into recovery.
@@ -210,50 +285,83 @@ fn run_original_scoped_phase(
     gate.require_open()?;
     origin.require_retained_predecessor()?;
     record.require_claimed()?;
-    let namespace = crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext {
-        gate, record: &record,
-    };
-    original.service.reserve_original_learning_profile_in_phase(
-        &original.config, &original.registration, &original.owner_pidfd, &submission.profile,
-        Some(&namespace),
-    )?;
+    let namespace =
+        crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext {
+            gate,
+            record: &record,
+        };
+    original
+        .service
+        .reserve_original_learning_profile_in_phase(
+            &original.config,
+            &original.registration,
+            &original.owner_pidfd,
+            &submission.profile,
+            Some(&namespace),
+        )?;
     gate.require_open()?;
     record.require_claimed()?;
     let mut learning = original.service.open_original_learning_profile_in_phase(
-        &original.config, &original.registration, &original.owner_pidfd, submission.profile.clone(),
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        submission.profile.clone(),
         Some(&namespace),
     )?;
     gate.require_open()?;
     record.require_claimed()?;
     let factory_profile = HostAuthorityService::reserve_original_phase_q24_model_factory(
-        &original.service, &original.config, &original.registration, &original.owner_pidfd,
-        &learning.profile, model, Some(&namespace),
+        &original.service,
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        &learning.profile,
+        model,
+        Some(&namespace),
     )?;
     gate.require_open()?;
     record.require_claimed()?;
     let factory = original.service.open_original_phase_q24_model_reservation(
-        &original.config, &original.registration, &original.owner_pidfd,
-        &learning.profile, model.clone(), Some(&namespace),
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        &learning.profile,
+        model.clone(),
+        Some(&namespace),
     )?;
     if factory.profile != factory_profile {
-        return Err(io::Error::other("original reserved Model factory changed on open"));
+        return Err(io::Error::other(
+            "original reserved Model factory changed on open",
+        ));
     }
     learning.q24_model = Some(factory);
     let learning_bootstrap = original.service.seal_learning_checkpoint(
-        &original.config, &original.registration, &original.owner_pidfd, &learning,
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        &learning,
     )?;
     gate.require_open()?;
-    let (publication, capability, publication_offer) = generation_publication::original_publication_route(
-        &original.service, &original.config, &original.registration, &original.owner_pidfd, &learning,
-    )?;
+    let (publication, capability, publication_offer) =
+        generation_publication::original_publication_route(
+            &original.service,
+            &original.config,
+            &original.registration,
+            &original.owner_pidfd,
+            &learning,
+        )?;
     gate.require_open()?;
     record.require_claimed()?;
     gate.require_open()?;
     record.mark_scoped_before_rights(factory_profile.binding().to_string())?;
     gate.require_open()?;
     let factory_offer = original.service.seal_q24_model_factory_offer(
-        &original.config, &original.registration, &original.owner_pidfd,
-        learning.q24_model.as_mut()
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
+        learning
+            .q24_model
+            .as_mut()
             .ok_or_else(|| io::Error::other("original scoped Model owner missing"))?,
     )?;
     let scoped_descriptor = crate::same_actor_q24_phase_protocol::OriginalScopedPhaseBootstrap {
@@ -281,15 +389,26 @@ fn run_original_scoped_phase(
         gate: Arc::clone(gate),
         closing: CloseSameActorPhaseOnDrop::new(gate),
     };
-    let context = OriginalPhasePublicationContext { gate, record: &record, original: &origin };
+    let context = OriginalPhasePublicationContext {
+        gate,
+        record: &record,
+        original: &origin,
+    };
     lane.serve_same_actor_phase_learning(
-        &original.service, &original.config, &original.registration, &original.owner_pidfd,
+        &original.service,
+        &original.config,
+        &original.registration,
+        &original.owner_pidfd,
         &context,
         || {
             record.require_scoped()?;
             gate.require_open()?;
-            submission.acknowledgement.try_send(Ok(enrolled))
-                .map_err(|_| io::Error::other("original scoped owner offer acknowledgement lost"))?;
+            submission
+                .acknowledgement
+                .try_send(Ok(enrolled))
+                .map_err(|_| {
+                    io::Error::other("original scoped owner offer acknowledgement lost")
+                })?;
             gate.notify_original_waiters();
             gate.require_open()?;
             Ok(())

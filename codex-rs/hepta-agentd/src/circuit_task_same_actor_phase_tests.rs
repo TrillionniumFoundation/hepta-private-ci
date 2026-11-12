@@ -40,10 +40,21 @@ impl Block {
     }
 }
 
-fn block() -> (Block, std::sync::mpsc::Receiver<()>, std::sync::mpsc::Sender<()>) {
+fn block() -> (
+    Block,
+    std::sync::mpsc::Receiver<()>,
+    std::sync::mpsc::Sender<()>,
+) {
     let (entered, notified) = std::sync::mpsc::channel();
     let (release, released) = std::sync::mpsc::channel();
-    (Block { entered, release: Mutex::new(released) }, notified, release)
+    (
+        Block {
+            entered,
+            release: Mutex::new(released),
+        },
+        notified,
+        release,
+    )
 }
 
 struct ProbeInvocation {
@@ -105,11 +116,19 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn new(active: bool, capacity: usize, build: Option<Block>, observation: Option<Block>) -> Self {
+    fn new(
+        active: bool,
+        capacity: usize,
+        build: Option<Block>,
+        observation: Option<Block>,
+    ) -> Self {
         let directory = tempfile::tempdir().unwrap();
         let agent_id = AgentId::parse("queue-component").unwrap();
         let fleet_root = directory.path().join("fleet");
-        let layout = HeptaFleetRoot::parse(fleet_root.clone()).unwrap().layout().agent(&agent_id);
+        let layout = HeptaFleetRoot::parse(fleet_root.clone())
+            .unwrap()
+            .layout()
+            .agent(&agent_id);
         let identity = AgentdIdentity {
             agent_id,
             home_root: layout.home_root().to_path_buf(),
@@ -123,8 +142,8 @@ impl Fixture {
             resources: ResourceBudget::local_default(),
         };
         let record = record();
-        let deadline = SameActorPhaseDeadline::at_original_service_start(Duration::from_secs(30))
-            .unwrap();
+        let deadline =
+            SameActorPhaseDeadline::at_original_service_start(Duration::from_secs(30)).unwrap();
         let gate = SameActorPhaseGate::from_original_deadline(deadline).unwrap();
         let (route, provider) = SameActorTaskRoute::pending_original(&identity, gate).unwrap();
         let probe = Arc::new(ProbeInvocation {
@@ -147,7 +166,9 @@ impl Fixture {
         if active {
             // Only the queue primitive is injected here. This does not call or
             // qualify either sealed owner-parts installer or a Ready C slot.
-            route.state.lock().unwrap().phase = Phase::A { original: Arc::clone(&original) };
+            route.state.lock().unwrap().phase = Phase::A {
+                original: Arc::clone(&original),
+            };
         }
         Self {
             _directory: directory,
@@ -162,12 +183,15 @@ impl Fixture {
     }
 
     fn admission(&self) -> Result<SameActorTaskAdmission, Error> {
-        self.route.admit_original_task(&self.provider, &self.identity, &self.record)
+        self.route
+            .admit_original_task(&self.provider, &self.identity, &self.record)
     }
 
     fn handle(&self) -> CircuitTaskHandleV1 {
         CircuitTaskHandleV1 {
-            route: TaskHandleRoute::SameActor { original: Arc::clone(&self.route) },
+            route: TaskHandleRoute::SameActor {
+                original: Arc::clone(&self.route),
+            },
         }
     }
 
@@ -240,9 +264,7 @@ async fn poll_pending<F: Future>(mut future: Pin<&mut F>) {
     assert!(matches!(result, Poll::Pending));
 }
 
-async fn unresolved_observation_trace(
-    f: &Fixture,
-) -> (AutomationStore, CircuitCommittedTraceV2) {
+async fn unresolved_observation_trace(f: &Fixture) -> (AutomationStore, CircuitCommittedTraceV2) {
     let store = AutomationStore::open(&f.identity.layout).await.unwrap();
     let (definition, _) = crate::circuit_cell::tests::configuration();
     let fence = TaskFlowFence::new(
@@ -274,11 +296,15 @@ async fn pending_and_bare_phase_paths_cannot_build_or_queue() {
     assert!(matches!(f.admission(), Err(Error::Unavailable)));
     assert!(f.provider.build(&f.identity, &f.record).is_err());
     assert_eq!(
-        f.handle().submit(request(&f.record), f.record.clone()).await,
+        f.handle()
+            .submit(request(&f.record), f.record.clone())
+            .await,
         Err(Error::Unavailable)
     );
     assert_eq!(
-        f.handle().readback(request(&f.record), f.record.clone()).await,
+        f.handle()
+            .readback(request(&f.record), f.record.clone())
+            .await,
         Err(Error::Unavailable)
     );
     assert_eq!(f.probe.builds.load(Ordering::Acquire), 0);
@@ -300,10 +326,13 @@ fn wrong_identity_record_or_invocation_closes_without_build() {
             "invocation" => provider = f.probe.clone(),
             _ => unreachable!(),
         }
-        assert!(matches!(
-            f.route.admit_original_task(&provider, &identity, &record),
-            Err(Error::InvalidBinding)
-        ), "{case}");
+        assert!(
+            matches!(
+                f.route.admit_original_task(&provider, &identity, &record),
+                Err(Error::InvalidBinding)
+            ),
+            "{case}"
+        );
         assert!(f.route.gate.require_open().is_err(), "{case}");
         assert!(matches!(f.admission(), Err(Error::Unavailable)), "{case}");
         assert_eq!(f.probe.builds.load(Ordering::Acquire), 0);
@@ -350,7 +379,12 @@ async fn closing_a_ticket_queues_once_and_cancelled_work_stays_counted() {
     let command = f.receiver.try_recv().unwrap();
     assert_eq!(command.request, request);
     assert_eq!(command.record, f.record);
-    command.phase.as_ref().unwrap().require_original_queue_admission().unwrap();
+    command
+        .phase
+        .as_ref()
+        .unwrap()
+        .require_original_queue_admission()
+        .unwrap();
     assert_eq!(f.pending(), 1);
     assert_eq!(f.route.state.lock().unwrap().tickets, 1);
     assert!(matches!(f.admission(), Err(Error::Unavailable)));
@@ -364,7 +398,14 @@ async fn closing_a_ticket_queues_once_and_cancelled_work_stays_counted() {
         f.handle().readback(request, f.record.clone()).await,
         Err(Error::Unavailable)
     );
-    assert!(command.phase.as_ref().unwrap().require_original_queue_admission().is_err());
+    assert!(
+        command
+            .phase
+            .as_ref()
+            .unwrap()
+            .require_original_queue_admission()
+            .is_err()
+    );
     drop(command);
     assert_eq!(f.pending(), 0);
     assert_eq!(f.route.pending_count(), 0);
@@ -379,7 +420,10 @@ async fn full_original_queue_rolls_back_transfer_and_closes_phase() {
     poll_pending(waiting.as_mut()).await;
     let mut second = f.admission().unwrap();
     let second_request = second.build_original_task_request().unwrap();
-    assert_eq!(second.submit_original_task_request(second_request).await, Err(Error::QueueFull));
+    assert_eq!(
+        second.submit_original_task_request(second_request).await,
+        Err(Error::QueueFull)
+    );
     assert!(f.route.gate.require_open().is_err());
     // The failed send drops only its own pending guard. Original queued work
     // still exists and must be included even after both callers disappear.
@@ -402,12 +446,20 @@ async fn lost_original_ack_closes_before_return_without_readback_or_resend() {
     let request = ticket.build_original_task_request().unwrap();
     let mut waiting = Box::pin(ticket.submit_original_task_request(request.clone()));
     poll_pending(waiting.as_mut()).await;
-    let Command { response, _pending, phase, .. } = f.receiver.try_recv().unwrap();
+    let Command {
+        response,
+        _pending,
+        phase,
+        ..
+    } = f.receiver.try_recv().unwrap();
     // Keep the real queued-work guards; only the original acknowledgement dies.
     drop(response);
     assert_eq!(waiting.await, Err(Error::CommitUncertain));
     assert!(f.route.gate.require_open().is_err());
-    assert_eq!(ticket.submit_original_task_request(request.clone()).await, Err(Error::Unavailable));
+    assert_eq!(
+        ticket.submit_original_task_request(request.clone()).await,
+        Err(Error::Unavailable)
+    );
     assert_eq!(
         f.handle().readback(request, f.record.clone()).await,
         Err(Error::Unavailable)
@@ -434,7 +486,10 @@ async fn queue_quiescence_requires_both_ticket_and_actual_worker_drain() {
     // empty mpsc queue. No test marks A complete or fabricates a C owner.
     assert!(f.route.release_original_a().is_err());
     assert!(waiting.await.is_err());
-    assert!(matches!(f.route.state.lock().unwrap().phase, Phase::ClosingA { .. }));
+    assert!(matches!(
+        f.route.state.lock().unwrap().phase,
+        Phase::ClosingA { .. }
+    ));
     drop(ticket);
     assert_eq!(f.route.pending_count(), 0);
 }
@@ -465,7 +520,9 @@ async fn cancelled_observation_remains_counted_until_blocking_callback_finishes(
         while f.route.pending_count() != 0 {
             tokio::time::sleep(Duration::from_millis(1)).await;
         }
-    }).await.unwrap();
+    })
+    .await
+    .unwrap();
     assert_eq!(f.probe.observed.load(Ordering::Acquire), 1);
     assert_eq!(f.route.pending_count(), 0);
     store.close().await;
@@ -483,9 +540,9 @@ async fn stopped_original_observer_closes_phase_instead_of_becoming_outcome_pend
     let observed = ticket.observe_original_task_learning(&trace).await;
     entered.recv_timeout(WAIT).unwrap();
     match observed {
-        CircuitTaskLearningReadinessV1::Pending(
-            CircuitTaskLearningPendingV1::Refused(reason),
-        ) => assert!(reason.contains("original learning owner observation stopped:")),
+        CircuitTaskLearningReadinessV1::Pending(CircuitTaskLearningPendingV1::Refused(reason)) => {
+            assert!(reason.contains("original learning owner observation stopped:"))
+        }
         _ => panic!("stopped original callback was not reported as refused"),
     }
     assert!(f.route.gate.require_open().is_err());

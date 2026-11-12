@@ -35,12 +35,12 @@ use crate::PreparedLearningIterationProposalV1;
 use crate::cell_q24_learning_owner_error::owner_error as unavailable;
 use crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork;
 
-#[path = "cell_q24_learning_successor.rs"]
-mod successor;
-#[path = "cell_q24_learning_same_actor.rs"]
-mod same_actor;
 #[path = "cell_q24_learning_evaluation_phase.rs"]
 mod evaluation_phase;
+#[path = "cell_q24_learning_same_actor.rs"]
+mod same_actor;
+#[path = "cell_q24_learning_successor.rs"]
+mod successor;
 
 #[path = "cell_q24_learning_model_dispatch.rs"]
 mod model;
@@ -74,7 +74,8 @@ struct Q24StageState {
     lane: Arc<Semaphore>,
     cancelled: Arc<AtomicBool>,
     successor: std::sync::OnceLock<std::sync::Weak<crate::circuit_q24_successor::SuccessorSlot>>,
-    same_actor_work: Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
+    same_actor_work:
+        Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>,
 }
 
 /// No public raw-receipt or callback constructor. Each resource is an original
@@ -198,7 +199,8 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         self.require_current().await?;
         let prepared = Arc::clone(&self.inner.prepared);
         let (selection, next_use) = if let Some(phase) = &self.inner.same_actor_work {
-            self.open_original_same_actor_generation(original, phase).await?
+            self.open_original_same_actor_generation(original, phase)
+                .await?
         } else {
             tokio::task::spawn_blocking(move || original.into_receipt_owners(&prepared))
                 .await

@@ -162,28 +162,29 @@ impl AgentdLearningCheckpointClientV1 {
         if request != &self.initial.request {
             return Err(Error::WrongScope);
         }
-        let result = self.exchange(Command::Restore, |reply| match reply {
-            Reply::Restored { snapshot } => snapshot
-                .map(|encoded| {
-                    let snapshot = decode_snapshot(&encoded)?;
-                    if let Some(scope) = &self.scope {
-                        scope
-                            .validate_snapshot(&snapshot)
-                            .map_err(Error::Snapshot)?;
-                    } else if snapshot.requires_scoped_owner_v2() {
-                        return Err(Error::WrongScope);
-                    }
-                    if snapshot.request != self.initial.request
-                        || snapshot.owners != self.initial.owners
-                    {
-                        return Err(Error::WrongScope);
-                    }
-                    Ok(snapshot)
-                })
-                .transpose(),
-            Reply::Committed { .. } | Reply::Conflict => Err(Error::InvalidRecord),
-        })
-        .await;
+        let result = self
+            .exchange(Command::Restore, |reply| match reply {
+                Reply::Restored { snapshot } => snapshot
+                    .map(|encoded| {
+                        let snapshot = decode_snapshot(&encoded)?;
+                        if let Some(scope) = &self.scope {
+                            scope
+                                .validate_snapshot(&snapshot)
+                                .map_err(Error::Snapshot)?;
+                        } else if snapshot.requires_scoped_owner_v2() {
+                            return Err(Error::WrongScope);
+                        }
+                        if snapshot.request != self.initial.request
+                            || snapshot.owners != self.initial.owners
+                        {
+                            return Err(Error::WrongScope);
+                        }
+                        Ok(snapshot)
+                    })
+                    .transpose(),
+                Reply::Committed { .. } | Reply::Conflict => Err(Error::InvalidRecord),
+            })
+            .await;
         if result.is_ok() {
             self.require_original_phase(/*mutation*/ false)?;
             if let Some(closing) = &mut phase_closing {
@@ -220,14 +221,15 @@ impl AgentdLearningCheckpointClientV1 {
             expected_head: expected_head.to_string(),
             snapshot: STANDARD_NO_PAD.encode(codec::encode(snapshot)?),
         };
-        let result = self.exchange(command, |reply| match reply {
-            Reply::Committed { head } if head == snapshot.head_digest.to_string() => {
-                Ok(snapshot.head_digest)
-            }
-            Reply::Conflict => Err(Error::Conflict),
-            Reply::Committed { .. } | Reply::Restored { .. } => Err(Error::InvalidRecord),
-        })
-        .await;
+        let result = self
+            .exchange(command, |reply| match reply {
+                Reply::Committed { head } if head == snapshot.head_digest.to_string() => {
+                    Ok(snapshot.head_digest)
+                }
+                Reply::Conflict => Err(Error::Conflict),
+                Reply::Committed { .. } | Reply::Restored { .. } => Err(Error::InvalidRecord),
+            })
+            .await;
         if result.is_ok() {
             self.require_original_phase(/*mutation*/ true)?;
             if let Some(closing) = &mut phase_closing {

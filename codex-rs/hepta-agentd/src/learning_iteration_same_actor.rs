@@ -44,7 +44,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                     "same-actor learning requires its actual original Q24 aggregate".into(),
                 )
             })?;
-        original.require_original_same_actor_work(phase)
+        original
+            .require_original_same_actor_work(phase)
             .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
         loop {
             phase
@@ -67,9 +68,15 @@ impl LearningIterationRuntimeBootstrapV1 {
                 command = self.receiver.recv() => command,
             };
             let Some(command) = command else {
-                return Err(AgentdError::GenerationFenced("original learning queue closed".into()));
+                return Err(AgentdError::GenerationFenced(
+                    "original learning queue closed".into(),
+                ));
             };
-            let LearningIterationCommandV1 { mode, request, mut response } = command;
+            let LearningIterationCommandV1 {
+                mode,
+                request,
+                mut response,
+            } = command;
             if response.is_closed() {
                 return Err(AgentdError::GenerationFenced(
                     "original learning caller disappeared before dispatch".into(),
@@ -133,8 +140,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         // The process has already checked admission and the request deadline.
         // Default aggregates return false without new reads or state changes.
         if !OriginalCellQ24LearningStageOwnersV1::wait_original_same_actor_evaluation(
-            original,
-            snapshot,
+            original, snapshot,
         )
         .await?
         {

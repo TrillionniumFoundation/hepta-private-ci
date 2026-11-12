@@ -33,11 +33,16 @@ pub(crate) struct OriginalInitialPhaseLifetime {
 impl OriginalInitialPhaseLifetime {
     pub(crate) fn new(gate: &Arc<SameActorPhaseGate>, phase: &str) -> Arc<Self> {
         Arc::new(Self {
-            gate: Arc::clone(gate), phase: phase.into(), accepted: AtomicBool::new(false),
+            gate: Arc::clone(gate),
+            phase: phase.into(),
+            accepted: AtomicBool::new(false),
         })
     }
 
-    pub(crate) fn require_original_gate(&self, gate: &Arc<SameActorPhaseGate>) -> Result<(), AgentdError> {
+    pub(crate) fn require_original_gate(
+        &self,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
         gate.require_open()?;
         if !Arc::ptr_eq(&self.gate, gate) {
             return Err(refused("Initial lifetime belongs to another phase gate"));
@@ -49,13 +54,21 @@ impl OriginalInitialPhaseLifetime {
         Arc::ptr_eq(&self.gate, gate) && self.accepted.load(Ordering::Acquire)
     }
 
-    fn accept_original_retirement_ack(&self, context: &OriginalSameActorRootContext) -> Result<(), AgentdError> {
+    fn accept_original_retirement_ack(
+        &self,
+        context: &OriginalSameActorRootContext,
+    ) -> Result<(), AgentdError> {
         self.require_original_gate(context.gate())?;
         OriginalSameActorRootContext::require_current(&context)?;
         if self.phase != context.descriptor().phase
-            || self.accepted.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err()
+            || self
+                .accepted
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
         {
-            return Err(refused("original retirement acknowledgement was already consumed"));
+            return Err(refused(
+                "original retirement acknowledgement was already consumed",
+            ));
         }
         OriginalSameActorRootContext::require_current(&context)
     }
@@ -97,15 +110,28 @@ impl OriginalDaemonPhaseRetirement {
                 return Err(refused("bounded original phase join timeout required"));
             }
             OriginalSameActorRootContext::require_current(&context)?;
-            retained.require_same_actor_phase_prepared(&prepared, context.identity()).await?;
-            let profile = prepared.root_profile(
-                context.identity(), context.bootstrap().writer_proof.sha256()?.as_str()
-                    .parse::<codex_hepta_types::Digest32>().map_err(refused)?.into_array(),
-            ).map_err(refused)?;
+            retained
+                .require_same_actor_phase_prepared(&prepared, context.identity())
+                .await?;
+            let profile = prepared
+                .root_profile(
+                    context.identity(),
+                    context
+                        .bootstrap()
+                        .writer_proof
+                        .sha256()?
+                        .as_str()
+                        .parse::<codex_hepta_types::Digest32>()
+                        .map_err(refused)?
+                        .into_array(),
+                )
+                .map_err(refused)?;
             let stream = tokio::time::timeout(
                 timeout.min(context.gate().require_open()?),
                 tokio::net::UnixStream::connect(&context.descriptor().control_socket),
-            ).await.map_err(|_| refused("original phase join connection expired"))??;
+            )
+            .await
+            .map_err(|_| refused("original phase join connection expired"))??;
             OriginalSameActorRootContext::require_current(&context)?;
             let stream = stream.into_std()?;
             let stop = context.gate().retain_original_stream(&stream)?;
@@ -113,17 +139,30 @@ impl OriginalDaemonPhaseRetirement {
             let transport = RootObservationStream::from_stream_until(
                 stream,
                 AgentdRootAuthorityPeer {
-                    pid: root.pid, boot_id: root.boot_id.clone(),
+                    pid: root.pid,
+                    boot_id: root.boot_id.clone(),
                     process_start_ticks: root.process_start_ticks,
                 },
-                context.root_pidfd()?, timeout, context.gate().deadline().instant(),
-            ).map_err(refused)?;
+                context.root_pidfd()?,
+                timeout,
+                context.gate().deadline().instant(),
+            )
+            .map_err(refused)?;
             original_join_exchange(&transport, &context, &profile, 1).await?;
-            retained.require_same_actor_phase_prepared(&prepared, context.identity()).await?;
-            context.initial_lifetime().accept_original_retirement_ack(&context)?;
+            retained
+                .require_same_actor_phase_prepared(&prepared, context.identity())
+                .await?;
+            context
+                .initial_lifetime()
+                .accept_original_retirement_ack(&context)?;
             Ok(Self {
-                transport, context, profile, prepared, retained,
-                _stop: stop, closing,
+                transport,
+                context,
+                profile,
+                prepared,
+                retained,
+                _stop: stop,
+                closing,
             })
         }
     }
@@ -131,40 +170,73 @@ impl OriginalDaemonPhaseRetirement {
     /// This consumes the first-ACK owner. The caller must have actually dropped
     /// the old Initial/Cell/CURRENT resources; Root independently waits for
     /// their authorized EOF and checks the held physical drained journal cut.
-    pub(crate) async fn join_after_original_a_drop(mut self) -> Result<OriginalJoinedSameActorA, AgentdError> {
+    pub(crate) async fn join_after_original_a_drop(
+        mut self,
+    ) -> Result<OriginalJoinedSameActorA, AgentdError> {
         OriginalSameActorRootContext::require_current(&self.context)?;
-        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;
+        self.retained
+            .require_same_actor_phase_prepared(&self.prepared, self.context.identity())
+            .await?;
         original_join_exchange(&self.transport, &self.context, &self.profile, 2).await?;
-        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;
+        self.retained
+            .require_same_actor_phase_prepared(&self.prepared, self.context.identity())
+            .await?;
         OriginalSameActorRootContext::require_current(&self.context)?;
         let closing = CloseSameActorPhaseOnDrop::new(self.context.gate());
         self.closing.disarm();
         Ok(OriginalJoinedSameActorA {
-            context: self.context, profile: self.profile,
-            prepared: self.prepared, retained: self.retained, closing,
+            context: self.context,
+            profile: self.profile,
+            prepared: self.prepared,
+            retained: self.retained,
+            closing,
         })
     }
 }
 
 impl OriginalJoinedSameActorA {
-    pub(crate) fn context(&self) -> &Arc<OriginalSameActorRootContext> { &self.context }
-    pub(crate) fn prepared(&self) -> &Arc<CellQ24PreparedLearningV1> { &self.prepared }
-    pub(crate) fn profile(&self) -> &HostAuthorityLearningProfileV1 { &self.profile }
+    pub(crate) fn context(&self) -> &Arc<OriginalSameActorRootContext> {
+        &self.context
+    }
+    pub(crate) fn prepared(&self) -> &Arc<CellQ24PreparedLearningV1> {
+        &self.prepared
+    }
+    pub(crate) fn profile(&self) -> &HostAuthorityLearningProfileV1 {
+        &self.profile
+    }
 
     pub(crate) async fn require_original(&self) -> Result<(), AgentdError> {
         OriginalSameActorRootContext::require_current(&self.context)?;
-        self.retained.require_same_actor_phase_prepared(&self.prepared, self.context.identity()).await?;
-        self.prepared.require_profile(
-            &self.profile, self.context.identity(),
-            self.context.bootstrap().writer_proof.sha256()?.as_str()
-                .parse::<codex_hepta_types::Digest32>().map_err(refused)?.into_array(),
-        ).map_err(refused)?;
+        self.retained
+            .require_same_actor_phase_prepared(&self.prepared, self.context.identity())
+            .await?;
+        self.prepared
+            .require_profile(
+                &self.profile,
+                self.context.identity(),
+                self.context
+                    .bootstrap()
+                    .writer_proof
+                    .sha256()?
+                    .as_str()
+                    .parse::<codex_hepta_types::Digest32>()
+                    .map_err(refused)?
+                    .into_array(),
+            )
+            .map_err(refused)?;
         OriginalSameActorRootContext::require_current(&self.context)
     }
 
     pub(crate) fn into_original_learning_parts(
         mut self,
-    ) -> Result<(Arc<OriginalSameActorRootContext>, Arc<CellQ24PreparedLearningV1>, OriginalCellQ24RetainedLearningSourceV1), AgentdError> {
+    ) -> Result<
+        (
+            Arc<OriginalSameActorRootContext>,
+            Arc<CellQ24PreparedLearningV1>,
+            OriginalCellQ24RetainedLearningSourceV1,
+        ),
+        AgentdError,
+    > {
         OriginalSameActorRootContext::require_current(&self.context)?;
         self.closing.disarm();
         Ok((self.context, self.prepared, self.retained))
@@ -181,8 +253,11 @@ async fn original_join_exchange(
     OriginalSameActorRootContext::require_current(&context)?;
     let profile = serde_json::to_string(profile)?;
     let request = PhaseJoinRequest {
-        schema: 1, purpose: PURPOSE.into(), sequence,
-        phase: context.descriptor().phase.clone(), profile: profile.clone(),
+        schema: 1,
+        purpose: PURPOSE.into(),
+        sequence,
+        phase: context.descriptor().phase.clone(),
+        profile: profile.clone(),
     };
     if serde_json::to_vec(&request)?.len() > 16 * 1024 {
         return Err(refused("original phase request bound"));
@@ -190,8 +265,11 @@ async fn original_join_exchange(
     let response: PhaseJoinResponse = transport.read(&request).await.map_err(refused)?;
     // This follows actual framing and semantic ACK validation, including
     // BOOTTIME after suspend; a watcher alone is not the acceptance condition.
-    if response.schema != 1 || response.purpose != PURPOSE || response.sequence != sequence
-        || response.phase != request.phase || response.profile != profile
+    if response.schema != 1
+        || response.purpose != PURPOSE
+        || response.sequence != sequence
+        || response.phase != request.phase
+        || response.profile != profile
     {
         return Err(refused("original phase acknowledgement differs"));
     }

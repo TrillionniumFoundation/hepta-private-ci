@@ -2,9 +2,9 @@
 //! Public profile bytes never create a second Initial connection or an owner.
 
 use super::*;
+use std::os::unix::net::UnixDatagram;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
-use std::os::unix::net::UnixDatagram;
 
 use crate::AgentdRootQ24ModelFactoryV1;
 use crate::CellQ24PreparedLearningV1;
@@ -52,11 +52,14 @@ impl OriginalScopedPublicationTicket {
         OriginalSameActorRootContext::require_current(&self.context)?;
         if !std::ptr::eq(self.context.successor_session().as_ref(), session)
             || self.scoped.original != *self.context.descriptor()
-            || self.consumed.compare_exchange(
-                false, true, Ordering::AcqRel, Ordering::Acquire,
-            ).is_err()
+            || self
+                .consumed
+                .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
         {
-            return Err(refused("scoped CURRENT ticket differs or was already consumed"));
+            return Err(refused(
+                "scoped CURRENT ticket differs or was already consumed",
+            ));
         }
         session.require_original_same_actor_phase(self.context.gate())?;
         closing.disarm();
@@ -70,15 +73,24 @@ impl OriginalScopedPublicationTicket {
     pub(crate) fn connect_original_current(
         mut self,
         timeout: Duration,
-    ) -> impl std::future::Future<Output = Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>> {
+    ) -> impl std::future::Future<Output = Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError>>
+    {
         // The ticket already owns its close guard before this future is polled.
         async move {
             OriginalSameActorRootContext::require_current(&self.context)?;
-            let connection = self.context.successor_session()
+            let connection = self
+                .context
+                .successor_session()
                 .take_original_scoped_publication_connection(&self)?;
-            let current = self.handoff.connect_original_same_actor_publication(
-                connection, Arc::clone(&self.context), self.scoped, timeout,
-            ).await?;
+            let current = self
+                .handoff
+                .connect_original_same_actor_publication(
+                    connection,
+                    Arc::clone(&self.context),
+                    self.scoped,
+                    timeout,
+                )
+                .await?;
             OriginalSameActorRootContext::require_current(&self.context)?;
             self.closing.disarm();
             Ok(current)
@@ -87,24 +99,36 @@ impl OriginalScopedPublicationTicket {
 }
 
 impl OriginalSameActorScopedOwners {
-    pub(crate) fn context(&self) -> &Arc<OriginalSameActorRootContext> { &self.context }
+    pub(crate) fn context(&self) -> &Arc<OriginalSameActorRootContext> {
+        &self.context
+    }
 
     /// The required task worker already owns its common close guard. Every
     /// returned lane also retains its original same-Gate close responsibility.
     pub(crate) fn into_original_parts(
         mut self,
-    ) -> Result<(
-        Arc<OriginalSameActorRootContext>,
-        AgentdRootLearningInputsV1,
-        AgentdRootQ24ModelFactoryV1,
-        OriginalScopedPublicationTicket,
-        Arc<CellQ24PreparedLearningV1>,
-        OriginalCellQ24RetainedLearningSourceV1,
-    ), AgentdError> {
+    ) -> Result<
+        (
+            Arc<OriginalSameActorRootContext>,
+            AgentdRootLearningInputsV1,
+            AgentdRootQ24ModelFactoryV1,
+            OriginalScopedPublicationTicket,
+            Arc<CellQ24PreparedLearningV1>,
+            OriginalCellQ24RetainedLearningSourceV1,
+        ),
+        AgentdError,
+    > {
         OriginalSameActorRootContext::require_current(&self.context)?;
         self.learning.require_prepared_q24(&self.prepared)?;
         self.closing.disarm();
-        Ok((self.context, self.learning, self.model, self.publication, self.prepared, self.retained))
+        Ok((
+            self.context,
+            self.learning,
+            self.model,
+            self.publication,
+            self.prepared,
+            self.retained,
+        ))
     }
 }
 
@@ -125,23 +149,37 @@ pub(crate) fn receive_original_same_actor_scoped_owners(
             let handoff = receive_original_scoped_phase(socket, timeout, receive_context.gate())?;
             OriginalSameActorRootContext::require_current(&receive_context)?;
             Ok::<_, AgentdError>(handoff)
-        }).await.map_err(|_| refused("original scoped rights receiver was lost"))??;
+        })
+        .await
+        .map_err(|_| refused("original scoped rights receiver was lost"))??;
         joined.require_original().await?;
-        let scoped: OriginalScopedPhaseBootstrap = read_original_phase_descriptor(handoff.bootstrap)?;
+        let scoped: OriginalScopedPhaseBootstrap =
+            read_original_phase_descriptor(handoff.bootstrap)?;
         if handoff.root_pid != context.bootstrap().root.pid {
             return Err(refused("scoped rights came from another original Root"));
         }
-        context.accept_original_scoped_descriptor(&scoped, OriginalJoinedSameActorA::prepared(&joined))?;
+        context.accept_original_scoped_descriptor(
+            &scoped,
+            OriginalJoinedSameActorA::prepared(&joined),
+        )?;
         if serde_json::to_vec(&scoped.learning)? != serde_json::to_vec(joined.profile())? {
-            return Err(refused("scoped Root profile differs from the actual joined A"));
+            return Err(refused(
+                "scoped Root profile differs from the actual joined A",
+            ));
         }
-        let learning = handoff.learning.connect_original_same_actor_learning(
-            Arc::clone(&context), scoped.clone(), Arc::clone(OriginalJoinedSameActorA::prepared(&joined)), timeout,
-        ).await?;
+        let learning = handoff
+            .learning
+            .connect_original_same_actor_learning(
+                Arc::clone(&context),
+                scoped.clone(),
+                Arc::clone(OriginalJoinedSameActorA::prepared(&joined)),
+                timeout,
+            )
+            .await?;
         OriginalSameActorRootContext::require_current(&context)?;
-        let model = connect_original_same_actor_model(
-            handoff.model, &context, &learning, &scoped, timeout,
-        ).await?;
+        let model =
+            connect_original_same_actor_model(handoff.model, &context, &learning, &scoped, timeout)
+                .await?;
         joined.require_original().await?;
         OriginalSameActorRootContext::require_current(&context)?;
         let publication = OriginalScopedPublicationTicket {
@@ -154,7 +192,12 @@ pub(crate) fn receive_original_same_actor_scoped_owners(
         let (context, prepared, retained) = joined.into_original_learning_parts()?;
         let result = OriginalSameActorScopedOwners {
             closing: CloseSameActorPhaseOnDrop::new(context.gate()),
-            context, learning, model, publication, prepared, retained,
+            context,
+            learning,
+            model,
+            publication,
+            prepared,
+            retained,
         };
         closing.disarm();
         Ok(result)
@@ -175,52 +218,81 @@ impl RootLearningHandoffV1 {
                 return Err(refused("bounded original phase Learning timeout required"));
             }
             OriginalSameActorRootContext::require_current(&context)?;
-            let bundle: HostAuthorityLearningBootstrapV1 = read_original_phase_descriptor(self.bootstrap)?;
+            let bundle: HostAuthorityLearningBootstrapV1 =
+                read_original_phase_descriptor(self.bootstrap)?;
             let initial = validate_binding(
-                &bundle, context.bootstrap(), context.identity(), self.root_pid,
+                &bundle,
+                context.bootstrap(),
+                context.identity(),
+                self.root_pid,
             )?;
-            let scope = bundle.frozen_scope(&initial)?
+            let scope = bundle
+                .frozen_scope(&initial)?
                 .ok_or_else(|| refused("original phase requires its scoped Learning purpose"))?;
             let expected_initial = scoped.learning.require_binding(
-                context.identity(), context.bootstrap().writer_proof.sha256()?.as_str(),
+                context.identity(),
+                context.bootstrap().writer_proof.sha256()?.as_str(),
             )?;
             let expected_scope = scoped.learning.require_cell_scope(&expected_initial)?;
-            if initial != expected_initial || scope != expected_scope
+            if initial != expected_initial
+                || scope != expected_scope
                 || scoped.original != *context.descriptor()
                 || scoped.phase != context.descriptor().phase
                 || scoped.purpose != crate::same_actor_q24_phase_protocol::SCOPED_PURPOSE
             {
-                return Err(refused("Learning handoff differs from the actual scoped purpose"));
+                return Err(refused(
+                    "Learning handoff differs from the actual scoped purpose",
+                ));
             }
-            prepared.require_initial(&initial, &scope)
+            prepared
+                .require_initial(&initial, &scope)
                 .map_err(|error| refused(error.to_string()))?;
             let paths = &context.bootstrap().sockets;
             // SAFETY: only observes the actual current credential.
             crate::authority_host_runtime::validate_lane_paths(
-                &[&paths.observation, &paths.issuer, &paths.checkpoint,
-                  &paths.device_frontier, &paths.notes_frontier, &bundle.socket_path],
+                &[
+                    &paths.observation,
+                    &paths.issuer,
+                    &paths.checkpoint,
+                    &paths.device_frontier,
+                    &paths.notes_frontier,
+                    &bundle.socket_path,
+                ],
                 unsafe { libc::getegid() },
             )?;
             OriginalSameActorRootContext::require_current(&context)?;
             let stream = tokio::time::timeout(
                 timeout.min(context.gate().require_open()?),
                 tokio::net::UnixStream::connect(&bundle.socket_path),
-            ).await.map_err(|_| refused("original phase Learning connection expired"))??;
+            )
+            .await
+            .map_err(|_| refused("original phase Learning connection expired"))??;
             OriginalSameActorRootContext::require_current(&context)?;
             let client = AgentdLearningCheckpointClientV1::from_original_same_actor_stream_until(
                 stream.into_std()?,
                 AgentdRootAuthorityPeer {
-                    pid: bundle.root.pid, boot_id: bundle.root.boot_id,
+                    pid: bundle.root.pid,
+                    boot_id: bundle.root.boot_id,
                     process_start_ticks: bundle.root.process_start_ticks,
                 },
-                self.root_pidfd, initial.clone(), timeout, scope.clone(), context.gate(),
-            ).map_err(|error| refused(format!("original phase Learning transport: {error}")))?;
-            client.restore(&initial.request).await
+                self.root_pidfd,
+                initial.clone(),
+                timeout,
+                scope.clone(),
+                context.gate(),
+            )
+            .map_err(|error| refused(format!("original phase Learning transport: {error}")))?;
+            client
+                .restore(&initial.request)
+                .await
                 .map_err(|error| refused(format!("original phase Learning CURRENT: {error}")))?;
             OriginalSameActorRootContext::require_current(&context)?;
             closing.disarm();
             Ok(AgentdRootLearningInputsV1 {
-                client, initial, identity: context.identity().clone(), scope: Some(scope),
+                client,
+                initial,
+                identity: context.identity().clone(),
+                scope: Some(scope),
             })
         }
     }
@@ -241,34 +313,55 @@ async fn connect_original_same_actor_model(
     let bundle: Q24ModelFactoryBootstrap = read_original_phase_descriptor(handoff.bootstrap)?;
     let original = context.bootstrap();
     let identity = context.identity();
-    let socket = original.sockets.observation.parent()
+    let socket = original
+        .sockets
+        .observation
+        .parent()
         .ok_or_else(|| refused("original Root socket parent missing"))?
         .join("q24-model-proposal-factory-v1.sock");
-    if bundle.root != original.root || bundle.consumer != original.consumer
-        || bundle.root.pid != handoff.root_pid || bundle.root.uid != 0
+    if bundle.root != original.root
+        || bundle.consumer != original.consumer
+        || bundle.root.pid != handoff.root_pid
+        || bundle.root.uid != 0
         || bundle.identity.identity()? != *identity
         || original.registered_identity.identity()? != *identity
         || bundle.socket_path != socket
         || bundle.profile.binding().to_string() != scoped.factory
     {
-        return Err(refused("Model handoff differs from the original scoped Root purpose"));
+        return Err(refused(
+            "Model handoff differs from the original scoped Root purpose",
+        ));
     }
     let (initial, scope) = learning.q24_model_scope(identity)?;
     bundle.profile.require_context(
-        identity, original.writer_proof.sha256()?.as_str(), &initial, &scope,
+        identity,
+        original.writer_proof.sha256()?.as_str(),
+        &initial,
+        &scope,
     )?;
-    bundle.profile.require_files(&handoff.journal, &handoff.witness)?;
+    bundle
+        .profile
+        .require_files(&handoff.journal, &handoff.witness)?;
     let paths = &original.sockets;
     // SAFETY: only observes the actual current credential.
     crate::authority_host_runtime::validate_lane_paths(
-        &[&paths.observation, &paths.issuer, &paths.checkpoint,
-          &paths.device_frontier, &paths.notes_frontier, &socket],
+        &[
+            &paths.observation,
+            &paths.issuer,
+            &paths.checkpoint,
+            &paths.device_frontier,
+            &paths.notes_frontier,
+            &socket,
+        ],
         unsafe { libc::getegid() },
     )?;
     OriginalSameActorRootContext::require_current(&context)?;
     let stream = tokio::time::timeout(
-        timeout.min(context.gate().require_open()?), tokio::net::UnixStream::connect(&socket),
-    ).await.map_err(|_| refused("original phase Model connection expired"))??;
+        timeout.min(context.gate().require_open()?),
+        tokio::net::UnixStream::connect(&socket),
+    )
+    .await
+    .map_err(|_| refused("original phase Model connection expired"))??;
     OriginalSameActorRootContext::require_current(&context)?;
     let stream = stream.into_std()?;
     // Both owners are derived here from THIS original stream and THIS gate.
@@ -277,15 +370,25 @@ async fn connect_original_same_actor_model(
     let transport = RootObservationStream::from_stream_until(
         stream,
         AgentdRootAuthorityPeer {
-            pid: bundle.root.pid, boot_id: bundle.root.boot_id,
+            pid: bundle.root.pid,
+            boot_id: bundle.root.boot_id,
             process_start_ticks: bundle.root.process_start_ticks,
         },
-        handoff.root_pidfd, timeout, context.gate().deadline().instant(),
-    ).map_err(|error| refused(format!("original phase Model peer: {error}")))?;
+        handoff.root_pidfd,
+        timeout,
+        context.gate().deadline().instant(),
+    )
+    .map_err(|error| refused(format!("original phase Model peer: {error}")))?;
     let model = AgentdRootQ24ModelFactoryV1::from_original_same_actor_handoff(
-        transport, bundle.profile, initial, scope, identity.spawn_generation,
-        (handoff.journal, handoff.witness), required,
-    ).await?;
+        transport,
+        bundle.profile,
+        initial,
+        scope,
+        identity.spawn_generation,
+        (handoff.journal, handoff.witness),
+        required,
+    )
+    .await?;
     OriginalSameActorRootContext::require_current(&context)?;
     closing.disarm();
     Ok(model)

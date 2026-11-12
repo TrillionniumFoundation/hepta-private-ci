@@ -24,16 +24,20 @@ pub(crate) struct OriginalPublicationStream {
 }
 
 struct OriginalPhasePublicationChannel {
-    initial_retirement: Option<std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>>,
+    initial_retirement: Option<
+        std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,
+    >,
     _stop: crate::same_actor_q24_phase_gate::SameActorPhaseStream,
     gate: std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
 }
 
 impl Drop for OriginalPhasePublicationChannel {
     fn drop(&mut self) {
-        if !self.initial_retirement.as_ref().is_some_and(|retirement| {
-            retirement.permits_original_drop(&self.gate)
-        }) {
+        if !self
+            .initial_retirement
+            .as_ref()
+            .is_some_and(|retirement| retirement.permits_original_drop(&self.gate))
+        {
             self.gate.close();
         }
     }
@@ -116,10 +120,18 @@ impl OriginalPublicationStream {
         peer: AgentdRootAuthorityPeer,
         timeout: Duration,
         gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
-        retirement: std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,
+        retirement: std::sync::Arc<
+            crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime,
+        >,
     ) -> io::Result<Self> {
         Self::from_original_phase_stream_until(
-            stream, root, peer, timeout, gate.deadline().instant(), gate, Some(retirement),
+            stream,
+            root,
+            peer,
+            timeout,
+            gate.deadline().instant(),
+            gate,
+            Some(retirement),
         )
     }
 
@@ -131,7 +143,13 @@ impl OriginalPublicationStream {
         gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
     ) -> io::Result<Self> {
         Self::from_original_phase_stream_until(
-            stream, root, peer, timeout, gate.deadline().instant(), gate, None,
+            stream,
+            root,
+            peer,
+            timeout,
+            gate.deadline().instant(),
+            gate,
+            None,
         )
     }
 
@@ -142,12 +160,18 @@ impl OriginalPublicationStream {
         timeout: Duration,
         end: Instant,
         gate: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
-        initial_retirement: Option<std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>>,
+        initial_retirement: Option<
+            std::sync::Arc<crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime>,
+        >,
     ) -> io::Result<Self> {
         let mut closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(gate);
         gate.require_open()?;
-        if end != gate.deadline().instant() { return Err(unavailable()); }
-        let lifetime = end.checked_duration_since(Instant::now()).ok_or_else(unavailable)?;
+        if end != gate.deadline().instant() {
+            return Err(unavailable());
+        }
+        let lifetime = end
+            .checked_duration_since(Instant::now())
+            .ok_or_else(unavailable)?;
         let stop = gate.retain_original_stream(&stream)?;
         if peer.pid == 0
             || peer.pid > i32::MAX as u32
@@ -205,7 +229,9 @@ impl OriginalPublicationStream {
         stream.set_nonblocking(true)?;
         gate.require_open()?;
         if let Some(retirement) = &initial_retirement {
-            retirement.require_original_gate(gate).map_err(io::Error::other)?;
+            retirement
+                .require_original_gate(gate)
+                .map_err(io::Error::other)?;
         }
         // Only the exact first retirement ACK enables this one Initial
         // channel's deliberate owner drop. Any earlier drop closes all lanes.
@@ -227,7 +253,9 @@ impl OriginalPublicationStream {
         let mut phase_close = self.phase.as_ref().map(|phase| {
             crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(&phase.gate)
         });
-        if let Some(phase) = &self.phase { phase.gate.require_open()?; }
+        if let Some(phase) = &self.phase {
+            phase.gate.require_open()?;
+        }
         if request.is_empty() || request.len() > 16_384 {
             return Err(unavailable());
         }
@@ -247,8 +275,12 @@ impl OriginalPublicationStream {
         if Instant::now() >= end {
             return Err(unavailable());
         }
-        if let Some(phase) = &self.phase { phase.gate.require_open()?; }
-        if let Some(closing) = &mut phase_close { closing.disarm(); }
+        if let Some(phase) = &self.phase {
+            phase.gate.require_open()?;
+        }
+        if let Some(closing) = &mut phase_close {
+            closing.disarm();
+        }
         Ok(response)
     }
 

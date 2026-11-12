@@ -7,15 +7,15 @@
 use super::*;
 use std::sync::Arc;
 
-use codex_hepta_contracts::RootAuthorityDirectory;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 use crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;
 use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use crate::same_actor_q24_phase_protocol::CONTROL_SOCKET;
 use crate::same_actor_q24_phase_protocol::OriginalPhaseBootstrap;
 use crate::same_actor_q24_phase_protocol::START_PURPOSE;
-use crate::same_actor_q24_phase_protocol::CONTROL_SOCKET;
 use crate::same_actor_q24_phase_record::OriginalPhaseRecord;
 use crate::same_actor_q24_phase_record::PhaseIdentity;
+use codex_hepta_contracts::RootAuthorityDirectory;
 
 #[path = "authority_host_same_actor_q24_scope_cap.rs"]
 mod scope_cap;
@@ -27,9 +27,9 @@ mod worker;
 
 #[path = "authority_host_same_actor_q24_host.rs"]
 mod host;
-pub use host::RootSameActorHostInputsV1;
-pub use host::RootSameActorHostCommandV1;
 pub use host::RootSameActorHostAcknowledgementV1;
+pub use host::RootSameActorHostCommandV1;
+pub use host::RootSameActorHostInputsV1;
 
 pub struct RootSameActorPhaseStartV1 {
     pub initial_capability: generation_initial::RootSameActorInitialEnrollmentCapabilityV1,
@@ -65,10 +65,16 @@ impl PreparedRootSameActorQ24PhaseV1 {
         let deadline = SameActorPhaseDeadline::at_original_service_start(
             std::time::Duration::from_millis(config.lifetime_ms),
         )?;
-        let original = PreparedHostAuthoritySession::open(
-            config_file, registration_file, owner_pidfd,
-        )?;
-        Self::capture_original_phase(original, config, deadline, current_directory, initial, model)
+        let original =
+            PreparedHostAuthoritySession::open(config_file, registration_file, owner_pidfd)?;
+        Self::capture_original_phase(
+            original,
+            config,
+            deadline,
+            current_directory,
+            initial,
+            model,
+        )
     }
 
     pub async fn prepare_fresh_from_registered(
@@ -84,9 +90,19 @@ impl PreparedRootSameActorQ24PhaseV1 {
             std::time::Duration::from_millis(config.lifetime_ms),
         )?;
         let original = PreparedHostAuthoritySession::prepare_fresh_from_registered(
-            config_file, registration_file, owner_pidfd,
-        ).await?;
-        Self::capture_original_phase(original, config, deadline, current_directory, initial, model)
+            config_file,
+            registration_file,
+            owner_pidfd,
+        )
+        .await?;
+        Self::capture_original_phase(
+            original,
+            config,
+            deadline,
+            current_directory,
+            initial,
+            model,
+        )
     }
 
     fn capture_original_phase(
@@ -108,15 +124,22 @@ impl PreparedRootSameActorQ24PhaseV1 {
             || original.config.sockets.device_frontier.is_none()
             || original.config.sockets.notes_frontier.is_none()
         {
-            return Err(io::Error::other("same-actor phase requires the unchanged original startup"));
+            return Err(io::Error::other(
+                "same-actor phase requires the unchanged original startup",
+            ));
         }
         gate.require_open()?;
-        original.service.bind_original_same_actor_phase_issuer(&gate)?;
+        original
+            .service
+            .bind_original_same_actor_phase_issuer(&gate)?;
         let (initial_capability, initial_offer) =
             original.enable_generation_initial(initial.clone())?;
         let mut retained = None;
         original.service.with_initial_publication_context(
-            &original.config, &original.registration, &original.owner_pidfd, |proof| {
+            &original.config,
+            &original.registration,
+            &original.owner_pidfd,
+            |proof| {
                 gate.require_open()?;
                 let phase_identity = PhaseIdentity {
                     root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
@@ -133,20 +156,27 @@ impl PreparedRootSameActorQ24PhaseV1 {
                     },
                     identity: crate::neuron_generation_process_identity_digest_v1(
                         &original.registration.registered_identity.identity()?,
-                    ).map_err(io::Error::other)?.to_string(),
+                    )
+                    .map_err(io::Error::other)?
+                    .to_string(),
                     writer: proof,
                     initial: initial.clone(),
                     model_reservation: serde_json::to_string(&model).map_err(io::Error::other)?,
                     root_end_boottime_ns: deadline.boottime_ns(),
                 };
                 let record = OriginalPhaseRecord::reserve(
-                    Arc::clone(&current_directory), phase_identity.clone(),
+                    Arc::clone(&current_directory),
+                    phase_identity.clone(),
                 )?;
                 let descriptor = OriginalPhaseBootstrap {
                     purpose: START_PURPOSE.into(),
                     phase: record.binding()?,
                     original: phase_identity,
-                    control_socket: original.config.sockets.observation.parent()
+                    control_socket: original
+                        .config
+                        .sockets
+                        .observation
+                        .parent()
                         .ok_or_else(|| io::Error::other("original Root listener parent missing"))?
                         .join(CONTROL_SOCKET),
                 };
@@ -158,8 +188,8 @@ impl PreparedRootSameActorQ24PhaseV1 {
             },
         )?;
         gate.require_open()?;
-        let (record, descriptor, sealed) = retained
-            .ok_or_else(|| io::Error::other("original phase startup capture missing"))?;
+        let (record, descriptor, sealed) =
+            retained.ok_or_else(|| io::Error::other("original phase startup capture missing"))?;
         let (scope, scope_capability) =
             scope_cap::ScopeRuntime::mint(descriptor.original.root.clone(), &gate);
         let start = RootSameActorPhaseStartV1 {
@@ -176,13 +206,24 @@ impl PreparedRootSameActorQ24PhaseV1 {
         };
         closing.disarm();
         let closing = CloseSameActorPhaseOnDrop::new(&gate);
-        Ok(Self { original, gate, record, descriptor, model, scope, start: Some(start), closing })
+        Ok(Self {
+            original,
+            gate,
+            record,
+            descriptor,
+            model,
+            scope,
+            start: Some(start),
+            closing,
+        })
     }
 
     pub fn take_start(&mut self) -> io::Result<RootSameActorPhaseStartV1> {
         let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
         self.gate.require_open()?;
-        let start = self.start.take()
+        let start = self
+            .start
+            .take()
             .ok_or_else(|| io::Error::other("original phase start was already consumed"))?;
         closing.disarm();
         Ok(start)
@@ -208,22 +249,30 @@ impl PreparedRootSameActorQ24PhaseV1 {
     }
 
     pub fn with_original_logind_session(
-        mut self, profile_file: &Path, original_login: OwnedFd,
+        mut self,
+        profile_file: &Path,
+        original_login: OwnedFd,
     ) -> io::Result<Self> {
         let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
         self.gate.require_open()?;
-        self.original = self.original.with_original_logind_session(profile_file, original_login)?;
+        self.original = self
+            .original
+            .with_original_logind_session(profile_file, original_login)?;
         self.gate.require_open()?;
         closing.disarm();
         Ok(self)
     }
 
     pub fn with_registered_notes_from_session(
-        mut self, target: &codex_hepta_memory::NotesTargetIdentity, lifetime_ms: u64,
+        mut self,
+        target: &codex_hepta_memory::NotesTargetIdentity,
+        lifetime_ms: u64,
     ) -> io::Result<Self> {
         let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
         self.gate.require_open()?;
-        self.original = self.original.with_registered_notes_from_session(target, lifetime_ms)?;
+        self.original = self
+            .original
+            .with_registered_notes_from_session(target, lifetime_ms)?;
         self.gate.require_open()?;
         closing.disarm();
         Ok(self)

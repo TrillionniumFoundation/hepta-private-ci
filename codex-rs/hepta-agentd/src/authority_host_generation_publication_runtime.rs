@@ -202,7 +202,9 @@ pub(in super::super) fn serve_optional(
 
 impl BoundPublication {
     pub(in super::super) fn activate_same_actor_phase(&self) -> io::Result<()> {
-        self.runtime.phase.compare_exchange(PREPARED, ACTIVE, Ordering::AcqRel, Ordering::Acquire)
+        self.runtime
+            .phase
+            .compare_exchange(PREPARED, ACTIVE, Ordering::AcqRel, Ordering::Acquire)
             .map_err(|_| io::Error::other("original phase publication runtime already consumed"))?;
         Ok(())
     }
@@ -218,7 +220,10 @@ impl BoundPublication {
     ) -> io::Result<()> {
         let _closing = crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop::new(phase.gate);
         let end = phase.gate.deadline().instant();
-        let receiver = self.runtime.receiver.try_lock()
+        let receiver = self
+            .runtime
+            .receiver
+            .try_lock()
             .map_err(|_| io::Error::other("original phase publication receiver busy"))?;
         let submission = loop {
             let epoch = phase.gate.original_wait_epoch()?;
@@ -227,18 +232,29 @@ impl BoundPublication {
                 Ok(value) => break value,
                 Err(mpsc::TryRecvError::Empty) => phase.gate.wait_original_change(epoch)?,
                 Err(mpsc::TryRecvError::Disconnected) => {
-                    return Err(io::Error::other("original phase publication capability was dropped"));
+                    return Err(io::Error::other(
+                        "original phase publication capability was dropped",
+                    ));
                 }
             }
         };
         let slot = service.enroll_generation_publication_for_phase(
-            config, registration, owner, learning, submission.inputs, phase,
+            config,
+            registration,
+            owner,
+            learning,
+            submission.inputs,
+            phase,
         );
         let slot = match slot {
             Ok(slot) => {
                 phase.require_original(&slot)?;
-                submission.acknowledgement.try_send(Ok(slot.profile.binding.clone()))
-                    .map_err(|_| io::Error::other("original phase publication acknowledgement lost"))?;
+                submission
+                    .acknowledgement
+                    .try_send(Ok(slot.profile.binding.clone()))
+                    .map_err(|_| {
+                        io::Error::other("original phase publication acknowledgement lost")
+                    })?;
                 phase.gate.notify_original_waiters();
                 phase.require_original(&slot)?;
                 slot
@@ -263,15 +279,23 @@ impl BoundPublication {
         verify_pinned_process(registration, config.peer_uid, config.peer_gid, owner, end)?;
         phase.require_original(&slot)?;
         service.serve_generation_publication_until(
-            &slot, learning, config, registration, stream,
+            &slot,
+            learning,
+            config,
+            registration,
+            stream,
             HostAuthorityPeerPolicy {
-                peer: HostIssuerPeer { uid: config.peer_uid, pid: registration.peer_pid },
+                peer: HostIssuerPeer {
+                    uid: config.peer_uid,
+                    pid: registration.peer_pid,
+                },
                 timeout: Duration::from_millis(config.timeout_ms),
                 lifetime: Duration::from_millis(config.lifetime_ms),
                 request_bound: 16 * 1024,
                 response_bound: 16 * 1024,
             },
-            owner.try_clone()?, phase,
+            owner.try_clone()?,
+            phase,
         )
     }
 }

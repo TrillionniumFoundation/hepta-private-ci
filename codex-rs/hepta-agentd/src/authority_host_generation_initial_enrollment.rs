@@ -14,7 +14,12 @@ impl HostAuthorityService {
         inputs: RootGenerationInitialEnrollmentV1,
     ) -> io::Result<RegisteredGenerationInitial> {
         self.enroll_generation_initial_in_phase(
-            config, registration, owner, deployment, inputs, None,
+            config,
+            registration,
+            owner,
+            deployment,
+            inputs,
+            None,
         )
     }
 
@@ -135,7 +140,9 @@ impl HostAuthorityService {
                             Some(current)
                         }
                     };
-                if let Some(gate) = phase { gate.require_open()?; }
+                if let Some(gate) = phase {
+                    gate.require_open()?;
+                }
                 let profile_store = match &recovered {
                     Some((store, record)) => {
                         if record.profile != profile {
@@ -207,7 +214,9 @@ impl HostAuthorityService {
                     }
                 }
                 drop(held);
-                if let Some(gate) = phase { gate.require_open()?; }
+                if let Some(gate) = phase {
+                    gate.require_open()?;
+                }
                 Ok(enrolled)
             })();
             let enrolled = match retained_result {

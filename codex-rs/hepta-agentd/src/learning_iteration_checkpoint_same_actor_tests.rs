@@ -3,11 +3,11 @@
 //! Root-only constructor, a business snapshot, or a complete phase deployment.
 
 use super::*;
-use pretty_assertions::assert_eq;
 use crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel;
 use crate::same_actor_q24_phase_gate::SameActorPhaseDeadline;
 use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
+use pretty_assertions::assert_eq;
 
 fn current_uid() -> u32 {
     // SAFETY: reads this test process's kernel credential without changing it.
@@ -115,8 +115,8 @@ fn closed(fixture: &mut PhaseClient) {
 }
 
 #[tokio::test]
-async fn phase_learning_success_keeps_lane_but_wrong_scope_closes_all_lanes()
--> anyhow::Result<()> {
+async fn phase_learning_success_keeps_lane_but_wrong_scope_closes_all_lanes() -> anyhow::Result<()>
+{
     let history = snapshots(Decision::EvaluatedNoUpdate)?;
     let initial = &history[0];
     let scope = scoped(initial);
@@ -182,8 +182,7 @@ async fn phase_learning_original_owner_conflict_preserves_error_and_closes_conne
 }
 
 #[tokio::test]
-async fn phase_learning_original_commit_lost_ack_is_kept_and_never_rearmed()
--> anyhow::Result<()> {
+async fn phase_learning_original_commit_lost_ack_is_kept_and_never_rearmed() -> anyhow::Result<()> {
     let history = snapshots(Decision::EvaluatedNoUpdate)?;
     let initial = &history[0];
     let scope = scoped(initial);

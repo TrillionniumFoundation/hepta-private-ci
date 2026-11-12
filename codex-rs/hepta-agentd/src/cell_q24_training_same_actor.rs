@@ -50,60 +50,63 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let mut closing = phase.original_failure_scope();
         self.require_dataset(dataset)?;
         let for_work = Arc::clone(phase);
-        let completed = self.in_lane(
-            move |owners| match owners.receipts.journal.read(&owners.receipts.saved) {
-                Ok(_) => owners.read_original_completion(),
-                Err(LearningOriginalOwnerErrorV1::Store(
-                    ProductEvaluationExecutionStoreErrorV1::Missing,
-                )) => {
-                    let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
-                    let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> =
-                        &mut owners.receipts;
-                    let retained_outcome = match training.readback() {
-                        Ok(outcome) => Some(outcome),
-                        Err(CellQ24TrainingOwnerErrorV1::Store(
-                            ProductEvaluationExecutionStoreErrorV1::Missing,
-                        )) => None,
-                        Err(error) => return Err(error.into()),
-                    };
-                    let now = super::super::now()
-                        .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                    receipts
-                        .config
-                        .verifier
-                        .require_signer_binding(
-                            LearningEvidenceRoleV1::Generator,
-                            &receipts.config.signer,
-                            now,
-                        )
-                        .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                    if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds {
-                        return Err(Error::DeadlineExceeded);
+        let completed = self
+            .in_lane(
+                move |owners| match owners.receipts.journal.read(&owners.receipts.saved) {
+                    Ok(_) => owners.read_original_completion(),
+                    Err(LearningOriginalOwnerErrorV1::Store(
+                        ProductEvaluationExecutionStoreErrorV1::Missing,
+                    )) => {
+                        let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
+                        let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> =
+                            &mut owners.receipts;
+                        let retained_outcome = match training.readback() {
+                            Ok(outcome) => Some(outcome),
+                            Err(CellQ24TrainingOwnerErrorV1::Store(
+                                ProductEvaluationExecutionStoreErrorV1::Missing,
+                            )) => None,
+                            Err(error) => return Err(error.into()),
+                        };
+                        let now = super::super::now()
+                            .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+                        receipts
+                            .config
+                            .verifier
+                            .require_signer_binding(
+                                LearningEvidenceRoleV1::Generator,
+                                &receipts.config.signer,
+                                now,
+                            )
+                            .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+                        if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds {
+                            return Err(Error::DeadlineExceeded);
+                        }
+                        // The original witness read and native owner lock have
+                        // completed. A closed phase cannot start a new fit.
+                        for_work
+                            .require_original_work_entry()
+                            .map_err(|_| Error::CommitUncertain)?;
+                        let outcome = match retained_outcome {
+                            Some(outcome) => outcome,
+                            None => training.fit_or_readback(&cancellation)?,
+                        };
+                        // An admitted fit may finish after cancellation. Its real
+                        // durable outcome is retained; no new receipt is started.
+                        for_work
+                            .require_original_work_entry()
+                            .map_err(|_| Error::CommitUncertain)?;
+                        let (receipt, attestation) =
+                            receipts.attest_original_completion(training)?;
+                        Ok(OriginalCellQ24TrainingCompletionV1 {
+                            outcome,
+                            receipt,
+                            attestation,
+                        })
                     }
-                    // The original witness read and native owner lock have
-                    // completed. A closed phase cannot start a new fit.
-                    for_work
-                        .require_original_work_entry()
-                        .map_err(|_| Error::CommitUncertain)?;
-                    let outcome = match retained_outcome {
-                        Some(outcome) => outcome,
-                        None => training.fit_or_readback(&cancellation)?,
-                    };
-                    // An admitted fit may finish after cancellation. Its real
-                    // durable outcome is retained; no new receipt is started.
-                    for_work
-                        .require_original_work_entry()
-                        .map_err(|_| Error::CommitUncertain)?;
-                    let (receipt, attestation) = receipts.attest_original_completion(training)?;
-                    Ok(OriginalCellQ24TrainingCompletionV1 {
-                        outcome,
-                        receipt,
-                        attestation,
-                    })
-                }
-                Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
-            },
-        ).await?;
+                    Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
+                },
+            )
+            .await?;
         phase
             .require_original_work_entry()
             .map_err(|_| Error::CommitUncertain)?;
