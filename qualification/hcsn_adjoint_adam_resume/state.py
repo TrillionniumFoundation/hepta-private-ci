@@ -1,15 +1,14 @@
 """Primitive/tensor-only complete checkpoint schema and atomic publication."""
 
-from fractions import Fraction
 import hashlib
 import io
-import json
 import os
-from pathlib import Path
 import platform
 import random
 import sys
 import tarfile
+from fractions import Fraction
+from pathlib import Path
 
 import numpy as np
 import scipy
@@ -20,7 +19,6 @@ from qualification.hcsn_graded.model import GradedJointModel
 from qualification.hcsn_graded.spatial import GradedSpatialGenerator
 from qualification.hcsn_initial_adjoint.solver import freeze_problem
 from qualification.hcsn_joint_dde.model import JointModel
-
 
 NAMES = ("active", "content", "phase_mass", "phase_content")
 PROTOCOL = "hcsn-adjoint-four-amplitudes-adam-resume-20261112-c06d-stage1"

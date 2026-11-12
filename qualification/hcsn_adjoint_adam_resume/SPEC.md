@@ -90,8 +90,13 @@ same exact runtime/source, Adam settings and tested process/publication boundary
 It grants no large-grid, cross-runtime, full-network, historical-training,
 full-prior/migration or model-adoption qualification. Global HCSN remains HOLD.
 
-Every controller admission is persisted with a nonce, PID, started/terminal
-state, actual exit code and reserved maximum work. A missing, malformed or
+Before Popen, every controller admission is persisted as STARTING with an
+UNKNOWN launch effect, a nonce and reserved maximum work. A returned PID
+updates that intent to SPAWNED. An unresolved STARTING intent has unknown
+work even if its PID was never recorded. Only a definite prelaunch failure
+or a reported Popen spawn exception is marked terminal with no child and
+zero known calls. Every spawned actor retains its PID, started/terminal
+state and actual exit code. A missing, malformed or
 unbound actor RESULT leaves its cost UNKNOWN and stops further admissions.
 In that case exact total actual_calls is null; only separately labeled
 observed totals and the unknown actor bounds are reported. No unreported

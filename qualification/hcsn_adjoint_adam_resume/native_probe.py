@@ -1,14 +1,13 @@
 """Coordinate bounded fresh actors and inspect their complete logical states."""
 
 import argparse
-import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -64,7 +63,8 @@ def main():
     def actor(geometry, mode, label, checkpoint=None, published=None):
         bounds = dict(zip(totals, expected[mode]))
         if any(
-            entry["started"] and entry["calls_status"] != "KNOWN" for entry in actors
+            entry["calls_status"] not in ("KNOWN", "START_FAILED_NO_CHILD")
+            for entry in actors
         ):
             raise ValueError("no further admission after unreported actor work")
         if any(
@@ -103,11 +103,12 @@ def main():
             mode=mode,
             command=command,
             expected_maximum_calls=bounds,
-            started=False,
+            started=None,
             terminal=False,
             pid=None,
             exit_code=None,
-            calls_status="NOT_STARTED",
+            calls_status="UNKNOWN_STARTING",
+            launch_state="STARTING",
             observed_calls=None,
             result=None,
         )
@@ -115,14 +116,24 @@ def main():
         write("ACTORS.json", actors)
         write(label + "-ADMISSION.json", entry)
         wall = time.perf_counter()
+        process = None
+        definite_no_child = True
         try:
             with (
                 (args.output / (label + ".stdout")).open("wb") as stdout,
                 (args.output / (label + ".stderr")).open("wb") as stderr,
             ):
-                process = subprocess.Popen(command, stdout=stdout, stderr=stderr)
+                definite_no_child = False
+                try:
+                    process = subprocess.Popen(command, stdout=stdout, stderr=stderr)
+                except (OSError, ValueError):
+                    definite_no_child = True
+                    raise
                 entry.update(
-                    started=True, pid=process.pid, calls_status="UNKNOWN_PENDING_RESULT"
+                    started=True,
+                    pid=process.pid,
+                    launch_state="SPAWNED",
+                    calls_status="UNKNOWN_PENDING_RESULT",
                 )
                 write("ACTORS.json", actors)
                 write(label + "-ADMISSION.json", entry)
@@ -131,9 +142,16 @@ def main():
             entry["launch_or_wait_error"] = dict(
                 type=type(exc).__name__, message=str(exc)
             )
-            entry["calls_status"] = (
-                "UNKNOWN" if entry["started"] else "START_FAILED_NO_CHILD"
-            )
+            if definite_no_child:
+                entry.update(
+                    started=False,
+                    terminal=True,
+                    launch_state="TERMINAL_SPAWN_FAILED",
+                    calls_status="START_FAILED_NO_CHILD",
+                    observed_calls=dict(forwards=0, adjoints=0, adam_updates=0),
+                )
+            else:
+                entry["calls_status"] = "UNKNOWN_LAUNCH_OR_WAIT"
             write("ACTORS.json", actors)
             write(label + "-ADMISSION.json", entry)
             raise
@@ -343,12 +361,14 @@ def main():
             nonce=e["admission_nonce"],
             pid=e["pid"],
             started=e["started"],
+            launch_state=e["launch_state"],
+            calls_status=e["calls_status"],
             terminal=e["terminal"],
             exit_code=e["exit_code"],
             maximum_calls=e["expected_maximum_calls"],
         )
         for e in actors
-        if e["started"] and e["calls_status"] != "KNOWN"
+        if e["calls_status"] not in ("KNOWN", "START_FAILED_NO_CHILD")
     ]
     exact_calls = None if unknown else totals
     result = dict(
