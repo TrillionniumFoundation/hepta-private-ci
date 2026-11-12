@@ -79,7 +79,14 @@
     },
     "whole_zip_all_member_crc_and_size_sha256": "PASS_BY_PRIMARY_RECEIPT",
     "source_of_byte_crc_credit": "PRIMARY-BYTE-READBACK.json",
-    "independent_actual_operational_audit": "PENDING_AT_CORE_ARCHIVE",
+    "independent_actual_operational_audit": {
+      "status": "PASS",
+      "reviewer": "/root/review_spatial",
+      "receipt": "actual-review/RECEIPT.json",
+      "receipt_git_blob": "7068257e1a691ee44039ffa1b096cc68b962d249",
+      "receipt_sha256": "290dc3d3c516f2d34b7278ad5bde7242751d5ab608dd0d34936d1ae31e25410d",
+      "review_fixture_worker_toy_model_numeric_import_or_api_executions": 0
+    },
     "this_archivist_executed_fixture_or_worker_or_toy": false,
     "this_archivist_executed_model_or_Torch_or_forward_or_adjoint_or_optimizer": false,
     "v8_sha256_known_vectors": [
@@ -94,7 +101,7 @@
     "Two post-spawn kill controls reap their zero-work toy before controller SIGKILL; this does not prove termination of a live optimizer or orphan cleanup.",
     "Synthetic unresolved reservation (3 forward,3 adjoint,2 Adam) is an upper bound only, with null actual work; no such numerical work was executed.",
     "Does not resolve prior C2 UNKNOWN/OOM attempts, independent full-training replay 0/6, power-loss durability, active orphan cleanup, hostile Python/JSON or full-network qualification.",
-    "Finite scenario PASS is not exhaustive state-space proof. Independent actual event/JSON audit pending separately."
+    "Finite scenario PASS is not exhaustive state-space proof. The independent review retains its malformed-JSON preliminary read error, then checks that negative control as raw bytes."
   ],
   "mutation_scope": "Only new files under qualification/hcsn_ci_readbacks/6254-actual001; source head unchanged; no workflow rerun or native key."
 }

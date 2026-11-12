@@ -1,0 +1,296 @@
+{
+  "actual_failed_exec_attempts": 1,
+  "actual_fixture_numerical_calls": {
+    "adam_updates": 0,
+    "adjoints": 0,
+    "forwards": 0
+  },
+  "actual_fixture_toy_bodies": 10,
+  "actual_fixture_worker_processes": 13,
+  "actual_toy_PIDs": [
+    2232,
+    2236,
+    2238,
+    2240,
+    2242,
+    2244,
+    2246,
+    2248,
+    2251,
+    2253
+  ],
+  "actual_worker_PIDs": [
+    2231,
+    2233,
+    2235,
+    2237,
+    2239,
+    2241,
+    2243,
+    2245,
+    2247,
+    2249,
+    2250,
+    2252,
+    2254
+  ],
+  "artifact_id": 13951651852,
+  "cases": [
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": {
+        "adam_updates": 0,
+        "adjoints": 0,
+        "forwards": 0
+      },
+      "ledger_unknown": false,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": false,
+      "scenario": "known_zero",
+      "worker_pid": 2231
+    },
+    {
+      "actual_toy_body": 0,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered"
+      ],
+      "exact_calls_under_test": {
+        "adam_updates": 0,
+        "adjoints": 0,
+        "forwards": 0
+      },
+      "ledger_unknown": false,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": false,
+      "scenario": "no_child",
+      "worker_pid": 2233
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "missing_result",
+      "worker_pid": 2235
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "malformed_result",
+      "worker_pid": 2237
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "unbound_result",
+      "worker_pid": 2239
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "wrong_pid",
+      "worker_pid": 2241
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "wrong_source",
+      "worker_pid": 2243
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "wrong_exit",
+      "worker_pid": 2245
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": 0,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "noninteger_counter",
+      "worker_pid": 2247
+    },
+    {
+      "actual_toy_body": 0,
+      "authoritative_exit": -9,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "intentional_controller_SIGKILL"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "pre_popen_kill",
+      "worker_pid": 2249
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": -9,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped",
+        "intentional_controller_SIGKILL"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "post_spawn_pre_pid_kill",
+      "worker_pid": 2250
+    },
+    {
+      "actual_toy_body": 1,
+      "authoritative_exit": -9,
+      "event_kinds": [
+        "target_Popen_adapter_entered",
+        "actual_stdlib_toy_spawned",
+        "toy_reaped",
+        "intentional_controller_SIGKILL"
+      ],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": false,
+      "readmission_blocked": true,
+      "scenario": "post_pid_kill",
+      "worker_pid": 2252
+    },
+    {
+      "actual_toy_body": 0,
+      "authoritative_exit": 0,
+      "event_kinds": [],
+      "exact_calls_under_test": null,
+      "ledger_unknown": true,
+      "nonzero_reserved_only": true,
+      "readmission_blocked": true,
+      "scenario": "starting_no_pid",
+      "worker_pid": 2254
+    }
+  ],
+  "independently_derived_unknown_cases": 11,
+  "inspector": {
+    "bytes": 19460,
+    "sha256": "4d94f2bff7acceae6b5cb465f2d082958c876fcca96a9c6dae2f8daabd0fe006"
+  },
+  "job_id": 131234720335,
+  "limits": [
+    "No fixture or lifted AST was re-executed by this reviewer. Aggregate classification was independently derived from JSON values, not by eval/exec or candidate imports.",
+    "Second-admission rejection is checked through producer worker/results, lack of additional admission/spawn artifacts and the pinned original guard AST; reviewer did not call actor.",
+    "The three controller self-kills follow planned hooks after any toy was already reaped. This is not active-child cleanup, power loss or an optimizer interruption test.",
+    "Final ACTORS/admissions are snapshots; intermediate event history is supplied by explicit fixture events. External reconstruction is distinct from a final report by a killed worker.",
+    "Injected zero-work namespace is not the complete original numerical controller. Nonzero reservation is synthetic metadata only and no historical UNKNOWN job or model qualification is resolved.",
+    "A preliminary inventory read attempted to parse the intentionally malformed control RESULT and got JSONDecodeError; the full inspector instead checks that control as raw bytes. No fixture/process was executed by either read."
+  ],
+  "original_zip": {
+    "bytes": 70427,
+    "crc_members": 119,
+    "sha256": "591680f81beb90e6509f529b74ddda31d9b1099b7d10a5c6474ee5a65a022222"
+  },
+  "passed": true,
+  "producer_costs": {
+    "child_cpu_seconds": 0.9650269999999999,
+    "child_reported_max_rss_kib": 20188,
+    "supervisor_body_cpu_seconds": 0.09174101799999998,
+    "supervisor_startup_imports_included_in_cpu": false,
+    "wall_seconds": 1.9660728309999982
+  },
+  "review_cpu_seconds": 0.013417421999999998,
+  "review_new_fixture_worker_toy_model_numeric_import_or_api_executions": 0,
+  "review_wall_seconds": 0.013424037999357097,
+  "reviewer": "/root/review_spatial",
+  "run_id": 43233514011,
+  "schema": "hcsn-ledger-fault-independent-actual-review-v1",
+  "selected_AST_sha256_independently_recomputed": {
+    "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+    "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+    "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+    "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+  },
+  "source_commit": "e6d989320e6ad9310b68f650bc8805618cba34fc",
+  "source_hashes_equal_count": 5,
+  "verified_intentional_kill_exits": [
+    {
+      "exit_code": -9,
+      "pid": 2249,
+      "scenario": "pre_popen_kill"
+    },
+    {
+      "exit_code": -9,
+      "pid": 2250,
+      "scenario": "post_spawn_pre_pid_kill"
+    },
+    {
+      "exit_code": -9,
+      "pid": 2252,
+      "scenario": "post_pid_kill"
+    }
+  ]
+}
