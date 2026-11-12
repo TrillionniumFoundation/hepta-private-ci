@@ -69,3 +69,17 @@ fn post_a_q24_cli_rejects_missing_replay_and_competing_execution_inputs() {
         assert!(validate(Profile::PostAQ24, &competing, Some(36), &handoffs, &[]).is_err());
     }
 }
+
+#[test]
+fn post_a_completed_cli_allows_only_historical_without_partial_owner_handoffs()
+-> Result<(), AgentdError> {
+    let original = [Some(31), None, None, None, None];
+    validate(Profile::PostAQ24, &ordinary(), Some(36), &original, &[])?;
+    assert!(validate(Profile::PostAQ24, &ordinary(), Some(36), &[None; 5], &[]).is_err());
+    for index in 1..5 {
+        let mut partial = original;
+        partial[index] = Some(40 + index as i32);
+        assert!(validate(Profile::PostAQ24, &ordinary(), Some(36), &partial, &[]).is_err());
+    }
+    Ok(())
+}

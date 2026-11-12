@@ -22,14 +22,17 @@ pub(super) fn validate(
         }
         return Ok(());
     }
+    let owners = historical_learning_model_publication_b[1..]
+        .iter()
+        .filter(|descriptor| descriptor.is_some())
+        .count();
     if deployment.is_none()
-        || historical_learning_model_publication_b
-            .iter()
-            .any(Option::is_none)
+        || historical_learning_model_publication_b[0].is_none()
+        || !matches!(owners, 0 | 4)
         || incompatible.iter().any(Option::is_some)
     {
         return Err(invalid(
-            "post-A Q24 requires original historical, learning, model, publication and independent B handoffs plus its sealed deployment",
+            "post-A requires historical and sealed deployment; original owner handoffs must be all four or absent for explicit completed history",
         ));
     }
     for flag in [

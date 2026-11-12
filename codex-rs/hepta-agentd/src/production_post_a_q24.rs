@@ -64,6 +64,29 @@ impl AgentdProductionLaunch {
         }
         let identity = config.identity().clone();
         let data = deployment::Deployment::read(deployment, &identity)?;
+        if let Some(mode) = data.completed_history {
+            if self.post_a_handoffs.is_some() {
+                return Err(refused(
+                    "completed history cannot receive original learning owner handoffs",
+                ));
+            }
+            let client = self.take_original_historical_read()?;
+            let original = RootHistoricalTaskReadClientV1::read_original_completed_history(
+                &client,
+                &self.root.session,
+                &identity,
+                mode,
+            )?;
+            self.require_original_post_a_context(&identity)?;
+            config = AgentdConfig::with_original_q24_completed_history(config, Arc::new(original))?;
+            self.require_original_post_a_context(&identity)?;
+            // No baseline, freeze, receipt signer, old delivery, Trainer, Model
+            // or C writer has been opened in this completed-only branch.
+            return Ok((self, config));
+        }
+        if self.post_a_handoffs.is_none() {
+            return Err(refused("fresh post-A requires all original owner handoffs"));
+        }
         let mut files = OriginalFiles::new()?;
         let client = self.take_original_historical_read()?;
         let receipt = Arc::new(RootHistoricalTaskReadClientV1::observe_original_task(
