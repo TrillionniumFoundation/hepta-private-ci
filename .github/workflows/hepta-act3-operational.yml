@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 8
+          fetch-depth: 16
           persist-credentials: false
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
@@ -42,7 +42,7 @@ jobs:
       - name: Require behavioral tests and complete original policy panel
         run: |
           set -euo pipefail
-          for suite in test_skill_lifecycle.py test_operational_metrics.py test_qualify_operational.py test_file_family.py; do
+          for suite in test_skill_lifecycle.py test_operational_metrics.py test_qualify_operational.py test_file_family.py test_async_owner_wait.py test_durable_lifecycle.py; do
             "$RUNNER_TEMP/act3-venv/bin/python" -m unittest discover -s scripts/act2_learning -p "$suite" -v > "$RUNNER_TEMP/act3-operational/$suite.log" 2>&1
           done
           "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_operational.py --archive qualification/act2-learning-20261110/run2 --output "$RUNNER_TEMP/act3-operational/panel" > "$RUNNER_TEMP/act3-operational/panel.log" 2>&1
