@@ -109,6 +109,9 @@ jobs:
               "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_attempt_survives_process_exit_without_new_nonce",
               "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_retains_actual_signature_and_reopen_never_issues",
               "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_recovery_refuses_missing_and_substituted_profile",
+              "root_production_handoff::independent_b_source::fresh_rights_tests::original_b_source_fresh_handoff_requires_six_exact_original_rights",
+              "root_independent_b_notice::terminal_tests::original_b_source_terminal_notice_allows_exit_after_real_frame_postcheck",
+              "root_independent_b_notice::terminal_tests::original_b_source_terminal_missing_notice_never_completes",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",
