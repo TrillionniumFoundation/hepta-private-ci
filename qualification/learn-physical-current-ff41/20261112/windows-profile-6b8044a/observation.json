@@ -1,0 +1,82 @@
+{
+  "observed_utc": "2026-11-12 03:07:29 UTC",
+  "profile_head": "6b8044a27c79da78dd0e04df996b8f77708af62c",
+  "profile_tree": "ad551197c6c9814a765586aae00d5c4b5fdb9338",
+  "run_id": 43142375551,
+  "run_attempt": 1,
+  "job_id": 130932155555,
+  "job_conclusion": "success",
+  "completed_at": "2026-11-12T02:55:43Z",
+  "log_utf8_bytes": 367917,
+  "log_sha256": "f098b2e9ac7465606271085fe1acb11429c727af288cd80bbbd959064d34113c",
+  "windows_scope": {
+    "private_file_tests": 15,
+    "prompt_registry_tests": 2,
+    "final_use_tests": 3,
+    "authority_lease_tests": 2,
+    "prompt_runtime_tests": 12,
+    "selected_learn_tests": 36,
+    "test_retries": 0,
+    "formatter": "passed",
+    "directory_acquisition_positive": "passed",
+    "directory_acquisition_mutants": [
+      "unchecked-create expected exit 1",
+      "path-check-open expected exit 1"
+    ]
+  },
+  "junit": {
+    "bytes": 9050,
+    "sha256": "e85f68a08174f5b400c58750642ec775c102fffbf6242edbd69e34c66a31a977",
+    "independent_xml_parse": false,
+    "source": "original native collector JSON plus original native PASS rows"
+  },
+  "remaining_gates": [
+    {
+      "id": 43142375568,
+      "name": "Hepta shared Cell framework",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T02:34:37Z"
+    },
+    {
+      "id": 43142375524,
+      "name": "Hepta daemon learning native",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T02:34:37Z"
+    },
+    {
+      "id": 43142375657,
+      "name": "blocking-ci",
+      "status": "queued",
+      "conclusion": null,
+      "updated_at": "2026-11-12T02:34:37Z"
+    }
+  ],
+  "complete_ordinary_acceptance": {
+    "adopt": 0,
+    "no_update": 0,
+    "daemon_and_root_cold_recovery": 0
+  },
+  "limitations": [
+    "The complete original 18 Linux failures are not selected by this Windows scope.",
+    "The f8ea-based runtime differs from b514; this is not a strict b514 A/B experiment.",
+    "Cargo dev package profiles do not change Bazel compilation.",
+    "The local execution environment remains unavailable; no local full-caller result is inferred.",
+    "The tool downloaded both artifact ZIPs to reusable file references; the ZIP contents could not be independently parsed in the unavailable execution environment. Original artifacts remain linked by immutable run/id and metadata digest."
+  ],
+  "artifact_download_receipts": [
+    {
+      "artifact_id": 13910214118,
+      "file_id": "file_00000000bafc81f5bcd768f9bb16e04d",
+      "file_name": "windows-learn-regressions-6b8044a-43142375551-1.zip",
+      "mime_type": "application/zip"
+    },
+    {
+      "artifact_id": 13910548555,
+      "file_id": "file_0000000070e481f591ac1c820a281b5e",
+      "file_name": "windows-private-state-acquisition-6b8044a-43142375551-1.zip",
+      "mime_type": "application/zip"
+    }
+  ]
+}
