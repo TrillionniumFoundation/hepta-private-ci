@@ -37,7 +37,8 @@ impl RootGenerationInitialHandoffV1 {
         if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
             return Err(refused("original Initial lifetime exceeds its bound"));
         }
-        let end = Instant::now().checked_add(lifetime)
+        let end = Instant::now()
+            .checked_add(lifetime)
             .ok_or_else(|| refused("original Initial deadline overflow"))?;
         self.connect_until(connection, timeout, end).await
     }
@@ -120,9 +121,12 @@ impl RootGenerationInitialHandoffV1 {
             unsafe { libc::getegid() },
         )?;
         connection.require_original_publication_session()?;
-        let stream = tokio::time::timeout(timeout.min(remaining_until(end)?), tokio::net::UnixStream::connect(&socket))
-            .await
-            .map_err(|_| refused("initial publication Root connection timed out"))??;
+        let stream = tokio::time::timeout(
+            timeout.min(remaining_until(end)?),
+            tokio::net::UnixStream::connect(&socket),
+        )
+        .await
+        .map_err(|_| refused("initial publication Root connection timed out"))??;
         let original = OriginalPublicationStream::from_stream_until(
             stream.into_std()?,
             self.root_pidfd,

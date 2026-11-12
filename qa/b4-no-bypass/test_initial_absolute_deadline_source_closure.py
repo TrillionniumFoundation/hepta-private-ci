@@ -68,7 +68,7 @@ class InitialAbsoluteDeadlineTests(unittest.TestCase):
     def test_peer_checks_consume_budget_without_rebasing_the_stream(self):
         filename = "root_generation_publication_stream.rs"
         function = "fn from_stream_until("
-        for marker in ("end.checked_duration_since(Instant::now())",
+        for marker in (".checked_duration_since(Instant::now())",
                        "remaining > Duration::from_secs(300)", "libc::SO_PEERCRED",
                        "actual.uid != 0", "check_lifetime(&root)", "Instant::now() >= end"):
             self.reject(filename, function, marker)
