@@ -1,0 +1,51 @@
+{
+  "schema": "c2-terminal-events-attempt-ledger-v1",
+  "training_runs": 0,
+  "model_loads": 0,
+  "independent_full_training_replays_added": 0,
+  "attempts": [
+    {
+      "name": "initial-red",
+      "returncode": 1,
+      "tests": 13,
+      "failures": 12,
+      "retained_log": "RED.log",
+      "note": "extra trailing newline in fetched controller; actual function AST unchanged"
+    },
+    {
+      "name": "red-wrapper-before-exact-byte-normalization",
+      "returncode": 1,
+      "tests": 13,
+      "failures": 12,
+      "source_sha256": "b38ca1e0ca14b7f75f47c621da23cb684b91e1481d8d41dbe14d626438383a61",
+      "wall_seconds": 0.1801103589999684,
+      "raw_streams_separately_retained": false
+    },
+    {
+      "name": "exact-parent-red",
+      "receipt": "RED.json",
+      "stdout": "RED.stdout",
+      "stderr": "RED.stderr"
+    },
+    {
+      "name": "initial-green",
+      "receipt": "GREEN-initial.json",
+      "stdout": "GREEN-initial.stdout",
+      "stderr": "GREEN-initial.stderr",
+      "note": "prior to parsed-stream digest hardening"
+    },
+    {
+      "name": "final-green",
+      "receipt": "GREEN.json",
+      "stdout": "GREEN.stdout",
+      "stderr": "GREEN.stderr"
+    },
+    {
+      "name": "formatter",
+      "receipt": "FMT.json",
+      "stdout": "FMT.stdout",
+      "stderr": "FMT.stderr"
+    }
+  ],
+  "limits": "Synthetic actual-source function extraction with opaque checkpoint bytes; no native full controller import, model or independent optimizer replay."
+}
