@@ -313,18 +313,36 @@ class EpisodicRetrievalTests(unittest.TestCase):
         self.assertEqual(result["receipt"]["source_ids"], ["s1"])
         self.assertTrue(verify_read_receipt(result))
 
-    def test_suppressed_delivery_does_not_revalidate_or_emit_revoked_content(self):
+    def test_withheld_delivery_preserves_bounded_assembly_work(self):
+        with patch.object(
+            episodic_retrieval, "assemble_context", wraps=assemble_context
+        ) as assembly:
+            on = self.read(mode="on")
+            withheld = self.read(mode="delivery_off")
+        self.assertEqual(assembly.call_count, 2)
+        self.assertEqual(assembly.call_args_list[0], assembly.call_args_list[1])
+        self.assertTrue(on["context"])
+        self.assertEqual((withheld["records"], withheld["context"]), ([], ""))
+        self.assertEqual(
+            on["receipt"]["selected_ids"], withheld["receipt"]["selected_ids"]
+        )
+        self.assertTrue(verify_read_receipt(on))
+        self.assertTrue(verify_read_receipt(withheld))
+
+    def test_suppressed_delivery_revalidates_the_same_revocation_as_on(self):
         def association(query, records):
             self.store.revoke("s1", "gate")
             return [r["record_id"] for r in records]
 
         with patch.object(self.store, "view", wraps=self.store.view) as view:
-            result = self.read(
-                mode="delivery_off",
-                association=association,
-                association_id="b" * 64,
-            )
-            self.assertEqual(view.call_count, 1)
+            with self.assertRaisesRegex(ValueError, "before context delivery"):
+                self.read(
+                    mode="delivery_off",
+                    association=association,
+                    association_id="b" * 64,
+                )
+            self.assertEqual(view.call_count, 2)
+        result = self.read(mode="delivery_off")
         self.assertEqual((result["records"], result["context"]), ([], ""))
         self.assertTrue(verify_read_receipt(result))
         for mode, reads in (("off", 0), ("retrieval_off", 1)):
