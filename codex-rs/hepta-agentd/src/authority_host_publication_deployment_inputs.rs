@@ -44,6 +44,35 @@ impl OriginalInputs {
         material: &LateMaterial,
         consumer_uid: u32,
     ) -> io::Result<(RootGenerationPublicationEnrollmentV1, Vec<OriginalFile>)> {
+        let now: u64 = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(io::Error::other)?
+            .as_millis()
+            .try_into()
+            .map_err(io::Error::other)?;
+        self.inputs_at(data, material, consumer_uid, now)
+    }
+
+    /// Only an actual persisted first-Publish proof supplies the historical
+    /// verification instant. This read-only path cannot enroll a live route.
+    pub(super) fn completed_inputs(
+        &self,
+        data: &PublicationInputData,
+        material: &LateMaterial,
+        consumer_uid: u32,
+        proof: &crate::authority_host_service::generation_publication::OriginalPublicationHistoryProofV1<'_>,
+    ) -> io::Result<(RootGenerationPublicationEnrollmentV1, Vec<OriginalFile>)> {
+        proof.original_profile()?;
+        self.inputs_at(data, material, consumer_uid, proof.verified_at_unix_ms())
+    }
+
+    fn inputs_at(
+        &self,
+        data: &PublicationInputData,
+        material: &LateMaterial,
+        consumer_uid: u32,
+        now: u64,
+    ) -> io::Result<(RootGenerationPublicationEnrollmentV1, Vec<OriginalFile>)> {
         self.require_original_inputs()?;
         if material.schema_version != 1 {
             return Err(io::Error::other("late material version differs"));
@@ -65,12 +94,6 @@ impl OriginalInputs {
         .map_err(io::Error::other)?;
         let selected = material.selection.original_selection()?;
         // Locators come from the same actual read-view; late JSON cannot add paths.
-        let now: u64 = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_err(io::Error::other)?
-            .as_millis()
-            .try_into()
-            .map_err(io::Error::other)?;
         let reader: LearningArtifactReadViewV1 = LearningArtifactReadViewV1::open_original(
             data.artifact_root.clone(),
             consumer_uid,
