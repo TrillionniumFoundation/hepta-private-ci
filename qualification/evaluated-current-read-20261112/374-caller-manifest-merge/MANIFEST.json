@@ -1,0 +1,142 @@
+{
+  "schema": "hepta.374-callers-merge.v1",
+  "ancestor": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "ours": "c7ba93274c0e6ccf764120defc642689df499273",
+  "theirs": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "ours_tree": "e72ab40aadbfd3f69b3b272f1597ccaeb39fe75b",
+  "theirs_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "code_tree": "2738c502d23053fd9cc32b67b468916715913fff",
+  "inputs": {
+    "base_callers": {
+      "blob": "7b5af7a67e9f960ca260d9ef4f5a59579e13034e",
+      "bytes": 1835944,
+      "sha256": "a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757"
+    },
+    "ours_callers": {
+      "blob": "f6efa0852dd91312b3571332bea862908eb8997c",
+      "bytes": 1842850,
+      "sha256": "03df70c12e195c96d09423e8bfa2b52c321520918ba4fea8c88eaff758ca0b63"
+    },
+    "theirs_callers": {
+      "blob": "b56a7967f0ab444595704bb5995ae16007730c70",
+      "bytes": 1882184,
+      "sha256": "cb874ec8c9cda9fbb00190eb4be47e4f2cbff2c68afb846d592b0dc9c645eb4a"
+    },
+    "base_allow": {
+      "blob": "d8e4f723209da9a0b6cfcf72612fcd2a495ec427",
+      "bytes": 12709,
+      "sha256": "f54d02aec8ec75ead3a58db22b1e88c3d43bd0b0996e51dab642d5ef58f0bd48"
+    },
+    "ours_allow": {
+      "blob": "3c3a465aa84669eaefb90e1e299f5d2de4695f85",
+      "bytes": 11847,
+      "sha256": "51696d4f119b073abf906f8a8f4ce6ae06c5370910e4afac1f71c2f2cf79cafc"
+    },
+    "theirs_allow": {
+      "blob": "a77dcc268033314ff2a51c8fa89aa0e474a72886",
+      "bytes": 12905,
+      "sha256": "6a73fb47671239729fab1faf2b39c12946ce02abd412230f1acf6b0887376d39"
+    }
+  },
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+      "bytes": 1895095,
+      "sha256": "5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f",
+      "readback_verified": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "blob": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+      "bytes": 11847,
+      "sha256": "cbf36c921aa37e172e850985527a3582e6aa95e8740baca07cd6341180fbcb4a",
+      "readback_verified": true
+    }
+  ],
+  "counts": {
+    "boundaries": 628,
+    "protected_rows": 429,
+    "unique_protected_paths": 355,
+    "function_guard_rows": 1349,
+    "unique_path_function": 1310
+  },
+  "invariants": {
+    "parent_boundary_and_protected_path_union": true,
+    "all_ours_608_product_caller_tuples_preserved": true,
+    "all_sequences_at_least_two_nonempty_markers": true,
+    "all_function_markers_exact_schema": true,
+    "source_guard_context": "16 source postimages; six merged production files are from fe4bc5b9e8334a15374154a001c5ba9b86da2d39; other ten unchanged upstream files",
+    "current_next_use_external_callers": [],
+    "read_set_external_callers": [
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    ],
+    "actual_source_read_slots": {
+      "Selection": 6,
+      "NextUse": 9,
+      "purpose_after": 1
+    },
+    "sole_final_CALLERS_pin": true,
+    "non_CALLERS_rules_unchanged_all_parents": 60,
+    "upstream_14_old_CALLERS_active_pins_not_restored": true
+  },
+  "validation": {
+    "full_python_tomllib_parse": true,
+    "full_inventory_and_parent_union": true,
+    "scoped_original_verifier_protected_rows": {
+      "passed": 16,
+      "failed": 0,
+      "exact_source_and_verifier_hashes": 18
+    },
+    "full_source_gate": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "native": "NOT_RUN",
+    "actors": 0
+  },
+  "artifacts": [
+    {
+      "path": "CALLERS.diff",
+      "blob": "cc3429fcecae6415c8adaf518bd35219e8b1500a",
+      "bytes": 270246,
+      "sha256": "c4b912b4cd85826fc7a3ea36448e797b19c702655a243a92910f319eb81a2815"
+    },
+    {
+      "path": "ALLOWLIST.diff",
+      "blob": "2e91d8f9df1c0c4c4dfe53a4d397ec57f3db7645",
+      "bytes": 749,
+      "sha256": "8763713b09c277deb76cc2997a99ea06cacbcb2ac0c574314c5cb84f2c331134"
+    },
+    {
+      "path": "STATIC_CHECK.json",
+      "blob": "8bed6da47fdba5e2063848d334bea870b2809a10",
+      "bytes": 2901,
+      "sha256": "4c0e6db18d63bfbf157c8ae963198d46c4eb112b55d2c68171cd62362f916667"
+    },
+    {
+      "path": "SOURCE_INPUT_PINS.json",
+      "blob": "15517f0c2e9f41732a62878630e707b579212d29",
+      "bytes": 5911,
+      "sha256": "6a79d460f75df0d0051f65c5d79f191d4cb38dcaf67780823e122e8d3a42d44f"
+    },
+    {
+      "path": "MERGE_DELTAS.json",
+      "blob": "6f72c2b423c762161b0a22cf38f519398f261861",
+      "bytes": 38522,
+      "sha256": "80e6effe8304fb2693b66865e7339ff378cc2df82be8b07938fd348f295392c1"
+    }
+  ],
+  "diff_bases": {
+    "CALLERS.diff": "374 upstream CALLERS b56a7967f0ab444595704bb5995ae16007730c70",
+    "ALLOWLIST.diff": "ours already deduplicated allowlist 3c3a465aa84669eaefb90e1e299f5d2de4695f85"
+  },
+  "test_only_origin_followup": {
+    "manifest": "f49b1e9e4e0857d395a4eb5e920beac4921c8831",
+    "paths_not_referenced_in_CALLERS": true,
+    "aliases_not_referenced_in_CALLERS": true,
+    "existing_tests_path_exclusion_unchanged": true,
+    "no_extra_production_callers": true,
+    "related_origin_QA_unchanged": true,
+    "full_QA_scan": "repository agent checking"
+  },
+  "status": "IMMUTABLE_CANDIDATE_NOT_COMMITTED_NOT_PUSHED"
+}

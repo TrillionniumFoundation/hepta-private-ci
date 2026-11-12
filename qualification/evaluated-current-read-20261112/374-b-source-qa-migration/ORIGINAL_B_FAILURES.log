@@ -1,0 +1,28 @@
+ERROR: test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms (test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms)
+2026-11-12T19:19:39.1757382Z ----------------------------------------------------------------------
+2026-11-12T19:19:39.1757933Z Traceback (most recent call last):
+2026-11-12T19:19:39.1758935Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py", line 163, in test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms
+2026-11-12T19:19:39.1760181Z     self.rejects(CORE, "fn read_current_with_clock(", marker)
+2026-11-12T19:19:39.1761021Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py", line 61, in rejects
+2026-11-12T19:19:39.1761800Z     offset = source.index(marker, start, end + 1)
+2026-11-12T19:19:39.1762156Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T19:19:39.1762486Z ValueError: substring not found
+2026-11-12T19:19:39.1762680Z 
+ERROR: test_both_physical_cells_and_actual_completed_qualification_are_read (test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_both_physical_cells_and_actual_completed_qualification_are_read)
+2026-11-12T19:19:39.1764451Z ----------------------------------------------------------------------
+2026-11-12T19:19:39.1764738Z Traceback (most recent call last):
+2026-11-12T19:19:39.1765568Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py", line 154, in test_both_physical_cells_and_actual_completed_qualification_are_read
+2026-11-12T19:19:39.1766231Z     self.rejects(MEMBER, "fn read_original(", marker)
+2026-11-12T19:19:39.1766741Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py", line 61, in rejects
+2026-11-12T19:19:39.1767276Z     offset = source.index(marker, start, end + 1)
+2026-11-12T19:19:39.1767517Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T19:19:39.1767747Z ValueError: substring not found
+2026-11-12T19:19:39.1767885Z 
+FAIL: test_each_original_custody_effect_and_fresh_clock_guard_is_effective (test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_each_original_custody_effect_and_fresh_clock_guard_is_effective)
+2026-11-12T19:19:39.1833678Z ----------------------------------------------------------------------
+2026-11-12T19:19:39.1833956Z Traceback (most recent call last):
+2026-11-12T19:19:39.1834555Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qa/b4-no-bypass/test_original_qualification_owner_source_closure.py", line 90, in test_each_original_custody_effect_and_fresh_clock_guard_is_effective
+2026-11-12T19:19:39.1835214Z     self.assertEqual({row["function"] for row in rules}, expected)
+2026-11-12T19:19:39.1835535Z AssertionError: Items in the first set but not the second:
+2026-11-12T19:19:39.1835811Z 'fn prepare_with_training('
+2026-11-12T19:19:39.1835933Z 

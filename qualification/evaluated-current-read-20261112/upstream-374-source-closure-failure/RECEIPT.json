@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.original-source-closure-failure.v1",
+  "observed_at_utc": "2026-11-12 19:35:26 UTC",
+  "source_sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "source_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "run_id": 43288106844,
+  "job_id": 131426787351,
+  "conclusion": "failure",
+  "full_job_log": {
+    "bytes": 1900203,
+    "sha256": "e2ab52ec4109853951347a0b20fd0b00649eb227ca2e7727edaf23e73a78afb2",
+    "git_blob": "9e52b5b2687f71c2bf44e5d50deeb0e8ccf9a3af"
+  },
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-001.log",
+      "byte_offset": 0,
+      "bytes": 240002,
+      "sha256": "f92925cb98e71bc8b980eb35739463d3845c9edecb5bf54b36f5316650efecc3",
+      "git_blob": "8d487839d4fd4a5cb832c34d38e7d85cc620e04b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-002.log",
+      "byte_offset": 240002,
+      "bytes": 240000,
+      "sha256": "f5bd17e363b5151d8861ec22390b2408d403f934080302e0cc3f238abe5cd8a0",
+      "git_blob": "01643152d8d918ffa4949d09b592025b8cad57db"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-003.log",
+      "byte_offset": 480002,
+      "bytes": 240000,
+      "sha256": "82d7165b98129970786eaa52d9ea41468d6eb25c78733c25fdc0897342a3c5b7",
+      "git_blob": "a5cf87f002da7d85170bee29e7494654ad5a6ebb"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-004.log",
+      "byte_offset": 720002,
+      "bytes": 240000,
+      "sha256": "86c909689ee18143bbcf90e0f6b332c7c13d096ea06cf40c90b1f1fc9fadae05",
+      "git_blob": "599d9d7079f7e0bf74bea95801a40171e818f8b9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-005.log",
+      "byte_offset": 960002,
+      "bytes": 240000,
+      "sha256": "92d0c55b8a09cc6cb21abe2ae1a169eb7446f4bf424cd3b801f15f5878fd7074",
+      "git_blob": "fb4a8aa9ee8e595208aa849d61a61609a563c702"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-006.log",
+      "byte_offset": 1200002,
+      "bytes": 240000,
+      "sha256": "9f877d785b853ee5434d02a843020afc56a2dc9d6e083f303f5619ec2c29ad29",
+      "git_blob": "d032ce905c64138ed2403909ca2c5643b8eb3f5b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-007.log",
+      "byte_offset": 1440002,
+      "bytes": 240000,
+      "sha256": "2cc63afa0998a0cc9ec51b9eb3ce318716711ccc1a34776d5345f8f84680ff82",
+      "git_blob": "ffcc98da1c962df8e393cab33139a4e0c8c97d81"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/upstream-374-source-closure-failure/job.part-008.log",
+      "byte_offset": 1680002,
+      "bytes": 220201,
+      "sha256": "40cfd73f6473873ebeb002e0eded4de282fd0a63ddec6b6783e20d7827bdd461",
+      "git_blob": "83b041eb0ceeb850d457ef24d1f2de15354818ee"
+    }
+  ],
+  "original_execution_receipt": {
+    "after": {
+      "commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "dirty": false,
+      "parents": [
+        "d3977d9a1bed3e89952c576c45660b04ea674faf"
+      ],
+      "tree": "981c4675a6579dfd9748046d3d01a2268f11c36f"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "dirty": false,
+      "parents": [
+        "d3977d9a1bed3e89952c576c45660b04ea674faf"
+      ],
+      "tree": "981c4675a6579dfd9748046d3d01a2268f11c36f"
+    },
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "*source_closure.py",
+      "-v"
+    ],
+    "command_exit_code": 1,
+    "elapsed_seconds": 185.300948599,
+    "error": "required tests were not observed passing",
+    "exit_code": 1,
+    "finished_at": "2026-11-12T19:19:39.993278+00:00",
+    "job": "native",
+    "lane": "source-head",
+    "log_bytes": 132876,
+    "log_file": "source-closure.json.f8df6308592840a7966f64fab857840b.log",
+    "log_sha256": "81bd32f4dbf580fea089612e226ec0fca68bbe6b3f014271c305a5726f3e3f0b",
+    "minimum_tests": 1,
+    "observed_failed_tests": 15,
+    "observed_passed_tests": 489,
+    "output_limit_exceeded": false,
+    "returncode": 1,
+    "run_attempt": "1",
+    "run_id": "43288106844",
+    "schema_version": 1,
+    "source_sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "started_at": "2026-11-12T19:16:34.600733+00:00",
+    "status": "failed",
+    "tested_sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "unittest_summary": {
+    "tests_run": 504,
+    "seconds": 183.915,
+    "failures": 1,
+    "errors": 14
+  },
+  "unique_method_roster": {
+    "total": 504,
+    "pass": 499,
+    "not_passed": 5
+  },
+  "failed_or_error_details": [
+    "ERROR: test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms (test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms)",
+    "ERROR: test_both_physical_cells_and_actual_completed_qualification_are_read (test_original_evaluation_panel_source_closure.OriginalEvaluationPanelClosureTests.test_both_physical_cells_and_actual_completed_qualification_are_read)",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)')",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='prefix.head_digest = selection.predecessor')",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='self.read_learning_selection(&prefix)?')",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='actual_selection != selection.observation')",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='source\\n            .read_run_publication(')",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='self.committed(&before)?')",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='receipt.bundle_digest != candidate_bundle')",
+    "ERROR: test_retirement_and_next_use_recheck_source_and_actual_cell (test_original_learning_owner_source_closure.OriginalLearningOwnerClosureTests.test_retirement_and_next_use_recheck_source_and_actual_cell) (marker='self.task.require_current()?')",
+    "ERROR: test_selection_binds_original_completed_task_before_version_readback (test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selection_binds_original_completed_task_before_version_readback) (marker='self.task.require_current()?')",
+    "ERROR: test_selection_binds_original_completed_task_before_version_readback (test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selection_binds_original_completed_task_before_version_readback) (marker='if previous.source.history_digest().as_str()')",
+    "ERROR: test_selection_binds_original_completed_task_before_version_readback (test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selection_binds_original_completed_task_before_version_readback) (marker='!= coordinator\\n                .snapshot()\\n                .request\\n                .completed_task_receipt\\n                .to_string()')",
+    "ERROR: test_selection_binds_original_completed_task_before_version_readback (test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_selection_binds_original_completed_task_before_version_readback) (marker='return Err(invalid(\\n                \"learning selection differs from original completed source\",')",
+    "FAIL: test_each_original_custody_effect_and_fresh_clock_guard_is_effective (test_original_qualification_owner_source_closure.OriginalQualificationOwnerSourceClosureTests.test_each_original_custody_effect_and_fresh_clock_guard_is_effective)"
+  ],
+  "driver_count_note": "The unchanged original execution receipt reports 489 observed passes and 15 observed failures. The complete verbose roster contains 504 distinct methods, 499 with explicit ok; 5 nonpassing methods contain 14 error records and 1 failure. Both original records are retained; subtest error records are not independent methods.",
+  "native_compile": "NOT_REACHED",
+  "root_suite": "NOT_REACHED",
+  "format": "NOT_REACHED",
+  "artifact_zip_separately_downloaded": false,
+  "owner_decision": null,
+  "all_blockers_closed": false
+}

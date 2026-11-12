@@ -1,0 +1,1135 @@
+2026-11-12T20:00:30.1261390Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T20:00:30.1263253Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1263563Z 
+2026-11-12T20:00:30.1264467Z warning: function `closure` is never used
+2026-11-12T20:00:30.1265667Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T20:00:30.1274626Z     |
+2026-11-12T20:00:30.1281225Z 212 | pub(super) fn closure(
+2026-11-12T20:00:30.1289128Z     |               ^^^^^^^
+2026-11-12T20:00:30.1289498Z 
+2026-11-12T20:00:30.1290056Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T20:00:30.1310121Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:00:30.1311561Z    |
+2026-11-12T20:00:30.1318689Z 84 | impl LedgerFixture {
+2026-11-12T20:00:30.1319413Z    | ------------------ associated function in this implementation
+2026-11-12T20:00:30.1351173Z ...
+2026-11-12T20:00:30.1351665Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:00:30.1352342Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1352916Z 
+2026-11-12T20:00:30.1353185Z warning: function `original_evaluation_source` is never used
+2026-11-12T20:00:30.1358097Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T20:00:30.1359045Z   |
+2026-11-12T20:00:30.1359388Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T20:00:30.1359893Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1360237Z 
+2026-11-12T20:00:30.1360418Z warning: method `require_decision` is never used
+2026-11-12T20:00:30.1360954Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T20:00:30.1363519Z     |
+2026-11-12T20:00:30.1364564Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T20:00:30.1365759Z     | ----------------------------------- method in this implementation
+2026-11-12T20:00:30.1366327Z ...
+2026-11-12T20:00:30.1366910Z 136 |     pub(crate) fn require_decision(
+2026-11-12T20:00:30.1367355Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1367646Z 
+2026-11-12T20:00:30.1367860Z warning: function `require_decision` is never used
+2026-11-12T20:00:30.1368744Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T20:00:30.1379361Z     |
+2026-11-12T20:00:30.1381765Z 443 | pub(super) fn require_decision(
+2026-11-12T20:00:30.1383131Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1383933Z 
+2026-11-12T20:00:30.1384231Z warning: method `require_original_input` is never used
+2026-11-12T20:00:30.1385297Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T20:00:30.1385876Z    |
+2026-11-12T20:00:30.1387042Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T20:00:30.1389472Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:00:30.1394326Z ...
+2026-11-12T20:00:30.1394738Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T20:00:30.1395277Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1395597Z 
+2026-11-12T20:00:30.1395752Z warning: field `at` is never read
+2026-11-12T20:00:30.1397591Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T20:00:30.1423868Z    |
+2026-11-12T20:00:30.1426289Z 91 | pub(super) struct Fixture {
+2026-11-12T20:00:30.1426924Z    |                   ------- field in this struct
+2026-11-12T20:00:30.1428034Z 92 |     root: PathBuf,
+2026-11-12T20:00:30.1429275Z 93 |     pub(super) at: u64,
+2026-11-12T20:00:30.1429779Z    |                ^^
+2026-11-12T20:00:30.1430386Z 
+2026-11-12T20:00:30.1435509Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T20:00:30.1437444Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T20:00:30.1438268Z     |
+2026-11-12T20:00:30.1438939Z 108 | enum MaterialFixtureProfile {
+2026-11-12T20:00:30.1529196Z     |      ---------------------- variants in this enum
+2026-11-12T20:00:30.1746304Z 109 |     NoUpdate,
+2026-11-12T20:00:30.1836458Z 110 |     CandidatePages,
+2026-11-12T20:00:30.1861887Z     |     ^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1884101Z 111 |     CandidateMaximumPages,
+2026-11-12T20:00:30.1925967Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.1957908Z     |
+2026-11-12T20:00:30.1959373Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T20:00:30.2199811Z 
+2026-11-12T20:00:30.2690383Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T20:00:30.2873611Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T20:00:30.2880443Z     |
+2026-11-12T20:00:30.2880894Z 114 | impl Fixture {
+2026-11-12T20:00:30.2886908Z     | ------------ associated functions in this implementation
+2026-11-12T20:00:30.2887513Z ...
+2026-11-12T20:00:30.2887996Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T20:00:30.2888864Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2889302Z ...
+2026-11-12T20:00:30.2889794Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T20:00:30.2890458Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2890911Z ...
+2026-11-12T20:00:30.2891339Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T20:00:30.2891870Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2892265Z 
+2026-11-12T20:00:30.2892526Z warning: method `set_test_clock` is never used
+2026-11-12T20:00:30.2893285Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T20:00:30.2893754Z     |
+2026-11-12T20:00:30.2894243Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T20:00:30.2895073Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:00:30.2895734Z ...
+2026-11-12T20:00:30.2896076Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T20:00:30.2896545Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2896813Z 
+2026-11-12T20:00:30.2897092Z warning: fields `executions` and `now` are never read
+2026-11-12T20:00:30.2897826Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T20:00:30.2898360Z    |
+2026-11-12T20:00:30.2898873Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T20:00:30.2899366Z    |                   --------------- fields in this struct
+2026-11-12T20:00:30.2899813Z ...
+2026-11-12T20:00:30.2900338Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T20:00:30.2900968Z    |     ^^^^^^^^^^
+2026-11-12T20:00:30.2901327Z 63 |     now: u64,
+2026-11-12T20:00:30.2901678Z    |     ^^^
+2026-11-12T20:00:30.2901920Z 
+2026-11-12T20:00:30.2902297Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T20:00:30.2903144Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T20:00:30.2903781Z     |
+2026-11-12T20:00:30.2904148Z  66 | impl LearningFixture {
+2026-11-12T20:00:30.2904647Z     | -------------------- methods in this implementation
+2026-11-12T20:00:30.2905158Z ...
+2026-11-12T20:00:30.2906465Z 241 |     pub(crate) fn with_training(
+2026-11-12T20:00:30.2907009Z     |                   ^^^^^^^^^^^^^
+2026-11-12T20:00:30.2907443Z ...
+2026-11-12T20:00:30.2907791Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T20:00:30.2908287Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2908889Z 
+2026-11-12T20:00:30.2909212Z warning: method `original_model_commitments` is never used
+2026-11-12T20:00:30.2909984Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T20:00:30.2910563Z   |
+2026-11-12T20:00:30.2911045Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T20:00:30.2911858Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T20:00:30.2912590Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T20:00:30.2913121Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2913483Z 
+2026-11-12T20:00:30.2913727Z warning: variant `Notes` is never constructed
+2026-11-12T20:00:30.2914267Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T20:00:30.2914735Z     |
+2026-11-12T20:00:30.2915090Z 631 | enum OperationReconcileProfile {
+2026-11-12T20:00:30.2915618Z     |      ------------------------- variant in this enum
+2026-11-12T20:00:30.2916122Z 632 |     Full,
+2026-11-12T20:00:30.2916546Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T20:00:30.2917051Z     |     ^^^^^
+2026-11-12T20:00:30.2917279Z 
+2026-11-12T20:00:30.2917605Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T20:00:30.2918248Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T20:00:30.2918923Z     |
+2026-11-12T20:00:30.2919287Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T20:00:30.2919935Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2920306Z 
+2026-11-12T20:00:30.2920604Z warning: method `circuit_learning_source` is never used
+2026-11-12T20:00:30.2921161Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T20:00:30.2921600Z    |
+2026-11-12T20:00:30.2921947Z 49 | impl AgentdState {
+2026-11-12T20:00:30.2922325Z    | ---------------- method in this implementation
+2026-11-12T20:00:30.2922741Z ...
+2026-11-12T20:00:30.2923238Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T20:00:30.2923890Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2924249Z 
+2026-11-12T20:00:30.2924533Z warning: method `close_expired_original` is never used
+2026-11-12T20:00:30.2925161Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T20:00:30.2925685Z     |
+2026-11-12T20:00:30.2926026Z   3 | impl AgentdTextRequests {
+2026-11-12T20:00:30.2926544Z     | ----------------------- method in this implementation
+2026-11-12T20:00:30.2927078Z ...
+2026-11-12T20:00:30.2927471Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T20:00:30.2928026Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:30.2928408Z 
+2026-11-12T20:00:30.2928898Z warning: this function has too many arguments (8/7)
+2026-11-12T20:00:30.2929504Z    --> hepta-agentd/src\cell_q24_dataset.rs:193:5
+2026-11-12T20:00:30.2930026Z     |
+2026-11-12T20:00:30.2930364Z 193 | /     fn read_current_at_clock(
+2026-11-12T20:00:30.2930820Z 194 | |         &mut self,
+2026-11-12T20:00:30.2931299Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T20:00:30.2931921Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T20:00:30.2932416Z ...   |
+2026-11-12T20:00:30.2932915Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T20:00:30.2933715Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T20:00:30.2934447Z     | |________________________________________________________________^
+2026-11-12T20:00:30.2934996Z     |
+2026-11-12T20:00:30.2936445Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T20:00:30.2937837Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T20:00:30.2938324Z 
+2026-11-12T20:00:30.2939176Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T20:00:30.2940345Z    --> hepta-agentd/src\circuit_task_source_codec.rs:508:36
+2026-11-12T20:00:30.2940918Z     |
+2026-11-12T20:00:30.2941396Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T20:00:30.2942195Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T20:00:30.2942847Z     |
+2026-11-12T20:00:30.2943735Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T20:00:30.2945037Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T20:00:30.2945668Z 
+2026-11-12T20:00:30.2945889Z warning: 27 warnings emitted
+2026-11-12T20:00:30.2946204Z 
+2026-11-12T20:00:30.2947223Z [6,827 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 73s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:00:34.2115771Z [6,827 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 79s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:00:36.0766858Z [6,830 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 81s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:00:37.4796171Z [6,830 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 82s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:00:39.0992266Z [6,831 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 84s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:00:40.2629977Z [6,831 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 85s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:00:42.1867677Z [6,834 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 87s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:00:43.3156336Z [6,835 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 88s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:00:44.3989284Z [6,835 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 89s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:00:46.7740366Z [6,835 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 91s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:00:48.4014649Z [6,837 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 93s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:00:52.1844260Z [6,837 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 97s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:00:53.0072953Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files):
+2026-11-12T20:00:53.0728435Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T20:00:53.1198345Z    --> hepta-agentd/src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T20:00:53.1905037Z     |
+2026-11-12T20:00:53.2709083Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T20:00:53.3134599Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:53.3596700Z     |
+2026-11-12T20:00:53.4194883Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:00:53.4943858Z 
+2026-11-12T20:00:53.5457409Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T20:00:53.6076143Z   --> hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T20:00:53.6794245Z    |
+2026-11-12T20:00:53.7368051Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T20:00:53.7833371Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:53.8586464Z 
+2026-11-12T20:00:53.9159943Z warning: unused import: `crate::RunPhase`
+2026-11-12T20:00:53.9627629Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-12T20:00:54.0199680Z    |
+2026-11-12T20:00:54.0589557Z 43 | use crate::RunPhase;
+2026-11-12T20:00:54.1001624Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T20:00:54.1538997Z 
+2026-11-12T20:00:54.1885629Z warning: variable does not need to be mutable
+2026-11-12T20:00:54.2271391Z    --> hepta-agentd/src\prompt_runtime_tests.rs:795:10
+2026-11-12T20:00:54.3092707Z     |
+2026-11-12T20:00:54.3583110Z 795 |     let (mut store, initial) =
+2026-11-12T20:00:54.4261567Z     |          ----^^^^^
+2026-11-12T20:00:54.4630545Z     |          |
+2026-11-12T20:00:54.5003027Z     |          help: remove this `mut`
+2026-11-12T20:00:54.5450455Z     |
+2026-11-12T20:00:54.5907894Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:00:54.6256761Z 
+2026-11-12T20:00:54.6757630Z warning: method `with_desktop_objective` is never used
+2026-11-12T20:00:54.7099938Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T20:00:54.7569819Z   |
+2026-11-12T20:00:54.7997495Z 4 | impl AgentdConfig {
+2026-11-12T20:00:54.8545478Z   | ----------------- method in this implementation
+2026-11-12T20:00:54.9049891Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T20:00:54.9408451Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:54.9772048Z   |
+2026-11-12T20:00:55.0390312Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:00:55.0755088Z 
+2026-11-12T20:00:55.1391298Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T20:00:55.1739292Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:00:55.2170033Z     |
+2026-11-12T20:00:55.2761117Z  84 | impl LedgerFixture {
+2026-11-12T20:00:55.3198495Z     | ------------------ associated items in this implementation
+2026-11-12T20:00:55.3641314Z ...
+2026-11-12T20:00:55.4227135Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:00:55.4707167Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:55.5233398Z ...
+2026-11-12T20:00:55.5657457Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T20:00:55.6107046Z     |                   ^^^^^
+2026-11-12T20:00:55.6606862Z 
+2026-11-12T20:00:55.6998194Z warning: function `append_decision` is never used
+2026-11-12T20:00:55.7457060Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T20:00:55.7956911Z     |
+2026-11-12T20:00:55.8357508Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T20:00:55.8896683Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T20:00:55.9626975Z 
+2026-11-12T20:00:56.0219723Z warning: function `closure` is never used
+2026-11-12T20:00:56.0728272Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T20:00:56.1195351Z     |
+2026-11-12T20:00:56.1553770Z 212 | pub(super) fn closure(
+2026-11-12T20:00:56.1843787Z     |               ^^^^^^^
+2026-11-12T20:00:56.2289285Z 
+2026-11-12T20:00:56.2743278Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T20:00:56.3113234Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:00:56.3686045Z    |
+2026-11-12T20:00:56.4115429Z 84 | impl LedgerFixture {
+2026-11-12T20:00:56.4455458Z    | ------------------ associated function in this implementation
+2026-11-12T20:00:56.5103060Z ...
+2026-11-12T20:00:56.5653688Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:00:56.6113349Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:56.6563273Z 
+2026-11-12T20:00:56.6954374Z warning: function `original_evaluation_source` is never used
+2026-11-12T20:00:56.7307314Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T20:00:56.7899334Z   |
+2026-11-12T20:00:56.8319396Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T20:00:56.8813882Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:56.9333442Z 
+2026-11-12T20:00:56.9833603Z warning: method `require_decision` is never used
+2026-11-12T20:00:57.0510343Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T20:00:57.0955269Z     |
+2026-11-12T20:00:57.1450041Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T20:00:57.1850604Z     | ----------------------------------- method in this implementation
+2026-11-12T20:00:57.2305572Z ...
+2026-11-12T20:00:57.2779903Z 136 |     pub(crate) fn require_decision(
+2026-11-12T20:00:57.3119579Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T20:00:57.3619077Z 
+2026-11-12T20:00:57.3964322Z warning: function `require_decision` is never used
+2026-11-12T20:00:57.4341772Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T20:00:57.4798571Z     |
+2026-11-12T20:00:57.5295676Z 443 | pub(super) fn require_decision(
+2026-11-12T20:00:57.5661605Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T20:00:57.6392925Z 
+2026-11-12T20:00:57.6809037Z warning: method `require_original_input` is never used
+2026-11-12T20:00:57.7245272Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T20:00:57.7773194Z    |
+2026-11-12T20:00:57.8279033Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T20:00:57.8652275Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:00:57.9057701Z ...
+2026-11-12T20:00:57.9571983Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T20:00:58.0059095Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:58.0504353Z 
+2026-11-12T20:00:58.0994864Z warning: field `at` is never read
+2026-11-12T20:00:58.1524538Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T20:00:58.2160262Z    |
+2026-11-12T20:00:58.2546053Z 91 | pub(super) struct Fixture {
+2026-11-12T20:00:58.2873391Z    |                   ------- field in this struct
+2026-11-12T20:00:58.3200531Z 92 |     root: PathBuf,
+2026-11-12T20:00:58.3408424Z 93 |     pub(super) at: u64,
+2026-11-12T20:00:58.3749512Z    |                ^^
+2026-11-12T20:00:58.4134538Z 
+2026-11-12T20:00:58.4463693Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T20:00:58.4810702Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T20:00:58.5097372Z     |
+2026-11-12T20:00:58.5465022Z 108 | enum MaterialFixtureProfile {
+2026-11-12T20:00:58.5820599Z     |      ---------------------- variants in this enum
+2026-11-12T20:00:58.6036473Z 109 |     NoUpdate,
+2026-11-12T20:00:58.6514843Z 110 |     CandidatePages,
+2026-11-12T20:00:58.6849196Z     |     ^^^^^^^^^^^^^^
+2026-11-12T20:00:58.7302553Z 111 |     CandidateMaximumPages,
+2026-11-12T20:00:58.7574950Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:58.7892959Z     |
+2026-11-12T20:00:58.8213496Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T20:00:58.8532544Z 
+2026-11-12T20:00:58.8853638Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T20:00:58.9173625Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T20:00:58.9562688Z     |
+2026-11-12T20:00:59.0011585Z 114 | impl Fixture {
+2026-11-12T20:00:59.0353342Z     | ------------ associated functions in this implementation
+2026-11-12T20:00:59.0671216Z ...
+2026-11-12T20:00:59.0993663Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T20:00:59.1313040Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T20:00:59.1690788Z ...
+2026-11-12T20:00:59.2252522Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T20:00:59.2618687Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:59.2948889Z ...
+2026-11-12T20:00:59.3268615Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T20:00:59.3598431Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:00:59.4317686Z 
+2026-11-12T20:00:59.4601659Z warning: method `set_test_clock` is never used
+2026-11-12T20:00:59.5022421Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T20:00:59.5355463Z     |
+2026-11-12T20:00:59.5675767Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T20:00:59.5995710Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:00:59.6315651Z ...
+2026-11-12T20:00:59.6661237Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T20:00:59.7027286Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T20:00:59.7457120Z 
+2026-11-12T20:00:59.7950629Z warning: fields `executions` and `now` are never read
+2026-11-12T20:00:59.8327584Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T20:00:59.8647286Z    |
+2026-11-12T20:00:59.8988328Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T20:00:59.9477584Z    |                   --------------- fields in this struct
+2026-11-12T20:00:59.9797192Z ...
+2026-11-12T20:01:00.0178055Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T20:01:00.1616550Z    |     ^^^^^^^^^^
+2026-11-12T20:01:00.1767007Z 63 |     now: u64,
+2026-11-12T20:01:00.1964961Z    |     ^^^
+2026-11-12T20:01:00.2200513Z 
+2026-11-12T20:01:00.2317464Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T20:01:00.2408032Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T20:01:00.2640550Z     |
+2026-11-12T20:01:00.2854316Z  66 | impl LearningFixture {
+2026-11-12T20:01:00.3210796Z     | -------------------- methods in this implementation
+2026-11-12T20:01:00.3423289Z ...
+2026-11-12T20:01:00.3553504Z 241 |     pub(crate) fn with_training(
+2026-11-12T20:01:00.3654473Z     |                   ^^^^^^^^^^^^^
+2026-11-12T20:01:00.3810511Z ...
+2026-11-12T20:01:00.4133010Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T20:01:00.4460556Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:00.4522293Z 
+2026-11-12T20:01:00.4790687Z warning: method `original_model_commitments` is never used
+2026-11-12T20:01:00.5098756Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T20:01:00.5256519Z   |
+2026-11-12T20:01:00.5428672Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T20:01:00.5495973Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T20:01:00.5497137Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T20:01:00.5656899Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:00.5825282Z 
+2026-11-12T20:01:00.5945232Z warning: variant `Notes` is never constructed
+2026-11-12T20:01:00.6596146Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T20:01:00.6741652Z     |
+2026-11-12T20:01:00.6812058Z 631 | enum OperationReconcileProfile {
+2026-11-12T20:01:00.6942833Z     |      ------------------------- variant in this enum
+2026-11-12T20:01:00.7071821Z 632 |     Full,
+2026-11-12T20:01:00.7281722Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T20:01:00.7366479Z     |     ^^^^^
+2026-11-12T20:01:00.7375145Z 
+2026-11-12T20:01:00.7508529Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T20:01:00.7591512Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T20:01:00.7717794Z     |
+2026-11-12T20:01:00.7911882Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T20:01:00.7941818Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:00.7981066Z 
+2026-11-12T20:01:00.8282664Z warning: method `circuit_learning_source` is never used
+2026-11-12T20:01:00.8337212Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T20:01:00.8781508Z    |
+2026-11-12T20:01:00.8908433Z 49 | impl AgentdState {
+2026-11-12T20:01:00.8981304Z    | ---------------- method in this implementation
+2026-11-12T20:01:00.9231854Z ...
+2026-11-12T20:01:00.9322356Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T20:01:00.9346826Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:00.9358772Z 
+2026-11-12T20:01:00.9512200Z warning: method `close_expired_original` is never used
+2026-11-12T20:01:00.9642519Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T20:01:00.9755923Z     |
+2026-11-12T20:01:00.9804810Z   3 | impl AgentdTextRequests {
+2026-11-12T20:01:01.0053390Z     | ----------------------- method in this implementation
+2026-11-12T20:01:01.0078581Z ...
+2026-11-12T20:01:01.0100884Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T20:01:01.0177070Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:01.0177654Z 
+2026-11-12T20:01:01.0177890Z warning: 24 warnings emitted
+2026-11-12T20:01:01.0220829Z 
+2026-11-12T20:01:01.0272565Z [6,837 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (969 files); 98s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:01.0330011Z [6,842 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 28s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:01.0702204Z [6,842 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 30s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:01.0822112Z [6,843 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 31s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:01.1133016Z [6,843 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 33s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:01.1435891Z [6,843 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 35s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:02.2350553Z [6,849 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 36s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:03.9034376Z [6,849 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 37s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:04.8859653Z [6,849 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 38s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:05.9121279Z [6,853 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 39s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:06.9735064Z [6,853 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 40s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:08.0572604Z [6,853 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 41s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:09.9978778Z [6,855 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 43s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:11.3113620Z [6,855 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 45s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:13.0852332Z [6,859 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 47s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:14.1249570Z [6,859 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 48s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:15.2445612Z [6,860 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 49s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:17.0806230Z [6,862 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 51s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:18.1326499Z [6,863 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 52s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:21.6887526Z [6,863 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 55s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:23.2142434Z [6,864 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 57s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:24.8735745Z [6,864 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 58s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:26.3011861Z [6,866 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 60s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:27.6437916Z [6,866 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 61s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:29.3716922Z [6,867 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 63s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T20:01:30.7038392Z [6,867 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 64s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T20:01:30.7851094Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin:
+2026-11-12T20:01:30.7854536Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T20:01:30.8048473Z    --> hepta-agentd/src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T20:01:30.8177739Z     |
+2026-11-12T20:01:30.8488394Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T20:01:30.8697771Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:30.8817937Z     |
+2026-11-12T20:01:30.9607255Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:01:31.1562015Z 
+2026-11-12T20:01:31.1757646Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T20:01:31.2039930Z   --> hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T20:01:31.2293454Z    |
+2026-11-12T20:01:31.2380694Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T20:01:31.2409534Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:31.2418172Z 
+2026-11-12T20:01:31.2497736Z warning: unused import: `crate::RunPhase`
+2026-11-12T20:01:31.2612176Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-12T20:01:31.2617271Z    |
+2026-11-12T20:01:31.2618135Z 43 | use crate::RunPhase;
+2026-11-12T20:01:31.2643156Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T20:01:31.2686149Z 
+2026-11-12T20:01:31.2752753Z warning: file is loaded as a module multiple times: `codex-rs/hepta-agentd/src\circuit_credit_ledger_test_support.rs`
+2026-11-12T20:01:31.2784471Z   |
+2026-11-12T20:01:31.2822974Z   = help: replace all but one `mod` item with `use` items
+2026-11-12T20:01:31.2963830Z   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+2026-11-12T20:01:31.3083441Z   = note: `#[warn(clippy::duplicate_mod)]` on by default
+2026-11-12T20:01:31.3173112Z 
+2026-11-12T20:01:31.3187101Z warning: variable does not need to be mutable
+2026-11-12T20:01:31.3200335Z    --> hepta-agentd/src\prompt_runtime_tests.rs:795:10
+2026-11-12T20:01:31.3201085Z     |
+2026-11-12T20:01:31.3201541Z 795 |     let (mut store, initial) =
+2026-11-12T20:01:31.3202111Z     |          ----^^^^^
+2026-11-12T20:01:31.3202745Z     |          |
+2026-11-12T20:01:31.3203229Z     |          help: remove this `mut`
+2026-11-12T20:01:31.3208477Z     |
+2026-11-12T20:01:31.3453556Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:01:31.3613302Z 
+2026-11-12T20:01:31.3673677Z warning: method `with_desktop_objective` is never used
+2026-11-12T20:01:31.3692021Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T20:01:31.3779156Z   |
+2026-11-12T20:01:31.3779912Z 4 | impl AgentdConfig {
+2026-11-12T20:01:31.3780505Z   | ----------------- method in this implementation
+2026-11-12T20:01:31.3781207Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T20:01:31.3951953Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:31.4035089Z   |
+2026-11-12T20:01:31.4050945Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:01:31.4198150Z 
+2026-11-12T20:01:31.4381938Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T20:01:31.4466278Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:01:31.4481354Z     |
+2026-11-12T20:01:31.4527373Z  84 | impl LedgerFixture {
+2026-11-12T20:01:31.4528092Z     | ------------------ associated items in this implementation
+2026-11-12T20:01:31.4562696Z ...
+2026-11-12T20:01:31.4563459Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:01:31.4813517Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:31.4961411Z ...
+2026-11-12T20:01:31.5303817Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T20:01:31.5625774Z     |                   ^^^^^
+2026-11-12T20:01:31.5851634Z 
+2026-11-12T20:01:31.6004546Z warning: function `append_decision` is never used
+2026-11-12T20:01:31.6023629Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T20:01:31.6500235Z     |
+2026-11-12T20:01:31.6577177Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T20:01:31.7003605Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T20:01:31.7182509Z 
+2026-11-12T20:01:31.7411789Z warning: function `closure` is never used
+2026-11-12T20:01:31.7596932Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T20:01:31.7982344Z     |
+2026-11-12T20:01:31.8145912Z 212 | pub(super) fn closure(
+2026-11-12T20:01:31.8553741Z     |               ^^^^^^^
+2026-11-12T20:01:31.8772930Z 
+2026-11-12T20:01:31.9222250Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T20:01:31.9624371Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:01:31.9753546Z    |
+2026-11-12T20:01:32.0082849Z 84 | impl LedgerFixture {
+2026-11-12T20:01:32.0197400Z    | ------------------ associated function in this implementation
+2026-11-12T20:01:32.0207882Z ...
+2026-11-12T20:01:32.0213850Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:01:32.0217160Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0217937Z 
+2026-11-12T20:01:32.0223286Z warning: function `original_evaluation_source` is never used
+2026-11-12T20:01:32.0234906Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T20:01:32.0240194Z   |
+2026-11-12T20:01:32.0242517Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T20:01:32.0246038Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0247981Z 
+2026-11-12T20:01:32.0251467Z warning: method `require_decision` is never used
+2026-11-12T20:01:32.0254496Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T20:01:32.0256067Z     |
+2026-11-12T20:01:32.0260153Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T20:01:32.0263642Z     | ----------------------------------- method in this implementation
+2026-11-12T20:01:32.0269389Z ...
+2026-11-12T20:01:32.0289848Z 136 |     pub(crate) fn require_decision(
+2026-11-12T20:01:32.0292239Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0292905Z 
+2026-11-12T20:01:32.0293340Z warning: function `require_decision` is never used
+2026-11-12T20:01:32.0294136Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T20:01:32.0294820Z     |
+2026-11-12T20:01:32.0295448Z 443 | pub(super) fn require_decision(
+2026-11-12T20:01:32.0295879Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0296162Z 
+2026-11-12T20:01:32.0305631Z warning: method `require_original_input` is never used
+2026-11-12T20:01:32.0306363Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T20:01:32.0306886Z    |
+2026-11-12T20:01:32.0307328Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T20:01:32.0308132Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:01:32.0308717Z ...
+2026-11-12T20:01:32.0309023Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T20:01:32.0310083Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0310410Z 
+2026-11-12T20:01:32.0310573Z warning: field `at` is never read
+2026-11-12T20:01:32.0385615Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T20:01:32.0386294Z    |
+2026-11-12T20:01:32.0386586Z 91 | pub(super) struct Fixture {
+2026-11-12T20:01:32.0387062Z    |                   ------- field in this struct
+2026-11-12T20:01:32.0387517Z 92 |     root: PathBuf,
+2026-11-12T20:01:32.0387856Z 93 |     pub(super) at: u64,
+2026-11-12T20:01:32.0388201Z    |                ^^
+2026-11-12T20:01:32.0388401Z 
+2026-11-12T20:01:32.0388805Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T20:01:32.0389707Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T20:01:32.0390310Z     |
+2026-11-12T20:01:32.0390606Z 108 | enum MaterialFixtureProfile {
+2026-11-12T20:01:32.0391065Z     |      ---------------------- variants in this enum
+2026-11-12T20:01:32.0391514Z 109 |     NoUpdate,
+2026-11-12T20:01:32.0391823Z 110 |     CandidatePages,
+2026-11-12T20:01:32.0392157Z     |     ^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0392501Z 111 |     CandidateMaximumPages,
+2026-11-12T20:01:32.0393128Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0393465Z     |
+2026-11-12T20:01:32.0394305Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T20:01:32.0395182Z 
+2026-11-12T20:01:32.0395944Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T20:01:32.0397135Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T20:01:32.0397731Z     |
+2026-11-12T20:01:32.0397988Z 114 | impl Fixture {
+2026-11-12T20:01:32.0398415Z     | ------------ associated functions in this implementation
+2026-11-12T20:01:32.0398906Z ...
+2026-11-12T20:01:32.0399297Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T20:01:32.0399808Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0400155Z ...
+2026-11-12T20:01:32.0400555Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T20:01:32.0401109Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0401952Z ...
+2026-11-12T20:01:32.0402301Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T20:01:32.0403147Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0403461Z 
+2026-11-12T20:01:32.0403635Z warning: method `set_test_clock` is never used
+2026-11-12T20:01:32.0404182Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T20:01:32.0404672Z     |
+2026-11-12T20:01:32.0405101Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T20:01:32.0405880Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:01:32.0406497Z ...
+2026-11-12T20:01:32.0406773Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T20:01:32.0407184Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0407497Z 
+2026-11-12T20:01:32.0407708Z warning: fields `executions` and `now` are never read
+2026-11-12T20:01:32.0408367Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T20:01:32.0408944Z    |
+2026-11-12T20:01:32.0409242Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T20:01:32.0409718Z    |                   --------------- fields in this struct
+2026-11-12T20:01:32.0410150Z ...
+2026-11-12T20:01:32.0410577Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T20:01:32.0411139Z    |     ^^^^^^^^^^
+2026-11-12T20:01:32.0411432Z 63 |     now: u64,
+2026-11-12T20:01:32.0411711Z    |     ^^^
+2026-11-12T20:01:32.0411870Z 
+2026-11-12T20:01:32.0412181Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T20:01:32.0413130Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T20:01:32.0413706Z     |
+2026-11-12T20:01:32.0413984Z  66 | impl LearningFixture {
+2026-11-12T20:01:32.0414421Z     | -------------------- methods in this implementation
+2026-11-12T20:01:32.0414873Z ...
+2026-11-12T20:01:32.0415151Z 241 |     pub(crate) fn with_training(
+2026-11-12T20:01:32.0415558Z     |                   ^^^^^^^^^^^^^
+2026-11-12T20:01:32.0415915Z ...
+2026-11-12T20:01:32.0416201Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T20:01:32.0416629Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0416897Z 
+2026-11-12T20:01:32.0417137Z warning: method `original_model_commitments` is never used
+2026-11-12T20:01:32.0417849Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T20:01:32.0418439Z   |
+2026-11-12T20:01:32.0418838Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T20:01:32.0419574Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T20:01:32.0420256Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T20:01:32.0420719Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0421011Z 
+2026-11-12T20:01:32.0421186Z warning: variant `Notes` is never constructed
+2026-11-12T20:01:32.0421663Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T20:01:32.0422066Z     |
+2026-11-12T20:01:32.0422364Z 631 | enum OperationReconcileProfile {
+2026-11-12T20:01:32.0423006Z     |      ------------------------- variant in this enum
+2026-11-12T20:01:32.0423445Z 632 |     Full,
+2026-11-12T20:01:32.0423807Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T20:01:32.0424260Z     |     ^^^^^
+2026-11-12T20:01:32.0424435Z 
+2026-11-12T20:01:32.0424700Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T20:01:32.0425284Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T20:01:32.0425691Z     |
+2026-11-12T20:01:32.0426042Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T20:01:32.0426555Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0426867Z 
+2026-11-12T20:01:32.0427078Z warning: method `circuit_learning_source` is never used
+2026-11-12T20:01:32.0427636Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T20:01:32.0428256Z    |
+2026-11-12T20:01:32.0429675Z 49 | impl AgentdState {
+2026-11-12T20:01:32.0430071Z    | ---------------- method in this implementation
+2026-11-12T20:01:32.0430524Z ...
+2026-11-12T20:01:32.0431046Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T20:01:32.0431659Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0431960Z 
+2026-11-12T20:01:32.0432172Z warning: method `close_expired_original` is never used
+2026-11-12T20:01:32.0432964Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T20:01:32.0433447Z     |
+2026-11-12T20:01:32.0433739Z   3 | impl AgentdTextRequests {
+2026-11-12T20:01:32.0434194Z     | ----------------------- method in this implementation
+2026-11-12T20:01:32.0434657Z ...
+2026-11-12T20:01:32.0434987Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T20:01:32.0435485Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:01:32.0435784Z 
+2026-11-12T20:01:32.0435989Z warning: this function has too many arguments (8/7)
+2026-11-12T20:01:32.0436528Z    --> hepta-agentd/src\cell_q24_dataset.rs:193:5
+2026-11-12T20:01:32.0436967Z     |
+2026-11-12T20:01:32.0437239Z 193 | /     fn read_current_at_clock(
+2026-11-12T20:01:32.0437629Z 194 | |         &mut self,
+2026-11-12T20:01:32.0438042Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T20:01:32.0438553Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T20:01:32.0438976Z ...   |
+2026-11-12T20:01:32.0439406Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T20:01:32.0440167Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T20:01:32.0440833Z     | |________________________________________________________________^
+2026-11-12T20:01:32.0441322Z     |
+2026-11-12T20:01:32.0442096Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T20:01:32.0443297Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T20:01:32.0443704Z 
+2026-11-12T20:01:32.0444272Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T20:01:32.0445233Z    --> hepta-agentd/src\circuit_task_source_codec.rs:508:36
+2026-11-12T20:01:32.0445741Z     |
+2026-11-12T20:01:32.0446144Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T20:01:32.0446857Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T20:01:32.0447419Z     |
+2026-11-12T20:01:32.0448226Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T20:01:32.0449446Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T20:01:32.0450003Z 
+2026-11-12T20:01:32.0450138Z warning: 27 warnings emitted
+2026-11-12T20:01:32.0450387Z 
+2026-11-12T20:01:32.3680983Z [6,870 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 66s remote-cache, local ... (28 actions, 4 running)
+2026-11-12T20:01:33.4747873Z [6,870 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 67s remote-cache, local ... (28 actions, 5 running)
+2026-11-12T20:01:34.5213704Z [6,873 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 68s remote-cache, local ... (26 actions, 4 running)
+2026-11-12T20:01:37.6432433Z [6,873 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 71s remote-cache, local ... (26 actions, 4 running)
+2026-11-12T20:01:38.6799360Z [6,874 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 72s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T20:01:39.7374202Z [6,874 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 73s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T20:01:40.8322310Z [6,876 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 74s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T20:01:41.9135791Z [6,876 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 75s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T20:01:45.6904456Z [6,876 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 79s remote-cache, local ... (24 actions, 5 running)
+2026-11-12T20:01:47.2317308Z [6,878 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 81s remote-cache, local ... (22 actions, 4 running)
+2026-11-12T20:01:52.6569928Z [6,878 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 86s remote-cache, local ... (22 actions, 5 running)
+2026-11-12T20:01:54.4445761Z [6,880 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 88s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T20:01:57.9344853Z [6,880 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 91s remote-cache, local ... (21 actions, 5 running)
+2026-11-12T20:01:59.1353173Z [6,882 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 93s remote-cache, local ... (20 actions, 4 running)
+2026-11-12T20:02:00.6681345Z [6,883 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 94s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T20:02:02.2547508Z [6,883 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 96s remote-cache, local ... (19 actions, 5 running)
+2026-11-12T20:02:03.6412878Z [6,886 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 97s remote-cache, local ... (17 actions, 4 running)
+2026-11-12T20:02:04.6411684Z [6,888 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 98s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T20:02:05.6526182Z [6,888 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 99s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T20:02:06.6856567Z [6,889 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 100s remote-cache, local ... (14 actions, 4 running)
+2026-11-12T20:02:07.6597557Z [6,891 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 101s remote-cache, local ... (13 actions, 4 running)
+2026-11-12T20:02:08.7243734Z [6,893 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 102s remote-cache, local ... (12 actions, 4 running)
+2026-11-12T20:02:10.6806601Z [6,894 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 104s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T20:02:11.7693296Z [6,894 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 105s remote-cache, local ... (11 actions, 4 running)
+2026-11-12T20:02:12.7456545Z [6,895 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 106s remote-cache, local ... (10 actions, 4 running)
+2026-11-12T20:02:13.7094268Z [6,895 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 107s remote-cache, local ... (10 actions, 4 running)
+2026-11-12T20:02:14.7799032Z [6,895 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files); 108s remote-cache, local ... (10 actions, 5 running)
+2026-11-12T20:02:14.8661003Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (965 files):
+2026-11-12T20:02:14.8851451Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T20:02:14.9090489Z    --> hepta-agentd/src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T20:02:14.9170618Z     |
+2026-11-12T20:02:14.9410703Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T20:02:14.9491058Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:14.9726750Z     |
+2026-11-12T20:02:14.9808714Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:02:14.9907357Z 
+2026-11-12T20:02:15.0129179Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T20:02:15.0129928Z   --> hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T20:02:15.0573896Z    |
+2026-11-12T20:02:15.0719915Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T20:02:15.1000140Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:15.1328915Z 
+2026-11-12T20:02:15.1684881Z warning: unused import: `crate::RunPhase`
+2026-11-12T20:02:15.2020434Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-12T20:02:15.2359310Z    |
+2026-11-12T20:02:15.2684513Z 43 | use crate::RunPhase;
+2026-11-12T20:02:15.3022594Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T20:02:15.3371771Z 
+2026-11-12T20:02:15.3608378Z warning: variable does not need to be mutable
+2026-11-12T20:02:15.3863199Z    --> hepta-agentd/src\prompt_runtime_tests.rs:795:10
+2026-11-12T20:02:15.3863778Z     |
+2026-11-12T20:02:15.3864071Z 795 |     let (mut store, initial) =
+2026-11-12T20:02:15.3864981Z     |          ----^^^^^
+2026-11-12T20:02:15.4183241Z     |          |
+2026-11-12T20:02:15.4452985Z     |          help: remove this `mut`
+2026-11-12T20:02:15.4593262Z     |
+2026-11-12T20:02:15.4883470Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:02:15.5152593Z 
+2026-11-12T20:02:15.5473581Z warning: method `with_desktop_objective` is never used
+2026-11-12T20:02:15.5562952Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T20:02:15.5852980Z   |
+2026-11-12T20:02:15.6152483Z 4 | impl AgentdConfig {
+2026-11-12T20:02:15.6443305Z   | ----------------- method in this implementation
+2026-11-12T20:02:15.6553119Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T20:02:15.6863241Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:15.7148349Z   |
+2026-11-12T20:02:15.7361414Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:02:15.7508425Z 
+2026-11-12T20:02:15.7810107Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T20:02:15.8064691Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:02:15.8400912Z     |
+2026-11-12T20:02:15.8720917Z  84 | impl LedgerFixture {
+2026-11-12T20:02:15.8908755Z     | ------------------ associated items in this implementation
+2026-11-12T20:02:15.9231350Z ...
+2026-11-12T20:02:15.9582482Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:02:15.9892243Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:15.9960481Z ...
+2026-11-12T20:02:16.0317642Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T20:02:16.0551220Z     |                   ^^^^^
+2026-11-12T20:02:16.0686911Z 
+2026-11-12T20:02:16.0977657Z warning: function `append_decision` is never used
+2026-11-12T20:02:16.1212100Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T20:02:16.1373291Z     |
+2026-11-12T20:02:16.1680989Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T20:02:16.1960767Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T20:02:16.2270196Z 
+2026-11-12T20:02:16.2330727Z warning: function `closure` is never used
+2026-11-12T20:02:16.2650933Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T20:02:16.2948654Z     |
+2026-11-12T20:02:16.3241292Z 212 | pub(super) fn closure(
+2026-11-12T20:02:16.3370893Z     |               ^^^^^^^
+2026-11-12T20:02:16.3767745Z 
+2026-11-12T20:02:16.4091070Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T20:02:16.4371330Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T20:02:16.4640631Z    |
+2026-11-12T20:02:16.4870964Z 84 | impl LedgerFixture {
+2026-11-12T20:02:16.5050984Z    | ------------------ associated function in this implementation
+2026-11-12T20:02:16.5360843Z ...
+2026-11-12T20:02:16.5670971Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T20:02:16.5860505Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:16.6030131Z 
+2026-11-12T20:02:16.6339964Z warning: function `original_evaluation_source` is never used
+2026-11-12T20:02:16.6640329Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T20:02:16.6859949Z   |
+2026-11-12T20:02:16.7029788Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T20:02:16.7355063Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:16.7405055Z 
+2026-11-12T20:02:16.7715448Z warning: method `require_decision` is never used
+2026-11-12T20:02:16.8011720Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T20:02:16.8251948Z     |
+2026-11-12T20:02:16.8451236Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T20:02:16.8741408Z     | ----------------------------------- method in this implementation
+2026-11-12T20:02:16.9021727Z ...
+2026-11-12T20:02:16.9351294Z 136 |     pub(crate) fn require_decision(
+2026-11-12T20:02:16.9681185Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T20:02:16.9950819Z 
+2026-11-12T20:02:17.0228986Z warning: function `require_decision` is never used
+2026-11-12T20:02:17.0381380Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T20:02:17.0691240Z     |
+2026-11-12T20:02:17.1038678Z 443 | pub(super) fn require_decision(
+2026-11-12T20:02:17.1221749Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T20:02:17.1400768Z 
+2026-11-12T20:02:17.1702834Z warning: method `require_original_input` is never used
+2026-11-12T20:02:17.2011402Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T20:02:17.2221386Z    |
+2026-11-12T20:02:17.2399192Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T20:02:17.2681590Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:02:17.2941202Z ...
+2026-11-12T20:02:17.3011135Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T20:02:17.3311232Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:17.3600848Z 
+2026-11-12T20:02:17.3738493Z warning: field `at` is never read
+2026-11-12T20:02:17.3921503Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T20:02:17.4050195Z    |
+2026-11-12T20:02:17.4261691Z 91 | pub(super) struct Fixture {
+2026-11-12T20:02:17.4671530Z    |                   ------- field in this struct
+2026-11-12T20:02:17.5101564Z 92 |     root: PathBuf,
+2026-11-12T20:02:17.5421220Z 93 |     pub(super) at: u64,
+2026-11-12T20:02:17.5600994Z    |                ^^
+2026-11-12T20:02:17.5831104Z 
+2026-11-12T20:02:17.5981397Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T20:02:17.6181539Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T20:02:17.6335642Z     |
+2026-11-12T20:02:17.6601137Z 108 | enum MaterialFixtureProfile {
+2026-11-12T20:02:17.6861279Z     |      ---------------------- variants in this enum
+2026-11-12T20:02:17.7071050Z 109 |     NoUpdate,
+2026-11-12T20:02:17.7321159Z 110 |     CandidatePages,
+2026-11-12T20:02:17.7635012Z     |     ^^^^^^^^^^^^^^
+2026-11-12T20:02:17.7774133Z 111 |     CandidateMaximumPages,
+2026-11-12T20:02:17.8011486Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:17.8287292Z     |
+2026-11-12T20:02:17.8596763Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T20:02:17.8756867Z 
+2026-11-12T20:02:17.9058007Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T20:02:17.9317814Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T20:02:17.9607501Z     |
+2026-11-12T20:02:17.9717294Z 114 | impl Fixture {
+2026-11-12T20:02:18.0027494Z     | ------------ associated functions in this implementation
+2026-11-12T20:02:18.0365385Z ...
+2026-11-12T20:02:18.0687739Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T20:02:18.1005191Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T20:02:18.1007150Z ...
+2026-11-12T20:02:18.1345551Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T20:02:18.1558047Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:18.1855103Z ...
+2026-11-12T20:02:18.2017793Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T20:02:18.2317622Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:18.2557359Z 
+2026-11-12T20:02:18.2677941Z warning: method `set_test_clock` is never used
+2026-11-12T20:02:18.2902990Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T20:02:18.3089916Z     |
+2026-11-12T20:02:18.3243492Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T20:02:18.3473468Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T20:02:18.3841382Z ...
+2026-11-12T20:02:18.4203192Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T20:02:18.4450145Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T20:02:18.4832551Z 
+2026-11-12T20:02:18.5263388Z warning: fields `executions` and `now` are never read
+2026-11-12T20:02:18.5684977Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T20:02:18.6195344Z    |
+2026-11-12T20:02:18.6545402Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T20:02:18.6874389Z    |                   --------------- fields in this struct
+2026-11-12T20:02:18.7071368Z ...
+2026-11-12T20:02:18.7486014Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T20:02:18.7578367Z    |     ^^^^^^^^^^
+2026-11-12T20:02:18.7947452Z 63 |     now: u64,
+2026-11-12T20:02:18.8168751Z    |     ^^^
+2026-11-12T20:02:18.8523579Z 
+2026-11-12T20:02:18.8782218Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T20:02:18.9033047Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T20:02:18.9345168Z     |
+2026-11-12T20:02:18.9616047Z  66 | impl LearningFixture {
+2026-11-12T20:02:18.9931996Z     | -------------------- methods in this implementation
+2026-11-12T20:02:19.0251779Z ...
+2026-11-12T20:02:19.0571372Z 241 |     pub(crate) fn with_training(
+2026-11-12T20:02:19.0913103Z     |                   ^^^^^^^^^^^^^
+2026-11-12T20:02:19.1372624Z ...
+2026-11-12T20:02:19.1827620Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T20:02:19.2157451Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:19.2458211Z 
+2026-11-12T20:02:19.2709391Z warning: method `original_model_commitments` is never used
+2026-11-12T20:02:19.3038045Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T20:02:19.3375462Z   |
+2026-11-12T20:02:19.3718473Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T20:02:19.3906164Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T20:02:19.4227373Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T20:02:19.4547237Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:19.4877408Z 
+2026-11-12T20:02:19.5185420Z warning: variant `Notes` is never constructed
+2026-11-12T20:02:19.5267111Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T20:02:19.5507681Z     |
+2026-11-12T20:02:19.5597073Z 631 | enum OperationReconcileProfile {
+2026-11-12T20:02:19.5796722Z     |      ------------------------- variant in this enum
+2026-11-12T20:02:19.5848171Z 632 |     Full,
+2026-11-12T20:02:19.5924954Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T20:02:19.6167605Z     |     ^^^^^
+2026-11-12T20:02:19.6286953Z 
+2026-11-12T20:02:19.6327529Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T20:02:19.6667429Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T20:02:19.6977696Z     |
+2026-11-12T20:02:19.7045661Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T20:02:19.7297405Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:19.7366833Z 
+2026-11-12T20:02:19.7601783Z warning: method `circuit_learning_source` is never used
+2026-11-12T20:02:19.7642020Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T20:02:19.7686927Z    |
+2026-11-12T20:02:19.7927508Z 49 | impl AgentdState {
+2026-11-12T20:02:19.8055299Z    | ---------------- method in this implementation
+2026-11-12T20:02:19.8193017Z ...
+2026-11-12T20:02:19.8300376Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T20:02:19.8558348Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:19.8631824Z 
+2026-11-12T20:02:19.8888544Z warning: method `close_expired_original` is never used
+2026-11-12T20:02:19.8967689Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T20:02:19.9218289Z     |
+2026-11-12T20:02:19.9324064Z   3 | impl AgentdTextRequests {
+2026-11-12T20:02:19.9534656Z     | ----------------------- method in this implementation
+2026-11-12T20:02:19.9666582Z ...
+2026-11-12T20:02:19.9910891Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T20:02:20.0026423Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T20:02:20.0230136Z 
+2026-11-12T20:02:20.0416816Z warning: 24 warnings emitted
+2026-11-12T20:02:20.0430042Z 
+2026-11-12T20:02:20.0551602Z [6,898 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test (1 file); 9s remote-cache, local ... (9 actions, 4 running)
+2026-11-12T20:02:20.0575270Z [6,898 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test (1 file); 11s remote-cache, local ... (9 actions, 5 running)
+2026-11-12T20:02:20.0579423Z [6,899 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test (1 file); 13s remote-cache, local ... (8 actions, 4 running)
+2026-11-12T20:02:20.8373285Z [6,899 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test (1 file); 14s remote-cache, local ... (8 actions, 5 running)
+2026-11-12T20:02:22.0363240Z [6,901 / 6,915] Compiling Rust bin //codex-rs/hepta-matrixd:codex-hepta-matrixd (13 files); 14s remote-cache, local ... (7 actions, 4 running)
+2026-11-12T20:02:23.7960817Z [6,902 / 6,915] Compiling Rust bin //codex-rs/hepta-matrixd:codex-hepta-matrixd (13 files); 15s remote-cache, local ... (6 actions, 5 running)
+2026-11-12T20:02:24.8648303Z [6,904 / 6,915] Compiling Rust bin //codex-rs/hepta-matrixd:codex-hepta-matrixd (13 files); 16s remote-cache, local ... (5 actions, 4 running)
+2026-11-12T20:02:25.8833288Z [6,908 / 6,915] Compiling Rust bin //codex-rs/hepta-matrixd:codex-hepta-matrixd (13 files); 17s remote-cache, local ... (3 actions running)
+2026-11-12T20:02:26.8794962Z [6,909 / 6,915] Compiling Rust bin //codex-rs/hepta-matrixd:codex-hepta-matrixd (13 files); 18s remote-cache, local ... (2 actions running)
+2026-11-12T20:02:27.9125872Z [6,913 / 6,915] Compiling Rust bin //codex-rs/hepta-matrixd:hepta-matrixd-real_synapse_e2e-test (1 file); 2s remote-cache, local
+2026-11-12T20:02:27.9803900Z INFO: Found 1295 targets...
+2026-11-12T20:02:28.8966541Z INFO: Elapsed time: 603.607s, Critical Path: 442.22s
+2026-11-12T20:02:28.9009046Z INFO: 6915 processes: 3392 remote cache hit, 3377 internal, 146 local.
+2026-11-12T20:02:28.9103481Z INFO: Build completed successfully, 6915 total actions
+2026-11-12T20:02:28.9114079Z INFO: 
+2026-11-12T20:02:30.0126697Z INFO: 
+2026-11-12T20:02:32.0147054Z INFO: 
+2026-11-12T20:02:32.2849317Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/cca79438-a324-4b7e-b88a-ae7386d3ef38
+2026-11-12T20:02:32.7682195Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T20:02:32.7682708Z with:
+2026-11-12T20:02:32.7682999Z   name: bazel-execution-logs-clippy-x86_64-pc-windows-msvc
+2026-11-12T20:02:32.7683392Z   path: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:02:32.7683688Z   if-no-files-found: ignore
+2026-11-12T20:02:32.7683935Z   compression-level: 6
+2026-11-12T20:02:32.7684150Z   overwrite: false
+2026-11-12T20:02:32.7684364Z   include-hidden-files: false
+2026-11-12T20:02:32.7684609Z   archive: true
+2026-11-12T20:02:32.7684796Z env:
+2026-11-12T20:02:32.7684961Z   CI_BUILD_ROOT: D:
+2026-11-12T20:02:32.7685238Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:02:32.7685597Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T20:02:32.7685825Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T20:02:32.7686114Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T20:02:32.7686593Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43293663395-clippy
+2026-11-12T20:02:32.7687030Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T20:02:32.7687276Z   TEMP: D:/tmp
+2026-11-12T20:02:32.7687459Z   TMP: D:/tmp
+2026-11-12T20:02:32.7687653Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:02:32.7691116Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:02:32.7693645Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T20:02:32.7696972Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T20:02:32.7699608Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T20:02:32.7717844Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T20:02:32.7733588Z   UCRTVersion: 10.0.26100.0
+2026-11-12T20:02:32.7733884Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:32.7734317Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T20:02:32.7734872Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T20:02:32.7735791Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T20:02:32.7736454Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T20:02:32.7737354Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:32.7737703Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T20:02:32.7737958Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T20:02:32.7746571Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T20:02:32.7755378Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:02:32.7755736Z ##[endgroup]
+2026-11-12T20:02:33.7084893Z With the provided path, there will be 1 file uploaded
+2026-11-12T20:02:33.7090747Z Artifact name is valid!
+2026-11-12T20:02:33.7092313Z Root directory input is valid!
+2026-11-12T20:02:33.9543449Z Uploading artifact: bazel-execution-logs-clippy-x86_64-pc-windows-msvc.zip
+2026-11-12T20:02:33.9589276Z Beginning upload of artifact content to blob storage
+2026-11-12T20:02:34.4097974Z Uploaded bytes 5512638
+2026-11-12T20:02:34.4266668Z Finished uploading artifact content to blob storage!
+2026-11-12T20:02:34.4268031Z SHA256 digest of uploaded artifact is 8fc9b215c6dfcb2f75ec111024f8d3bc3ec131dd1dea6594dff67d91c823838f
+2026-11-12T20:02:34.4269013Z Finalizing artifact upload
+2026-11-12T20:02:34.8258147Z Artifact bazel-execution-logs-clippy-x86_64-pc-windows-msvc successfully finalized. Artifact ID 13978828887
+2026-11-12T20:02:34.8259756Z Artifact bazel-execution-logs-clippy-x86_64-pc-windows-msvc has been successfully uploaded! Final size is 5512638 bytes. Artifact ID is 13978828887
+2026-11-12T20:02:34.8261609Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43293663395/artifacts/13978828887
+2026-11-12T20:02:34.8621935Z ##[group]Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-12T20:02:34.8622394Z with:
+2026-11-12T20:02:34.8622605Z   path: D:/bazel-repository-cache
+2026-11-12T20:02:34.8623195Z   key: bazel-cache-bazel-clippy-x86_64-pc-windows-msvc-cd2efd5992ac0f5233c864ca93cef79165705c98673c7348e8018c8303830b48
+2026-11-12T20:02:34.8623789Z   enableCrossOsArchive: false
+2026-11-12T20:02:34.8624012Z env:
+2026-11-12T20:02:34.8624174Z   CI_BUILD_ROOT: D:
+2026-11-12T20:02:34.8624443Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:02:34.8624755Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T20:02:34.8624970Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T20:02:34.8625241Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T20:02:34.8625673Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43293663395-clippy
+2026-11-12T20:02:34.8626060Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T20:02:34.8626291Z   TEMP: D:/tmp
+2026-11-12T20:02:34.8626498Z   TMP: D:/tmp
+2026-11-12T20:02:34.8626684Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:02:34.8629450Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:02:34.8631673Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T20:02:34.8634940Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T20:02:34.8637841Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T20:02:34.8655954Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T20:02:34.8671785Z   UCRTVersion: 10.0.26100.0
+2026-11-12T20:02:34.8672096Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:34.8672571Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T20:02:34.8673156Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T20:02:34.8673947Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T20:02:34.8674611Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T20:02:34.8675151Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:34.8675467Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T20:02:34.8676258Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T20:02:34.8684922Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T20:02:34.8693821Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:02:34.8694188Z ##[endgroup]
+2026-11-12T20:02:35.2505143Z [command]"C:\Program Files\Git\usr\bin\tar.exe" --posix -cf cache.tzst --exclude cache.tzst -P -C D:/a/hepta-private-ci/hepta-private-ci --files-from manifest.txt --force-local --use-compress-program "zstd -T0"
+2026-11-12T20:02:56.5524301Z Sent 0 of 631158122 (0.0%), 0.0 MBs/sec
+2026-11-12T20:02:57.5538463Z Sent 536870912 of 631158122 (85.1%), 255.7 MBs/sec
+2026-11-12T20:02:58.4285551Z Sent 631158122 of 631158122 (100.0%), 209.2 MBs/sec
+2026-11-12T20:02:58.5937720Z Cache saved with key: bazel-cache-bazel-clippy-x86_64-pc-windows-msvc-cd2efd5992ac0f5233c864ca93cef79165705c98673c7348e8018c8303830b48
+2026-11-12T20:02:58.6260087Z Prepare all required actions
+2026-11-12T20:02:58.6307300Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T20:02:58.6307598Z env:
+2026-11-12T20:02:58.6307776Z   CI_BUILD_ROOT: D:
+2026-11-12T20:02:58.6308043Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:02:58.6308374Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T20:02:58.6308593Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T20:02:58.6308868Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T20:02:58.6309460Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43293663395-clippy
+2026-11-12T20:02:58.6309852Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T20:02:58.6310083Z   TEMP: D:/tmp
+2026-11-12T20:02:58.6310251Z   TMP: D:/tmp
+2026-11-12T20:02:58.6310439Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:02:58.6312866Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:02:58.6315388Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T20:02:58.6318653Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T20:02:58.6321376Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T20:02:58.6340052Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T20:02:58.6355855Z   UCRTVersion: 10.0.26100.0
+2026-11-12T20:02:58.6356213Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:58.6356668Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T20:02:58.6357262Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T20:02:58.6358098Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T20:02:58.6358800Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T20:02:58.6359212Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:58.6359532Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T20:02:58.6359798Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T20:02:58.6368966Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T20:02:58.6378041Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:02:58.6378412Z ##[endgroup]
+2026-11-12T20:02:58.6393241Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T20:02:58.6537200Z ##[group]Run set -euo pipefail
+2026-11-12T20:02:58.6537535Z [36;1mset -euo pipefail[0m
+2026-11-12T20:02:58.6537751Z [36;1m[0m
+2026-11-12T20:02:58.6538217Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T20:02:58.6538774Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T20:02:58.6539026Z [36;1m  exit 0[0m
+2026-11-12T20:02:58.6539209Z [36;1mfi[0m
+2026-11-12T20:02:58.6539385Z [36;1m[0m
+2026-11-12T20:02:58.6539751Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T20:02:58.6540211Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T20:02:58.6540450Z [36;1mexit 1[0m
+2026-11-12T20:02:58.6558138Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T20:02:58.6558561Z env:
+2026-11-12T20:02:58.6558738Z   CI_BUILD_ROOT: D:
+2026-11-12T20:02:58.6559022Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:02:58.6559348Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T20:02:58.6559609Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T20:02:58.6559889Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T20:02:58.6560313Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43293663395-clippy
+2026-11-12T20:02:58.6560719Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T20:02:58.6561061Z   TEMP: D:/tmp
+2026-11-12T20:02:58.6561369Z   TMP: D:/tmp
+2026-11-12T20:02:58.6561564Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:02:58.6564184Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:02:58.6566572Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T20:02:58.6570000Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T20:02:58.6572863Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T20:02:58.6589584Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T20:02:58.6605628Z   UCRTVersion: 10.0.26100.0
+2026-11-12T20:02:58.6605942Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:58.6606497Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T20:02:58.6607081Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T20:02:58.6607878Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T20:02:58.6608560Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T20:02:58.6608949Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:02:58.6609266Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T20:02:58.6609532Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T20:02:58.6618726Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T20:02:58.6628131Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:02:58.6628510Z ##[endgroup]
+2026-11-12T20:02:59.2048845Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=565]
+2026-11-12T20:02:59.2351227Z Post job cleanup.
+2026-11-12T20:02:59.2355626Z ##[start-action display=Set up Bazel;id=__ef57cbd3-1b36-4dcb-aa3b-c0c19c4ff4b7.__bazel-contrib_setup-bazel]
+2026-11-12T20:02:59.2565965Z Post job cleanup.
+2026-11-12T20:02:59.4619861Z ##[end-action id=__ef57cbd3-1b36-4dcb-aa3b-c0c19c4ff4b7.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=226]
+2026-11-12T20:02:59.4850101Z Post job cleanup.
+2026-11-12T20:02:59.7417091Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-12T20:02:59.7830320Z git version 2.56.0.windows.4
+2026-11-12T20:02:59.7918897Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\70589d5b-61f3-4af0-bcbe-8f8a4b9ccf31\.gitconfig'
+2026-11-12T20:02:59.7947977Z Temporarily overriding HOME='D:\a\_temp\70589d5b-61f3-4af0-bcbe-8f8a4b9ccf31' before making global git config changes
+2026-11-12T20:02:59.7950315Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T20:02:59.7967334Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:02:59.8408274Z Removing SSH command configuration
+2026-11-12T20:02:59.8421638Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T20:02:59.8854649Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-12T20:03:00.5032824Z Removing HTTP extra header
+2026-11-12T20:03:00.5045077Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T20:03:00.5451944Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-12T20:03:01.0915961Z Removing includeIf entries pointing to credentials config files
+2026-11-12T20:03:01.0930496Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T20:03:01.1281946Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T20:03:01.1282613Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T20:03:01.1327036Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T20:03:01.1678485Z D:\a\_temp\git-credentials-a184e14e-7eeb-4ad2-8525-858a396dad03.config
+2026-11-12T20:03:01.1724505Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-a184e14e-7eeb-4ad2-8525-858a396dad03.config
+2026-11-12T20:03:01.2115176Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T20:03:01.2477657Z D:\a\_temp\git-credentials-a184e14e-7eeb-4ad2-8525-858a396dad03.config
+2026-11-12T20:03:01.2527950Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-a184e14e-7eeb-4ad2-8525-858a396dad03.config
+2026-11-12T20:03:01.2928975Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-12T20:03:01.8275238Z Removing credentials config 'D:\a\_temp\git-credentials-a184e14e-7eeb-4ad2-8525-858a396dad03.config'
+2026-11-12T20:03:01.8502487Z Cleaning up orphan processes
+2026-11-12T20:03:02.0858832Z Terminate orphan process: pid (5152) (java)

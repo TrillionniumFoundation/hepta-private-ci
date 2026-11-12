@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.source84-windows-private-original-result.v1",
+  "source_commit": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "source_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85",
+  "run_id": 43293663313,
+  "job_id": 131446135835,
+  "job_conclusion": "failure",
+  "sole_failed_step": "Enforce source-level Rust formatting for durable owners",
+  "whole_log": {
+    "job_id": 131446135835,
+    "bytes": 370188,
+    "sha256": "1e4c5290e9180ee6f3c6e99610095248f86a06c1c9cfb5fd75796965e9ab07ce",
+    "git_blob_sha": "2fde2baf54fc1273897d034d56a3b40c40897e3b"
+  },
+  "log_parts": [
+    "JOB.part001.log.txt",
+    "JOB.part002.log.txt"
+  ],
+  "entries": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JOB.part001.log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e73b0f7a5a25e7e0e60ad9a03382a3a83971c17",
+      "bytes": 300242,
+      "sha256": "5bd22bb9035e29a59d97b9d460c74380e75d2c257b08a4470880fbe207536f82",
+      "kind": "original_decoded_full_job_log_part"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JOB.part002.log.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7ab9eb47470891a9c2da0358b4c8ee4fad84676b",
+      "bytes": 69946,
+      "sha256": "32160a61ed807457606cb2beeffd118232b1047ce0aee83e6758ab00e4812eba",
+      "kind": "original_decoded_full_job_log_part"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JOBS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e34dcf4684895e9a0ef5bb63d3ab64fea6e463f1",
+      "bytes": 4222,
+      "sha256": "751084fb125b9bc42738d748cc921d0cc937e09c9f619ae65ad4b8da1b65a8e1",
+      "kind": "original_actions_api_response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/JUNIT_RECORD_FROM_JOBLOG.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "69be8f41c4d415a4d52224ee2e9811ac877f6b3e",
+      "bytes": 5045,
+      "sha256": "d8c7eb933a1b43f09f65c51eb28032ba5ab4a31f1a6a861198d195eeb06194fe",
+      "kind": "exact_payload_line_copied_from_original_job_log_not_original_artifact_member"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source84-windows-private-result/REGRESSION_RECORD_FROM_JOBLOG.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cae771a730b91244e8e6273d109680b1c807eebc",
+      "bytes": 10630,
+      "sha256": "b3b2a3e8fc2fc30b34a52aaeb5e5dd60f8733b890db84532b59814a2a58938ea",
+      "kind": "exact_payload_line_copied_from_original_job_log_not_original_artifact_member"
+    }
+  ],
+  "dedicated_regression": {
+    "selected": 36,
+    "passed": 36,
+    "failed": 0,
+    "filter_excluded": 597,
+    "retries": 0,
+    "original_log_receipt_exact_log_and_junit_coverage": true,
+    "junit_payload_reports": {
+      "total_testcases": 36,
+      "failures": 0,
+      "errors": 0,
+      "skipped_in_xml": 0
+    },
+    "actual_xml_artifact_not_downloaded_by_this_archive": true
+  },
+  "other_independent_step_summaries": [
+    {
+      "run": 15,
+      "passed": 15,
+      "filter_excluded": 5
+    },
+    {
+      "run": 2,
+      "passed": 2,
+      "filter_excluded": 26
+    },
+    {
+      "run": 3,
+      "passed": 3,
+      "filter_excluded": 147
+    },
+    {
+      "run": 2,
+      "passed": 2,
+      "filter_excluded": 148
+    },
+    {
+      "run": 12,
+      "passed": 12,
+      "filter_excluded": 340
+    }
+  ],
+  "formatter": {
+    "hunks": 7,
+    "paths": 5,
+    "all_match_linux_formatter_path_and_line": true,
+    "no_new_repair_path": true
+  },
+  "source_result_not_transferred_to_new_candidate": true,
+  "no_dispatch": true
+}

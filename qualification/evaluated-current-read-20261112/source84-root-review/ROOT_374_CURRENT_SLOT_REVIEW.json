@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.root-original-current-slot-review.v1",
+  "source_posts": {
+    "learning": "69a88e479494dfa9dda77a642c1cc1c85c1ad590",
+    "service": "3802bc408a0736dc7c934293dfbb30d0debcf3f0",
+    "token": "2c469106274329851ea7329f312ed33d55c4a2f8",
+    "unchanged_upstream_committed_owner": "cb3c74f89ee9fa692d16c7d7adf8970d6959411b"
+  },
+  "selection": {
+    "semantic_require_slots": 6,
+    "physical_current_reads": 2,
+    "sequence": [
+      "1 service begin: actual CURRENT",
+      "actual Source input check",
+      "select authenticated purpose exactly at slot 1",
+      "2-3 native Selection before/after",
+      "4-5 independent tail Selection before/after",
+      "actual tail Source input check",
+      "6 service finish: actual CURRENT",
+      "consume completed token"
+    ]
+  },
+  "next_use": {
+    "semantic_require_slots": 9,
+    "physical_current_reads": 2,
+    "sequence": [
+      "1 service begin: actual CURRENT",
+      "actual Source input check",
+      "select authenticated purpose exactly at slot 1",
+      "2-3 native prefix Selection before/after",
+      "actual Source run publication before committed read",
+      "4-5 native committed before/after",
+      "actual Source run publication after committed read, equality required",
+      "6 native read-set final slot",
+      "7-8 independent tail Selection before/after",
+      "actual tail Source input check",
+      "9 service finish: actual CURRENT",
+      "consume completed token"
+    ]
+  },
+  "public_individual_mode": "Every original public require slot still performs physical CURRENT read; no finish shortcut is introduced.",
+  "state_checks": {
+    "same_actual_cell_and_task_arc_pointers": true,
+    "borrowed_original_kept_alive": true,
+    "nonclone_nonsend_private_token": true,
+    "state_set_refused_before_each_step": true,
+    "purpose_selected_once_at_one": true,
+    "early_late_or_repeat_purpose_rejected": true,
+    "partial_extra_or_reused_token_rejected": true,
+    "last_physical_current_required_for_complete": true,
+    "source_withdrawal_test_hook_before_independent_tail_retained": true,
+    "read_set_native_body_and_source_publication_pair_retained": true
+  },
+  "execution": "STATIC_SOURCE_EXPANSION_ONLY_NOT_FMT_NOT_COMPILED_NOT_NATIVE",
+  "all_blockers_closed": false,
+  "owner_decision": null
+}

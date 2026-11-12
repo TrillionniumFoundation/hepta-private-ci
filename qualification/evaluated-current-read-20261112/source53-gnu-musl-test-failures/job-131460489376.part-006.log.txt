@@ -1,0 +1,169 @@
+s::evaluated_selection_command_lost_ack_recovers_only_exact_readback' (1929) has overflowed its stack
+2026-11-12T20:21:40.4649427Z fatal runtime error: stack overflow, aborting
+2026-11-12T20:21:40.4650254Z ##[endgroup]
+2026-11-12T20:21:40.4657007Z ##[error]Process completed with exit code 3.
+2026-11-12T20:21:40.4716556Z ##[group]Run ./.github/scripts/run-bazel-ci.sh \
+2026-11-12T20:21:40.4717099Z [36;1m./.github/scripts/run-bazel-ci.sh \[0m
+2026-11-12T20:21:40.4717500Z [36;1m  --print-failed-action-summary \[0m
+2026-11-12T20:21:40.4717891Z [36;1m  --print-failed-test-logs \[0m
+2026-11-12T20:21:40.4718229Z [36;1m  -- \[0m
+2026-11-12T20:21:40.4718471Z [36;1m  test \[0m
+2026-11-12T20:21:40.4718791Z [36;1m  --strategy=TestRunner=linux-sandbox \[0m
+2026-11-12T20:21:40.4719228Z [36;1m  --test_tag_filters=-argument-comment-lint \[0m
+2026-11-12T20:21:40.4719621Z [36;1m  --nocache_test_results \[0m
+2026-11-12T20:21:40.4720010Z [36;1m  --build_metadata=COMMIT_SHA=${GITHUB_SHA} \[0m
+2026-11-12T20:21:40.4720481Z [36;1m  --build_metadata=TAG_job=native-openssh-test \[0m
+2026-11-12T20:21:40.4721102Z [36;1m  -- \[0m
+2026-11-12T20:21:40.4721578Z [36;1m  //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests[0m
+2026-11-12T20:21:40.4774150Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T20:21:40.4774539Z env:
+2026-11-12T20:21:40.4774806Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T20:21:40.4775286Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:21:40.4775764Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T20:21:40.4776178Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T20:21:40.4776690Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:21:40.4777379Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:21:40.4778001Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:21:40.4778412Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:21:40.4778741Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:21:40.4779065Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:21:40.4782284Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:21:40.4782793Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:21:40.4783377Z   BUILDBUDDY_API_KEY: ***
+2026-11-12T20:21:40.4783647Z ##[endgroup]
+2026-11-12T20:21:40.4856716Z BuildBuddy API key is available; using remote Bazel configuration.
+2026-11-12T20:21:40.5129040Z Using generic BuildBuddy configuration: buildbuddy-generic-rbe.
+2026-11-12T20:21:40.7947285Z WARNING: option '--remote_download_outputs' was expanded from both option '--remote_download_toplevel' (source /home/runner/work/hepta-private-ci/hepta-private-ci/.bazelrc) and option '--remote_download_minimal' (source expanded from --config=ci-linux)
+2026-11-12T20:21:40.7948426Z INFO: Invocation ID: 6d439238-7729-4cef-916d-b1f1e78ccb1b
+2026-11-12T20:21:40.7949011Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/6d439238-7729-4cef-916d-b1f1e78ccb1b
+2026-11-12T20:21:49.8844163Z Computing main repo mapping: 
+2026-11-12T20:21:50.1703923Z Loading: 
+2026-11-12T20:21:50.1720157Z Loading: 3 packages loaded
+2026-11-12T20:21:50.5404631Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (4 packages loaded, 0 targets configured)
+2026-11-12T20:21:50.5422858Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (4 packages loaded, 0 targets configured)
+2026-11-12T20:21:50.5423641Z 
+2026-11-12T20:21:51.6052896Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (204 packages loaded, 14226 targets configured)
+2026-11-12T20:21:51.6065660Z 
+2026-11-12T20:21:52.7496133Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (210 packages loaded, 32655 targets configured, 64 aspect applications)
+2026-11-12T20:21:52.7551383Z 
+2026-11-12T20:21:53.8962673Z Analyzing: target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (213 packages loaded, 45495 targets configured, 176 aspect applications)
+2026-11-12T20:21:53.9021399Z 
+2026-11-12T20:21:54.5932287Z INFO: Analyzed target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (215 packages loaded, 47521 targets configured, 200 aspect applications).
+2026-11-12T20:21:55.9003888Z [398 / 1,557] checking cached actions
+2026-11-12T20:21:57.3659912Z [2,073 / 2,075] [Sched] Compiling Rust bin //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (28 files)
+2026-11-12T20:21:58.8914552Z [2,073 / 2,075] Compiling Rust bin //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (28 files); 1s remote
+2026-11-12T20:21:59.8917235Z [2,075 / 2,076] Testing //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests; 0s linux-sandbox
+2026-11-12T20:22:00.2175784Z INFO: Found 1 test target...
+2026-11-12T20:22:00.2805871Z Target //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests up-to-date:
+2026-11-12T20:22:00.2806679Z   bazel-bin/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests
+2026-11-12T20:22:00.2876577Z INFO: Elapsed time: 19.762s, Critical Path: 3.99s
+2026-11-12T20:22:00.2877164Z INFO: 6 processes: 2070 action cache hit, 4 internal, 2 linux-sandbox, 1 remote.
+2026-11-12T20:22:00.2877789Z INFO: Build completed successfully, 6 total actions
+2026-11-12T20:22:00.2878578Z INFO: 
+2026-11-12T20:22:00.2890257Z //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     PASSED in 0.3s
+2026-11-12T20:22:00.2891434Z 
+2026-11-12T20:22:00.2891602Z Executed 1 out of 1 test: 1 test passes.
+2026-11-12T20:22:00.2892162Z There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
+2026-11-12T20:22:01.8920083Z INFO: 
+2026-11-12T20:22:01.9485285Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/6d439238-7729-4cef-916d-b1f1e78ccb1b
+2026-11-12T20:22:01.9604271Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T20:22:01.9604593Z with:
+2026-11-12T20:22:01.9604810Z   name: bazel-execution-logs-test-x86_64-unknown-linux-gnu
+2026-11-12T20:22:01.9605114Z   path: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:22:01.9605361Z   if-no-files-found: ignore
+2026-11-12T20:22:01.9605557Z   compression-level: 6
+2026-11-12T20:22:01.9605742Z   overwrite: false
+2026-11-12T20:22:01.9605924Z   include-hidden-files: false
+2026-11-12T20:22:01.9606116Z   archive: true
+2026-11-12T20:22:01.9606284Z env:
+2026-11-12T20:22:01.9606460Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T20:22:01.9606756Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:22:01.9607069Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T20:22:01.9607337Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T20:22:01.9607673Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:22:01.9608105Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:22:01.9608503Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:22:01.9608773Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:22:01.9608992Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:22:01.9609206Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:22:01.9611115Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:22:01.9611420Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:22:01.9611730Z ##[endgroup]
+2026-11-12T20:22:02.0740667Z With the provided path, there will be 2 files uploaded
+2026-11-12T20:22:02.0741328Z Artifact name is valid!
+2026-11-12T20:22:02.0741854Z Root directory input is valid!
+2026-11-12T20:22:02.3789378Z Uploading artifact: bazel-execution-logs-test-x86_64-unknown-linux-gnu.zip
+2026-11-12T20:22:02.3818347Z Beginning upload of artifact content to blob storage
+2026-11-12T20:22:03.1104899Z Uploaded bytes 8388608
+2026-11-12T20:22:03.2887663Z Uploaded bytes 16367033
+2026-11-12T20:22:03.3271514Z Finished uploading artifact content to blob storage!
+2026-11-12T20:22:03.3272090Z SHA256 digest of uploaded artifact is 1d3cea7592a00cd62a8d54ce78ffaa0887210da299cdbd8e38254460e3a62146
+2026-11-12T20:22:03.3272513Z Finalizing artifact upload
+2026-11-12T20:22:03.7793889Z Artifact bazel-execution-logs-test-x86_64-unknown-linux-gnu successfully finalized. Artifact ID 13979863765
+2026-11-12T20:22:03.7794569Z Artifact bazel-execution-logs-test-x86_64-unknown-linux-gnu has been successfully uploaded! Final size is 16367033 bytes. Artifact ID is 13979863765
+2026-11-12T20:22:03.7797185Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43297579660/artifacts/13979863765
+2026-11-12T20:22:03.7920831Z Prepare all required actions
+2026-11-12T20:22:03.7943068Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T20:22:03.7943305Z env:
+2026-11-12T20:22:03.7943491Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T20:22:03.7943785Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:22:03.7944084Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T20:22:03.7944336Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T20:22:03.7944649Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:22:03.7945051Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:22:03.7945432Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:22:03.7945684Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:22:03.7945903Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:22:03.7946135Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:22:03.7947765Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:22:03.7948053Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:22:03.7948360Z ##[endgroup]
+2026-11-12T20:22:03.7951256Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T20:22:03.7979798Z ##[group]Run set -euo pipefail
+2026-11-12T20:22:03.7980055Z [36;1mset -euo pipefail[0m
+2026-11-12T20:22:03.7980232Z [36;1m[0m
+2026-11-12T20:22:03.7980573Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T20:22:03.7981204Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T20:22:03.7981418Z [36;1m  exit 0[0m
+2026-11-12T20:22:03.7981577Z [36;1mfi[0m
+2026-11-12T20:22:03.7981741Z [36;1m[0m
+2026-11-12T20:22:03.7982006Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T20:22:03.7982341Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T20:22:03.7982528Z [36;1mexit 1[0m
+2026-11-12T20:22:03.7993969Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T20:22:03.7994219Z env:
+2026-11-12T20:22:03.7994391Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T20:22:03.7994693Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:22:03.7994988Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T20:22:03.7995249Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T20:22:03.7995551Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:22:03.7995968Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:22:03.7996343Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:22:03.7996602Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:22:03.7996813Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T20:22:03.7997028Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:22:03.7998641Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:22:03.7998939Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:22:03.7999238Z ##[endgroup]
+2026-11-12T20:22:04.3797322Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=584]
+2026-11-12T20:22:04.3883210Z Post job cleanup.
+2026-11-12T20:22:04.3886680Z ##[start-action display=Set up Bazel;id=__a2f4b367-1537-4e77-a48f-8cfeaeed86e9.__bazel-contrib_setup-bazel]
+2026-11-12T20:22:04.3923259Z Post job cleanup.
+2026-11-12T20:22:04.5069980Z ##[end-action id=__a2f4b367-1537-4e77-a48f-8cfeaeed86e9.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=118]
+2026-11-12T20:22:04.5125892Z Post job cleanup.
+2026-11-12T20:22:04.5743448Z [command]/usr/bin/git version
+2026-11-12T20:22:04.5773357Z git version 2.56.1
+2026-11-12T20:22:04.5802089Z Temporarily overriding HOME='/home/runner/work/_temp/80019d51-8c92-47a3-8922-ca2d027548b2' before making global git config changes
+2026-11-12T20:22:04.5811346Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T20:22:04.5812139Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:22:04.5838574Z Removing SSH command configuration
+2026-11-12T20:22:04.5847747Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T20:22:04.5880443Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T20:22:04.6182087Z Removing HTTP extra header
+2026-11-12T20:22:04.6182672Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T20:22:04.6216340Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T20:22:04.6492766Z Removing includeIf entries pointing to credentials config files
+2026-11-12T20:22:04.6496674Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T20:22:04.6510004Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T20:22:04.6792776Z Cleaning up orphan processes
+2026-11-12T20:22:04.7171646Z Terminate orphan process: pid (2849) (java.lang=ALL-UNNAMED)

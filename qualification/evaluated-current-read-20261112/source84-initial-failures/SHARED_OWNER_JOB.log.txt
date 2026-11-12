@@ -1,0 +1,1350 @@
+﻿2026-11-12T19:47:01.1168867Z Current runner version: '2.338.2'
+2026-11-12T19:47:01.1192987Z ##[group]Runner Image Provisioner
+2026-11-12T19:47:01.1193902Z Hosted Compute Agent
+2026-11-12T19:47:01.1194406Z Version: 20261028.624
+2026-11-12T19:47:01.1194997Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T19:47:01.1195623Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T19:47:01.1196198Z Worker ID: {521537e1-bef0-4bf7-8091-542e9a18ccf2}
+2026-11-12T19:47:01.1196832Z Region: westus2
+2026-11-12T19:47:01.1197336Z Cloud: Azure
+2026-11-12T19:47:01.1197790Z ##[endgroup]
+2026-11-12T19:47:01.1199291Z ##[group]Operating System
+2026-11-12T19:47:01.1199928Z Ubuntu
+2026-11-12T19:47:01.1200479Z 24.04.5
+2026-11-12T19:47:01.1200920Z LTS
+2026-11-12T19:47:01.1201351Z ##[endgroup]
+2026-11-12T19:47:01.1201891Z ##[group]Runner Image
+2026-11-12T19:47:01.1202415Z Image: ubuntu-24.04
+2026-11-12T19:47:01.1202918Z Version: 20261101.360.1
+2026-11-12T19:47:01.1204061Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T19:47:01.1205373Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T19:47:01.1206188Z ##[endgroup]
+2026-11-12T19:47:01.1207215Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T19:47:01.1208850Z Contents: read
+2026-11-12T19:47:01.1209716Z Metadata: read
+2026-11-12T19:47:01.1210220Z ##[endgroup]
+2026-11-12T19:47:01.1212145Z Secret source: Actions
+2026-11-12T19:47:01.1213033Z Cache mode: write
+2026-11-12T19:47:01.1213651Z Prepare workflow directory
+2026-11-12T19:47:01.1684784Z Prepare all required actions
+2026-11-12T19:47:01.1737572Z Getting action download info
+2026-11-12T19:47:01.5276853Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T19:47:01.7228507Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-12T19:47:02.0118420Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-12T19:47:02.1874436Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-12T19:47:02.4291350Z Complete job name: owners
+2026-11-12T19:47:02.5008719Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T19:47:02.5009882Z with:
+2026-11-12T19:47:02.5010300Z   ref: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:02.5010836Z   persist-credentials: false
+2026-11-12T19:47:02.5011355Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:02.5014991Z   token: ***
+2026-11-12T19:47:02.5015373Z   ssh-strict: true
+2026-11-12T19:47:02.5015768Z   ssh-user: git
+2026-11-12T19:47:02.5016130Z   clean: true
+2026-11-12T19:47:02.5016512Z   sparse-checkout-cone-mode: true
+2026-11-12T19:47:02.5016969Z   fetch-depth: 1
+2026-11-12T19:47:02.5017367Z   fetch-tags: false
+2026-11-12T19:47:02.5017754Z   show-progress: true
+2026-11-12T19:47:02.5018145Z   lfs: false
+2026-11-12T19:47:02.5018512Z   submodules: false
+2026-11-12T19:47:02.5018906Z   set-safe-directory: true
+2026-11-12T19:47:02.5019644Z env:
+2026-11-12T19:47:02.5020054Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:02.5020709Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:02.5021246Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:02.5021683Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:02.5022103Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:02.5022506Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:02.5022940Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:02.5023314Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:02.5023698Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:02.5024139Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:02.5024568Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:02.5024982Z ##[endgroup]
+2026-11-12T19:47:02.9100978Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:02.9104702Z ##[group]Getting Git version info
+2026-11-12T19:47:02.9106025Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T19:47:02.9108103Z [command]/usr/bin/git version
+2026-11-12T19:47:02.9157223Z git version 2.56.0
+2026-11-12T19:47:02.9179301Z ##[endgroup]
+2026-11-12T19:47:02.9193787Z Temporarily overriding HOME='/home/runner/work/_temp/65ff63f3-eaf0-4809-89fa-4dc2dd13d591' before making global git config changes
+2026-11-12T19:47:02.9197387Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T19:47:02.9200920Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:02.9775841Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T19:47:02.9779295Z ##[group]Initializing the repository
+2026-11-12T19:47:02.9783931Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:02.9871306Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T19:47:02.9873376Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T19:47:02.9875236Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T19:47:02.9877114Z hint: call:
+2026-11-12T19:47:02.9877959Z hint:
+2026-11-12T19:47:02.9879208Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T19:47:02.9880653Z hint:
+2026-11-12T19:47:02.9881938Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T19:47:02.9883818Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T19:47:02.9885242Z hint:
+2026-11-12T19:47:02.9886119Z hint: 	git branch -m <name>
+2026-11-12T19:47:02.9887197Z hint:
+2026-11-12T19:47:02.9888400Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T19:47:02.9890876Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T19:47:02.9894488Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:02.9938003Z ##[endgroup]
+2026-11-12T19:47:02.9939817Z ##[group]Disabling automatic garbage collection
+2026-11-12T19:47:02.9941576Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T19:47:02.9982027Z ##[endgroup]
+2026-11-12T19:47:02.9983573Z ##[group]Setting up auth
+2026-11-12T19:47:02.9984761Z Removing SSH command configuration
+2026-11-12T19:47:02.9989126Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T19:47:03.0040439Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T19:47:03.0349231Z Removing HTTP extra header
+2026-11-12T19:47:03.0356094Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T19:47:03.0398700Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T19:47:03.0613798Z Removing includeIf entries pointing to credentials config files
+2026-11-12T19:47:03.0618160Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T19:47:03.0659685Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T19:47:03.0880954Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T19:47:03.0928256Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:03.0973891Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:03.1011415Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:03.1046760Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:03.1079189Z ##[endgroup]
+2026-11-12T19:47:03.1080402Z ##[group]Fetching the repository
+2026-11-12T19:47:03.1086093Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:09.5314593Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:09.5315757Z  * branch              84ee9c2ed0db8b20b792634d775f9b4f97a34578 -> FETCH_HEAD
+2026-11-12T19:47:09.5324512Z [command]/usr/bin/git rev-parse --verify --quiet 84ee9c2ed0db8b20b792634d775f9b4f97a34578^{object}
+2026-11-12T19:47:09.5358370Z 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:09.5362854Z ##[endgroup]
+2026-11-12T19:47:09.5368904Z ##[group]Determining the checkout info
+2026-11-12T19:47:09.5369758Z ##[endgroup]
+2026-11-12T19:47:09.5370271Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T19:47:09.5423485Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T19:47:09.5458605Z ##[group]Checking out the ref
+2026-11-12T19:47:09.5462107Z [command]/usr/bin/git checkout --progress --force 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:10.4778687Z Note: switching to '84ee9c2ed0db8b20b792634d775f9b4f97a34578'.
+2026-11-12T19:47:10.4779250Z 
+2026-11-12T19:47:10.4779623Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T19:47:10.4780265Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T19:47:10.4780906Z state without impacting any branches by switching back to a branch.
+2026-11-12T19:47:10.4781258Z 
+2026-11-12T19:47:10.4781870Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T19:47:10.4782463Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T19:47:10.4782858Z 
+2026-11-12T19:47:10.4782988Z   git switch -c <new-branch-name>
+2026-11-12T19:47:10.4783239Z 
+2026-11-12T19:47:10.4783378Z Or undo this operation with:
+2026-11-12T19:47:10.4783514Z 
+2026-11-12T19:47:10.4783595Z   git switch -
+2026-11-12T19:47:10.4783699Z 
+2026-11-12T19:47:10.4783873Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T19:47:10.4784115Z 
+2026-11-12T19:47:10.4784315Z HEAD is now at 84ee9c2e Align the typed origin fixture with the current upstream repair
+2026-11-12T19:47:10.4820634Z ##[endgroup]
+2026-11-12T19:47:10.4871113Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T19:47:10.4902791Z 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:10.4911883Z ##[group]Removing auth
+2026-11-12T19:47:10.4912255Z Removing SSH command configuration
+2026-11-12T19:47:10.4916255Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T19:47:10.4955683Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T19:47:10.5190758Z Removing HTTP extra header
+2026-11-12T19:47:10.5193411Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T19:47:10.5233513Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T19:47:10.5463164Z Removing includeIf entries pointing to credentials config files
+2026-11-12T19:47:10.5467126Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T19:47:10.5500770Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T19:47:10.5501572Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T19:47:10.5502256Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T19:47:10.5502725Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T19:47:10.5520102Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T19:47:10.5544963Z /home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5555246Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5596630Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T19:47:10.5626401Z /home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5635157Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5797650Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T19:47:10.5828784Z /github/runner_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5836209Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5883929Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T19:47:10.5912115Z /github/runner_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5919182Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config
+2026-11-12T19:47:10.5958738Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T19:47:10.6187871Z Removing credentials config '/home/runner/work/_temp/git-credentials-50a4c19a-3595-460d-96c0-0d77d2dac86b.config'
+2026-11-12T19:47:10.6196805Z ##[endgroup]
+2026-11-12T19:47:10.6397125Z ##[group]Run set -euo pipefail
+2026-11-12T19:47:10.6397459Z [36;1mset -euo pipefail[0m
+2026-11-12T19:47:10.6397730Z [36;1mmkdir -p "$RUNNER_TEMP/shared-framework"[0m
+2026-11-12T19:47:10.6398066Z [36;1mtest "$(git rev-parse HEAD)" = "$SOURCE_SHA"[0m
+2026-11-12T19:47:10.6398331Z [36;1mtest "$TESTED_SHA" = "$SOURCE_SHA"[0m
+2026-11-12T19:47:10.6398674Z [36;1mgit rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/shared-framework/source.txt"[0m
+2026-11-12T19:47:10.6399258Z [36;1mtest -z "$(git status --porcelain)"[0m
+2026-11-12T19:47:10.6399494Z [36;1mcd codex-rs[0m
+2026-11-12T19:47:10.6399777Z [36;1mrustc --version --verbose > "$RUNNER_TEMP/shared-framework/rustc.txt"[0m
+2026-11-12T19:47:10.6421021Z shell: /usr/bin/bash -e {0}
+2026-11-12T19:47:10.6421253Z env:
+2026-11-12T19:47:10.6421469Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:10.6421759Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:10.6422070Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:10.6422291Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:10.6422495Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:10.6422689Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:10.6423098Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:10.6423269Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:10.6423454Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:10.6423659Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:10.6423859Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:10.6424049Z ##[endgroup]
+2026-11-12T19:47:11.1445133Z info: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-12T19:47:11.5661606Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-12T19:47:11.5666275Z info: downloading 6 components
+2026-11-12T19:47:19.6148666Z warn: the missing active toolchain `1.96.0-x86_64-unknown-linux-gnu` has been auto-installed
+2026-11-12T19:47:19.6149363Z warn: this might cause rustup commands to take longer time to finish than expected
+2026-11-12T19:47:19.6149872Z info: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`
+2026-11-12T19:47:19.6449664Z ##[group]Run python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
+2026-11-12T19:47:19.6450494Z [36;1mpython3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \[0m
+2026-11-12T19:47:19.6450974Z [36;1m  --output "$RUNNER_TEMP/shared-framework/execution-gate-tests.json" \[0m
+2026-11-12T19:47:19.6451386Z [36;1m  -- python3 -B -m unittest discover -s scripts -p test_hepta_ci_exec.py -v[0m
+2026-11-12T19:47:19.6469245Z shell: /usr/bin/bash -e {0}
+2026-11-12T19:47:19.6469463Z env:
+2026-11-12T19:47:19.6469675Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:19.6469957Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:19.6470199Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:19.6470414Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:19.6470607Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:19.6470792Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:19.6470994Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:19.6471213Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:19.6471394Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:19.6471596Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:19.6471782Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:19.6471965Z ##[endgroup]
+2026-11-12T19:47:19.8823457Z test_actual_command_success_binds_source_tree_parents_and_argv (test_hepta_ci_exec.ExecutionRecordTests.test_actual_command_success_binds_source_tree_parents_and_argv) ... ok
+2026-11-12T19:47:19.9939891Z test_conflicting_merge_never_dispatches_an_arbitrary_resolution (test_hepta_ci_exec.ExecutionRecordTests.test_conflicting_merge_never_dispatches_an_arbitrary_resolution) ... ok
+2026-11-12T19:47:20.1142829Z test_divergent_clean_merge_records_recomputed_tree (test_hepta_ci_exec.ExecutionRecordTests.test_divergent_clean_merge_records_recomputed_tree) ... ok
+2026-11-12T19:47:20.1677216Z test_existing_receipt_cannot_be_overwritten_or_reused (test_hepta_ci_exec.ExecutionRecordTests.test_existing_receipt_cannot_be_overwritten_or_reused) ... ok
+2026-11-12T19:47:20.2498698Z test_killed_command_is_failed_not_passed (test_hepta_ci_exec.ExecutionRecordTests.test_killed_command_is_failed_not_passed) ... ok
+2026-11-12T19:47:20.3307812Z test_matching_parents_with_wrong_tree_reject_before_command (test_hepta_ci_exec.ExecutionRecordTests.test_matching_parents_with_wrong_tree_reject_before_command) ... ok
+2026-11-12T19:47:20.3970650Z test_merge_lane_rejects_symbolic_base_identity (test_hepta_ci_exec.ExecutionRecordTests.test_merge_lane_rejects_symbolic_base_identity) ... ok
+2026-11-12T19:47:20.5119451Z test_nonzero_command_is_retained_and_not_converted_to_pass (test_hepta_ci_exec.ExecutionRecordTests.test_nonzero_command_is_retained_and_not_converted_to_pass) ... ok
+2026-11-12T19:47:20.6287548Z test_shallow_checkout_records_real_commit_parents_not_traversal_grafts (test_hepta_ci_exec.ExecutionRecordTests.test_shallow_checkout_records_real_commit_parents_not_traversal_grafts) ... ok
+2026-11-12T19:47:20.7046935Z test_source_lane_cannot_relabel_another_commit (test_hepta_ci_exec.ExecutionRecordTests.test_source_lane_cannot_relabel_another_commit) ... ok
+2026-11-12T19:47:20.7963736Z test_successful_command_mutating_source_still_fails (test_hepta_ci_exec.ExecutionRecordTests.test_successful_command_mutating_source_still_fails) ... ok
+2026-11-12T19:47:20.9497912Z test_synthetic_merge_accepts_only_exact_ordered_parents (test_hepta_ci_exec.ExecutionRecordTests.test_synthetic_merge_accepts_only_exact_ordered_parents) ... ok
+2026-11-12T19:47:21.1640140Z test_wrong_checkout_and_dirty_inputs_never_dispatch (test_hepta_ci_exec.ExecutionRecordTests.test_wrong_checkout_and_dirty_inputs_never_dispatch) ... ok
+2026-11-12T19:47:21.5123975Z test_shell_preserves_test_targets_and_strict_lint_arguments (test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_preserves_test_targets_and_strict_lint_arguments) ... ok
+2026-11-12T19:47:21.7070916Z test_shell_test_failure_has_no_lint_pass_receipt (test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_test_failure_has_no_lint_pass_receipt) ... ok
+2026-11-12T19:47:21.7071427Z 
+2026-11-12T19:47:21.7071554Z ----------------------------------------------------------------------
+2026-11-12T19:47:21.7071873Z Ran 15 tests in 1.930s
+2026-11-12T19:47:21.7071993Z 
+2026-11-12T19:47:21.7072066Z OK
+2026-11-12T19:47:21.7738500Z {"after": {"commit": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "dirty": false, "parents": ["26f9a14d689cee20b46a88db493896fe4e713e36", "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609"], "tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85"}, "base_sha": "", "before": {"commit": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "dirty": false, "parents": ["26f9a14d689cee20b46a88db493896fe4e713e36", "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609"], "tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85"}, "command": ["python3", "-B", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_hepta_ci_exec.py", "-v"], "command_exit_code": 0, "elapsed_seconds": 2.075865025000006, "exit_code": 0, "finished_at": "2026-11-12T19:47:21.760296+00:00", "job": "owners", "lane": "source-head", "log_bytes": 2500, "log_file": "execution-gate-tests.json.0de95319619144428fa00a8ce55e3424.log", "log_sha256": "ce8464e952b518d4009cd7de35883171324d0f98cd71e8676a69c8d4918d9112", "minimum_tests": 1, "observed_failed_tests": 0, "observed_passed_tests": 15, "output_limit_exceeded": false, "returncode": 0, "run_attempt": "1", "run_id": "43293663217", "schema_version": 1, "source_sha": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "started_at": "2026-11-12T19:47:19.683858+00:00", "status": "passed", "tested_sha": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "timed_out": false, "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"}
+2026-11-12T19:47:21.7826376Z ##[group]Run sudo apt-get update
+2026-11-12T19:47:21.7826662Z [36;1msudo apt-get update[0m
+2026-11-12T19:47:21.7827101Z [36;1msudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap[0m
+2026-11-12T19:47:21.7844574Z shell: /usr/bin/bash -e {0}
+2026-11-12T19:47:21.7844781Z env:
+2026-11-12T19:47:21.7844983Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:21.7845283Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:21.7845529Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:21.7845745Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:21.7845930Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:21.7846113Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:21.7846308Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:21.7846480Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:21.7846658Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:21.7846852Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:21.7847076Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:21.7847266Z ##[endgroup]
+2026-11-12T19:47:21.8432860Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-12T19:47:21.8775618Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-12T19:47:21.8862706Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-12T19:47:21.8875466Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-12T19:47:21.8918482Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-12T19:47:21.8941566Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-12T19:47:21.9440016Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]
+2026-11-12T19:47:21.9543476Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [767 kB]
+2026-11-12T19:47:21.9620753Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [697 kB]
+2026-11-12T19:47:22.0384717Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1450 kB]
+2026-11-12T19:47:22.0447981Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [315 kB]
+2026-11-12T19:47:22.0469991Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1711 kB]
+2026-11-12T19:47:22.0543439Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [344 kB]
+2026-11-12T19:47:22.0563460Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1883 kB]
+2026-11-12T19:47:22.0649712Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [430 kB]
+2026-11-12T19:47:22.0669288Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [50.7 kB]
+2026-11-12T19:47:22.0675331Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+2026-11-12T19:47:22.1270547Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1194 kB]
+2026-11-12T19:47:22.1329758Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [238 kB]
+2026-11-12T19:47:22.1771775Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1228 kB]
+2026-11-12T19:47:22.1829076Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [248 kB]
+2026-11-12T19:47:22.1844535Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1788 kB]
+2026-11-12T19:47:22.1925047Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [411 kB]
+2026-11-12T19:47:22.1950489Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [45.4 kB]
+2026-11-12T19:47:22.1963551Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [12.4 kB]
+2026-11-12T19:47:26.5737836Z Fetched 13.2 MB in 1s (11.8 MB/s)
+2026-11-12T19:47:27.6392803Z Reading package lists...
+2026-11-12T19:47:27.6745614Z Reading package lists...
+2026-11-12T19:47:27.9479303Z Building dependency tree...
+2026-11-12T19:47:27.9485802Z Reading state information...
+2026-11-12T19:47:28.1535485Z libssl-dev is already the newest version (3.0.13-0ubuntu3.16).
+2026-11-12T19:47:28.1536122Z pkg-config is already the newest version (1.8.1-2build1).
+2026-11-12T19:47:28.1536586Z The following additional packages will be installed:
+2026-11-12T19:47:28.1537956Z   cmake-data libjsoncpp25 libprotobuf-dev libprotobuf32t64 libprotoc32t64
+2026-11-12T19:47:28.1544442Z   librhash0
+2026-11-12T19:47:28.1551492Z Suggested packages:
+2026-11-12T19:47:28.1551862Z   cmake-doc cmake-format elpa-cmake-mode ninja-build manpages-dev
+2026-11-12T19:47:28.1552272Z   protobuf-mode-el
+2026-11-12T19:47:28.1800490Z The following NEW packages will be installed:
+2026-11-12T19:47:28.1806432Z   bubblewrap build-essential clang cmake cmake-data libcap-dev libjsoncpp25
+2026-11-12T19:47:28.1818409Z   libprotobuf-dev libprotobuf32t64 libprotoc32t64 librhash0 protobuf-compiler
+2026-11-12T19:47:28.2033027Z 0 upgraded, 12 newly installed, 0 to remove and 48 not upgraded.
+2026-11-12T19:47:28.2033530Z Need to get 17.3 MB of archives.
+2026-11-12T19:47:28.2033956Z After this operation, 70.0 MB of additional disk space will be used.
+2026-11-12T19:47:28.2034452Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-12T19:47:28.3911506Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 bubblewrap amd64 0.9.0-1ubuntu0.3 [50.4 kB]
+2026-11-12T19:47:28.6034849Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1 [4928 B]
+2026-11-12T19:47:28.6746275Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 clang amd64 1:18.0-59~exp2 [5846 B]
+2026-11-12T19:47:28.7468929Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1 [82.8 kB]
+2026-11-12T19:47:28.8851555Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1 [129 kB]
+2026-11-12T19:47:28.9914957Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7 [2155 kB]
+2026-11-12T19:47:29.3334845Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7 [11.2 MB]
+2026-11-12T19:47:29.6638539Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4 [596 kB]
+2026-11-12T19:47:29.9292839Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf32t64 amd64 3.21.12-8.2ubuntu0.4 [923 kB]
+2026-11-12T19:47:30.0186571Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotoc32t64 amd64 3.21.12-8.2ubuntu0.4 [683 kB]
+2026-11-12T19:47:30.1033316Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf-dev amd64 3.21.12-8.2ubuntu0.4 [1413 kB]
+2026-11-12T19:47:30.2040977Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 protobuf-compiler amd64 3.21.12-8.2ubuntu0.4 [29.0 kB]
+2026-11-12T19:47:30.4547363Z Fetched 17.3 MB in 2s (8577 kB/s)
+2026-11-12T19:47:30.5110118Z Selecting previously unselected package bubblewrap.
+2026-11-12T19:47:30.5306845Z (Reading database ... 
+2026-11-12T19:47:30.5307108Z (Reading database ... 5%
+2026-11-12T19:47:30.5307587Z (Reading database ... 10%
+2026-11-12T19:47:30.5307871Z (Reading database ... 15%
+2026-11-12T19:47:30.5308202Z (Reading database ... 20%
+2026-11-12T19:47:30.5308583Z (Reading database ... 25%
+2026-11-12T19:47:30.5309406Z (Reading database ... 30%
+2026-11-12T19:47:30.5309632Z (Reading database ... 35%
+2026-11-12T19:47:30.5309866Z (Reading database ... 40%
+2026-11-12T19:47:30.5310053Z (Reading database ... 45%
+2026-11-12T19:47:30.5333184Z (Reading database ... 50%
+2026-11-12T19:47:30.5369154Z (Reading database ... 55%
+2026-11-12T19:47:30.6236208Z (Reading database ... 60%
+2026-11-12T19:47:30.7678031Z (Reading database ... 65%
+2026-11-12T19:47:31.0139191Z (Reading database ... 70%
+2026-11-12T19:47:31.2062166Z (Reading database ... 75%
+2026-11-12T19:47:31.2637521Z (Reading database ... 80%
+2026-11-12T19:47:31.4145959Z (Reading database ... 85%
+2026-11-12T19:47:31.4821130Z (Reading database ... 90%
+2026-11-12T19:47:31.5876002Z (Reading database ... 95%
+2026-11-12T19:47:31.5876389Z (Reading database ... 100%
+2026-11-12T19:47:31.5876819Z (Reading database ... 215960 files and directories currently installed.)
+2026-11-12T19:47:31.5924061Z Preparing to unpack .../00-bubblewrap_0.9.0-1ubuntu0.3_amd64.deb ...
+2026-11-12T19:47:31.5960428Z Unpacking bubblewrap (0.9.0-1ubuntu0.3) ...
+2026-11-12T19:47:31.6209790Z Selecting previously unselected package build-essential.
+2026-11-12T19:47:31.6336016Z Preparing to unpack .../01-build-essential_12.10ubuntu1_amd64.deb ...
+2026-11-12T19:47:31.6343622Z Unpacking build-essential (12.10ubuntu1) ...
+2026-11-12T19:47:31.6554043Z Selecting previously unselected package clang.
+2026-11-12T19:47:31.6680528Z Preparing to unpack .../02-clang_1%3a18.0-59~exp2_amd64.deb ...
+2026-11-12T19:47:31.6687762Z Unpacking clang (1:18.0-59~exp2) ...
+2026-11-12T19:47:31.6911102Z Selecting previously unselected package libjsoncpp25:amd64.
+2026-11-12T19:47:31.7037682Z Preparing to unpack .../03-libjsoncpp25_1.9.5-6build1_amd64.deb ...
+2026-11-12T19:47:31.7052790Z Unpacking libjsoncpp25:amd64 (1.9.5-6build1) ...
+2026-11-12T19:47:31.7440511Z Selecting previously unselected package librhash0:amd64.
+2026-11-12T19:47:31.7570957Z Preparing to unpack .../04-librhash0_1.4.3-3build1_amd64.deb ...
+2026-11-12T19:47:31.7578609Z Unpacking librhash0:amd64 (1.4.3-3build1) ...
+2026-11-12T19:47:31.7885140Z Selecting previously unselected package cmake-data.
+2026-11-12T19:47:31.8013541Z Preparing to unpack .../05-cmake-data_3.28.3-1build7_all.deb ...
+2026-11-12T19:47:31.8090613Z Unpacking cmake-data (3.28.3-1build7) ...
+2026-11-12T19:47:32.2751609Z Selecting previously unselected package cmake.
+2026-11-12T19:47:32.2893782Z Preparing to unpack .../06-cmake_3.28.3-1build7_amd64.deb ...
+2026-11-12T19:47:32.2905800Z Unpacking cmake (3.28.3-1build7) ...
+2026-11-12T19:47:32.5437716Z Selecting previously unselected package libcap-dev:amd64.
+2026-11-12T19:47:32.5568515Z Preparing to unpack .../07-libcap-dev_1%3a2.66-5ubuntu2.4_amd64.deb ...
+2026-11-12T19:47:32.5576981Z Unpacking libcap-dev:amd64 (1:2.66-5ubuntu2.4) ...
+2026-11-12T19:47:32.5969810Z Selecting previously unselected package libprotobuf32t64:amd64.
+2026-11-12T19:47:32.6100106Z Preparing to unpack .../08-libprotobuf32t64_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-11-12T19:47:32.6106843Z Unpacking libprotobuf32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.6527156Z Selecting previously unselected package libprotoc32t64:amd64.
+2026-11-12T19:47:32.6659810Z Preparing to unpack .../09-libprotoc32t64_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-11-12T19:47:32.6788268Z Unpacking libprotoc32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.7158188Z Selecting previously unselected package libprotobuf-dev:amd64.
+2026-11-12T19:47:32.7287427Z Preparing to unpack .../10-libprotobuf-dev_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-11-12T19:47:32.7294514Z Unpacking libprotobuf-dev:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.8339772Z Selecting previously unselected package protobuf-compiler.
+2026-11-12T19:47:32.8468511Z Preparing to unpack .../11-protobuf-compiler_3.21.12-8.2ubuntu0.4_amd64.deb ...
+2026-11-12T19:47:32.8474971Z Unpacking protobuf-compiler (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.9157618Z Setting up bubblewrap (0.9.0-1ubuntu0.3) ...
+2026-11-12T19:47:32.9203903Z Setting up libprotobuf32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.9221929Z Setting up libprotobuf-dev:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.9237909Z Setting up clang (1:18.0-59~exp2) ...
+2026-11-12T19:47:32.9438842Z Setting up libjsoncpp25:amd64 (1.9.5-6build1) ...
+2026-11-12T19:47:32.9463349Z Setting up librhash0:amd64 (1.4.3-3build1) ...
+2026-11-12T19:47:32.9482322Z Setting up build-essential (12.10ubuntu1) ...
+2026-11-12T19:47:32.9507188Z Setting up cmake-data (3.28.3-1build7) ...
+2026-11-12T19:47:32.9564171Z Setting up libprotoc32t64:amd64 (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.9581610Z Setting up libcap-dev:amd64 (1:2.66-5ubuntu2.4) ...
+2026-11-12T19:47:32.9603135Z Setting up protobuf-compiler (3.21.12-8.2ubuntu0.4) ...
+2026-11-12T19:47:32.9623697Z Setting up cmake (3.28.3-1build7) ...
+2026-11-12T19:47:32.9647727Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-11-12T19:47:32.9667141Z Not building database; man-db/auto-update is not 'true'.
+2026-11-12T19:47:32.9679422Z Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+2026-11-12T19:47:33.8195863Z 
+2026-11-12T19:47:33.8196480Z Running kernel seems to be up-to-date.
+2026-11-12T19:47:33.8196778Z 
+2026-11-12T19:47:33.8196905Z No services need to be restarted.
+2026-11-12T19:47:33.8197114Z 
+2026-11-12T19:47:33.8197240Z No containers need to be restarted.
+2026-11-12T19:47:33.8197445Z 
+2026-11-12T19:47:33.8197597Z No user sessions are running outdated binaries.
+2026-11-12T19:47:33.8197851Z 
+2026-11-12T19:47:33.8198102Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-12T19:47:34.9996650Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-12T19:47:34.9996982Z with:
+2026-11-12T19:47:34.9997163Z   tool: just@1.51.0,nextest@0.9.103
+2026-11-12T19:47:34.9997382Z   checksum: true
+2026-11-12T19:47:34.9997561Z   fallback: cargo-binstall
+2026-11-12T19:47:34.9997917Z env:
+2026-11-12T19:47:34.9998118Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:34.9998398Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:34.9998643Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:34.9998853Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:34.9999328Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:34.9999520Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:34.9999725Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:34.9999895Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:35.0000073Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:35.0000267Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:35.0000456Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:35.0000671Z ##[endgroup]
+2026-11-12T19:47:35.0047588Z ##[start-action display=Run set -eu;id=__taiki-e_install-action.__run]
+2026-11-12T19:47:35.0081790Z ##[group]Run set -eu
+2026-11-12T19:47:35.0082039Z [36;1mset -eu[0m
+2026-11-12T19:47:35.0082246Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-12T19:47:35.0082550Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-12T19:47:35.0082904Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-12T19:47:35.0083246Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-12T19:47:35.0083504Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-12T19:47:35.0083754Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-12T19:47:35.0084007Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-12T19:47:35.0084256Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-12T19:47:35.0084472Z [36;1m    else[0m
+2026-11-12T19:47:35.0084658Z [36;1m      apk --no-cache add bash[0m
+2026-11-12T19:47:35.0084861Z [36;1m    fi[0m
+2026-11-12T19:47:35.0085035Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-12T19:47:35.0085230Z [36;1m  else[0m
+2026-11-12T19:47:35.0085435Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-12T19:47:35.0085681Z [36;1m    exit 1[0m
+2026-11-12T19:47:35.0085852Z [36;1m  fi[0m
+2026-11-12T19:47:35.0086008Z [36;1mfi[0m
+2026-11-12T19:47:35.1007184Z shell: /usr/bin/sh -e {0}
+2026-11-12T19:47:35.1007442Z env:
+2026-11-12T19:47:35.1007683Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:35.1008001Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:35.1008259Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:35.1008465Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:35.1008665Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:35.1008851Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:35.1009167Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:35.1009342Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:35.1009537Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:35.1009739Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:35.1009932Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:35.1010117Z ##[endgroup]
+2026-11-12T19:47:35.1074199Z ##[end-action id=__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=102]
+2026-11-12T19:47:35.1093750Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__taiki-e_install-action.__run_2]
+2026-11-12T19:47:35.1110737Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-12T19:47:35.1111133Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-12T19:47:35.1128343Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:35.1128611Z env:
+2026-11-12T19:47:35.1128817Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:35.1129310Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:35.1129633Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:35.1130126Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:35.1130325Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:35.1130509Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:35.1130707Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:35.1130884Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:35.1131067Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:35.1131393Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:35.1131582Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:35.1131788Z   INPUT_TOOL: just@1.51.0,nextest@0.9.103
+2026-11-12T19:47:35.1132004Z   INPUT_CHECKSUM: true
+2026-11-12T19:47:35.1132187Z   INPUT_FALLBACK: cargo-binstall
+2026-11-12T19:47:35.1134428Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-12T19:47:35.1134763Z   ACTION_USER_AGENT: taiki-e/install-action (44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-12T19:47:35.1135094Z ##[endgroup]
+2026-11-12T19:47:35.1306343Z info: host platform: x86_64_linux
+2026-11-12T19:47:35.1398182Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-12T19:47:35.1560945Z info: installing cargo-nextest@0.9.103
+2026-11-12T19:47:35.1741633Z info: downloading https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-12T19:47:35.4761148Z info: verifying sha256 checksum for cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-12T19:47:35.6259690Z info: cargo-nextest installed at /home/runner/.cargo/bin/cargo-nextest
+2026-11-12T19:47:35.6262140Z + cargo-nextest nextest --version
+2026-11-12T19:47:35.6279499Z cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)
+2026-11-12T19:47:35.6279853Z release: 0.9.103
+2026-11-12T19:47:35.6280082Z commit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0
+2026-11-12T19:47:35.6280345Z commit-date: 2025-08-25
+2026-11-12T19:47:35.6280542Z host: x86_64-unknown-linux-gnu
+2026-11-12T19:47:35.6282959Z 
+2026-11-12T19:47:35.6284573Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-12T19:47:35.6321807Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-12T19:47:35.6620326Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T19:47:35.9472193Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T19:47:36.0578371Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-12T19:47:36.0582343Z + cargo-binstall binstall -V
+2026-11-12T19:47:36.0590261Z 1.15.11
+2026-11-12T19:47:36.0695103Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-12T19:47:37.5245304Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-12T19:47:37.5245973Z  INFO This will install the following binaries:
+2026-11-12T19:47:37.5246423Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-12T19:47:37.5246802Z  INFO Installing binaries...
+2026-11-12T19:47:37.5260690Z  INFO Done in 1.465757099s
+2026-11-12T19:47:37.5282009Z ##[end-action id=__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=2418]
+2026-11-12T19:47:37.5368660Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-12T19:47:37.5369128Z env:
+2026-11-12T19:47:37.5369333Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.5369614Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.5369880Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:37.5370084Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:37.5370273Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:37.5370459Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:37.5370660Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:37.5370837Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:37.5371014Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:37.5371209Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:37.5371395Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:37.5371574Z ##[endgroup]
+2026-11-12T19:47:37.5385499Z ##[start-action display=Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT;id=__facebook_install-dotslash.configure]
+2026-11-12T19:47:37.5402576Z ##[group]Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT
+2026-11-12T19:47:37.5402945Z [36;1mecho platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:37.5405715Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:37.5424003Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:37.5424280Z env:
+2026-11-12T19:47:37.5424481Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.5424761Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.5425012Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:37.5425223Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:37.5425431Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:37.5425615Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:37.5425816Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:37.5425996Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:37.5426177Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:37.5426377Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:37.5426561Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:37.5426749Z ##[endgroup]
+2026-11-12T19:47:37.9499729Z ##[end-action id=__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=411]
+2026-11-12T19:47:37.9505924Z ##[start-action display=Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin";id=__facebook_install-dotslash.__run]
+2026-11-12T19:47:37.9543848Z ##[group]Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin"
+2026-11-12T19:47:37.9544231Z [36;1mmkdir -p "/home/runner/work/_temp/install-dotslash/bin"[0m
+2026-11-12T19:47:37.9561643Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:37.9561924Z env:
+2026-11-12T19:47:37.9562131Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.9562418Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.9562682Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:37.9562892Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:37.9563084Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:37.9563270Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:37.9563469Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:37.9563664Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:37.9563844Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:37.9564038Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:37.9564222Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:37.9564406Z ##[endgroup]
+2026-11-12T19:47:37.9619255Z ##[end-action id=__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=11]
+2026-11-12T19:47:37.9623346Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \;id=__facebook_install-dotslash.__run_2]
+2026-11-12T19:47:37.9641069Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \
+2026-11-12T19:47:37.9641739Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \[0m
+2026-11-12T19:47:37.9644083Z [36;1m--header "authorization: ***" \[0m
+2026-11-12T19:47:37.9644421Z [36;1m--output "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-12T19:47:37.9644795Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-12T19:47:37.9661265Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:37.9661539Z env:
+2026-11-12T19:47:37.9661748Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.9662026Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:37.9662271Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:37.9662478Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:37.9662669Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:37.9662858Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:37.9663060Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:37.9663249Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:37.9663429Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:37.9663626Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:37.9663813Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:37.9664002Z ##[endgroup]
+2026-11-12T19:47:38.2989654Z ##[end-action id=__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=336]
+2026-11-12T19:47:38.2994050Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/";id=__facebook_install-dotslash.__run_3]
+2026-11-12T19:47:38.3016795Z ##[group]Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"
+2026-11-12T19:47:38.3017460Z [36;1mtar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"[0m
+2026-11-12T19:47:38.3035195Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:38.3035483Z env:
+2026-11-12T19:47:38.3035688Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3035964Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3036205Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:38.3036415Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:38.3036631Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:38.3036819Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:38.3037023Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:38.3037197Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:38.3037377Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:38.3037577Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:38.3037768Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:38.3037957Z ##[endgroup]
+2026-11-12T19:47:38.3095853Z dotslash
+2026-11-12T19:47:38.3209915Z ##[end-action id=__facebook_install-dotslash.__run_3;outcome=success;conclusion=success;duration_ms=21]
+2026-11-12T19:47:38.3214033Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -O >"/home/runner/work/_temp/install-dotslash/bin/dotslash.exe" --force-local;id=__facebook_install-dotslash.__run_4]
+2026-11-12T19:47:38.3220140Z ##[end-action id=__facebook_install-dotslash.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T19:47:38.3222555Z ##[start-action display=Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH;id=__facebook_install-dotslash.__run_5]
+2026-11-12T19:47:38.3238505Z ##[group]Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-12T19:47:38.3239069Z [36;1mecho "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-12T19:47:38.3256371Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:38.3256635Z env:
+2026-11-12T19:47:38.3256834Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3257105Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3257345Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:38.3257718Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:38.3257918Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:38.3258107Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:38.3258314Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:38.3258500Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:38.3258682Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:38.3258896Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:38.3259330Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:38.3259522Z ##[endgroup]
+2026-11-12T19:47:38.3303168Z ##[end-action id=__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=7]
+2026-11-12T19:47:38.3305074Z ##[start-action display=Run dotslash --version;id=__facebook_install-dotslash.__run_6]
+2026-11-12T19:47:38.3321129Z ##[group]Run dotslash --version
+2026-11-12T19:47:38.3321369Z [36;1mdotslash --version[0m
+2026-11-12T19:47:38.3340288Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:38.3340577Z env:
+2026-11-12T19:47:38.3340790Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3341093Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3341341Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:38.3341590Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:38.3341789Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:38.3341973Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:38.3342327Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:38.3342498Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:38.3342677Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:38.3342875Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:38.3343071Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:38.3343248Z ##[endgroup]
+2026-11-12T19:47:38.3388497Z DotSlash 0.5.9
+2026-11-12T19:47:38.3396200Z ##[end-action id=__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=9]
+2026-11-12T19:47:38.3421213Z ##[group]Run python3 scripts/hepta_ci_v8.py
+2026-11-12T19:47:38.3421511Z [36;1mpython3 scripts/hepta_ci_v8.py[0m
+2026-11-12T19:47:38.3437813Z shell: /usr/bin/bash -e {0}
+2026-11-12T19:47:38.3438015Z env:
+2026-11-12T19:47:38.3438224Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3438511Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:38.3438756Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:38.3439147Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:38.3439390Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:38.3439578Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:38.3439782Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:38.3439955Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:38.3440138Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:38.3440335Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:38.3440517Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:38.3440789Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:38.3441108Z   PYTHONPATH: scripts
+2026-11-12T19:47:38.3441287Z ##[endgroup]
+2026-11-12T19:47:38.4856380Z V8 download attempt 1/3: https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256
+2026-11-12T19:47:38.7512006Z V8 download attempt 1/3: https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz
+2026-11-12T19:47:39.2498084Z V8 download attempt 1/3: https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs
+2026-11-12T19:47:39.5334893Z ##[group]Run python3 scripts/hepta_cell_test_helpers.py \
+2026-11-12T19:47:39.5335232Z [36;1mpython3 scripts/hepta_cell_test_helpers.py \[0m
+2026-11-12T19:47:39.5335521Z [36;1m  --package codex-hepta-infer-worker-host \[0m
+2026-11-12T19:47:39.5335833Z [36;1m  --output-dir "$RUNNER_TEMP/shared-framework/helpers" \[0m
+2026-11-12T19:47:39.5336127Z [36;1m  --github-env "$GITHUB_ENV"[0m
+2026-11-12T19:47:39.5353537Z shell: /usr/bin/bash -e {0}
+2026-11-12T19:47:39.5353752Z env:
+2026-11-12T19:47:39.5353957Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:39.5354234Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:47:39.5354481Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:47:39.5354696Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:47:39.5354894Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:47:39.5355082Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:47:39.5355297Z   CARGO_NET_RETRY: 5
+2026-11-12T19:47:39.5355476Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:47:39.5355689Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:47:39.5355888Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:47:39.5356080Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:47:39.5356543Z   RUSTY_V8_ARCHIVE: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz
+2026-11-12T19:47:39.5357283Z   RUSTY_V8_SRC_BINDING_PATH: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs
+2026-11-12T19:47:39.5357754Z ##[endgroup]
+2026-11-12T19:47:39.6143109Z Building test helpers: codex-hepta-infer-worker-host
+2026-11-12T19:56:32.1762186Z {"manifest": "/home/runner/work/_temp/shared-framework/helpers/manifest.json", "complete": true, "exit_code": 0}
+2026-11-12T19:56:32.1860363Z ##[group]Run python3 scripts/hepta_ci_exec.py --timeout-seconds 5400 --minimum-tests 1 \
+2026-11-12T19:56:32.1861196Z [36;1mpython3 scripts/hepta_ci_exec.py --timeout-seconds 5400 --minimum-tests 1 \[0m
+2026-11-12T19:56:32.1861732Z [36;1m  --output "$RUNNER_TEMP/shared-framework/tests.json" \[0m
+2026-11-12T19:56:32.1862241Z [36;1m  -- just test --locked -p codex-hepta-automation \[0m
+2026-11-12T19:56:32.1862668Z [36;1m  -p codex-hepta-neuron -p codex-hepta-agentd --lib[0m
+2026-11-12T19:56:32.1880534Z shell: /usr/bin/bash -e {0}
+2026-11-12T19:56:32.1880865Z env:
+2026-11-12T19:56:32.1881299Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:56:32.1881698Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T19:56:32.1882087Z   HEPTA_CI_LANE: source-head
+2026-11-12T19:56:32.1882420Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T19:56:32.1882741Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:56:32.1883096Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T19:56:32.1883503Z   CARGO_NET_RETRY: 5
+2026-11-12T19:56:32.1883839Z   CARGO_BUILD_JOBS: 2
+2026-11-12T19:56:32.1884177Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T19:56:32.1884506Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T19:56:32.1884828Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T19:56:32.1885791Z   RUSTY_V8_ARCHIVE: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz
+2026-11-12T19:56:32.1886704Z   RUSTY_V8_SRC_BINDING_PATH: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs
+2026-11-12T19:56:32.1887538Z   CARGO_BIN_EXE_hepta-joint-propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T19:56:32.1888226Z   CARGO_BIN_EXE_hepta_joint_propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T19:56:32.1888750Z ##[endgroup]
+2026-11-12T19:56:32.2767932Z RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+2026-11-12T19:56:33.0221860Z  Downloading crates ...
+2026-11-12T19:56:33.1965639Z   Downloaded assert-json-diff v2.0.2
+2026-11-12T19:56:33.2059078Z   Downloaded assert_cmd v2.2.2
+2026-11-12T19:56:33.2182235Z   Downloaded ctor v0.6.3
+2026-11-12T19:56:33.2216134Z   Downloaded ctor-proc-macro v0.0.7
+2026-11-12T19:56:33.2374466Z   Downloaded deadpool v0.12.3
+2026-11-12T19:56:33.2401690Z   Downloaded deadpool-runtime v0.1.4
+2026-11-12T19:56:33.2575039Z   Downloaded difflib v0.4.0
+2026-11-12T19:56:33.2599576Z   Downloaded diff v0.1.13
+2026-11-12T19:56:33.2768020Z   Downloaded dtor-proc-macro v0.0.6
+2026-11-12T19:56:33.2779370Z   Downloaded dtor v0.1.1
+2026-11-12T19:56:33.2927806Z   Downloaded predicates v3.1.4
+2026-11-12T19:56:33.2950732Z   Downloaded num_cpus v1.17.0
+2026-11-12T19:56:33.3074567Z   Downloaded predicates-tree v1.0.13
+2026-11-12T19:56:33.3108784Z   Downloaded predicates-core v1.0.10
+2026-11-12T19:56:33.3245918Z   Downloaded termtree v0.5.1
+2026-11-12T19:56:33.3259668Z   Downloaded pretty_assertions v1.4.1
+2026-11-12T19:56:33.3416799Z   Downloaded wiremock v0.6.5
+2026-11-12T19:56:33.3449453Z   Downloaded wait-timeout v0.2.1
+2026-11-12T19:56:33.3589261Z   Downloaded yansi v1.0.1
+2026-11-12T19:56:33.7022448Z    Compiling hyper v1.12.0
+2026-11-12T19:56:33.7412749Z warning: hiding a lifetime that's elided elsewhere is confusing
+2026-11-12T19:56:33.7413898Z    --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+2026-11-12T19:56:33.7414484Z     |
+2026-11-12T19:56:33.7414849Z 144 |         &self,
+2026-11-12T19:56:33.7415275Z     |         ^^^^^ the lifetime is elided here
+2026-11-12T19:56:33.7415929Z 145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+2026-11-12T19:56:33.7416601Z     |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+2026-11-12T19:56:33.7417140Z     |                          |  |
+2026-11-12T19:56:33.7417624Z     |                          |  the same lifetime is hidden here
+2026-11-12T19:56:33.7418690Z     |                          the same lifetime is elided here
+2026-11-12T19:56:33.7419355Z     |
+2026-11-12T19:56:33.7419928Z     = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+2026-11-12T19:56:33.7421017Z     = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+2026-11-12T19:56:33.7421582Z help: use `'_` for type paths
+2026-11-12T19:56:33.7421993Z     |
+2026-11-12T19:56:33.7422486Z 145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+2026-11-12T19:56:33.7423084Z     |                                  ++++
+2026-11-12T19:56:33.7423449Z 
+2026-11-12T19:56:33.7423826Z warning: hiding a lifetime that's elided elsewhere is confusing
+2026-11-12T19:56:33.7424478Z    --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+2026-11-12T19:56:33.7424988Z     |
+2026-11-12T19:56:33.7425583Z 155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+2026-11-12T19:56:33.7426382Z     |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+2026-11-12T19:56:33.7426977Z     |                          |                         |  |
+2026-11-12T19:56:33.7427539Z     |                          |                         |  the same lifetime is hidden here
+2026-11-12T19:56:33.7428175Z     |                          |                         the same lifetime is elided here
+2026-11-12T19:56:33.7428776Z     |                          the lifetime is elided here
+2026-11-12T19:56:33.7429397Z     |
+2026-11-12T19:56:33.7429980Z     = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+2026-11-12T19:56:33.7430647Z help: use `'_` for type paths
+2026-11-12T19:56:33.7431082Z     |
+2026-11-12T19:56:33.7431690Z 155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+2026-11-12T19:56:33.7432403Z     |                                                            ++++
+2026-11-12T19:56:33.7432802Z 
+2026-11-12T19:56:33.7433356Z warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+2026-11-12T19:56:33.7466207Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7468512Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+2026-11-12T19:56:33.7469156Z     |
+2026-11-12T19:56:33.7469565Z 204 |     use time::format_description::BorrowedFormatItem::Literal;
+2026-11-12T19:56:33.7470091Z     |                                                       ^^^^^^^
+2026-11-12T19:56:33.7470501Z     |
+2026-11-12T19:56:33.7470781Z     = note: `#[warn(deprecated)]` on by default
+2026-11-12T19:56:33.7471031Z 
+2026-11-12T19:56:33.7471606Z warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+2026-11-12T19:56:33.7474570Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+2026-11-12T19:56:33.7475145Z     |
+2026-11-12T19:56:33.7475480Z 208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+2026-11-12T19:56:33.7475995Z     |                                                    ^^^^
+2026-11-12T19:56:33.7476241Z 
+2026-11-12T19:56:33.7476696Z warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+2026-11-12T19:56:33.7477463Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+2026-11-12T19:56:33.7477888Z     |
+2026-11-12T19:56:33.7478231Z 209 |         let mut value = modifier::Year::default();
+2026-11-12T19:56:33.7478616Z     |                                   ^^^^
+2026-11-12T19:56:33.7478833Z 
+2026-11-12T19:56:33.7479482Z warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+2026-11-12T19:56:33.7480265Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+2026-11-12T19:56:33.7480660Z     |
+2026-11-12T19:56:33.7481139Z 211 |         value.repr = modifier::YearRepr::Full;
+2026-11-12T19:56:33.7481505Z     |                                          ^^^^
+2026-11-12T19:56:33.7481888Z 
+2026-11-12T19:56:33.7482409Z warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+2026-11-12T19:56:33.7483237Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+2026-11-12T19:56:33.7483617Z     |
+2026-11-12T19:56:33.7483929Z 217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+2026-11-12T19:56:33.7484351Z     |                                                     ^^^^^
+2026-11-12T19:56:33.7484596Z 
+2026-11-12T19:56:33.7485075Z warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+2026-11-12T19:56:33.7485829Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+2026-11-12T19:56:33.7486215Z     |
+2026-11-12T19:56:33.7486509Z 218 |         let mut value = modifier::Month::default();
+2026-11-12T19:56:33.7486879Z     |                                   ^^^^^
+2026-11-12T19:56:33.7487103Z 
+2026-11-12T19:56:33.7487638Z warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+2026-11-12T19:56:33.7488468Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+2026-11-12T19:56:33.7488858Z     |
+2026-11-12T19:56:33.7489940Z 220 |         value.repr = modifier::MonthRepr::Numerical;
+2026-11-12T19:56:33.7490347Z     |                                           ^^^^^^^^^
+2026-11-12T19:56:33.7490589Z 
+2026-11-12T19:56:33.7491043Z warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+2026-11-12T19:56:33.7491761Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+2026-11-12T19:56:33.7492194Z     |
+2026-11-12T19:56:33.7492515Z 231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+2026-11-12T19:56:33.7492937Z     |                                                    ^^^^
+2026-11-12T19:56:33.7493206Z 
+2026-11-12T19:56:33.7493609Z warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+2026-11-12T19:56:33.7494335Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+2026-11-12T19:56:33.7494726Z     |
+2026-11-12T19:56:33.7495000Z 232 |         let mut value = modifier::Hour::default();
+2026-11-12T19:56:33.7495368Z     |                                   ^^^^
+2026-11-12T19:56:33.7495605Z 
+2026-11-12T19:56:33.7496282Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7497304Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+2026-11-12T19:56:33.7497707Z     |
+2026-11-12T19:56:33.7497947Z 272 |             Literal(b"-"),
+2026-11-12T19:56:33.7498238Z     |             ^^^^^^^
+2026-11-12T19:56:33.7498423Z 
+2026-11-12T19:56:33.7499161Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7500045Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+2026-11-12T19:56:33.7500450Z     |
+2026-11-12T19:56:33.7500679Z 274 |             Literal(b"-"),
+2026-11-12T19:56:33.7500964Z     |             ^^^^^^^
+2026-11-12T19:56:33.7501123Z 
+2026-11-12T19:56:33.7501717Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7502562Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+2026-11-12T19:56:33.7502978Z     |
+2026-11-12T19:56:33.7503222Z 276 |             Optional(&Literal(b" ")),
+2026-11-12T19:56:33.7503551Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7503749Z 
+2026-11-12T19:56:33.7504538Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7505759Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+2026-11-12T19:56:33.7506128Z     |
+2026-11-12T19:56:33.7506365Z 277 |             Optional(&Literal(b"T")),
+2026-11-12T19:56:33.7506677Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7506875Z 
+2026-11-12T19:56:33.7507452Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7508317Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+2026-11-12T19:56:33.7508670Z     |
+2026-11-12T19:56:33.7508884Z 279 |             Literal(b":"),
+2026-11-12T19:56:33.7509310Z     |             ^^^^^^^
+2026-11-12T19:56:33.7509473Z 
+2026-11-12T19:56:33.7510083Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7510923Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+2026-11-12T19:56:33.7511282Z     |
+2026-11-12T19:56:33.7511515Z 281 |             Optional(&Literal(b":")),
+2026-11-12T19:56:33.7511824Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7512030Z 
+2026-11-12T19:56:33.7512594Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7513381Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+2026-11-12T19:56:33.7513752Z     |
+2026-11-12T19:56:33.7513991Z 283 |             Optional(&Literal(b".")),
+2026-11-12T19:56:33.7514319Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7514501Z 
+2026-11-12T19:56:33.7515060Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7515896Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+2026-11-12T19:56:33.7516261Z     |
+2026-11-12T19:56:33.7516516Z 286 |             Optional(&Literal(b":")),
+2026-11-12T19:56:33.7516827Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7517022Z 
+2026-11-12T19:56:33.7517587Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7518537Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+2026-11-12T19:56:33.7518928Z     |
+2026-11-12T19:56:33.7519312Z 294 |             Literal(b"-"),
+2026-11-12T19:56:33.7519600Z     |             ^^^^^^^
+2026-11-12T19:56:33.7519783Z 
+2026-11-12T19:56:33.7520383Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7521257Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+2026-11-12T19:56:33.7521670Z     |
+2026-11-12T19:56:33.7522030Z 296 |             Literal(b"-"),
+2026-11-12T19:56:33.7522378Z     |             ^^^^^^^
+2026-11-12T19:56:33.7522544Z 
+2026-11-12T19:56:33.7523148Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7524045Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+2026-11-12T19:56:33.7524420Z     |
+2026-11-12T19:56:33.7524644Z 298 |             Literal(b" "),
+2026-11-12T19:56:33.7524932Z     |             ^^^^^^^
+2026-11-12T19:56:33.7525100Z 
+2026-11-12T19:56:33.7525672Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7526552Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+2026-11-12T19:56:33.7526927Z     |
+2026-11-12T19:56:33.7527154Z 300 |             Literal(b":"),
+2026-11-12T19:56:33.7527645Z     |             ^^^^^^^
+2026-11-12T19:56:33.7527809Z 
+2026-11-12T19:56:33.7528416Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7529637Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+2026-11-12T19:56:33.7530025Z     |
+2026-11-12T19:56:33.7530290Z 302 |             Optional(&Literal(b":")),
+2026-11-12T19:56:33.7530635Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7530840Z 
+2026-11-12T19:56:33.7531498Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7532391Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+2026-11-12T19:56:33.7532777Z     |
+2026-11-12T19:56:33.7533025Z 304 |             Optional(&Literal(b".")),
+2026-11-12T19:56:33.7533356Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7533561Z 
+2026-11-12T19:56:33.7534185Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7535056Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+2026-11-12T19:56:33.7535450Z     |
+2026-11-12T19:56:33.7535697Z 306 |             Optional(&Literal(b"Z")),
+2026-11-12T19:56:33.7536038Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7536232Z 
+2026-11-12T19:56:33.7536847Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7537728Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+2026-11-12T19:56:33.7538112Z     |
+2026-11-12T19:56:33.7538351Z 313 |             Literal(b"-"),
+2026-11-12T19:56:33.7538646Z     |             ^^^^^^^
+2026-11-12T19:56:33.7538818Z 
+2026-11-12T19:56:33.7539583Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7540478Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+2026-11-12T19:56:33.7540875Z     |
+2026-11-12T19:56:33.7541111Z 315 |             Literal(b"-"),
+2026-11-12T19:56:33.7541427Z     |             ^^^^^^^
+2026-11-12T19:56:33.7541586Z 
+2026-11-12T19:56:33.7542171Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7543033Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+2026-11-12T19:56:33.7543404Z     |
+2026-11-12T19:56:33.7543631Z 317 |             Literal(b"T"),
+2026-11-12T19:56:33.7543922Z     |             ^^^^^^^
+2026-11-12T19:56:33.7544094Z 
+2026-11-12T19:56:33.7544673Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7545581Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+2026-11-12T19:56:33.7545967Z     |
+2026-11-12T19:56:33.7546205Z 319 |             Literal(b":"),
+2026-11-12T19:56:33.7546498Z     |             ^^^^^^^
+2026-11-12T19:56:33.7546659Z 
+2026-11-12T19:56:33.7547251Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7548116Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+2026-11-12T19:56:33.7548497Z     |
+2026-11-12T19:56:33.7548731Z 321 |             Optional(&Literal(b":")),
+2026-11-12T19:56:33.7549287Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7549488Z 
+2026-11-12T19:56:33.7550089Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7550980Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+2026-11-12T19:56:33.7551643Z     |
+2026-11-12T19:56:33.7551910Z 323 |             Optional(&Literal(b".")),
+2026-11-12T19:56:33.7552401Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7552604Z 
+2026-11-12T19:56:33.7553184Z warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+2026-11-12T19:56:33.7554058Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+2026-11-12T19:56:33.7554455Z     |
+2026-11-12T19:56:33.7554704Z 325 |             Optional(&Literal(b"Z")),
+2026-11-12T19:56:33.7555017Z     |                       ^^^^^^^
+2026-11-12T19:56:33.7555201Z 
+2026-11-12T19:56:33.7555711Z warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+2026-11-12T19:56:33.7556501Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+2026-11-12T19:56:33.7556891Z     |
+2026-11-12T19:56:33.7557198Z 210 |         value.padding = modifier::Padding::Zero;
+2026-11-12T19:56:33.7557575Z     |         ^^^^^^^^^^^^^
+2026-11-12T19:56:33.7557764Z 
+2026-11-12T19:56:33.7558242Z warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+2026-11-12T19:56:33.7559151Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+2026-11-12T19:56:33.7559510Z     |
+2026-11-12T19:56:33.7559763Z 211 |         value.repr = modifier::YearRepr::Full;
+2026-11-12T19:56:33.7560109Z     |         ^^^^^^^^^^
+2026-11-12T19:56:33.7560273Z 
+2026-11-12T19:56:33.7560805Z warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+2026-11-12T19:56:33.7561597Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+2026-11-12T19:56:33.7561974Z     |
+2026-11-12T19:56:33.7562226Z 212 |         value.iso_week_based = false;
+2026-11-12T19:56:33.7562567Z     |         ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T19:56:33.7562786Z 
+2026-11-12T19:56:33.7563335Z warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+2026-11-12T19:56:33.7564167Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+2026-11-12T19:56:33.7564559Z     |
+2026-11-12T19:56:33.7564822Z 213 |         value.sign_is_mandatory = false;
+2026-11-12T19:56:33.7565164Z     |         ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T19:56:33.7565374Z 
+2026-11-12T19:56:33.7565895Z warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+2026-11-12T19:56:33.7566663Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+2026-11-12T19:56:33.7567044Z     |
+2026-11-12T19:56:33.7567328Z 219 |         value.padding = modifier::Padding::Zero;
+2026-11-12T19:56:33.7567706Z     |         ^^^^^^^^^^^^^
+2026-11-12T19:56:33.7567887Z 
+2026-11-12T19:56:33.7568439Z warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+2026-11-12T19:56:33.7569372Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+2026-11-12T19:56:33.7569739Z     |
+2026-11-12T19:56:33.7570021Z 220 |         value.repr = modifier::MonthRepr::Numerical;
+2026-11-12T19:56:33.7570393Z     |         ^^^^^^^^^^
+2026-11-12T19:56:33.7570565Z 
+2026-11-12T19:56:33.7571109Z warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+2026-11-12T19:56:33.7571933Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+2026-11-12T19:56:33.7572321Z     |
+2026-11-12T19:56:33.7572599Z 221 |         value.case_sensitive = true;
+2026-11-12T19:56:33.7572931Z     |         ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T19:56:33.7573130Z 
+2026-11-12T19:56:33.7573564Z warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+2026-11-12T19:56:33.7575517Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+2026-11-12T19:56:33.7575927Z     |
+2026-11-12T19:56:33.7576353Z 233 |         value.padding = modifier::Padding::Zero;
+2026-11-12T19:56:33.7576726Z     |         ^^^^^^^^^^^^^
+2026-11-12T19:56:33.7576910Z 
+2026-11-12T19:56:33.7577380Z warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+2026-11-12T19:56:33.7578196Z    --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+2026-11-12T19:56:33.7578582Z     |
+2026-11-12T19:56:33.7578840Z 234 |         value.is_12_hour_clock = false;
+2026-11-12T19:56:33.7579314Z     |         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T19:56:33.7579502Z 
+2026-11-12T19:56:33.7579654Z warning: `sqlx-sqlite` (lib) generated 40 warnings
+2026-11-12T19:56:33.7580168Z warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+2026-11-12T19:56:33.7581032Z    Compiling codex-hepta-learning-ledger v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-ledger)
+2026-11-12T19:56:34.7283499Z    Compiling hyper-util v0.1.21
+2026-11-12T19:56:35.4998635Z    Compiling predicates-core v1.0.10
+2026-11-12T19:56:35.5734639Z    Compiling codex-hepta-intelligence-eval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+2026-11-12T19:56:35.8316211Z    Compiling hyper-rustls v0.27.10
+2026-11-12T19:56:35.9789922Z    Compiling hyper-tls v0.6.0
+2026-11-12T19:56:36.0845014Z    Compiling reqwest v0.12.28
+2026-11-12T19:56:36.9961390Z    Compiling hyper-timeout v0.5.2
+2026-11-12T19:56:37.1001950Z    Compiling tonic v0.14.6
+2026-11-12T19:56:38.7379718Z    Compiling codex-http-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/http-client)
+2026-11-12T19:56:38.9698011Z    Compiling tonic-prost v0.14.6
+2026-11-12T19:56:39.0524804Z    Compiling opentelemetry-proto v0.31.0
+2026-11-12T19:56:39.6423790Z    Compiling codex-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/protocol)
+2026-11-12T19:56:40.7926179Z    Compiling codex-websocket-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/websocket-client)
+2026-11-12T19:56:41.1507077Z    Compiling codex-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-client)
+2026-11-12T19:56:41.4111336Z    Compiling opentelemetry-http v0.31.0
+2026-11-12T19:56:41.7472726Z    Compiling opentelemetry-otlp v0.31.1
+2026-11-12T19:56:42.6784692Z    Compiling aws-smithy-http-client v1.5.1
+2026-11-12T19:56:47.3775685Z    Compiling axum v0.8.9
+2026-11-12T19:56:49.9384042Z    Compiling aws-smithy-runtime v1.16.1
+2026-11-12T19:56:52.5800307Z    Compiling codex-file-system v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-system)
+2026-11-12T19:56:53.2656295Z    Compiling codex-git-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/git-utils)
+2026-11-12T19:56:54.6854999Z    Compiling codex-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-api)
+2026-11-12T19:56:55.8949343Z    Compiling codex-shell-command v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-command)
+2026-11-12T19:56:56.6493958Z    Compiling codex-exec-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server-protocol)
+2026-11-12T19:56:58.0866803Z    Compiling codex-otel v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/otel)
+2026-11-12T19:56:58.4768413Z    Compiling codex-model-provider-info v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider-info)
+2026-11-12T19:56:59.0185023Z    Compiling codex-secrets v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/secrets)
+2026-11-12T19:56:59.6908535Z    Compiling codex-history v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/history)
+2026-11-12T19:57:00.7033375Z    Compiling codex-features v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/features)
+2026-11-12T19:57:00.9128824Z    Compiling codex-windows-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/windows-sandbox-rs)
+2026-11-12T19:57:01.2262756Z    Compiling codex-sandboxing v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/sandboxing)
+2026-11-12T19:57:01.8933904Z    Compiling codex-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/config)
+2026-11-12T19:57:01.9886266Z    Compiling codex-state v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/state)
+2026-11-12T19:57:05.2649195Z    Compiling aws-runtime v1.10.0
+2026-11-12T19:57:06.4578437Z    Compiling codex-agent-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-identity)
+2026-11-12T19:57:07.2526638Z    Compiling codex-workload-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/workload-identity)
+2026-11-12T19:57:07.4543119Z    Compiling codex-utils-output-truncation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/output-truncation)
+2026-11-12T19:57:07.7293309Z    Compiling oauth2 v5.0.0
+2026-11-12T19:57:08.4669594Z    Compiling reqwest v0.13.5
+2026-11-12T19:57:10.1259244Z    Compiling codex-exec-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server)
+2026-11-12T19:57:18.6710859Z    Compiling codex-login v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/login)
+2026-11-12T19:57:21.3457446Z    Compiling codex-utils-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/plugins)
+2026-11-12T19:57:21.7920753Z    Compiling rmcp v3.9.0
+2026-11-12T19:57:23.7948549Z    Compiling aws-sdk-sso v1.114.0
+2026-11-12T19:57:25.2707335Z    Compiling aws-sdk-signin v1.27.0
+2026-11-12T19:57:27.9426204Z    Compiling aws-sdk-ssooidc v1.116.0
+2026-11-12T19:57:29.6553522Z    Compiling aws-sdk-sts v1.119.0
+2026-11-12T19:57:32.1752619Z    Compiling aws-config v1.12.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-config-1.12.0)
+2026-11-12T19:57:34.6031390Z    Compiling codex-plugin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/plugin)
+2026-11-12T19:57:35.1073183Z    Compiling sentry v0.46.2
+2026-11-12T19:57:35.4073186Z    Compiling codex-feedback v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/feedback)
+2026-11-12T19:57:35.7567018Z    Compiling codex-aws-auth v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/aws-auth)
+2026-11-12T19:57:35.9978180Z    Compiling codex-models-manager v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/models-manager)
+2026-11-12T19:57:36.1471576Z    Compiling codex-response-debug-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/response-debug-context)
+2026-11-12T19:57:36.4310573Z    Compiling codex-code-mode-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode-protocol)
+2026-11-12T19:57:37.5085221Z    Compiling codex-model-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider)
+2026-11-12T19:57:38.3495548Z    Compiling codex-code-mode v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode)
+2026-11-12T19:57:39.0951837Z    Compiling codex-connectors v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/connectors)
+2026-11-12T19:57:40.3783305Z    Compiling codex-rmcp-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rmcp-client)
+2026-11-12T19:57:40.6887073Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T19:57:40.6887877Z  --> rmcp-client/src/elicitation_client_service.rs:4:18
+2026-11-12T19:57:40.6888508Z   |
+2026-11-12T19:57:40.6888899Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T19:57:40.6889430Z   |                  ^^^^^^^^^^
+2026-11-12T19:57:40.6889792Z   |
+2026-11-12T19:57:40.6890126Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T19:57:40.6890473Z 
+2026-11-12T19:57:40.6891181Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T19:57:40.6892012Z   --> rmcp-client/src/elicitation_client_service.rs:55:22
+2026-11-12T19:57:40.6892481Z    |
+2026-11-12T19:57:40.6892833Z 55 |         client_info: ClientInfo,
+2026-11-12T19:57:40.6893266Z    |                      ^^^^^^^^^^
+2026-11-12T19:57:40.6893597Z 
+2026-11-12T19:57:40.6894008Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T19:57:40.6894811Z    --> rmcp-client/src/elicitation_client_service.rs:191:27
+2026-11-12T19:57:40.6895347Z     |
+2026-11-12T19:57:40.6895733Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T19:57:40.6896180Z     |                           ^^^^^^^^^^
+2026-11-12T19:57:40.6896492Z 
+2026-11-12T19:57:40.6913020Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T19:57:40.6913784Z  --> rmcp-client/src/logging_client_handler.rs:6:18
+2026-11-12T19:57:40.6914353Z   |
+2026-11-12T19:57:40.6914755Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T19:57:40.6915216Z   |                  ^^^^^^^^^^
+2026-11-12T19:57:40.6915509Z 
+2026-11-12T19:57:40.6915904Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T19:57:40.6916552Z   --> rmcp-client/src/logging_client_handler.rs:27:18
+2026-11-12T19:57:40.6917002Z    |
+2026-11-12T19:57:40.6917331Z 27 |     client_info: ClientInfo,
+2026-11-12T19:57:40.6917733Z    |                  ^^^^^^^^^^
+2026-11-12T19:57:40.6918015Z 
+2026-11-12T19:57:40.6918429Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T19:57:40.6919224Z   --> rmcp-client/src/logging_client_handler.rs:32:36
+2026-11-12T19:57:40.6919660Z    |
+2026-11-12T19:57:40.6920169Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T19:57:40.6920767Z    |                                    ^^^^^^^^^^
+2026-11-12T19:57:40.6921106Z 
+2026-11-12T19:57:40.6921491Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T19:57:40.6922210Z   --> rmcp-client/src/logging_client_handler.rs:94:27
+2026-11-12T19:57:40.6922684Z    |
+2026-11-12T19:57:40.6923038Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T19:57:40.6923517Z    |                           ^^^^^^^^^^
+2026-11-12T19:57:40.6923892Z 
+2026-11-12T19:57:42.2850123Z    Compiling codex-exec-server-test-support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server/tests/support)
+2026-11-12T19:57:42.3934822Z    Compiling codex-tools v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/tools)
+2026-11-12T19:57:43.7592667Z    Compiling codex-mcp v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-mcp)
+2026-11-12T19:57:45.5869885Z warning: `codex-rmcp-client` (lib) generated 7 warnings
+2026-11-12T19:57:45.5872112Z    Compiling codex-context-fragments v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/context-fragments)
+2026-11-12T19:57:45.8993350Z    Compiling codex-rollout v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout)
+2026-11-12T19:57:52.1141495Z    Compiling codex-extension-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/extension-api)
+2026-11-12T19:57:52.9214800Z    Compiling codex-app-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol)
+2026-11-12T19:57:53.1810112Z    Compiling codex-skills v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/skills)
+2026-11-12T19:57:53.9211107Z    Compiling codex-hooks v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hooks)
+2026-11-12T19:57:56.2429666Z    Compiling codex-apply-patch v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/apply-patch)
+2026-11-12T19:57:57.1134154Z    Compiling codex-shell-escalation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-escalation)
+2026-11-12T19:57:58.2876642Z    Compiling codex-prompts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/prompts)
+2026-11-12T19:57:58.7444074Z    Compiling codex-rollout-trace v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout-trace)
+2026-11-12T19:58:02.9278653Z    Compiling codex-agent-graph-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-graph-store)
+2026-11-12T19:58:03.3151077Z    Compiling codex-memories-read v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/read)
+2026-11-12T19:58:03.6538119Z    Compiling codex-utils-audio v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/audio)
+2026-11-12T19:58:04.1109276Z    Compiling codex-hepta-operations v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-operations)
+2026-11-12T19:58:05.1261211Z    Compiling codex-backend-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/backend-client)
+2026-11-12T19:58:06.2108566Z    Compiling codex-hepta-memory v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory)
+2026-11-12T19:58:18.7687599Z    Compiling codex-analytics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/analytics)
+2026-11-12T19:58:19.3935333Z    Compiling codex-thread-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/thread-store)
+2026-11-12T19:58:21.7896218Z    Compiling codex-core-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core-plugins)
+2026-11-12T19:58:26.0989687Z    Compiling codex-skills-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/skills)
+2026-11-12T19:58:30.7442713Z    Compiling codex-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core)
+2026-11-12T19:58:30.8444304Z    Compiling codex-linux-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/linux-sandbox)
+2026-11-12T19:58:32.4154043Z    Compiling codex-arg0 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/arg0)
+2026-11-12T19:58:32.9255613Z    Compiling codex-home v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-home)
+2026-11-12T19:58:33.4501986Z    Compiling codex-hepta-authbus v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-authbus)
+2026-11-12T19:58:34.5393215Z    Compiling codex-hepta-evidence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-evidence)
+2026-11-12T19:58:37.4127440Z    Compiling codex-connectors-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/connectors)
+2026-11-12T19:58:38.0002503Z    Compiling codex-utils-cli v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cli)
+2026-11-12T19:58:38.4945939Z    Compiling codex-hepta-governance v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-governance)
+2026-11-12T19:58:39.5470040Z    Compiling codex-hepta-memory-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-memory)
+2026-11-12T19:58:42.9213246Z    Compiling codex-git-attribution v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/git-attribution)
+2026-11-12T19:58:43.6267232Z    Compiling codex-hepta-prompt-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-prompt)
+2026-11-12T19:58:44.3626018Z    Compiling codex-hepta-automation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-automation)
+2026-11-12T19:58:49.6802455Z    Compiling num_cpus v1.17.0
+2026-11-12T19:58:49.8459447Z    Compiling assert_cmd v2.2.2
+2026-11-12T19:58:49.9345153Z    Compiling deadpool-runtime v0.1.4
+2026-11-12T19:58:49.9928333Z    Compiling dtor-proc-macro v0.0.6
+2026-11-12T19:58:50.1140668Z    Compiling difflib v0.4.0
+2026-11-12T19:58:50.4092578Z    Compiling termtree v0.5.1
+2026-11-12T19:58:50.4863378Z    Compiling predicates-tree v1.0.13
+2026-11-12T19:58:50.5873619Z    Compiling predicates v3.1.4
+2026-11-12T19:58:50.9256996Z    Compiling dtor v0.1.1
+2026-11-12T19:58:50.9648751Z    Compiling deadpool v0.12.3
+2026-11-12T19:58:51.1704910Z    Compiling codex-hepta-agent-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agent-protocol)
+2026-11-12T19:58:53.2115959Z    Compiling codex-hepta-neuron v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron)
+2026-11-12T19:58:57.6883884Z    Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+2026-11-12T19:58:58.4129322Z    Compiling assert-json-diff v2.0.2
+2026-11-12T19:58:58.5997462Z    Compiling wait-timeout v0.2.1
+2026-11-12T19:58:58.7157427Z    Compiling diff v0.1.13
+2026-11-12T19:58:58.8381885Z    Compiling yansi v1.0.1
+2026-11-12T19:58:59.0116816Z    Compiling ctor-proc-macro v0.0.7
+2026-11-12T19:58:59.1388548Z    Compiling ctor v0.6.3
+2026-11-12T19:58:59.1826437Z    Compiling pretty_assertions v1.4.1
+2026-11-12T19:58:59.5722096Z    Compiling wiremock v0.6.5
+2026-11-12T19:59:00.0698214Z    Compiling codex-hepta-supervisor v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor)
+2026-11-12T19:59:06.7568597Z    Compiling codex-memories-write v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/write)
+2026-11-12T19:59:09.3691482Z    Compiling codex-external-agent-migration v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/external-agent-migration)
+2026-11-12T19:59:12.2937533Z    Compiling codex-app-server-transport v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-transport)
+2026-11-12T19:59:19.7915238Z    Compiling codex-goal-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/goal)
+2026-11-12T19:59:22.0010193Z    Compiling codex-cloud-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cloud-config)
+2026-11-12T19:59:23.0332262Z    Compiling codex-guardian-v2 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/guardian-v2)
+2026-11-12T19:59:23.6143448Z    Compiling codex-queue-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue)
+2026-11-12T19:59:25.1161172Z    Compiling codex-web-search-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/web-search)
+2026-11-12T19:59:25.4896251Z    Compiling codex-mcp-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/mcp)
+2026-11-12T19:59:26.4103421Z    Compiling codex-history-notes-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/history-notes)
+2026-11-12T19:59:26.6249540Z    Compiling codex-image-generation-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/image-generation)
+2026-11-12T19:59:27.4704178Z    Compiling codex-memories-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/memories)
+2026-11-12T19:59:27.8915846Z    Compiling codex-agent-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/agent)
+2026-11-12T19:59:28.1364062Z    Compiling codex-chatgpt v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/chatgpt)
+2026-11-12T19:59:29.1015497Z    Compiling codex-hepta-intelligence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence)
+2026-11-12T19:59:29.7811317Z    Compiling codex-app-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server)
+2026-11-12T19:59:30.1528539Z    Compiling codex-hepta-cognitive-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-store)
+2026-11-12T19:59:30.8484845Z    Compiling codex-hepta-bellman-operator v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-bellman-operator)
+2026-11-12T19:59:31.5518078Z    Compiling core_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core/tests/common)
+2026-11-12T19:59:34.7623719Z    Compiling app_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server/tests/common)
+2026-11-12T19:59:47.4923414Z warning: variable does not need to be mutable
+2026-11-12T19:59:47.4924041Z    --> hepta-neuron/src/cell_generation_observation_tests.rs:310:9
+2026-11-12T19:59:47.4924491Z     |
+2026-11-12T19:59:47.4924888Z 310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+2026-11-12T19:59:47.4925427Z     |         ----^^^^^^^^
+2026-11-12T19:59:47.4925714Z     |         |
+2026-11-12T19:59:47.4926001Z     |         help: remove this `mut`
+2026-11-12T19:59:47.4926314Z     |
+2026-11-12T19:59:47.4926659Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T19:59:47.4927035Z 
+2026-11-12T19:59:52.8745455Z warning: `codex-hepta-neuron` (lib test) generated 1 warning (run `cargo fix --lib -p codex-hepta-neuron --tests` to apply 1 suggestion)
+2026-11-12T19:59:53.9604834Z    Compiling codex-app-server-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-client)
+2026-11-12T19:59:56.0435492Z    Compiling codex-hepta-codex-adapter v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-codex-adapter)
+2026-11-12T19:59:57.1888506Z    Compiling codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)
+2026-11-12T20:00:16.1562522Z warning: variant `Unavailable` is never constructed
+2026-11-12T20:00:16.1563031Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T20:00:16.1563395Z    |
+2026-11-12T20:00:16.1563615Z 22 | pub(super) enum Status {
+2026-11-12T20:00:16.1563910Z    |                 ------ variant in this enum
+2026-11-12T20:00:16.1564207Z ...
+2026-11-12T20:00:16.1564416Z 26 |     Unavailable = 4,
+2026-11-12T20:00:16.1564664Z    |     ^^^^^^^^^^^
+2026-11-12T20:00:16.1564881Z    |
+2026-11-12T20:00:16.1565439Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T20:00:16.1566154Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T20:00:16.1566446Z 
+2026-11-12T20:00:16.1566583Z warning: field `estimand` is never read
+2026-11-12T20:00:16.1567010Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T20:00:16.1567414Z    |
+2026-11-12T20:00:16.1567623Z 19 | pub(super) struct Checked {
+2026-11-12T20:00:16.1567973Z    |                   ------- field in this struct
+2026-11-12T20:00:16.1568274Z ...
+2026-11-12T20:00:16.1568492Z 23 |     pub estimand: Digest32,
+2026-11-12T20:00:16.1568761Z    |         ^^^^^^^^
+2026-11-12T20:00:16.1568914Z 
+2026-11-12T20:00:16.1570490Z warning: method `context` is never used
+2026-11-12T20:00:16.1570943Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T20:00:16.1571337Z    |
+2026-11-12T20:00:16.1571562Z 30 | impl Request {
+2026-11-12T20:00:16.1571834Z    | ------------ method in this implementation
+2026-11-12T20:00:16.1572148Z ...
+2026-11-12T20:00:16.1572419Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T20:00:16.1572774Z    |                   ^^^^^^^
+2026-11-12T20:00:16.1572941Z 
+2026-11-12T20:00:22.3854712Z    Compiling codex-hepta-infer-worker-host v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host)
+2026-11-12T20:00:33.4931204Z warning: `codex-hepta-agentd` (lib) generated 3 warnings
+2026-11-12T20:00:52.7104173Z error[E0616]: field `sender` of struct `neuron_generation_runtime::NeuronGenerationRuntimeHandleV2` is private
+2026-11-12T20:00:52.7105013Z   --> hepta-agentd/src/neuron_generation_runtime_test_support.rs:53:28
+2026-11-12T20:00:52.7105461Z    |
+2026-11-12T20:00:52.7105737Z 53 |             sender: handle.sender.downgrade(),
+2026-11-12T20:00:52.7106134Z    |                            ^^^^^^ private field
+2026-11-12T20:00:52.7106714Z 
+2026-11-12T20:01:17.6195775Z For more information about this error, try `rustc --explain E0616`.
+2026-11-12T20:01:17.8232418Z error: could not compile `codex-hepta-agentd` (lib test) due to 1 previous error
+2026-11-12T20:01:17.9375388Z error: command `/home/runner/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-automation --package codex-hepta-neuron --package codex-hepta-agentd --lib --locked` exited with code 101
+2026-11-12T20:01:17.9459974Z error: recipe `test` failed on line 89 with exit code 101
+2026-11-12T20:01:17.9977293Z {"after": {"commit": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "dirty": false, "parents": ["26f9a14d689cee20b46a88db493896fe4e713e36", "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609"], "tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85"}, "base_sha": "", "before": {"commit": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "dirty": false, "parents": ["26f9a14d689cee20b46a88db493896fe4e713e36", "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609"], "tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85"}, "command": ["just", "test", "--locked", "-p", "codex-hepta-automation", "-p", "codex-hepta-neuron", "-p", "codex-hepta-agentd", "--lib"], "command_exit_code": 101, "elapsed_seconds": 285.76729541199995, "error": "required tests were not observed passing", "exit_code": 101, "finished_at": "2026-11-12T20:01:17.995845+00:00", "job": "owners", "lane": "source-head", "log_bytes": 32158, "log_file": "tests.json.a627425b26d54e61bac4f915f0d6c39d.log", "log_sha256": "9105c8c86c84ee316625aef16cf3fd08dbee14fcb3b7b1b6282f0a65b1c9f2ac", "minimum_tests": 1, "observed_failed_tests": 0, "observed_passed_tests": 0, "output_limit_exceeded": false, "returncode": 101, "run_attempt": "1", "run_id": "43293663217", "schema_version": 1, "source_sha": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "started_at": "2026-11-12T19:56:32.228010+00:00", "status": "failed", "tested_sha": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "timed_out": false, "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"}
+2026-11-12T20:01:18.0117492Z ##[error]Process completed with exit code 101.
+2026-11-12T20:01:18.0160069Z ##[group]Run python3 scripts/hepta_cell_test_helpers.py --verify-only \
+2026-11-12T20:01:18.0160518Z [36;1mpython3 scripts/hepta_cell_test_helpers.py --verify-only \[0m
+2026-11-12T20:01:18.0160864Z [36;1m  --package codex-hepta-infer-worker-host \[0m
+2026-11-12T20:01:18.0161188Z [36;1m  --output-dir "$RUNNER_TEMP/shared-framework/helpers" \[0m
+2026-11-12T20:01:18.0161520Z [36;1m  > "$RUNNER_TEMP/shared-framework/helpers-after.json"[0m
+2026-11-12T20:01:18.0161807Z [36;1mpython3 scripts/hepta_ci_junit.py \[0m
+2026-11-12T20:01:18.0162105Z [36;1m  --execution "$RUNNER_TEMP/shared-framework/tests.json" \[0m
+2026-11-12T20:01:18.0162446Z [36;1m  --junit codex-rs/target/nextest/local/junit.xml \[0m
+2026-11-12T20:01:18.0162752Z [36;1m  --output "$RUNNER_TEMP/shared-framework/junit.xml"[0m
+2026-11-12T20:01:18.0180366Z shell: /usr/bin/bash -e {0}
+2026-11-12T20:01:18.0180574Z env:
+2026-11-12T20:01:18.0180781Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T20:01:18.0181122Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T20:01:18.0181372Z   HEPTA_CI_LANE: source-head
+2026-11-12T20:01:18.0181579Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T20:01:18.0181771Z   CARGO_INCREMENTAL: 0
+2026-11-12T20:01:18.0181956Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T20:01:18.0182160Z   CARGO_NET_RETRY: 5
+2026-11-12T20:01:18.0182333Z   CARGO_BUILD_JOBS: 2
+2026-11-12T20:01:18.0182512Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T20:01:18.0182713Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T20:01:18.0182902Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T20:01:18.0183370Z   RUSTY_V8_ARCHIVE: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz
+2026-11-12T20:01:18.0184108Z   RUSTY_V8_SRC_BINDING_PATH: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs
+2026-11-12T20:01:18.0184948Z   CARGO_BIN_EXE_hepta-joint-propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T20:01:18.0185501Z   CARGO_BIN_EXE_hepta_joint_propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T20:01:18.0185876Z ##[endgroup]
+2026-11-12T20:01:18.2057914Z {"command": ["just", "test", "--locked", "-p", "codex-hepta-automation", "-p", "codex-hepta-neuron", "-p", "codex-hepta-agentd", "--lib"], "error": "[Errno 2] No such file or directory: 'codex-rs/target/nextest/local/junit.xml'", "execution_file": "tests.json", "execution_sha256": "1e000538301942c5b58eb1af0c3842793084388d280380664a6417155d1bdb26", "job": "owners", "kind": "native-junit-collection", "native_path": "codex-rs/target/nextest/local/junit.xml", "run_attempt": "1", "run_id": "43293663217", "schema_version": 1, "source_sha": "84ee9c2ed0db8b20b792634d775f9b4f97a34578", "source_tree": "6f1d7265ef1a58a0de1cc8da75ce142111743d85", "status": "rejected"}
+2026-11-12T20:01:18.2113214Z ##[error]Process completed with exit code 1.
+2026-11-12T20:01:18.2141402Z ##[group]Run git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/shared-framework/source-after.txt"
+2026-11-12T20:01:18.2141948Z [36;1mgit rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/shared-framework/source-after.txt"[0m
+2026-11-12T20:01:18.2142441Z [36;1mcmp "$RUNNER_TEMP/shared-framework/source.txt" "$RUNNER_TEMP/shared-framework/source-after.txt"[0m
+2026-11-12T20:01:18.2142858Z [36;1mtest -z "$(git status --porcelain)"[0m
+2026-11-12T20:01:18.2160272Z shell: /usr/bin/bash -e {0}
+2026-11-12T20:01:18.2160479Z env:
+2026-11-12T20:01:18.2160687Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T20:01:18.2160993Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T20:01:18.2161246Z   HEPTA_CI_LANE: source-head
+2026-11-12T20:01:18.2161454Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T20:01:18.2161653Z   CARGO_INCREMENTAL: 0
+2026-11-12T20:01:18.2161844Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T20:01:18.2162045Z   CARGO_NET_RETRY: 5
+2026-11-12T20:01:18.2162251Z   CARGO_BUILD_JOBS: 2
+2026-11-12T20:01:18.2162441Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T20:01:18.2162635Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T20:01:18.2162822Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T20:01:18.2163290Z   RUSTY_V8_ARCHIVE: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz
+2026-11-12T20:01:18.2164030Z   RUSTY_V8_SRC_BINDING_PATH: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs
+2026-11-12T20:01:18.2164691Z   CARGO_BIN_EXE_hepta-joint-propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T20:01:18.2165236Z   CARGO_BIN_EXE_hepta_joint_propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T20:01:18.2165625Z ##[endgroup]
+2026-11-12T20:01:18.2703360Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-12T20:01:18.2703726Z with:
+2026-11-12T20:01:18.2704074Z   name: shared-framework-84ee9c2ed0db8b20b792634d775f9b4f97a34578-1
+2026-11-12T20:01:18.2704581Z   path: /home/runner/work/_temp/shared-framework
+!/home/runner/work/_temp/shared-framework/helpers/bin/**
+
+2026-11-12T20:01:18.2705048Z   if-no-files-found: error
+2026-11-12T20:01:18.2705248Z   retention-days: 14
+2026-11-12T20:01:18.2705504Z   compression-level: 6
+2026-11-12T20:01:18.2705686Z   overwrite: false
+2026-11-12T20:01:18.2705866Z   include-hidden-files: false
+2026-11-12T20:01:18.2706058Z env:
+2026-11-12T20:01:18.2706328Z   SOURCE_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T20:01:18.2706599Z   TESTED_SHA: 84ee9c2ed0db8b20b792634d775f9b4f97a34578
+2026-11-12T20:01:18.2706843Z   HEPTA_CI_LANE: source-head
+2026-11-12T20:01:18.2707128Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T20:01:18.2707335Z   CARGO_INCREMENTAL: 0
+2026-11-12T20:01:18.2707557Z   CARGO_HTTP_MULTIPLEXING: false
+2026-11-12T20:01:18.2707788Z   CARGO_NET_RETRY: 5
+2026-11-12T20:01:18.2708148Z   CARGO_BUILD_JOBS: 2
+2026-11-12T20:01:18.2708324Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T20:01:18.2708516Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T20:01:18.2708794Z   NEXTEST_TEST_THREADS: 2
+2026-11-12T20:01:18.2709429Z   RUSTY_V8_ARCHIVE: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz
+2026-11-12T20:01:18.2710293Z   RUSTY_V8_SRC_BINDING_PATH: /tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs
+2026-11-12T20:01:18.2711036Z   CARGO_BIN_EXE_hepta-joint-propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T20:01:18.2711703Z   CARGO_BIN_EXE_hepta_joint_propose: /home/runner/work/_temp/shared-framework/helpers/bin/hepta-joint-propose
+2026-11-12T20:01:18.2712089Z ##[endgroup]
+2026-11-12T20:01:18.4192945Z (node:25044) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T20:01:18.4193868Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T20:01:18.4291019Z With the provided path, there will be 13 files uploaded
+2026-11-12T20:01:18.4295998Z Artifact name is valid!
+2026-11-12T20:01:18.4296682Z Root directory input is valid!
+2026-11-12T20:01:18.8068597Z Beginning upload of artifact content to blob storage
+2026-11-12T20:01:18.8496720Z (node:25044) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T20:01:19.2923592Z Uploaded bytes 100101
+2026-11-12T20:01:19.3657636Z Finished uploading artifact content to blob storage!
+2026-11-12T20:01:19.3658432Z SHA256 digest of uploaded artifact zip is 722a1b1de9c674dc7c75ac8e5fc9645f060619fcaad54777b064da994e271644
+2026-11-12T20:01:19.3660402Z Finalizing artifact upload
+2026-11-12T20:01:19.8307402Z Artifact shared-framework-84ee9c2ed0db8b20b792634d775f9b4f97a34578-1.zip successfully finalized. Artifact ID 13979745827
+2026-11-12T20:01:19.8308835Z Artifact shared-framework-84ee9c2ed0db8b20b792634d775f9b4f97a34578-1 has been successfully uploaded! Final size is 100101 bytes. Artifact ID is 13979745827
+2026-11-12T20:01:19.8313665Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43293663217/artifacts/13979745827
+2026-11-12T20:01:19.8505508Z Post job cleanup.
+2026-11-12T20:01:19.9227811Z [command]/usr/bin/git version
+2026-11-12T20:01:19.9304323Z git version 2.56.0
+2026-11-12T20:01:19.9340102Z Temporarily overriding HOME='/home/runner/work/_temp/52d52bbd-404b-41fe-9bab-a09f2a5b9f47' before making global git config changes
+2026-11-12T20:01:19.9341117Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T20:01:19.9345268Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:01:19.9384433Z Removing SSH command configuration
+2026-11-12T20:01:19.9391646Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T20:01:19.9429606Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T20:01:19.9694025Z Removing HTTP extra header
+2026-11-12T20:01:19.9699555Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T20:01:19.9736416Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T20:01:19.9986042Z Removing includeIf entries pointing to credentials config files
+2026-11-12T20:01:19.9994644Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T20:01:20.0036984Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T20:01:20.0411492Z Cleaning up orphan processes
+2026-11-12T20:01:20.0713923Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

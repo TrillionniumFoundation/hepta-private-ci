@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.root-production-integration-review.v1",
+  "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+  "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "manifest_blob": "ded2662c3c3668ef17c49a6f6dcaa8a6af40539e",
+  "source_blobs_independently_read": 26,
+  "paths": 13,
+  "root_observed_forward_and_reverse_exact": true,
+  "checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "edit_base": "5d2b1eeb3d9971741145563a4d708c28d6cd2eae",
+      "post": "ff108c4b3a11f3dbdfc014ff6c5fc485ee7dfc73",
+      "bytes": 12381,
+      "sha256": "a2702c756212445a29776cc10fd214ae9096f095d74d9a4fb6dc5bbafe1762e6",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "edit_base": "05359fcfecf67f7695a99aa666f761db169aa5ed",
+      "post": "551a281e0df6b0abb0033cd8b4840eeb48882d2e",
+      "bytes": 6640,
+      "sha256": "f71a15f6ea0b8735188487ca67cf471826d95f7bb4358530ad85de4efaca5078",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "edit_base": "7213c87054bf7335622eda758659baf2f1a41e8e",
+      "post": "2d1813e4f5a8c4b0f0d852d3c51b817d25f93c90",
+      "bytes": 15775,
+      "sha256": "2bbb8b979707da80b850c90342f94e3862b56cb4d08ba5d5ebe5f28762643727",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+      "edit_base": "5520712840c75b8e8a0831628f2c8715315aad36",
+      "post": "7232ad40b7bdbc69d9813e40c056766dc3344bff",
+      "bytes": 11035,
+      "sha256": "d197a9d98286b3b37bd7ac46aabadaa6ab1a2513c92c4ee3fafc86d84ccdaae8",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_attestations.rs",
+      "edit_base": "e884bb91508d86382e7189edaab8fe403581be6b",
+      "post": "2154edd35a20d36064fd5dedefb71e73966bdc99",
+      "bytes": 6997,
+      "sha256": "eff941b87b4da222d6f8e6af13b571326a823b281bd1ed3bf36ba54a28206465",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_binding.rs",
+      "edit_base": "a53143e30fd9a1b7ee5c0c3bafc6ca083acb163d",
+      "post": "7a624fbb69c9b557a9496ddb3f484916d2608beb",
+      "bytes": 5223,
+      "sha256": "484f1414ca4c60fc4e0071de16c6ab305274e992f88f581f844a06cd40e5bba3",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+      "edit_base": "02bc38551e1ccb6e574567277f902c05ca83dd86",
+      "post": "1ee4e558ae60296f47a0049eb08654c726e0c2e4",
+      "bytes": 10772,
+      "sha256": "f55ebb81067da6fbb079efec95a33a0a05c10ca65aacd22729ec5bc860899303",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs",
+      "edit_base": "bd28119fd00c39ecb246bad3bf500aece080160f",
+      "post": "53c87af635fd882bc509fa6ef37f679be2b90b15",
+      "bytes": 9491,
+      "sha256": "b6e60af75d7e7b5d0e7d8a1436d89d3a93e88ce55c71ed5efb7c720fb676c86e",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "edit_base": "382844a32227c48a752ecf053d0cf9d293f1b3f4",
+      "post": "968f2d6f4affcb1396a9e751bfdb2c42a5ba235a",
+      "bytes": 9267,
+      "sha256": "0048dc29c359a2ebec309d7848d8cde0e42788e313acc1cc76d6a7e7270a42ee",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "edit_base": "0b79409538da4f7ed92c9123ab0efd97615aa085",
+      "post": "8bd47c76fc82365daac44acf5061861e0c552011",
+      "bytes": 16679,
+      "sha256": "ae77ec5eb1b8d77d7179fd21b0939124cee210866140313c850e91d51b73c94c",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "edit_base": "5ee70d671dea96349eb69434146bf59ae1e05ed6",
+      "post": "4a593c5805f3ba23e287c130ea40b03cbe801d7a",
+      "bytes": 10184,
+      "sha256": "deb6012e680fcf6daab3fd847e1124998673093775d5a5f6b895222cb4e713e6",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "edit_base": "32ca73705cb3ccb07938cd930095d3a3dbf3bf17",
+      "post": "366400a019bcaf29016d74c9540823be8da7969b",
+      "bytes": 12237,
+      "sha256": "836277fd5d7b6a18979baabeda0f0c4c4c48b7ad355f33c363ef7cb9932f8d93",
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "edit_base": "7bcb86349f3626a08bba85e10b86ac0200026a91",
+      "post": "7b64a69e5e0ad9c3dbb7c6a8180f9ecabb843d99",
+      "bytes": 5281,
+      "sha256": "0ab1eac9c7b7be91042d97d8df35f4119112c6093f50f8478cd8a75e4c4bd254",
+      "inverse_exact": true
+    }
+  ],
+  "semantics": "Read actual retention selection/next_use/binding/attestations. Owning leases replace borrowedMutexGuards while preserving failed bits, original I/O, deadlines,caps and original authority gates. Service starts from exact872b and adds only evaluated readiness module and strict four-cut originalchannel entrance.",
+  "limitations": "Static source review only. DiagnosticsFlush must match the final test helper; final QA/caller inventory and integrated compilation/execution still pending."
+}

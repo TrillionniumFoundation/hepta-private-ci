@@ -1,0 +1,153 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 131426787479,
+      "run_id": 43288106947,
+      "workflow_name": "Hepta shared Cell framework",
+      "head_branch": "codex/learn-common-profile-20261112-037c",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43288106947",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAemaWglw",
+      "head_sha": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/131426787479",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43288106947/job/131426787479",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-12T19:14:26Z",
+      "started_at": "2026-11-12T19:14:28Z",
+      "completed_at": "2026-11-12T19:29:24Z",
+      "name": "owners",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-12T19:14:29Z",
+          "completed_at": "2026-11-12T19:14:30Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-12T19:14:30Z",
+          "completed_at": "2026-11-12T19:14:38Z"
+        },
+        {
+          "name": "Record original source and toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-12T19:14:38Z",
+          "completed_at": "2026-11-12T19:14:49Z"
+        },
+        {
+          "name": "Verify execution identity before building owners",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-12T19:14:49Z",
+          "completed_at": "2026-11-12T19:14:51Z"
+        },
+        {
+          "name": "Install native prerequisites",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-12T19:14:51Z",
+          "completed_at": "2026-11-12T19:15:03Z"
+        },
+        {
+          "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-12T19:15:03Z",
+          "completed_at": "2026-11-12T19:15:05Z"
+        },
+        {
+          "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-12T19:15:05Z",
+          "completed_at": "2026-11-12T19:15:06Z"
+        },
+        {
+          "name": "Resolve repository-pinned V8",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-12T19:15:06Z",
+          "completed_at": "2026-11-12T19:15:07Z"
+        },
+        {
+          "name": "Build the original same-source inference helper",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-12T19:15:07Z",
+          "completed_at": "2026-11-12T19:24:23Z"
+        },
+        {
+          "name": "Run original scoped owner libraries",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 10,
+          "started_at": "2026-11-12T19:24:23Z",
+          "completed_at": "2026-11-12T19:29:21Z"
+        },
+        {
+          "name": "Verify helper custody and fresh JUnit",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11,
+          "started_at": "2026-11-12T19:29:21Z",
+          "completed_at": "2026-11-12T19:29:21Z"
+        },
+        {
+          "name": "Check source remained unchanged",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-12T19:29:21Z",
+          "completed_at": "2026-11-12T19:29:21Z"
+        },
+        {
+          "name": "Retain original results, including failures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-12T19:29:21Z",
+          "completed_at": "2026-11-12T19:29:22Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-11-12T19:29:22Z",
+          "completed_at": "2026-11-12T19:29:22Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-11-12T19:29:22Z",
+          "completed_at": "2026-11-12T19:29:22Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/131426787479",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000134572,
+      "runner_name": "GitHub Actions 1000134572",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

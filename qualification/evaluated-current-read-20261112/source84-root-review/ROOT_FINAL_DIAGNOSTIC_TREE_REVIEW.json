@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.root-diagnostic-final-tree-readback.v1",
+  "before": "18052d1898e2cd7c524a1d18dd58a777c22a8789",
+  "after": "0d3ceda61015e8d6fa04d5812ac7bf2205dd6150",
+  "pairs": [
+    {
+      "path": "",
+      "before": "18052d1898e2cd7c524a1d18dd58a777c22a8789",
+      "after": "0d3ceda61015e8d6fa04d5812ac7bf2205dd6150"
+    },
+    {
+      "path": "codex-rs",
+      "before": "db964a0a5358ccd700c5ff12ba81ce99de7718f5",
+      "after": "48471e989dcba1e74eda5b69b450cf1f13b5d633"
+    },
+    {
+      "path": "codex-rs/hepta-agentd",
+      "before": "54aab928db089f8df98091509aaa1edb7866fa49",
+      "after": "1a2f86f4e2cf40f594668acc2462930437ef00cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src",
+      "before": "8900922f080bb41edbfc4ca8b80a63fb4cb95216",
+      "after": "109953c160f91a9c10138b1b80c9027a0665f0ab"
+    }
+  ],
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+      "before": {
+        "path": "neuron_cell_evaluation_host_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ece1fdf2adcc54de868fa6378ea1638b949a5565",
+        "size": 5557,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/ece1fdf2adcc54de868fa6378ea1638b949a5565"
+      },
+      "after": {
+        "path": "neuron_cell_evaluation_host_service.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c1a56101fc6db3ea93155784c2776dfff3f44973",
+        "size": 6107,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c1a56101fc6db3ea93155784c2776dfff3f44973"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_diagnostics_tests.rs",
+      "before": null,
+      "after": {
+        "path": "neuron_cell_evaluation_host_diagnostics_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c075688f8eb85ef77bd9495fcb85810acfe658e",
+        "size": 4300,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6c075688f8eb85ef77bd9495fcb85810acfe658e"
+      }
+    }
+  ],
+  "original_service_exact_base": true,
+  "new_helper_previously_absent": true,
+  "no_other_tree_changes": true,
+  "merge_commit": {
+    "sha": "118e8d1367ce9d51769fdac7682e3005866daf5d",
+    "node_id": "C_kwDOTrgxoNoAKDExOGU4ZDEzNjdjZTlkNTE3NjlmZGFjNzY4MmUzMDA1ODY2ZGFmNWQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/118e8d1367ce9d51769fdac7682e3005866daf5d",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/118e8d1367ce9d51769fdac7682e3005866daf5d",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:44:24Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:44:24Z"
+    },
+    "tree": {
+      "sha": "18052d1898e2cd7c524a1d18dd58a777c22a8789",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/18052d1898e2cd7c524a1d18dd58a777c22a8789"
+    },
+    "message": "Integrate original-owner transactions and preserve evaluated read guards\n\nCombine the reviewed d397 integration with upstream e403. Preserve the same-call evaluated ReadSet, actual Source tail checks and first/last CURRENT reads; align the real Selection/NextUse paths at 6/9 slots. Retain bounded original Training proofs, resident-origin checks and owning lane guards.\n\nFix the observed E0308 in the test-only Candidate origin fixture using its existing typed original channel factory. Migrate all original source-guard attacks to their actual consuming helpers and preserve both sides of the four upstream QA repairs.\n\nThis immutable source has byte, tree and scoped static review only. Formatter, compilation, full caller/source gates and native execution on this source remain pending. All complete research/authority gates remain HOLD; no adoption or owner decision.",
+    "parents": [
+      {
+        "sha": "c7ba93274c0e6ccf764120defc642689df499273",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c7ba93274c0e6ccf764120defc642689df499273",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c7ba93274c0e6ccf764120defc642689df499273"
+      },
+      {
+        "sha": "e403c45570ad313851ca71392625e5572882405f",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e403c45570ad313851ca71392625e5572882405f",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e403c45570ad313851ca71392625e5572882405f"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "prepared_commit": {
+    "sha": "26f9a14d689cee20b46a88db493896fe4e713e36",
+    "node_id": "C_kwDOTrgxoNoAKDI2ZjlhMTRkNjg5Y2VlMjBiNDZhODhkYjQ5Mzg5NmZlNGU3MTNlMzY",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/26f9a14d689cee20b46a88db493896fe4e713e36",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/26f9a14d689cee20b46a88db493896fe4e713e36",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:44:40Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:44:40Z"
+    },
+    "tree": {
+      "sha": "0d3ceda61015e8d6fa04d5812ac7bf2205dd6150",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/0d3ceda61015e8d6fa04d5812ac7bf2205dd6150"
+    },
+    "message": "Capture original evaluation failure categories in test fixtures\n\nRetain the first original Panel, Qualification or predecessor error category and flush it only after the fixture's original service returns. Hooks and the private helper are cfg(test) only; no extra owner read, retry, runtime authority, request cap or deadline change.\n\nNo payload, signature, request or response field is formatted. This diagnostic does not resolve or relabel the observed predecessor failures. Compilation, formatting and native results on this child remain pending.",
+    "parents": [
+      {
+        "sha": "118e8d1367ce9d51769fdac7682e3005866daf5d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/118e8d1367ce9d51769fdac7682e3005866daf5d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/118e8d1367ce9d51769fdac7682e3005866daf5d"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "base_ref": {
+    "ref": "refs/heads/codex/learn-common-profile-20261112-037c",
+    "node_id": "REF_kwDOTrgxoNoAM3JlZnMvaGVhZHMvY29kZXgvbGVhcm4tY29tbW9uLXByb2ZpbGUtMjAyNjExMTItMDM3Yw",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/learn-common-profile-20261112-037c",
+    "object": {
+      "sha": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a4a1b5eb6cb45fc1182564e6b81026a2a2acf609"
+    }
+  },
+  "owner_ref": {
+    "ref": "refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "node_id": "REF_kwDOTrgxoNoAQnJlZnMvaGVhZHMvcmVzZWFyY2gvbmV1cm80LWV2YWx1YXRlZC1jdXJyZW50LXJlYWQtMjAyNjExMTItODYyNTMxZA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "object": {
+      "sha": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/872b1b68342285893abd4c09f9141bcc19d8f9ce"
+    }
+  },
+  "published": false,
+  "source_gate": "NOT_RUN",
+  "owner_decision": null
+}

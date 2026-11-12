@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.source53-original-rustfmt-pass.v1",
+  "published_source_commit": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "published_source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "run_id": 43297579660,
+  "job_id": 131460646196,
+  "job_name": "rust-ci / Rust format",
+  "job_conclusion": "success",
+  "completed_at": "2026-11-12T20:12:08Z",
+  "actual_checkout_commit": "7302b0d4d0cd9335c9c505db7995689e8dc9f9c8",
+  "actual_checkout_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "actual_checkout_parents": [
+    "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "53b3227a8dff5af9e39ecef6356cfce702d80b1c"
+  ],
+  "actual_tree_equals_published_tree": true,
+  "command": "cargo fmt -- --config imports_granularity=Item --check",
+  "fmt_step": {
+    "name": "cargo fmt",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 5,
+    "started_at": "2026-11-12T20:11:50Z",
+    "completed_at": "2026-11-12T20:12:05Z"
+  },
+  "log": {
+    "job_id": 131460646196,
+    "bytes": 133647,
+    "sha256": "4e9494db3d56702f72883d0364c873e3743c954ef479eb01d4f462f9ef466402",
+    "git_blob_sha": "3336c21df60d8cca4a9dc5a2f99b30cdc382360c"
+  },
+  "entries": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/JOB.log.txt",
+      "sha": "3336c21df60d8cca4a9dc5a2f99b30cdc382360c",
+      "bytes": 133647,
+      "sha256": "4e9494db3d56702f72883d0364c873e3743c954ef479eb01d4f462f9ef466402",
+      "kind": "original_decoded_full_job_log"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/BLOCKING_JOBS.json",
+      "sha": "1c9ba31746b824ea523b22c883c8c3f66dc6e24e",
+      "bytes": 79506,
+      "sha256": "d846526eb11cfdf3e543d5ba9be99931b10ab32eccff467c0c1f0b5683ff11b4",
+      "kind": "original_actions_api_response"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-rustfmt-pass/ACTUAL_CHECKOUT.json",
+      "sha": "ff9e0f54edf4401891f8d5e8fdf9a36e44695764",
+      "bytes": 2798,
+      "sha256": "111b72e573753064fced2d43317d766cb7ec5b51f7ef5d9f62e9aaa36595289a",
+      "kind": "original_git_commit_api_response"
+    }
+  ],
+  "old_failed_job": 131446629264,
+  "old_format_hunks": 11,
+  "old_format_paths": 8,
+  "old_failure_original_retained": true,
+  "scope": "Rust format only; does not assert completion of native, caller, parser, scientific or Root qualification gates.",
+  "no_dispatch": true
+}

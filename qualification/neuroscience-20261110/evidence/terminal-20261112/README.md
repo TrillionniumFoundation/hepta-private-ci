@@ -1,17 +1,13 @@
-# 原始终态证据与最新增量
+# 原始终态证据与当前工程状态
 
-截至2026-11-12 18:52:55 UTC，源码Draft PR6213已发布872b1b68342285893abd4c09f9141bcc19d8f9ce / tree5a22d17b8d21f2b9843d508ec4ef21f8045a0c66：46路径修复已静态复核。准确head在18:35:16的Actions集合total_count=0，尚无该版本执行PASS。实际base已到d3977d9a1bed3e89952c576c45660b04ea674faf，31个重叠文件和5个必要retention接口适配正在整合。
+源码Draft PR6213当前 **53b3227a8dff5af9e39ecef6356cfce702d80b1c / 10cb49cee9c3ca8ed280a680fb262c7e7ce549a1**。实际上游整合和11路径源码／编译／格式修复均已发布。准确source53的源码守卫、owner解析及同源helper步骤已成功；完整Rustfmt和GNU Clippy原件成功。Windows private整个job于20:32:28成功，其中原专项36／36、零失败／重试，完整376,162字节日志保留。native／Root、caller、shared完整终态仍待各自原件。具体结果只属于相应准确source，不转记旧PASS。
 
-原edaf与286c各完成1,738普通方法：1,730PASS、7FAIL、1TIMEOUT、98过滤、0重试；Root和maintenance未到达。两版各自caller真实success（541边界／541清单／390保护／6,604Rust文件），authorityGranted=false。edaf Windows私有状态专项36/36成功。edaf GNU／musl超时及Windows／macOS／Fence失败均保留，不转为当前source结果。
+source53 GNU／musl目标仍实际失败并出现300.1s汇总；Windows shard1保留原RestrictedToken拒绝，shard3保留TUI路径不一致失败。原84的506＝505OK＋1FAIL、E0616、格式失败、36／36所选Windows成功但整体失败、Mac209宣布／208OK／1未完成超时均完整保留。Fence原报告audit健康但ready_observation_only、protection_available=false。
 
-本次先独立核验144个不可变条目：133个资格证据文件与11个只核对而不导入的源码后像；重新拼接8份完整日志，所有原字节数、SHA256与Git blob一致。另新封edaf caller完整2,150,402B原日志，7连续分片、原timestamp/BOM receipt与job元数据。此前已核其他平台原job的独立直接读取也保持准确source。未另取的完整XML／ZIP／inventory仍不计已取得。
+完整同连接预算仍OPEN：限定Bound B组合的Version-only Trainer需求210＋30R已超过原128请求；更强244＋36R另需实际同host。局部降读设计不足以闭合。成本批量候选仅静态，原127／4096、fsync、witness和失败边界保持，尚不称超时已修复。Windows旧沙箱拒绝不等于本次runner ACL观测，不能用绕过隔离来获得正向测试通过。
 
-[872b源码审查](../../../evaluated-current-read-20261112/repair-872b-review/ROOT_SOURCE_REVIEW.json) · [三方整合](../../../evaluated-current-read-20261112/merge-d397-review/ORIGINAL_THREE_WAY_OVERLAP.json) · [完整字节核验](ROOT_IMPORTED_BYTE_READBACK.json) · [edaf caller](../../../evaluated-current-read-20261112/edaf-caller-success/MANIFEST.json) · [blocker清单](../../BLOCKER_CLOSURE_NEXT.md) · [机器索引](../../TERMINAL_EVIDENCE.json)。
+本轮286个资格导入路径全部按完整Git字节核验；本日志集合27份完整job原件已核。实现源文件仅在源码PR中修改。本索引保留9cbd及更早准确历史快照。
 
-完整研究资格仍12门OPEN，owner_decision=null，HOLD，all_blockers_closed=false。原研究NoUpdate、失败、UNKNOWN与冻结四次B/C结果不改写。无actor重派、PR合并、部署或默认采用。
+[blocker清单](../../BLOCKER_CLOSURE_NEXT.md) · [机器索引](../../TERMINAL_EVIDENCE.json) · [导入映射](IMPORT_MAPPING_SOURCE53.json) · [日志重组](ROOT_LOG_REASSEMBLY_SOURCE53.json) · [准确主job状态](SOURCE53_JOB_OBSERVATION.json) · [9cbd原README](../history-20261112/TERMINAL_README-9cbd.md)。
 
-## 历史原说明
-
-[f409 README](../history-20261112/TERMINAL_README-f409.md)、[f409完整索引](../history-20261112/TERMINAL_EVIDENCE-f409.json)与更早快照按原字节保留；其中“进行中／未推送／当前”属于各自当时观察。本页以上与机器索引是新状态。
-
-[本次发布树与字节独立核验](GIT_READBACK_EDAF_TERMINAL.json)：暂存提交161个变更路径均限于qualification，32个Git树节点及10份新文本完整字节已读回匹配。最终提交另加入该核验记录并更新索引；不代表新source测试通过。
+**12完整门OPEN；HOLD；owner_decision=null；all_blockers_closed=false。** 冻结B/C四宏均STOP，MEM registry UNKNOWN，原研究NoUpdate不改写。没有actor重派、手动Bazel、PR合并、部署或默认采用。

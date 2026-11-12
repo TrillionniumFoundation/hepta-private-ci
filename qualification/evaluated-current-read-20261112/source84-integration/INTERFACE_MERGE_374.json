@@ -1,0 +1,203 @@
+{
+  "schema": "hepta.374-qa-interface-adaptations.v1",
+  "ancestor": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "ours": "c7ba93274c0e6ccf764120defc642689df499273",
+  "theirs": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "status": "STATIC_POSTIMAGES_NOT_RUN_NOT_FMT",
+  "unchanged_overlap": [
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "post": "4a0a1b550ca3314c9d2ffd42c00e2c7c9759fb29",
+      "reason": "Both parent postimages identical."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "post": "fce2754635d6fb2eb0d8391bca3a353c8bcf2901",
+      "reason": "Both sides remove the same actual service caller from the public NextUse boundary; retain ours exact tuple rendering."
+    }
+  ],
+  "posts": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read_support_tests.rs",
+      "edit_base": "af56c313e7648fb2fe0fb2c09ae83e564b70ea41",
+      "bytes": 5026,
+      "sha": "5a92bb85cab6ca67262c9e4735864facd736e74c",
+      "sha256": "fb092f6b511bf3412e9a456ca1cba85535f5d1c8fae559711fbc71a697627cf8",
+      "reason": "Mechanics-only fixture follows the actual first/purpose/final slots; all existing wrong-owner, omitted-final, reselection, extra-slot and withdrawal assertions retained, plus omitted-purpose refusal.",
+      "edits": [
+        {
+          "before": "    for _ in 0..4 {\n        current.require(cell)?;\n    }",
+          "after": "    current.require(cell)?;"
+        },
+        {
+          "before": "OriginalPublishedReadPurpose::Selection => 10",
+          "after": "OriginalPublishedReadPurpose::Selection => 6"
+        },
+        {
+          "before": "OriginalPublishedReadPurpose::NextUse => 15",
+          "after": "OriginalPublishedReadPurpose::NextUse => 9"
+        },
+        {
+          "before": "for _ in 4..slots - 1",
+          "after": "for _ in 1..slots - 1"
+        },
+        {
+          "before": "    early.require(cell)?;\n",
+          "after": ""
+        },
+        {
+          "before": "purpose cannot precede the original first four slots",
+          "after": "purpose cannot precede the original first slot"
+        },
+        {
+          "before": "    anyhow::ensure!(early.finish().is_err());\n\n    let unfinished",
+          "after": "    anyhow::ensure!(early.finish().is_err());\n\n    let mut missing_purpose = OriginalPublishedReadCurrent::for_original_read(cell);\n    missing_purpose.require(cell)?;\n    anyhow::ensure!(\n        missing_purpose.require(cell).is_err(),\n        \"the native read cannot begin before its exact purpose\"\n    );\n    anyhow::ensure!(missing_purpose.finish().is_err());\n\n    let unfinished"
+        },
+        {
+          "before": "    for _ in 0..4 {\n        repeated.require(cell)?;\n    }",
+          "after": "    repeated.require(cell)?;"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_version_source_closure.py",
+      "edit_base": "6bde735c14e734dc33dd543c64f73502d9a22aea",
+      "bytes": 69865,
+      "sha": "bfe0760741ea951959655f583bfeef80f849e064",
+      "sha256": "59eb8cf16e1d1548758cf764f780b9993ffc95f457309b0878b78c5811e0ee06",
+      "reason": "Keep merged exact caller tuples; update exact private service function inventory for both the retained original-input helper and upstream Current wrapper. No inventory relaxation.",
+      "edits": [
+        {
+          "before": "                                                                'require_original_selection': 1,\n",
+          "after": "                                                                'require_original_selection': 1,\n                                                                'require_original_task_input': 1,\n"
+        },
+        {
+          "before": "                                                                'require_task_input_current': 1,\n",
+          "after": "                                                                'require_task_input_current': 1,\n                                                                'require_task_input_current_with_current': 1,\n"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "edit_base": "700cfedc590cf3e2f7b2d6bcf64680d763e4c1ea",
+      "bytes": 15846,
+      "sha": "34860892ea9b74935d4673afe9a63d5000e85677",
+      "sha256": "0cb96cf0880a34596fd12bf3723561878f070fa1abe016ee7c4740fd8f9cfb2a",
+      "reason": "Upstream bounded same-call Training proof changes the actual panel method; retain ours model-material real caller tuple and every rejection.",
+      "edits": [
+        {
+          "before": "\"let before = self.read_panel().await?\"",
+          "after": "\"let before = self.read_panel_with_training(&mut training).await?\""
+        },
+        {
+          "before": "\"let after = self.read_panel().await?\"",
+          "after": "\"let after = self.read_panel_with_training(&mut training).await?\""
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "edit_base": "f574a6e2b6f47e40beb187214190b215f44f2a2b",
+      "bytes": 28595,
+      "sha": "9de00bac3beab03cc52944032dc5202df7adccbd",
+      "sha256": "3fd07d32e3f56c48985cdbc8870670599fa0254b9bf4bac841e58e8e44324d59",
+      "reason": "Migrate each physical CURRENT rejection to the exact transaction and retained same-call ReadSet path; preserve upstream public-individual/unused-body rejections plus real Source-input helper.",
+      "edits": [
+        {
+          "before": "    def test_actual_source_and_cell_surround_each_read_and_five_cut_c_result(self):\n        for function, markers in (\n            (\"from_original_profile\", (\"owner.require_task_input_current()?\", \"cell.read_learning_selection(&coordinator)?\", \"owner.require_original_selection(&observed)?\", \"owner.context.binding(fresh)? != binding\")),\n            (\"require_task_input_current\", (\"self.cell.task.require_current()?\", \"self.require_original_task_input()?\")),\n            (\"require_original_task_input\", (\"let request = &self.context.prefix().request;\", \"source.require_original_input(&self.identity, input)?\")),\n            (\"read_original\", (\"self.cell.task.require_current()?\", \"self.require_original_task_input()?\", \"cell.read_learning_selection(&coordinator)?\", \"circuit_feature_task_digest_v1(\", \"(selection.clone(), selection, None)\", \"PublishedCircuitCellOwnerV1::read_learning_next_use_set(\", \"(selection, observation, Some(publication))\", \"cell.read_learning_selection(&coordinator)? != selection\", \"self.require_original_task_input()?;\\n        self.cell.task.require_current()?;\\n        Ok(Readback\")),\n            (\"response\", (\"self.context.require_request(&request, self.binding, request_id)?\", \"self.read_original()?\", \"self.context.binding(fresh)? != self.binding\")),\n        ):\n            for marker in markers:\n                self.rejects(SERVICE, function, marker)\n        self.rejects(SERVICE, \"require_original_selection\", \"&& self.context.selection()? != observed\", \"|| self.context.selection()? != observed\")\n        self.rejects_unused_body(SERVICE, \"read_original\")\n        self.rejects_unused_body(SERVICE, \"response\")\n",
+          "after": "    def test_actual_source_and_cell_surround_each_read_and_five_cut_c_result(self):\n        for function, markers in (\n            (\"from_original_profile\", (\"owner.require_task_input_current()?\", \"cell.read_learning_selection(&coordinator)?\", \"owner.require_original_selection(&observed)?\", \"owner.context.binding(fresh)? != binding\")),\n            (\"require_task_input_current\", (\"OriginalPublishedReadCurrent::individual(&self.cell)\", \"self.require_task_input_current_with_current(&mut current)\")),\n            (\"require_task_input_current_with_current\", (\"OriginalPublishedReadCurrent::require(current, &self.cell)?\", \"self.require_original_task_input()?\")),\n            (\"require_original_task_input\", (\"let request = &self.context.prefix().request;\", \"source.require_original_input(&self.identity, input)?\")),\n            (\"read_original\", (\"OriginalPublishedReadCurrent::require(&mut current, &self.cell)?\", \"self.require_original_task_input()?\", \"cell.read_learning_selection_with_current(&coordinator, &mut current)?\", \"circuit_feature_task_digest_v1(\", \"(selection.clone(), selection, None)\", \"PublishedCircuitCellOwnerV1::read_learning_next_use_set(\", \"(selection, observation, Some(publication))\", \"cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection\", \"self.require_original_task_input()?;\\n        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;\\n        OriginalPublishedReadCurrent::finish(current)?;\\n        Ok(Readback\")),\n            (\"response\", (\"self.context.require_request(&request, self.binding, request_id)?\", \"self.read_original()?\", \"self.context.binding(fresh)? != self.binding\")),\n        ):\n            for marker in markers:\n                self.rejects(SERVICE, function, marker)\n        self.rejects(SERVICE, \"require_original_selection\", \"&& self.context.selection()? != observed\", \"|| self.context.selection()? != observed\")\n        self.rejects(SERVICE, \"read_original\", \"OriginalPublishedReadCurrent::finish(current)?\")\n        self.rejects_unused_body(SERVICE, \"require_task_input_current\")\n        self.rejects_unused_body(SERVICE, \"require_task_input_current_with_current\")\n        self.rejects_unused_body(SERVICE, \"require_original_task_input\")\n        self.rejects_unused_body(SERVICE, \"read_original\")\n        self.rejects_unused_body(SERVICE, \"response\")\n"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "edit_base": "1acd8e8845e5b276481eab2d73251e0e2605580a",
+      "bytes": 19835,
+      "sha": "ac72d8a157447f8b6b5f260d3d061b4b46d1bc6e",
+      "sha256": "333f74ab5d548eed25c5df5630085b032fb0cdd8bdb1dd2e964c833574989710",
+      "reason": "Preserve all opaque/attenuation, source-tail and native ReadSet refusals; keep public individual wrapper, exact same-call Current forwarding and finish rejection.",
+      "edits": [
+        {
+          "before": "    def test_actual_task_source_selection_and_c_completion_precede_wire_response(self):\n        for marker in (\n            \"input.scope.run_id == request.source_run_id\",\n            \"input.scope.principal_digest.to_string() != request.principal_id.as_str()\",\n            \"source.require_original_input(&self.identity, input)?\",\n        ):\n            self.rejects(SERVICE, \"fn require_original_task_input(\", marker)\n        for marker in (\n            \"self.cell.task.require_current()?\",\n            \"self.require_original_task_input()?\",\n            \"cell.read_learning_selection(&coordinator)?\",\n            \"self.require_original_selection(&selection)?\",\n            \"(selection.clone(), selection, None)\",\n            \"wire::Mode::NextUse\",\n            \"PublishedCircuitCellOwnerV1::read_learning_next_use_set(\",\n            \"(selection, observation, Some(publication))\",\n            \"cell.read_learning_selection(&coordinator)? != selection\",\n            \"self.require_original_task_input()?;\\n        self.cell.task.require_current()?;\\n        Ok(Readback\",\n        ):\n            self.rejects(SERVICE, \"fn read_original(\", marker)\n        for marker in (\n            \"self.cell.task.require_current()?\",\n            \"self.require_original_task_input()?\",\n        ):\n            self.rejects(SERVICE, \"fn require_task_input_current(\", marker)\n        for marker in (\n            \"self.context\\n            .require_request(&request, self.binding, request_id)?\",\n            \"let read = self.read_original()?;\",\n            \"self.context.binding(fresh)? != self.binding\",\n            \"wire::OriginalRead::from_original(read)?\",\n            \"bytes.is_empty() || bytes.len() > 16_384\",\n        ):\n            self.rejects(SERVICE, \"fn response(\", marker)\n",
+          "after": "    def test_actual_task_source_selection_and_c_completion_precede_wire_response(self):\n        for marker in (\n            \"input.scope.run_id == request.source_run_id\",\n            \"input.scope.principal_digest.to_string() != request.principal_id.as_str()\",\n            \"source.require_original_input(&self.identity, input)?\",\n        ):\n            self.rejects(SERVICE, \"fn require_original_task_input(\", marker)\n        for marker in (\n            \"OriginalPublishedReadCurrent::require(&mut current, &self.cell)?\",\n            \"self.require_original_task_input()?\",\n            \"cell.read_learning_selection_with_current(&coordinator, &mut current)?\",\n            \"self.require_original_selection(&selection)?\",\n            \"(selection.clone(), selection, None)\",\n            \"wire::Mode::NextUse\",\n            \"PublishedCircuitCellOwnerV1::read_learning_next_use_set(\",\n            \"(selection, observation, Some(publication))\",\n            \"cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection\",\n            \"self.require_original_task_input()?;\\n        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;\\n        OriginalPublishedReadCurrent::finish(current)?;\\n        Ok(Readback\",\n        ):\n            self.rejects(SERVICE, \"fn read_original(\", marker)\n        for marker in (\n            \"OriginalPublishedReadCurrent::individual(&self.cell)\",\n            \"self.require_task_input_current_with_current(&mut current)\",\n        ):\n            self.rejects(SERVICE, \"fn require_task_input_current(\", marker)\n        for marker in (\n            \"OriginalPublishedReadCurrent::require(current, &self.cell)?\",\n            \"self.require_original_task_input()?\",\n        ):\n            self.rejects(SERVICE, \"fn require_task_input_current_with_current(\", marker)\n        self.rejects(SERVICE, \"fn read_original(\", \"OriginalPublishedReadCurrent::finish(current)?\")\n        for marker in (\n            \"self.context\\n            .require_request(&request, self.binding, request_id)?\",\n            \"let read = self.read_original()?;\",\n            \"self.context.binding(fresh)? != self.binding\",\n            \"wire::OriginalRead::from_original(read)?\",\n            \"bytes.is_empty() || bytes.len() > 16_384\",\n        ):\n            self.rejects(SERVICE, \"fn response(\", marker)\n"
+        },
+        {
+          "before": "    def test_same_call_set_keeps_native_source_and_cell_guards_before_consumption(self):\n        self.rejects(\n            CURRENT, \"fn read_learning_next_use<\",\n            \".read_learning_next_use_set(coordinator, source, identity)?\",\n        )\n        for marker in (\n            \"coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)\",\n            \"self.read_learning_selection(&prefix)?\",\n            \"actual_selection != selection.observation\",\n            \"source\\n            .read_run_publication(\",\n            \"self.committed(&before)?\",\n            \"receipt.bundle_digest != candidate_bundle\",\n            \"previous.source.input().scope.run_id != coordinator.snapshot().request.source_run_id\",\n            \"if source\\n            .read_run_publication(\",\n            \"!= before\",\n            \"self.task.require_current()?\",\n            \"source_publication: before.publication_digest()\",\n        ):\n            self.rejects(CURRENT, \"fn read_learning_next_use_set(\", marker)\n        for marker in (\"self.selection\", \"self.observation\", \"self.source_publication\"):\n            self.rejects(CURRENT, \"fn into_parts(\", marker)\n",
+          "after": "    def test_same_call_set_keeps_native_source_and_cell_guards_before_consumption(self):\n        self.rejects(\n            CURRENT, \"fn read_learning_next_use<\",\n            \"self.read_learning_next_use_with_current(coordinator, source, identity, &mut current)\",\n        )\n        self.rejects(\n            CURRENT, \"fn read_learning_next_use_with_current<\",\n            \".read_learning_next_use_set(coordinator, source, identity, current)?\",\n        )\n        for marker in (\n            \"coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)\",\n            \"self.read_learning_selection_with_current(&prefix, current)?\",\n            \"actual_selection != selection.observation\",\n            \"source\\n            .read_run_publication(\",\n            \"PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?\",\n            \"receipt.bundle_digest != candidate_bundle\",\n            \"previous.source.input().scope.run_id != coordinator.snapshot().request.source_run_id\",\n            \"if source\\n            .read_run_publication(\",\n            \"!= before\",\n            \"OriginalPublishedReadCurrent::require(current, self)?\",\n            \"source_publication: before.publication_digest()\",\n        ):\n            self.rejects(CURRENT, \"fn read_learning_next_use_set(\", marker)\n        for marker in (\"self.selection\", \"self.observation\", \"self.source_publication\"):\n            self.rejects(CURRENT, \"fn into_parts(\", marker)\n"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "edit_base": "0c21eebe62b86c858453f69b2ed10c535161e400",
+      "bytes": 12685,
+      "sha": "fc413cecd9165679090f5b866a7b7c698e8c46d5",
+      "sha256": "267df2822bd85f105c6d570a9c31b0e216acb9b992b951dcd2ac4fd73f1d276e",
+      "reason": "Additional ours-only QA interface adaptation to the same native guard sites; all method names and rejection cases retained.",
+      "edits": [
+        {
+          "before": "        for marker in (\"coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)\", \"prefix.head_digest = selection.predecessor\", \"self.read_learning_selection(&prefix)?\", \"actual_selection != selection.observation\", \"source\\n            .read_run_publication(\", \"self.committed(&before)?\", \"receipt.bundle_digest != candidate_bundle\", \"self.task.require_current()?\"):",
+          "after": "        for marker in (\"coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)\", \"prefix.head_digest = selection.predecessor\", \"self.read_learning_selection_with_current(&prefix, current)?\", \"actual_selection != selection.observation\", \"source\\n            .read_run_publication(\", \"PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?\", \"receipt.bundle_digest != candidate_bundle\", \"OriginalPublishedReadCurrent::require(current, self)?\"):"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_current_transaction_source_closure.py",
+      "edit_base": "80c1268c5fdfdbac2506bc648a163483454f00f6",
+      "bytes": 17974,
+      "sha": "219cf87fa5da3110aea295c8a792d599cb77b6c8",
+      "sha256": "6fead02b5607ee1a913c50a1c915388b73052cfa81bda58ada345faf02ccbb0c",
+      "reason": "All upstream test methods retained; exact real six/nine slots, first-slot purpose, private same-call ReadSet delegation and real Source-input endpoints replace old duplicate physical-read shape. Additional same-call object consumption and missing-purpose refusals.",
+      "edits": [
+        {
+          "before": "    \"circuit_feature_read_current_next_use\": (SERVICE,),",
+          "after": "    \"circuit_feature_read_current_next_use\": (),\n    \"circuit_feature_original_next_use_read_set\": (SERVICE,),"
+        },
+        {
+          "before": "(\"Self::Selection => 10\", \"Self::Selection => 9\")",
+          "after": "(\"Self::Selection => 6\", \"Self::Selection => 5\")"
+        },
+        {
+          "before": "(\"Self::NextUse => 15\", \"Self::NextUse => 14\")",
+          "after": "(\"Self::NextUse => 9\", \"Self::NextUse => 8\")"
+        },
+        {
+          "before": "(\"Self::NextUse => 15\", \"Self::NextUse => 16\")",
+          "after": "(\"Self::NextUse => 9\", \"Self::NextUse => 10\")"
+        },
+        {
+          "before": "\"State::BeforePurpose { slots: 4 }\"",
+          "after": "\"State::BeforePurpose { slots: 1 }\""
+        },
+        {
+          "before": "\"self.state = State::Reading { purpose, slots: 4 }\"",
+          "after": "\"self.state = State::Reading { purpose, slots: 1 }\""
+        },
+        {
+          "before": "\"if slots >= 4\"",
+          "after": "\"if slots >= 1\""
+        },
+        {
+          "before": "\"if !(4..purpose.slots()).contains(&slots)\"",
+          "after": "\"if !(1..purpose.slots()).contains(&slots)\""
+        },
+        {
+          "before": "    def test_actual_mode_fixes_one_call_and_final_source_precedes_completion(self):\n        for marker in (\n            \"OriginalPublishedReadCurrent::for_original_read(&self.cell)\",\n            \"self.require_task_input_current_with_current(&mut current)?\",\n            \"cell.read_learning_selection_with_current(&coordinator, &mut current)?\",\n            \"self.require_original_selection(&selection)?\",\n            \"let mode = self.context.mode()?;\",\n            \"wire::Mode::Selection => OriginalPublishedReadPurpose::Selection\",\n            \"wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse\",\n            \"OriginalPublishedReadCurrent::finish(current)?\",\n        ):\n            with self.subTest(marker=marker):\n                self.mutate(SERVICE, \"fn read_original(\", marker)\n        # Each before/after input read remains in its original position.\n        for occurrence in (1, 2):\n            self.mutate(SERVICE, \"fn read_original(\",\n                        \"self.require_task_input_current_with_current(&mut current)?\",\n                        occurrence=occurrence)\n        for marker in (\"source.require_original_input(&self.identity, input)?\",\n                       \"input.scope.run_id == request.source_run_id\"):\n            self.mutate(SERVICE, \"fn require_task_input_current_with_current(\", marker)\n        for occurrence in (0, 1):\n            self.mutate(SERVICE, \"fn require_task_input_current_with_current(\",\n                        \"OriginalPublishedReadCurrent::require(current, &self.cell)?\",\n                        occurrence=occurrence)\n",
+          "after": "    def test_actual_mode_fixes_one_call_and_final_source_precedes_completion(self):\n        for marker in (\n            \"OriginalPublishedReadCurrent::for_original_read(&self.cell)\",\n            \"self.require_original_selection(&selection)?\",\n            \"let mode = self.context.mode()?;\",\n            \"wire::Mode::Selection => OriginalPublishedReadPurpose::Selection\",\n            \"wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse\",\n            \"PublishedCircuitCellOwnerV1::read_learning_next_use_set(\",\n            \"OriginalPublishedReadCurrent::finish(current)?\",\n        ):\n            with self.subTest(marker=marker):\n                self.mutate(SERVICE, \"fn read_original(\", marker)\n        # Each original input and CURRENT endpoint remains at its real position.\n        for marker in (\n            \"self.require_original_task_input()?\",\n            \"OriginalPublishedReadCurrent::require(&mut current, &self.cell)?\",\n            \"cell.read_learning_selection_with_current(&coordinator, &mut current)?\",\n        ):\n            for occurrence in (0, 1):\n                self.mutate(SERVICE, \"fn read_original(\", marker, occurrence=occurrence)\n        for marker in (\"source.require_original_input(&self.identity, input)?\",\n                       \"input.scope.run_id == request.source_run_id\"):\n            self.mutate(SERVICE, \"fn require_original_task_input(\", marker)\n        self.mutate(SERVICE, \"fn require_task_input_current_with_current(\",\n                    \"self.require_original_task_input()?\")\n        for occurrence in (0, 1):\n            self.mutate(SERVICE, \"fn require_task_input_current_with_current(\",\n                        \"OriginalPublishedReadCurrent::require(current, &self.cell)?\",\n                        occurrence=occurrence)\n\n"
+        },
+        {
+          "before": "    def test_all_version_source_cell_and_checkpoint_reads_remain_real(self):\n        for path, function, marker in (\n            (LEARNING, \"fn read_learning_selection_with_current(\",\n             \"LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())\"),\n            (LEARNING, \"fn read_learning_selection_with_current(\",\n             \"self.task.0.original.lock().map_err(invalid)?.selection(\"),\n            (LEARNING, \"fn read_learning_next_use_with_current<\",\n             \"self.read_learning_selection_with_current(&prefix, current)?\"),\n            (LEARNING, \"fn read_learning_next_use_with_current<\",\n             \"PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?\"),\n            (LEARNING, \"fn read_learning_next_use_with_current<\",\n             \"if actual_selection != selection.observation\"),\n            (LEARNING, \"fn read_learning_next_use_with_current<\",\n             \"receipt.bundle_digest != candidate_bundle\"),\n            (OWNER, \"fn committed_with_current(\", \"self.original.lock().map_err(invalid)?\"),\n            (OWNER, \"fn committed_with_current(\", \".pending_inference(&input.scope)\"),\n            (OWNER, \"fn committed_with_current(\", \".lookup(&input.scope, &input.operation_id, digest)\"),\n            (OWNER, \"fn committed_with_current(\", \"source.require_decision(&decision)\"),\n            (OWNER, \"fn committed_with_current(\", \"owner.snapshot(&input.scope)\"),\n            (OWNER, \"fn committed_with_current(\", \"decision.checkpoint_after != source.checkpoint_digest()\"),\n        ):\n            with self.subTest(function=function, marker=marker):\n                self.mutate(path, function, marker)\n        for occurrence in (0, 1):\n            self.mutate(LEARNING, \"fn read_learning_next_use_with_current<\",\n                        \".read_run_publication(identity, &self.task.source().scope.run_id)\",\n                        occurrence=occurrence)\n            self.mutate(SERVICE, \"fn read_original(\",\n                        \".read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?\",\n                        occurrence=occurrence)\n",
+          "after": "    def test_all_version_source_cell_and_checkpoint_reads_remain_real(self):\n        for path, function, marker in (\n            (LEARNING, \"fn read_learning_selection_with_current(\",\n             \"LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())\"),\n            (LEARNING, \"fn read_learning_selection_with_current(\",\n             \"self.task.0.original.lock().map_err(invalid)?.selection(\"),\n            (LEARNING, \"fn read_learning_next_use_set(\",\n             \"self.read_learning_selection_with_current(&prefix, current)?\"),\n            (LEARNING, \"fn read_learning_next_use_set(\",\n             \"PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?\"),\n            (LEARNING, \"fn read_learning_next_use_set(\",\n             \"if actual_selection != selection.observation\"),\n            (LEARNING, \"fn read_learning_next_use_set(\",\n             \"receipt.bundle_digest != candidate_bundle\"),\n            (OWNER, \"fn committed_with_current(\", \"self.original.lock().map_err(invalid)?\"),\n            (OWNER, \"fn committed_with_current(\", \".pending_inference(&input.scope)\"),\n            (OWNER, \"fn committed_with_current(\", \".lookup(&input.scope, &input.operation_id, digest)\"),\n            (OWNER, \"fn committed_with_current(\", \"source.require_decision(&decision)\"),\n            (OWNER, \"fn committed_with_current(\", \"owner.snapshot(&input.scope)\"),\n            (OWNER, \"fn committed_with_current(\", \"decision.checkpoint_after != source.checkpoint_digest()\"),\n        ):\n            with self.subTest(function=function, marker=marker):\n                self.mutate(path, function, marker)\n        for occurrence in (0, 1):\n            self.mutate(LEARNING, \"fn read_learning_next_use_set(\",\n                        \".read_run_publication(identity, &self.task.source().scope.run_id)\",\n                        occurrence=occurrence)\n        # Consume the native pair's owned results within this call. The service\n        # keeps its separate real Source-input endpoints; it never imports a\n        # cached publication from a caller or reconnects a replacement owner.\n        for marker in (\"selection: selection_observation\", \"observation: result\",\n                       \"source_publication: before.publication_digest()\"):\n            self.mutate(LEARNING, \"fn read_learning_next_use_set(\", marker)\n        for marker in (\"self.selection\", \"self.observation\", \"self.source_publication\"):\n            self.mutate(LEARNING, \"fn into_parts(\", marker)\n        for marker in (\n            \".read_learning_next_use_set(coordinator, source, identity, current)?\",\n            \".into_parts()\",\n            \"Ok(observation)\",\n        ):\n            self.mutate(LEARNING, \"fn read_learning_next_use_with_current<\", marker)\n"
+        },
+        {
+          "before": "            (SERVICE, \"fn require_task_input_current_with_current(\",\n             \"source.require_original_input(&self.identity, input)?;\"),",
+          "after": "            (SERVICE, \"fn require_original_task_input(\",\n             \"source.require_original_input(&self.identity, input)?;\"),"
+        },
+        {
+          "before": "                       \"complete.current.require(cell).is_err()\", \"complete.current.finish().is_err()\"):",
+          "after": "                       \"complete.current.require(cell).is_err()\", \"complete.current.finish().is_err()\",\n                       \"missing_purpose.require(cell).is_err()\", \"missing_purpose.finish().is_err()\"):"
+        }
+      ]
+    }
+  ]
+}

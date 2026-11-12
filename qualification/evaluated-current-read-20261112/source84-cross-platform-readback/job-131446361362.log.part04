@@ -1,0 +1,208 @@
+2026-11-12T20:08:22.6592620Z test protocol::tests::checkpoint_publication_rejects_forged_owner_summary ... ok
+2026-11-12T20:08:22.6595440Z test qualification::tests::config_ablations_remove_only_the_named_mechanism ... ok
+2026-11-12T20:08:22.6597660Z test qualification::tests::eligibility_and_modulator_ablations_are_explicit_and_deterministic ... ok
+2026-11-12T20:08:22.6599900Z test qualification::tests::resource_summary_rejects_mixed_host_profiles ... ok
+2026-11-12T20:08:22.6603080Z test qualification::tests::supplied_resource_samples_have_deterministic_percentiles_without_claiming_authority ... ok
+2026-11-12T20:08:22.6607180Z test runtime::tests::canonical_runtime_commits_model_bound_calibrated_signal_and_recovers ... ok
+2026-11-12T20:08:22.6615080Z test runtime::tests::collapse_or_ood_forces_abstention_without_granting_authority ... ok
+2026-11-12T20:08:22.6617290Z test runtime::tests::deletion_rebuild_starts_fresh_successor_generation_without_old_state ... ok
+2026-11-12T20:08:22.6620620Z test runtime::tests::expired_calibration_advances_state_but_forces_fail_closed_abstention ... ok
+2026-11-12T20:08:22.6622500Z test runtime::tests::model_identity_drift_rejects_before_checkpoint_mutation ... ok
+2026-11-12T20:08:22.6624400Z test runtime::tests::runtime_rollover_and_chain_recovery_preserve_latest_witness ... ok
+2026-11-12T20:08:22.6626670Z test runtime::tests::witness_failure_after_commit_reconciles_without_reinvoking_model ... ok
+2026-11-12T20:08:22.6634170Z test sparse::body_scope_tests::reopened_checkpoint_retains_body_scope_and_rejects_before_write ... ok
+2026-11-12T20:08:22.6640450Z test sparse::body_scope_tests::successor_rejects_body_scope_drift ... ok
+2026-11-12T20:08:22.6656470Z test sparse::tests::changed_config_is_rejected ... ok
+2026-11-12T20:08:22.6689750Z test sparse::tests::changed_scope_or_objective_is_rejected ... ok
+2026-11-12T20:08:22.6692090Z test sparse::tests::clock_regression_is_rejected ... ok
+2026-11-12T20:08:22.6694850Z test sparse::tests::damaged_checkpoint_is_rejected ... ok
+2026-11-12T20:08:22.6697860Z test sparse::tests::duplicate_edges_and_row_norm_overflow_are_rejected ... ok
+2026-11-12T20:08:22.6699420Z test sparse::tests::edge_order_does_not_change_config_or_output ... ok
+2026-11-12T20:08:22.6701000Z test sparse::tests::invalid_dimensions_and_extreme_top_k_fail_without_overflow ... ok
+2026-11-12T20:08:22.6703920Z test sparse::tests::invalid_inhibition_is_rejected ... ok
+2026-11-12T20:08:22.6705480Z test sparse::tests::lateral_inhibition_changes_winner ... ok
+2026-11-12T20:08:22.6712380Z test journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence ... ok
+2026-11-12T20:08:22.6714530Z test sparse::tests::missing_digest_invalid_width_and_unbounded_input_are_rejected ... ok
+2026-11-12T20:08:22.6724410Z test sparse::tests::replay_or_skipped_sequence_is_rejected ... ok
+2026-11-12T20:08:22.6726020Z test sparse::tests::saturation_and_eligibility_l1_projection_are_counted ... ok
+2026-11-12T20:08:22.6727640Z test sparse::tests::signed_multiply_rounds_half_to_even ... ok
+2026-11-12T20:08:22.6729280Z test sparse::tests::silent_input_has_zero_activation_with_nonnegative_thresholds ... ok
+2026-11-12T20:08:22.6738090Z test sparse::tests::supplied_numeric_values_are_bound_not_just_caller_digest ... ok
+2026-11-12T20:08:22.6743400Z test sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable ... ok
+2026-11-12T20:08:22.6745650Z test sparse::tests::ticks_advance_sequence_without_changing_artifact_generation ... ok
+2026-11-12T20:08:22.6748610Z test sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact ... ok
+2026-11-12T20:08:22.6750030Z test tests::generation_must_advance ... ok
+2026-11-12T20:08:22.6751320Z test tests::model_drift_is_rejected ... ok
+2026-11-12T20:08:22.6752620Z test tests::step_is_deterministic_and_authority_free ... ok
+2026-11-12T20:08:22.6755850Z test tests::width_drift_is_rejected ... ok
+2026-11-12T20:08:22.6760010Z test witness::tests::physical_current::witness_current_physical_corruption_fences_reads_and_cas_after_restore ... ok
+2026-11-12T20:08:22.6768400Z test witness::tests::physical_current::witness_current_rehashed_history_cannot_preserve_cached_frontier ... ok
+2026-11-12T20:08:22.6777420Z test witness::tests::physical_current::witness_current_shared_reads_preserve_original_cursor_and_lock ... ok
+2026-11-12T20:08:22.6779550Z test witness::tests::witness_capacity_and_independent_writer_are_bounded ... ok
+2026-11-12T20:08:22.6782020Z test witness::tests::witness_history_survives_reopen_and_fences_stale_cas ... ok
+2026-11-12T20:08:22.6783900Z test witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history ... ok
+2026-11-12T20:08:22.6789550Z test sparse::tests::long_replay_remains_bounded_and_immutable ... ok
+2026-11-12T20:08:22.6792120Z test journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor ... ok
+2026-11-12T20:08:22.6795380Z test cell_generation_journal::tests::task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement has been running for over 60 seconds
+2026-11-12T20:08:22.6803980Z -- Test timed out at 2026-11-12 20:04:20 UTC --
+2026-11-12T20:08:22.6806180Z ================================================================================
+2026-11-12T20:08:23.2288810Z [22,292 / 22,305] 407 / 584 tests, 5 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test; 417s remote-cache, darwin-sandbox ... (13 actions, 11 running)
+2026-11-12T20:08:23.9503830Z FAIL: //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test/test.log)
+2026-11-12T20:08:24.0497930Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test:
+2026-11-12T20:08:24.1502070Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test:
+2026-11-12T20:08:24.2505610Z 
+2026-11-12T20:08:24.3510620Z running 2 tests
+2026-11-12T20:08:24.4514710Z test five_real_agentd_processes_roll_one_agent_without_stopping_peers has been running for over 60 seconds
+2026-11-12T20:08:24.5515950Z test six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated has been running for over 60 seconds
+2026-11-12T20:08:24.6519030Z test six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated ... FAILED
+2026-11-12T20:08:24.7525140Z test five_real_agentd_processes_roll_one_agent_without_stopping_peers ... ok
+2026-11-12T20:08:24.8527010Z 
+2026-11-12T20:08:24.9215800Z failures:
+2026-11-12T20:08:24.9296180Z 
+2026-11-12T20:08:24.9312300Z ---- six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated stdout ----
+2026-11-12T20:08:24.9352580Z FLEET_STAGE install agent=0
+2026-11-12T20:08:24.9362770Z FLEET_STAGE start agent=0
+2026-11-12T20:08:24.9389700Z FLEET_STAGE install agent=1
+2026-11-12T20:08:24.9447600Z FLEET_STAGE start agent=1
+2026-11-12T20:08:24.9487510Z FLEET_STAGE ready six-agent=0
+2026-11-12T20:08:24.9527030Z FLEET_STAGE bootstrap agent=0 elapsed=7.904353048s
+2026-11-12T20:08:24.9531850Z FLEET_STAGE ready six-agent=1
+2026-11-12T20:08:24.9534150Z FLEET_STAGE bootstrap agent=1 elapsed=8.358918479s
+2026-11-12T20:08:24.9537640Z FLEET_STAGE install agent=2
+2026-11-12T20:08:24.9539730Z FLEET_STAGE start agent=2
+2026-11-12T20:08:24.9541670Z FLEET_STAGE install agent=3
+2026-11-12T20:08:24.9543630Z FLEET_STAGE start agent=3
+2026-11-12T20:08:24.9545610Z FLEET_STAGE ready six-agent=2
+2026-11-12T20:08:24.9547700Z FLEET_STAGE bootstrap agent=2 elapsed=20.43883928s
+2026-11-12T20:08:24.9549920Z FLEET_STAGE ready six-agent=3
+2026-11-12T20:08:24.9552060Z FLEET_STAGE bootstrap agent=3 elapsed=22.058845828s
+2026-11-12T20:08:24.9554290Z FLEET_STAGE install agent=4
+2026-11-12T20:08:24.9556280Z FLEET_STAGE start agent=4
+2026-11-12T20:08:24.9558270Z FLEET_STAGE install agent=5
+2026-11-12T20:08:24.9564310Z FLEET_STAGE start agent=5
+2026-11-12T20:08:24.9568210Z FLEET_STAGE ready six-agent=4
+2026-11-12T20:08:24.9572410Z FLEET_STAGE bootstrap agent=4 elapsed=47.262405234s
+2026-11-12T20:08:24.9574760Z FLEET_STAGE ready six-agent=5
+2026-11-12T20:08:24.9576700Z FLEET_STAGE bootstrap agent=5 elapsed=49.838703084s
+2026-11-12T20:08:24.9580900Z FLEET_TIMING phase=bootstrap_complete elapsed=53.154541695s
+2026-11-12T20:08:24.9583540Z FLEET_TIMING phase=stop_requested elapsed=53.216643229s
+2026-11-12T20:08:24.9586110Z FLEET_STAGE await-inactive agent=019153a4-3088-7e03-a56a-9b1964f75dd7
+2026-11-12T20:08:24.9603060Z FLEET_STOP_STATE Some(AgentSupervisorSnapshot { active: true, healthy: true, runtime_generation: Some(3), spawn_generation: Some(1), process_system_id: Some(20352), active_release: Some("six-initial-0"), previous_release: None, release_change_pending: false, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: StopRequested }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 1, runtime_phase: Some(Stopping), runtime_release: Some("six-initial-0"), runtime_incarnation: Some("unix-pid-20352-generation-1"), runtime_fenced: false, release_change: None, has_last_command: true })
+2026-11-12T20:08:24.9622210Z FLEET_TIMING phase=target_inactive elapsed=58.189084624s
+2026-11-12T20:08:24.9624930Z FLEET_TIMING phase=peer_health_after_stop elapsed=58.782028487s
+2026-11-12T20:08:24.9628610Z FLEET_TIMING peer_threads_complete count=2
+2026-11-12T20:08:24.9631630Z FLEET_TIMING peer_threads_complete count=4
+2026-11-12T20:08:24.9633520Z FLEET_TIMING peer_threads_complete count=5
+2026-11-12T20:08:24.9637080Z FLEET_TIMING phase=peer_threads_created elapsed=82.625370327s
+2026-11-12T20:08:24.9640580Z FLEET_TIMING phase=peer_tasks_created elapsed=84.059268759s
+2026-11-12T20:08:24.9644040Z FLEET_TIMING phase=peer_automation_materialized elapsed=94.936620963s
+2026-11-12T20:08:24.9647750Z FLEET_TIMING phase=peer_model_requests_observed elapsed=95.024338143s
+2026-11-12T20:08:24.9651690Z FLEET_STAGE await-release agent=019153a4-3088-7e03-a56a-9b1964f75dd7 target=six-initial-0
+2026-11-12T20:08:24.9678170Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: false, healthy: false, runtime_generation: None, spawn_generation: None, process_system_id: None, active_release: Some("six-initial-0"), previous_release: None, release_change_pending: false, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 4, kind: RestartQueued }], logs: [], control_revision: 0, restart_pending: true, restart_attempt: 1, release_state_generation: 1, runtime_phase: None, runtime_release: None, runtime_incarnation: None, runtime_fenced: false, release_change: None, has_last_command: true })
+2026-11-12T20:08:24.9714800Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(5), spawn_generation: Some(5), process_system_id: Some(22258), active_release: Some("six-initial-0"), previous_release: None, release_change_pending: false, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 4, kind: RestartQueued }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 1, release_state_generation: 1, runtime_phase: Some(AwaitingHealth), runtime_release: Some("six-initial-0"), runtime_incarnation: Some("unix-pid-22258-generation-5"), runtime_fenced: false, release_change: None, has_last_command: true })
+2026-11-12T20:08:24.9734620Z FLEET_TIMING phase=target_restarted elapsed=109.481415516s
+2026-11-12T20:08:24.9738480Z FLEET_STAGE await-release agent=019153a4-3088-7e03-a56a-9b1964f75ddc target=six-agent-5-v2
+2026-11-12T20:08:24.9760050Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(3), spawn_generation: Some(1), process_system_id: Some(20920), active_release: Some("six-initial-5"), previous_release: None, release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 3, kind: StopRequested }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 1, runtime_phase: Some(Stopping), runtime_release: Some("six-initial-5"), runtime_incarnation: Some("unix-pid-20920-generation-1"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: "six-initial-5", target_release: "six-agent-5-v2", prior_previous_release: None, phase: WaitingForTargetExit, explicit_rollback: false }), has_last_command: true })
+2026-11-12T20:08:24.9817410Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(5), spawn_generation: Some(5), process_system_id: Some(22970), active_release: Some("six-agent-5-v2"), previous_release: None, release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 1, runtime_phase: Some(AwaitingHealth), runtime_release: Some("six-agent-5-v2"), runtime_incarnation: Some("unix-pid-22970-generation-5"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: "six-initial-5", target_release: "six-agent-5-v2", prior_previous_release: None, phase: TargetStarting, explicit_rollback: false }), has_last_command: true })
+2026-11-12T20:08:24.9863890Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: true, runtime_generation: Some(6), spawn_generation: Some(5), process_system_id: Some(22970), active_release: Some("six-agent-5-v2"), previous_release: Some("six-initial-5"), release_change_pending: false, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: "six-initial-5", target: "six-agent-5-v2" } }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(Running), runtime_release: Some("six-agent-5-v2"), runtime_incarnation: Some("unix-pid-22970-generation-5"), runtime_fenced: false, release_change: None, has_last_command: true })
+2026-11-12T20:08:24.9921300Z FLEET_STAGE await-release agent=019153a4-3088-7e03-a56a-9b1964f75ddc target=six-initial-5
+2026-11-12T20:08:24.9963320Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(7), spawn_generation: Some(5), process_system_id: Some(22970), active_release: Some("six-agent-5-v2"), previous_release: Some("six-initial-5"), release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 7, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 7, kind: DrainRequested }, SupervisorEvent { generation: 7, kind: ExplicitRollbackQueued { previous: "six-agent-5-v2", target: "six-initial-5" } }, SupervisorEvent { generation: 7, kind: StopRequested }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(Stopping), runtime_release: Some("six-agent-5-v2"), runtime_incarnation: Some("unix-pid-22970-generation-5"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: "six-agent-5-v2", target_release: "six-initial-5", prior_previous_release: Some("six-initial-5"), phase: WaitingForTargetExit, explicit_rollback: true }), has_last_command: true })
+2026-11-12T20:08:25.0031410Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(9), spawn_generation: Some(9), process_system_id: Some(23447), active_release: Some("six-initial-5"), previous_release: Some("six-initial-5"), release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 7, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 7, kind: DrainRequested }, SupervisorEvent { generation: 7, kind: ExplicitRollbackQueued { previous: "six-agent-5-v2", target: "six-initial-5" } }, SupervisorEvent { generation: 7, kind: StopRequested }, SupervisorEvent { generation: 8, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 8, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 9, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 9, kind: Spawned }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(AwaitingHealth), runtime_release: Some("six-initial-5"), runtime_incarnation: Some("unix-pid-23447-generation-9"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: "six-agent-5-v2", target_release: "six-initial-5", prior_previous_release: Some("six-initial-5"), phase: TargetStarting, explicit_rollback: true }), has_last_command: true })
+2026-11-12T20:08:25.0090830Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(9), spawn_generation: Some(9), process_system_id: Some(23447), active_release: Some("six-initial-5"), previous_release: Some("six-initial-5"), release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: "six-initial-5", target: "six-agent-5-v2" } }, SupervisorEvent { generation: 7, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 7, kind: DrainRequested }, SupervisorEvent { generation: 7, kind: ExplicitRollbackQueued { previous: "six-agent-5-v2", target: "six-initial-5" } }, SupervisorEvent { generation: 7, kind: StopRequested }, SupervisorEvent { generation: 8, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 8, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 9, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 9, kind: Spawned }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(AwaitingHealth), runtime_release: Some("six-initial-5"), runtime_incarnation: Some("unix-pid-23447-generation-9"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: "six-agent-5-v2", target_release: "six-initial-5", prior_previous_release: Some("six-initial-5"), phase: TargetStarting, explicit_rollback: true }), has_last_command: true })
+2026-11-12T20:08:25.0118560Z Error: 019153a4-3088-7e03-a56a-9b1964f75dda is not healthy at final boundary
+2026-11-12T20:08:25.0119800Z 
+2026-11-12T20:08:25.0119810Z 
+2026-11-12T20:08:25.0120080Z failures:
+2026-11-12T20:08:25.0120870Z     six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated
+2026-11-12T20:08:25.0121660Z 
+2026-11-12T20:08:25.0122610Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 154.60s
+2026-11-12T20:08:25.0123830Z 
+2026-11-12T20:08:25.0124190Z ================================================================================
+2026-11-12T20:08:25.1131850Z [22,293 / 22,305] 408 / 584 tests, 6 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test; 419s remote-cache, darwin-sandbox ... (12 actions running)
+2026-11-12T20:08:35.0848190Z [22,293 / 22,305] 408 / 584 tests, 6 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test; 429s remote-cache, darwin-sandbox ... (12 actions running)
+2026-11-12T20:08:35.8665790Z FAIL: //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-cognitive-product-qualification-test/test.log)
+2026-11-12T20:08:35.8773480Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test:
+2026-11-12T20:08:35.8802510Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test:
+2026-11-12T20:08:35.8838430Z 
+2026-11-12T20:08:35.8858810Z running 13 tests
+2026-11-12T20:08:35.8870720Z test cognitive_store_unavailable_fails_closed_before_provider ... ok
+2026-11-12T20:08:35.8877780Z test five_real_agents_survive_one_automation_store_failure_without_peer_stall ... ok
+2026-11-12T20:08:35.9270610Z test five_running_agents_share_only_with_the_explicit_consumer ... FAILED
+2026-11-12T20:08:35.9297190Z test real_agentd_external_gpt53_spark_read_only_smoke ... ignored, set HEPTA_EXTERNAL_CODEX_AUTH_JSON to run the bounded GPT-5.3 Spark provider smoke
+2026-11-12T20:08:35.9772050Z test real_agentd_final_use_revalidation_rejects_concurrent_tombstone ... ok
+2026-11-12T20:08:35.9788690Z test real_agentd_local_memory_review_hides_host_tombstone_after_reopen ... ignored, qualification profile runs the separate bounded cognitive-write E2E
+2026-11-12T20:08:36.0100040Z test real_agentd_local_memory_review_is_read_only_and_replayable ... ignored, qualification profile runs the separate bounded cognitive-write E2E
+2026-11-12T20:08:36.0129660Z test real_agentd_loopback_provider_read_only_smoke ... ignored, set HEPTA_LOCAL_PROVIDER_BASE_URL and HEPTA_LOCAL_PROVIDER_MODEL for a loopback model smoke
+2026-11-12T20:08:36.0420520Z test real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends ... ok
+2026-11-12T20:08:36.0456900Z test running_consumer_observes_owner_control_grant_and_revoke_without_restart ... ok
+2026-11-12T20:08:36.0472250Z test runtime_automation_store_failure_does_not_end_real_agentd_or_normal_turns ... ok
+2026-11-12T20:08:36.0490890Z test two_real_agentd_app_servers_never_cross_recall ... ok
+2026-11-12T20:08:36.0495460Z test unavailable_automation_store_keeps_real_agentd_and_app_server_ready ... ok
+2026-11-12T20:08:36.0498900Z 
+2026-11-12T20:08:36.0500710Z failures:
+2026-11-12T20:08:36.0502090Z 
+2026-11-12T20:08:36.0504440Z ---- five_running_agents_share_only_with_the_explicit_consumer stdout ----
+2026-11-12T20:08:36.0507790Z FLEET_STAGE federation bootstrap agent=018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12 elapsed=15.441465501s
+2026-11-12T20:08:36.0512880Z FLEET_STAGE federation bootstrap agent=019153a4-3088-7e03-a56a-9b1964f75dd3 elapsed=21.839546688s
+2026-11-12T20:08:36.0517530Z FLEET_STAGE federation bootstrap agent=019153a4-3088-7e03-a56a-9b1964f75dd4 elapsed=37.59413906s
+2026-11-12T20:08:36.0521450Z FLEET_STAGE federation bootstrap agent=019153a4-3088-7e03-a56a-9b1964f75dd5 elapsed=39.65616734s
+2026-11-12T20:08:36.0531740Z FLEET_STAGE federation bootstrap agent=019153a4-3088-7e03-a56a-9b1964f75dd6 elapsed=59.30247258s
+2026-11-12T20:08:36.0540270Z Error: turn ended with Turn {
+2026-11-12T20:08:36.0543300Z     id: "01a1d15c-5a16-759a-9872-72b9443716e2",
+2026-11-12T20:08:36.0546230Z     items: [],
+2026-11-12T20:08:36.0548850Z     items_view: NotLoaded,
+2026-11-12T20:08:36.0552220Z     status: Interrupted,
+2026-11-12T20:08:36.0555660Z     error: None,
+2026-11-12T20:08:36.0557140Z     started_at: None,
+2026-11-12T20:08:36.0558710Z     completed_at: Some(
+2026-11-12T20:08:36.0560640Z         1794513854,
+2026-11-12T20:08:36.0562280Z     ),
+2026-11-12T20:08:36.0563360Z     duration_ms: Some(
+2026-11-12T20:08:36.0563970Z         873,
+2026-11-12T20:08:36.0564470Z     ),
+2026-11-12T20:08:36.0570180Z }
+2026-11-12T20:08:36.0570530Z 
+2026-11-12T20:08:36.0570540Z 
+2026-11-12T20:08:36.0570770Z failures:
+2026-11-12T20:08:36.0572380Z     five_running_agents_share_only_with_the_explicit_consumer
+2026-11-12T20:08:36.0573130Z 
+2026-11-12T20:08:36.0573930Z test result: FAILED. 8 passed; 1 failed; 4 ignored; 0 measured; 0 filtered out; finished in 311.64s
+2026-11-12T20:08:36.0575070Z 
+2026-11-12T20:08:36.0575420Z ================================================================================
+2026-11-12T20:08:36.2247390Z [22,298 / 22,305] 409 / 584 tests, 7 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 4 of 8); 132s remote-cache, darwin-sandbox ... (7 actions running)
+2026-11-12T20:08:37.4567580Z [22,302 / 22,305] 410 / 584 tests, 7 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 7 of 8); 95s remote-cache, darwin-sandbox ... (3 actions running)
+2026-11-12T20:08:48.2593780Z [22,302 / 22,305] 410 / 584 tests, 7 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 7 of 8); 106s remote-cache, darwin-sandbox ... (3 actions running)
+2026-11-12T20:09:00.6191000Z [22,302 / 22,305] 410 / 584 tests, 7 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 7 of 8); 119s remote-cache, darwin-sandbox ... (3 actions running)
+2026-11-12T20:09:02.5668980Z [22,303 / 22,305] 411 / 584 tests, 7 failed; Testing //codex-rs/app-server:app-server-all-test (shard 6 of 16); 39s remote-cache, local ... (2 actions running)
+2026-11-12T20:09:13.3508290Z [22,303 / 22,305] 411 / 584 tests, 7 failed; Testing //codex-rs/app-server:app-server-all-test (shard 6 of 16); 50s remote-cache, local ... (2 actions running)
+2026-11-12T20:09:45.5674800Z [22,303 / 22,305] 411 / 584 tests, 7 failed; Testing //codex-rs/app-server:app-server-all-test (shard 6 of 16); 82s remote-cache, local ... (2 actions running)
+2026-11-12T20:10:00.0213180Z [22,303 / 22,305] 411 / 584 tests, 7 failed; Testing //codex-rs/app-server:app-server-all-test (shard 6 of 16); 96s remote-cache, local ... (2 actions running)
+2026-11-12T20:10:00.8042620Z FAIL: //codex-rs/app-server:app-server-all-test (shard 15 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_15_of_16/test_attempts/attempt_1.log)
+2026-11-12T20:10:01.3106120Z [22,303 / 22,305] 411 / 584 tests, 7 failed; Testing //codex-rs/app-server:app-server-all-test (shard 6 of 16); 98s remote-cache, local ... (2 actions running)
+2026-11-12T20:10:14.6073150Z [22,303 / 22,305] 411 / 584 tests, 7 failed; Testing //codex-rs/app-server:app-server-all-test (shard 6 of 16); 111s remote-cache, local ... (2 actions running)
+2026-11-12T20:10:15.2878300Z FAIL: //codex-rs/app-server:app-server-all-test (shard 6 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_6_of_16/test_attempts/attempt_1.log)
+2026-11-12T20:10:16.1153420Z [22,303 / 22,305] 411 / 584 tests, 7 failed; Testing //codex-rs/app-server:app-server-all-test (shard 6 of 16); 112s remote-cache, local ... (2 actions running)
+2026-11-12T20:10:27.2425200Z ##[error]The operation was canceled.
+2026-11-12T20:10:27.4657790Z Post job cleanup.
+2026-11-12T20:10:27.4722350Z ##[start-action display=Set up Bazel;id=__49542aad-ca66-4736-94bd-c0e50df12448.__bazel-contrib_setup-bazel]
+2026-11-12T20:10:27.4732360Z ##[end-action id=__49542aad-ca66-4736-94bd-c0e50df12448.__bazel-contrib_setup-bazel;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T20:10:27.5223240Z Post job cleanup.
+2026-11-12T20:10:29.3303650Z [command]/usr/local/bin/git version
+2026-11-12T20:10:29.3875100Z git version 2.55.0
+2026-11-12T20:10:29.5018740Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/a18b0ceb-9351-409c-88a1-a73cb6959a48/.gitconfig'
+2026-11-12T20:10:29.5028000Z Temporarily overriding HOME='/Users/runner/work/_temp/a18b0ceb-9351-409c-88a1-a73cb6959a48' before making global git config changes
+2026-11-12T20:10:29.5030870Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T20:10:29.5042830Z [command]/usr/local/bin/git config --global --add safe.directory /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:10:29.5046100Z Removing SSH command configuration
+2026-11-12T20:10:29.5051000Z [command]/usr/local/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T20:10:29.5058360Z [command]/usr/local/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T20:10:29.7703470Z Removing HTTP extra header
+2026-11-12T20:10:29.7739300Z [command]/usr/local/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T20:10:29.7832070Z [command]/usr/local/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T20:10:30.0779390Z Removing includeIf entries pointing to credentials config files
+2026-11-12T20:10:30.0855420Z [command]/usr/local/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T20:10:30.0921200Z [command]/usr/local/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T20:10:30.4591280Z Cleaning up orphan processes
+2026-11-12T20:10:31.8690200Z Terminate orphan process: pid (3304) (java)
+2026-11-12T20:10:31.9782590Z Terminate orphan process: pid (3295) (bazel)
+2026-11-12T20:10:32.4949590Z Terminate orphan process: pid (3191) (bash)

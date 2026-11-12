@@ -1,0 +1,1455 @@
+﻿2026-11-12T19:47:50.3842728Z Current runner version: '2.338.2'
+2026-11-12T19:47:50.3868128Z ##[group]Runner Image Provisioner
+2026-11-12T19:47:50.3869418Z Hosted Compute Agent
+2026-11-12T19:47:50.3870045Z Version: 20261028.624
+2026-11-12T19:47:50.3870794Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T19:47:50.3871593Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T19:47:50.3872325Z Worker ID: {5e54999f-6286-460a-aea1-d263fd8aeb4a}
+2026-11-12T19:47:50.3873065Z Region: westus2
+2026-11-12T19:47:50.3873631Z Cloud: Azure
+2026-11-12T19:47:50.3874266Z ##[endgroup]
+2026-11-12T19:47:50.3875826Z ##[group]Operating System
+2026-11-12T19:47:50.3876550Z Ubuntu
+2026-11-12T19:47:50.3877114Z 24.04.5
+2026-11-12T19:47:50.3877642Z LTS
+2026-11-12T19:47:50.3878212Z ##[endgroup]
+2026-11-12T19:47:50.3879106Z ##[group]Runner Image
+2026-11-12T19:47:50.3879782Z Image: ubuntu-24.04
+2026-11-12T19:47:50.3880462Z Version: 20261101.360.1
+2026-11-12T19:47:50.3881749Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T19:47:50.3883455Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T19:47:50.3884421Z ##[endgroup]
+2026-11-12T19:47:50.3885633Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T19:47:50.3887508Z Contents: read
+2026-11-12T19:47:50.3888344Z Metadata: read
+2026-11-12T19:47:50.3889152Z ##[endgroup]
+2026-11-12T19:47:50.3891342Z Secret source: Actions
+2026-11-12T19:47:50.3892299Z Cache mode: write
+2026-11-12T19:47:50.3893077Z Prepare workflow directory
+2026-11-12T19:47:50.4302688Z Prepare all required actions
+2026-11-12T19:47:50.4349572Z Getting action download info
+2026-11-12T19:47:50.8055987Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T19:47:50.9030012Z Download action repository 'dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489' (SHA:d86e0fa8f147d6539442c26a61ebba8becc19489)
+2026-11-12T19:47:51.1862077Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/rust-ci.yml@refs/pull/6213/merge (3fd9ee81bb321f7f7cccd89af077678dc56a5e99)
+2026-11-12T19:47:51.1866813Z Complete job name: rust-ci / Rust format
+2026-11-12T19:47:51.2813745Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T19:47:51.2814835Z with:
+2026-11-12T19:47:51.2815305Z   persist-credentials: false
+2026-11-12T19:47:51.2815933Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:51.2819904Z   token: ***
+2026-11-12T19:47:51.2820365Z   ssh-strict: true
+2026-11-12T19:47:51.2820809Z   ssh-user: git
+2026-11-12T19:47:51.2821240Z   clean: true
+2026-11-12T19:47:51.2821694Z   sparse-checkout-cone-mode: true
+2026-11-12T19:47:51.2822225Z   fetch-depth: 1
+2026-11-12T19:47:51.2822664Z   fetch-tags: false
+2026-11-12T19:47:51.2823113Z   show-progress: true
+2026-11-12T19:47:51.2823563Z   lfs: false
+2026-11-12T19:47:51.2823982Z   submodules: false
+2026-11-12T19:47:51.2824617Z   set-safe-directory: true
+2026-11-12T19:47:51.2825500Z ##[endgroup]
+2026-11-12T19:47:51.6017652Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:51.6021093Z ##[group]Getting Git version info
+2026-11-12T19:47:51.6022513Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T19:47:51.6024186Z [command]/usr/bin/git version
+2026-11-12T19:47:51.6160913Z git version 2.56.0
+2026-11-12T19:47:51.6172787Z ##[endgroup]
+2026-11-12T19:47:51.6225609Z Temporarily overriding HOME='/home/runner/work/_temp/45cf75f4-e4e2-439d-a9f6-f852971d65c0' before making global git config changes
+2026-11-12T19:47:51.6234164Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T19:47:51.6240690Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:51.6313959Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T19:47:51.6316426Z ##[group]Initializing the repository
+2026-11-12T19:47:51.6321395Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:51.6512572Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T19:47:51.6514865Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T19:47:51.6517898Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T19:47:51.6519518Z hint: call:
+2026-11-12T19:47:51.6520242Z hint:
+2026-11-12T19:47:51.6520931Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T19:47:51.6521550Z hint:
+2026-11-12T19:47:51.6522137Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T19:47:51.6523069Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T19:47:51.6523796Z hint:
+2026-11-12T19:47:51.6524214Z hint: 	git branch -m <name>
+2026-11-12T19:47:51.6524687Z hint:
+2026-11-12T19:47:51.6525318Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T19:47:51.6536230Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T19:47:51.6550780Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:51.6609531Z ##[endgroup]
+2026-11-12T19:47:51.6611242Z ##[group]Disabling automatic garbage collection
+2026-11-12T19:47:51.6613859Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T19:47:51.6654368Z ##[endgroup]
+2026-11-12T19:47:51.6656092Z ##[group]Setting up auth
+2026-11-12T19:47:51.6657493Z Removing SSH command configuration
+2026-11-12T19:47:51.6665005Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T19:47:51.6713455Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T19:47:51.7275576Z Removing HTTP extra header
+2026-11-12T19:47:51.7294058Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T19:47:51.7355719Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T19:47:51.7619583Z Removing includeIf entries pointing to credentials config files
+2026-11-12T19:47:51.7626830Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T19:47:51.7678166Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T19:47:51.7995565Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T19:47:51.8054678Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:51.8103381Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:51.8162830Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:51.8205718Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:51.8248966Z ##[endgroup]
+2026-11-12T19:47:51.8250765Z ##[group]Fetching the repository
+2026-11-12T19:47:51.8260436Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3fd9ee81bb321f7f7cccd89af077678dc56a5e99:refs/remotes/pull/6213/merge
+2026-11-12T19:47:53.5923470Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T19:47:53.5926179Z  * [new ref]           3fd9ee81bb321f7f7cccd89af077678dc56a5e99 -> pull/6213/merge
+2026-11-12T19:47:53.5931895Z ##[endgroup]
+2026-11-12T19:47:53.5934032Z ##[group]Determining the checkout info
+2026-11-12T19:47:53.5936291Z ##[endgroup]
+2026-11-12T19:47:53.5939687Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T19:47:53.6003855Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T19:47:53.6046902Z ##[group]Checking out the ref
+2026-11-12T19:47:53.6049641Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/6213/merge
+2026-11-12T19:47:54.6301144Z Updating files:  89% (13722/15294)
+2026-11-12T19:47:54.6421392Z Updating files:  90% (13765/15294)
+2026-11-12T19:47:54.6516564Z Updating files:  91% (13918/15294)
+2026-11-12T19:47:54.6630288Z Updating files:  92% (14071/15294)
+2026-11-12T19:47:54.6787540Z Updating files:  93% (14224/15294)
+2026-11-12T19:47:54.6975531Z Updating files:  94% (14377/15294)
+2026-11-12T19:47:54.7202346Z Updating files:  95% (14530/15294)
+2026-11-12T19:47:54.7348464Z Updating files:  96% (14683/15294)
+2026-11-12T19:47:54.7466836Z Updating files:  97% (14836/15294)
+2026-11-12T19:47:54.7574576Z Updating files:  98% (14989/15294)
+2026-11-12T19:47:54.7676372Z Updating files:  99% (15142/15294)
+2026-11-12T19:47:54.7677166Z Updating files: 100% (15294/15294)
+2026-11-12T19:47:54.7677706Z Updating files: 100% (15294/15294), done.
+2026-11-12T19:47:54.7831790Z Note: switching to 'refs/remotes/pull/6213/merge'.
+2026-11-12T19:47:54.7832688Z 
+2026-11-12T19:47:54.7833200Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T19:47:54.7834049Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T19:47:54.7834840Z state without impacting any branches by switching back to a branch.
+2026-11-12T19:47:54.7835347Z 
+2026-11-12T19:47:54.7835593Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T19:47:54.7836549Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T19:47:54.7836937Z 
+2026-11-12T19:47:54.7837110Z   git switch -c <new-branch-name>
+2026-11-12T19:47:54.7837560Z 
+2026-11-12T19:47:54.7837760Z Or undo this operation with:
+2026-11-12T19:47:54.7837979Z 
+2026-11-12T19:47:54.7838102Z   git switch -
+2026-11-12T19:47:54.7838269Z 
+2026-11-12T19:47:54.7838675Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T19:47:54.7839330Z 
+2026-11-12T19:47:54.7839932Z HEAD is now at 3fd9ee81 Merge 84ee9c2ed0db8b20b792634d775f9b4f97a34578 into a4a1b5eb6cb45fc1182564e6b81026a2a2acf609
+2026-11-12T19:47:54.7884430Z ##[endgroup]
+2026-11-12T19:47:54.7938496Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T19:47:54.7973939Z 3fd9ee81bb321f7f7cccd89af077678dc56a5e99
+2026-11-12T19:47:54.7984140Z ##[group]Removing auth
+2026-11-12T19:47:54.7984687Z Removing SSH command configuration
+2026-11-12T19:47:54.7987923Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T19:47:54.8031065Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T19:47:54.8291496Z Removing HTTP extra header
+2026-11-12T19:47:54.8296187Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T19:47:54.8340018Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T19:47:54.8600311Z Removing includeIf entries pointing to credentials config files
+2026-11-12T19:47:54.8604073Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T19:47:54.8641986Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T19:47:54.8643117Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T19:47:54.8643899Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T19:47:54.8644660Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T19:47:54.8742452Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T19:47:54.8744179Z /home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.8747375Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.8750847Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T19:47:54.8785877Z /home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.8795932Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.8842995Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T19:47:54.8878254Z /github/runner_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.8886415Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.8933405Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T19:47:54.8966231Z /github/runner_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.8974406Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config
+2026-11-12T19:47:54.9018097Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T19:47:54.9280287Z Removing credentials config '/home/runner/work/_temp/git-credentials-d2b26ff6-fc4a-4d73-8801-8b16808b69f6.config'
+2026-11-12T19:47:54.9289824Z ##[endgroup]
+2026-11-12T19:47:54.9561620Z Prepare all required actions
+2026-11-12T19:47:54.9562307Z Getting action download info
+2026-11-12T19:47:55.0954775Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-12T19:47:55.2535751Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-12T19:47:55.4655510Z ##[group]Run ./.github/actions/setup-ci
+2026-11-12T19:47:55.4655833Z ##[endgroup]
+2026-11-12T19:47:55.4717444Z ##[start-action display=Configure Dev Drive (Windows);id=__self.__run]
+2026-11-12T19:47:55.4735928Z ##[end-action id=__self.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T19:47:55.4738167Z ##[start-action display=Configure CI build root (Unix);id=__self.__run_2]
+2026-11-12T19:47:55.4786094Z ##[group]Run echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
+2026-11-12T19:47:55.4786702Z [36;1mecho "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"[0m
+2026-11-12T19:47:55.4811124Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:55.4811502Z ##[endgroup]
+2026-11-12T19:47:55.4894770Z ##[end-action id=__self.__run_2;outcome=success;conclusion=success;duration_ms=15]
+2026-11-12T19:47:55.4897041Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=__self.__run_3]
+2026-11-12T19:47:55.4925084Z ##[group]Run sudo sysctl -w kernel.unprivileged_userns_clone=1
+2026-11-12T19:47:55.4925541Z [36;1msudo sysctl -w kernel.unprivileged_userns_clone=1[0m
+2026-11-12T19:47:55.4926095Z [36;1mif sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then[0m
+2026-11-12T19:47:55.4926685Z [36;1m  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0[0m
+2026-11-12T19:47:55.4927055Z [36;1mfi[0m
+2026-11-12T19:47:55.4946155Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:55.4946513Z env:
+2026-11-12T19:47:55.4946758Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:55.4947056Z ##[endgroup]
+2026-11-12T19:47:55.5052506Z kernel.unprivileged_userns_clone = 1
+2026-11-12T19:47:55.5562410Z kernel.apparmor_restrict_unprivileged_userns = 0
+2026-11-12T19:47:55.5580084Z ##[end-action id=__self.__run_3;outcome=success;conclusion=success;duration_ms=68]
+2026-11-12T19:47:55.5582740Z ##[start-action display=Configure CI build paths;id=__self.configure_ci_build_paths]
+2026-11-12T19:47:55.5609632Z ##[group]Run set -euo pipefail
+2026-11-12T19:47:55.5609991Z [36;1mset -euo pipefail[0m
+2026-11-12T19:47:55.5610366Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-12T19:47:55.5610904Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-12T19:47:55.5611440Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-12T19:47:55.5611877Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-12T19:47:55.5612197Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-12T19:47:55.5612523Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-12T19:47:55.5612936Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-12T19:47:55.5613545Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-12T19:47:55.5614081Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-12T19:47:55.5614412Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-12T19:47:55.5614654Z [36;1m[0m
+2026-11-12T19:47:55.5614846Z [36;1mbuild_dirs=([0m
+2026-11-12T19:47:55.5615073Z [36;1m  "$bazel_output_base"[0m
+2026-11-12T19:47:55.5615330Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-12T19:47:55.5615597Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-12T19:47:55.5615869Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-12T19:47:55.5616141Z [36;1m  "$cargo_target_dir"[0m
+2026-11-12T19:47:55.5616378Z [36;1m  "$tmp"[0m
+2026-11-12T19:47:55.5616777Z [36;1m)[0m
+2026-11-12T19:47:55.5616998Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-12T19:47:55.5617373Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-12T19:47:55.5617849Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-12T19:47:55.5618205Z [36;1m[0m
+2026-11-12T19:47:55.5618382Z [36;1m{[0m
+2026-11-12T19:47:55.5618611Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-12T19:47:55.5619285Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-12T19:47:55.5619670Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-12T19:47:55.5620078Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-12T19:47:55.5620496Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-12T19:47:55.5620894Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-12T19:47:55.5621196Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-12T19:47:55.5621442Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-12T19:47:55.5621674Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-12T19:47:55.5641627Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:55.5641977Z env:
+2026-11-12T19:47:55.5642200Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:55.5642490Z ##[endgroup]
+2026-11-12T19:47:55.5720879Z ##[end-action id=__self.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=13]
+2026-11-12T19:47:55.5725992Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=__self.__run_4]
+2026-11-12T19:47:55.5751495Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-12T19:47:55.5751999Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-12T19:47:55.5770707Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:55.5771057Z env:
+2026-11-12T19:47:55.5771308Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:55.5771721Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:55.5772156Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:55.5772515Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:55.5772961Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:55.5795561Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:55.5796289Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:55.5796680Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:55.5796978Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:55.5797247Z ##[endgroup]
+2026-11-12T19:47:55.5843518Z ##[end-action id=__self.__run_4;outcome=success;conclusion=success;duration_ms=11]
+2026-11-12T19:47:55.5845654Z ##[start-action display=Install DotSlash;id=__self.__facebook_install-dotslash]
+2026-11-12T19:47:55.5920457Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-12T19:47:55.5920892Z env:
+2026-11-12T19:47:55.5921115Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:55.5921511Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:55.5921927Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:55.5922296Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:55.5922736Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:55.5923344Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:55.5923905Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:55.5924255Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:55.5924538Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:55.5924812Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:55.5925061Z ##[endgroup]
+2026-11-12T19:47:55.5963011Z ##[start-action display=Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT;id=__self.__facebook_install-dotslash.configure]
+2026-11-12T19:47:55.5991438Z ##[group]Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT
+2026-11-12T19:47:55.5991881Z [36;1mecho platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:55.5995283Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:55.6014793Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:55.6015145Z env:
+2026-11-12T19:47:55.6015375Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:55.6015772Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:55.6016195Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:55.6016547Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:55.6016985Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:55.6017590Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:55.6018164Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:55.6018516Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:55.6019114Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:55.6019398Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:55.6019652Z ##[endgroup]
+2026-11-12T19:47:56.1052233Z ##[end-action id=__self.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=508]
+2026-11-12T19:47:56.1057463Z ##[start-action display=Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin";id=__self.__facebook_install-dotslash.__run]
+2026-11-12T19:47:56.1085848Z ##[group]Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin"
+2026-11-12T19:47:56.1086337Z [36;1mmkdir -p "/home/runner/work/_temp/install-dotslash/bin"[0m
+2026-11-12T19:47:56.1107037Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:56.1107383Z env:
+2026-11-12T19:47:56.1107611Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.1108021Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.1108459Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.1109062Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.1109507Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.1110112Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.1110661Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.1111008Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.1111290Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.1111573Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.1111838Z ##[endgroup]
+2026-11-12T19:47:56.1173458Z ##[end-action id=__self.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=11]
+2026-11-12T19:47:56.1179318Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \;id=__self.__facebook_install-dotslash.__run_2]
+2026-11-12T19:47:56.1206587Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \
+2026-11-12T19:47:56.1207466Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \[0m
+2026-11-12T19:47:56.1210751Z [36;1m--header "authorization: ***" \[0m
+2026-11-12T19:47:56.1211197Z [36;1m--output "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-12T19:47:56.1211676Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-12T19:47:56.1230792Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:56.1231163Z env:
+2026-11-12T19:47:56.1231403Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.1231816Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.1232234Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.1232587Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.1233027Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.1233650Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.1234221Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.1234568Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.1234848Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.1235120Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.1235373Z ##[endgroup]
+2026-11-12T19:47:56.4770917Z ##[end-action id=__self.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=359]
+2026-11-12T19:47:56.4777440Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/";id=__self.__facebook_install-dotslash.__run_3]
+2026-11-12T19:47:56.4863418Z ##[group]Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"
+2026-11-12T19:47:56.4864457Z [36;1mtar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"[0m
+2026-11-12T19:47:56.4886044Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:56.4886408Z env:
+2026-11-12T19:47:56.4886639Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.4887042Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.4887467Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.4887828Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.4888264Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.4889130Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.4889712Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.4890072Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.4890356Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.4890630Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.4890883Z ##[endgroup]
+2026-11-12T19:47:56.4960236Z dotslash
+2026-11-12T19:47:56.5088567Z ##[end-action id=__self.__facebook_install-dotslash.__run_3;outcome=success;conclusion=success;duration_ms=30]
+2026-11-12T19:47:56.5094186Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -O >"/home/runner/work/_temp/install-dotslash/bin/dotslash.exe" --force-local;id=__self.__facebook_install-dotslash.__run_4]
+2026-11-12T19:47:56.5099654Z ##[end-action id=__self.__facebook_install-dotslash.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T19:47:56.5103090Z ##[start-action display=Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH;id=__self.__facebook_install-dotslash.__run_5]
+2026-11-12T19:47:56.5128428Z ##[group]Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-12T19:47:56.5129291Z [36;1mecho "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-12T19:47:56.5148541Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:56.5149123Z env:
+2026-11-12T19:47:56.5149359Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.5149769Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.5150195Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.5150725Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.5151171Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.5151784Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.5152349Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.5152715Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5153012Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5153287Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.5153551Z ##[endgroup]
+2026-11-12T19:47:56.5202107Z ##[end-action id=__self.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=9]
+2026-11-12T19:47:56.5204592Z ##[start-action display=Run dotslash --version;id=__self.__facebook_install-dotslash.__run_6]
+2026-11-12T19:47:56.5228426Z ##[group]Run dotslash --version
+2026-11-12T19:47:56.5228715Z [36;1mdotslash --version[0m
+2026-11-12T19:47:56.5250952Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:56.5251328Z env:
+2026-11-12T19:47:56.5251613Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.5252140Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.5252769Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.5253230Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.5253910Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.5254751Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.5255478Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.5255971Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5256356Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5256714Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.5257162Z ##[endgroup]
+2026-11-12T19:47:56.5367939Z DotSlash 0.5.9
+2026-11-12T19:47:56.5377101Z ##[end-action id=__self.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=17]
+2026-11-12T19:47:56.5390325Z ##[end-action id=__self.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=954]
+2026-11-12T19:47:56.5392535Z ##[start-action display=Install just;id=__self.__taiki-e_install-action]
+2026-11-12T19:47:56.5462531Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-12T19:47:56.5462934Z with:
+2026-11-12T19:47:56.5463130Z   tool: just@1.51.0
+2026-11-12T19:47:56.5463338Z   checksum: true
+2026-11-12T19:47:56.5463555Z   fallback: cargo-binstall
+2026-11-12T19:47:56.5463781Z env:
+2026-11-12T19:47:56.5463997Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.5464389Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.5464807Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.5465171Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.5465610Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.5466217Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.5466774Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.5467153Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5467448Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5467723Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.5467976Z ##[endgroup]
+2026-11-12T19:47:56.5472029Z ##[start-action display=Run set -eu;id=__self.__taiki-e_install-action.__run]
+2026-11-12T19:47:56.5497951Z ##[group]Run set -eu
+2026-11-12T19:47:56.5498210Z [36;1mset -eu[0m
+2026-11-12T19:47:56.5498449Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-12T19:47:56.5499096Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-12T19:47:56.5499747Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-12T19:47:56.5500197Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-12T19:47:56.5500526Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-12T19:47:56.5500857Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-12T19:47:56.5501175Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-12T19:47:56.5501492Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-12T19:47:56.5501758Z [36;1m    else[0m
+2026-11-12T19:47:56.5501969Z [36;1m      apk --no-cache add bash[0m
+2026-11-12T19:47:56.5502226Z [36;1m    fi[0m
+2026-11-12T19:47:56.5502436Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-12T19:47:56.5502679Z [36;1m  else[0m
+2026-11-12T19:47:56.5502934Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-12T19:47:56.5503249Z [36;1m    exit 1[0m
+2026-11-12T19:47:56.5503446Z [36;1m  fi[0m
+2026-11-12T19:47:56.5503630Z [36;1mfi[0m
+2026-11-12T19:47:56.5625727Z shell: /usr/bin/sh -e {0}
+2026-11-12T19:47:56.5625984Z env:
+2026-11-12T19:47:56.5626213Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.5626617Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.5627059Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.5627422Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.5628006Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.5628623Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.5629386Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.5629736Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5630023Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5630297Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.5630555Z ##[endgroup]
+2026-11-12T19:47:56.5695859Z ##[end-action id=__self.__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=22]
+2026-11-12T19:47:56.5701214Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__self.__taiki-e_install-action.__run_2]
+2026-11-12T19:47:56.5725583Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-12T19:47:56.5726066Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-12T19:47:56.5746442Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:56.5746784Z env:
+2026-11-12T19:47:56.5747005Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:56.5747404Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:56.5747825Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:56.5748175Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:56.5748617Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:56.5749436Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:56.5749995Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:56.5750337Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5750618Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:56.5750890Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:56.5751154Z   INPUT_TOOL: just@1.51.0
+2026-11-12T19:47:56.5751381Z   INPUT_CHECKSUM: true
+2026-11-12T19:47:56.5751610Z   INPUT_FALLBACK: cargo-binstall
+2026-11-12T19:47:56.5754117Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-12T19:47:56.5754374Z   ACTION_USER_AGENT:  ()
+2026-11-12T19:47:56.5754620Z ##[endgroup]
+2026-11-12T19:47:56.5950242Z info: host platform: x86_64_linux
+2026-11-12T19:47:56.6060800Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-12T19:47:56.6061819Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-12T19:47:56.6086602Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-12T19:47:56.6432872Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T19:47:56.9087290Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T19:47:57.0394016Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-12T19:47:57.0398181Z + cargo-binstall binstall -V
+2026-11-12T19:47:57.0413391Z 1.15.11
+2026-11-12T19:47:57.0556172Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-12T19:47:58.6720617Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-12T19:47:58.6721506Z  INFO This will install the following binaries:
+2026-11-12T19:47:58.6722103Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-12T19:47:58.6746971Z  INFO Installing binaries...
+2026-11-12T19:47:58.6750300Z  INFO Done in 1.631942682s
+2026-11-12T19:47:58.6772977Z ##[end-action id=__self.__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=2107]
+2026-11-12T19:47:58.6778458Z ##[end-action id=__self.__taiki-e_install-action;outcome=success;conclusion=success;duration_ms=2138]
+2026-11-12T19:47:58.6782385Z ##[start-action display=Make DotSlash available in PATH (Unix);id=__self.__run_5]
+2026-11-12T19:47:58.6811284Z ##[group]Run if [[ -w /usr/local/bin ]]; then
+2026-11-12T19:47:58.6811639Z [36;1mif [[ -w /usr/local/bin ]]; then[0m
+2026-11-12T19:47:58.6811942Z [36;1m  cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-12T19:47:58.6812221Z [36;1melse[0m
+2026-11-12T19:47:58.6812452Z [36;1m  sudo cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-12T19:47:58.6812739Z [36;1mfi[0m
+2026-11-12T19:47:58.6832942Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:58.6833289Z env:
+2026-11-12T19:47:58.6833514Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:58.6833920Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:58.6834331Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:58.6834685Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:58.6835109Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:58.6835721Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:58.6836286Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:58.6836685Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.6836967Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.6837234Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:58.6837485Z ##[endgroup]
+2026-11-12T19:47:58.6920880Z ##[end-action id=__self.__run_5;outcome=success;conclusion=success;duration_ms=13]
+2026-11-12T19:47:58.6923333Z ##[start-action display=Make DotSlash available in PATH (Windows);id=__self.__run_6]
+2026-11-12T19:47:58.6927529Z ##[end-action id=__self.__run_6;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T19:47:58.6929921Z ##[start-action display=Enable Git long paths (Windows);id=__self.__run_7]
+2026-11-12T19:47:58.6933313Z ##[end-action id=__self.__run_7;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T19:47:58.7116991Z ##[group]Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+2026-11-12T19:47:58.7117422Z with:
+2026-11-12T19:47:58.7117624Z   components: rustfmt
+2026-11-12T19:47:58.7117851Z env:
+2026-11-12T19:47:58.7118067Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:58.7118459Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:58.7119219Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:58.7119586Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:58.7120029Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:58.7120635Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:58.7121187Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:58.7121527Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7121836Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7122109Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:58.7122362Z ##[endgroup]
+2026-11-12T19:47:58.7131724Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-11-12T19:47:58.7172925Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-11-12T19:47:58.7173489Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-11-12T19:47:58.7174290Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-11-12T19:47:58.7175152Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-11-12T19:47:58.7175667Z [36;1m  exit 1[0m
+2026-11-12T19:47:58.7176273Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-11-12T19:47:58.7176991Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-11-12T19:47:58.7177943Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:58.7179069Z [36;1m  else[0m
+2026-11-12T19:47:58.7179761Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:58.7180245Z [36;1m  fi[0m
+2026-11-12T19:47:58.7180551Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-11-12T19:47:58.7181094Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:58.7181563Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-11-12T19:47:58.7182113Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:58.7182621Z [36;1melse[0m
+2026-11-12T19:47:58.7182822Z [36;1m  delimiter=EOF[0m
+2026-11-12T19:47:58.7183133Z [36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done[0m
+2026-11-12T19:47:58.7183650Z [36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT[0m
+2026-11-12T19:47:58.7184075Z [36;1mfi[0m
+2026-11-12T19:47:58.7203628Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:58.7203967Z env:
+2026-11-12T19:47:58.7204190Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:58.7204594Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:58.7205011Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:58.7205378Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:58.7205808Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:58.7206408Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:58.7206951Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:58.7207292Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7207803Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7208098Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:58.7208356Z   toolchain: 1.96.0
+2026-11-12T19:47:58.7208559Z ##[endgroup]
+2026-11-12T19:47:58.7260248Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=12]
+2026-11-12T19:47:58.7262356Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-11-12T19:47:58.7286055Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+2026-11-12T19:47:58.7286530Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-11-12T19:47:58.7304988Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:58.7305333Z env:
+2026-11-12T19:47:58.7305563Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:58.7305966Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:58.7306376Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:58.7306737Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:58.7307181Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:58.7307781Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:58.7308350Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:58.7308692Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7309279Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7309559Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:58.7309806Z ##[endgroup]
+2026-11-12T19:47:58.7356333Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=9]
+2026-11-12T19:47:58.7358399Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-11-12T19:47:58.7382080Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-11-12T19:47:58.7382456Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-11-12T19:47:58.7383204Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-11-12T19:47:58.7384100Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-11-12T19:47:58.7384379Z [36;1mfi[0m
+2026-11-12T19:47:58.7402510Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:58.7402854Z env:
+2026-11-12T19:47:58.7403075Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:58.7403471Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:58.7403882Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:58.7404226Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:58.7404651Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:58.7405251Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:58.7405793Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:58.7406132Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7406405Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7406671Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:58.7406932Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:47:58.7407170Z ##[endgroup]
+2026-11-12T19:47:58.7452785Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=9]
+2026-11-12T19:47:58.7454937Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-11-12T19:47:58.7458479Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T19:47:58.7465891Z ##[start-action display=rustup toolchain install 1.96.0;id=__dtolnay_rust-toolchain.__run_4]
+2026-11-12T19:47:58.7488103Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+2026-11-12T19:47:58.7489031Z [36;1mset -f  # split targets and components on commas and whitespace, without glob expansion[0m
+2026-11-12T19:47:58.7489521Z [36;1mflags=()[0m
+2026-11-12T19:47:58.7489802Z [36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done[0m
+2026-11-12T19:47:58.7490218Z [36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done[0m
+2026-11-12T19:47:58.7490730Z [36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi[0m
+2026-11-12T19:47:58.7491146Z [36;1mlog=$(mktemp)[0m
+2026-11-12T19:47:58.7491377Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-11-12T19:47:58.7491630Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-11-12T19:47:58.7492207Z [36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-11-12T19:47:58.7492778Z [36;1m    break[0m
+2026-11-12T19:47:58.7492977Z [36;1m  else[0m
+2026-11-12T19:47:58.7493171Z [36;1m    status=$?[0m
+2026-11-12T19:47:58.7493378Z [36;1m  fi[0m
+2026-11-12T19:47:58.7493678Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-11-12T19:47:58.7494260Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-11-12T19:47:58.7494767Z [36;1m    exit "$status"[0m
+2026-11-12T19:47:58.7494993Z [36;1m  fi[0m
+2026-11-12T19:47:58.7495344Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-11-12T19:47:58.7495762Z [36;1m  sleep 30[0m
+2026-11-12T19:47:58.7495961Z [36;1mdone[0m
+2026-11-12T19:47:58.7514003Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:47:58.7514346Z env:
+2026-11-12T19:47:58.7514576Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:47:58.7514977Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:47:58.7515381Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:47:58.7515748Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:47:58.7516327Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:47:58.7516926Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:47:58.7517469Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:47:58.7517809Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7518087Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:47:58.7518355Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:47:58.7518621Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:47:58.7519167Z   toolchain: 1.96.0
+2026-11-12T19:47:58.7519374Z   targets: 
+2026-11-12T19:47:58.7519560Z   components: rustfmt
+2026-11-12T19:47:58.7519781Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-11-12T19:47:58.7520016Z ##[endgroup]
+2026-11-12T19:47:58.7676549Z info: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-12T19:47:58.9307130Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-12T19:47:58.9309646Z info: downloading 4 components
+2026-11-12T19:48:06.8753918Z 
+2026-11-12T19:48:06.8835607Z   1.96.0-x86_64-unknown-linux-gnu installed - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-12T19:48:06.8836195Z 
+2026-11-12T19:48:06.9122114Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=8165]
+2026-11-12T19:48:06.9130034Z ##[start-action display=rustup default 1.96.0;id=__dtolnay_rust-toolchain.__run_5]
+2026-11-12T19:48:06.9160110Z ##[group]Run rustup default "$toolchain" --force-non-host
+2026-11-12T19:48:06.9160810Z [36;1mrustup default "$toolchain" --force-non-host[0m
+2026-11-12T19:48:06.9189356Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:06.9189957Z env:
+2026-11-12T19:48:06.9190326Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:06.9191395Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:06.9192128Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:06.9192771Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:06.9193544Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:06.9194632Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:06.9195611Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:06.9196215Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9196760Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9197092Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:06.9197360Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:06.9197609Z   toolchain: 1.96.0
+2026-11-12T19:48:06.9197813Z ##[endgroup]
+2026-11-12T19:48:06.9286966Z info: using existing install for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-12T19:48:06.9293871Z info: default toolchain set to 1.96.0-x86_64-unknown-linux-gnu
+2026-11-12T19:48:06.9294367Z 
+2026-11-12T19:48:06.9365102Z   1.96.0-x86_64-unknown-linux-gnu unchanged - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-12T19:48:06.9365687Z 
+2026-11-12T19:48:06.9385507Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=25]
+2026-11-12T19:48:06.9389366Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-11-12T19:48:06.9407227Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-11-12T19:48:06.9408119Z [36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-11-12T19:48:06.9409106Z [36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-11-12T19:48:06.9409702Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-11-12T19:48:06.9429068Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:06.9429601Z env:
+2026-11-12T19:48:06.9429829Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:06.9430226Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:06.9430642Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:06.9431000Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:06.9431428Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:06.9432048Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:06.9432620Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:06.9432972Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9433255Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9433531Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:06.9433802Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:06.9434048Z   toolchain: 1.96.0
+2026-11-12T19:48:06.9434250Z ##[endgroup]
+2026-11-12T19:48:06.9752501Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=36]
+2026-11-12T19:48:06.9756102Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-11-12T19:48:06.9779801Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-11-12T19:48:06.9780213Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-11-12T19:48:06.9780562Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-11-12T19:48:06.9780860Z [36;1mfi[0m
+2026-11-12T19:48:06.9800297Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:06.9800640Z env:
+2026-11-12T19:48:06.9800863Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:06.9801255Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:06.9801852Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:06.9802229Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:06.9802659Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:06.9803268Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:06.9803821Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:06.9804162Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9804443Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9804711Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:06.9804972Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:06.9805215Z ##[endgroup]
+2026-11-12T19:48:06.9852426Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=9]
+2026-11-12T19:48:06.9864007Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-11-12T19:48:06.9881863Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-11-12T19:48:06.9882257Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-11-12T19:48:06.9882598Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-11-12T19:48:06.9882894Z [36;1mfi[0m
+2026-11-12T19:48:06.9900671Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:06.9901017Z env:
+2026-11-12T19:48:06.9901239Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:06.9901653Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:06.9902072Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:06.9902435Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:06.9902867Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:06.9903472Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:06.9904029Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:06.9904526Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9904806Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9905075Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:06.9905336Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:06.9905580Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:48:06.9905797Z ##[endgroup]
+2026-11-12T19:48:06.9950608Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=8]
+2026-11-12T19:48:06.9953507Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-11-12T19:48:06.9971317Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-11-12T19:48:06.9971830Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-11-12T19:48:06.9972561Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-11-12T19:48:06.9973339Z [36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-11-12T19:48:06.9973948Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-12T19:48:06.9974500Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-11-12T19:48:06.9975022Z [36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-11-12T19:48:06.9975617Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-12T19:48:06.9976145Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-11-12T19:48:06.9976495Z [36;1m  fi[0m
+2026-11-12T19:48:06.9976687Z [36;1mfi[0m
+2026-11-12T19:48:06.9994642Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:06.9994994Z env:
+2026-11-12T19:48:06.9995383Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:06.9995810Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:06.9996225Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:06.9996586Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:06.9997026Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:06.9997641Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:06.9998196Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:06.9998541Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9999076Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:06.9999355Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:06.9999626Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:06.9999881Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:48:07.0000104Z   CARGO_TERM_COLOR: always
+2026-11-12T19:48:07.0000332Z   toolchain: 1.96.0
+2026-11-12T19:48:07.0000532Z ##[endgroup]
+2026-11-12T19:48:07.0306532Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=35]
+2026-11-12T19:48:07.0311568Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-11-12T19:48:07.0338044Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-11-12T19:48:07.0339525Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-11-12T19:48:07.0340589Z [36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-11-12T19:48:07.0341391Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-11-12T19:48:07.0341915Z [36;1mfi[0m
+2026-11-12T19:48:07.0367398Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:07.0367938Z env:
+2026-11-12T19:48:07.0368300Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:07.0369154Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:07.0370072Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:07.0370658Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:07.0371397Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:07.0372434Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:07.0373377Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:07.0373950Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:07.0374414Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:07.0374865Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:07.0375306Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:07.0375714Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:48:07.0376070Z   CARGO_TERM_COLOR: always
+2026-11-12T19:48:07.0376450Z   toolchain: 1.96.0
+2026-11-12T19:48:07.0376776Z ##[endgroup]
+2026-11-12T19:48:07.0559504Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=24]
+2026-11-12T19:48:07.0565100Z ##[start-action display=rustc +1.96.0 --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-11-12T19:48:07.0590831Z ##[group]Run rustc +"$toolchain" --version --verbose
+2026-11-12T19:48:07.0591428Z [36;1mrustc +"$toolchain" --version --verbose[0m
+2026-11-12T19:48:07.0617262Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:07.0617819Z env:
+2026-11-12T19:48:07.0618266Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:07.0619119Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:07.0619805Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:07.0620391Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:07.0621378Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:07.0622428Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:07.0623382Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:07.0623960Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:07.0624431Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:07.0624881Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:07.0625312Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:07.0625716Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:48:07.0626075Z   CARGO_TERM_COLOR: always
+2026-11-12T19:48:07.0626438Z   toolchain: 1.96.0
+2026-11-12T19:48:07.0626768Z ##[endgroup]
+2026-11-12T19:48:07.0789809Z rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-12T19:48:07.0790638Z binary: rustc
+2026-11-12T19:48:07.0791363Z commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+2026-11-12T19:48:07.0792036Z commit-date: 2026-05-25
+2026-11-12T19:48:07.0792437Z host: x86_64-unknown-linux-gnu
+2026-11-12T19:48:07.0792738Z release: 1.96.0
+2026-11-12T19:48:07.0792987Z LLVM version: 22.1.2
+2026-11-12T19:48:07.0810532Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=24]
+2026-11-12T19:48:07.0841827Z ##[group]Run cargo fmt -- --config imports_granularity=Item --check
+2026-11-12T19:48:07.0842334Z [36;1mcargo fmt -- --config imports_granularity=Item --check[0m
+2026-11-12T19:48:07.0861976Z shell: /usr/bin/bash -e {0}
+2026-11-12T19:48:07.0862232Z env:
+2026-11-12T19:48:07.0862461Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:07.0862881Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:07.0863326Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:07.0863683Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:07.0864122Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:07.0864752Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:07.0865477Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:07.0865878Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:07.0866165Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:07.0866437Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:07.0866701Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:07.0866953Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:48:07.0867181Z   CARGO_TERM_COLOR: always
+2026-11-12T19:48:07.0867406Z ##[endgroup]
+2026-11-12T19:48:07.1666420Z info: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-12T19:48:07.3130150Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-12T19:48:07.3264826Z info: component rustfmt is up to date
+2026-11-12T19:48:07.3270071Z info: downloading 2 components
+2026-11-12T19:48:08.4404927Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:08.4440899Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:08.4517123Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:08.5399196Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:08.5404714Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:08.5409208Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:08.5417413Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:08.5422233Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:09.1349091Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:09.1366546Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.0883778Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.1263850Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.1700269Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.1990522Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.4238644Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.4240983Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.4594175Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.4596666Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.5979876Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6322350Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6323618Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6374973Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6437455Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6444669Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6494196Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6709110Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6728598Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6740510Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6747555Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6819008Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6833823Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6837801Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6871309Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.6872791Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7072605Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7074238Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7084359Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7095025Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7100370Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7102978Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7113764Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7249414Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7257799Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7280803Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7305997Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7317154Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7325616Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7331130Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7359476Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7399941Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7451539Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7508468Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7534004Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7552406Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7567104Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7570884Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.7767215Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.8216006Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.8221078Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.8335711Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.8357241Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.9268702Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.9780279Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.9783442Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.9889956Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.9921135Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:10.9943618Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.0019579Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.0119567Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.0123343Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.0463144Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.0963452Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.0993073Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.0998262Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2155471Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2203426Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2219351Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2307390Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2322209Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2370784Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2395238Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2431412Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.2450150Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.4644603Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.4645933Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.4650772Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.6605957Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.7073841Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.7098935Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:11.7104677Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:13.9622469Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.3852090Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.4515385Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.4574116Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.4582899Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.8358653Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.8385810Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.9024240Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.9034199Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:15.9553555Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3370310Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3412324Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3498457Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3625721Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3738335Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3775276Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3888338Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.3975196Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.4212672Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.4318343Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.4618545Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.4821186Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.4938262Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5021183Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5220230Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5388548Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5412844Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5496577Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5648683Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5822347Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5903667Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5905733Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.5995040Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6156809Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6338971Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6341869Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6399436Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6409537Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6418455Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6425991Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6438712Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6565385Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6576128Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6590019Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6603399Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6647498Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6672710Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.6743897Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.7015518Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.7053137Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.7153157Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.7975351Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.8183377Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9297823Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9419209Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9487037Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9507772Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9680010Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9699815Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9813125Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9842516Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:16.9870130Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.0073245Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.0261997Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.0555748Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.2754774Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.2876894Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.3230687Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.3309591Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.5187124Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.5376593Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.5491216Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.5589472Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.5597626Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.5640090Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.5764254Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6172199Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6294184Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6405959Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6485788Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6629129Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6834993Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6853651Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.6903292Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:17.7218571Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:18.7260510Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs:245:
+2026-11-12T19:48:18.7261836Z                              heads,
+2026-11-12T19:48:18.7262245Z                          } => (offset, total, heads),
+2026-11-12T19:48:18.7266891Z                          candidate_wire::MaterialResult::Current { .. } => {
+2026-11-12T19:48:18.7267507Z -                            return Err(Error::Binding("Page response cannot be Candidate Current"));
+2026-11-12T19:48:18.7268089Z +                            return Err(Error::Binding(
+2026-11-12T19:48:18.7268504Z +                                "Page response cannot be Candidate Current",
+2026-11-12T19:48:18.7269216Z +                            ));
+2026-11-12T19:48:18.7269499Z                          }
+2026-11-12T19:48:18.7269844Z                          candidate_wire::MaterialResult::NoCandidate => {
+2026-11-12T19:48:18.7270280Z                              return Err(Error::NoCandidate);
+2026-11-12T19:48:18.9266091Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs:289:
+2026-11-12T19:48:18.9267768Z  #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+2026-11-12T19:48:18.9269241Z  async fn evaluated_c_refuses_each_actual_original_predecessor_without_claim() -> anyhow::Result<()>
+2026-11-12T19:48:18.9270346Z  {
+2026-11-12T19:48:18.9271102Z -    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Trainer)).await
+2026-11-12T19:48:18.9272125Z +    Box::pin(refuses_original_predecessor(
+2026-11-12T19:48:18.9272805Z +        OriginalPredecessorFault::Trainer,
+2026-11-12T19:48:18.9273411Z +    ))
+2026-11-12T19:48:18.9273804Z +    .await
+2026-11-12T19:48:18.9274193Z  }
+2026-11-12T19:48:18.9274564Z  
+2026-11-12T19:48:18.9275104Z  #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+2026-11-12T19:48:18.9276323Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs:296:
+2026-11-12T19:48:18.9277252Z  async fn evaluated_c_refuses_original_evaluator_without_claim() -> anyhow::Result<()> {
+2026-11-12T19:48:18.9277964Z -    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Evaluator)).await
+2026-11-12T19:48:18.9278495Z +    Box::pin(refuses_original_predecessor(
+2026-11-12T19:48:18.9279147Z +        OriginalPredecessorFault::Evaluator,
+2026-11-12T19:48:18.9279478Z +    ))
+2026-11-12T19:48:18.9279686Z +    .await
+2026-11-12T19:48:18.9279890Z  }
+2026-11-12T19:48:18.9280083Z  
+2026-11-12T19:48:18.9280369Z  #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+2026-11-12T19:48:18.9281151Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs:301:
+2026-11-12T19:48:18.9282048Z  async fn evaluated_c_refuses_original_selector_without_claim() -> anyhow::Result<()> {
+2026-11-12T19:48:18.9282725Z -    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Selector)).await
+2026-11-12T19:48:18.9283239Z +    Box::pin(refuses_original_predecessor(
+2026-11-12T19:48:18.9283597Z +        OriginalPredecessorFault::Selector,
+2026-11-12T19:48:18.9283912Z +    ))
+2026-11-12T19:48:18.9284458Z +    .await
+2026-11-12T19:48:18.9284666Z  }
+2026-11-12T19:48:18.9284860Z  
+2026-11-12T19:48:18.9285089Z  #[derive(Clone, Copy, Eq, PartialEq)]
+2026-11-12T19:48:19.7325058Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_diagnostics_tests.rs:31:
+2026-11-12T19:48:19.7326738Z      REQUEST_ID.set(request_id);
+2026-11-12T19:48:19.7327331Z  }
+2026-11-12T19:48:19.7327760Z  
+2026-11-12T19:48:19.7328200Z -pub(super) fn capture(
+2026-11-12T19:48:19.7329110Z -    action: wire::Action,
+2026-11-12T19:48:19.7329628Z -    binding: Digest32,
+2026-11-12T19:48:19.7329973Z -    elapsed: Duration,
+2026-11-12T19:48:19.7330306Z -    error: &Error,
+2026-11-12T19:48:19.7330620Z -) {
+2026-11-12T19:48:19.7331237Z +pub(super) fn capture(action: wire::Action, binding: Digest32, elapsed: Duration, error: &Error) {
+2026-11-12T19:48:19.7332481Z      let error = match error {
+2026-11-12T19:48:19.7332895Z          Error::Panel(error) => match error {
+2026-11-12T19:48:19.7333605Z              PanelError::Binding(reason) => format!("Panel::Binding({reason})"),
+2026-11-12T19:48:19.7555785Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:336:
+2026-11-12T19:48:19.7557065Z              }
+2026-11-12T19:48:19.7557564Z              // All original bytes remain, but a u32 prefix must not be accepted.
+2026-11-12T19:48:19.7558260Z              let mut changed = Body::decode(&self.bytes)?;
+2026-11-12T19:48:19.7559315Z -            drop(changed.members[0].execution_record.splice(start..start, [0, 0]));
+2026-11-12T19:48:19.7559946Z +            drop(
+2026-11-12T19:48:19.7560287Z +                changed.members[0]
+2026-11-12T19:48:19.7560704Z +                    .execution_record
+2026-11-12T19:48:19.7561140Z +                    .splice(start..start, [0, 0]),
+2026-11-12T19:48:19.7561579Z +            );
+2026-11-12T19:48:19.7561818Z              assert!(
+2026-11-12T19:48:19.7562537Z                  verify::material(&self.context, &self.evaluation, &changed.encode()?, current)
+2026-11-12T19:48:19.7563207Z                      .is_err()
+2026-11-12T19:48:19.8798285Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs:265:
+2026-11-12T19:48:19.8800123Z      assert_eq!(checked(handle.task_cost().await), receipt.cost);
+2026-11-12T19:48:19.8801135Z      assert_eq!(checked(handle.snapshot().await), expected);
+2026-11-12T19:48:19.8801698Z      assert!(checked(handle.drain().await));
+2026-11-12T19:48:19.8802422Z -    assert_eq!(checked(GenerationFiles::new(&handle).read().await), drained_bytes);
+2026-11-12T19:48:19.8803083Z +    assert_eq!(
+2026-11-12T19:48:19.8803496Z +        checked(GenerationFiles::new(&handle).read().await),
+2026-11-12T19:48:19.8803983Z +        drained_bytes
+2026-11-12T19:48:19.8804279Z +    );
+2026-11-12T19:48:19.8804774Z      assert_eq!(contacts.load(Ordering::SeqCst), 0);
+2026-11-12T19:48:19.8805384Z      assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
+2026-11-12T19:48:19.8805909Z      tasks.shutdown().await;
+2026-11-12T19:48:20.5305459Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.5345906Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.5569926Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.5850231Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.5898271Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6044337Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6104944Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6140015Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6243629Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6363222Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6415139Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6497056Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6567908Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6635554Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6655202Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6722941Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.6786479Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.7050390Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.7222882Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.7297531Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.7715778Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.7732494Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:20.7734435Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0064659Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0227370Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0317330Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0434427Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0497747Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0514186Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0531640Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0554862Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0625089Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0666774Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0709916Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0739821Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.0752626Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.1051924Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.1093072Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.1431437Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.1552873Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.1810040Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.2077421Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.2380719Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.2468345Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.2876164Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.5236242Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.5274618Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.5301230Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.5313740Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.5325366Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.6285322Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.6304061Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.6308401Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.7745302Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.7747036Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.8322362Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.8338473Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.8340475Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.8715569Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.8733885Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.9214905Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.9840935Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.9858092Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:21.9893041Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.1069944Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.1134106Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.1177386Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.2690668Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.2707688Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.2735859Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.2968823Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.3160654Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.4540942Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.4578604Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.5910030Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.6047167Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.6411703Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.6453219Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.6499942Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.7040009Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.7120265Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.7252409Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.7284283Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.7286455Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.7885823Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.7887666Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.8421048Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:22.8438294Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.5418537Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.5456523Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.5626441Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.5652045Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.6392246Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.6395156Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.6637576Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.6680751Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.7262490Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:23.8140613Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron/src/cell_generation_qualification.rs:16:
+2026-11-12T19:48:23.8141795Z      ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
+2026-11-12T19:48:23.8142355Z          self.require_healthy()?;
+2026-11-12T19:48:23.8142808Z          let result = (|| {
+2026-11-12T19:48:23.8143482Z -            let journal = file_bytes(&mut self.file, maximum_bytes).map_err(|error| match error {
+2026-11-12T19:48:23.8144455Z -                FileBytesError::Capacity => CellGenerationErrorV2::Capacity,
+2026-11-12T19:48:23.8145301Z -                FileBytesError::Io(_) => CellGenerationErrorV2::CommitUncertain,
+2026-11-12T19:48:23.8145950Z -            })?;
+2026-11-12T19:48:23.8146286Z +            let journal =
+2026-11-12T19:48:23.8146867Z +                file_bytes(&mut self.file, maximum_bytes).map_err(|error| match error {
+2026-11-12T19:48:23.8147707Z +                    FileBytesError::Capacity => CellGenerationErrorV2::Capacity,
+2026-11-12T19:48:23.8149063Z +                    FileBytesError::Io(_) => CellGenerationErrorV2::CommitUncertain,
+2026-11-12T19:48:23.8149740Z +                })?;
+2026-11-12T19:48:23.8150103Z              let witness = self
+2026-11-12T19:48:23.8150503Z                  .witness
+2026-11-12T19:48:23.8150925Z                  .qualification_file_bytes(maximum_bytes)
+2026-11-12T19:48:23.8155112Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs:30:
+2026-11-12T19:48:23.8156381Z      checked(owner.file.seek(SeekFrom::Start(7)));
+2026-11-12T19:48:23.8157060Z      let bytes = checked(owner.qualification_file_bytes(MAXIMUM_BYTES));
+2026-11-12T19:48:23.8157807Z      assert_eq!(checked(owner.file.stream_position()), 7);
+2026-11-12T19:48:23.8158589Z -    assert_eq!(owner.qualification_file_bytes(MAXIMUM_BYTES), Ok(bytes.clone()));
+2026-11-12T19:48:23.8159566Z +    assert_eq!(
+2026-11-12T19:48:23.8159995Z +        owner.qualification_file_bytes(MAXIMUM_BYTES),
+2026-11-12T19:48:23.8160522Z +        Ok(bytes.clone())
+2026-11-12T19:48:23.8160904Z +    );
+2026-11-12T19:48:23.8161218Z      assert!(matches!(
+2026-11-12T19:48:23.8161666Z          LockedFile::acquire(fixture.file("journal")),
+2026-11-12T19:48:23.8162250Z          Err(JournalError::Busy)
+2026-11-12T19:48:23.8163273Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs:109:
+2026-11-12T19:48:23.8164371Z      let mut created = fixture.file("read-error");
+2026-11-12T19:48:23.8164974Z      checked(created.write_all(b"original locked file"));
+2026-11-12T19:48:23.8165512Z      drop(created);
+2026-11-12T19:48:23.8166150Z -    let file = checked(OpenOptions::new().write(true).open(fixture.0.join("read-error")));
+2026-11-12T19:48:23.8166883Z +    let file = checked(
+2026-11-12T19:48:23.8167269Z +        OpenOptions::new()
+2026-11-12T19:48:23.8167658Z +            .write(true)
+2026-11-12T19:48:23.8168078Z +            .open(fixture.0.join("read-error")),
+2026-11-12T19:48:23.8168547Z +    );
+2026-11-12T19:48:23.8169183Z      let mut locked = checked(LockedFile::acquire(file));
+2026-11-12T19:48:23.8169785Z      checked(locked.seek(SeekFrom::Start(4)));
+2026-11-12T19:48:23.8170273Z      assert!(matches!(
+2026-11-12T19:48:23.9592208Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron/src/qualification_file.rs:21:
+2026-11-12T19:48:23.9593410Z      }
+2026-11-12T19:48:23.9593689Z  }
+2026-11-12T19:48:23.9593958Z  
+2026-11-12T19:48:23.9594247Z -pub(crate) fn file_bytes(
+2026-11-12T19:48:23.9594635Z -    file: &mut File,
+2026-11-12T19:48:23.9594978Z -    maximum_bytes: u64,
+2026-11-12T19:48:23.9595357Z -) -> Result<Vec<u8>, FileBytesError> {
+2026-11-12T19:48:23.9596083Z +pub(crate) fn file_bytes(file: &mut File, maximum_bytes: u64) -> Result<Vec<u8>, FileBytesError> {
+2026-11-12T19:48:23.9596887Z      if maximum_bytes == 0 || maximum_bytes > MAXIMUM_BYTES {
+2026-11-12T19:48:23.9597498Z          return Err(FileBytesError::Capacity);
+2026-11-12T19:48:23.9597946Z      }
+2026-11-12T19:48:23.9881137Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.0522197Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.1069246Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.1103633Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.1123914Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.1710568Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.1727782Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.1790709Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.2356388Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.2773722Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.3447614Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.3874119Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.3883527Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4626926Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4643617Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4657840Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4790149Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4798004Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4803558Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4820085Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4829229Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4838576Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4846910Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.4854700Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7109711Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7131740Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7151712Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7165072Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7251526Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7260536Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7293977Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7333214Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7379255Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7399928Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7416478Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7744054Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.7921244Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.8042470Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.8046449Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.9323468Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:24.9335728Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.0096140Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.0146141Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.0213885Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.0238045Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.0244095Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.0245898Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.1005023Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.1006339Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.1177697Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.1223103Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.2256848Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.2488296Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.2751590Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.2754408Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.2830234Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.2877945Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.2898596Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.3291730Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.3423234Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.3880336Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.4008201Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.4241147Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.5992881Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.6046347Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.6139326Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.6553478Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.6966126Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.7037496Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.7050854Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.7208407Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9269044Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9289535Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9379207Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9381645Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9398355Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9407610Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9424045Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9534009Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:25.9596707Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1268331Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1276349Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1415816Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1447518Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1532988Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1586714Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1606042Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1640327Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1675600Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1860923Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1880335Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1894430Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.1917014Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.2024635Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.2083437Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.2145100Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.2196816Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.2231320Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.2274761Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.3517234Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.4461170Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.5416378Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.5522575Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.6160043Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.6162167Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.6349624Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.6354141Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.6551353Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.8847168Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.8855785Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.8859641Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.8893398Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.8973875Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.8981703Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:26.9016618Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:27.1771870Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:27.2226498Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:27.2243761Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:27.2246975Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8593544Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8605862Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8744255Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8752886Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8763806Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8824667Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8899611Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8905659Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8949832Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8965218Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.8982328Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9012741Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9025838Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9072581Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9078502Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9093872Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9125691Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9145164Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9227459Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9237084Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9244571Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9286898Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9553825Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9711204Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:29.9752528Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0273990Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0283091Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0308627Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0313039Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0318120Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0322510Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0325849Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0346979Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0389175Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0497840Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0539060Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0568260Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0577130Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0723542Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0729742Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.0807334Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.1134368Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.3210216Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.3229255Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-12T19:48:30.3531509Z ##[error]Process completed with exit code 1.
+2026-11-12T19:48:30.3569480Z Prepare all required actions
+2026-11-12T19:48:30.3597995Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T19:48:30.3598302Z env:
+2026-11-12T19:48:30.3598523Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:30.3599260Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:30.3599696Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:30.3600043Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:30.3600477Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:30.3601082Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:30.3601629Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:30.3601974Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:30.3602258Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:30.3602568Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:30.3602837Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:30.3603088Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:48:30.3603314Z   CARGO_TERM_COLOR: always
+2026-11-12T19:48:30.3603542Z ##[endgroup]
+2026-11-12T19:48:30.3606848Z ##[start-action display=Check for a clean worktree;id=__self_2.__run]
+2026-11-12T19:48:30.3623469Z ##[group]Run set -euo pipefail
+2026-11-12T19:48:30.3623767Z [36;1mset -euo pipefail[0m
+2026-11-12T19:48:30.3623994Z [36;1m[0m
+2026-11-12T19:48:30.3624458Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T19:48:30.3625003Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T19:48:30.3625260Z [36;1m  exit 0[0m
+2026-11-12T19:48:30.3625451Z [36;1mfi[0m
+2026-11-12T19:48:30.3625631Z [36;1m[0m
+2026-11-12T19:48:30.3625999Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T19:48:30.3626466Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T19:48:30.3626711Z [36;1mexit 1[0m
+2026-11-12T19:48:30.3646486Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T19:48:30.3646824Z env:
+2026-11-12T19:48:30.3647049Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T19:48:30.3647441Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:30.3647864Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T19:48:30.3648213Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T19:48:30.3648646Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T19:48:30.3649501Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43293663395-general
+2026-11-12T19:48:30.3650053Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T19:48:30.3650401Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:30.3650680Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T19:48:30.3650957Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T19:48:30.3651216Z   CARGO_HOME: /home/runner/.cargo
+2026-11-12T19:48:30.3651462Z   CARGO_INCREMENTAL: 0
+2026-11-12T19:48:30.3651680Z   CARGO_TERM_COLOR: always
+2026-11-12T19:48:30.3651901Z ##[endgroup]
+2026-11-12T19:48:30.8974217Z ##[end-action id=__self_2.__run;outcome=success;conclusion=success;duration_ms=536]
+2026-11-12T19:48:30.9070350Z Post job cleanup.
+2026-11-12T19:48:30.9936350Z [command]/usr/bin/git version
+2026-11-12T19:48:30.9984900Z git version 2.56.0
+2026-11-12T19:48:31.0034523Z Temporarily overriding HOME='/home/runner/work/_temp/2c13afad-f070-4368-b2d7-94a5934a0aa9' before making global git config changes
+2026-11-12T19:48:31.0036068Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T19:48:31.0041735Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T19:48:31.0076913Z Removing SSH command configuration
+2026-11-12T19:48:31.0085045Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T19:48:31.0125359Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T19:48:31.0418398Z Removing HTTP extra header
+2026-11-12T19:48:31.0426333Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T19:48:31.0466966Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T19:48:31.0776794Z Removing includeIf entries pointing to credentials config files
+2026-11-12T19:48:31.0789198Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T19:48:31.0834807Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T19:48:31.1292197Z Cleaning up orphan processes

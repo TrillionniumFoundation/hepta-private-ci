@@ -1,0 +1,76 @@
+{
+  "compare": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "base": "e403c45570ad313851ca71392625e5572882405f",
+    "head": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "e403c45570ad313851ca71392625e5572882405f",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e403c45570ad313851ca71392625e5572882405f",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e403c45570ad313851ca71392625e5572882405f"
+    },
+    "merge_base_commit": {
+      "sha": "e403c45570ad313851ca71392625e5572882405f",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e403c45570ad313851ca71392625e5572882405f",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e403c45570ad313851ca71392625e5572882405f"
+    },
+    "files": [
+      {
+        "filename": "codex-rs/hepta-agentd/src/authority_host_learning_resident_origin_tests.rs",
+        "status": "modified",
+        "additions": 17,
+        "deletions": 2,
+        "changes": 19,
+        "previous_filename": null
+      },
+      {
+        "filename": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 0,
+        "changes": 3,
+        "previous_filename": null
+      }
+    ]
+  },
+  "commit": {
+    "sha": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "node_id": "C_kwDOTrgxoNoAKGE0YTFiNWViNmNiNDVmYzExODI1NjRlNmI4MTAyNmEyYTJhY2Y2MDk",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:44:20Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T19:44:20Z"
+    },
+    "tree": {
+      "sha": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+    },
+    "message": "Use original typed Training command peers in resident origin test\n\nThe actual locked/offline compiler rejected a Readback connection passed to the Candidate fixture's Command connection argument. Use the existing original Fresh or Recovered command-peer factory matching each existing pairing, exposed only through the existing cfg(test) ports module.\n\nAll eight origin pairings, actual protected Root observations, issuer sequence and zero-frame assertions remain unchanged. Actual pinned formatting exits zero with no changes; six origin source guards pass. Native and ordinary qualification remain pending.",
+    "parents": [
+      {
+        "sha": "e403c45570ad313851ca71392625e5572882405f",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e403c45570ad313851ca71392625e5572882405f",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e403c45570ad313851ca71392625e5572882405f"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "time": "2026-11-12 19:45:12 UTC"
+}
