@@ -79,3 +79,11 @@ policy knowledge. No full lifetime cost or learning benefit is qualified.
 Async waits, cross-process lifecycle recovery, production CellStateOwner/FinalUse
 integration, independent real application families and full operational cost
 remain open. Production adoption and learning promotion remain false.
+
+## Later continuation
+
+[Actual async waits and durable control recovery](continuation/README.md) add
+17 new passing behavioral cases and retain an independently reproduced and
+repaired original-invocation receipt defect. Their exact source and remaining
+gates are separate in `continuation/BLOCKERS.json`. The original panel above
+does not qualify their combined execution or production FinalUse.

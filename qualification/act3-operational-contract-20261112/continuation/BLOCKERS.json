@@ -1,0 +1,79 @@
+{
+  "code_commit": "b0065696ee4642539361d77543fef18837d278b2",
+  "code_tree": "181fca489f3d1348da9462e216084d6bbfbb4783",
+  "local_tree_exact_match": true,
+  "native_seed_pr": 6127,
+  "native_seed_commit": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+  "new_tests": {
+    "actual_async_pipe": 8,
+    "durable_process_crash": 9
+  },
+  "gates": [
+    {
+      "gate": "async_exact_invocation_readback",
+      "status": "PASS_CONTROLLED_FIXTURE",
+      "scope": "same UID spawned worker and read-only original pipe observer; no redispatch"
+    },
+    {
+      "gate": "durable_control_crash_recovery",
+      "status": "PASS_CONTROLLED_LINUX",
+      "scope": "original deadline/pause/spent/retry/unresolved across actual process death"
+    },
+    {
+      "gate": "foreign_original_invocation_rejection",
+      "status": "PASS_CONTROLLED_LINUX",
+      "scope": "actual after-apply process death; self-consistent foreign invocation rejected on restore, observe, audit and apply"
+    },
+    {
+      "gate": "native_seed_executable",
+      "status": "NOT_RUN",
+      "run_id": 43163424939,
+      "reason": "dedicated exact-case workflow queued; architecture prior source filtered this case out"
+    },
+    {
+      "gate": "product_goal_checking_host_registration",
+      "status": "OPEN_SOURCE_INTEGRATION",
+      "source": "9db98207bdb1ec36e2ba9ac0cf0356bf243821ab",
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "reason": "ordinary host rejects ActionSkillInvocationV1 and uses HttpAuthorizedEffectDriver; full registered goal-checking path not qualified"
+    },
+    {
+      "gate": "original_root_authbus_final_use",
+      "status": "UNOBSERVED",
+      "reason": "requires actual sealed Root bootstrap, original pidfd and socket lanes, Session lifetime, original Core thread and AuthBus admitted human delivery; target health tool timed out"
+    },
+    {
+      "gate": "combined_async_and_restart_path",
+      "status": "NOT_RUN",
+      "reason": "separate APIs/tests do not qualify their joint assembly"
+    },
+    {
+      "gate": "recurrent_model_hidden_recovery_in_new_lifecycle",
+      "status": "NOT_IMPLEMENTED",
+      "reason": "model artifact hash is bound; hidden state not restored; earlier continuation evidence is separate"
+    },
+    {
+      "gate": "independent_real_application_families",
+      "status": "NOT_RUN",
+      "reason": "current probe families and fault conditions are controlled fixtures"
+    },
+    {
+      "gate": "complete_lifetime_cost",
+      "status": "NOT_MEASURED",
+      "reason": "historical owner requests remain unknown; process-local windows exclude historical model training/deployment"
+    },
+    {
+      "gate": "current_learned_candidate_adoption",
+      "status": "DECIDED_NO_UPDATE",
+      "reason": "existing fixed/head/GRU panel ties, no learning gain qualified"
+    }
+  ],
+  "source_sha256": {
+    "async_owner_wait.py": "eaec392cc53da967fcb719ad3f554e97369345bf7998b2192b4b67fe725d6a6f",
+    "test_async_owner_wait.py": "2f4832cee10a7f1d666a44e28f14c95f36d6a8bf731725d35464d685296b270c",
+    "durable_lifecycle.py": "29f88dbe6a3b933fb84bf362e35323146f32f4c15da6662eb1a1ada1328d4689",
+    "test_durable_lifecycle.py": "dc58c4df4f0c2e8e24466310c4b2f97f05b8679a577346a93d4dd3c2567a7c8f"
+  },
+  "all_blockers_closed": false,
+  "production_adoption": false
+}
