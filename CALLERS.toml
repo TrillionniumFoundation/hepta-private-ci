@@ -4015,8 +4015,9 @@ required_function_order = [{ function = "fn create(", sequence = ["prepared.with
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs"
-required = ["pub struct OriginalCellQ24SourceJournalV1", "pub struct OriginalCellQ24SourceFilesV1", "pub witness: FileAnchorWitnessStore", "OriginalCellQ24SourceStageV1::Experience", "OriginalCellQ24SourceStageV1::Dataset", "validate_config(&prepared, &experience, &self.experience.key)?", "validate_config(&prepared, &dataset, &self.dataset.key)?", "Mode::Create => OriginalCellQ24SourceReceiptOwnerV1::create(", "Mode::Recover => OriginalCellQ24SourceReceiptOwnerV1::recover("]
+required = ["pub struct OriginalCellQ24SourceJournalV1", "pub struct OriginalCellQ24SourceFilesV1", "pub witness: FileAnchorWitnessStore", "OriginalCellQ24SourceStageV1::Experience", "OriginalCellQ24SourceStageV1::Dataset", "validate_config(&prepared, &experience, &self.experience.key, read)?", "validate_config(&prepared, &dataset, &self.dataset.key, read)?", "Mode::Create => OriginalCellQ24SourceReceiptOwnerV1::create(", "Mode::Recover => OriginalCellQ24SourceReceiptOwnerV1::recover("]
 forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "OpenOptions", "UnixStream::connect", "put_lease", "initialize_host_authority", "permit_all"]
+required_function_order = [{ function = "fn open_original_source_files(", sequence = ["OriginalCellQ24SourceStageV1::Experience", "OriginalCellQ24SourceStageV1::Dataset", "CellQ24PreparedLearningV1::with_original_prepared_operation(&prepared, |read|", "validate_config(&prepared, &experience, &self.experience.key, read)?", "validate_config(&prepared, &dataset, &self.dataset.key, read)?", "Ok::<_, Error>(())", ".open(Arc::clone(&prepared), experience, mode)?", "self.dataset.open(Arc::clone(&prepared), dataset, mode)?", "prepared.revalidate_source()?", "Ok((experience, dataset))"] }]
 
 [[boundary]]
 id = "learning_original_source_prepared_handoff"
@@ -9921,7 +9922,7 @@ caller_markers = []
 id = "root_historical_current_trust_read"
 symbol = "OriginalHistoricalLearningTrustV1::with_current_trust"
 definition_path = "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"
-definition_markers = ["fn with_current_trust<T>(", "self.with_original_operation(", "operation.read_for(self, &self.receipt, action)"]
+definition_markers = ["fn with_current_trust<T>(", "OriginalHistoricalLearningTrustV1::with_original_operation(", "OriginalHistoricalOperationV1::read_for(operation, self, &self.receipt, action)"]
 product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"]
 caller_markers = []
 
@@ -10972,7 +10973,7 @@ symbol = "CellQ24PreparedLearningV1::with_original_prepared_operation"
 receiver_type = "CellQ24PreparedLearningV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs"
 definition_markers = ["fn with_original_prepared_operation<T, E>(", "for<'read> FnOnce(&OriginalPreparedReadV1<'read>)", "prepared: self,"]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs", "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs", "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs"]
 caller_markers = ["with_original_prepared_operation("]
 
 [[boundary]]
