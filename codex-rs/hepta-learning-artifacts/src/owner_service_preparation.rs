@@ -21,6 +21,7 @@ use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationReceiptV1;
 use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
+use crate::LearningArtifactOwnerHost;
 use crate::OriginalArtifactRegistryDurableV1;
 use crate::SignedCurrentArtifactHeadV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
@@ -131,7 +132,8 @@ impl LearningArtifactOwnerService {
             return Err(OriginalArtifactPreparationErrorV1::ReadbackRequired);
         }
         let started = clock()?;
-        let predecessor = self.host.read_original_registry_predecessor(
+        let predecessor = LearningArtifactOwnerHost::read_original_registry_predecessor(
+            &self.host,
             context.expected_registry_predecessor_head,
             self.storage_binding,
             started,
@@ -154,7 +156,8 @@ impl LearningArtifactOwnerService {
         )?;
         self.recovery_required = Some(context.operation_id.clone());
         self.original_preparation_active = true;
-        let mut transaction = self.host.begin_original_registry_publication(
+        let mut transaction = LearningArtifactOwnerHost::begin_original_registry_publication(
+            &self.host,
             context.operation_id.clone(),
             context.admission.clone(),
             &self.withdrawal_registry,
@@ -207,7 +210,8 @@ impl LearningArtifactOwnerService {
         if self.original_preparation_fenced.load(Ordering::Acquire) {
             return Err(OriginalArtifactPreparationErrorV1::Fenced);
         }
-        let result = self.host.read_original_registry_durable(
+        let result = LearningArtifactOwnerHost::read_original_registry_durable(
+            &self.host,
             context,
             &self.withdrawal_registry,
             self.storage_binding,

@@ -12,6 +12,7 @@ use std::time::Duration;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
+use codex_hepta_learning_artifacts::OriginalArtifactRegistryDurableV1;
 use codex_hepta_learning_artifacts::UntrustedArtifactRegistryDurableV1;
 use codex_hepta_types::Digest32;
 use tokio::sync::Semaphore;
@@ -119,7 +120,7 @@ impl OriginalArtifactRegistrySourceOwnerV1 {
         drop(writer);
         // Encoding is pure. The original writer has already reread payload,
         // complete registry/checkpoint/CURRENT and the original writer lease.
-        let encoded = observed.encode_for_original_head_source(&self.config)?;
+        let encoded = OriginalArtifactRegistryDurableV1::encode_for_original_head_source(&observed, &self.config)?;
         let claims = UntrustedArtifactRegistryDurableV1::decode(&encoded, &self.config)?;
         claims.authenticate_current(&self.config, fresh(started)?)?;
         request.response(wire::Status::Completed, &encoded)
@@ -251,3 +252,7 @@ impl OriginalArtifactRegistrySourceClientV1 {
         Ok(source)
     }
 }
+
+#[cfg(test)]
+#[path = "artifact_original_head_tests.rs"]
+mod tests;

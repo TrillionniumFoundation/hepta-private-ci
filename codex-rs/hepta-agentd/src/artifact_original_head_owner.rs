@@ -54,7 +54,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
         source
             .config
             .require_registered_key(&original_key.verifying_key().to_bytes(), started)?;
-        let before = source.read_current().await?;
+        let before = OriginalArtifactRegistrySourceClientV1::read_current(&source).await?;
         before.require_unsigned_phase()?;
         let binding = source.config.binding()?;
         let original_subject = before.subject_binding(&source.config)?;
@@ -67,7 +67,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
             if cancelled.load(Ordering::Acquire) {
                 return Err(Error::CommitUncertain);
             }
-            let current_source = queued_source.read_current_in_lane(&cancelled)?;
+            let current_source = OriginalArtifactRegistrySourceClientV1::read_current_in_lane(&queued_source, &cancelled)?;
             if !queued_before.same_original_observation(&current_source) {
                 return Err(Error::CommitUncertain);
             }
@@ -84,7 +84,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
         .await
         .map_err(|_| Error::CommitUncertain)??;
         drop(waiting);
-        let after = source.read_current().await?;
+        let after = OriginalArtifactRegistrySourceClientV1::read_current(&source).await?;
         if !before.same_original_observation(&after) {
             return Err(Error::CommitUncertain);
         }
@@ -118,7 +118,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
     ) -> Result<Self, Error> {
         let source = Arc::new(source);
         let started = now()?;
-        let before = source.read_current().await?;
+        let before = OriginalArtifactRegistrySourceClientV1::read_current(&source).await?;
         let binding = source.config.binding()?;
         let original_subject = before.subject_binding(&source.config)?;
         let queued_source = Arc::clone(&source);
@@ -129,7 +129,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
             if cancelled.load(Ordering::Acquire) {
                 return Err(Error::CommitUncertain);
             }
-            let current_source = queued_source.read_current_in_lane(&cancelled)?;
+            let current_source = OriginalArtifactRegistrySourceClientV1::read_current_in_lane(&queued_source, &cancelled)?;
             if !queued_before.same_original_observation(&current_source) {
                 return Err(Error::CommitUncertain);
             }
@@ -142,7 +142,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
         .await
         .map_err(|_| Error::CommitUncertain)??;
         drop(waiting);
-        let after = source.read_current().await?;
+        let after = OriginalArtifactRegistrySourceClientV1::read_current(&source).await?;
         if !before.same_original_observation(&after) {
             return Err(Error::CommitUncertain);
         }
@@ -172,7 +172,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
             return Err(Error::CommitUncertain);
         }
         let started = now()?;
-        let before = self.source.read_current_in_lane(cancelled)?;
+        let before = OriginalArtifactRegistrySourceClientV1::read_current_in_lane(&self.source, cancelled)?;
         self.require_subject(&before)?;
         before.require_unsigned_phase()?;
         let key = self
@@ -221,7 +221,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
         };
         drop(key);
         // No journal mutex is held while the source reenters its writer host.
-        let after = self.source.read_current_in_lane(cancelled)?;
+        let after = OriginalArtifactRegistrySourceClientV1::read_current_in_lane(&self.source, cancelled)?;
         if !before.same_original_observation(&after) {
             return Err(Error::CommitUncertain);
         }
@@ -240,11 +240,11 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalArtifactHeadOwnerV1<W> {
 
     pub(super) fn read_original(&self, cancelled: &AtomicBool) -> Result<Vec<u8>, Error> {
         let started = now()?;
-        let before = self.source.read_current_in_lane(cancelled)?;
+        let before = OriginalArtifactRegistrySourceClientV1::read_current_in_lane(&self.source, cancelled)?;
         self.require_subject(&before)?;
         let bytes = self.read_record()?;
         let signed = decode_record(self.original_subject, &bytes)?;
-        let after = self.source.read_current_in_lane(cancelled)?;
+        let after = OriginalArtifactRegistrySourceClientV1::read_current_in_lane(&self.source, cancelled)?;
         // Progress at the writer (including HEAD -> ACK) is never merged into
         // an observation made across a changing read. A later call may observe
         // one stable phase, but it can only return this saved original HEAD.

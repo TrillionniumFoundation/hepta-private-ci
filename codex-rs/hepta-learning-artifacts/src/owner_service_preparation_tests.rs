@@ -188,6 +188,39 @@ fn original_registry_lost_return_and_cold_readback_cannot_recreate_continuation(
             .read_original_registry_durable_with_clock(&context, &|| Ok(21))
             .is_ok()
     );
+    // Public legacy transaction methods can reconstruct the compatibility
+    // projection, but it is not the original split-protocol checkpoint. The
+    // low-level host must reject before creating a witness or CURRENT record.
+    let mut legacy = ArtifactPublicationTransactionV1::begin(
+        context.operation_id.clone(),
+        context.admission.clone(),
+        recovered.withdrawal_registry(),
+        &ArtifactRegistry::new(),
+        context.expected_registry_predecessor_head,
+        21,
+    )
+    .fixture("legacy transaction");
+    legacy
+        .record_payload_durable(Digest32::of_bytes(b"payload"), 7)
+        .fixture("legacy payload projection");
+    legacy
+        .record_registry_durable(
+            &prepared.staged,
+            prepared.observed.registry_receipt(),
+            recovered.withdrawal_registry(),
+            21,
+        )
+        .fixture("legacy registry projection");
+    assert!(matches!(
+        recovered.host.ensure_witness_durable(
+            &mut legacy,
+            &head,
+            recovered.withdrawal_registry(),
+            21,
+        ),
+        Err(crate::ArtifactOwnerHostError::CheckpointMismatch)
+    ));
+    assert_eq!(files(&directory.0), before);
     // A cold service no longer has the in-memory active flag. The original
     // immutable intent must still refuse the old write-and-resume entrance.
     assert!(matches!(

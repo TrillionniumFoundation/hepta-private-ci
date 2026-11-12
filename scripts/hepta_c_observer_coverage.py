@@ -398,7 +398,35 @@ ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES = tuple(
     )
 )
 
+ORIGINAL_ARTIFACT_PREPARATION_CASES = tuple(
+    "owner_service::preparation::tests::" + name
+    for name in (
+        "original_registry_preparation_stops_before_head_and_finishes_same_writer_once",
+        "original_registry_lost_return_and_cold_readback_cannot_recreate_continuation",
+        "original_registry_partial_prepare_is_pending_and_readback_never_completes_it",
+        "original_registry_physical_corruption_fences_even_after_original_bytes_return",
+        "original_registry_wrong_context_is_refused_before_consuming_the_writer",
+        "original_registry_finish_requires_original_signature_withdrawal_and_fresh_time",
+    )
+)
+LEGACY_ARTIFACT_RECOVERY_CASES = (
+    "owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head",
+    "owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot",
+    "owner_host::tests::owner_host_resumes_legacy_payload_under_renewed_writer_lease",
+)
+ORIGINAL_ARTIFACT_HEAD_CASES = tuple(
+    "artifact_original_head::source::tests::" + name
+    for name in (
+        "original_artifact_head_signs_once_and_cold_reads_saved_signature",
+        "original_artifact_head_lost_reply_reads_original_without_recreating_writer",
+        "original_artifact_head_restored_source_cannot_revive_consumed_connection",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_artifact_head", PACKAGE, ORIGINAL_ARTIFACT_HEAD_CASES),
+    ("original_artifact_preparation", "codex-hepta-learning-artifacts", ORIGINAL_ARTIFACT_PREPARATION_CASES),
+    ("legacy_artifact_recovery", "codex-hepta-learning-artifacts", LEGACY_ARTIFACT_RECOVERY_CASES),
     ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
     (
         "original_evaluation_model_material",

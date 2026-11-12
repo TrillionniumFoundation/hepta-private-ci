@@ -543,6 +543,10 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<PathBuf, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
+        self.require_original_publication_checkpoint(
+            transaction,
+            ArtifactPublicationPhaseV1::Prepared,
+        )?;
         let manifest = &transaction.intent().admission.validated_manifest.manifest;
         let relative = PathBuf::from("payloads").join(format!(
             "{}-{}.bin",
@@ -582,6 +586,10 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
+        self.require_original_publication_checkpoint(
+            transaction,
+            ArtifactPublicationPhaseV1::PayloadDurable,
+        )?;
         let encoded = encode_snapshot(registry, binding)?;
         let expected = RegistrySnapshotReceipt {
             binding,
@@ -623,6 +631,10 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<RegistryHeadWitnessReceipt, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
+        self.require_original_publication_checkpoint(
+            transaction,
+            ArtifactPublicationPhaseV1::RegistryDurable,
+        )?;
         let current = self.discover_current_head(now)?;
         let expected_predecessor = transaction.intent().expected_registry_predecessor_head;
         let requirement = match current.as_ref() {
@@ -721,6 +733,10 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<crate::ArtifactPublicationReceiptV1, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
+        self.require_original_publication_checkpoint(
+            transaction,
+            ArtifactPublicationPhaseV1::WitnessDurable,
+        )?;
         let current = self
             .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadConflict)?;
@@ -1846,6 +1862,111 @@ mod tests {
             .resume_publication(snapshot, 21)
             .fixture("exact snapshot resumes");
         assert_eq!(resumed.phase(), ArtifactPublicationPhaseV1::PayloadDurable);
+    }
+
+    #[test]
+    fn owner_host_resumes_legacy_payload_under_renewed_writer_lease() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("original owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let (registry, mut transaction) = deterministic_publication(&owner, &withdrawals, 20);
+        let payload_relative = owner
+            .ensure_payload_durable(&mut transaction, &registry, b"payload", 20)
+            .fixture("original payload is durable");
+        let payload =
+            fs::read(directory.0.join(&payload_relative)).fixture("original payload bytes");
+        assert_eq!(payload.as_slice(), b"payload");
+        let snapshot = transaction.snapshot();
+        let original_checkpoint = owner
+            .read_original_publication_checkpoint(&snapshot.intent.operation_id)
+            .fixture("read original payload checkpoint")
+            .fixture("original payload checkpoint exists");
+        assert_eq!(
+            original_checkpoint.phase,
+            ArtifactPublicationPhaseV1::PayloadDurable
+        );
+        assert_eq!(
+            original_checkpoint.original_writer_lease_digest,
+            owner.writer_lease_digest()
+        );
+        drop(owner);
+
+        let mut renewed = lease(&key, scope_digest);
+        renewed.lease_id = id("renewed-writer-lease");
+        renewed.lease_generation = 2;
+        renewed.issued_at = 21;
+        renewed.signature = key.sign(&renewed.signing_bytes()).to_bytes();
+        let reopened = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            renewed,
+            22,
+        )
+        .fixture("original host reopens under a renewed valid lease");
+        assert_ne!(
+            reopened.writer_lease_digest(),
+            original_checkpoint.original_writer_lease_digest
+        );
+        let mut resumed = reopened
+            .resume_publication(snapshot, 22)
+            .fixture("exact legacy snapshot resumes under renewed lease");
+        assert_eq!(resumed.phase(), ArtifactPublicationPhaseV1::PayloadDurable);
+        assert_eq!(
+            reopened
+                .read_original_publication_checkpoint(&resumed.intent().operation_id)
+                .fixture("reread original checkpoint")
+                .fixture("original checkpoint remains"),
+            original_checkpoint
+        );
+        assert!(
+            fs::read_dir(directory.0.join("registries"))
+                .fixture("registry directory")
+                .next()
+                .is_none()
+        );
+
+        let binding = digest("binding");
+        let receipt = reopened
+            .ensure_registry_durable(&mut resumed, &registry, &withdrawals, binding, 22)
+            .fixture("resumed legacy publication durably writes registry");
+        assert_eq!(resumed.phase(), ArtifactPublicationPhaseV1::RegistryDurable);
+        let registry_path = directory.0.join("registries").join(format!(
+            "{}-{}.snapshot",
+            receipt.head_digest, receipt.file_digest
+        ));
+        assert_eq!(
+            fs::read(&registry_path).fixture("persisted registry bytes"),
+            encode_snapshot(&registry, binding).fixture("expected registry bytes")
+        );
+        let persisted = read_registry_snapshot(
+            File::open(&registry_path).fixture("open persisted registry"),
+            receipt,
+        )
+        .fixture("read and authenticate persisted registry");
+        assert_eq!(persisted.snapshot(), registry.snapshot());
+        let advanced = reopened
+            .read_original_publication_checkpoint(&resumed.intent().operation_id)
+            .fixture("read advanced checkpoint")
+            .fixture("advanced checkpoint exists");
+        assert_eq!(advanced.phase, ArtifactPublicationPhaseV1::RegistryDurable);
+        assert_eq!(advanced.registry_receipt, Some(receipt));
+        assert_eq!(
+            advanced.original_writer_lease_digest,
+            reopened.writer_lease_digest()
+        );
+        assert_eq!(
+            fs::read(directory.0.join(payload_relative)).fixture("payload after registry write"),
+            payload
+        );
     }
 
     #[test]

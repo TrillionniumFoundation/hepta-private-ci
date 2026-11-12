@@ -134,9 +134,10 @@ impl OriginalArtifactHeadConnectionV1 {
         if !matches!(&self.origin, Origin::Fresh) {
             return Err(Error::ReadbackRequired);
         }
-        let original = prepared
-            .registry_durable()
-            .encode_for_original_head_source(&self.config)?;
+        let original = OriginalArtifactRegistryDurableV1::encode_for_original_head_source(
+            prepared.registry_durable(),
+            &self.config,
+        )?;
         let claims = UntrustedArtifactRegistryDurableV1::decode(&original, &self.config)?;
         claims.require_unsigned_phase()?;
         // The continuation is moved into this one future, so cancellation or
@@ -149,7 +150,7 @@ impl OriginalArtifactHeadConnectionV1 {
         self,
         observed: &OriginalArtifactRegistryDurableV1,
     ) -> Result<SignedCurrentArtifactHeadV1, Error> {
-        let bytes = observed.encode_for_original_head_source(&self.config)?;
+        let bytes = OriginalArtifactRegistryDurableV1::encode_for_original_head_source(observed, &self.config)?;
         let source = UntrustedArtifactRegistryDurableV1::decode(&bytes, &self.config)?;
         self.exchange(
             wire::Action::Readback,
