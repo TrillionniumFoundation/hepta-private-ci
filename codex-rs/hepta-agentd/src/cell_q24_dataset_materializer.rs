@@ -111,7 +111,23 @@ pub fn cell_q24_dataset_run_snapshot_digest_v1(
 /// owner's current original publication.
 trait OriginalTask: Send + Sync {
     fn read(&self) -> Result<CircuitTaskSourcePublicationV1, Error>;
+
+    #[cfg(target_os = "linux")]
+    fn read_for_historical_receipt(
+        &self,
+        _receipt: &Arc<
+            crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
+        >,
+    ) -> Result<CircuitTaskSourcePublicationV1, Error> {
+        Err(Error::Binding(
+            "task is not held by the original historical Root receipt",
+        ))
+    }
 }
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_dataset_historical_task.rs"]
+mod historical_task;
 
 #[cfg(target_os = "linux")]
 struct TaskSource<W: AnchorWitnessStore> {
