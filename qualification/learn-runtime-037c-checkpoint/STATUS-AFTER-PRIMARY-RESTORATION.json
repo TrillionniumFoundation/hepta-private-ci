@@ -1,0 +1,36 @@
+{
+  "observed_at": "2026-11-12 16:54:43 UTC",
+  "source": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+  "session_id": "dpty-12c148dbfefbe2849fccf9c4b8778a74a9bab75b7449203dcbdbb49491975390",
+  "actual_session_status": {
+    "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+    "bytes_seen": 127801,
+    "bytes_stored": 127801,
+    "capture_error": null,
+    "created_unix_ms": 1794501671547,
+    "output_complete": false,
+    "owner_pid": 1698925,
+    "pid": 1698927,
+    "state": "running"
+  },
+  "observed_real_rust_compilation": true,
+  "latest_output_preview": "ss; commands=[['rustc','--version','--verbose'],['cargo','--version'],['just','--version'],['cargo','nextest','--version']];[subprocess.run(c,check=True) for c in commands]\"], \"command_exit_code\": 0, \"elapsed_seconds\": 0.2866212949156761, \"exit_code\": 0, \"finished_at\": \"2026-11-12T16:53:19.193996+00:00\", \"job\": null, \"lane\": \"source-head\", \"log_bytes\": 415, \"log_file\": \"toolchain.json.a7ea86c19d9b4da5a4e3c2e74ddb3a3e.log\", \"log_sha256\": \"6c72114ad2667b12c3e486c8d80e7d74876bb6757ec198df455da1536061ccbe\", \"minimum_tests\": 0, \"observed_failed_tests\": 0, \"observed_passed_tests\": 0, \"output_limit_exceeded\": false, \"returncode\": 0, \"run_attempt\": null, \"run_id\": null, \"schema_version\": 1, \"source_sha\": \"00378c2e33ede95f4a93bf96f6d87b3bd415d337\", \"started_at\": \"2026-11-12T16:53:18.837317+00:00\", \"status\": \"passed\", \"tested_sha\": \"00378c2e33ede95f4a93bf96f6d87b3bd415d337\", \"timed_out\": false, \"working_directory\": \"/home/qian-qi/hepta-learn-common-20261112-037c\"}\r\nBuilding test helpers: codex-hepta-infer-worker-host\r\n",
+  "validation_limit": "Compilation output observed; no terminal maintenance or native result yet. Do not treat start ACK, formatter status or previous scoped QA as native PASS.",
+  "prior_v2": {
+    "terminal_exit": 1,
+    "cases_executed": 0,
+    "failure": "Original target admission conjunction failed before checkout/fmt/fix/native; exact disjunct was not established by that result.",
+    "terminal_sha256": "d2166e4b3f7a92081acfcbad62159ab06c8b3324e208bb33dec9e834d47e4914"
+  },
+  "primary_restored": {
+    "six_frozen_files_read_and_independently_hashed": true,
+    "all_six_sha256_match": true,
+    "original_source_and_guard_inputs_preserved": true
+  },
+  "qualification": {
+    "ordinary_evaluated_no_update": 0,
+    "ordinary_adopt": 0,
+    "full_daemon_root_cold_recovery": 0,
+    "multigeneration": 0
+  }
+}
