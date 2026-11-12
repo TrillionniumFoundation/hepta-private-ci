@@ -59,7 +59,7 @@ pub(crate) fn with_original_completed_b<T>(
     let record = OriginalBRecord::open(root, initial)?;
     OriginalBRecord::inspect(&record, end, |enrollment| {
         let original = enrollment.clone();
-        enrollment.completed_history_fact(scope)?;
+        OriginalBEnrollment::completed_history_fact(enrollment, scope)?;
         // No OwnerWriter is opened, even when a first terminal acceptance runs
         // while the original B process still retains its exclusive writers.
         let files = OriginalBInputs::open_completed_readonly(path)?;
@@ -111,7 +111,7 @@ impl OriginalCompletedBReadV1<'_> {
             return Err(io::Error::other("completed B original scope differs"));
         }
         let (accepted_at, acceptance, signature_digest) =
-            self.enrollment.completed_history_fact(self.scope)?;
+            OriginalBEnrollment::completed_history_fact(self.enrollment, self.scope)?;
         self.files
             .require_completed_protocol(context, accepted_at)?;
         let training = context
