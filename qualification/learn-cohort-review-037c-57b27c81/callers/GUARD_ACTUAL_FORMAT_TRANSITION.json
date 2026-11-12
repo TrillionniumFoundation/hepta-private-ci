@@ -1,0 +1,847 @@
+{
+  "status": "ACTUAL_FORMAT_MARKER_REFRESH_VERIFIED",
+  "old_plan": {
+    "bytes": 484175,
+    "sha256": "f92123daeded33f2f2c8e17d36d7c6d58e9882ba2417a1e55276767a84428af4",
+    "blob": "12a567e22be4580a1c1deb701aa55c93c856bdbf"
+  },
+  "actual_plan": {
+    "bytes": 488633,
+    "sha256": "1e0091b8e343cba6444a27406f0b4415fdf77aa5821f704b9527b8d0ac6ac0fd",
+    "blob": "7f42f47b24510d9ab04532d2876bd1c0336db58d"
+  },
+  "actual_format_manifest": {
+    "bytes": 24296,
+    "sha256": "cabe1d4baa76eeef490db21181f935988da28950610be26625cbaa94cb05a35e",
+    "blob": "aa756296c4c89e6abf46721fb351a4ac9a75315e"
+  },
+  "actual_format_patch": {
+    "bytes": 30220,
+    "sha256": "719250f816e43288c8eae48090c89990dad5fa71ea9a2c1c950cb8db9ac3303d",
+    "blob": "b66bc001e9ef01fc33389811f0703629a214a6ce"
+  },
+  "source_verifier": {
+    "bytes": 38402,
+    "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+    "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+  },
+  "changes": [
+    {
+      "plan_path": [
+        "protected_changes",
+        1,
+        "after",
+        "required_function_order",
+        12,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "before_marker": "\n        &self,\n    ) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {\n        if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {\n            return Err(Error::Binding(                                         ));\n        }\n        match self.exchange_original(RequestMode::PublicationProgress).await? {\n            OriginalVersionValue::Progress(value) => Ok(value),\n            OriginalVersionValue::Readback(_) => Err(Error::Binding(                                         )),\n        }\n    }",
+      "after_marker": "\n        &self,\n    ) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {\n        if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {\n            return Err(Error::Binding(                                         ));\n        }\n        match self\n            .exchange_original(RequestMode::PublicationProgress)\n            .await?\n        {\n            OriginalVersionValue::Progress(value) => Ok(value),\n            OriginalVersionValue::Readback(_) => {\n                Err(Error::Binding(                                         ))\n            }\n        }\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "after_source": {
+        "bytes": 14788,
+        "sha256": "d5f5844b33eb7a694b3c910472450cca509296cc28d67b204df8bb3602ce73a0",
+        "blob": "08dae223525454ec24b4c7586bb5865adc5ac860"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        1,
+        "after",
+        "required_function_order",
+        12,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "before_marker": "if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {\n            return Err(Error::Binding(                                         ));\n        }\n        match self.exchange_original(RequestMode::PublicationProgress).await? {\n            OriginalVersionValue::Progress(value) => Ok(value),\n            OriginalVersionValue::Readback(_) => Err(Error::Binding(                                         )),\n        }",
+      "after_marker": "if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {\n            return Err(Error::Binding(                                         ));\n        }\n        match self\n            .exchange_original(RequestMode::PublicationProgress)\n            .await?\n        {\n            OriginalVersionValue::Progress(value) => Ok(value),\n            OriginalVersionValue::Readback(_) => {\n                Err(Error::Binding(                                         ))\n            }\n        }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "after_source": {
+        "bytes": 14788,
+        "sha256": "d5f5844b33eb7a694b3c910472450cca509296cc28d67b204df8bb3602ce73a0",
+        "blob": "08dae223525454ec24b4c7586bb5865adc5ac860"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        1,
+        "after",
+        "required_function_order",
+        13,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "before_marker": "\n        &self,\n        mode: RequestMode,\n    ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {\n        match self.exchange_original(mode).await? {\n            OriginalVersionValue::Readback(value) => Ok(value),\n            OriginalVersionValue::Progress(_) => Err(Error::Binding(                                         )),\n        }\n    }",
+      "after_marker": "\n        &self,\n        mode: RequestMode,\n    ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {\n        match self.exchange_original(mode).await? {\n            OriginalVersionValue::Readback(value) => Ok(value),\n            OriginalVersionValue::Progress(_) => {\n                Err(Error::Binding(                                         ))\n            }\n        }\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "after_source": {
+        "bytes": 14788,
+        "sha256": "d5f5844b33eb7a694b3c910472450cca509296cc28d67b204df8bb3602ce73a0",
+        "blob": "08dae223525454ec24b4c7586bb5865adc5ac860"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        1,
+        "after",
+        "required_function_order",
+        13,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "before_marker": "match self.exchange_original(mode).await? {\n            OriginalVersionValue::Readback(value) => Ok(value),\n            OriginalVersionValue::Progress(_) => Err(Error::Binding(                                         )),\n        }",
+      "after_marker": "match self.exchange_original(mode).await? {\n            OriginalVersionValue::Readback(value) => Ok(value),\n            OriginalVersionValue::Progress(_) => {\n                Err(Error::Binding(                                         ))\n            }\n        }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "after_source": {
+        "bytes": 14788,
+        "sha256": "d5f5844b33eb7a694b3c910472450cca509296cc28d67b204df8bb3602ce73a0",
+        "blob": "08dae223525454ec24b4c7586bb5865adc5ac860"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        1,
+        "after",
+        "required_order",
+        10,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "before_marker": "    pub(crate) async fn publication_progress(\n        &self,\n    ) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {\n        if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {\n            return Err(Error::Binding(                                         ));\n        }\n        match self.exchange_original(RequestMode::PublicationProgress).await? {\n            OriginalVersionValue::Progress(value) => Ok(value),\n            OriginalVersionValue::Readback(_) => Err(Error::Binding(                                         )),\n        }\n    ",
+      "after_marker": "    pub(crate) async fn publication_progress(\n        &self,\n    ) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {\n        if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {\n            return Err(Error::Binding(                                         ));\n        }\n        match self\n            .exchange_original(RequestMode::PublicationProgress)\n            .await?\n        {\n            OriginalVersionValue::Progress(value) => Ok(value),\n            OriginalVersionValue::Readback(_) => {\n                Err(Error::Binding(                                         ))\n            }\n        }\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "after_source": {
+        "bytes": 14788,
+        "sha256": "d5f5844b33eb7a694b3c910472450cca509296cc28d67b204df8bb3602ce73a0",
+        "blob": "08dae223525454ec24b4c7586bb5865adc5ac860"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        1,
+        "after",
+        "required_order",
+        11,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "before_marker": "    async fn exchange(\n        &self,\n        mode: RequestMode,\n    ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {\n        match self.exchange_original(mode).await? {\n            OriginalVersionValue::Readback(value) => Ok(value),\n            OriginalVersionValue::Progress(_) => Err(Error::Binding(                                         )),\n        }\n    ",
+      "after_marker": "    async fn exchange(\n        &self,\n        mode: RequestMode,\n    ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {\n        match self.exchange_original(mode).await? {\n            OriginalVersionValue::Readback(value) => Ok(value),\n            OriginalVersionValue::Progress(_) => {\n                Err(Error::Binding(                                         ))\n            }\n        }\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "after_source": {
+        "bytes": 14788,
+        "sha256": "d5f5844b33eb7a694b3c910472450cca509296cc28d67b204df8bb3602ce73a0",
+        "blob": "08dae223525454ec24b4c7586bb5865adc5ac860"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        1,
+        "after",
+        "required_order",
+        12,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "before_marker": "    async fn exchange_original(\n        &self,\n        mode: RequestMode,\n    ) -> Result<OriginalVersionValue, Error> {\n        let started = now()?;\n        let access = match &mode {\n            RequestMode::Prepare(_) => PublicationAccess::NewWork,\n            RequestMode::Readback | RequestMode::PublicationProgress => PublicationAccess::Readback,\n        };\n        self.cut.require_fresh(started, access)?;\n        let action = match &mode {\n            RequestMode::Prepare(cancelled) => {\n                if cancelled.load(Ordering::Acquire) {\n                    return Err(Error::Cancelled);\n                }\n                Some(wire::Action::Prepare)\n            }\n            RequestMode::Readback => Some(wire::Action::Readback),\n            RequestMode::PublicationProgress => None,\n        };\n        let mut channel = {\n            let mut slot = self.channel.try_lock().map_err(|_| Error::Busy)?;\n            let original = slot.as_mut().ok_or(Error::Unavailable)?;\n            if action == Some(wire::Action::Prepare) && original.preparation_requested {\n                return Err(Error::ReadbackRequired);\n            }\n                                                                                \n                                                                             \n            original.preparation_requested = true;\n            slot.take().ok_or(Error::Unavailable)?\n        };\n        if !(1..=128).contains(&channel.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let request = match action {\n            Some(action) => VersionRequest::new(&self.cut, channel.next_request_id, action),\n            None => VersionRequest::publication_progress(&self.cut, channel.next_request_id)?,\n        };\n        let encoded = request.encode()?;\n        if encoded.is_empty() || encoded.len() > 16_384 {\n            return Err(Error::Binding(                         ));\n        }\n        channel.next_request_id += 1;\n        let queued = QueuedVersionRequestFence::new();\n        let dropped = Arc::clone(&queued.cancelled);\n        let cut = Arc::clone(&self.cut);\n        let (channel, raw) = tokio::task::spawn_blocking(move || {\n            if dropped.load(Ordering::Acquire) {\n                return Err(Error::Cancelled);\n            }\n            if let RequestMode::Prepare(cancelled) = &mode\n                && cancelled.load(Ordering::Acquire)\n            {\n                return Err(Error::Cancelled);\n            }\n            cut.require_fresh(started, access)?;\n                                                                                \n            if dropped.load(Ordering::Acquire) {\n                return Err(Error::Cancelled);\n            }\n            if let RequestMode::Prepare(cancelled) = &mode\n                && cancelled.load(Ordering::Acquire)\n            {\n                return Err(Error::Cancelled);\n            }\n            let raw = channel.peer.request(&encoded)?;\n            Ok::<_, Error>((channel, raw))\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)??;\n        drop(queued);\n        let response = if request.is_publication_progress() {\n            OriginalVersionResponse::Progress(request.decode_progress_response(&raw)?)\n        } else {\n            OriginalVersionResponse::Readback(request.decode_response(&raw)?)\n        };\n        channel.peer.check_peer_lifetime()?;\n        self.cut\n            .require_fresh(started, access)\n            .map_err(|_| Error::CommitUncertain)?;\n        let decoded = match response {\n            OriginalVersionResponse::Progress(response) => match response.decode() {\n                Ok(value) => Ok(OriginalVersionValue::Progress(value)),\n                Err(Error::Busy) => Err(Error::Busy),\n                                                                           \n                                                                            \n                Err(error) => return Err(error),\n            },\n            OriginalVersionResponse::Readback(response) => {\n                                                                             \n                                                                       \n                let structured_error = matches!(\n                    &response,\n                    wire::OriginalResult::Busy\n                        | wire::OriginalResult::ReadbackRequired\n                        | wire::OriginalResult::Uncertain\n                        | wire::OriginalResult::Unavailable\n                        | wire::OriginalResult::FinalUseDenied\n                );\n                let decoded = decode_result(response, &self.cut);\n                match &decoded {\n                    Ok(value) => self.pin(value)?,\n                    Err(_) if structured_error => {}\n                    Err(_) => return decoded.map(OriginalVersionValue::Readback),\n                }\n                decoded.map(OriginalVersionValue::Readback)\n            }\n        };\n        *self\n            .channel\n            .try_lock()\n            .map_err(|_| Error::CommitUncertain)? = Some(channel);\n        decoded\n    ",
+      "after_marker": "    async fn exchange_original(&self, mode: RequestMode) -> Result<OriginalVersionValue, Error> {\n        let started = now()?;\n        let access = match &mode {\n            RequestMode::Prepare(_) => PublicationAccess::NewWork,\n            RequestMode::Readback | RequestMode::PublicationProgress => PublicationAccess::Readback,\n        };\n        self.cut.require_fresh(started, access)?;\n        let action = match &mode {\n            RequestMode::Prepare(cancelled) => {\n                if cancelled.load(Ordering::Acquire) {\n                    return Err(Error::Cancelled);\n                }\n                Some(wire::Action::Prepare)\n            }\n            RequestMode::Readback => Some(wire::Action::Readback),\n            RequestMode::PublicationProgress => None,\n        };\n        let mut channel = {\n            let mut slot = self.channel.try_lock().map_err(|_| Error::Busy)?;\n            let original = slot.as_mut().ok_or(Error::Unavailable)?;\n            if action == Some(wire::Action::Prepare) && original.preparation_requested {\n                return Err(Error::ReadbackRequired);\n            }\n                                                                                \n                                                                             \n            original.preparation_requested = true;\n            slot.take().ok_or(Error::Unavailable)?\n        };\n        if !(1..=128).contains(&channel.next_request_id) {\n            return Err(Error::Unavailable);\n        }\n        let request = match action {\n            Some(action) => VersionRequest::new(&self.cut, channel.next_request_id, action),\n            None => VersionRequest::publication_progress(&self.cut, channel.next_request_id)?,\n        };\n        let encoded = request.encode()?;\n        if encoded.is_empty() || encoded.len() > 16_384 {\n            return Err(Error::Binding(                         ));\n        }\n        channel.next_request_id += 1;\n        let queued = QueuedVersionRequestFence::new();\n        let dropped = Arc::clone(&queued.cancelled);\n        let cut = Arc::clone(&self.cut);\n        let (channel, raw) = tokio::task::spawn_blocking(move || {\n            if dropped.load(Ordering::Acquire) {\n                return Err(Error::Cancelled);\n            }\n            if let RequestMode::Prepare(cancelled) = &mode\n                && cancelled.load(Ordering::Acquire)\n            {\n                return Err(Error::Cancelled);\n            }\n            cut.require_fresh(started, access)?;\n                                                                                \n            if dropped.load(Ordering::Acquire) {\n                return Err(Error::Cancelled);\n            }\n            if let RequestMode::Prepare(cancelled) = &mode\n                && cancelled.load(Ordering::Acquire)\n            {\n                return Err(Error::Cancelled);\n            }\n            let raw = channel.peer.request(&encoded)?;\n            Ok::<_, Error>((channel, raw))\n        })\n        .await\n        .map_err(|_| Error::CommitUncertain)??;\n        drop(queued);\n        let response = if request.is_publication_progress() {\n            OriginalVersionResponse::Progress(request.decode_progress_response(&raw)?)\n        } else {\n            OriginalVersionResponse::Readback(request.decode_response(&raw)?)\n        };\n        channel.peer.check_peer_lifetime()?;\n        self.cut\n            .require_fresh(started, access)\n            .map_err(|_| Error::CommitUncertain)?;\n        let decoded = match response {\n            OriginalVersionResponse::Progress(response) => match response.decode() {\n                Ok(value) => Ok(OriginalVersionValue::Progress(value)),\n                Err(Error::Busy) => Err(Error::Busy),\n                                                                           \n                                                                            \n                Err(error) => return Err(error),\n            },\n            OriginalVersionResponse::Readback(response) => {\n                                                                             \n                                                                       \n                let structured_error = matches!(\n                    &response,\n                    wire::OriginalResult::Busy\n                        | wire::OriginalResult::ReadbackRequired\n                        | wire::OriginalResult::Uncertain\n                        | wire::OriginalResult::Unavailable\n                        | wire::OriginalResult::FinalUseDenied\n                );\n                let decoded = decode_result(response, &self.cut);\n                match &decoded {\n                    Ok(value) => self.pin(value)?,\n                    Err(_) if structured_error => {}\n                    Err(_) => return decoded.map(OriginalVersionValue::Readback),\n                }\n                decoded.map(OriginalVersionValue::Readback)\n            }\n        };\n        *self\n            .channel\n            .try_lock()\n            .map_err(|_| Error::CommitUncertain)? = Some(channel);\n        decoded\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "after_source": {
+        "bytes": 14788,
+        "sha256": "d5f5844b33eb7a694b3c910472450cca509296cc28d67b204df8bb3602ce73a0",
+        "blob": "08dae223525454ec24b4c7586bb5865adc5ac860"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        3,
+        "after",
+        "required_order",
+        0,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "before_marker": "    pub(super) fn bind_original_predecessor(\n        &self,\n        state: &mut RetainedVersionHostStateV1,\n    ) -> Result<(), Error> {\n        self.require_lifetime()?;\n        if let Some(cut) = state.cut.as_ref() {\n            if cut.purpose() != self.purpose || cut.initial_binding() != self.initial_binding {\n                return Err(Error::Binding(                                         ));\n            }\n            return match cut {\n                VersionCut::TrainingNoUpdate(_) => state.require_cut_current(&self.runtime),\n                                                                             \n                                                                            \n                                                                               \n                VersionCut::Evaluated(_) => cut.require_fresh(\n                    super::super::now()?, PublicationAccess::Readback,\n                ),\n            };\n        }\n        let dataset = self\n            .runtime\n            .block_on(OriginalCellQ24DatasetCommandReadbackV1::readback(\n                &state.dataset,\n            ))?;\n        OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(&state.dataset, &dataset)?;\n        let original = state\n            .initial_trainer\n            .take()\n            .ok_or(Error::ReadbackRequired)?;\n        let trainer = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(\n            original,\n            dataset.clone(),\n        )?;\n        let training = self\n            .runtime\n            .block_on(OriginalCellQ24TrainingCommandClientV1::readback(&trainer))?;\n        let (cut, evaluator) = match self.purpose {\n            VersionPurpose::TrainingNoUpdate => (\n                VersionCut::TrainingNoUpdate(OriginalVersionCut::from_original(\n                    self.material.clone(),\n                    dataset,\n                    &training,\n                    self.origin,\n                )?),\n                None,\n            ),\n            VersionPurpose::Evaluated => {\n                let original = state\n                    .initial_evaluator\n                    .take()\n                    .ok_or(Error::ReadbackRequired)?;\n                let evaluator = OriginalCellEvaluationCommandConnectionV1::bind_original_training(\n                    original,\n                    dataset.snapshot().clone(),\n                    &training,\n                )?;\n                let evaluation = self\n                    .runtime\n                    .block_on(OriginalCellEvaluationCommandClientV1::readback(&evaluator))?;\n                let cut = OriginalEvaluatedVersionCut::from_original(\n                    self.material.clone(),\n                    dataset,\n                    &training,\n                    &evaluation,\n                    self.origin,\n                )?;\n                (VersionCut::Evaluated(cut), Some(evaluator))\n            }\n        };\n        if cut.purpose() != self.purpose || cut.initial_binding() != self.initial_binding {\n            return Err(Error::Binding(\n                                                                   ,\n            ));\n        }\n        if let Some(expected) = &state.expected {\n            let VersionCut::TrainingNoUpdate(cut) = &cut else {\n                return Err(Error::Binding(                                         ));\n            };\n            let mut signatures = cut.dataset.attestations().to_vec();\n            signatures.push(cut.training.training_evidence.clone());\n            if expected.training != cut.training.training || expected.attestations != signatures {\n                return Err(Error::Binding(\n                                                                  ,\n                ));\n            }\n        }\n        if let Some(expected) = &state.expected_evaluated {\n            let VersionCut::Evaluated(cut) = &cut else {\n                return Err(Error::Binding(                                        ));\n            };\n            if expected.dataset != cut.dataset\n                || expected.evaluation.snapshot() != cut.evaluated.snapshot()\n                || expected.evaluation.receipt_context_binding()\n                    != cut.evaluated.receipt_context_binding()\n            {\n                return Err(Error::Binding(\n                                                                    ,\n                ));\n            }\n        }\n        cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;\n        if self.origin == RetainedVersionOriginV1::Recovered\n            && matches!(&cut, VersionCut::Evaluated(_))\n        {\n            if !matches!(state.phase, Some(RetainedVersionHostPhaseV1::Recovered(_))) {\n                return Err(Error::ReadbackRequired);\n            }\n            state.shared_evaluated = Some(SharedEvaluatedReadbacks {\n                trainer: std::sync::Arc::new(trainer),\n                evaluator: std::sync::Arc::new(evaluator.ok_or(Error::ReadbackRequired)?),\n            });\n        } else {\n            state.trainer = Some(trainer);\n            state.evaluator = evaluator;\n        }\n        state.cut = Some(cut);\n        state.install_original_selection_reader()?;\n        Ok(())\n    ",
+      "after_marker": "    pub(super) fn bind_original_predecessor(\n        &self,\n        state: &mut RetainedVersionHostStateV1,\n    ) -> Result<(), Error> {\n        self.require_lifetime()?;\n        if let Some(cut) = state.cut.as_ref() {\n            if cut.purpose() != self.purpose || cut.initial_binding() != self.initial_binding {\n                return Err(Error::Binding(                                         ));\n            }\n            return match cut {\n                VersionCut::TrainingNoUpdate(_) => state.require_cut_current(&self.runtime),\n                                                                             \n                                                                            \n                                                                               \n                VersionCut::Evaluated(_) => {\n                    cut.require_fresh(super::super::now()?, PublicationAccess::Readback)\n                }\n            };\n        }\n        let dataset = self\n            .runtime\n            .block_on(OriginalCellQ24DatasetCommandReadbackV1::readback(\n                &state.dataset,\n            ))?;\n        OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(&state.dataset, &dataset)?;\n        let original = state\n            .initial_trainer\n            .take()\n            .ok_or(Error::ReadbackRequired)?;\n        let trainer = OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(\n            original,\n            dataset.clone(),\n        )?;\n        let training = self\n            .runtime\n            .block_on(OriginalCellQ24TrainingCommandClientV1::readback(&trainer))?;\n        let (cut, evaluator) = match self.purpose {\n            VersionPurpose::TrainingNoUpdate => (\n                VersionCut::TrainingNoUpdate(OriginalVersionCut::from_original(\n                    self.material.clone(),\n                    dataset,\n                    &training,\n                    self.origin,\n                )?),\n                None,\n            ),\n            VersionPurpose::Evaluated => {\n                let original = state\n                    .initial_evaluator\n                    .take()\n                    .ok_or(Error::ReadbackRequired)?;\n                let evaluator = OriginalCellEvaluationCommandConnectionV1::bind_original_training(\n                    original,\n                    dataset.snapshot().clone(),\n                    &training,\n                )?;\n                let evaluation = self\n                    .runtime\n                    .block_on(OriginalCellEvaluationCommandClientV1::readback(&evaluator))?;\n                let cut = OriginalEvaluatedVersionCut::from_original(\n                    self.material.clone(),\n                    dataset,\n                    &training,\n                    &evaluation,\n                    self.origin,\n                )?;\n                (VersionCut::Evaluated(cut), Some(evaluator))\n            }\n        };\n        if cut.purpose() != self.purpose || cut.initial_binding() != self.initial_binding {\n            return Err(Error::Binding(\n                                                                   ,\n            ));\n        }\n        if let Some(expected) = &state.expected {\n            let VersionCut::TrainingNoUpdate(cut) = &cut else {\n                return Err(Error::Binding(                                         ));\n            };\n            let mut signatures = cut.dataset.attestations().to_vec();\n            signatures.push(cut.training.training_evidence.clone());\n            if expected.training != cut.training.training || expected.attestations != signatures {\n                return Err(Error::Binding(\n                                                                  ,\n                ));\n            }\n        }\n        if let Some(expected) = &state.expected_evaluated {\n            let VersionCut::Evaluated(cut) = &cut else {\n                return Err(Error::Binding(                                        ));\n            };\n            if expected.dataset != cut.dataset\n                || expected.evaluation.snapshot() != cut.evaluated.snapshot()\n                || expected.evaluation.receipt_context_binding()\n                    != cut.evaluated.receipt_context_binding()\n            {\n                return Err(Error::Binding(\n                                                                    ,\n                ));\n            }\n        }\n        cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;\n        if self.origin == RetainedVersionOriginV1::Recovered\n            && matches!(&cut, VersionCut::Evaluated(_))\n        {\n            if !matches!(state.phase, Some(RetainedVersionHostPhaseV1::Recovered(_))) {\n                return Err(Error::ReadbackRequired);\n            }\n            state.shared_evaluated = Some(SharedEvaluatedReadbacks {\n                trainer: std::sync::Arc::new(trainer),\n                evaluator: std::sync::Arc::new(evaluator.ok_or(Error::ReadbackRequired)?),\n            });\n        } else {\n            state.trainer = Some(trainer);\n            state.evaluator = evaluator;\n        }\n        state.cut = Some(cut);\n        state.install_original_selection_reader()?;\n        Ok(())\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13208,
+        "sha256": "a3965af0689e48ca3560b39c7297eca4446977e7a67a8dd3f8212f6809c514a5",
+        "blob": "131c52a5713d5407ced90b16bca2c9a559379ea5"
+      },
+      "after_source": {
+        "bytes": 13208,
+        "sha256": "2a2b8bfff18ba006223c10ca566c9a521e8781aa3e6b566818d82a5c0c83fb74",
+        "blob": "226e0ea70d356f1950a5fc6f1c103cf6615f008e"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        6,
+        "after",
+        "required_function_order",
+        8,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "before_marker": "\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref()) {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => EvaluatedProgressResult::FinalUseDenied,\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => EvaluatedProgressResult::Uncertain,\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting, Some(RetainedVersionHostPhaseV1::Awaiting { .. })) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. })) => EvaluatedProgressResult::Pending,\n                            (RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    }",
+      "after_marker": "\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref())\n                        {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => {\n                                EvaluatedProgressResult::FinalUseDenied\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => {\n                                EvaluatedProgressResult::Uncertain\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting,\n                                Some(RetainedVersionHostPhaseV1::Awaiting { .. }),\n                            ) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting\n                                | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. }),\n                            ) => EvaluatedProgressResult::Pending,\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(\n                                    RetainedVersionHostPhaseV1::Installed { .. }\n                                    | RetainedVersionHostPhaseV1::Recovered(_),\n                                ),\n                            ) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 17273,
+        "sha256": "76a90b08f09c9e2b05473da952fd6b1fc9601ed750efff6f1581772e53813616",
+        "blob": "6fa0bb61ec9b4f5c5864386d79c014050878c66a"
+      },
+      "after_source": {
+        "bytes": 17826,
+        "sha256": "197aabd70884f2a7826b75be44f717cf905abea3363f6d78e796d08953dc413c",
+        "blob": "725dc32de0ae7b36c3a5a46c4408387ea2f8df69"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        6,
+        "after",
+        "required_function_order",
+        8,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "before_marker": "if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref()) {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => EvaluatedProgressResult::FinalUseDenied,\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => EvaluatedProgressResult::Uncertain,\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting, Some(RetainedVersionHostPhaseV1::Awaiting { .. })) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. })) => EvaluatedProgressResult::Pending,\n                            (RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)",
+      "after_marker": "if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref())\n                        {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => {\n                                EvaluatedProgressResult::FinalUseDenied\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => {\n                                EvaluatedProgressResult::Uncertain\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting,\n                                Some(RetainedVersionHostPhaseV1::Awaiting { .. }),\n                            ) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting\n                                | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. }),\n                            ) => EvaluatedProgressResult::Pending,\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(\n                                    RetainedVersionHostPhaseV1::Installed { .. }\n                                    | RetainedVersionHostPhaseV1::Recovered(_),\n                                ),\n                            ) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 17273,
+        "sha256": "76a90b08f09c9e2b05473da952fd6b1fc9601ed750efff6f1581772e53813616",
+        "blob": "6fa0bb61ec9b4f5c5864386d79c014050878c66a"
+      },
+      "after_source": {
+        "bytes": 17826,
+        "sha256": "197aabd70884f2a7826b75be44f717cf905abea3363f6d78e796d08953dc413c",
+        "blob": "725dc32de0ae7b36c3a5a46c4408387ea2f8df69"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        6,
+        "after",
+        "required_order",
+        7,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "before_marker": "    fn publication_progress_response(\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref()) {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => EvaluatedProgressResult::FinalUseDenied,\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => EvaluatedProgressResult::Uncertain,\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting, Some(RetainedVersionHostPhaseV1::Awaiting { .. })) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. })) => EvaluatedProgressResult::Pending,\n                            (RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    ",
+      "after_marker": "    fn publication_progress_response(\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref())\n                        {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => {\n                                EvaluatedProgressResult::FinalUseDenied\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => {\n                                EvaluatedProgressResult::Uncertain\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting,\n                                Some(RetainedVersionHostPhaseV1::Awaiting { .. }),\n                            ) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting\n                                | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. }),\n                            ) => EvaluatedProgressResult::Pending,\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(\n                                    RetainedVersionHostPhaseV1::Installed { .. }\n                                    | RetainedVersionHostPhaseV1::Recovered(_),\n                                ),\n                            ) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 17273,
+        "sha256": "76a90b08f09c9e2b05473da952fd6b1fc9601ed750efff6f1581772e53813616",
+        "blob": "6fa0bb61ec9b4f5c5864386d79c014050878c66a"
+      },
+      "after_source": {
+        "bytes": 17826,
+        "sha256": "197aabd70884f2a7826b75be44f717cf905abea3363f6d78e796d08953dc413c",
+        "blob": "725dc32de0ae7b36c3a5a46c4408387ea2f8df69"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        7,
+        "after",
+        "required_function_order",
+        7,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "before_marker": "\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref()) {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => EvaluatedProgressResult::FinalUseDenied,\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => EvaluatedProgressResult::Uncertain,\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting, Some(RetainedVersionHostPhaseV1::Awaiting { .. })) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. })) => EvaluatedProgressResult::Pending,\n                            (RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    }",
+      "after_marker": "\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref())\n                        {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => {\n                                EvaluatedProgressResult::FinalUseDenied\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => {\n                                EvaluatedProgressResult::Uncertain\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting,\n                                Some(RetainedVersionHostPhaseV1::Awaiting { .. }),\n                            ) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting\n                                | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. }),\n                            ) => EvaluatedProgressResult::Pending,\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(\n                                    RetainedVersionHostPhaseV1::Installed { .. }\n                                    | RetainedVersionHostPhaseV1::Recovered(_),\n                                ),\n                            ) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 17273,
+        "sha256": "76a90b08f09c9e2b05473da952fd6b1fc9601ed750efff6f1581772e53813616",
+        "blob": "6fa0bb61ec9b4f5c5864386d79c014050878c66a"
+      },
+      "after_source": {
+        "bytes": 17826,
+        "sha256": "197aabd70884f2a7826b75be44f717cf905abea3363f6d78e796d08953dc413c",
+        "blob": "725dc32de0ae7b36c3a5a46c4408387ea2f8df69"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        7,
+        "after",
+        "required_function_order",
+        7,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "before_marker": "if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref()) {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => EvaluatedProgressResult::FinalUseDenied,\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => EvaluatedProgressResult::Uncertain,\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting, Some(RetainedVersionHostPhaseV1::Awaiting { .. })) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. })) => EvaluatedProgressResult::Pending,\n                            (RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)",
+      "after_marker": "if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref())\n                        {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => {\n                                EvaluatedProgressResult::FinalUseDenied\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => {\n                                EvaluatedProgressResult::Uncertain\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting,\n                                Some(RetainedVersionHostPhaseV1::Awaiting { .. }),\n                            ) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting\n                                | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. }),\n                            ) => EvaluatedProgressResult::Pending,\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(\n                                    RetainedVersionHostPhaseV1::Installed { .. }\n                                    | RetainedVersionHostPhaseV1::Recovered(_),\n                                ),\n                            ) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 17273,
+        "sha256": "76a90b08f09c9e2b05473da952fd6b1fc9601ed750efff6f1581772e53813616",
+        "blob": "6fa0bb61ec9b4f5c5864386d79c014050878c66a"
+      },
+      "after_source": {
+        "bytes": 17826,
+        "sha256": "197aabd70884f2a7826b75be44f717cf905abea3363f6d78e796d08953dc413c",
+        "blob": "725dc32de0ae7b36c3a5a46c4408387ea2f8df69"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        7,
+        "after",
+        "required_order",
+        7,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "before_marker": "    fn publication_progress_response(\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref()) {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => EvaluatedProgressResult::FinalUseDenied,\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => EvaluatedProgressResult::Uncertain,\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting, Some(RetainedVersionHostPhaseV1::Awaiting { .. })) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Awaiting | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. })) => EvaluatedProgressResult::Pending,\n                            (RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    ",
+      "after_marker": "    fn publication_progress_response(\n        &self,\n        request: VersionRequest,\n        request_id: u64,\n        started: u64,\n    ) -> Result<Vec<u8>, Error> {\n        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {\n            return Err(Error::Binding(                                         ));\n        }\n        let (result, pin) = {\n            match self.state.try_lock() {\n                Ok(state) => match state.cut.as_ref() {\n                    None => (EvaluatedProgressResult::ReadbackRequired, None),\n                    Some(cut) => {\n                        if !matches!(cut, VersionCut::Evaluated(_)) {\n                            return Err(Error::Binding(                                         ));\n                        }\n                        request.require_cut(cut, request_id)?;\n                        cut.require_fresh(started, PublicationAccess::Readback)?;\n                                                                              \n                                                                              \n                                                                             \n                        let result = match (self.original_final_use_outcome(), state.phase.as_ref())\n                        {\n                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => {\n                                EvaluatedProgressResult::FinalUseDenied\n                            }\n                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => {\n                                EvaluatedProgressResult::Uncertain\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting,\n                                Some(RetainedVersionHostPhaseV1::Awaiting { .. }),\n                            ) => {\n                                if self.preparation_requested.load(Ordering::Acquire) {\n                                                                                \n                                                                            \n                                    EvaluatedProgressResult::Uncertain\n                                } else {\n                                    EvaluatedProgressResult::Pending\n                                }\n                            }\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Awaiting\n                                | RetainedVersionFinalUseOutcomeV1::Requested,\n                                Some(RetainedVersionHostPhaseV1::Prepared { .. }),\n                            ) => EvaluatedProgressResult::Pending,\n                            (\n                                RetainedVersionFinalUseOutcomeV1::Published,\n                                Some(\n                                    RetainedVersionHostPhaseV1::Installed { .. }\n                                    | RetainedVersionHostPhaseV1::Recovered(_),\n                                ),\n                            ) => EvaluatedProgressResult::ReadbackAvailable,\n                            _ => EvaluatedProgressResult::Uncertain,\n                        };\n                        (result, Some(cut.duplicate_response_pin()))\n                    }\n                },\n                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),\n                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),\n            }\n        };\n        let (binding, fresh) =\n            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(\n                &self.material,\n            )?;\n        if binding != self.initial_binding || fresh < started {\n            return Err(Error::Binding(                                       ));\n        }\n        self.require_lifetime()?;\n        let bytes = request.encode_progress_response(result)?;\n        if bytes.is_empty() || bytes.len() > 16_384 {\n            return Err(Error::Binding(                                            ));\n        }\n        if let Some(pin) = pin {\n            pin.require_fresh(started, PublicationAccess::Readback)?;\n        }\n        Ok(bytes)\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 17273,
+        "sha256": "76a90b08f09c9e2b05473da952fd6b1fc9601ed750efff6f1581772e53813616",
+        "blob": "6fa0bb61ec9b4f5c5864386d79c014050878c66a"
+      },
+      "after_source": {
+        "bytes": 17826,
+        "sha256": "197aabd70884f2a7826b75be44f717cf905abea3363f6d78e796d08953dc413c",
+        "blob": "725dc32de0ae7b36c3a5a46c4408387ea2f8df69"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        1,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "cut: &VersionCut, request_id: u64) -> Result<Self, Error> {\n        let VersionCut::Evaluated(original) = cut else {\n            return Err(Error::Binding(                                         ));\n        };\n        Ok(Self::Evaluated(EvaluatedRequest::new(\n            original, request_id, EvaluatedAction::PublicationProgress,\n        )))\n    }",
+      "after_marker": "cut: &VersionCut, request_id: u64) -> Result<Self, Error> {\n        let VersionCut::Evaluated(original) = cut else {\n            return Err(Error::Binding(                                         ));\n        };\n        Ok(Self::Evaluated(EvaluatedRequest::new(\n            original,\n            request_id,\n            EvaluatedAction::PublicationProgress,\n        )))\n    }",
+      "kind": "whitespace",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        1,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "let VersionCut::Evaluated(original) = cut else {\n            return Err(Error::Binding(                                         ));\n        };\n        Ok(Self::Evaluated(EvaluatedRequest::new(\n            original, request_id, EvaluatedAction::PublicationProgress,\n        )))",
+      "after_marker": "let VersionCut::Evaluated(original) = cut else {\n            return Err(Error::Binding(                                         ));\n        };\n        Ok(Self::Evaluated(EvaluatedRequest::new(\n            original,\n            request_id,\n            EvaluatedAction::PublicationProgress,\n        )))",
+      "kind": "whitespace",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        4,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "&self) -> Result<wire::Action, Error> {\n        match self {\n            Self::TrainingNoUpdate(original) => Ok(original.action),\n            Self::Evaluated(original) => match original.action {\n                EvaluatedAction::Prepare => Ok(wire::Action::Prepare),\n                EvaluatedAction::Readback => Ok(wire::Action::Readback),\n                EvaluatedAction::PublicationProgress => Err(Error::Binding(                                              )),\n            },\n        }\n    }",
+      "after_marker": "&self) -> Result<wire::Action, Error> {\n        match self {\n            Self::TrainingNoUpdate(original) => Ok(original.action),\n            Self::Evaluated(original) => match original.action {\n                EvaluatedAction::Prepare => Ok(wire::Action::Prepare),\n                EvaluatedAction::Readback => Ok(wire::Action::Readback),\n                EvaluatedAction::PublicationProgress => Err(Error::Binding(\n                                                                  ,\n                )),\n            },\n        }\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        4,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "match self {\n            Self::TrainingNoUpdate(original) => Ok(original.action),\n            Self::Evaluated(original) => match original.action {\n                EvaluatedAction::Prepare => Ok(wire::Action::Prepare),\n                EvaluatedAction::Readback => Ok(wire::Action::Readback),\n                EvaluatedAction::PublicationProgress => Err(Error::Binding(                                              )),\n            },\n        }",
+      "after_marker": "match self {\n            Self::TrainingNoUpdate(original) => Ok(original.action),\n            Self::Evaluated(original) => match original.action {\n                EvaluatedAction::Prepare => Ok(wire::Action::Prepare),\n                EvaluatedAction::Readback => Ok(wire::Action::Readback),\n                EvaluatedAction::PublicationProgress => Err(Error::Binding(\n                                                                  ,\n                )),\n            },\n        }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        7,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "&self, raw: &[u8]) -> Result<wire::OriginalResult, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(                                                     ));\n        }\n        match self {\n            Self::TrainingNoUpdate(request) => {\n                let response: wire::Response = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                 ));\n                }\n                Ok(response.result)\n            }\n            Self::Evaluated(request) => {\n                let response: EvaluatedResponse = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                           ));\n                }\n                Ok(response.result)\n            }\n        }\n    }",
+      "after_marker": "&self, raw: &[u8]) -> Result<wire::OriginalResult, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        match self {\n            Self::TrainingNoUpdate(request) => {\n                let response: wire::Response = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                 ));\n                }\n                Ok(response.result)\n            }\n            Self::Evaluated(request) => {\n                let response: EvaluatedResponse = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                           ));\n                }\n                Ok(response.result)\n            }\n        }\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        7,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "if self.is_publication_progress() {\n            return Err(Error::Binding(                                                     ));\n        }\n        match self {\n            Self::TrainingNoUpdate(request) => {\n                let response: wire::Response = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                 ));\n                }\n                Ok(response.result)\n            }\n            Self::Evaluated(request) => {\n                let response: EvaluatedResponse = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                           ));\n                }\n                Ok(response.result)\n            }\n        }",
+      "after_marker": "if self.is_publication_progress() {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        match self {\n            Self::TrainingNoUpdate(request) => {\n                let response: wire::Response = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                 ));\n                }\n                Ok(response.result)\n            }\n            Self::Evaluated(request) => {\n                let response: EvaluatedResponse = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                           ));\n                }\n                Ok(response.result)\n            }\n        }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        8,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "self, result: wire::OriginalResult) -> Result<Vec<u8>, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(                                                     ));\n        }\n        Ok(match self {\n            Self::TrainingNoUpdate(request) => {\n                serde_json::to_vec(&wire::Response { request, result })?\n            }\n            Self::Evaluated(request) => serde_json::to_vec(&EvaluatedResponse { request, result })?,\n        })\n    }",
+      "after_marker": "self, result: wire::OriginalResult) -> Result<Vec<u8>, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        Ok(match self {\n            Self::TrainingNoUpdate(request) => {\n                serde_json::to_vec(&wire::Response { request, result })?\n            }\n            Self::Evaluated(request) => serde_json::to_vec(&EvaluatedResponse { request, result })?,\n        })\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        8,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "if self.is_publication_progress() {\n            return Err(Error::Binding(                                                     ));\n        }\n        Ok(match self {\n            Self::TrainingNoUpdate(request) => {\n                serde_json::to_vec(&wire::Response { request, result })?\n            }\n            Self::Evaluated(request) => serde_json::to_vec(&EvaluatedResponse { request, result })?,\n        })",
+      "after_marker": "if self.is_publication_progress() {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        Ok(match self {\n            Self::TrainingNoUpdate(request) => {\n                serde_json::to_vec(&wire::Response { request, result })?\n            }\n            Self::Evaluated(request) => serde_json::to_vec(&EvaluatedResponse { request, result })?,\n        })",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        9,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "&self, raw: &[u8]) -> Result<EvaluatedProgressResult, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        let response: EvaluatedProgressResponse = serde_json::from_slice(raw)?;\n        if &response.request != request {\n            return Err(Error::Binding(                                                    ));\n        }\n        Ok(response.result)\n    }",
+      "after_marker": "\n        &self,\n        raw: &[u8],\n    ) -> Result<EvaluatedProgressResult, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        let response: EvaluatedProgressResponse = serde_json::from_slice(raw)?;\n        if &response.request != request {\n            return Err(Error::Binding(\n                                                                    ,\n            ));\n        }\n        Ok(response.result)\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        9,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        let response: EvaluatedProgressResponse = serde_json::from_slice(raw)?;\n        if &response.request != request {\n            return Err(Error::Binding(                                                    ));\n        }\n        Ok(response.result)",
+      "after_marker": "let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        let response: EvaluatedProgressResponse = serde_json::from_slice(raw)?;\n        if &response.request != request {\n            return Err(Error::Binding(\n                                                                    ,\n            ));\n        }\n        Ok(response.result)",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        10,
+        "sequence",
+        1
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "self, result: EvaluatedProgressResult) -> Result<Vec<u8>, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        Ok(serde_json::to_vec(&EvaluatedProgressResponse { request, result })?)\n    }",
+      "after_marker": "\n        self,\n        result: EvaluatedProgressResult,\n    ) -> Result<Vec<u8>, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        Ok(serde_json::to_vec(&EvaluatedProgressResponse {\n            request,\n            result,\n        })?)\n    }",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_function_order",
+        10,
+        "top_level",
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        Ok(serde_json::to_vec(&EvaluatedProgressResponse { request, result })?)",
+      "after_marker": "let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        Ok(serde_json::to_vec(&EvaluatedProgressResponse {\n            request,\n            result,\n        })?)",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_order",
+        2,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "    pub(super) fn decode(self) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {\n        match self {\n            Self::Pending => Ok(OriginalCircuitEvaluatedVersionProgressV1::Pending),\n            Self::ReadbackAvailable => Ok(OriginalCircuitEvaluatedVersionProgressV1::ReadbackAvailable),\n            Self::Busy => Err(Error::Busy),\n            Self::ReadbackRequired => Err(Error::ReadbackRequired),\n            Self::FinalUseDenied => Err(Error::FinalUseDenied),\n            Self::Uncertain => Err(Error::CommitUncertain),\n            Self::Unavailable => Err(Error::Unavailable),\n        }\n    ",
+      "after_marker": "    pub(super) fn decode(self) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {\n        match self {\n            Self::Pending => Ok(OriginalCircuitEvaluatedVersionProgressV1::Pending),\n            Self::ReadbackAvailable => {\n                Ok(OriginalCircuitEvaluatedVersionProgressV1::ReadbackAvailable)\n            }\n            Self::Busy => Err(Error::Busy),\n            Self::ReadbackRequired => Err(Error::ReadbackRequired),\n            Self::FinalUseDenied => Err(Error::FinalUseDenied),\n            Self::Uncertain => Err(Error::CommitUncertain),\n            Self::Unavailable => Err(Error::Unavailable),\n        }\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_order",
+        4,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "    pub(super) fn publication_progress(cut: &VersionCut, request_id: u64) -> Result<Self, Error> {\n        let VersionCut::Evaluated(original) = cut else {\n            return Err(Error::Binding(                                         ));\n        };\n        Ok(Self::Evaluated(EvaluatedRequest::new(\n            original, request_id, EvaluatedAction::PublicationProgress,\n        )))\n    ",
+      "after_marker": "    pub(super) fn publication_progress(cut: &VersionCut, request_id: u64) -> Result<Self, Error> {\n        let VersionCut::Evaluated(original) = cut else {\n            return Err(Error::Binding(                                         ));\n        };\n        Ok(Self::Evaluated(EvaluatedRequest::new(\n            original,\n            request_id,\n            EvaluatedAction::PublicationProgress,\n        )))\n    ",
+      "kind": "whitespace",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_order",
+        8,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "    pub(super) fn action(&self) -> Result<wire::Action, Error> {\n        match self {\n            Self::TrainingNoUpdate(original) => Ok(original.action),\n            Self::Evaluated(original) => match original.action {\n                EvaluatedAction::Prepare => Ok(wire::Action::Prepare),\n                EvaluatedAction::Readback => Ok(wire::Action::Readback),\n                EvaluatedAction::PublicationProgress => Err(Error::Binding(                                              )),\n            },\n        }\n    ",
+      "after_marker": "    pub(super) fn action(&self) -> Result<wire::Action, Error> {\n        match self {\n            Self::TrainingNoUpdate(original) => Ok(original.action),\n            Self::Evaluated(original) => match original.action {\n                EvaluatedAction::Prepare => Ok(wire::Action::Prepare),\n                EvaluatedAction::Readback => Ok(wire::Action::Readback),\n                EvaluatedAction::PublicationProgress => Err(Error::Binding(\n                                                                  ,\n                )),\n            },\n        }\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_order",
+        11,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "    pub(super) fn decode_response(&self, raw: &[u8]) -> Result<wire::OriginalResult, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(                                                     ));\n        }\n        match self {\n            Self::TrainingNoUpdate(request) => {\n                let response: wire::Response = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                 ));\n                }\n                Ok(response.result)\n            }\n            Self::Evaluated(request) => {\n                let response: EvaluatedResponse = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                           ));\n                }\n                Ok(response.result)\n            }\n        }\n    ",
+      "after_marker": "    pub(super) fn decode_response(&self, raw: &[u8]) -> Result<wire::OriginalResult, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        match self {\n            Self::TrainingNoUpdate(request) => {\n                let response: wire::Response = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                 ));\n                }\n                Ok(response.result)\n            }\n            Self::Evaluated(request) => {\n                let response: EvaluatedResponse = serde_json::from_slice(raw)?;\n                if &response.request != request {\n                    return Err(Error::Binding(                                           ));\n                }\n                Ok(response.result)\n            }\n        }\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_order",
+        12,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "    pub(super) fn encode_response(self, result: wire::OriginalResult) -> Result<Vec<u8>, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(                                                     ));\n        }\n        Ok(match self {\n            Self::TrainingNoUpdate(request) => {\n                serde_json::to_vec(&wire::Response { request, result })?\n            }\n            Self::Evaluated(request) => serde_json::to_vec(&EvaluatedResponse { request, result })?,\n        })\n    ",
+      "after_marker": "    pub(super) fn encode_response(self, result: wire::OriginalResult) -> Result<Vec<u8>, Error> {\n        if self.is_publication_progress() {\n            return Err(Error::Binding(\n                                                                     ,\n            ));\n        }\n        Ok(match self {\n            Self::TrainingNoUpdate(request) => {\n                serde_json::to_vec(&wire::Response { request, result })?\n            }\n            Self::Evaluated(request) => serde_json::to_vec(&EvaluatedResponse { request, result })?,\n        })\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_order",
+        13,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "    pub(super) fn decode_progress_response(&self, raw: &[u8]) -> Result<EvaluatedProgressResult, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        let response: EvaluatedProgressResponse = serde_json::from_slice(raw)?;\n        if &response.request != request {\n            return Err(Error::Binding(                                                    ));\n        }\n        Ok(response.result)\n    ",
+      "after_marker": "    pub(super) fn decode_progress_response(\n        &self,\n        raw: &[u8],\n    ) -> Result<EvaluatedProgressResult, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        let response: EvaluatedProgressResponse = serde_json::from_slice(raw)?;\n        if &response.request != request {\n            return Err(Error::Binding(\n                                                                    ,\n            ));\n        }\n        Ok(response.result)\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    },
+    {
+      "plan_path": [
+        "protected_changes",
+        16,
+        "after",
+        "required_order",
+        14,
+        0
+      ],
+      "source_path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "before_marker": "    pub(super) fn encode_progress_response(self, result: EvaluatedProgressResult) -> Result<Vec<u8>, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        Ok(serde_json::to_vec(&EvaluatedProgressResponse { request, result })?)\n    ",
+      "after_marker": "    pub(super) fn encode_progress_response(\n        self,\n        result: EvaluatedProgressResult,\n    ) -> Result<Vec<u8>, Error> {\n        let Self::Evaluated(request) = self else {\n            return Err(Error::Binding(                                          ));\n        };\n        if request.action != EvaluatedAction::PublicationProgress {\n            return Err(Error::Binding(                                         ));\n        }\n        Ok(serde_json::to_vec(&EvaluatedProgressResponse {\n            request,\n            result,\n        })?)\n    ",
+      "kind": "actual_rustfmt_braces_commas_and_layout",
+      "before_source": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "after_source": {
+        "bytes": 13378,
+        "sha256": "9ed73db105e4076fd1bf6b2accb86c570a3442b2f8f6a031ea9e8ade9d5842c5",
+        "blob": "0a7611ecb8b9100e03b79785fd1458de995e80be"
+      }
+    }
+  ],
+  "all_boundary_caller_inventory_forbidden_data_unchanged": true,
+  "changes_only_refresh_actual_source_function_markers": true,
+  "source_qa": "NOT_RUN_BY_THIS_REVIEW",
+  "native": "UNRUN",
+  "ordinary_qualification": 0
+}

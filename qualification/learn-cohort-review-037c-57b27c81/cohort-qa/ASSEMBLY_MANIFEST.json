@@ -1,0 +1,73 @@
+{
+  "status": "ACTUAL_V3_SOURCE_QA154_PASS_READY_FOR_ROOT_ASSEMBLY",
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "source_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "immutable_base": {
+    "path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v2",
+    "files": 107,
+    "manifest": {
+      "bytes": 2282,
+      "sha256": "fc448c720bfa7054c8f7ae4a97ce8f1f1186bdeda3f229d60fc4b801a1e3c9bb",
+      "blob": "fb4cf4bfad750c9720c6967e60502fda3651ff64"
+    }
+  },
+  "files": 122,
+  "rust_files": 109,
+  "qa_files": 13,
+  "qa_case_count": 154,
+  "new_rust_modules_with_actual_mounts": 52,
+  "new_source_content_conflicts": 0,
+  "new_source_overlap": [],
+  "shared_QA_merge": "Current13 plus Training material QA; strict three-way output equals actual frozen final QA",
+  "lib_and_existing_test_mounts": "unchanged from immutable actual-layers-v2",
+  "roundtrips": [
+    {
+      "route": "combined",
+      "patch": "assembled-actual-v3.patch",
+      "returncode": 0,
+      "all_files_equal": true,
+      "files": 122,
+      "no_offset_or_fuzz": true,
+      "stdout": {
+        "bytes": 9853,
+        "sha256": "866c5fd60861ad9ddde51bd036dd90e630ddc9653a577abb64f582d85cad1a25",
+        "blob": "5868c9e847bfe3e0ec06c4689fe36a65a69c8d70"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "route": "incremental",
+      "patch": "incremental-v2-to-v3.patch",
+      "returncode": 0,
+      "all_files_equal": true,
+      "files": 122,
+      "no_offset_or_fuzz": true,
+      "stdout": {
+        "bytes": 1300,
+        "sha256": "a9ad6a6cc998143db64aca0500871844afd21a6150df736171c1d712892a868f",
+        "blob": "fb4df790fe97b51b76d4e0f73425fb48b7371e95"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    }
+  ],
+  "all_incoming_rust_actual_formatted": true,
+  "combined_mechanical_lib_merge_separately_formatted": false,
+  "current_delta": "original 72732-byte plan; rebuilt identity is not applied",
+  "central_CALLERS_or_allowlist_written": false,
+  "source_qa_run": true,
+  "native_run": false,
+  "ordinary_qualification": 0,
+  "source_qa_result": "SOURCE_QA_RESULTS.json",
+  "all_122_source_qa_blobs_available": true,
+  "remote_blob_provenance": "REMOTE_BLOB_PROVENANCE.json",
+  "base_paths_and_new_absence_verified": "EXACT_A96_BASE_AND_ABSENCE.json",
+  "full_rust_caller_index_run": false
+}

@@ -1,0 +1,16 @@
+{
+  "status": "STRICT_PATCH_CHECK_FAILED_TRAILING_NEW_BLANK_LINE",
+  "argv": [
+    "git",
+    "apply",
+    "--whitespace=error-all",
+    "--check",
+    "/workspace/scratch/037c0371c195/profile-central-callers-proposal-v1/CALLERS.proposal.patch"
+  ],
+  "exit_code": 128,
+  "stdout": "",
+  "stderr": "/workspace/scratch/037c0371c195/profile-central-callers-proposal-v1/CALLERS.proposal.patch:1668: new blank line at EOF.\n+\nerror: 1 line adds whitespace errors.\n",
+  "scope": "one isolated proposal patch; TOML semantic merge proof passed; no Source gate executed",
+  "v1_frozen_bytes_preserved": true,
+  "next_revision": "v2 appends authorized T layer and emits one final LF; v1 original remains immutable"
+}

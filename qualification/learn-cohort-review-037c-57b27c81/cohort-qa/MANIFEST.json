@@ -1,0 +1,112 @@
+{
+  "status": "ACTUAL_V3_SOURCE_QA154_PASS_READY_FOR_ROOT_ASSEMBLY",
+  "files": [
+    {
+      "path": "ASSEMBLY_MANIFEST.json",
+      "bytes": 2670,
+      "sha256": "c39f8c981e47d6aeb1af7235888d44cf9d611b7b76031ccaf3c109888d4d17b9",
+      "blob": "675d621b69a77d3ecfe42c2baf6a5ce2f3cb7bf7"
+    },
+    {
+      "path": "COMMIT_FILES.json",
+      "bytes": 64651,
+      "sha256": "d35578fa36e73c0559fc461c91921bbb91000a8a737a0c8074f9fa7c3ebdd94b",
+      "blob": "f814cdb06475d568a983df47cf85ee8aab40e5e3"
+    },
+    {
+      "path": "LAYER_EVENTS.json",
+      "bytes": 14043,
+      "sha256": "2a3d3b50a0f51af976b8f3e7369bf588236b3e6f8642a5fe84dac1c3f9956380",
+      "blob": "a621954c5044efe7177fa19700718a4b5ccb7974"
+    },
+    {
+      "path": "SOURCE_INPUT_MANIFEST.json",
+      "bytes": 68962,
+      "sha256": "147ca33063034de59f8681b9c9267a737096584cdd935581844b4df4d9a28b95",
+      "blob": "0039d9ee7fa0eb64529f213bfba5a789581b7c7b"
+    },
+    {
+      "path": "PATCH_ROUNDTRIPS.json",
+      "bytes": 1089,
+      "sha256": "5f76edaf862ee814f6783d076425b1dc38b2358343f531b4a3555102006fd666",
+      "blob": "8ad885151b14e52d7a5f50417deb387da01c72db"
+    },
+    {
+      "path": "QA_CASES.json",
+      "bytes": 15512,
+      "sha256": "ae56b90331d437c6b6aa47c7e234448d4c7e0215919ab21e17d87778df196da6",
+      "blob": "a70fd51cd140418eceb202f3cc028871789d0db1"
+    },
+    {
+      "path": "UNRESOLVED.json",
+      "bytes": 240,
+      "sha256": "d36b1daa59d33fc41f4dcc788c3df9036d4e2dcb58db7e79cc6cd93f46bca81f",
+      "blob": "c0d78cd1d8534f05792e238fb05455e7a96c0b30"
+    },
+    {
+      "path": "SOURCE_MODULE_MOUNTS.actual.json",
+      "bytes": 27607,
+      "sha256": "06adb048cb081d4bd0171c62ad30d25542ad3356f41fe9d124d15f2321ac77b9",
+      "blob": "ef8c0ea7d70aac1e60d6f600e23150177d3b9a77"
+    },
+    {
+      "path": "assembled-actual-v3.patch",
+      "bytes": 781146,
+      "sha256": "70ffcac698aaf28a36acaad827a40f34238a44182d3a0d769d995311945607aa",
+      "blob": "142160b503261a1a5da5f6d4947a333cfcdc3859"
+    },
+    {
+      "path": "incremental-v2-to-v3.patch",
+      "bytes": 134078,
+      "sha256": "785fc883ee7110d937e4359f06b298ab661b7de83c6cbbcfb709bc86b2b5f4c9",
+      "blob": "4ccc8eeea98d189046dabea4861f5811262977ce"
+    },
+    {
+      "path": "SOURCE_QA_RESULTS.json",
+      "bytes": 5903,
+      "sha256": "7d9dd4c42d37a92e204fc696a78b7d7c3cad4f8875fbe0b13bc8a82a626339f8",
+      "blob": "45424def05b6fc08ce6338f0f3e5219a1095db74"
+    },
+    {
+      "path": "EXACT_A96_BASE_AND_ABSENCE.json",
+      "bytes": 55111,
+      "sha256": "80a0f491523c9511568c8b9299e4babdb4b5d0847b5f112cbbf4b1ae6d46e285",
+      "blob": "fd14a5e75ae0edadf90aaa7120c2d425104cfcec"
+    },
+    {
+      "path": "REMOTE_BLOB_PROVENANCE.json",
+      "bytes": 95070,
+      "sha256": "428889fbca87b895dcd04cbce790629d78459af64e57173e4161a30babcf9f4f",
+      "blob": "31d20b77d16802046b2732bb11e6d97905a13f37"
+    },
+    {
+      "path": "ROOT_TREE_ELEMENTS.json",
+      "bytes": 22788,
+      "sha256": "db15a117ab53273f8dcb33421ccb772d5c1fc5099bfa44a810982ce2c6c6b28a",
+      "blob": "29140254b3438885d88083aecf5a019dc9cdf2f2"
+    },
+    {
+      "path": "CENTRAL_NEW_BLOB_RECEIPTS.json",
+      "bytes": 687,
+      "sha256": "a6f604a96d4b8241ccdca9ab73e3570388656b2d0fc8b5490ed83970f743fb91",
+      "blob": "989e7d386cc40b779bbe8241b0fe9b99c03697a0"
+    },
+    {
+      "path": "QA_OVERLAY_DEPENDENCY_FIX.json",
+      "bytes": 829,
+      "sha256": "cfdcf749e5e753ed85cf24ce969f298705356a0174a92e460a85ad3c49a471e7",
+      "blob": "5ad5f87a87fbdee317b3965ca361943bd6644109"
+    }
+  ],
+  "source_qa": {
+    "suites": 13,
+    "pass": 154,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "native_run": false,
+  "full_rust_caller_index_run": false,
+  "main_ref_tree_or_commit_changed_by_this_agent": false,
+  "ordinary_qualification": 0
+}

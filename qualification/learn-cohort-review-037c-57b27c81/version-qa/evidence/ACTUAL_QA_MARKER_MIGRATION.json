@@ -1,0 +1,22 @@
+{
+  "status": "THREE_ACTUAL_FORMAT_LOCATORS_MIGRATED",
+  "changes": [
+    {
+      "before": "VersionCut::Evaluated(_) => cut.require_fresh(",
+      "after": "VersionCut::Evaluated(_) => { cut.require_fresh("
+    },
+    {
+      "before": "OriginalVersionValue::Readback(_) => Err",
+      "after": "OriginalVersionValue::Readback(_) => { Err"
+    },
+    {
+      "before": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection.clone())?",
+      "after": "OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection.clone(),)?"
+    }
+  ],
+  "before_sha256": "a5f1b2d1033666ae1f1cf8ad6d0a8d8f8bd36569d19edf550843581ca1c2351a",
+  "after_sha256": "fb27fd773624e744efc02c3f2d0ba85b042941190c6a1e6d967c621313c00164",
+  "source_or_verifier_changed": false,
+  "attacks_removed": 0,
+  "first_actual_failures_preserved": "actual-attempt-01"
+}

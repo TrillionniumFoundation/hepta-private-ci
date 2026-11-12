@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "status": "IN_PROGRESS",
+  "package_status": "FROZEN_REVIEW_CHECKPOINT",
+  "recorded_at": "2026-11-12T17:25:42.077465+00:00",
+  "purpose": "Preserve final caller row proof, both actual Version57 attempts, both actual cohort154 attempts, and isolated merged-lib actual formatting evidence.",
+  "reviewed_source": {
+    "commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+    "tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+    "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/57b27c81d0d5321b873ee751fd0e58e1d905b988",
+    "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6163"
+  },
+  "checkpoint_branch": {
+    "name": "codex/learn-profile-checkpoint-037c",
+    "expected_parent": "6af982e9a169165599f93fa097a90ee19185ae5e",
+    "changes": "new qualification files only; branch source tree is not relabelled as the reviewed source"
+  },
+  "execution_binding": "The scoped tests ran on pinned physical actual component postimages before publication. They were not rerun in a checkout of 57b27c81. Published source comparison and exact input/blob mapping are separately preserved.",
+  "callers": {
+    "boundaries": 607,
+    "protected_rows": 425,
+    "exact_before_matches": 183,
+    "old_forbidden_order_and_multiplicity_preserved": true,
+    "old_duplicate_rows_preserved": true,
+    "original_verifier_changed": false,
+    "proposal": {
+      "bytes": 1835713,
+      "sha256": "abd68af6b993cb2b363c1909581b628e6f94bab0696eff2e55120d5cf9d2f4b9",
+      "blob": "50077d9ffa5362358ae2234864be1f905217d184"
+    },
+    "strict_patch_replay": "PASS",
+    "previous_v1_eof_failure_preserved": true
+  },
+  "observed_checks": [
+    {
+      "name": "Version actual attempt01",
+      "tests": 57,
+      "passed": 54,
+      "failures": 3,
+      "errors": 0,
+      "result": "version-qa/evidence/actual-attempt-01/result.json",
+      "reason": "Three old prefmt mutation locators failed to find the actual formatted code. No accepted attack and no product change claimed."
+    },
+    {
+      "name": "Version actual attempt02",
+      "tests": 57,
+      "passed": 57,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 24.92287901200325,
+      "result": "version-qa/evidence/actual-attempt-02/result.json",
+      "inputs_unchanged": true,
+      "correction": "Three exact actual-format locator updates; all original attacks retained."
+    },
+    {
+      "name": "Cohort actual attempt01",
+      "tests": 154,
+      "passed": 152,
+      "failures": 0,
+      "errors": 2,
+      "result": "cohort-qa/source-qa-attempt-01/RESULT.json",
+      "reason": "Source QA overlay lacked exact-a96 cell_q24_training_command_readback_service.rs; complete original errors retained."
+    },
+    {
+      "name": "Cohort actual attempt02",
+      "tests": 154,
+      "passed": 154,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 71.88904870999977,
+      "result": "cohort-qa/source-qa-attempt-02/RESULT.json",
+      "inputs_unchanged": true,
+      "correction": "Only the missing exact-a96 baseline dependency was materialized; no product, QA case or registry mutation."
+    },
+    {
+      "name": "Merged lib isolated formatter",
+      "exit_code": 0,
+      "files": 1,
+      "changed_files": 0,
+      "started_at": "2026-11-12T17:16:27.631525+00:00",
+      "finished_at": "2026-11-12T17:16:27.767677+00:00",
+      "rustfmt_sha256": "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c",
+      "result": "merged-lib-format/manifest.actual.json",
+      "checkout_access": false,
+      "target_access": false,
+      "native": false
+    }
+  ],
+  "acceptance_not_established": {
+    "full_repository_source_gate": {
+      "result_in_package": false,
+      "status": "Root reports separate source600 in progress; no terminal result collected here"
+    },
+    "full_caller_gate_for_reviewed_source": "NOT_RUN_IN_THIS_CHECKPOINT",
+    "native_for_reviewed_source": "NOT_RUN_IN_THIS_CHECKPOINT",
+    "ordinary_deployment": "NOT_QUALIFIED"
+  },
+  "qualification_counts": {
+    "complete_ordinary_adopt": 0,
+    "complete_ordinary_no_update": 0,
+    "complete_daemon_root_cold_recovery": 0,
+    "multi_generation_improver": 0
+  },
+  "root_independent_reviews": [
+    "root-review/BASE_GIT_TREE_REVIEW.json",
+    "root-review/REGISTRY_ROOT_REVIEW.json",
+    "root-review/ALLOWLIST_REVIEW.json",
+    "root-review/PR_BODY_BEFORE_COHORT.md",
+    "root-review/PR_BODY_COHORT_CURRENT.md"
+  ],
+  "ordinary_qualification_added": 0,
+  "frozen_PUBLICATION_modified": false
+}

@@ -1,0 +1,42 @@
+{
+  "status": "STRICT_PATCH_REPLAY_PASS",
+  "before_sha256": "d1528f92e274a081dd1c77356a10b5ab2944f00f59eb72ef6b0d9d3e95f20903",
+  "after_sha256": "abd68af6b993cb2b363c1909581b628e6f94bab0696eff2e55120d5cf9d2f4b9",
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/037c0371c195/profile-central-callers-proposal-v2/CALLERS.proposal.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/workspace/scratch/037c0371c195/profile-central-callers-proposal-v2/CALLERS.proposal.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "no_offsets_or_fuzz": true,
+  "v1_failure_original_preserved": true
+}

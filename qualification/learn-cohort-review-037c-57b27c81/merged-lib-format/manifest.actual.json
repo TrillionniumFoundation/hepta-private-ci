@@ -1,0 +1,159 @@
+{
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "source_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "source_binding": {
+    "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+    "description": "Ancestor a96 plus the verified actual cohort component merges. This request formats only the single central merged lib.rs byte string in a fresh isolated record directory. It does not snapshot or access any current Git checkout, target cache, Cargo build or native test.",
+    "input_path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/work/codex-rs/hepta-agentd/src/lib.rs",
+    "merged_input": {
+      "bytes": 72278,
+      "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+      "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+    },
+    "original_a96_file": {
+      "bytes": 70871,
+      "sha256": "72a347216216c7fd8c8c0a7bd1faa72bd81783b4eb8b6ee840f213e7e4466004",
+      "blob": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a"
+    },
+    "merge_layers": [
+      "01-C14",
+      "02-S12",
+      "03-C11",
+      "07-Version40",
+      "10-VersionV4-actual"
+    ],
+    "assembly_staged_manifest": {
+      "path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/STAGED_FILES.json",
+      "bytes": 62535,
+      "sha256": "8e208836585b082092560a65cd6ffec77763065fedab20a78d30f9be469170c3",
+      "blob": "d108d665dd2c1f18e5e3141b414fc66ffb685f9f"
+    },
+    "not_raw_version_component": true,
+    "current_git_source_snapshot": "OMITTED: this operation has no checkout or target access; exact ancestor and assembled input provenance are carried in the payload",
+    "only_write_root": "/home/qian-qi/hepta-learn-037c-evidence/format-central-merged-lib-v1"
+  },
+  "input_json": {
+    "bytes": 159546,
+    "sha256": "6627ddcccb51f8d20b517b61e5fa6288fe4f4b23c81a85fd5dacbfa25c203840",
+    "blob": "cbd149de0a1c491ec591f61fa37abcdb91f5fc17"
+  },
+  "input_gzip": {
+    "bytes": 19918,
+    "sha256": "1f093d0088dc687bb4891869d33bc2ed13533df8ddc74b194db38852c40095b8",
+    "blob": "a37c82fbb2c839d8ff0b4fdc8c9268e13b41a707"
+  },
+  "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\n",
+  "rustfmt_binary": {
+    "bytes": 5288720,
+    "sha256": "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c",
+    "blob": "e00621fd3784b63d4437d85e6bbedde777aac862"
+  },
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "--edition",
+    "2024",
+    "--config",
+    "imports_granularity=Item,skip_children=true",
+    "/home/qian-qi/hepta-learn-037c-evidence/format-central-merged-lib-v1/postimages/codex-rs/hepta-agentd/src/lib.rs"
+  ],
+  "started_at": "2026-11-12T17:16:27.631525+00:00",
+  "finished_at": "2026-11-12T17:16:27.767677+00:00",
+  "returncode": 0,
+  "error": null,
+  "raw_log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "origin": {
+        "base_kind": "verified central merged lib.rs; base equals formatter input, not bare a96",
+        "source_binding": {
+          "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+          "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+          "description": "Ancestor a96 plus the verified actual cohort component merges. This request formats only the single central merged lib.rs byte string in a fresh isolated record directory. It does not snapshot or access any current Git checkout, target cache, Cargo build or native test.",
+          "input_path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/work/codex-rs/hepta-agentd/src/lib.rs",
+          "merged_input": {
+            "bytes": 72278,
+            "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+            "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+          },
+          "original_a96_file": {
+            "bytes": 70871,
+            "sha256": "72a347216216c7fd8c8c0a7bd1faa72bd81783b4eb8b6ee840f213e7e4466004",
+            "blob": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a"
+          },
+          "merge_layers": [
+            "01-C14",
+            "02-S12",
+            "03-C11",
+            "07-Version40",
+            "10-VersionV4-actual"
+          ],
+          "assembly_staged_manifest": {
+            "path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/STAGED_FILES.json",
+            "bytes": 62535,
+            "sha256": "8e208836585b082092560a65cd6ffec77763065fedab20a78d30f9be469170c3",
+            "blob": "d108d665dd2c1f18e5e3141b414fc66ffb685f9f"
+          },
+          "not_raw_version_component": true,
+          "current_git_source_snapshot": "OMITTED: this operation has no checkout or target access; exact ancestor and assembled input provenance are carried in the payload",
+          "only_write_root": "/home/qian-qi/hepta-learn-037c-evidence/format-central-merged-lib-v1"
+        }
+      },
+      "base_exists": true,
+      "base": {
+        "bytes": 72278,
+        "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+        "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+      },
+      "before": {
+        "bytes": 72278,
+        "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+        "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+      },
+      "after": {
+        "bytes": 72278,
+        "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+        "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+      }
+    }
+  ],
+  "format_changed": [],
+  "input_files_preserved": true,
+  "checkout_access": false,
+  "target_access": false,
+  "native_tests_run": false,
+  "ordinary_route_complete": false,
+  "qualification": "isolated central merged lib formatting only; no native or ordinary qualification",
+  "artifacts": [
+    {
+      "path": "central-merged-lib-v1-prefmt.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "combined-central-merged-lib-v1.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "format-only.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "complete-postimages.json.gz",
+      "bytes": 15151,
+      "sha256": "d9e0e627b14bd4eb000de99e08b5ac2ac8d88e16a6b16bb19d85d83a10f0cbbd",
+      "blob": "2736c37e0b510b7ffc2a43fcd83850d720a89fa1"
+    }
+  ]
+}

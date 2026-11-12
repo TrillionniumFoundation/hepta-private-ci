@@ -1,0 +1,47 @@
+{
+  "status": "FAIL",
+  "tests": 154,
+  "expected": 154,
+  "failures": [],
+  "errors": [
+    {
+      "case": "assembled_v3_test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_model_readback_edge_does_not_admit_an_unregistered_model_lane",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/source-qa-overlay/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py\", line 105, in test_model_readback_edge_does_not_admit_an_unregistered_model_lane\n    (ROOT / path).read_text())) for path in (\n    ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/source-qa-overlay/codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs'\n"
+    },
+    {
+      "case": "assembled_v3_test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/source-qa-overlay/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py\", line 85, in test_only_actual_original_read_edges_open_and_new_authority_stays_closed\n    (ROOT / path).read_text())) for path in paths}\n    ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/source-qa-overlay/codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs'\n"
+    }
+  ],
+  "skipped": [],
+  "raw_log": {
+    "bytes": 39655,
+    "sha256": "7890de63e7fa41cb3e23b44045b533d5b9845d8808ec3e993936a27c095b5654",
+    "blob": "cee8abfa758fe5fcd585399aba7bab7398495f9d"
+  },
+  "elapsed_seconds": 72.08645549799985,
+  "input_bytes_unchanged": true,
+  "registry": {
+    "bytes": 1835713,
+    "sha256": "abd68af6b993cb2b363c1909581b628e6f94bab0696eff2e55120d5cf9d2f4b9",
+    "blob": "50077d9ffa5362358ae2234864be1f905217d184"
+  },
+  "suites": [
+    "test_evaluated_candidate_continuation_source_closure.py",
+    "test_evaluated_next_use_source_closure.py",
+    "test_evaluated_published_read_source_closure.py",
+    "test_evaluated_retention_command_source_closure.py",
+    "test_evaluated_retention_source_closure.py",
+    "test_evaluated_selection_source_closure.py",
+    "test_evaluated_version_source_closure.py",
+    "test_original_candidate_current_source_closure.py",
+    "test_original_candidate_material_source_closure.py",
+    "test_original_circuit_observer_source_closure.py",
+    "test_original_training_read_transaction_source_closure.py",
+    "test_original_training_source_capture_source_closure.py",
+    "test_retained_version_issuer_source_closure.py"
+  ],
+  "full_caller_index": false,
+  "native": false,
+  "ordinary_qualification": 0
+}

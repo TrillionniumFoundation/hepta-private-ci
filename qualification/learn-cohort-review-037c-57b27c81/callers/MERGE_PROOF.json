@@ -1,0 +1,1106 @@
+{
+  "status": "ISOLATED_PROPOSAL_MERGE_PROOF_PASS",
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "base": {
+    "bytes": 1124758,
+    "sha256": "d1528f92e274a081dd1c77356a10b5ab2944f00f59eb72ef6b0d9d3e95f20903",
+    "blob": "6eb79688b56aca6306bc500b96f3b10654660196"
+  },
+  "source_scope": "exact Candidate V2 + binding forbidden17 + original Current72732 + Root guards V2 + actual Version V4 markers + actual T47147; actual V4/Root3/T postimages available, source QA recorded separately",
+  "layer_order": [
+    "01-candidate-v2",
+    "02-binding-forbidden",
+    "03-current",
+    "04-root-v2",
+    "05-version-v4",
+    "06-training-v3-actual"
+  ],
+  "before_counts": {
+    "boundaries": 541,
+    "protected": 389
+  },
+  "after_counts": {
+    "boundaries": 607,
+    "protected": 425
+  },
+  "proposal": {
+    "bytes": 1835713,
+    "sha256": "abd68af6b993cb2b363c1909581b628e6f94bab0696eff2e55120d5cf9d2f4b9",
+    "blob": "50077d9ffa5362358ae2234864be1f905217d184"
+  },
+  "patch": {
+    "bytes": 1118767,
+    "sha256": "5eeb7909f1bf090216250d213db679044a7d42d7d61b1d22eecb792d2ecdefc3",
+    "blob": "cac30d02e13fce4c4acd73cc739b47ba46e6a114"
+  },
+  "history_uncompressed": {
+    "bytes": 2816066,
+    "sha256": "7851842cd91f2491ea38c230c4968da410a712e098710fdff1c6242f6c8304dc",
+    "blob": "b93edee61c0b83e5405c3962643b7eeb63d48242"
+  },
+  "history_compressed": {
+    "bytes": 150205,
+    "sha256": "4f6bf675e1d75fcd678a305db37cccf5bb48130b4c2ceb955b1d1da417895d77",
+    "blob": "5233e7be5941cb77a1080417b48646ccab637c51"
+  },
+  "row_provenance": {
+    "bytes": 358782,
+    "sha256": "204972065a9aeee9b46ff28f72ed9ae1bd5bb43540b1046161e8358aed99e8df",
+    "blob": "84a96b2e7b34b0c37a5272a2a7d4612f9e5faf09"
+  },
+  "exact_before_matches": 183,
+  "untouched_original_table_blocks_preserved_verbatim": 865,
+  "original_duplicate_protected_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "original_indices": [
+        1,
+        51
+      ],
+      "final_indices": [
+        1,
+        51
+      ],
+      "original_row_sha256": [
+        "da69c495fa887045d175ec18f301d76b6f4f31f231a12bfc2fe7edd3138aa380",
+        "b01f52b40414db29519738b20c0b018fb7cf63f9e692d58a83917bda38e97c67"
+      ],
+      "final_row_sha256": [
+        "da69c495fa887045d175ec18f301d76b6f4f31f231a12bfc2fe7edd3138aa380",
+        "b01f52b40414db29519738b20c0b018fb7cf63f9e692d58a83917bda38e97c67"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "original_indices": [
+        2,
+        191
+      ],
+      "final_indices": [
+        2,
+        191
+      ],
+      "original_row_sha256": [
+        "54b27f10ab2a10c5eec61e8828c24c9379b18288e5b265ee8870e8a728067fe5",
+        "79a1c76603bd85476803737f1760110e756706863e5136812cb36b4a0f77a9e6"
+      ],
+      "final_row_sha256": [
+        "54b27f10ab2a10c5eec61e8828c24c9379b18288e5b265ee8870e8a728067fe5",
+        "79a1c76603bd85476803737f1760110e756706863e5136812cb36b4a0f77a9e6"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "original_indices": [
+        4,
+        106
+      ],
+      "final_indices": [
+        4,
+        106
+      ],
+      "original_row_sha256": [
+        "56799c9093461fe4a256b1af25e00d935d93ce53ca370122ba5c47226a28f48d",
+        "ff5b2c99e88683b196302ba642533b57024fca3940eb34fde09514762aef961e"
+      ],
+      "final_row_sha256": [
+        "56799c9093461fe4a256b1af25e00d935d93ce53ca370122ba5c47226a28f48d",
+        "ff5b2c99e88683b196302ba642533b57024fca3940eb34fde09514762aef961e"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "original_indices": [
+        5,
+        8,
+        130,
+        158,
+        318
+      ],
+      "final_indices": [
+        5,
+        8,
+        130,
+        158,
+        318
+      ],
+      "original_row_sha256": [
+        "703f3bd5bf10dea1ba35b90b4bdfa43bcbdd75aac64c298c01551cfdc828a77c",
+        "f077115a618afc28856ef3dd14d38c1967f0307f66db9d24a727c87ba91f9107",
+        "41efa10562a44dbeed7bd9d0140a975acf99ab94eb3eefc2f310b01113617b18",
+        "70ad906d64738a5edd433c0084b982ea1093a453f56491796d7452610038b920",
+        "bdaf6eeedd64448eda757a158e1d060015ce72e639dc3a49609c45f9feb63080"
+      ],
+      "final_row_sha256": [
+        "703f3bd5bf10dea1ba35b90b4bdfa43bcbdd75aac64c298c01551cfdc828a77c",
+        "f077115a618afc28856ef3dd14d38c1967f0307f66db9d24a727c87ba91f9107",
+        "41efa10562a44dbeed7bd9d0140a975acf99ab94eb3eefc2f310b01113617b18",
+        "70ad906d64738a5edd433c0084b982ea1093a453f56491796d7452610038b920",
+        "bdaf6eeedd64448eda757a158e1d060015ce72e639dc3a49609c45f9feb63080"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "original_indices": [
+        19,
+        117
+      ],
+      "final_indices": [
+        19,
+        117
+      ],
+      "original_row_sha256": [
+        "fac2f87082e7e684d6c66292d963617ca5200e8df17aa80e2833cd62d93efe00",
+        "81966c9ffac0097a196745cc459e291628469d8a1bcb5316d3ed34241d0e21e8"
+      ],
+      "final_row_sha256": [
+        "fac2f87082e7e684d6c66292d963617ca5200e8df17aa80e2833cd62d93efe00",
+        "81966c9ffac0097a196745cc459e291628469d8a1bcb5316d3ed34241d0e21e8"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_protected_host.rs",
+      "original_indices": [
+        20,
+        107
+      ],
+      "final_indices": [
+        20,
+        107
+      ],
+      "original_row_sha256": [
+        "4845ed0656a46e4dd9c7ac0f33a7ce346bbc9c0eb81c5a73c151bbb71983a9c2",
+        "bd9515e548d3af54010dd6f21ca9bd0e0e89b15a08edd9aba3dda443488c848d"
+      ],
+      "final_row_sha256": [
+        "4845ed0656a46e4dd9c7ac0f33a7ce346bbc9c0eb81c5a73c151bbb71983a9c2",
+        "bd9515e548d3af54010dd6f21ca9bd0e0e89b15a08edd9aba3dda443488c848d"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "original_indices": [
+        21,
+        118
+      ],
+      "final_indices": [
+        21,
+        118
+      ],
+      "original_row_sha256": [
+        "49a8a0afc00fdd58c3895aa292f2a753559ae8d05c08aaaa6f20192c1b25b5a6",
+        "5485167f22282329d0351cf9146f57332e5f9e94514e84de141024cec749c3ea"
+      ],
+      "final_row_sha256": [
+        "49a8a0afc00fdd58c3895aa292f2a753559ae8d05c08aaaa6f20192c1b25b5a6",
+        "5485167f22282329d0351cf9146f57332e5f9e94514e84de141024cec749c3ea"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "original_indices": [
+        22,
+        119
+      ],
+      "final_indices": [
+        22,
+        119
+      ],
+      "original_row_sha256": [
+        "91a5cbbed36066c7d7c3d15dce2a3ae13612353475c9747b1ea87a6367a51c3f",
+        "a217fb0c71b83da546c22fc7ad5954abe17df995d2bd0381c644006055372d44"
+      ],
+      "final_row_sha256": [
+        "91a5cbbed36066c7d7c3d15dce2a3ae13612353475c9747b1ea87a6367a51c3f",
+        "a217fb0c71b83da546c22fc7ad5954abe17df995d2bd0381c644006055372d44"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+      "original_indices": [
+        23,
+        120
+      ],
+      "final_indices": [
+        23,
+        120
+      ],
+      "original_row_sha256": [
+        "a5e211b787adf041f899e811a3f819d3ad2719e1a9a4259d744873fd65cfaa42",
+        "5048fc30ab8e9d6434449dedf483da7d744b53dff46cf58f8d426f78d902aaa6"
+      ],
+      "final_row_sha256": [
+        "a5e211b787adf041f899e811a3f819d3ad2719e1a9a4259d744873fd65cfaa42",
+        "5048fc30ab8e9d6434449dedf483da7d744b53dff46cf58f8d426f78d902aaa6"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "original_indices": [
+        29,
+        103
+      ],
+      "final_indices": [
+        29,
+        103
+      ],
+      "original_row_sha256": [
+        "f4008665c8e8615fb57f4435403437399f8899f78fed2329106ece6ef079529e",
+        "783740b183e456060687bf69ad94f32a07367d42783488c4104c848833953c96"
+      ],
+      "final_row_sha256": [
+        "f4008665c8e8615fb57f4435403437399f8899f78fed2329106ece6ef079529e",
+        "783740b183e456060687bf69ad94f32a07367d42783488c4104c848833953c96"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "original_indices": [
+        30,
+        114,
+        159,
+        314
+      ],
+      "final_indices": [
+        30,
+        114,
+        159,
+        314
+      ],
+      "original_row_sha256": [
+        "3cd538e3b820b8caa6c2c719a02eff99a317f154e8bc2c758de452f04a1ae238",
+        "a3b45e6dda7ca2f436e6eae7417d033e6ada1ea9a0fbfe4d04344221968e0bdb",
+        "242654ae34b681fbdcefd01fa5c97063f63e5a4897a787405b0080f3b2819f3b",
+        "f5ea53fb4d091cdd6a8b8e3713b4c34e07203d61227d231aca65b5b98013e3b4"
+      ],
+      "final_row_sha256": [
+        "3cd538e3b820b8caa6c2c719a02eff99a317f154e8bc2c758de452f04a1ae238",
+        "a3b45e6dda7ca2f436e6eae7417d033e6ada1ea9a0fbfe4d04344221968e0bdb",
+        "242654ae34b681fbdcefd01fa5c97063f63e5a4897a787405b0080f3b2819f3b",
+        "f5ea53fb4d091cdd6a8b8e3713b4c34e07203d61227d231aca65b5b98013e3b4"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "original_indices": [
+        31,
+        115
+      ],
+      "final_indices": [
+        31,
+        115
+      ],
+      "original_row_sha256": [
+        "39953fe6c0f4060136c667351669afb5bd6e7988941f193709da02d0cc45ccc2",
+        "bc2ae493c11a289be879de8ee58fd9fc97d0b2646d643237140922f46c9d30ec"
+      ],
+      "final_row_sha256": [
+        "39953fe6c0f4060136c667351669afb5bd6e7988941f193709da02d0cc45ccc2",
+        "bc2ae493c11a289be879de8ee58fd9fc97d0b2646d643237140922f46c9d30ec"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+      "original_indices": [
+        32,
+        121
+      ],
+      "final_indices": [
+        32,
+        121
+      ],
+      "original_row_sha256": [
+        "b2f96aadfd1de20578cbfb03e8bd6f8c537437567253a98ba4d81c14dac3ed22",
+        "b0a050ee4d230f75d93ff12319f4cda93c76ddd1d2f37749b43e94f0a9482dc8"
+      ],
+      "final_row_sha256": [
+        "b2f96aadfd1de20578cbfb03e8bd6f8c537437567253a98ba4d81c14dac3ed22",
+        "b0a050ee4d230f75d93ff12319f4cda93c76ddd1d2f37749b43e94f0a9482dc8"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+      "original_indices": [
+        34,
+        46,
+        123
+      ],
+      "final_indices": [
+        34,
+        46,
+        123
+      ],
+      "original_row_sha256": [
+        "2b6eab9f0b71102e53f297032a9de71de84198d52b3adec93efe3947e211b2ca",
+        "3253c32693f03aee4bd2100bc0f6d2b8f848972640edabefda8d2ed9e1526124",
+        "24fae32308d386b344db16c60f702674daf986ba6645492f4d01ca61f9b87bb9"
+      ],
+      "final_row_sha256": [
+        "2b6eab9f0b71102e53f297032a9de71de84198d52b3adec93efe3947e211b2ca",
+        "3253c32693f03aee4bd2100bc0f6d2b8f848972640edabefda8d2ed9e1526124",
+        "24fae32308d386b344db16c60f702674daf986ba6645492f4d01ca61f9b87bb9"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+      "original_indices": [
+        36,
+        56,
+        122
+      ],
+      "final_indices": [
+        36,
+        56,
+        122
+      ],
+      "original_row_sha256": [
+        "36e8f3173d040f6c0b35af3ed4170be5e297161fddf678690f15279094b51fad",
+        "e9d4ceaee6c6f9a8e8a1f6e09bb9aebfd721cfb9bcf021fdd6e9509ca44f756d",
+        "0d1d20ef056504897692186fb8d47dc718f0c4e6552f59f3b22be622a040077c"
+      ],
+      "final_row_sha256": [
+        "36e8f3173d040f6c0b35af3ed4170be5e297161fddf678690f15279094b51fad",
+        "e9d4ceaee6c6f9a8e8a1f6e09bb9aebfd721cfb9bcf021fdd6e9509ca44f756d",
+        "0d1d20ef056504897692186fb8d47dc718f0c4e6552f59f3b22be622a040077c"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "original_indices": [
+        37,
+        45,
+        124
+      ],
+      "final_indices": [
+        37,
+        45,
+        124
+      ],
+      "original_row_sha256": [
+        "13764edd6835947ede6d30bec65d8d8ee396c96306c3b9366027296d0a348df7",
+        "4584ceb42cfb6c5fbac887b01e946600e8b84a96feb097498fbde36abbf37ecb",
+        "0fad983f631de21b858e199cfdb088dbb3709181500d5f55890142acfe3da9be"
+      ],
+      "final_row_sha256": [
+        "13764edd6835947ede6d30bec65d8d8ee396c96306c3b9366027296d0a348df7",
+        "4584ceb42cfb6c5fbac887b01e946600e8b84a96feb097498fbde36abbf37ecb",
+        "0fad983f631de21b858e199cfdb088dbb3709181500d5f55890142acfe3da9be"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_human.rs",
+      "original_indices": [
+        43,
+        125
+      ],
+      "final_indices": [
+        43,
+        125
+      ],
+      "original_row_sha256": [
+        "e5fa45c46a9986a6ee54b1fed0c307a6532fab5b2d2f5715a72518ec775c20ae",
+        "db5deefb08241b6bd77b041d2269ac8290f4b5afa20e8c2e6756214bc58a9bbe"
+      ],
+      "final_row_sha256": [
+        "e5fa45c46a9986a6ee54b1fed0c307a6532fab5b2d2f5715a72518ec775c20ae",
+        "db5deefb08241b6bd77b041d2269ac8290f4b5afa20e8c2e6756214bc58a9bbe"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "original_indices": [
+        50,
+        315
+      ],
+      "final_indices": [
+        50,
+        315
+      ],
+      "original_row_sha256": [
+        "2df8ca0148be1c8f73d1243f72f993463f7faa848f0b3bba191c3a18a64b2900",
+        "3742299441955144a96897446b9a3197d90259962a3a1c9f5692363eb27babee"
+      ],
+      "final_row_sha256": [
+        "2df8ca0148be1c8f73d1243f72f993463f7faa848f0b3bba191c3a18a64b2900",
+        "3742299441955144a96897446b9a3197d90259962a3a1c9f5692363eb27babee"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "original_indices": [
+        53,
+        97,
+        160
+      ],
+      "final_indices": [
+        53,
+        97,
+        160
+      ],
+      "original_row_sha256": [
+        "9da64c541a5368d5a1271c4fd5ef8f671c344a7803554473df932f46d59fdb71",
+        "d5b5ab2548402f4e65d99a31e090475a665773faefe659b4e3b1a35f82217f5d",
+        "95c0bbfa900f5b15a1308fdfd00e4a58a2ed71dd231dc3f8c66f30c6192a8333"
+      ],
+      "final_row_sha256": [
+        "9da64c541a5368d5a1271c4fd5ef8f671c344a7803554473df932f46d59fdb71",
+        "d5b5ab2548402f4e65d99a31e090475a665773faefe659b4e3b1a35f82217f5d",
+        "95c0bbfa900f5b15a1308fdfd00e4a58a2ed71dd231dc3f8c66f30c6192a8333"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+      "original_indices": [
+        63,
+        116
+      ],
+      "final_indices": [
+        63,
+        116
+      ],
+      "original_row_sha256": [
+        "3f59dab02fbc3f043a5f41fd4ee67d074c6a321645ef5d71f2b4e71706f73df5",
+        "f06d70d3fed5dc93953d8eeb194501f6a3dfd7eea1ea5d1426e4e71aded77fa4"
+      ],
+      "final_row_sha256": [
+        "3f59dab02fbc3f043a5f41fd4ee67d074c6a321645ef5d71f2b4e71706f73df5",
+        "f06d70d3fed5dc93953d8eeb194501f6a3dfd7eea1ea5d1426e4e71aded77fa4"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+      "original_indices": [
+        76,
+        126
+      ],
+      "final_indices": [
+        76,
+        126
+      ],
+      "original_row_sha256": [
+        "ae5df66e031b65bc200e8f834a2aa2a89c9baaaa7e6234ddcf2ba6f7aecb6432",
+        "629825014ddab479fc14224f3179ce49b57fcb6930bb95c5d6afa391709b7cf0"
+      ],
+      "final_row_sha256": [
+        "ae5df66e031b65bc200e8f834a2aa2a89c9baaaa7e6234ddcf2ba6f7aecb6432",
+        "629825014ddab479fc14224f3179ce49b57fcb6930bb95c5d6afa391709b7cf0"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "original_indices": [
+        82,
+        105,
+        317
+      ],
+      "final_indices": [
+        82,
+        105,
+        317
+      ],
+      "original_row_sha256": [
+        "8746802cd9c21f208c44b3988fbf7477111c735fff83399c5afa0c245d4eeaf5",
+        "c277e0a187609f93b5c9c329a174e513880eb0169b1c357146b5caf292f4cfc3",
+        "5c20ac3950189df66be0891a7acdad57e9e73ac7bddd5fa1a6597a705b100a05"
+      ],
+      "final_row_sha256": [
+        "8746802cd9c21f208c44b3988fbf7477111c735fff83399c5afa0c245d4eeaf5",
+        "c277e0a187609f93b5c9c329a174e513880eb0169b1c357146b5caf292f4cfc3",
+        "5c20ac3950189df66be0891a7acdad57e9e73ac7bddd5fa1a6597a705b100a05"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "original_indices": [
+        83,
+        161
+      ],
+      "final_indices": [
+        83,
+        161
+      ],
+      "original_row_sha256": [
+        "20c22c1cb7065aba25f321647a8d01c17281a61f3fc9ca0b5d5309a990d8afa5",
+        "92b94c41b557b8c16255db30619b95078c5183f88d16ec6ca75d1808b7a719e2"
+      ],
+      "final_row_sha256": [
+        "20c22c1cb7065aba25f321647a8d01c17281a61f3fc9ca0b5d5309a990d8afa5",
+        "92b94c41b557b8c16255db30619b95078c5183f88d16ec6ca75d1808b7a719e2"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+      "original_indices": [
+        85,
+        94,
+        143,
+        144
+      ],
+      "final_indices": [
+        85,
+        94,
+        143,
+        144
+      ],
+      "original_row_sha256": [
+        "e08d6c21d48f1f335129bdf44ee45ee702e55753d187bf7be4dc13653085143c",
+        "ed453c3529ce268787bcd1676fd8619636efe931a41b8b6eebb0aabb5872cb4c",
+        "1726fa9da59073158385fec373f7820474fc80e2f16d7f0890ccc2e4099150e8",
+        "5a4979d3eceaa9cfddc774d2ba42c0ca082102e4eef58abc29966376b3cdda44"
+      ],
+      "final_row_sha256": [
+        "e08d6c21d48f1f335129bdf44ee45ee702e55753d187bf7be4dc13653085143c",
+        "ed453c3529ce268787bcd1676fd8619636efe931a41b8b6eebb0aabb5872cb4c",
+        "1726fa9da59073158385fec373f7820474fc80e2f16d7f0890ccc2e4099150e8",
+        "5a4979d3eceaa9cfddc774d2ba42c0ca082102e4eef58abc29966376b3cdda44"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+      "original_indices": [
+        86,
+        96
+      ],
+      "final_indices": [
+        86,
+        96
+      ],
+      "original_row_sha256": [
+        "55a5b84f215c4ecd4154880e01418bb0671f4eb0d3ff25b3949da36e4dea083d",
+        "19292f997fb82ece6c9fb5ed7930591dc5bfea021fe972fe209e055136bfc2f6"
+      ],
+      "final_row_sha256": [
+        "55a5b84f215c4ecd4154880e01418bb0671f4eb0d3ff25b3949da36e4dea083d",
+        "19292f997fb82ece6c9fb5ed7930591dc5bfea021fe972fe209e055136bfc2f6"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "original_indices": [
+        89,
+        95,
+        102
+      ],
+      "final_indices": [
+        89,
+        95,
+        102
+      ],
+      "original_row_sha256": [
+        "4febd504f832aa29a37f9cc5dd2d27e1b6535fd11f7da83a1988c7b3ce6c83a3",
+        "327288d099f0253d11c2dba8436c9287cfbe28921e82af36b01ec7beef77a18a",
+        "d192184f6503af9d23bf1dd5a412b824a2d0fe68137c48be4c3324b6f5389c86"
+      ],
+      "final_row_sha256": [
+        "4febd504f832aa29a37f9cc5dd2d27e1b6535fd11f7da83a1988c7b3ce6c83a3",
+        "327288d099f0253d11c2dba8436c9287cfbe28921e82af36b01ec7beef77a18a",
+        "d192184f6503af9d23bf1dd5a412b824a2d0fe68137c48be4c3324b6f5389c86"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "original_indices": [
+        90,
+        100
+      ],
+      "final_indices": [
+        90,
+        100
+      ],
+      "original_row_sha256": [
+        "994ef85a1d7b33010bcc6bdc7954ddbcafd53f32fe017118781305b709a24c2c",
+        "d4e842e14bedecd32e40cf86a477521065833ec4fcdf30a65d74864124eb86bb"
+      ],
+      "final_row_sha256": [
+        "994ef85a1d7b33010bcc6bdc7954ddbcafd53f32fe017118781305b709a24c2c",
+        "d4e842e14bedecd32e40cf86a477521065833ec4fcdf30a65d74864124eb86bb"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+      "original_indices": [
+        91,
+        101
+      ],
+      "final_indices": [
+        91,
+        101
+      ],
+      "original_row_sha256": [
+        "14fa14e29f9e6b530fd36db9d08cae1c37a1f59a32465f22f6cbe88deccbebbf",
+        "076d026b54ecbeeedf3f1f7f137aee865b9935d4f1a19116f5aeaab8d97b6469"
+      ],
+      "final_row_sha256": [
+        "14fa14e29f9e6b530fd36db9d08cae1c37a1f59a32465f22f6cbe88deccbebbf",
+        "076d026b54ecbeeedf3f1f7f137aee865b9935d4f1a19116f5aeaab8d97b6469"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "original_indices": [
+        93,
+        141
+      ],
+      "final_indices": [
+        93,
+        141
+      ],
+      "original_row_sha256": [
+        "f6d5dcbd37106729d50458e0eee819cd4784de0bab5542d0089097540b10084a",
+        "cd91c5f7dd3234252d408b5f48c6f4dc7f3bcced44b24503d2ed393aee0ce14e"
+      ],
+      "final_row_sha256": [
+        "f6d5dcbd37106729d50458e0eee819cd4784de0bab5542d0089097540b10084a",
+        "cd91c5f7dd3234252d408b5f48c6f4dc7f3bcced44b24503d2ed393aee0ce14e"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "original_indices": [
+        164,
+        190,
+        249
+      ],
+      "final_indices": [
+        164,
+        190,
+        249
+      ],
+      "original_row_sha256": [
+        "949aacf4d74243445551157341c376a5b91dd67ae7bc6163ce36561e6da09347",
+        "1e5b181d6b7d981589b0f202dc9c6ecc1d492748dae1f5fe2d8fd56828d35c75",
+        "0e904d5fe80e328598bdb0cecbb50b5572a496f578c8c6bd6b331fc315a389db"
+      ],
+      "final_row_sha256": [
+        "949aacf4d74243445551157341c376a5b91dd67ae7bc6163ce36561e6da09347",
+        "1e5b181d6b7d981589b0f202dc9c6ecc1d492748dae1f5fe2d8fd56828d35c75",
+        "0e904d5fe80e328598bdb0cecbb50b5572a496f578c8c6bd6b331fc315a389db"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "original_indices": [
+        165,
+        189
+      ],
+      "final_indices": [
+        165,
+        189
+      ],
+      "original_row_sha256": [
+        "7aa35f3b5aca25e10c1467996a47ce1dd976c9a52e10465f06630c78d4b7a631",
+        "b87e5b44b742ee463f28dcd2bcf1b0390c6d5c211c5d6005277a2c7fb8df98d0"
+      ],
+      "final_row_sha256": [
+        "7aa35f3b5aca25e10c1467996a47ce1dd976c9a52e10465f06630c78d4b7a631",
+        "b87e5b44b742ee463f28dcd2bcf1b0390c6d5c211c5d6005277a2c7fb8df98d0"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+      "original_indices": [
+        166,
+        187
+      ],
+      "final_indices": [
+        166,
+        187
+      ],
+      "original_row_sha256": [
+        "f7875447a16205bfd5d1bc27079628d45fb6cfcc58ff6fd256cbcd96badb78a9",
+        "f04f29000bcda697d095f3f0eac993c4955c2a282ecca7533cde749938682efc"
+      ],
+      "final_row_sha256": [
+        "f7875447a16205bfd5d1bc27079628d45fb6cfcc58ff6fd256cbcd96badb78a9",
+        "f04f29000bcda697d095f3f0eac993c4955c2a282ecca7533cde749938682efc"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "original_indices": [
+        176,
+        180,
+        321
+      ],
+      "final_indices": [
+        176,
+        180,
+        321
+      ],
+      "original_row_sha256": [
+        "b46d95407e00991b6038ebbea404d4bcff5e0de40a218c9a6f3c87322af2778a",
+        "d5c006f10e47f0b90f602f3941eb316516cebb05237a4687d3d42016fb49a310",
+        "9176fc2055d70294fc099b8226b6ae20a64f2d38c70d3796a71cf6749431fdec"
+      ],
+      "final_row_sha256": [
+        "b46d95407e00991b6038ebbea404d4bcff5e0de40a218c9a6f3c87322af2778a",
+        "d5c006f10e47f0b90f602f3941eb316516cebb05237a4687d3d42016fb49a310",
+        "9176fc2055d70294fc099b8226b6ae20a64f2d38c70d3796a71cf6749431fdec"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "original_indices": [
+        178,
+        237
+      ],
+      "final_indices": [
+        178,
+        237
+      ],
+      "original_row_sha256": [
+        "becd827f843040128e1f10dd976197c0d426f988474371b455798d1f4fa7bc0c",
+        "83efe51ed8e8cc5e67b0e55ed823d3b16b700ed73d3683ac8d34c7e1e98dfab9"
+      ],
+      "final_row_sha256": [
+        "becd827f843040128e1f10dd976197c0d426f988474371b455798d1f4fa7bc0c",
+        "83efe51ed8e8cc5e67b0e55ed823d3b16b700ed73d3683ac8d34c7e1e98dfab9"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "original_indices": [
+        179,
+        202
+      ],
+      "final_indices": [
+        179,
+        202
+      ],
+      "original_row_sha256": [
+        "12640f942c40f3be281a97b2245ef9102cefea7bcebb528bc9820cc9a6c240c1",
+        "3e7babfcf5fac88c0fe9fad30afef85c4baefbf0135556ef1e516d98e06379bf"
+      ],
+      "final_row_sha256": [
+        "12640f942c40f3be281a97b2245ef9102cefea7bcebb528bc9820cc9a6c240c1",
+        "3e7babfcf5fac88c0fe9fad30afef85c4baefbf0135556ef1e516d98e06379bf"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+      "original_indices": [
+        181,
+        319
+      ],
+      "final_indices": [
+        181,
+        319
+      ],
+      "original_row_sha256": [
+        "0974e8cde02cca5854d775608d1307182b013f44ef26c52747b231182bbec7cb",
+        "3bfcc8a5e47da949ef85f0b344dcefbc8b9ea7b974ff75d6e8c7c90c1d1643ec"
+      ],
+      "final_row_sha256": [
+        "0974e8cde02cca5854d775608d1307182b013f44ef26c52747b231182bbec7cb",
+        "3bfcc8a5e47da949ef85f0b344dcefbc8b9ea7b974ff75d6e8c7c90c1d1643ec"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "original_indices": [
+        183,
+        185,
+        322
+      ],
+      "final_indices": [
+        183,
+        185,
+        322
+      ],
+      "original_row_sha256": [
+        "ac0b78ec8117b871760eb6be4c8202cf148b056ddae4bb17759633aa5c7fce0d",
+        "b7354ee18110854f936b0cc1c94baeac7772119b9e060a06f09654fb3566289f",
+        "f25d49551cb46dc1a81d75431b5d1e61925bc3d1db726c805f826f652a36f0c8"
+      ],
+      "final_row_sha256": [
+        "ac0b78ec8117b871760eb6be4c8202cf148b056ddae4bb17759633aa5c7fce0d",
+        "b7354ee18110854f936b0cc1c94baeac7772119b9e060a06f09654fb3566289f",
+        "f25d49551cb46dc1a81d75431b5d1e61925bc3d1db726c805f826f652a36f0c8"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "original_indices": [
+        186,
+        214,
+        222,
+        227,
+        230
+      ],
+      "final_indices": [
+        186,
+        214,
+        222,
+        227,
+        230
+      ],
+      "original_row_sha256": [
+        "7e3cc72c3d7a05b42592bc47a45cc49dab8ae43e39d12664083b07e5ca3029d0",
+        "24ad5c2e0da56128ad16ef6d0bb3e6fab5f1d0e682bdaf9d3c02b41022e9e028",
+        "86e927c2b76aabb0ddd39e63026e5ed4fc3ac53e7f3cd6cc7b4e59064886430c",
+        "006b6e8a2fdb5c3c07f36acc860642eeae3f569426eb83cca1fe7978a1fbba58",
+        "c414ff48b0796227a7b4be227c35894ad5364e39ee6d3c650efff4fa211cac36"
+      ],
+      "final_row_sha256": [
+        "7e3cc72c3d7a05b42592bc47a45cc49dab8ae43e39d12664083b07e5ca3029d0",
+        "24ad5c2e0da56128ad16ef6d0bb3e6fab5f1d0e682bdaf9d3c02b41022e9e028",
+        "86e927c2b76aabb0ddd39e63026e5ed4fc3ac53e7f3cd6cc7b4e59064886430c",
+        "006b6e8a2fdb5c3c07f36acc860642eeae3f569426eb83cca1fe7978a1fbba58",
+        "c414ff48b0796227a7b4be227c35894ad5364e39ee6d3c650efff4fa211cac36"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "original_indices": [
+        201,
+        333
+      ],
+      "final_indices": [
+        201,
+        333
+      ],
+      "original_row_sha256": [
+        "9cf3b7268e8d348010fce6965f0fba6578122be9db08731faad7cd226983988b",
+        "2605878e81e57b7bbfd84ff0fc802a7625668238e414c1b4111c56d12a1316a8"
+      ],
+      "final_row_sha256": [
+        "9cf3b7268e8d348010fce6965f0fba6578122be9db08731faad7cd226983988b",
+        "2605878e81e57b7bbfd84ff0fc802a7625668238e414c1b4111c56d12a1316a8"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "original_indices": [
+        215,
+        228,
+        232,
+        234
+      ],
+      "final_indices": [
+        215,
+        228,
+        232,
+        234
+      ],
+      "original_row_sha256": [
+        "08dec0f5c013c5bcac3cce95ac1b3b82cae94ccad80bd076f17d81970d6a79c7",
+        "34c5123bff087ae3462f6f4a6ab55d3e8a5ff532a312199711804e3833b8b02c",
+        "8299d2571dd4fdd86eea0d3f28c4e55f1c4d45cb1f538fdf791ca67f00498d05",
+        "6694c10b373bfc7e3439807c0277f813fdc9fbaab356f1d298513682c979fcab"
+      ],
+      "final_row_sha256": [
+        "ea713c25437a8407dd6512327f4105883cb415b90fb7aa45697e972a565300d1",
+        "34c5123bff087ae3462f6f4a6ab55d3e8a5ff532a312199711804e3833b8b02c",
+        "8299d2571dd4fdd86eea0d3f28c4e55f1c4d45cb1f538fdf791ca67f00498d05",
+        "6694c10b373bfc7e3439807c0277f813fdc9fbaab356f1d298513682c979fcab"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "original_indices": [
+        217,
+        223
+      ],
+      "final_indices": [
+        217,
+        223
+      ],
+      "original_row_sha256": [
+        "f4df42af52c70734f206ea7cdcff35e4c6b3ce51587f5be122cdd41466e72d64",
+        "c1daa7a786da1642ec84ec7963f01b994660d8fd34bf8ad5b86043e3fc4f6b01"
+      ],
+      "final_row_sha256": [
+        "f4df42af52c70734f206ea7cdcff35e4c6b3ce51587f5be122cdd41466e72d64",
+        "c1daa7a786da1642ec84ec7963f01b994660d8fd34bf8ad5b86043e3fc4f6b01"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "original_indices": [
+        219,
+        344
+      ],
+      "final_indices": [
+        219,
+        344
+      ],
+      "original_row_sha256": [
+        "6c1debe811a88e21e1579e5d2f288938a1394b25438513d8bf118cab3e4545da",
+        "6facedcb08e272aed2f62e77937ff6e1682768cc260bdd53726fd9e7b5f3d173"
+      ],
+      "final_row_sha256": [
+        "6c1debe811a88e21e1579e5d2f288938a1394b25438513d8bf118cab3e4545da",
+        "6facedcb08e272aed2f62e77937ff6e1682768cc260bdd53726fd9e7b5f3d173"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "original_indices": [
+        225,
+        229,
+        231
+      ],
+      "final_indices": [
+        225,
+        229,
+        231
+      ],
+      "original_row_sha256": [
+        "14a33d7436f392aa2587c6463007d619bb62065cbf50da792dd70a22412c5b0e",
+        "33be2413e2ce2c39ff937ef395f13eebf9d72a2a21153a66585d4d9d9bff3b68",
+        "a188ec43878ac6ddce13b00a3ae2731aa72f38f3653033c56dc6b44d8c4bca85"
+      ],
+      "final_row_sha256": [
+        "14a33d7436f392aa2587c6463007d619bb62065cbf50da792dd70a22412c5b0e",
+        "33be2413e2ce2c39ff937ef395f13eebf9d72a2a21153a66585d4d9d9bff3b68",
+        "a188ec43878ac6ddce13b00a3ae2731aa72f38f3653033c56dc6b44d8c4bca85"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "original_indices": [
+        233,
+        235,
+        285
+      ],
+      "final_indices": [
+        233,
+        235,
+        285
+      ],
+      "original_row_sha256": [
+        "b50689ec49f7a79f3cdc83d9b98ffc0e15c811fbc92891d05f52967e8c26a8b8",
+        "84a4f744d12bab8e74490b513630c5525413f8a9958e659573930ad061b7e869",
+        "b016946f69947cfcbd2473f0aa21024259143b92e77c9b0675cfc097fb586f98"
+      ],
+      "final_row_sha256": [
+        "b50689ec49f7a79f3cdc83d9b98ffc0e15c811fbc92891d05f52967e8c26a8b8",
+        "84a4f744d12bab8e74490b513630c5525413f8a9958e659573930ad061b7e869",
+        "50408b3628701bcf9df1df499fd10fcc584a36726b3db85de59453bc6d1196a2"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "original_indices": [
+        248,
+        286
+      ],
+      "final_indices": [
+        248,
+        286
+      ],
+      "original_row_sha256": [
+        "80622d97cb15539fbac0e4ca9e9342bbe709c35a6df4e99c97d91f40eceb2817",
+        "618f6caf5eba3b3a694553487aebe93ee60e0a7acba32920d7b06d4d562a9b5e"
+      ],
+      "final_row_sha256": [
+        "80622d97cb15539fbac0e4ca9e9342bbe709c35a6df4e99c97d91f40eceb2817",
+        "618f6caf5eba3b3a694553487aebe93ee60e0a7acba32920d7b06d4d562a9b5e"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "original_indices": [
+        362,
+        370
+      ],
+      "final_indices": [
+        362,
+        370
+      ],
+      "original_row_sha256": [
+        "610a75db8c8b4449c0f4a640728e772e58405b87eaaf81aef4a5b97b174a6e89",
+        "49d58ff02a6254d69f42beaf0e87eedae038b40f0bf2e81367ade722e7431fd0"
+      ],
+      "final_row_sha256": [
+        "8fd7a79a08417ef6aadf8895eb4eb4f3b1b7c20971b4df446c914dcd24421585",
+        "0640779f30f9b8603465e5065873b023870a36f17e6d7b7007b263062ed4b1c6"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "original_indices": [
+        365,
+        371
+      ],
+      "final_indices": [
+        365,
+        371
+      ],
+      "original_row_sha256": [
+        "79a297c66ab2dbcf8b0994e008ea42c7816e901d1e49a2e2859e220c4ed0ae7d",
+        "49defea37b890a768704e2bf16cab7fa833e6ae34f6e5c99f490cff0e4424f66"
+      ],
+      "final_row_sha256": [
+        "bc4d263abf00df54b31c2ed7934aa1f4f84f0fc093a62a48fe145ff59386a34c",
+        "a186d34c7e453783cab32f3864931dcf3ec8fadad834e775661dfe58c70f51ef"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "original_indices": [
+        366,
+        372
+      ],
+      "final_indices": [
+        366,
+        372
+      ],
+      "original_row_sha256": [
+        "b122d15f0015b97390ee691825a305e0cb4d58e862e51dfc53c7d1abeb541943",
+        "2a872f8ef5cecb775dc21438ed1e802933bdf7067e91e6b371e121e21ae6ebbb"
+      ],
+      "final_row_sha256": [
+        "5255e4491357844a7f58696397cf91076c86286c4bfbcc142a7ad311ff9759a9",
+        "8f2cec454f3af4b3f390596c9f921075576639d24624ade98988a2d5ca6971e6"
+      ]
+    }
+  ],
+  "all_old_forbidden_markers_retained_by_original_row_index": true,
+  "old_forbidden_order_and_multiplicity_preserved": true,
+  "all_other_top_level_registry_data_identical": true,
+  "toml_roundtrip_parsed_equal": true,
+  "independent_closed_caller_recalculation_matches": true,
+  "merge_integrity_mutations": [
+    {
+      "mutation": "extra_unregistered_caller",
+      "status": "REJECTED",
+      "reason": "exact closed caller set: root_registered_learning_checkpoint_writer"
+    },
+    {
+      "mutation": "dropped_old_forbidden",
+      "status": "REJECTED",
+      "reason": "exact row identity/order and migrated guards"
+    },
+    {
+      "mutation": "deleted_duplicate_protected_row",
+      "status": "REJECTED",
+      "reason": "exact row identity/order and migrated guards"
+    },
+    {
+      "mutation": "changed_authority",
+      "status": "REJECTED",
+      "reason": "unchanged scanner/authority/top-level field: authority"
+    },
+    {
+      "mutation": "dropped_inventory_id",
+      "status": "REJECTED",
+      "reason": ""
+    }
+  ],
+  "unresolved_conflicts": 0,
+  "central_registry_written": false,
+  "allowlist_written": false,
+  "source_verifier_changed": false,
+  "T_v3_included": true,
+  "Version_actual_format_marker_transition": {
+    "path": "profile-evaluated-version-guards-v4-actual/evidence/GUARD_ACTUAL_FORMAT_TRANSITION.json",
+    "sha256": "cb7139785685ec73d207a249cc776f17a5e3cf78cf7a94aa20cdf08740f9a50e"
+  },
+  "previous_v1_unchanged": true,
+  "v1_eof_fix": "serialize one terminal LF; original strict whitespace failure retained in v1",
+  "source_qa": "NOT_RUN_BY_THIS_MERGE",
+  "native": "UNRUN",
+  "ordinary_qualification": 0,
+  "root_adoption": "REQUIRES_ROOT_REVIEW; this is not the central registry"
+}

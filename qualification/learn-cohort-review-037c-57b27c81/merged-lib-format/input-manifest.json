@@ -1,0 +1,94 @@
+{
+  "state": "NOT_SUBMITTED",
+  "first_start_owner": "/root",
+  "source_binding": {
+    "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+    "description": "Ancestor a96 plus the verified actual cohort component merges. This request formats only the single central merged lib.rs byte string in a fresh isolated record directory. It does not snapshot or access any current Git checkout, target cache, Cargo build or native test.",
+    "input_path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/work/codex-rs/hepta-agentd/src/lib.rs",
+    "merged_input": {
+      "bytes": 72278,
+      "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+      "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+    },
+    "original_a96_file": {
+      "bytes": 70871,
+      "sha256": "72a347216216c7fd8c8c0a7bd1faa72bd81783b4eb8b6ee840f213e7e4466004",
+      "blob": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a"
+    },
+    "merge_layers": [
+      "01-C14",
+      "02-S12",
+      "03-C11",
+      "07-Version40",
+      "10-VersionV4-actual"
+    ],
+    "assembly_staged_manifest": {
+      "path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/STAGED_FILES.json",
+      "bytes": 62535,
+      "sha256": "8e208836585b082092560a65cd6ffec77763065fedab20a78d30f9be469170c3",
+      "blob": "d108d665dd2c1f18e5e3141b414fc66ffb685f9f"
+    },
+    "not_raw_version_component": true,
+    "current_git_source_snapshot": "OMITTED: this operation has no checkout or target access; exact ancestor and assembled input provenance are carried in the payload",
+    "only_write_root": "/home/qian-qi/hepta-learn-037c-evidence/format-central-merged-lib-v1"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 72278,
+        "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+        "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+      },
+      "before": {
+        "bytes": 72278,
+        "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+        "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+      },
+      "origin": {
+        "base_kind": "verified central merged lib.rs; base equals formatter input, not bare a96",
+        "source_binding": {
+          "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+          "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+          "description": "Ancestor a96 plus the verified actual cohort component merges. This request formats only the single central merged lib.rs byte string in a fresh isolated record directory. It does not snapshot or access any current Git checkout, target cache, Cargo build or native test.",
+          "input_path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/work/codex-rs/hepta-agentd/src/lib.rs",
+          "merged_input": {
+            "bytes": 72278,
+            "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e",
+            "blob": "52877e53e769277a0bdf2bafd33054629ac97218"
+          },
+          "original_a96_file": {
+            "bytes": 70871,
+            "sha256": "72a347216216c7fd8c8c0a7bd1faa72bd81783b4eb8b6ee840f213e7e4466004",
+            "blob": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a"
+          },
+          "merge_layers": [
+            "01-C14",
+            "02-S12",
+            "03-C11",
+            "07-Version40",
+            "10-VersionV4-actual"
+          ],
+          "assembly_staged_manifest": {
+            "path": "/workspace/scratch/037c0371c195/candidate-central-assembly-a96-v1/actual-layers-v3/STAGED_FILES.json",
+            "bytes": 62535,
+            "sha256": "8e208836585b082092560a65cd6ffec77763065fedab20a78d30f9be469170c3",
+            "blob": "d108d665dd2c1f18e5e3141b414fc66ffb685f9f"
+          },
+          "not_raw_version_component": true,
+          "current_git_source_snapshot": "OMITTED: this operation has no checkout or target access; exact ancestor and assembled input provenance are carried in the payload",
+          "only_write_root": "/home/qian-qi/hepta-learn-037c-evidence/format-central-merged-lib-v1"
+        }
+      }
+    }
+  ],
+  "counts": {
+    "files": 1,
+    "production": 1,
+    "tests": 0
+  },
+  "native": "UNRUN",
+  "ordinary_qualification": 0
+}
