@@ -1,0 +1,26 @@
+{
+  "stage": "final-historical-task-read-wire-only",
+  "source_head": "56afda35880e7cff3ea7c62dfdccef874b02cc3f",
+  "source_tree": "0cc0cbe1f5567891d66a12aa43f4d122633eb3fc",
+  "base": "82c895ceb49732ccd7097cde39d1c4da232e8507",
+  "bundle": {
+    "path": "qa/evidence/historical-read-56afda35.bundle",
+    "bytes": 79753,
+    "sha256": "a28ebcdb54ba3bd88252ae2b0eff9f2bd891bf124f105738ad2ff0603276472f"
+  },
+  "implemented": [
+    "private original five-lane receiver captures an independent one-shot same-session connection slot",
+    "strict final-purpose data protocol and two-descriptor original Root handoff"
+  ],
+  "not_implemented": [
+    "Root complete-task provider and listener assembly",
+    "client and Dataset authority adaptor"
+  ],
+  "validation": {
+    "rustfmt_exit_code": 0,
+    "diff_check_exit_code": 0,
+    "native_run": false,
+    "new_wire_tests_written": 2
+  },
+  "limitations": "No temporary SourceCell-only product wire, no raw receipt to grant constructor, no complete A/Dataset/cold-restart claim. RunStart b112 static records are separately retained and do not qualify this new historical source."
+}
