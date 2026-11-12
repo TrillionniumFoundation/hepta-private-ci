@@ -248,3 +248,7 @@ impl OriginalCellEvaluationCommandClientV1 {
         result
     }
 }
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_host_support_tests.rs"]
+mod test_access;

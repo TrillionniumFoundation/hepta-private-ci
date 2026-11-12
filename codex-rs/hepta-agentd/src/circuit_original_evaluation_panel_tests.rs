@@ -176,3 +176,6 @@ async fn original_panel_refuses_valid_renewed_training_without_replacing_member_
     assert_eq!([primary, retention], [4, 1]);
     Ok(())
 }
+
+#[path = "circuit_original_evaluation_host_tests.rs"]
+mod evaluation_host;

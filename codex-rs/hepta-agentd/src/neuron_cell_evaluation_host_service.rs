@@ -107,3 +107,18 @@ fn original_state(error: Error) -> wire::Outcome {
         _ => wire::Outcome::Uncertain,
     }
 }
+
+#[cfg(test)]
+impl OriginalCellEvaluationHostV1 {
+    pub(crate) fn fixture_serve_channel(
+        &self, channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
+        self.serve_channel(channel)
+    }
+
+    pub(crate) fn fixture_command_response(
+        &self, bytes: &[u8], request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
+        self.command_response(bytes, request_id)
+    }
+}

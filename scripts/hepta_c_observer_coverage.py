@@ -336,7 +336,17 @@ ORIGINAL_EVALUATION_PANEL_MEMBER_CASES = tuple(
     )
 )
 
+ORIGINAL_EVALUATION_HOST_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::" + name
+    for name in (
+        "original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+        "original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+        "original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_evaluation_host", PACKAGE, ORIGINAL_EVALUATION_HOST_CASES),
     ("original_evaluation_panel_members", PACKAGE, ORIGINAL_EVALUATION_PANEL_MEMBER_CASES),
     ("original_evaluation_provider", PACKAGE, ORIGINAL_EVALUATION_PROVIDER_CASES),
     ("ordinary_candidate_material_route", PACKAGE, CANDIDATE_STAGE_CASES),

@@ -542,3 +542,22 @@ impl OriginalCellEvaluationReceiptOwnerV1<codex_hepta_neuron::FileAnchorWitnessS
         crate::OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)
     }
 }
+
+#[cfg(test)]
+impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
+    /// Fail the real original claim before any signature. This fixture seam
+    /// exercises durable Pending; it never creates a completed receipt.
+    pub(crate) fn fixture_pending_original_host(&mut self) -> anyhow::Result<()> {
+        anyhow::ensure!(matches!(
+            self.journal.read(&self.saved),
+            Err(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)),
+        ));
+        self.host_origin = HostOrigin::ReadbackOnly;
+        let result = self.journal.commit_once(&self.saved, || {
+            Err(OwnerError::Binding("explicit test failure after original claim"))
+        });
+        anyhow::ensure!(matches!(result, Err(OwnerError::Binding(_))));
+        anyhow::ensure!(matches!(self.journal.read(&self.saved), Err(OwnerError::Pending)));
+        Ok(())
+    }
+}
