@@ -1900,11 +1900,15 @@
   },
   "latest_text_readback": {
     "observed_at_utc": "2026-11-12 17:35:16 UTC",
-    "status": "PREPARED_PENDING_STAGED_GIT_READBACK",
+    "status": "ORIGINALS_AND_STAGED_GIT_PATHS_VERIFIED",
     "record": "evidence/terminal-20261112/GIT_READBACK_1735.json",
-    "all_verified": false,
+    "all_verified": true,
     "previous_record": "evidence/terminal-20261112/GIT_READBACK_1700.json",
     "root_fetched_originals": true,
-    "old_results_preserved": true
+    "old_results_preserved": true,
+    "readback_at_utc": "2026-11-12 17:41:15 UTC",
+    "imported_blobs": 79,
+    "new_staged_text_files": 24,
+    "original_full_logs_new": 8
   }
 }

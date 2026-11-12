@@ -1,0 +1,1288 @@
+{
+  "schema": "hepta.qualification-git-readback.v1",
+  "observed_at_utc": "2026-11-12 17:41:15 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "publication_parent": "f22459f2dcbe4184cf63ae2e5b480acad7334fae",
+  "stage_commit": "0090868342fdaea39f64082082be32695ca0a7b0",
+  "stage_tree": "578e345781da0d5a9ace8fcb9c2a0d7353414cfa",
+  "qualification_subtree": "ba4bc2c7b8fe14faffa2fedf1488d16e882b5f1f",
+  "tree_truncated": false,
+  "full_originals": [
+    {
+      "label": "286c Rustfmt",
+      "bytes": 138138,
+      "sha256": "e0cef1f2357fce490e439a7cca7b25b7815f183269c3f88c245f7b073b648796",
+      "parts": [
+        "qualification/evaluated-current-read-20261112/286c-early-ci/rustfmt.job.log"
+      ],
+      "exact_original_and_git_bytes": true
+    },
+    {
+      "label": "286c Fence",
+      "bytes": 9224,
+      "sha256": "58be19a06342def3d4183dc02f1f7bfbc7c7e6e4dac1d7e22196e9477e4d2fc6",
+      "parts": [
+        "qualification/evaluated-current-read-20261112/286c-early-ci/fence.job.log"
+      ],
+      "exact_original_and_git_bytes": true
+    },
+    {
+      "label": "edaf fmt",
+      "bytes": 133649,
+      "sha256": "b01240a9db898e64d46669688018b02697f554334429d8586193461cafd64295",
+      "parts": [
+        "qualification/evaluated-current-read-20261112/edaf-early-ci/fmt.job.log"
+      ],
+      "exact_original_and_git_bytes": true
+    },
+    {
+      "label": "edaf fence",
+      "bytes": 9222,
+      "sha256": "ed46a8e0e8f8b8b2781349a903dd3af0bb2d12bc41cd4677c8419d8ab2bc8538",
+      "parts": [
+        "qualification/evaluated-current-read-20261112/edaf-early-ci/fence.job.log"
+      ],
+      "exact_original_and_git_bytes": true
+    },
+    {
+      "label": "edaf clippy",
+      "bytes": 1234285,
+      "sha256": "086e17026c162090f333f8a18b5aeca2eb0f51384d19f477b7e976479ba54364",
+      "parts": [
+        "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part00",
+        "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part01",
+        "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part02",
+        "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part03"
+      ],
+      "exact_original_and_git_bytes": true
+    },
+    {
+      "label": "edaf gnu",
+      "bytes": 1184612,
+      "sha256": "10a606ed93848e1d8bc53fc8a4817683c8e3d8c189e42a408dd9142b47f86c22",
+      "exact_original_and_git_bytes": true,
+      "verification": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/ROOT_ORIGINAL_LOG_VERIFICATION.json"
+    },
+    {
+      "label": "edaf musl",
+      "bytes": 1171116,
+      "sha256": "8f860863db4b646feaaea741ae62529d468cc73702ec4704476e9a29b2ed1363",
+      "exact_original_and_git_bytes": true,
+      "verification": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/ROOT_ORIGINAL_LOG_VERIFICATION.json"
+    },
+    {
+      "label": "edaf windows_shard4",
+      "bytes": 1002876,
+      "sha256": "c70cf5729ca5dac09f117223fbc1f32a2be62c94ba20d71a982b1eac94d9fc5e",
+      "exact_original_and_git_bytes": true,
+      "verification": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/ROOT_ORIGINAL_LOG_VERIFICATION.json"
+    }
+  ],
+  "staged_texts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/fmt.job.log",
+      "git_blob": "878a06fe3a17d8d5ac0b61a43ff1336ff4321a2b",
+      "bytes": 133649,
+      "sha256": "b01240a9db898e64d46669688018b02697f554334429d8586193461cafd64295",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/fence.job.log",
+      "git_blob": "51fe55903ee5f24b0e138a265602732fd64324b2",
+      "bytes": 9222,
+      "sha256": "ed46a8e0e8f8b8b2781349a903dd3af0bb2d12bc41cd4677c8419d8ab2bc8538",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/edaf_actual_merge.original.json",
+      "git_blob": "6cefc73d4adf812d44e538985ebf739394814e07",
+      "bytes": 2798,
+      "sha256": "264feae329055c64e44ecc9df9c4b073063ff7433941cabea744e022d409d9a2",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/edaf_daemon_1726.original.json",
+      "git_blob": "f003d6ba36b892ab6493500b51c14dcc14a18137",
+      "bytes": 5970,
+      "sha256": "c1c057d62eb044d8c5f035f9ec9d6d4bc4ca857c4cafd125b1fc1ae8851175e9",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/edaf_blocking_1726.original.json",
+      "git_blob": "58e404c4d51351b406e0baf94504bd96b4c4cd1c",
+      "bytes": 79709,
+      "sha256": "a321e75dfc532d4ce8647cc31923198c2c2e65a8d22d6054cc4da170af4537bd",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/286c_daemon_1726.original.json",
+      "git_blob": "b5ed40de70ebc1cb1e35d9fb2dbaa31833c4a779",
+      "bytes": 5970,
+      "sha256": "81b50294aa226a24a08a131d6369bdd318b8b5501da5512361f3c889717354c9",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part00",
+      "git_blob": "11e0c609b1990f0d17ff1e604e9a42ac4ea21600",
+      "bytes": 350000,
+      "sha256": "89cde74c47bb5023aedf38be6725823461b6aa6127211c5d8db1c808e6daba9d",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part01",
+      "git_blob": "5cbcff6cdbdc00f754fad4dc33d5ea79c7008ae2",
+      "bytes": 350000,
+      "sha256": "8ac007e0f0ffab8467ffd93a5947d2bf3b1d5ac906d9c24cf4587fc9917ebc5e",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part02",
+      "git_blob": "c6c6cf18ce459d8c38e6f1676d47cab0ae7441f0",
+      "bytes": 350000,
+      "sha256": "2c3b87891760add20fc9ccf1b09c539e90bc1c9e2e74ff677180d4c73d73350a",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part03",
+      "git_blob": "b438cd832bdb0f010fc3ce8db5771e975632afcc",
+      "bytes": 184285,
+      "sha256": "9c366c1718018a450b8a016e8aa0bb6bed74134a03fa4087b66023abe4ecc2e9",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/BLOCKER_CLOSURE_NEXT-f224.md",
+      "git_blob": "d5cb50ccefc482be61f4da7ee3350152bc50c836",
+      "bytes": 28724,
+      "sha256": "ad1e1fc31b935a8cb7180b4ca99860461b00d7c83a2162a47a99a26281221e1e",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_EVIDENCE-f224.json",
+      "git_blob": "fb4c272d30edd46589195106d6e2097f829e6392",
+      "bytes": 77840,
+      "sha256": "63c503704e5169ee53f80ce5edcf7df3719d933e2f2f9691a52ef4ad5c2ef7a2",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_README-f224.md",
+      "git_blob": "8142bb1388735c55bcdd188b8a8a83641ea3ce0d",
+      "bytes": 7280,
+      "sha256": "0c8d12e59bf720aa850eff36b0d67dbf16e755ee129e63e7fe0dc1cf5cf6bfc7",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/PUBLICATION_MANIFEST-f224.json",
+      "git_blob": "61e9cce45c0e08c0b7b170087cc5ebd0de447510",
+      "bytes": 297902,
+      "sha256": "9c83fc9fa005bb96f9b6a090ec3a770a586486064f8aae5518c51c40d3cbafcb",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/ROOT_SOURCE_REVIEW.json",
+      "git_blob": "a22bcb2cf73f92f2efd475ed5d811efe58d9764b",
+      "bytes": 20866,
+      "sha256": "80983d6ee8b442052b96241b6f34b2b8d1f1e45c54cdc1bc7883f074bba293ae",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/ROOT_ORIGINAL_LOG_VERIFICATION.json",
+      "git_blob": "e85b7f99c4648c79360badd203d2f9704b1cbb31",
+      "bytes": 4157,
+      "sha256": "3ab1b831a91fb5b6af7caaa701247350bd5af98a71645b3527b963956d6fecd7",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/edaf_latest_daemon.original.json",
+      "git_blob": "810690305d2294037a47489fc248e1e35549cd73",
+      "bytes": 6013,
+      "sha256": "34b12391e59793aa9670b8285c323db5c538dd999f87f90c86a657e5f9b61e8b",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/286c_latest_daemon.original.json",
+      "git_blob": "e29bb136c348d67c08b3e034168fe9050d7ed700",
+      "bytes": 6013,
+      "sha256": "ff4e9ef090f3081345939b7d3f6840d2630788a5f69d9ad1306636a652007798",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/edaf_latest_blocking.original.json",
+      "git_blob": "16a08833a4c214c253085d680a1e299289546057",
+      "bytes": 82261,
+      "sha256": "3b43257a0273165d58c7a43f2ee29246fbcec50c62660ed3374017b3dd1dd0bf",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
+      "git_blob": "72101f9a9694fcda0eed8a19aa7cf9de1655dbe2",
+      "bytes": 85489,
+      "sha256": "29a37f913bdcb02e2461e668253dd8363239558872e0ba31c8061deb06909cb7",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/ROOT_ORIGINAL_LOG_VERIFICATION.json",
+      "git_blob": "2f8ba7a76e94abf580cea0bccd2b9daaa4659338",
+      "bytes": 6595,
+      "sha256": "aee89e0e80c0003401b1a0703e3973380712aae193b72d32b59e622686b2478c",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
+      "git_blob": "b24d96b412857216b14a1eb679debd1d6b422102",
+      "bytes": 32793,
+      "sha256": "8459cc8df1d29eeb86b64c4b5f4a4f3958318e5e3bbce3cc5605a82c5fe0238a",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
+      "git_blob": "44f675be1246b511cf329266b49701c5e57a0b18",
+      "bytes": 8958,
+      "sha256": "6ac43ff43334b4998e4c7ff60f4377ef4545eb2577b7f937e86c44a948aed071",
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/PUBLICATION_MANIFEST.json",
+      "git_blob": "54bec154b517c9101a60c595f2709f9b6ef1c1df",
+      "bytes": 319775,
+      "sha256": "91e0c99f40e22a2b37cf4966e1bfe6a947f8c077ce456b247fcdbb4df21f6825",
+      "exact": true
+    }
+  ],
+  "staged_import_paths": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-candidate-timeout-review/MANIFEST.json",
+      "sha": "514e00919501e39920a404fb05807b693972a11a",
+      "bytes": 1501,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-candidate-timeout-review/PATCH.diff.txt",
+      "sha": "f96cbec63215644a8b9d12acadc5c800832bb1ae",
+      "bytes": 3677,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-candidate-timeout-review/REVIEW.json",
+      "sha": "61b123b8fc1722f8f621482b8f883fe6a76c46b9",
+      "bytes": 6730,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-count-fix/MANIFEST.json",
+      "sha": "696e4661bc99cd6715fc21fbc3443a5b61073614",
+      "bytes": 9655,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-count-fix/PATCH.diff",
+      "sha": "b933a10a2b8b8e89961a2e760cd6e6916fc6ec4a",
+      "bytes": 8227,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-count-fix/SOURCE_QA_SCAN.json",
+      "sha": "f526151458d8e32f8e8481e5cc204778c535f4c8",
+      "bytes": 19044,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/MANIFEST.json",
+      "sha": "508f2c3e54c27008a18a8de3c538ba472cda4aef",
+      "bytes": 1609,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/PATCH.diff",
+      "sha": "844e205895632fba2e4e450cffb735b6b47edf4e",
+      "bytes": 3059,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/REVIEW.json",
+      "sha": "73e003cc1446f95421bee9562d27ccf465a21083",
+      "bytes": 5925,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-codec-review/STATIC_REVIEW.json",
+      "sha": "322ac50b617f42bb8d52dc5e57560160d0785c58",
+      "bytes": 3981,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-nested-material-budget/STATIC_REVIEW.json",
+      "sha": "db7d6352543f6075fbfbe5c5d89b2571dc5ceade",
+      "bytes": 10310,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-static-followup/MANIFEST.json",
+      "sha": "9fff11bb751e47406eab863f274667fe6a60f271",
+      "bytes": 839,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-withdrawal-assertions/DIAGNOSIS.md",
+      "sha": "4903f774f9fef5a215bf6540308240091f9e6c45",
+      "bytes": 1996,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-withdrawal-assertions/MANIFEST.json",
+      "sha": "01ee8c8549cc791ff3a13550e170643e07ef07e0",
+      "bytes": 3820,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-withdrawal-assertions/PATCH.diff",
+      "sha": "08bf87d3d30566e71c1037bacff1bce025c24c3d",
+      "bytes": 2914,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-s-readback-diagnostic/MANIFEST.json",
+      "sha": "9a10114a1b79cbafa2f2432029c687508462eb73",
+      "bytes": 3698,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-s-readback-diagnostic/PATCH.diff",
+      "sha": "770cdc06b113abd2e7d927011689572804cc8bc6",
+      "bytes": 7873,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-s-readback-diagnostic/DIAGNOSIS.md",
+      "sha": "99e6ff7efb66f689111eaab89cbbe9e8ddba05f0",
+      "bytes": 2075,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-codec-independent-review/REVIEW.json",
+      "sha": "26ee12148e20487ca3ee59a108bd74adb1f562cd",
+      "bytes": 6206,
+      "exact": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-codec-independent-review/MANIFEST.json",
+      "sha": "8ab8e6f65661cc997e68c9144e1857e5bc5281c8",
+      "bytes": 487,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/MANIFEST.json",
+      "sha": "43983b8ac59c36565ad08f85a419d9a27c176cd1",
+      "bytes": 4955,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/blocking-jobs.original.json",
+      "sha": "317633241532a9950ed5b436bc035ccfa52ea591",
+      "bytes": 73591,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/check-runs.initial.original.json",
+      "sha": "227df9a66ffe43458da73b308e3dc2e2fdfde621",
+      "bytes": 157862,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/daemon-jobs.initial.original.json",
+      "sha": "5011c1b05ffb8457bf5a07e6844d4f0a07ae0af8",
+      "bytes": 5299,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/fence.job.log",
+      "sha": "40c3c48897d5513e04120e0f3ce17e298aee3ff0",
+      "bytes": 9224,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/rustfmt.job.log",
+      "sha": "6d914af830b9d9fd47b41d876d8798f9574de73a",
+      "bytes": 138138,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/source-commit.original.json",
+      "sha": "2731155223ca44bccddc6e25783cc71675b20fdb",
+      "bytes": 1316,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/synthetic-merge.original.json",
+      "sha": "cd2a0ade0f7da54d53bfab387701aa098632dc52",
+      "bytes": 2798,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/workflow-runs.initial.original.json",
+      "sha": "7837df082ff8fb1c910986d1f55a2ed1f79196de",
+      "bytes": 121563,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/.gitattributes.txt",
+      "sha": "17da38650745923743630d38d3eb0327b7a55d1f",
+      "bytes": 755,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/.gitattributes.txt",
+      "sha": "97699ed2b4cdf3f4a1a4080f07b67680da9717f7",
+      "bytes": 909,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-neuron/src/feature_control_tests.rs.txt",
+      "sha": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+      "bytes": 12439,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-neuron/src/feature_control_tests.rs.txt",
+      "sha": "32fbe36826cc43fb4af106d820d82a4a11222425",
+      "bytes": 12514,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs.txt",
+      "sha": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+      "bytes": 8338,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs.txt",
+      "sha": "526596aa073290c60bf3e8d44f52d2812910b158",
+      "bytes": 8977,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs.txt",
+      "sha": "a40ba47f4f6fea4975cb68a0585b1cf42c1c73d6",
+      "bytes": 22543,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs.txt",
+      "sha": "2c787e9e1faea7eb11dc525ddd549229341ec06a",
+      "bytes": 23597,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs.txt",
+      "sha": "3a0e5d4697c869ba9f9ddf5ce39b35f7f9cc3e51",
+      "bytes": 13637,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs.txt",
+      "sha": "a23be4dfcfcc739bb8417d7c32c6b71efd45e62f",
+      "bytes": 13644,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs.txt",
+      "sha": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0",
+      "bytes": 15361,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs.txt",
+      "sha": "4b73e8a07bd27bd108d8d3fd539632974514a378",
+      "bytes": 15368,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs.txt",
+      "sha": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "bytes": 19294,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs.txt",
+      "sha": "320a6ce49e5d5016aa1af408a981c464f29e38af",
+      "bytes": 19569,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs.txt",
+      "sha": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+      "bytes": 16725,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs.txt",
+      "sha": "17bb2b51ccaab08a36c6876b217748fae7012450",
+      "bytes": 16732,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs.txt",
+      "sha": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+      "bytes": 5718,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs.txt",
+      "sha": "76e472fcb2237c719d3ee6455a9ac821036e8dfd",
+      "bytes": 7277,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs.txt",
+      "sha": "9b098811990e34d61c0d515cc2de731090a2b33a",
+      "bytes": 11712,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs.txt",
+      "sha": "a69bfe96936d66872316958bd098a02b3323e3bd",
+      "bytes": 12204,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs.txt",
+      "sha": "8b083bb62da5506b29a9eaadd7b1b059d799a128",
+      "bytes": 8235,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs.txt",
+      "sha": "2faee4cacb7f58b63efc46e821ee36a744a59751",
+      "bytes": 8815,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs.txt",
+      "sha": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+      "bytes": 11022,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs.txt",
+      "sha": "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c",
+      "bytes": 11030,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs.txt",
+      "sha": "d1dedb4b386ac822833e265ecd3192e000848730",
+      "bytes": 20112,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs.txt",
+      "sha": "447de9525d154c5a8d1bc9bef472b5ff1b7e9ed4",
+      "bytes": 23392,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs.txt",
+      "sha": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+      "bytes": 6034,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs.txt",
+      "sha": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1",
+      "bytes": 6497,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs.txt",
+      "sha": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "bytes": 3928,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs.txt",
+      "sha": "3c799bf03fd99dea05f4905845e45c8bf9107627",
+      "bytes": 4400,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs.txt",
+      "sha": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+      "bytes": 11057,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs.txt",
+      "sha": "4f54cff102f768355bcf8422cbfbe14250f70d3d",
+      "bytes": 12881,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-format-followup/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs.txt",
+      "sha": "b0fe2b873db6158978e64d69fe686e3a1692fc2f",
+      "bytes": 23184,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-format-followup/post/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs.txt",
+      "sha": "ec295b7aa459e14fbe5109354ab888b7f9239e85",
+      "bytes": 9005,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/MANIFEST.json",
+      "sha": "4139f7f31a569858f7024943dedd2e586e5a8655",
+      "bytes": 7919,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/PARTIAL_METHOD_OBSERVATIONS.json",
+      "sha": "e66b89eea14618c312678710513e1351fa39acc6",
+      "bytes": 16576,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/blocking-jobs.original.json",
+      "sha": "16a08833a4c214c253085d680a1e299289546057",
+      "bytes": 82261,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part00.txt",
+      "sha": "d676a3b17ebeb08cbf4927942c7e510f8c101527",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part01.txt",
+      "sha": "3af9efed8f82433a505860c3fd4c752da2e28364",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part02.txt",
+      "sha": "e3b041140ffaf78202a0c4539738e48d75b55dbb",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part03.txt",
+      "sha": "c9260e40485dd80e9e20124114b2051576c98bfc",
+      "bytes": 164612,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.partial-methods.jsonl",
+      "sha": "93693ecd097e395977dd84a79cc98b747aad6020",
+      "bytes": 186766,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part00.txt",
+      "sha": "755301f9d11267b2ec7a5a0ce1ba7d82d870fe81",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part01.txt",
+      "sha": "79422c845208048cd0f525bdfa6190052b4a8f77",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part02.txt",
+      "sha": "1908bc1eea061761e32df71f71d329338afea014",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part03.txt",
+      "sha": "ceb177856aa46661673aff57c5fc2a5007099e97",
+      "bytes": 151116,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.partial-methods.jsonl",
+      "sha": "7751fb2b301f9757787a7d07711e9c5c22a1f739",
+      "bytes": 186766,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part00.txt",
+      "sha": "9e6203ca7ac4e3fc6536d09cc5d8abead05436d0",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part01.txt",
+      "sha": "30a1d579d220bb1eb9e629425c8e8c8fe91902d8",
+      "bytes": 340000,
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part02.txt",
+      "sha": "cf9d3491cd67e27969c1b4b1ce4f73fa6ae94f26",
+      "bytes": 322876,
+      "exact": true
+    }
+  ],
+  "import_blob_byte_readbacks": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-candidate-timeout-review/MANIFEST.json",
+      "sha": "514e00919501e39920a404fb05807b693972a11a",
+      "bytes": 1501,
+      "sha256": "4093d3c7b9721d9aba795d2e0e32c863708ab3010a1db8f398d616d9a27503c0",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-candidate-timeout-review/PATCH.diff.txt",
+      "sha": "f96cbec63215644a8b9d12acadc5c800832bb1ae",
+      "bytes": 3677,
+      "sha256": "5b1e966d7f73bc7fc68832cd9bbeadb3766c329ed4a48586757f0c88069ef04a",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-candidate-timeout-review/REVIEW.json",
+      "sha": "61b123b8fc1722f8f621482b8f883fe6a76c46b9",
+      "bytes": 6730,
+      "sha256": "13485c56647ac262defe3f08d5168cc00fc3328f020c7f151cd8e9b2b555459b",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-count-fix/MANIFEST.json",
+      "sha": "696e4661bc99cd6715fc21fbc3443a5b61073614",
+      "bytes": 9655,
+      "sha256": "14549b2dff5d89a79bfaf06ccba38882a957dd33f9136865e687a95a80f27ed3",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-count-fix/PATCH.diff",
+      "sha": "b933a10a2b8b8e89961a2e760cd6e6916fc6ec4a",
+      "bytes": 8227,
+      "sha256": "efa444c741284982e39f225705ad115d1255ab899eb4e0dda3d17999c5540307",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-count-fix/SOURCE_QA_SCAN.json",
+      "sha": "f526151458d8e32f8e8481e5cc204778c535f4c8",
+      "bytes": 19044,
+      "sha256": "79dc14cfb20ba916d52f64ffb1bedc835075f2732ba60ae5a616cb2d25a2cd3e",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/MANIFEST.json",
+      "sha": "508f2c3e54c27008a18a8de3c538ba472cda4aef",
+      "bytes": 1609,
+      "sha256": "6939eb98124099ab2b49576205be6afa714666c196f8f9f9bf01b734fb96fefb",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/PATCH.diff",
+      "sha": "844e205895632fba2e4e450cffb735b6b47edf4e",
+      "bytes": 3059,
+      "sha256": "ce8aee6cfa886492f5fc25910704c5018aa7e67cea649b9cee389686e92c5cc8",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-next-use-timeout-review/REVIEW.json",
+      "sha": "73e003cc1446f95421bee9562d27ccf465a21083",
+      "bytes": 5925,
+      "sha256": "e0ff46a20acbc9f3ab3907282bc48ff49f9c1b7f7cce05e6585057c8f0d37989",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-model-material-codec-review/STATIC_REVIEW.json",
+      "sha": "322ac50b617f42bb8d52dc5e57560160d0785c58",
+      "bytes": 3981,
+      "sha256": "24b6332db0eea57d913d6adad1ff7b47d1a38617984595de3464e1192387faa0",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-nested-material-budget/STATIC_REVIEW.json",
+      "sha": "db7d6352543f6075fbfbe5c5d89b2571dc5ceade",
+      "bytes": 10310,
+      "sha256": "2469b43cc010a0ec71b84c9eb1c40de10c54db261b4a48ce50d5ebb422c29f8a",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-static-followup/MANIFEST.json",
+      "sha": "9fff11bb751e47406eab863f274667fe6a60f271",
+      "bytes": 839,
+      "sha256": "34c7c1f8e66e31abc335340871f8fec28d8c01ccf85ff73b8d858b27728798ae",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-withdrawal-assertions/DIAGNOSIS.md",
+      "sha": "4903f774f9fef5a215bf6540308240091f9e6c45",
+      "bytes": 1996,
+      "sha256": "ac7c99b93aa9e21c557ccc861ef06914b5692ba4a6c1f8fc9b096b8529929859",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-withdrawal-assertions/MANIFEST.json",
+      "sha": "01ee8c8549cc791ff3a13550e170643e07ef07e0",
+      "bytes": 3820,
+      "sha256": "4a486ccb995eb2fd026f6861bd4f354376859c370a29dc147cc3e210a59e9134",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-withdrawal-assertions/PATCH.diff",
+      "sha": "08bf87d3d30566e71c1037bacff1bce025c24c3d",
+      "bytes": 2914,
+      "sha256": "fdaf5b089ea2b329ce1406d1e32dc5bcbac683c9f23be79555b6bcb54958d2df",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-s-readback-diagnostic/MANIFEST.json",
+      "sha": "9a10114a1b79cbafa2f2432029c687508462eb73",
+      "bytes": 3698,
+      "sha256": "aa6e8e1e0b3a0c8300fb7d6d70af31e4e91080889b7ec3557204230af8dbde28",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-s-readback-diagnostic/PATCH.diff",
+      "sha": "770cdc06b113abd2e7d927011689572804cc8bc6",
+      "bytes": 7873,
+      "sha256": "8a622d3298d50695a8fdbc4d2900a55a5df54b584161b7b410434070a8fc5f0e",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-s-readback-diagnostic/DIAGNOSIS.md",
+      "sha": "99e6ff7efb66f689111eaab89cbbe9e8ddba05f0",
+      "bytes": 2075,
+      "sha256": "58b62386f61baccad2823031de861a49500eacd657fab0dc8d0fbd9ba45ed6a8",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-codec-independent-review/REVIEW.json",
+      "sha": "26ee12148e20487ca3ee59a108bd74adb1f562cd",
+      "bytes": 6206,
+      "sha256": "91690ff702a09143ab2dad1f54b7015a63a2e1fd1f7cc73ab3f005806124cc3d",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/neuroscience-20261110/native-9fac-codec-independent-review/MANIFEST.json",
+      "sha": "8ab8e6f65661cc997e68c9144e1857e5bc5281c8",
+      "bytes": 487,
+      "sha256": "943b723e862ef435e3abb43f5b108ab3e5f0fa97b6485830c1457fd601cf3f36",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/MANIFEST.json",
+      "sha": "43983b8ac59c36565ad08f85a419d9a27c176cd1",
+      "bytes": 4955,
+      "sha256": "f760960374a619a38ee9fec371b50c59b0a6bb11bad367ec3bfc5c9685e6df41",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/blocking-jobs.original.json",
+      "sha": "317633241532a9950ed5b436bc035ccfa52ea591",
+      "bytes": 73591,
+      "sha256": "bafdd6c72cd750d3d76a11768e02425c562e6089fe9a6c69f1bcce19044ffc08",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/check-runs.initial.original.json",
+      "sha": "227df9a66ffe43458da73b308e3dc2e2fdfde621",
+      "bytes": 157862,
+      "sha256": "6bb16a7a39b42a16e5307e38c26e0101bf1db235a31c78ede9f3ba72194030db",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/daemon-jobs.initial.original.json",
+      "sha": "5011c1b05ffb8457bf5a07e6844d4f0a07ae0af8",
+      "bytes": 5299,
+      "sha256": "fbfe9f37609fd3856c11e36efee40ab5448a4fcef42ff1921b10e4d11345cdee",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/fence.job.log",
+      "sha": "40c3c48897d5513e04120e0f3ce17e298aee3ff0",
+      "bytes": 9224,
+      "sha256": "58be19a06342def3d4183dc02f1f7bfbc7c7e6e4dac1d7e22196e9477e4d2fc6",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/rustfmt.job.log",
+      "sha": "6d914af830b9d9fd47b41d876d8798f9574de73a",
+      "bytes": 138138,
+      "sha256": "e0cef1f2357fce490e439a7cca7b25b7815f183269c3f88c245f7b073b648796",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/source-commit.original.json",
+      "sha": "2731155223ca44bccddc6e25783cc71675b20fdb",
+      "bytes": 1316,
+      "sha256": "84e4a0f668db668ff0e0b3738d017c2206fcb30c2082c465d26835d3f318893d",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/synthetic-merge.original.json",
+      "sha": "cd2a0ade0f7da54d53bfab387701aa098632dc52",
+      "bytes": 2798,
+      "sha256": "4b42ac2b4c121e5899bd351add2a745307fe661ea6fba1d36f17cc7dc3b8c6ed",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-early-ci/workflow-runs.initial.original.json",
+      "sha": "7837df082ff8fb1c910986d1f55a2ed1f79196de",
+      "bytes": 121563,
+      "sha256": "22008880d9d85456a1832dcc09a72d4169a61e86c62e27d5178c38b91fa0b8c2",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/.gitattributes.txt",
+      "sha": "17da38650745923743630d38d3eb0327b7a55d1f",
+      "bytes": 755,
+      "sha256": "51bdbf461a07d891e1cb85721bf9ce50d4f761288edbe301bd565ee8e5091190",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/.gitattributes.txt",
+      "sha": "97699ed2b4cdf3f4a1a4080f07b67680da9717f7",
+      "bytes": 909,
+      "sha256": "697af3562bc9f094af53857d8aa1f5070450bd4fe192efecac35e969cfe138e4",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-neuron/src/feature_control_tests.rs.txt",
+      "sha": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+      "bytes": 12439,
+      "sha256": "4d55b3c2125f8fa811467b5b38197f29c92a2d70979063dcf3f341a1f917dca8",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-neuron/src/feature_control_tests.rs.txt",
+      "sha": "32fbe36826cc43fb4af106d820d82a4a11222425",
+      "bytes": 12514,
+      "sha256": "d5146e06e1ed575853783c625306cf8ba200de465a13c940b0da49cbc99089f2",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs.txt",
+      "sha": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+      "bytes": 8338,
+      "sha256": "4c97d448da9ff38b5d5d9f12aded6955d8e0328beec68d33afaff16747150022",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs.txt",
+      "sha": "526596aa073290c60bf3e8d44f52d2812910b158",
+      "bytes": 8977,
+      "sha256": "bc3d2ae7cf0b8ae04254552cdf5ad64f31758b1a6560f9ca150a7380e5b1dc5d",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs.txt",
+      "sha": "a40ba47f4f6fea4975cb68a0585b1cf42c1c73d6",
+      "bytes": 22543,
+      "sha256": "4ebd16d971c3cfed39eb529338d65315fba171241133dc1b01192004f648749c",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs.txt",
+      "sha": "2c787e9e1faea7eb11dc525ddd549229341ec06a",
+      "bytes": 23597,
+      "sha256": "b2a8ff84ebfb1db4e66ba0bb0fcc6c07bdc4c8d4ecbd43d8e4b0513797147b01",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs.txt",
+      "sha": "3a0e5d4697c869ba9f9ddf5ce39b35f7f9cc3e51",
+      "bytes": 13637,
+      "sha256": "149c87a60c5e6fb7406e12ae210053f6dae67f7baf11aa823b5dc6b8c0b0bf4d",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs.txt",
+      "sha": "a23be4dfcfcc739bb8417d7c32c6b71efd45e62f",
+      "bytes": 13644,
+      "sha256": "c81a1dcae2d9b5a444b79688aa84fe6011b45c069d03108c28dc6234a81e47a9",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs.txt",
+      "sha": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0",
+      "bytes": 15361,
+      "sha256": "638960b10793c4ee351d22bb0e58db8e797d578d36209570bc1ec769a79652f2",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs.txt",
+      "sha": "4b73e8a07bd27bd108d8d3fd539632974514a378",
+      "bytes": 15368,
+      "sha256": "ef828331e2d00dce4a02ef3f69c2cd80c2959c7ebdc18328ecbd9c7e5ce1fef6",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs.txt",
+      "sha": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "bytes": 19294,
+      "sha256": "b373ed0887d2eb21998d3fa3114c32793733242947b99fbe622cc602328f6566",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs.txt",
+      "sha": "320a6ce49e5d5016aa1af408a981c464f29e38af",
+      "bytes": 19569,
+      "sha256": "49538185200d50bd961647af16f8fde21940b342148788fa166ddad273a0e6fb",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs.txt",
+      "sha": "b63cad54ad8590b940b61ed68d9f986705f622ea",
+      "bytes": 16725,
+      "sha256": "8452afb67b51dbbaf00aed701d62e78fd91db447583107e0a47b30817f279bfb",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_tests.rs.txt",
+      "sha": "17bb2b51ccaab08a36c6876b217748fae7012450",
+      "bytes": 16732,
+      "sha256": "38b02dcbee67ec3069fe018ae6838bd48fffd3cc3b8950abe9895b90574b6e73",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs.txt",
+      "sha": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+      "bytes": 5718,
+      "sha256": "fa5cc5336720a595eb072492d95c160ae1a0637eedafec3232a82c9ef832a70f",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs.txt",
+      "sha": "76e472fcb2237c719d3ee6455a9ac821036e8dfd",
+      "bytes": 7277,
+      "sha256": "13f723c29e3c3a8be879e37fe71f2d2cfe4eec5960e936729884954e1b828804",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs.txt",
+      "sha": "9b098811990e34d61c0d515cc2de731090a2b33a",
+      "bytes": 11712,
+      "sha256": "0187d0bc7f73218643183373d0b7a92b2b38ee4ac12c906c810456e4abcba19b",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs.txt",
+      "sha": "a69bfe96936d66872316958bd098a02b3323e3bd",
+      "bytes": 12204,
+      "sha256": "b29256962e417548102140589c49061e2d002761fae92b16433416d3848cc1ff",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs.txt",
+      "sha": "8b083bb62da5506b29a9eaadd7b1b059d799a128",
+      "bytes": 8235,
+      "sha256": "d35ae398da651c7d1a75acac6de5a5fde116d5b4085987dc804c1694d40185c9",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs.txt",
+      "sha": "2faee4cacb7f58b63efc46e821ee36a744a59751",
+      "bytes": 8815,
+      "sha256": "923b9c75463b3f548b50411fa71334ff23d01af298dc8dbab5f10d091cab3e8b",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs.txt",
+      "sha": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+      "bytes": 11022,
+      "sha256": "b6928800b4a9192745c4f1942b5de17c08ce8b2550b3ffa890defba5b1332b46",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs.txt",
+      "sha": "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c",
+      "bytes": 11030,
+      "sha256": "b26d35c97617a284d90646d9df638b406f053de61e48e65f72d5cf19b6184c54",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs.txt",
+      "sha": "d1dedb4b386ac822833e265ecd3192e000848730",
+      "bytes": 20112,
+      "sha256": "090a5a485aa4b6c01be9cdf516292c1bef5099c88f0d63e71a0b0a546d6daee1",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs.txt",
+      "sha": "447de9525d154c5a8d1bc9bef472b5ff1b7e9ed4",
+      "bytes": 23392,
+      "sha256": "c5474be07f9d3f08a5b5731f991b1a14c4f0d5cb49810b113ff20d31e8ce1a45",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs.txt",
+      "sha": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+      "bytes": 6034,
+      "sha256": "7dab4ab4b46422a14042761a1f9769c61bdf0d8f3711dd3f80a2ff0492c5c4cb",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs.txt",
+      "sha": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1",
+      "bytes": 6497,
+      "sha256": "a297111c1e321835d832239fee6066efcae57a1681ca944510fcf42462894871",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs.txt",
+      "sha": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "bytes": 3928,
+      "sha256": "7fc3c615118e417c75d95cb2309838b1b468e9fdd70c72bbc20be597bb0f64a7",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs.txt",
+      "sha": "3c799bf03fd99dea05f4905845e45c8bf9107627",
+      "bytes": 4400,
+      "sha256": "26156213658cf0b9bf2e0366308dc82b736348da802b5eeeebe55a7e57c62e0d",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/base/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs.txt",
+      "sha": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+      "bytes": 11057,
+      "sha256": "d3e68a64c6080889f6b1074fea121ef3ff8159c404046a52ada05c0fc1101dc5",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-286c-review/post/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs.txt",
+      "sha": "4f54cff102f768355bcf8422cbfbe14250f70d3d",
+      "bytes": 12881,
+      "sha256": "2612d41ee5b49db641f288478b2dda7a884fc850d8ed9fdd258c6d1b40ad52e1",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-format-followup/post/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs.txt",
+      "sha": "b0fe2b873db6158978e64d69fe686e3a1692fc2f",
+      "bytes": 23184,
+      "sha256": "869d03336ccd4cd6e66bdd4dfaad2fe76677ca8c5149bd7f02f05fd991c31193",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-format-followup/post/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs.txt",
+      "sha": "ec295b7aa459e14fbe5109354ab888b7f9239e85",
+      "bytes": 9005,
+      "sha256": "b6ce4d6021c3cc99132d68f969e468667e38e45facc6800cc09f785fab0f5ac7",
+      "exact_blob": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/MANIFEST.json",
+      "sha": "4139f7f31a569858f7024943dedd2e586e5a8655",
+      "bytes": 7919,
+      "sha256": "f3216dcc5fcd6405d7e8a8fc0f536503e63681d44409ed8138a58d9e4b21757d",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/PARTIAL_METHOD_OBSERVATIONS.json",
+      "sha": "e66b89eea14618c312678710513e1351fa39acc6",
+      "bytes": 16576,
+      "sha256": "542e237c5284f606c4fc8c8b791126dd51b6ff7e2fb9c9651115f9f5366c5781",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/blocking-jobs.original.json",
+      "sha": "16a08833a4c214c253085d680a1e299289546057",
+      "bytes": 82261,
+      "sha256": "3b43257a0273165d58c7a43f2ee29246fbcec50c62660ed3374017b3dd1dd0bf",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part00.txt",
+      "sha": "d676a3b17ebeb08cbf4927942c7e510f8c101527",
+      "bytes": 340000,
+      "sha256": "70689f0bd91ada0b2581c58631d07967aa5e7fc8a742e80ce7eac8f10138b1d5",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part01.txt",
+      "sha": "3af9efed8f82433a505860c3fd4c752da2e28364",
+      "bytes": 340000,
+      "sha256": "94289ab1c89eb759ce713b00d625a5ba1899c8533808b2849c1e9d27ba109977",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part02.txt",
+      "sha": "e3b041140ffaf78202a0c4539738e48d75b55dbb",
+      "bytes": 340000,
+      "sha256": "a31827848819d42407ce35d9b0579ac7ffe5026f795f9d5ffac7db09a7558430",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.job.log.part03.txt",
+      "sha": "c9260e40485dd80e9e20124114b2051576c98bfc",
+      "bytes": 164612,
+      "sha256": "9c5138fe554464fbbe16766fd6752a2ba068ff057c12baea1dfd1b34fd92feab",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/gnu.partial-methods.jsonl",
+      "sha": "93693ecd097e395977dd84a79cc98b747aad6020",
+      "bytes": 186766,
+      "sha256": "1b059f431aa2469684923c96bb5d147270a3ef470404c959ddb3b3b2adbbd199",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part00.txt",
+      "sha": "755301f9d11267b2ec7a5a0ce1ba7d82d870fe81",
+      "bytes": 340000,
+      "sha256": "f5bf8464a826b9557b299d98956a0bc6895675b6ac3efc6276dfe32ecb4a6d58",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part01.txt",
+      "sha": "79422c845208048cd0f525bdfa6190052b4a8f77",
+      "bytes": 340000,
+      "sha256": "df23c46d0a2ef36ad430e0e03604ae23110c623b6365bf999f844cd2a85b36a6",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part02.txt",
+      "sha": "1908bc1eea061761e32df71f71d329338afea014",
+      "bytes": 340000,
+      "sha256": "5266dc72d762655c548071399db9cac56a9a231b69f32074896a6f9de7a1894a",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.job.log.part03.txt",
+      "sha": "ceb177856aa46661673aff57c5fc2a5007099e97",
+      "bytes": 151116,
+      "sha256": "e875a10e49319ee477d0139c634be23b44c480c3aaa5fd4754284e176b52aa64",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/musl.partial-methods.jsonl",
+      "sha": "7751fb2b301f9757787a7d07711e9c5c22a1f739",
+      "bytes": 186766,
+      "sha256": "e3bc8c84c252801bc32f6e46e31fa1e22875b5db105d4b94cd590c56c66b95ad",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part00.txt",
+      "sha": "9e6203ca7ac4e3fc6536d09cc5d8abead05436d0",
+      "bytes": 340000,
+      "sha256": "c9055d4b4d24f8e62cc333f3acc1b3dd9a8311dfa467532fe05aa4fd87fbc367",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part01.txt",
+      "sha": "30a1d579d220bb1eb9e629425c8e8c8fe91902d8",
+      "bytes": 340000,
+      "sha256": "5fa1049b613a89ef8874da03d06b265ade9e2c18f8d031773a53012a5b8db381",
+      "exact": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-failure/windows_shard4.job.log.part02.txt",
+      "sha": "cf9d3491cd67e27969c1b4b1ce4f73fa6ae94f26",
+      "bytes": 322876,
+      "sha256": "fab227aa9247f79c901bce07fd8370a864a969d939fcf0ac49c0017b058ec2b1",
+      "exact": true
+    }
+  ],
+  "source_review": "qualification/evaluated-current-read-20261112/repair-286c-review/ROOT_SOURCE_REVIEW.json",
+  "current_native_and_caller_pending": true,
+  "all_verified": true,
+  "scope": "This verifies source/audit and original evidence bytes. It does not change failed jobs, grant owner decisions, establish unobserved ordinary/Root outcomes or promote scientific efficacy.",
+  "owner_decision": null,
+  "all_blockers_closed": false
+}

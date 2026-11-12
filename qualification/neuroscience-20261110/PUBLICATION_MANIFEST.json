@@ -2943,6 +2943,12 @@
       "git_blob": "d8f867813e2d205f9f433f9b1d202a2a1e31039b"
     },
     {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GIT_READBACK_1735.json",
+      "bytes": 56009,
+      "sha256": "764d379f482bef8dcbddc0a6aff8c8ced484ca4646b7d19e37a75d32af1694f7",
+      "git_blob": "d8a42ad50a5d54f1d4164dcdb8512950980ab816"
+    },
+    {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/GZIP_DECODER_REFERENCE.js.txt",
       "bytes": 3833,
       "sha256": "47e17f029edb8d0722a05a06a453347fd255a36b748b6b839751d682c6dcb707",
@@ -2992,9 +2998,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
-      "bytes": 85489,
-      "sha256": "29a37f913bdcb02e2461e668253dd8363239558872e0ba31c8061deb06909cb7",
-      "git_blob": "72101f9a9694fcda0eed8a19aa7cf9de1655dbe2"
+      "bytes": 85633,
+      "sha256": "d1673dfed195e00aafc985ae211f588cb27076cee417a3a6df57dbd04c996805",
+      "git_blob": "3cdcfe38f2d78ccbb7926ec4fe55910cc3e92298"
     },
     {
       "path": "qualification/notes-seed-profile-20261112/bb8-format-fix/JOBS_1408_ORIGINAL.json",
@@ -6423,9 +6429,9 @@
   },
   "additional_text_readback_record": "evidence/terminal-20261112/GIT_READBACK_1735.json",
   "latest_text_readback": {
-    "status": "PREPARED_PENDING_STAGED_GIT_READBACK",
+    "status": "ORIGINALS_AND_STAGED_GIT_PATHS_VERIFIED",
     "imported_blobs": 79,
-    "new_text_files": 23,
+    "new_text_files": 24,
     "full_original_logs": 8,
     "originals": [
       "286c Rustfmt",
@@ -6437,7 +6443,8 @@
       "edaf musl Bazel timeout",
       "edaf Windows Bazel shard4"
     ],
-    "all_verified": false,
-    "record": "evidence/terminal-20261112/GIT_READBACK_1735.json"
+    "all_verified": true,
+    "record": "evidence/terminal-20261112/GIT_READBACK_1735.json",
+    "readback_at_utc": "2026-11-12 17:41:15 UTC"
   }
 }
