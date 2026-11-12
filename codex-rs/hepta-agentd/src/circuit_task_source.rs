@@ -45,6 +45,10 @@ use crate::circuit_cell_scope_digest_v1;
 
 #[path = "circuit_task_source_codec.rs"]
 mod codec;
+#[path = "circuit_task_source_history.rs"]
+mod history;
+pub use history::HistoricalCircuitTaskSourceObservationV1;
+pub use history::HistoricalCircuitTaskSourceV1;
 #[path = "circuit_task_source_journal.rs"]
 mod journal;
 #[path = "circuit_task_source_readback.rs"]

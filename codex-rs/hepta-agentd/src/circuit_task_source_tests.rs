@@ -34,6 +34,9 @@ use crate::circuit_task::driver::CircuitTaskDriverV1;
 
 type Source = DurableCircuitTaskSourceV1<FileAnchorWitnessStore>;
 
+#[path = "circuit_task_source_history_tests.rs"]
+mod history;
+
 fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new()
         .read(true)

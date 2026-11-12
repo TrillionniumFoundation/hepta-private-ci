@@ -30,6 +30,8 @@ pub use source::CircuitTaskSourceInputV1;
 pub use source::CircuitTaskSourcePublicationV1;
 pub use source::CircuitTaskSourceReadbackV1;
 pub use source::DurableCircuitTaskSourceV1;
+pub use source::HistoricalCircuitTaskSourceObservationV1;
+pub use source::HistoricalCircuitTaskSourceV1;
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum CircuitTaskErrorV1 {
