@@ -13,12 +13,14 @@ fn finish_readiness(
     server: std::thread::JoinHandle<Result<u64, ReadError>>,
 ) -> anyhow::Result<u64> {
     drop(client);
-    Ok(server.join().map_err(|_| anyhow::anyhow!("readiness peer"))??)
+    Ok(server
+        .join()
+        .map_err(|_| anyhow::anyhow!("readiness peer"))??)
 }
 
 #[tokio::test]
-async fn q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch()
--> anyhow::Result<()> {
+async fn q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch() -> anyhow::Result<()>
+{
     let f = CompletionFixture::ready(None).await?;
     let context = next_use_context(&f.f.original.config);
     let published = original(&f.f.original, context.clone())?;
@@ -36,7 +38,10 @@ async fn q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch()
 
     f.complete_c().await?;
     let task_completed = owner_bytes(&f.f.original.session)?;
-    let ready = wait.read_current().await?.expect("actual ordinary C completed");
+    let ready = wait
+        .read_current()
+        .await?
+        .expect("actual ordinary C completed");
     assert_eq!(f.f.original.bytes()?, receipt_before);
     assert_eq!(owner_bytes(&f.f.original.session)?, task_completed);
     let attested = observer.attest_completed_task().await?;
@@ -50,8 +55,7 @@ async fn q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch()
 }
 
 #[tokio::test]
-async fn q24_readiness_withdrawal_is_fatal_and_never_becomes_pending()
--> anyhow::Result<()> {
+async fn q24_readiness_withdrawal_is_fatal_and_never_becomes_pending() -> anyhow::Result<()> {
     let mut f = CompletionFixture::ready(None).await?;
     let context = next_use_context(&f.f.original.config);
     let published = original(&f.f.original, context.clone())?;
@@ -61,18 +65,26 @@ async fn q24_readiness_withdrawal_is_fatal_and_never_becomes_pending()
     let task_before = owner_bytes(&f.f.original.session)?;
     f.f.original.version.withdraw()?;
     assert!(wait.read_current().await.is_err());
-    assert!(matches!(wait.read_current().await, Err(ReadError::Unavailable)));
+    assert!(matches!(
+        wait.read_current().await,
+        Err(ReadError::Unavailable)
+    ));
     assert_eq!(owner_bytes(&f.f.original.session)?, task_before);
     drop(wait);
-    assert!(waiter.join().map_err(|_| anyhow::anyhow!("withdrawn readiness peer"))?.is_err());
+    assert!(
+        waiter
+            .join()
+            .map_err(|_| anyhow::anyhow!("withdrawn readiness peer"))?
+            .is_err()
+    );
     // The original Selector's separate stream was not contacted after withdrawal.
     f.finish(false).await?;
     Ok(())
 }
 
 #[tokio::test]
-async fn q24_readiness_completed_identity_cannot_revert_or_change_publication()
--> anyhow::Result<()> {
+async fn q24_readiness_completed_identity_cannot_revert_or_change_publication() -> anyhow::Result<()>
+{
     let f = CompletionFixture::ready(None).await?;
     f.complete_c().await?;
     let before = owner_bytes(&f.f.original.session)?;
@@ -87,11 +99,21 @@ async fn q24_readiness_completed_identity_cannot_revert_or_change_publication()
         assert!(wait.read_current().await?.is_some());
         assert!(matches!(
             wait.read_current().await,
-            Err(ReadError::Binding("completed original C cannot change or become pending"))
+            Err(ReadError::Binding(
+                "completed original C cannot change or become pending"
+            ))
         ));
-        assert!(matches!(wait.read_current().await, Err(ReadError::Unavailable)));
+        assert!(matches!(
+            wait.read_current().await,
+            Err(ReadError::Unavailable)
+        ));
         drop(wait);
-        assert_eq!(server.join().map_err(|_| anyhow::anyhow!("changed readiness peer"))??, 2);
+        assert_eq!(
+            server
+                .join()
+                .map_err(|_| anyhow::anyhow!("changed readiness peer"))??,
+            2
+        );
         assert_eq!(owner_bytes(&f.f.original.session)?, before);
     }
     f.finish(false).await?;
@@ -99,13 +121,17 @@ async fn q24_readiness_completed_identity_cannot_revert_or_change_publication()
 }
 
 #[tokio::test]
-async fn q24_readiness_requires_original_selection_and_consumes_wrong_purpose()
--> anyhow::Result<()> {
+async fn q24_readiness_requires_original_selection_and_consumes_wrong_purpose() -> anyhow::Result<()>
+{
     let f = CompletionFixture::ready(None).await?;
     f.complete_c().await?;
     let context = next_use_context(&f.f.original.config);
     let mut incomplete = context.clone();
-    let removed = incomplete.prefix.receipts.pop().expect("original Selection");
+    let removed = incomplete
+        .prefix
+        .receipts
+        .pop()
+        .expect("original Selection");
     incomplete.prefix.head_digest = removed.predecessor;
     incomplete.selection_evidence = None;
     assert!(readiness::client(incomplete).is_err());
@@ -118,9 +144,17 @@ async fn q24_readiness_requires_original_selection_and_consumes_wrong_purpose()
         wait.read_current().await,
         Err(ReadError::Binding("fixed completion-readiness purpose"))
     ));
-    assert!(matches!(wait.read_current().await, Err(ReadError::Unavailable)));
+    assert!(matches!(
+        wait.read_current().await,
+        Err(ReadError::Unavailable)
+    ));
     drop(wait);
-    assert_eq!(server.join().map_err(|_| anyhow::anyhow!("wrong purpose peer"))??, 1);
+    assert_eq!(
+        server
+            .join()
+            .map_err(|_| anyhow::anyhow!("wrong purpose peer"))??,
+        1
+    );
     assert_eq!(owner_bytes(&f.f.original.session)?, before);
     f.finish(false).await?;
     Ok(())

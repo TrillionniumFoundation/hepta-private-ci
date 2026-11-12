@@ -179,7 +179,11 @@ pub(super) async fn cancel_queued_execute(
     role: Role,
 ) -> anyhow::Result<()> {
     let (client, peer) = connected(
-        fixture, role, Mode::ExecuteOnce, /*expected*/ None, Effect::Original,
+        fixture,
+        role,
+        Mode::ExecuteOnce,
+        /*expected*/ None,
+        Effect::Original,
     )?;
     tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
         let runtime = tokio::runtime::Builder::new_current_thread()
@@ -191,15 +195,15 @@ pub(super) async fn cancel_queued_execute(
             let (release, blocked) = std::sync::mpsc::channel();
             let blocker = tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
                 let _ = occupied.send(());
-                blocked.recv().map_err(|_| anyhow::anyhow!("queued cancellation release"))?;
+                blocked
+                    .recv()
+                    .map_err(|_| anyhow::anyhow!("queued cancellation release"))?;
                 Ok(())
             });
             waiting.await?;
             let mut request = Box::pin(client.execute());
             let pending = std::future::poll_fn(|cx| {
-                std::task::Poll::Ready(
-                    std::future::Future::poll(request.as_mut(), cx).is_pending(),
-                )
+                std::task::Poll::Ready(std::future::Future::poll(request.as_mut(), cx).is_pending())
             })
             .await;
             // The only blocking worker is still occupied. Dropping this exact

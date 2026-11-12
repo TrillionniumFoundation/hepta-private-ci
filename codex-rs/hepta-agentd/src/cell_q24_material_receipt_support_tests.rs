@@ -116,7 +116,11 @@ impl Fixture {
     }
 
     async fn candidate_pages() -> anyhow::Result<Self> {
-        Self::with_profile(/*expired_work*/ false, MaterialFixtureProfile::CandidatePages).await
+        Self::with_profile(
+            /*expired_work*/ false,
+            MaterialFixtureProfile::CandidatePages,
+        )
+        .await
     }
 
     async fn with_profile(
