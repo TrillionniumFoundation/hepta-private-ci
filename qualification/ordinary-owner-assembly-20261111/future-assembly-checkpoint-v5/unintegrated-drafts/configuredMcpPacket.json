@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "original-configured-MCP-strict-loader-draft",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "isolated source candidate; actual phase caller forthcoming; no native/ref changes",
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/configured_mcp_runtime.rs",
+      "pre": "b47ed015277fa5fde861a9678b3d464b543c4295",
+      "post": {
+        "path": "codex-rs/app-server/src/configured_mcp_runtime.rs",
+        "blob": "e9bb61775c50098bd0e85bbb246498165b4fd051",
+        "bytes": 7652,
+        "sha256": "f5eef6d8fc3d41fd3e8d6a0e7e9125ba066a3e3facfcf348e72172190d74087f",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "use crate::config_manager::ConfigManager;\n",
+          "after": "use crate::config_manager::ConfigManager;\n\n#[path = \"configured_mcp_runtime_owned_shutdown.rs\"]\nmod owned_shutdown;\npub use owned_shutdown::initialize_configured_mcp_server_with_owned_shutdown;\n"
+        },
+        {
+          "before": "    startup: CancellationToken,\n}\n",
+          "after": "    startup: CancellationToken,\n    original_owned_shutdown: Option<Arc<codex_mcp::OriginalMcpRuntimeShutdown>>,\n}\n"
+        },
+        {
+          "before": "            startup: startup.clone(),\n        })",
+          "after": "            startup: startup.clone(),\n            original_owned_shutdown: None,\n        })"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/configured_mcp_runtime_owned_shutdown.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/app-server/src/configured_mcp_runtime_owned_shutdown.rs",
+        "blob": "46cd1c62cd7ea24e14a8350a3fb1f18ba6bb7bd5",
+        "bytes": 7392,
+        "sha256": "1426ba3f17b5f31db173f11b7b809d5ae57051526d4d8ae61c903095bfb45fc0",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Original configured server loading with externally retained owner custody.\n//! Original effective config, credentials, environment, policy and selection\n//! checks remain required. The phase supplies its already fixed absolute end.\n\nuse super::*;\nuse codex_mcp::OriginalMcpRuntimeShutdown;\nuse codex_mcp::OriginalMcpRuntimeShutdownObservation;\n\nimpl ConfiguredMcpRuntime {\n    pub async fn shutdown_original_owned(\n        self,\n    ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>> {\n        let custody = self.original_owned_shutdown.as_ref()\n            .ok_or_else(|| anyhow!(\"configured MCP runtime has no original shutdown custody\"))?;\n        self.startup.cancel();\n        let observed = custody.stop_and_join_original_runtime().await?;\n        observed.require_original_ready_runtime_joined()?;\n        Ok(observed)\n    }\n}\n\npub async fn initialize_configured_mcp_server_with_owned_shutdown(\n    codex_home: AbsolutePathBuf,\n    workspace: AbsolutePathBuf,\n    arg0_paths: Arg0DispatchPaths,\n    server: &str,\n    environment_id: &str,\n    bounds: (Duration, std::time::Instant),\n    custody: &Arc<OriginalMcpRuntimeShutdown>,\n) -> Result<ConfiguredMcpRuntime> {\n    let (timeout, original_end) = bounds;\n    ensure!(std::time::Instant::now() < original_end,\n        \"original phase end elapsed before configured MCP startup\");\n    let operation = async {\n        ensure!(\n            !server.is_empty()\n                && !environment_id.is_empty()\n                && !timeout.is_zero()\n                && timeout <= Duration::from_secs(30),\n            \"original configured MCP bootstrap requires a bounded explicit selection\"\n        );\n        let startup = CancellationToken::new();\n        let cancel_on_failure = startup.clone().drop_guard();\n        let result = tokio::time::timeout(timeout, async {\n            let manager = ConfigManager::new(\n                codex_home.to_path_buf(),\n                Vec::new(),\n                LoaderOverrides::default(),\n                /*strict_config*/ true,\n                Default::default(),\n                arg0_paths.clone(),\n                Arc::new(NoopThreadConfigLoader),\n            );\n            let config = manager\n                .load_latest_config(Some(workspace.to_path_buf()))\n                .await?;\n            let auth_manager =\n                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;\n            manager.replace_cloud_config_bundle_loader(\n                auth_manager,\n                config.chatgpt_base_url.clone(),\n                config.http_client_factory(),\n            );\n            let config = manager\n                .load_latest_config(Some(workspace.to_path_buf()))\n                .await?;\n            ensure!(\n                config.codex_home == codex_home,\n                \"MCP bootstrap changed the original Agent home\"\n            );\n            ensure!(\n                config.cwd == workspace,\n                \"MCP bootstrap changed the original Agent workspace\"\n            );\n            config.auth_config().validate()?;\n            let auth_manager =\n                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;\n            let restriction = SessionSource::Custom(\"hepta-agentd\".into()).restriction_product();\n            let skills = Arc::new(HostSkillsService::new_with_restriction_product(\n                codex_home.clone(),\n                config.bundled_skills_enabled(),\n                restriction,\n            ));\n            let plugins = Arc::new(PluginsManager::new_with_options(\n                codex_home.to_path_buf(),\n                restriction,\n                Arc::clone(&auth_manager),\n                skills,\n            ));\n            let mcp_manager = McpManager::new(plugins);\n            let mcp_config = Arc::new(mcp_manager.runtime_config(&config).await);\n            let auth = auth_manager.auth().await;\n            let mut servers = codex_mcp::effective_mcp_servers(&mcp_config, auth.as_ref());\n            let selected = servers\n                .get(server)\n                .ok_or_else(|| anyhow!(\"selected original Runtime MCP server is not configured\"))?;\n            ensure!(\n                selected.enabled(),\n                \"selected original Runtime MCP server is disabled\"\n            );\n            ensure!(\n                selected.config().environment_id == environment_id,\n                \"selected original Runtime MCP environment does not match\"\n            );\n            servers.retain(|name, _| name == server);\n            let paths = ExecServerRuntimePaths::from_optional_paths(\n                arg0_paths.codex_self_exe.clone(),\n                arg0_paths.codex_linux_sandbox_exe.clone(),\n            )?;\n            let environments = Arc::new(\n                EnvironmentManager::from_codex_home(\n                    codex_home.clone(),\n                    Some(paths),\n                    config.http_client_factory(),\n                )\n                .await?,\n            );\n            let context = McpRuntimeContext::new(environments, config.cwd.to_path_buf());\n            let runtime = McpRuntime::new_with_owned_shutdown(McpRuntimeInput {\n                startup_policy: McpStartupPolicy::Eager,\n                config: Arc::clone(&mcp_config),\n                plugins_available: false,\n                selected_plugins: Arc::new(codex_mcp::SelectedPluginSnapshot::default()),\n                ready_selected_capability_roots: Vec::new(),\n                mcp_servers: servers,\n                submit_id: \"hepta-original-runtime-bootstrap\".into(),\n                tx_event: None,\n                startup_cancellation_token: startup.clone(),\n                runtime_context: context,\n                codex_apps_tools_cache: mcp_manager.codex_apps_tools_cache(),\n                tool_catalog_cache: mcp_manager.tool_catalog_cache(),\n                codex_apps_tools_cache_key: connector_runtime_context_key(auth.as_ref()),\n                client_mcp_extensions: ClientMcpExtensions::default(),\n                auth,\n                codex_apps_auth_manager: Some(auth_manager),\n                elicitation_reviewer: None,\n                elicitation_lifecycle: None,\n            }, custody)\n            .await?;\n            if !runtime.latest_wait_for_server_ready(server, timeout).await {\n                // The external owner drives the retained real startup/driver/Child\n                // joins after this initializer returns or is cancelled.\n                custody.request_stop();\n                return Err(anyhow!(\"original Runtime MCP server did not initialize\"));\n            }\n            let binding = runtime\n                .current_binding()\n                .await\n                .ok_or_else(|| anyhow!(\"original Runtime MCP binding is unavailable\"))?;\n            Ok(ConfiguredMcpRuntime {\n                runtime,\n                binding,\n                startup: startup.clone(),\n                original_owned_shutdown: Some(Arc::clone(custody)),\n            })\n        })\n        .await\n        .context(\"original Runtime MCP bootstrap deadline expired\")??;\n        let _ = cancel_on_failure.disarm();\n        Ok(result)\n    };\n    tokio::time::timeout_at(tokio::time::Instant::from_std(original_end), operation)\n        .await\n        .context(\"original phase end elapsed during configured MCP startup\")?\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "pre": "de019a6e9ef7fb6e14b70099ec3965b44914126e",
+      "post": {
+        "path": "codex-rs/app-server/src/lib.rs",
+        "blob": "b134db10170e90aee737de3b9177b63cdf673cda",
+        "bytes": 80431,
+        "sha256": "13b8de476ccb72d5f0e6c07e673c7399650c96f902874b7dc9e437652f2076ce",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "pub use configured_mcp_runtime::initialize_configured_mcp_server;\n",
+          "after": "pub use configured_mcp_runtime::initialize_configured_mcp_server;\npub use configured_mcp_runtime::initialize_configured_mcp_server_with_owned_shutdown;\npub use codex_mcp::OriginalMcpRuntimeShutdown;\npub use codex_mcp::OriginalMcpRuntimeShutdownObservation;\n"
+        }
+      ]
+    }
+  ],
+  "dependency": "d8ebaffd375815ea2a683a5751799797f6f43699",
+  "original_body_transformation": {
+    "base": "b47ed015277fa5fde861a9678b3d464b543c4295",
+    "edits": [
+      {
+        "before": "let runtime = McpRuntime::new(McpRuntimeInput {",
+        "after": "let runtime = McpRuntime::new_with_owned_shutdown(McpRuntimeInput {"
+      },
+      {
+        "before": "            elicitation_lifecycle: None,\n        })\n        .await;",
+        "after": "            elicitation_lifecycle: None,\n        }, custody)\n        .await?;"
+      },
+      {
+        "before": "            runtime.shutdown().await;",
+        "after": "            // The external owner drives the retained real startup/driver/Child\n            // joins after this initializer returns or is cancelled.\n            custody.request_stop();"
+      },
+      {
+        "before": "            startup: startup.clone(),\n        })",
+        "after": "            startup: startup.clone(),\n            original_owned_shutdown: Some(Arc::clone(custody)),\n        })"
+      }
+    ],
+    "all_other_original_loader_body_bytes_preserved_after_one_indent": true,
+    "outer_bound": "passed original Instant end, timeout_at; the existing bounded configured timeout remains a separate original sub-limit"
+  },
+  "validation": {
+    "paths": 3,
+    "operations": 5,
+    "create_get_equal": true,
+    "unique_exact_forward_reverse": true,
+    "native": 0,
+    "checker": 0,
+    "tests": 0,
+    "refs": 0
+  },
+  "limits": [
+    "The new caller must retain the same empty external custody before awaiting initialization, drop Device/retained-call owners before strict shutdown, and keep the original Tokio runtime alive while true joins complete.",
+    "The new method propagates actual startup/driver/stdio cleanup failure. It does not claim all SDK callbacks or daemon OS exit.",
+    "Default Configured shutdown/Drop body is unchanged; original initializer only adds None for the new optional field."
+  ]
+}

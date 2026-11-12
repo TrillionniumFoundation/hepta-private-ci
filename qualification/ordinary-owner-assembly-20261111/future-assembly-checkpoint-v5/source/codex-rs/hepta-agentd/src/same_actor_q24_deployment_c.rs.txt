@@ -1,0 +1,111 @@
+//! Concrete same-actor C files, still admitted by the original Root CURRENT,
+//! selected bundle and FinalUse owners. This is not an independent-C contract.
+
+use std::sync::Arc;
+use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use serde::{Deserialize, Serialize};
+use crate::{AgentdError, AgentdGenerationUpdateTargetV1, CircuitQ24TaskOpenModeV1,
+    LoadedCellQ24ModelV1, OriginalQ24SuccessorExecutionInputsV1, OriginalQ24SuccessorFeedbackV1};
+use crate::authority_host_runtime::{OriginalDeploymentObserverData, RootGenerationPublicationDeploymentV1};
+use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+use crate::same_actor_q24_phase::OriginalSameActorCInputsV1;
+use super::cell_data::OriginalCellDefinitionData;
+use super::files::{MutableFileData, OriginalDeploymentFiles};
+use super::learning::OriginalDeploymentLearning;
+use super::task::{OriginalCircuitData, OriginalInitialPredecessorFiles, OriginalTaskSourceData};
+use super::witness::{OriginalWitnessData, require_fresh_original_file};
+use super::{deployment_error, deployment_refused};
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum OriginalCModelData { RetainedInitial, ActualTrainingCandidate }
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct OriginalCData {
+    pub journal: MutableFileData,
+    pub witness: OriginalWitnessData,
+    pub target: OriginalDeploymentObserverData,
+    pub definition: OriginalCellDefinitionData,
+    pub source: OriginalTaskSourceData,
+    pub model: OriginalCModelData,
+    pub execution: OriginalCircuitData,
+}
+
+pub(super) struct OpenedOriginalC {
+    pub inputs: OriginalSameActorCInputsV1,
+    pub canonical_material: String,
+}
+
+impl OriginalCData {
+    pub(super) fn open_original(
+        &self,
+        context: &Arc<OriginalSameActorRootContext>,
+        files: &mut OriginalDeploymentFiles,
+        resources: OriginalCResources<'_>,
+    ) -> Result<OpenedOriginalC, AgentdError> {
+        let OriginalCResources {
+            initial_model, trained_model, predecessor, learning, selection, capacity, now,
+        } = resources;
+        OriginalSameActorRootContext::require_current(context)?;
+        require_fresh_original_file(&self.journal)?;
+        require_fresh_original_file(&self.witness.file)?;
+        if self.execution.queue_capacity != capacity {
+            return Err(deployment_refused("actual C capacity differs from its original pending slot"));
+        }
+        let model = match self.model {
+            OriginalCModelData::RetainedInitial => Arc::clone(initial_model),
+            OriginalCModelData::ActualTrainingCandidate => trained_model.cloned()
+                .ok_or_else(|| deployment_refused("there is no actual Training candidate model"))?,
+        };
+        let observer = self.target.original_observer_config().map_err(deployment_error)?;
+        if observer.witness_scope.scope_digest.into_array() != self.witness.scope
+            || observer.witness_scope.objective_digest.into_array() != self.witness.objective
+            || observer.witness_generation.get() != self.witness.generation
+            || observer.witness_records != self.witness.maximum_records
+        {
+            return Err(deployment_refused("C observer and actual witness configuration differ"));
+        }
+        // Encode only the actual input data. Root checks its separately
+        // approved material, actual files, signature and source independently.
+        let material = RootGenerationPublicationDeploymentV1::encode_original_material(
+            &observer, selection,
+        ).map_err(deployment_error)?;
+        let canonical_material = String::from_utf8(material).map_err(deployment_error)?;
+        let file = files.open_original_owner(&self.journal)?;
+        let witness: FileAnchorWitnessStore = self.witness.open_original(files)?;
+        let target = AgentdGenerationUpdateTargetV1 {
+            file, witness, config: observer.generation, max_records: observer.journal_records,
+        };
+        let actual = self.execution.open_original(context, files)?;
+        let ledger = learning.open_original_c_task(files, now)?;
+        let predecessor = predecessor.reopen_original(files)?;
+        let inputs = OriginalSameActorCInputsV1 {
+            predecessor, target, definition: self.definition.original()?,
+            source: self.source.original()?, model,
+            execution: OriginalQ24SuccessorExecutionInputsV1 {
+                files: actual.files, source_mode: CircuitQ24TaskOpenModeV1::Create,
+                feedback: OriginalQ24SuccessorFeedbackV1::OriginalLedger(ledger),
+                fence: actual.fence, circuit: actual.circuit, routes: actual.routes,
+                worker_generation: actual.worker_generation,
+                maximum_cell_records: actual.maximum_cell_records, clock: actual.clock,
+            },
+        };
+        OriginalSameActorRootContext::require_current(context)?;
+        Ok(OpenedOriginalC { inputs, canonical_material })
+    }
+}
+
+/// Only the concrete coordinator supplies these actual owned inputs after
+/// the controller has observed the independent Selection. Nothing here is a
+/// normal-retirement capability or permission to restart the old A.
+pub(super) struct OriginalCResources<'a> {
+    pub initial_model: &'a Arc<LoadedCellQ24ModelV1>,
+    pub trained_model: Option<&'a Arc<LoadedCellQ24ModelV1>>,
+    pub predecessor: OriginalInitialPredecessorFiles,
+    pub learning: &'a OriginalDeploymentLearning,
+    pub selection: &'a SignedArtifactSelectionV1,
+    pub capacity: usize,
+    pub now: u64,
+}

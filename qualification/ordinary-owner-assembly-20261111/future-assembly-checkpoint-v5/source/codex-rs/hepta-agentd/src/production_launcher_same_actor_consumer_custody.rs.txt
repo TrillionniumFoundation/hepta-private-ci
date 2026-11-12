@@ -1,0 +1,161 @@
+//! The two actual bootstrap FinalUse consumer tasks, retained outside the
+//! receiving future. A cancelled receive cannot discard either real handle
+//! or an owner which the closure has opened but not yet delivered.
+
+use std::future::Future;
+use std::sync::{Arc, Mutex, MutexGuard};
+use codex_hepta_contracts::FinalUseAuthority;
+use tokio::task::JoinHandle;
+use crate::AgentdError;
+use crate::same_actor_q24_phase_gate::{CloseSameActorPhaseOnDrop, SameActorPhaseGate};
+use super::refused;
+
+#[derive(Clone, Copy)]
+pub(crate) enum OriginalBootstrapConsumerKind { Device, Notes }
+
+struct ConsumersState {
+    claimed: u8,
+    closed: bool,
+    jobs: Vec<Arc<OriginalBootstrapConsumerJob>>,
+}
+
+pub(super) struct OriginalBootstrapConsumers { state: Mutex<ConsumersState> }
+
+pub(crate) struct OriginalBootstrapConsumerAdmission<'a> {
+    state: MutexGuard<'a, ConsumersState>,
+    gate: Arc<SameActorPhaseGate>,
+    armed: bool,
+}
+
+struct ConsumerJobState {
+    handle: Option<JoinHandle<Result<FinalUseAuthority, AgentdError>>>,
+    output: Option<Result<FinalUseAuthority, AgentdError>>,
+    joined: bool,
+    receiving: bool,
+}
+
+pub(crate) struct OriginalBootstrapConsumerJob {
+    state: tokio::sync::Mutex<ConsumerJobState>,
+    gate: Arc<SameActorPhaseGate>,
+}
+
+impl OriginalBootstrapConsumers {
+    pub(super) fn new() -> Self {
+        Self { state: Mutex::new(ConsumersState { claimed: 0, closed: false, jobs: Vec::new() }) }
+    }
+
+    pub(super) fn reserve(
+        &self, kind: OriginalBootstrapConsumerKind, gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<OriginalBootstrapConsumerAdmission<'_>, AgentdError> {
+        let bit = match kind { OriginalBootstrapConsumerKind::Device => 1, OriginalBootstrapConsumerKind::Notes => 2 };
+        let mut state = self.state.lock().map_err(|_| {
+            gate.close(); refused("original bootstrap consumer custody poisoned")
+        })?;
+        gate.require_open()?;
+        if state.closed || state.claimed & bit != 0 {
+            gate.close();
+            return Err(refused("original bootstrap consumer cannot be reopened"));
+        }
+        // Claim before the one actual spawn. Failure never re-arms this bit.
+        state.claimed |= bit;
+        Ok(OriginalBootstrapConsumerAdmission { state, gate: Arc::clone(gate), armed: true })
+    }
+
+    pub(super) fn close(&self) {
+        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+        state.closed = true;
+        for job in &state.jobs { job.gate.close(); }
+    }
+
+    pub(super) async fn join_and_release(&self) -> Result<(), AgentdError> {
+        let (jobs, poisoned) = {
+            let (mut state, poisoned) = match self.state.lock() {
+                Ok(state) => (state, false),
+                Err(error) => (error.into_inner(), true),
+            };
+            state.closed = true;
+            (state.jobs.clone(), poisoned)
+        };
+        let mut failure = poisoned.then(|| refused("original bootstrap consumer custody poisoned"));
+        for job in jobs {
+            job.gate.close();
+            let mut state = job.state.lock().await;
+            job.join_locked(&mut state).await;
+            if let Some(result) = state.output.take() {
+                // Undelivered owner is released only AFTER its actual task
+                // joined. An undelivered original error remains observable.
+                match result {
+                    Ok(owner) => drop(owner),
+                    Err(error) => super::save_original_failure(&mut failure, error),
+                }
+            }
+        }
+        failure.map_or(Ok(()), Err)
+    }
+}
+
+impl OriginalBootstrapConsumerAdmission<'_> {
+    pub(crate) fn retain_original_handle(
+        mut self, handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,
+    ) -> Arc<OriginalBootstrapConsumerJob> {
+        let job = Arc::new(OriginalBootstrapConsumerJob {
+            state: tokio::sync::Mutex::new(ConsumerJobState {
+                handle: Some(handle), output: None, joined: false, receiving: false,
+            }),
+            gate: Arc::clone(&self.gate),
+        });
+        self.state.jobs.push(Arc::clone(&job));
+        self.armed = false;
+        job
+    }
+}
+impl Drop for OriginalBootstrapConsumerAdmission<'_> {
+    fn drop(&mut self) {
+        if self.armed { self.state.closed = true; self.gate.close(); }
+    }
+}
+
+impl OriginalBootstrapConsumerJob {
+    async fn join_locked(&self, state: &mut ConsumerJobState) {
+        if state.joined { return; }
+        let result = match state.handle.as_mut() {
+            Some(handle) => match handle.await {
+                Ok(result) => result,
+                Err(error) => Err(AgentdError::Protocol(
+                    format!("original Root production inputs: {error}"),
+                )),
+            },
+            None => Err(refused("actual bootstrap consumer handle missing")),
+        };
+        // Keep the real result in the retained slot, without an intervening
+        // await. No cancelled waiter removes or re-polls the original handle.
+        state.handle = None;
+        state.output = Some(result);
+        state.joined = true;
+    }
+
+    pub(crate) fn receive_original(
+        self: &Arc<Self>,
+    ) -> impl Future<Output = Result<FinalUseAuthority, AgentdError>> + Send + 'static {
+        let job = Arc::clone(self);
+        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);
+        async move {
+            let mut state = job.state.lock().await;
+            if state.receiving {
+                return Err(refused("original bootstrap consumer result was already received"));
+            }
+            state.receiving = true;
+            job.join_locked(&mut state).await;
+            let output = state.output.take()
+                .ok_or_else(|| refused("original bootstrap consumer output missing"))?;
+            let owner = output?;
+            job.gate.require_open()?;
+            closing.disarm();
+            Ok(owner)
+        }
+    }
+}
+
+#[cfg(test)]
+#[path = "production_launcher_same_actor_consumer_custody_tests.rs"]
+mod tests;

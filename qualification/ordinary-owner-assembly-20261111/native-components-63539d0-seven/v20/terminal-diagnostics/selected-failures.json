@@ -1,0 +1,162 @@
+[
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::cancelled_observation_remains_counted_until_blocking_callback_finishes' (1896174) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::cancelled_observation_remains_counted_until_blocking_callback_finishes' (1896174) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::cancelled_observation_remains_counted_until_blocking_callback_finishes",
+    "time": "0.005"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::closing_a_ticket_queues_once_and_cancelled_work_stays_counted' (1896178) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::closing_a_ticket_queues_once_and_cancelled_work_stays_counted' (1896178) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::closing_a_ticket_queues_once_and_cancelled_work_stays_counted",
+    "time": "0.005"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::closing_cut_keeps_an_admitted_build_but_refuses_later_admission' (1896180) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::closing_cut_keeps_an_admitted_build_but_refuses_later_admission' (1896180) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::closing_cut_keeps_an_admitted_build_but_refuses_later_admission",
+    "time": "0.005"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::full_original_queue_rolls_back_transfer_and_closes_phase' (1896182) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::full_original_queue_rolls_back_transfer_and_closes_phase' (1896182) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::full_original_queue_rolls_back_transfer_and_closes_phase",
+    "time": "0.005"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::lost_original_ack_closes_before_return_without_readback_or_resend' (1896184) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::lost_original_ack_closes_before_return_without_readback_or_resend' (1896184) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::lost_original_ack_closes_before_return_without_readback_or_resend",
+    "time": "0.004"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::pending_and_bare_phase_paths_cannot_build_or_queue' (1896186) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::pending_and_bare_phase_paths_cannot_build_or_queue' (1896186) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::pending_and_bare_phase_paths_cannot_build_or_queue",
+    "time": "0.004"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::queue_quiescence_requires_both_ticket_and_actual_worker_drain' (1896188) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::queue_quiescence_requires_both_ticket_and_actual_worker_drain' (1896188) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::queue_quiescence_requires_both_ticket_and_actual_worker_drain",
+    "time": "0.004"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::wrong_identity_record_or_invocation_closes_without_build' (1896192) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::wrong_identity_record_or_invocation_closes_without_build' (1896192) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::wrong_identity_record_or_invocation_closes_without_build",
+    "time": "0.004"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "ordinary.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "thread 'circuit_task::runtime::same_actor_phase::tests::stopped_original_observer_closes_phase_instead_of_becoming_outcome_pending' (1896191) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "thread 'circuit_task::runtime::same_actor_phase::tests::stopped_original_observer_closes_phase_instead_of_becoming_outcome_pending' (1896191) panicked at hepta-agentd/src/circuit_task_same_actor_phase_tests.rs:126:58:\ncalled `Result::unwrap()` on an `Err` value: AgentIdParseError { message: \"agent id must be a canonical 36-byte UUID\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "name": "circuit_task::runtime::same_actor_phase::tests::stopped_original_observer_closes_phase_instead_of_becoming_outcome_pending",
+    "time": "0.004"
+  },
+  {
+    "classname": "codex-hepta-agentd",
+    "collection": "root.junit.xml",
+    "failure": [
+      {
+        "attributes": {
+          "message": "Error: initial child RetiredSession: retiring original idle session",
+          "type": "test failure with exit code 101"
+        },
+        "kind": "failure",
+        "text": "Error: initial child RetiredSession: retiring original idle session\n\nCaused by:\n    invalid agentd configuration: Unavailable\n\nROOT_COMPONENT_CHILD_OUTPUT_END\nError: initial parent RetiredSession, controlled_ack_loss=false: original Root serve result: Ok(())\n\nCaused by:\n    0: initial parent RetiredSession: awaiting STABLE\n    1: Resource temporarily unavailable (os error 11)"
+      }
+    ],
+    "name": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+    "time": "30.518"
+  }
+]

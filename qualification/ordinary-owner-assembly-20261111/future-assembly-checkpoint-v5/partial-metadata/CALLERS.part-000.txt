@@ -1,0 +1,462 @@
+schema_version = 2
+plan_id = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
+plan_version = "8.0.0"
+source_roots = ["codex-rs"]
+ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
+rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
+
+[privileged_inventory]
+required_boundary_ids = ["root_registered_learning_checkpoint_writer","root_original_learning_checkpoint_exchange","supervisor_authorized_boot","memory_production_writer_open","cognitive_store_recovery_open","cognitive_production_mutation_capability","agentd_production_writer_host","agentd_production_operation_runtime","learning_artifact_owner_bootstrap","learning_artifact_owner_restart","learning_artifact_verified_current_view","provider_effect_coordinator","http_provider_effect_adapter","final_use_open_state","final_use_claim","final_use_claim_raw","final_use_delivery","final_use_delivery_witness","final_use_delivery_raw","final_use_dispatch","final_use_dispatch_witness","final_use_dispatch_raw","final_use_revocation_update","final_use_approval_trust","final_use_approval_verify","final_use_revocation_feed_trust","final_use_revocation_feed_apply","final_use_revocation_convergence_trust","final_use_revocation_convergence_verify","bao_final_use_consumer","bao_registered_consumer_new","bao_final_use_host_new","bao_registered_revocation_update","bao_registered_final_use_host","authority_lease_open_state","authority_lease_put","authority_lease_revoke","authority_lease_prune","authority_lease_epoch_advance","authority_lease_verify_use","authority_lease_delivery","authority_lease_delivery_witness","authority_lease_dispatch_raw","authority_lease_dispatch_witness","final_use_async_dispatch_fence","automation_taskflow_provider_effect_bridge","final_use_guarded_effect","notes_original_pending_call_proof","notes_original_operation_observation_proof","notes_original_thread_prepare","notes_original_writer_terminal_receipt","memory_original_owner_current_publication","memory_original_protected_current_readback","original_authbus_human_delivery_read","notes_original_human_turn_proof","root_registered_human_text_writer","root_registered_human_text_admission","root_human_text_same_issuer_cas","root_retained_human_text_lookup","root_live_human_session_install","root_original_human_text_verification","notes_original_turn_unprepared_admission","root_host_original_human_text_verification","notes_original_human_text_verification","root_prepared_fresh_session","root_retained_native_ui_launch","root_prepared_native_ui_execution","root_material_capture_original_image","root_material_verify_retained_image","root_material_install_original_generation","root_material_reopen_original_installation","root_material_release_registered_custody","root_material_fresh_registered_session","root_material_recover_registered_session","root_material_existing_session_open","root_material_resume_registered_handoff","root_material_current_observation_chain","root_original_writer_descriptor_chain","root_same_retained_service_serve","root_registered_material_recovery","root_registered_material_handoff_resume","root_original_writer_purpose_send","root_original_writer_purpose_receive","agentd_original_root_writer_consume","root_registered_writer_rotation","native_original_operation_host_attach","native_original_owner_current_ack","native_original_terminal_history_observation","root_original_authority_initialize","root_original_writer_authorize","root_same_registered_bootstrap_seal","root_same_registered_bootstrap_capture","root_original_physical_login_install","root_original_writer_successor_shape","root_original_issuer_writer_rotation","root_physical_current_retired_adoption","root_physical_recovery_retirement_admission","root_physical_fresh_service_genesis","root_physical_registered_checkpoint_genesis","root_physical_current_backend_genesis","root_registered_physical_current_observation","root_original_two_descriptor_send","root_original_two_descriptor_receive","native_original_writer_terminal_observation","native_original_writer_next_delivery_observation","root_notes_original_startup_before","root_notes_recovered_successor_startup_before","root_notes_original_reserved_session_binding","root_notes_registered_successor_policy_replace","root_notes_original_issuer_policy_cas","root_desktop_original_issuer_pair_policy_cas","root_retained_native_ready_launch","root_prepared_native_ready_execution","root_prepared_native_ready_text_session","root_original_bound_native_lanes","root_original_bound_native_lane_acceptance","root_original_ready_lane_bridge","notes_original_retained_reference_projection","desktop_original_retained_reference_projection","memory_original_sender_read_only_cut","notes_recorded_original_observation_proof","notes_previous_recovery_typed_resolution","root_live_admin_enable","root_live_admin_mint","root_live_admin_exchange","root_live_admin_checked_dispatch","root_live_admin_signed_artifact_verify","root_live_admin_exact_issuer_head_revoke","root_live_admin_fixed_notes_revoke_prepare","root_live_admin_existing_effect_revoke","root_live_admin_existing_signed_grant_revoke","root_live_admin_same_service_signed_revoke","root_live_admin_original_issue_observer_enable","root_live_admin_original_issue_observation","root_live_admin_original_bounded_lease_revoke","root_live_admin_retained_artifact_observe","root_live_admin_original_effect_state_observe","root_live_admin_same_service_effect_state_observe","agentd_original_registered_writer_custody","agentd_original_recovered_writer_custody_factory","agentd_original_root_handoff_unique_file","calculator_previous_recovery_owner_target","calculator_previous_recovery_host_attach","calculator_previous_recovery_process_attach","calculator_previous_recovery_runtime_selection","calculator_previous_recovery_config_selection","root_original_issuer_renewal_prepare","root_original_issuer_renewal_commit","root_desktop_original_startup_before","root_desktop_recovered_successor_startup_before","root_desktop_registered_successor_policy_replace","desktop_previous_original_cut_selection","desktop_previous_joint_config_selection","memory_original_validated_target_retirement_ack","memory_original_owner_current_readonly_receipt","memory_original_notes_retirement_ack","memory_original_calculator_retirement_ack","memory_original_retirement_ack_commit","authority_lease_exact_bounded_revoke","root_live_admin_exact_issuer_revoke","root_live_admin_committed_issuer_reply","root_live_admin_exact_issuer_reply_record","root_learning_explicit_registration","root_learning_original_store_registration","root_learning_original_store_reopen","root_learning_original_owner_install","root_learning_original_scope_seal","root_learning_original_scope_capture","root_learning_same_service_serve","root_learning_registered_checkpoint_constructor","root_learning_original_client_constructor","root_learning_original_purpose_send","root_learning_original_purpose_receive","root_learning_original_handoff_consume","root_learning_original_config_hold","root_learning_original_stage_assembly","root_learning_original_runtime_consume","root_original_registered_ready_serve","root_original_private_sealed_bytes","root_learning_scoped_checkpoint_constructor","root_learning_scoped_client_constructor","root_learning_scoped_runtime_constructor","learning_frozen_update_scope_constructor","root_learning_scoped_profile_constructor","root_learning_scoped_checkpoint_record","learning_evidence_original_owner_constructor","learning_evidence_original_owner_readback","original_pinned_stream_explicit_uid","cell_learning_evaluation_profile_freeze","cell_learning_evaluation_receipt_prepare","cell_learning_evaluation_original_readback","generation_learning_original_stage_readback","cell_original_evaluation_execution","product_original_evaluation_execution","root_learning_original_delivery_source","root_learning_completed_circuit_source","circuit_learning_exact_ack_retirement","cell_completed_evaluation_readback","product_completed_evaluation_readback","cell_q24_single_head_training_plan","cell_q24_single_head_candidate_validation","cell_q24_native_training_fit","cell_q24_original_training_observation","learning_original_evaluator_attestation","learning_original_evaluation_key","circuit_feature_original_initial_publication","circuit_feature_original_update_publication","circuit_feature_guarded_private_cell","circuit_feature_private_cell_writer","circuit_feature_original_task_control","circuit_q24_ordinary_profile_assembly","circuit_feature_original_predecessor_recovery","circuit_feature_acknowledged_readonly_history","learning_original_training_receipt_create","learning_original_training_receipt_recover","learning_original_training_receipt_attest","learning_original_training_receipt_readback","cell_q24_original_training_execute","cell_q24_original_training_pair_binding","learning_original_training_stage_constructor","learning_original_training_stage_execute","learning_original_training_stage_readback","learning_original_training_stage_attestation","learning_original_training_snapshot_readback","cell_q24_model_material_owner_create","cell_q24_model_material_owner_recover","cell_q24_model_material_owner_commit","cell_q24_model_material_owner_readback","learning_original_evaluation_receipt_create","learning_original_evaluation_receipt_recover","learning_original_evaluation_receipt_attest","learning_original_evaluation_receipt_readback","cell_q24_original_dataset_batch","cell_q24_original_dataset_task","circuit_feature_original_committed_decision","cell_q24_original_dataset_revalidation","cell_q24_original_dataset_capability","cell_q24_original_trainer_dataset_capability","cell_q24_original_dataset_freeze_create","cell_q24_original_dataset_freeze_recover","cell_q24_original_dataset_freeze_authorize","cell_q24_original_dataset_freeze_readback","root_q24_factory_explicit_reserve","root_q24_factory_open_original","root_q24_factory_install_original","root_q24_factory_capture_original","root_q24_factory_take_offer","root_q24_factory_serve_original","root_q24_factory_purpose_send","root_q24_factory_purpose_receive","root_q24_factory_original_handoff_connect","root_q24_factory_original_constructor","root_q24_factory_live_observation","root_q24_factory_original_commit","root_q24_factory_original_readback","root_q24_factory_learning_scope","root_q24_factory_local_policy","root_q24_factory_original_material","root_learning_live_profile_action","learning_original_source_create","learning_original_source_recover","learning_original_source_attest_experience","learning_original_source_read_experience","learning_original_source_attest_dataset","learning_original_source_read_dataset","learning_original_source_files_create","learning_original_source_files_recover","learning_original_source_prepared_handoff","cell_q24_original_native_create","cell_q24_original_native_recover","learning_original_training_require_original_pair","learning_original_training_with_original_trainer","learning_original_evaluation_require_original_training","learning_original_evaluation_read_original_execution","learning_original_generation_receipt_create","learning_original_generation_receipt_recover","learning_original_generation_receipt_attest_original_completion","learning_original_generation_receipt_readback","learning_original_generation_receipt_require_context","learning_original_generation_receipt_observe_original_selection","learning_original_local_policy_create","learning_original_local_policy_recover","learning_original_local_policy_attest_original_decision","learning_original_local_policy_readback","learning_original_local_policy_require_context","learning_original_local_policy_policy_digest","learning_original_q24_stage_from_original_owners","learning_original_q24_stage_require_current","learning_original_q24_stage_prepared","learning_original_q24_model_dispatch","learning_original_q24_evaluation_inputs","learning_original_q24_generation_inputs","learning_original_q24_source_inputs","learning_original_q24_training_inputs","learning_original_q24_policy_inputs","root_original_q24_require_prepared_q24","root_original_q24_into_q24_learning_runtime","learning_original_q24_with_original_q24_stage_owners","learning_original_q24_require_proposal_owner","root_original_q24_stage_assembly","production_original_q24_receive","production_original_q24_assemble","learning_original_feature_receipt_create","learning_original_feature_receipt_recover","learning_original_feature_source_capture","learning_original_feature_source_binding","learning_original_feature_source_observe","learning_original_q24_stage_install_generation","learning_original_feature_dataset_feedback","q24_publication_original_b_manifest","q24_publication_original_lane","q24_publication_original_predecessor","q24_publication_embedded_admission","q24_publication_actual_artifact","q24_publication_actual_preparation","q24_publication_actual_final_use","q24_publication_original_recovery","learning_original_q24_evaluation_stage_require_training","learning_original_q24_evaluation_stage_require_original_training_evidence","learning_original_q24_evaluation_stage_read_execution","learning_original_q24_evaluation_stage_qualification_request","learning_original_q24_evaluation_stage_complete","learning_original_q24_install_evaluation","learning_original_q24_install_independent_evaluation","learning_original_q24_install_published_generation","learning_original_q24_training_files","learning_original_q24_training_material_export","learning_original_q24_training_material_assembly","q24_publication_executable_feature_preflight","learning_original_feature_objective_reply","root_generation_publication_enable","root_generation_publication_late_enroll","root_generation_publication_original_registration","root_generation_publication_original_serve","root_generation_publication_profile_fence","root_generation_current_original_broker_head","root_generation_current_original_broker_prepare","root_generation_current_original_broker_publish","root_generation_current_from_original_root_publication","root_generation_current_bound_selection","root_generation_current_store_bridge","root_generation_publication_original_stream","root_generation_publication_purpose_send","root_generation_publication_purpose_receive","root_generation_publication_purpose_connect","root_generation_journal_original_observer","root_generation_journal_original_target","root_artifact_original_reader_open","root_artifact_original_withdrawal_bind","root_artifact_original_current_read","root_artifact_original_withdrawal_read","artifact_writer_recover_original_withdrawal_frontier","artifact_writer_install_original_withdrawal_frontier","artifact_writer_require_original_withdrawal_frontier","artifact_original_acknowledged_readback","root_generation_original_artifact_selection","root_generation_original_selection_recheck","q24_root_artifact_qualified_phase","q24_root_artifact_publication","q24_root_artifact_publication_recovery","q24_root_retained_phase","q24_root_selection_adopted","q24_root_selection_retained","q24_root_current_connect","q24_root_current_prepare","q24_root_current_recover","q24_root_shared_prepare_selected","q24_root_shared_recover_selected","root_original_final_use_observer_enrollment","root_original_final_use_observer_retained_readback","q24_task_original_ledger_open","q24_task_original_ledger_resume","q24_task_original_ledger_readback","q24_task_original_outcome_submit","q24_task_original_dataset_prepare","q24_task_original_learning_prepare","q24_task_original_ready_observe","q24_task_original_ready_binding","q24_task_original_runtime_install","q24_task_original_profile_install","q24_task_explicit_source_attach","q24_task_original_readiness_observe","q24_task_original_ready_enqueue","q24_task_explicit_delivery_sources","q24_task_original_outcome_preflight","q24_task_original_learning_recover","root_generation_connection_original_capture","root_generation_connection_slot_take","root_generation_connection_inputs_take","root_generation_connection_launch_take","root_generation_connection_live_session","root_generation_connection_original_binding","q24_training_original_dataset_readback","q24_training_original_readback_export","q24_training_original_readback_construct","q24_training_original_readback","q24_training_original_readback_owner","q24_training_original_readback_cut","evaluation_original_trainer_owner","evaluation_original_trainer_cut","evaluation_original_trainer_borrow","evaluation_original_trainer_readback","evaluation_original_sources_attest","evaluation_original_sources_readback","root_generation_publication_launch_handoff_take","q24_retained_source_capture","q24_retained_source_scope","q24_retained_source_read","q24_retained_source_ready","q24_retained_source_outbox","q24_retained_source_root_install","q24_retained_source_state_install","q24_retained_source_state_lookup","q24_retained_source_reconcile","q24_retained_source_admission","q24_retained_original_ledger_capability","q24_retained_prepared_original_ledger","production_retained_q24_receive","production_retained_q24_assemble","production_retained_q24_capability_receive","production_retained_q24_capability_assemble","root_generation_deployment_capture","root_generation_deployment_wait","root_generation_deployment_original_inputs","root_artifact_original_selection_files","root_initial_original_writer_context","root_initial_separate_purpose_enable","root_initial_one_shot_enrollment","root_initial_original_registration","root_initial_original_serve","root_initial_original_sticky_fence","root_initial_purpose_send","root_initial_purpose_receive","root_initial_original_connection","root_initial_original_stream","root_initial_client_prepare","root_initial_client_observe","root_initial_client_publish","root_initial_current_store_bridge","root_initial_current_from_original_route","root_initial_current_original_publish","root_initial_complete_description","root_initial_exact_retained_record","root_initial_exact_published_record","root_initial_entire_contract","root_initial_actual_consumer_prepare","root_initial_actual_consumer_recover","root_initial_executable_feature_prepare","root_initial_executable_feature_recover","root_initial_actual_feature_publish","root_initial_original_unwritten_target","root_initial_complete_configuration","root_initial_launch_handoff_take","root_initial_deployment_original_files","root_initial_deployment_capture","root_initial_deployment_wait","root_initial_deployment_original_inputs","q24_successor_original_session_capture","q24_successor_original_session_current","q24_successor_same_root_connection","q24_successor_model_factory_context","q24_successor_root_current_context","q24_successor_current_owner_context","q24_successor_context_from_registered_root","q24_successor_context_live","q24_successor_aggregate_registration","q24_successor_generation_notification","q24_successor_original_generation_installed","q24_successor_wait_original_generation","q24_successor_wait_after_checkpoint","q24_successor_actual_owner_install","q24_successor_effect_cancellation","q24_successor_actual_task_handle","q24_successor_pending_runtime","q24_successor_worker_bootstrap","q24_successor_pending_handle","q24_successor_actual_runtime","q24_successor_root_prepare_request","q24_successor_root_prepare_worker","q24_successor_proof_current","q24_successor_actual_prepare","q24_successor_actual_publish","q24_successor_running_admission","q24_successor_execution_preflight","q24_successor_original_channel","q24_successor_launch_prepare","q24_successor_config_install","q24_successor_original_c_ingress","q24_successor_handoff_request","q24_successor_original_signed_finish","q24_successor_slot_new","agentd_original_late_writer_launch","q24_successor_original_feedback_ledger","agentd_original_late_writer_inputs_prepare","agentd_original_late_writer_inputs_consume","agentd_original_late_writer_cli_prepare","agentd_original_late_writer_cli_consume","fleet_original_readonly_snapshot","authority_original_lease_metadata_observation","authority_original_lease_metadata_revision","authority_original_lease_metadata_finish","root_original_issuer_metadata_observation","root_original_issuer_metadata_proof","root_original_issuer_metadata_revocations","root_original_owner_channel_until","root_original_peer_channel_until","root_q24_factory_same_service_reserve","root_original_final_use_frontier_until","root_original_root_issuer_until","root_original_observation_stream_until","q24_same_actor_original_a_parts","q24_same_actor_original_a_parts_consume","q24_same_actor_original_route_pending","q24_same_actor_original_a_install","q24_same_actor_original_a_close","q24_same_actor_original_a_quiescent","q24_same_actor_original_a_release","q24_same_actor_original_c_install","q24_same_actor_original_ingress_admission","q24_same_actor_original_admitted_task","q24_same_actor_original_queue_admission","q24_same_actor_original_worker_bootstrap","root_learning_same_actor_client_until","root_q24_same_actor_factory_constructor","q24_same_actor_learning_builder","q24_same_actor_learning_assemble","q24_same_actor_learning_activation","q24_same_actor_learning_work_construct","q24_same_actor_learning_work_binding","q24_same_actor_learning_prepared_binding","q24_same_actor_learning_training_binding","q24_same_actor_learning_effect_entry","q24_same_actor_learning_blocking_reserve","q24_same_actor_learning_blocking_handle","q24_same_actor_learning_blocking_receive","q24_same_actor_learning_terminal_join","q24_same_actor_learning_stage_constructor","q24_same_actor_learning_stage_work","q24_same_actor_learning_generation_custody","q24_same_actor_learning_aggregate_lane","q24_same_actor_learning_training_constructor","q24_same_actor_learning_training_execute","q24_same_actor_learning_training_lane","q24_same_actor_learning_local_decision","q24_same_actor_learning_process_run","q24_same_actor_learning_required_worker","q24_same_actor_learning_required_run","q24_same_actor_learning_route_custody","q24_same_actor_training_checkpoint_notice","q24_same_actor_evaluation_original_wait","q24_same_actor_evaluation_install_begin","q24_same_actor_evaluation_effect_entry","q24_same_actor_evaluation_install_complete","q24_same_actor_evaluation_aggregate_wait","q24_same_actor_evaluation_aggregate_install","q24_same_actor_evaluation_process_wait","root_same_actor_phase_open","root_same_actor_phase_fresh","root_same_actor_phase_start","root_same_actor_phase_seal","root_same_actor_phase_serve","root_same_actor_phase_host","root_same_actor_deadline_start","root_same_actor_deadline_receive","root_same_actor_gate_construct","root_same_actor_durable_reserve","root_same_actor_durable_claim","root_same_actor_durable_scope","root_same_actor_actual_a_claim","root_same_actor_initial_retire","root_same_actor_initial_cap","root_same_actor_initial_register","root_same_actor_publication_cap","root_same_actor_publication_register","root_same_actor_scope_register","root_same_actor_join_accept","root_same_actor_worker_serve","root_same_actor_lane_serve","root_same_actor_issuer_bind","root_same_actor_issuer_attachment","root_same_actor_learning_reserve","root_same_actor_learning_open","root_same_actor_model_reserve","root_same_actor_model_open","root_same_actor_initial_until","root_same_actor_learning_until","root_same_actor_model_until","root_same_actor_publication_until","root_same_actor_initial_service","root_same_actor_learning_service","root_same_actor_model_service","root_same_actor_receive_start","root_same_actor_receive_inputs","root_same_actor_context_current","root_same_actor_scoped_descriptor","root_same_actor_session_connect","root_same_actor_session_activate","root_same_actor_session_origin","root_same_actor_grant_gate","root_same_actor_send_start","root_same_actor_send_scope","root_same_actor_take_start_rights","root_same_actor_take_scope_rights","root_same_actor_retire_ack","root_same_actor_join_after_a_drop","root_same_actor_joined_parts","root_same_actor_scope_receive","root_same_actor_scope_parts","root_same_actor_ticket_session","root_same_actor_ticket_connect","root_same_actor_initial_connect","root_same_actor_publication_connect","root_same_actor_initial_stream","root_same_actor_scoped_stream","root_same_actor_successor_capture","root_same_actor_successor_origin","root_same_actor_successor_scope_take","q24_same_actor_successor_factory","q24_same_actor_successor_task_parts","q24_same_actor_artifact_publish","q24_same_actor_current_connect","q24_same_actor_startup","q24_same_actor_run","q24_same_actor_initial_install","q24_same_actor_task_worker","q24_same_actor_task_worker_run","q24_same_actor_a_controller","q24_same_actor_scoped_controller","q24_same_actor_c_controller","root_same_actor_initial_enroll","root_same_actor_publication_enroll","root_same_actor_publication_service","root_same_actor_bound_five_lanes","root_same_actor_issuer_effect_entry","root_same_actor_checkpoint_effect","root_same_actor_consumer_effect","root_same_actor_learning_effect","root_same_actor_checkpoint_until","product_original_holdout_release_permit","product_file_holdout_original_open","product_file_holdout_original_release","product_file_qualification_create","product_file_qualification_recover","product_file_qualification_persist","product_file_qualification_readback","root_phase_deployment_fresh_entry","root_phase_initial_pinned_current","root_phase_initial_actual_inputs","root_phase_current_descriptor","root_phase_current_actual_inputs","root_phase_actual_progress_apply","root_retirement_scope_construct","root_retirement_lane_register","root_retirement_actual_current","root_retirement_intent_authorize","root_retirement_intent_ack","root_retirement_deadline_stop","root_retirement_deadline_watch","root_retirement_workers_ack","root_retirement_workers_ack_commit","root_retirement_request_admission","root_retirement_clean_eof","root_retirement_five_service","root_retirement_checkpoint_service","root_retirement_model_service","root_retirement_publication_service","root_retirement_model_bound","root_retirement_publication_bound","root_retirement_learning_bound","root_retirement_five_bound","root_retirement_actual_phase_worker","root_retirement_actual_host","root_retirement_progress_serve","root_retirement_peer_transfer","root_retirement_final_peer_ack","root_phase_deployment_capture","root_retirement_peer_eof_ordering","q24_learning_normal_identity","q24_learning_normal_delivery_binding","q24_learning_normal_terminal_snapshot","q24_learning_normal_request","q24_learning_normal_take_request","q24_learning_normal_authorize_stop","q24_learning_normal_take_stop","q24_learning_normal_work_join","q24_learning_normal_stop_binding","q24_learning_normal_join_binding","q24_learning_normal_loop_run","q24_learning_normal_loop_binding","q24_learning_normal_delivery_run","q24_learning_normal_delivery_owner_binding","q24_learning_normal_delivery_ack_cap","q24_learning_normal_ack_binding","q24_learning_normal_ack_create","q24_learning_normal_owners_binding","q24_learning_normal_joined_binding","q24_learning_normal_joined_c","q24_learning_normal_worker_run","q24_learning_original_job_with_join_cause","q24_purpose_checkpoint_ports","q24_purpose_checkpoint_capture","q24_purpose_checkpoint_idle","q24_purpose_checkpoint_origin","q24_purpose_checkpoint_close","q24_purpose_runtime_assembly","q24_purpose_model_close","q24_purpose_stage_close","q24_purpose_loop_close","q24_purpose_learning_owners_close","q24_purpose_learning_owners_retained","q24_purpose_learning_joined_close","q24_purpose_learning_retired_origin","q24_purpose_publication_stream_close","q24_purpose_current_client_close","q24_purpose_current_store_close","q24_purpose_current_owner_close","q24_purpose_live_current_close","q24_purpose_published_task_close"]
+
+[[boundary]]
+id = "root_registered_learning_checkpoint_writer"
+symbol = "RegisteredWriter::exchange_learning_checkpoint"
+receiver_type = "RegisteredWriter"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+definition_markers = ["pub(super) fn exchange_learning_checkpoint(", ".with_live(&self.leases", "issuer.retained_writer_authorization(&self.registration)? != self.proof", ".exchange_learning_checkpoint(bytes, next_request_id)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"]
+caller_markers = ["let writer: &RegisteredWriter", "backend.registered_agent_id() != self.identity.agent_id.to_string()", "HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?", "writer.exchange_learning_checkpoint("]
+
+[[boundary]]
+id = "root_original_learning_checkpoint_exchange"
+symbol = "LearningIterationCheckpointOwnerV1::exchange_learning_checkpoint"
+receiver_type = "LearningIterationCheckpointOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
+definition_markers = ["pub(crate) fn exchange_learning_checkpoint(", "let (schema, binding) = self.profile_identity();", "request.schema != schema", "request.request_id != *next_request_id", "request.binding != binding", "self.checkpoint(expected, &next)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_writer.rs"]
+caller_markers = ["backend: &crate::LearningIterationCheckpointOwnerV1", ".with_live(&self.leases", ".exchange_learning_checkpoint(bytes, next_request_id)", "if before != after"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"
+required = ["pub fn serve_learning_checkpoint(", "policy.request_bound = 16 * 1024", "policy.response_bound = 16 * 1024"]
+forbidden = ["initialize_host_authority", "create_protected", "put_lease", "AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn serve_learning_checkpoint(", sequence = [
+  "let writer: &RegisteredWriter",
+  "backend.registered_agent_id() != self.identity.agent_id.to_string()",
+  "policy.request_bound = 16 * 1024",
+  "policy.response_bound = 16 * 1024",
+  "HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?",
+  "let mut next_request_id = 1",
+  "channel.exchange(|bytes|",
+  "self.check_logind_lifetime().map_err(unavailable)?",
+  "writer.exchange_learning_checkpoint(",
+  "self.check_logind_lifetime().map_err(unavailable)?",
+  "Ok(response)",
+] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+required = ["pub(super) fn exchange_learning_checkpoint("]
+forbidden = ["initialize_host_authority", "create_protected"]
+required_function_order = [{ function = "fn exchange_learning_checkpoint(", sequence = [
+  ".with_live(&self.leases, |_| {",
+  "issuer.retained_writer_authorization(&self.registration)? != self.proof",
+  "let before = issuer.revocations()?",
+  "validate_observation_lease(&self.registration.authority_lease, &before, now)?",
+  ".exchange_learning_checkpoint(bytes, next_request_id)",
+  "let after = issuer.revocations()?",
+  "if before != after",
+  "validate_observation_lease(&self.registration.authority_lease, &after, now)?",
+  "Ok(response)",
+] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
+required = ["#[serde(deny_unknown_fields)]", "const FRAME_BOUND: usize = 16 * 1024", "Error::CommitUncertain(AuthorityTrustError::Unavailable)", "Mutex<Option<Channel>>", "Some(binding) => (2, binding.to_string())", "None => (1, self.initial.head_digest.to_string())", "phase: Option<RequiredSameActorPhaseChannel>", "#[path = \"learning_iteration_checkpoint_same_actor.rs\"]"]
+forbidden = ["initialize_host_authority", "create_protected", "put_lease", "AllowVerifier", "permit_all"]
+required_order = [["async fn exchange<T>(", "let mut channel = self", ".try_lock()", ".take()", ".ok_or_else(&unavailable)?", "let request_id = channel.next_request_id", "channel.next_request_id = request_id", ".checked_add(1)", "let (schema, binding) = self.profile_identity()", "let operation = match self.frozen_scope_binding()", "Some(_) => SCOPED_OPERATION", "None => OPERATION", "let response: Response = channel", ".read(&request)", ".await", "response.schema != request.schema", "response.request_id != request_id", "response.binding != request.binding", "let result = validate(response.result)", "result.is_ok() || matches!(result, Err(Error::Conflict))", "*self", "Some(channel)"], ["async fn exchange<T>(","let mut phase_closing = self.original_phase_failure_scope()","self.require_original_phase(mutation)?","let mut channel = self",".take()",".ok_or_else(&unavailable)?","let response: Response = channel",".read(&request)",".await","let result = validate(response.result)","result.is_ok() || matches!(result, Err(Error::Conflict))","if self.phase.is_some() && result.is_err()","return result;","self.require_original_phase(mutation)?","*self.channel.try_lock().map_err(|_| unavailable())? = Some(channel);","self.require_original_phase(mutation)?","if result.is_ok()","&& let Some(closing) = &mut phase_closing","closing.disarm()","result"]]
+required_function_order = [{ function = "fn from_root_stream(", sequence = ["Self::from_stream_profile(", "None"] }, { function = "fn from_root_stream_scoped_v2(", sequence = ["scope.validate_snapshot(&initial)", "Self::from_stream_profile(", "Some(scope)"] }, { function = "fn from_stream_profile(", sequence = ["LearningIterationCoordinatorV1::new(", "expected.snapshot() != &initial", "RootObservationStream::from_stream(", "channel: Mutex::new(Some(Channel"] }, { function = "fn restore(", sequence = ["request != &self.initial.request", "self\n            .exchange(Command::Restore", "decode_snapshot(&encoded)?", "scope\n                                .validate_snapshot(&snapshot)", "snapshot.request != self.initial.request", "snapshot.owners != self.initial.owners"] }, { function = "fn checkpoint(", sequence = ["snapshot.request != self.initial.request", "snapshot.owners != self.initial.owners", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())", "scope.validate_snapshot(snapshot)", "predecessor != expected_head", "self\n            .exchange(command", "head == snapshot.head_digest.to_string()"] }, { function = "fn exchange_learning_checkpoint(", sequence = ["bytes.is_empty() || bytes.len() > FRAME_BOUND", "serde_json::from_slice(bytes)", "self.profile_identity()", "let operation = match self.frozen_scope_binding()", "Some(_) => SCOPED_OPERATION", "None => OPERATION", "request.schema != schema", "request.operation != operation", "request.request_id != *next_request_id", "request.binding != binding", "*next_request_id = next_request_id", ".checked_add(1)", "self.restore(&self.initial.request)", "decode_snapshot(&snapshot)", "expected_head != expected.to_string()", "self.checkpoint(expected, &next)", "Err(Error::Store(_) | Error::CommitUncertain(_))", "serde_json::to_vec(&Response", "bytes.len() > FRAME_BOUND"] }, { function = "fn profile_identity(", sequence = ["self.frozen_scope_binding()", "Some(binding) => (2, binding.to_string())", "None => (1, self.initial.head_digest.to_string())"] }, { function = "fn frozen_scope_binding(", sequence = ["fn frozen_scope_binding(", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)"] }, { function = "fn from_stream_profile(", sequence = ["RootObservationStream::from_stream(","channel: Mutex::new(Some(Channel","scope,","phase: None,"] }, { function = "fn restore(", sequence = ["let mut phase_closing = self.original_phase_failure_scope()","self.require_original_phase(","false)?","request != &self.initial.request","let result = self\n            .exchange(Command::Restore","decode_snapshot(&encoded)?","snapshot.request != self.initial.request","snapshot.owners != self.initial.owners",".await;","if result.is_ok()","self.require_original_phase(","false)?","closing.disarm()","result"] }, { function = "fn checkpoint(", sequence = ["let mut phase_closing = self.original_phase_failure_scope()","self.require_original_phase(","true)?","snapshot.request != self.initial.request","snapshot.owners != self.initial.owners","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())","scope.validate_snapshot(snapshot)","predecessor != expected_head","let result = self\n            .exchange(command","Reply::Conflict => Err(Error::Conflict)",".await;","if result.is_ok()","self.require_original_phase(","true)?","closing.disarm()","result"] }]
+
+[[boundary]]
+id = "supervisor_authorized_boot"
+symbol = "run_supervisord_with_grant_verifier"
+definition_path = "codex-rs/hepta-supervisor/src/daemon.rs"
+definition_markers = ["pub async fn run_supervisord_with_grant_verifier", "GrantVerifier"]
+product_callers = ["codex-rs/hepta-supervisor/src/main.rs"]
+caller_markers = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVerifier"]
+
+[[boundary]]
+id = "memory_production_writer_open"
+symbol = "ProductionDurableWriter::open_with_live_verifier"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub struct ProductionDurableWriter", "pub async fn open_with_live_verifier", "ProductionAuthorityVerifier"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["ProductionDurableWriter::open_with_live_verifier", "verifier"]
+
+[[boundary]]
+id = "cognitive_store_recovery_open"
+symbol = "CognitiveStore::open_with_recovery"
+definition_path = "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+definition_markers = ["pub async fn open_with_recovery", "ProductionAuthorityVerifier", "CognitiveStoreOpenGuard::acquire_exclusive"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/production_writer_host.rs",
+  "codex-rs/hepta-agentd/src/production_protected_host.rs",
+]
+caller_markers = ["CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier"]
+
+[[boundary]]
+id = "cognitive_production_mutation_capability"
+symbol = "ProductionDurableWriter::cognitive_mutation_capability"
+call_pattern = '\bcognitive_mutation_capability\s*\('
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub struct ProductionCognitiveMutationCapability", "pub fn cognitive_mutation_capability", "production_cognitive_mutation_sealed"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["cognitive_mutation_capability", "production_mutation"]
+
+[[boundary]]
+id = "agentd_production_writer_host"
+symbol = "AgentdProductionWriterHost::open"
+definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+definition_markers = ["pub struct AgentdProductionWriterHost", "pub async fn open", "CognitiveRecoveryRequirement"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "agentd_production_operation_runtime"
+symbol = "AgentdProductionOperationRuntimeConfig::attach"
+call_pattern = '\boperations\s*\.\s*attach\s*\('
+definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn attach", "recovered_host.writer.verify_current_authority"]
+product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
+caller_markers = ["operations.attach", "attach_production_operations", "run_production_operation_reconciler"]
+
+[[boundary]]
+id = "learning_artifact_owner_bootstrap"
+symbol = "LearningArtifactOwnerHost::open"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+definition_markers = ["pub struct LearningArtifactOwnerHost", "pub fn open", "SignedArtifactWriterLeaseV1"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service.rs"]
+caller_markers = ["LearningArtifactOwnerHost::open", "LearningArtifactOwnerService"]
+
+[[boundary]]
+id = "learning_artifact_owner_restart"
+symbol = "LearningArtifactOwnerHost::open_with_required_current_head"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+definition_markers = ["pub fn open_with_required_current_head", "CurrentHeadRollback", "required_current_head"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service.rs"]
+caller_markers = ["LearningArtifactOwnerHost::open_with_required_current_head", "LearningArtifactOwnerService"]
+
+[[boundary]]
+id = "learning_artifact_verified_current_view"
+symbol = "RevalidatingCandidate::with_current"
+call_pattern = '\bcandidate\s*\.\s*with_current\s*\('
+definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
+definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs","codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs"]
+caller_markers = ["VerifiedCurrentRegistryViewV1", "with_current"]
+
+[[boundary]]
+id = "provider_effect_coordinator"
+symbol = "ProviderEffectCoordinator::new"
+definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
+definition_markers = ["pub struct ProviderEffectCoordinator", "pub fn new", "ProviderEffectAdapter"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "http_provider_effect_adapter"
+symbol = "HttpProviderEffectAdapter::new"
+definition_path = "codex-rs/model-provider/src/provider_effect.rs"
+definition_markers = ["pub struct HttpProviderEffectAdapter", "pub fn new", "ProviderEffectAdapter"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractAttestation"]
+
+[[boundary]]
+id = "final_use_open_state"
+symbol = "FinalUseAuthority::open_state_dir"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["open_state_dir", "open_state_dir_with_clock", "open_state_dir_with_trust", "open_state_dir_with_issuer_keys"]
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-agentd/src/production_authority.rs", "codex-rs/hepta-agentd/src/root_production_inputs.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = ["FinalUseAuthority"]
+
+[[boundary]]
+id = "final_use_claim"
+symbol = "claim_final_use"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-agentd/src/neuron_generation_current.rs", "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"]
+caller_markers = ["claim_final_use"]
+
+[[boundary]]
+id = "final_use_claim_raw"
+symbol = "FinalUseAuthority::claim"
+receiver_type = "FinalUseAuthority"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+caller_markers = ["authority", "binding"]
+
+[[boundary]]
+id = "final_use_delivery"
+symbol = "deliver_final_use"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn deliver_final_use", "authority.with_verified_use(token, expected, consumer)"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
+caller_markers = ["deliver_final_use", "deliver_final_use(authority, verified, &binding", "ConsumerIndeterminate"]
+
+[[boundary]]
+id = "final_use_delivery_witness"
+symbol = "deliver_final_use_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn deliver_final_use_with_witness", "VerifiedUseTokenWitnessV1", "ConsumerEntry"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_delivery_raw"
+symbol = "FinalUseAuthority::with_verified_use"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["with_verified_use", "enter_verified_use"]
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn with_verified_use", "pub fn enter_verified_use", "Arc::ptr_eq", "validate_live"]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+caller_markers = ["with_verified_use", "binding"]
+
+[[boundary]]
+id = "final_use_dispatch"
+symbol = "dispatch_final_use"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn dispatch_final_use", "HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH", "with_dispatch_boundary"]
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["dispatch_final_use", "authority_enter", "dispatch_boundary"]
+
+[[boundary]]
+id = "final_use_dispatch_witness"
+symbol = "dispatch_final_use_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn dispatch_final_use_with_witness", "VerifiedUseTokenWitnessV1", "DispatchEntry"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current.rs", "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "final_use_dispatch_raw"
+symbol = "FinalUseAuthority::with_dispatch_boundary"
+call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn with_dispatch_boundary", "validate_live", "dispatch_boundary"]
+product_callers = ["codex-rs/hepta-operations/src/durable_dispatch.rs"]
+caller_markers = ["let authority: &FinalUseAuthority = &authorized.authority;", "Arc::ptr_eq(&self.dispatch_owner, &authorized.dispatch_owner)", "begin_with(\"BEGIN IMMEDIATE\")", "require_current_lease(&mut tx, &claim, now_millis()?).await?", "operation.intent != claim.intent || operation.writer_fence != claim.fence", "operation.state != DurableOperationState::Dispatching", ".with_dispatch_boundary(token, &authorized.binding, || {", "validate_claim_snapshot(&status, &claim, admitted_at)?", "Ok((admitted_at, effect(&operation.intent)))"]
+
+[[boundary]]
+id = "final_use_revocation_update"
+symbol = "FinalUseAuthority::update_revocations"
+call_pattern = '(?:\.\s*|FinalUseAuthority\s*::\s*)update_revocations\s*\('
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/root_authority_session.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+caller_markers = ["update_revocations"]
+
+[[boundary]]
+id = "final_use_approval_trust"
+symbol = "FinalUseApprovalVerifier::new"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new(", "InvalidTrust"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_approval_verify"
+symbol = "FinalUseApprovalVerifier::verify"
+call_pattern = "approval_verifier\\s*\\.\\s*verify\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseApprovalVerifier", "pub fn verify(", "verify_strict"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
+caller_markers = ["approval_verifier", ".verify(grant, approval)", "BaoFinalUseHostError::Control"]
+
+[[boundary]]
+id = "final_use_revocation_feed_trust"
+symbol = "FinalUseRevocationFeedVerifier::new"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new(", "InvalidTrust"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_revocation_feed_apply"
+symbol = "FinalUseRevocationFeedVerifier::apply"
+call_pattern = "revocation_verifier\\s*\\.\\s*apply\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseRevocationFeedVerifier", "pub fn apply(", "update_revocations"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
+caller_markers = ["revocation_verifier", ".apply(&self.authority, update, now_unix_ms)", "apply_revocation_update"]
+
+[[boundary]]
+id = "final_use_revocation_convergence_trust"
+symbol = "FinalUseRevocationConvergenceVerifier::new"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseRevocationConvergenceVerifier", "pub fn new(", "InvalidRevocationNodeTrust"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_revocation_convergence_verify"
+symbol = "FinalUseRevocationConvergenceVerifier::verify"
+call_pattern = "convergence_verifier\\s*\\.\\s*verify\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseRevocationConvergenceVerifier", "pub fn verify(", "missing_nodes"]
+product_callers = ["codex-rs/hepta-fleet/src/revocation_control.rs"]
+caller_markers = ["convergence_verifier", ".verify(", "FleetRevocationCoordinator"]
+
+[[boundary]]
+id = "bao_final_use_consumer"
+symbol = "BaoClient::consume_kv_v2"
+call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
+definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+definition_markers = ["pub async fn consume_kv_v2", "claim_final_use", "deliver_final_use"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "bao_registered_consumer_new"
+symbol = "RegisteredBaoConsumer::new"
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "bao_final_use_host_new"
+symbol = "BaoFinalUseHost::new"
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["impl BaoFinalUseHost", "pub fn new(", "DuplicateConsumer"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "bao_registered_revocation_update"
+symbol = "BaoFinalUseHost::apply_revocation_update"
+call_pattern = "\\.\\s*apply_revocation_update\\s*\\("
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["pub fn apply_revocation_update", "revocation_verifier", ".apply(&self.authority, update, now_unix_ms)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "bao_registered_final_use_host"
+symbol = "BaoFinalUseHost::consume_kv_v2"
+call_pattern = '(?:bao_host|final_use_host|BaoFinalUseHost)\s*(?:\.|::)\s*consume_kv_v2\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_open_state"
+symbol = "AuthorityLeaseRegistry::open_state_dir"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["open_state_dir", "open_state_dir_with_frontier_store", "open_state_dir_with_clock", "open_state_dir_with_trust"]
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn open_state_dir(", "trusted_frontier", "Store::open"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs"]
+caller_markers = ["AuthorityLeaseRegistry", "HostAuthorityClock", "HostAuthorityFrontierStore"]
+
+[[boundary]]
+id = "authority_lease_put"
+symbol = "AuthorityLeaseRegistry::put_lease"
+call_pattern = '(?:\.\s*|AuthorityLeaseRegistry\s*::\s*)put_lease\s*\('
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs", "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs"]
+caller_markers = ["put_lease"]
+
+[[boundary]]
+id = "authority_lease_revoke"
+symbol = "AuthorityLeaseRegistry::revoke"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["revoke"]
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn revoke(", "RevocationReceipt", "reason_sha256"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_prune"
+symbol = "AuthorityLeaseRegistry::prune_expired_leases"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn prune_expired_leases(", "MAX_AUTHORITY_PRUNE_BATCH", "expires_at_unix_ms"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_epoch_advance"
+symbol = "AuthorityLeaseRegistry::advance_epoch"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn advance_epoch(", "new_authority_epoch", "next.leases.clear()"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_verify_use"
+symbol = "AuthorityLeaseVerifier::verify_use"
+call_pattern = "(?:\\.\\s*|AuthorityLeaseVerifier\\s*::\\s*)verify_use\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs", "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs", "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"]
+caller_markers = [".verify_use("]
+
+[[boundary]]
+id = "authority_lease_delivery"
+symbol = "AuthorityLeaseVerifier::with_verified_use"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn with_verified_use", "validate_token_live_witness", "consumer()"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_delivery_witness"
+symbol = "deliver_authority_lease_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn deliver_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "validate_token_live_witness"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_dispatch_raw"
+symbol = "AuthorityLeaseVerifier::with_dispatch_boundary"
+receiver_type = "AuthorityLeaseVerifier"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn with_dispatch_boundary", "with_dispatch_boundary_witness", "dispatch_boundary"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs"]
+caller_markers = ["AuthorityLeaseVerifier", ".with_dispatch_boundary("]
+
+[[boundary]]
+id = "authority_lease_dispatch_witness"
+symbol = "dispatch_authority_lease_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
+product_callers = [
+  "codex-rs/hepta-fleet/src/authority_port.rs",
+  "codex-rs/hepta-agentd/src/deployment_writer.rs",
+]
+caller_markers = ["dispatch_authority_lease_with_witness"]
+
+[[protected_file]]
+path = "codex-rs/hepta-supervisor/src/main.rs"
+required = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVerifier", "run_supervisord"]
+forbidden = ["H7H89ProductionGrantVerifier::default"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "ProductionDurableWriter::open_with_live_verifier", "CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier", "cognitive_mutation_capability", "production_mutation"]
+forbidden = ["codex_hepta_memory::CognitiveStore", "AllowVerifier", "permit_all", ".writer.store()"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "CognitiveStore::open"]
+forbidden = ["codex_hepta_memory::CognitiveStore"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/app_runtime.rs"
+required = ["production_writer_host.and_then", "host.production_mutation", "hepta_cognitive_production_mutation", "pub(crate) enum AppServerModelToolProfile", "Self::Standard => true", "Self::OriginalNotes | Self::OriginalDesktop => false", "let cognitive_write_enabled = model_tools.cognitive_tools_enabled()", "&& (COGNITIVE_WRITE_ENABLED || production_mutation.is_some())", "app_server_config_overrides(cognitive_write_enabled, model_tools)", "\"features.hepta_governance=true\"", "\"features.hepta_turn_recovery=true\"", "\"features.hepta_memory_read_only=true\"", "\"features.hepta_memory={}\"", "production_cognitive_mutation.filter(|_| cognitive_tools_enabled)", "BTreeMap::from([(Feature::HeptaCognitiveWrite, cognitive_write_enabled)])", "required_feature_states.insert(Feature::HeptaMemory, false)", "hepta_cognitive_runtime: cognitive_runtime", "hepta_cognitive_production_mutation: production_cognitive_mutation", "required_feature_states,"]
+forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery", "pub enum AppServerModelToolProfile", "Serialize", "Deserialize"]
+required_function_order = [{function = "fn cognitive_tools_enabled(", sequence = ["Self::Standard => true", "Self::OriginalNotes | Self::OriginalDesktop => false"]}, {function = "fn run_app_server(", sequence = ["production_writer_host.and_then(|host| host.production_mutation())", "let cognitive_write_enabled = model_tools.cognitive_tools_enabled()", "&& (COGNITIVE_WRITE_ENABLED || production_mutation.is_some())", "app_server_config_overrides(cognitive_write_enabled, model_tools)", "app_server_runtime_options_for_agent("]}, {function = "fn app_server_runtime_options_with_writer(", sequence = ["let cognitive_tools_enabled = model_tools.cognitive_tools_enabled()", "let cognitive_write_enabled = cognitive_tools_enabled", "&& (COGNITIVE_WRITE_ENABLED || production_cognitive_mutation.is_some())", "production_cognitive_mutation.filter(|_| cognitive_tools_enabled)", "BTreeMap::from([(Feature::HeptaCognitiveWrite, cognitive_write_enabled)])", "if !cognitive_tools_enabled", "required_feature_states.insert(Feature::HeptaMemory, false)", "Ok(AppServerRuntimeOptions {", "hepta_cognitive_runtime: cognitive_runtime", "hepta_cognitive_production_mutation: production_cognitive_mutation", "required_feature_states,"]}]
+
+[[protected_file]]
+path = "codex-rs/ext/hepta-memory/src/cognitive/tools.rs"
+required = ["ProductionCognitiveMutation", "production_mutation", "hepta_cognitive_write_authority_unavailable"]
+forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"

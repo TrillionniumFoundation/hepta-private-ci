@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "base_checkpoint": "4f30502eea16f517ae5d2daca2dc5de6565e96f7",
+  "base_manifest": "228bf098ef2301180b8d137188174288f6dfebe3",
+  "source_edges": [
+    {
+      "packet": "sessionFinal",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs",
+      "pre": null,
+      "post": "1cb2e1f7394806673bf6cadd0318870fe11eb941",
+      "operations": 1
+    },
+    {
+      "packet": "sessionFinal",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "pre": "140a174b10b636e17b3e222fb6a5ae5b7edf3406",
+      "post": "f7687d22cc285378d93e0cfd60bd0fbcf73e54d1",
+      "operations": 1
+    },
+    {
+      "packet": "sessionFinal",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pre": "bb2e863474e2e2b3878e9717a3adde5930722aaf",
+      "post": "8449457ada15115c86a159bef03b7d7061b843ea",
+      "operations": 1
+    },
+    {
+      "packet": "sessionFinal",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pre": "fdcba1999c48f95c61be1a91d0d6e012f7285050",
+      "post": "56b475314e9c1b1b76f1a0997b9dfcd422207df1",
+      "operations": 1
+    },
+    {
+      "packet": "sessionFinal",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pre": "b117392faa7fb5af08b3f03ef84d3d06e7375ce2",
+      "post": "1bcff69e283840d43964e52d94ddae582d248078",
+      "operations": 1
+    },
+    {
+      "packet": "sessionFinal",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal_tests.rs",
+      "pre": "6ed8909b62cb886a93d04860a5f65d8846bd926a",
+      "post": "b50d02e7dc6b965be9d132608a735fb2bae0c7ab",
+      "operations": 1
+    },
+    {
+      "packet": "workerSplit",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "pre": "4b59b6cfe1bc15eba250bbf07ba12a28f321e45a",
+      "post": "ca68307fdf233666176933acc0285580708efe85",
+      "operations": 1
+    },
+    {
+      "packet": "workerSplit",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+      "pre": null,
+      "post": "69ae313a6b592de998636cc8f7a39476525e0424",
+      "operations": 1
+    },
+    {
+      "packet": "runtimeUFCS",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "pre": "a77a131a7c5340d1b5e8a5f7fe6c19181b6db3ff",
+      "post": "d032ef016d8b45df1eb15f3d25c95c9c30282e57",
+      "operations": 1
+    },
+    {
+      "packet": "runtimeUFCS",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "pre": "80c206437d590f6f864a43f58fbf9cac5cbc4fa2",
+      "post": "55c1386d733cbb96bf6ce771b3010debc634ffd7",
+      "operations": 1
+    },
+    {
+      "packet": "runtimeUFCS",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "pre": "d93b92644d601459fea98a31d0f86035a6aaec02",
+      "post": "6d953d086a4f554ace72c1ab3a211be24447123f",
+      "operations": 1
+    },
+    {
+      "packet": "runtimeUFCS",
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "pre": "8d5b6bc11513a197a025f3035ed7e89ab750be51",
+      "post": "1e372ebdd687f38d718433a1fcd096c39260d151",
+      "operations": 1
+    },
+    {
+      "packet": "phaseUFCS",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "pre": "8af6d0f93f528ddafa486cc940ed21da3b057ab5",
+      "post": "f8158cf557e4b2cf022494cd0bc97be5cd5b75e5",
+      "operations": 1
+    }
+  ],
+  "operations": 13,
+  "source_count": 148,
+  "verification": "Root GET and hash/exact forward-reverse verification performed for the original 12 edges in the preceding session; phase UFCS independently GET/hash/replayed in this session; every base146 source is retained byte-exact from the verified v4 source snapshots.",
+  "native_qualified": false
+}

@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "kind": "strict-local-legacy-stdio-owned-shutdown-source",
+  "status": "first frozen production candidate; Git/static only; component tests follow; not installed/executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+      "preimage": {
+        "blob": "1f6ab22be0ee19b54bc4f5913948f56ab484b0d8",
+        "bytes": 27174,
+        "sha256": "ccbc02f935879e312f59bc581367a7f53f56bf30c35c14c6e7ecc1e0b05339c7"
+      },
+      "postimage": {
+        "blob": "d2f6edcbf032138fcd774628ec739091668264b7",
+        "bytes": 28282,
+        "sha256": "7b8a9999c1418c18f1f5888852c6d9c5f85eac122058b9f844d23ee66b5d28ac"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "// General purpose public code.\n",
+          "new": "#[path = \"stdio_server_owned_shutdown.rs\"]\nmod owned_shutdown;\n\npub use owned_shutdown::OriginalStdioShutdownCustody;\npub use owned_shutdown::OriginalStdioShutdownObservation;\nuse owned_shutdown::OriginalOwnedStdioTransport;\n\n// General purpose public code.\n",
+          "reason": "Private concrete strict custody module and actual public types"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "    LocalLegacy(TokioChildProcess),\n",
+          "new": "    LocalLegacy(TokioChildProcess),\n    OwnedLocalLegacy(OriginalOwnedStdioTransport),\n",
+          "reason": "Opt-in actual Legacy transport owner"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "            StdioServerTransportInner::LocalLegacy(transport) => transport.send(item).boxed(),\n",
+          "new": "            StdioServerTransportInner::LocalLegacy(transport) => transport.send(item).boxed(),\n            StdioServerTransportInner::OwnedLocalLegacy(transport) => transport.send(item).boxed(),\n",
+          "reason": "Preserve legacy framing via actual retained transport"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "            StdioServerTransportInner::LocalLegacy(transport) => transport.receive().boxed(),\n",
+          "new": "            StdioServerTransportInner::LocalLegacy(transport) => transport.receive().boxed(),\n            StdioServerTransportInner::OwnedLocalLegacy(transport) => transport.receive().boxed(),\n",
+          "reason": "Receive from the same retained transport"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "            StdioServerTransportInner::LocalLegacy(transport) => transport.close().await,\n",
+          "new": "            StdioServerTransportInner::LocalLegacy(transport) => transport.close().await,\n            StdioServerTransportInner::OwnedLocalLegacy(transport) => transport.close().await,\n",
+          "reason": "Strict close genuinely reaps actual child and helper work"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "pub struct LocalStdioServerLauncher {\n    fallback_cwd: PathBuf,\n}",
+          "new": "pub struct LocalStdioServerLauncher {\n    fallback_cwd: PathBuf,\n    owned_shutdown: Option<Arc<OriginalStdioShutdownCustody>>,\n}",
+          "reason": "Retain explicitly selected custody; ordinary mode stays None"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "        Self { fallback_cwd }\n",
+          "new": "        Self {\n            fallback_cwd,\n            owned_shutdown: None,\n        }\n",
+          "reason": "Original public constructor retains ordinary behavior"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "    ) -> BoxFuture<'static, io::Result<StdioServerTransport>> {\n        let fallback_cwd = self.fallback_cwd.clone();\n",
+          "new": "    ) -> BoxFuture<'static, io::Result<StdioServerTransport>> {\n        if let Some(custody) = &self.owned_shutdown {\n            return Arc::clone(custody).launch(command, self.fallback_cwd.clone());\n        }\n        let fallback_cwd = self.fallback_cwd.clone();\n",
+          "reason": "Only explicit strict mode enters retained actual launch; old async body is unchanged"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "    Local(Option<LocalProcessTerminator>),\n",
+          "new": "    Local(Option<LocalProcessTerminator>),\n    OwnedLocal(Arc<OriginalStdioShutdownCustody>),\n",
+          "reason": "Process stop reaches actual strict custody"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "            StdioServerProcessKind::Local(None) => Ok(()),\n",
+          "new": "            StdioServerProcessKind::Local(None) => Ok(()),\n            StdioServerProcessKind::OwnedLocal(custody) => {\n                custody.request_stop();\n                Ok(())\n            }\n",
+          "reason": "Existing process_handle termination requests actual tracked group shutdown"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+          "kind": "replace_once",
+          "old": "            StdioServerProcessKind::Local(None) => {}\n",
+          "new": "            StdioServerProcessKind::Local(None) => {}\n            StdioServerProcessKind::OwnedLocal(custody) => custody.request_stop(),\n",
+          "reason": "Strict process-handle Drop retains termination-thread ownership"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "13c608a77bdc2a38e5d23fe715d77f8c7b841625",
+        "bytes": 24464,
+        "sha256": "78b2faeab99cd9a14d4ec113e90a89f357a6904015153495653ac3828e8bfe16"
+      },
+      "operations": [
+        {
+          "kind": "add",
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "content": "//! Linux Legacy stdio shutdown custody. This mode retains the actual launch,\n//! child wait, stderr reader and process-group termination work. An empty\n//! custody is not evidence that a child exited. Default launchers do not use it.\n\nuse std::any::Any;\nuse std::error::Error;\nuse std::fmt;\nuse std::process::ExitStatus;\nuse std::sync::Mutex;\nuse std::sync::MutexGuard;\n\nuse tokio::runtime::Handle;\nuse tokio::sync::Mutex as AsyncMutex;\nuse tokio::sync::MutexGuard as AsyncMutexGuard;\nuse tokio::sync::Notify;\nuse tokio::task::JoinHandle;\n\nuse super::*;\n\n#[derive(Clone, Debug)]\nstruct RecordedFailure {\n    kind: io::ErrorKind,\n    error: Arc<dyn Error + Send + Sync>,\n}\n\nimpl RecordedFailure {\n    fn io(error: io::Error) -> Self {\n        Self {\n            kind: error.kind(),\n            error: Arc::new(error),\n        }\n    }\n\n    fn join(error: tokio::task::JoinError) -> Self {\n        Self {\n            kind: io::ErrorKind::Other,\n            error: Arc::new(error),\n        }\n    }\n\n    fn to_io(&self) -> io::Error {\n        io::Error::new(self.kind, self.clone())\n    }\n}\n\nimpl fmt::Display for RecordedFailure {\n    fn fmt(&self, output: &mut fmt::Formatter<'_>) -> fmt::Result {\n        fmt::Display::fmt(self.error.as_ref(), output)\n    }\n}\n\nimpl Error for RecordedFailure {\n    fn source(&self) -> Option<&(dyn Error + 'static)> {\n        Some(self.error.as_ref())\n    }\n}\n\n#[derive(Debug)]\nstruct ShutdownFailures(Vec<(&'static str, RecordedFailure)>);\n\nimpl fmt::Display for ShutdownFailures {\n    fn fmt(&self, output: &mut fmt::Formatter<'_>) -> fmt::Result {\n        for (index, (stage, failure)) in self.0.iter().enumerate() {\n            if index != 0 {\n                write!(output, \"; \")?;\n            }\n            write!(output, \"{stage}: {failure}\")?;\n        }\n        Ok(())\n    }\n}\n\nimpl Error for ShutdownFailures {\n    fn source(&self) -> Option<&(dyn Error + 'static)> {\n        self.0.first().map(|(_, error)| error as &dyn Error)\n    }\n}\n\nstruct OwnedJob<T> {\n    state: AsyncMutex<OwnedJobState<T>>,\n}\n\nstruct OwnedJobState<T> {\n    handle: Option<JoinHandle<io::Result<T>>>,\n    result: Option<Result<T, RecordedFailure>>,\n    joined: bool,\n}\n\nimpl<T> OwnedJob<T> {\n    fn track(handle: JoinHandle<io::Result<T>>) -> Arc<Self> {\n        Arc::new(Self {\n            state: AsyncMutex::new(OwnedJobState {\n                handle: Some(handle),\n                result: None,\n                joined: false,\n            }),\n        })\n    }\n\n    async fn join(&self) -> AsyncMutexGuard<'_, OwnedJobState<T>> {\n        let mut state = self.state.lock().await;\n        if !state.joined && state.handle.is_none() {\n            state.result = Some(Err(RecordedFailure::io(io::Error::other(\n                \"owned stdio job lost its actual handle before join\",\n            ))));\n            state.joined = true;\n        }\n        if let Some(handle) = state.handle.as_mut() {\n            // Borrow the SAME handle. Dropping this waiter leaves it in the\n            // shared state. Record terminal state under the same lock before\n            // another waiter may poll or consume it.\n            let result = match handle.await {\n                Ok(result) => result.map_err(RecordedFailure::io),\n                Err(error) => Err(RecordedFailure::join(error)),\n            };\n            state.handle = None;\n            state.result = Some(result);\n            state.joined = true;\n        }\n        state\n    }\n}\n\n#[derive(Default)]\nstruct CustodyState {\n    launch: Option<Arc<OwnedJob<StdioServerTransport>>>,\n    runtime: Option<Handle>,\n    process_id: Option<u32>,\n    child: Vec<Arc<OwnedJob<ExitStatus>>>,\n    stderr: Vec<Arc<OwnedJob<()>>>,\n    termination: Option<Arc<OwnedJob<()>>>,\n    termination_attempted: bool,\n    _termination_thread: Option<Arc<Mutex<Option<std::thread::JoinHandle<io::Result<()>>>>>>,\n    failures: Vec<RecordedFailure>,\n    // A failed OS wait is never upgraded to a successful reap. Keep the\n    // actual unreaped owner as well as its error until this custody is dropped.\n    failed_child_owners: Vec<Box<dyn Any + Send>>,\n    poisoned: bool,\n}\n\n/// Owns exactly one attempted Linux Legacy launch and its real cleanup work.\n/// It is not an authority or application-completion receipt.\npub struct OriginalStdioShutdownCustody {\n    state: Mutex<CustodyState>,\n    stopping: AtomicBool,\n    changed: Notify,\n}\n\n/// Created only by actual custody observation. A non-successful exit status\n/// still records physical child exit; application errors remain separate.\npub struct OriginalStdioShutdownObservation {\n    process_id: Option<u32>,\n    status: Option<ExitStatus>,\n}\n\nimpl OriginalStdioShutdownObservation {\n    pub fn require_original_child_exited(&self) -> io::Result<()> {\n        if self.process_id.is_some() && self.status.is_some() {\n            Ok(())\n        } else {\n            Err(io::Error::other(\n                \"owned stdio was not started and does not prove child exit\",\n            ))\n        }\n    }\n}\n\nimpl OriginalStdioShutdownCustody {\n    pub fn new() -> Arc<Self> {\n        Arc::new(Self {\n            state: Mutex::new(CustodyState::default()),\n            stopping: AtomicBool::new(false),\n            changed: Notify::new(),\n        })\n    }\n\n    fn state(&self) -> MutexGuard<'_, CustodyState> {\n        match self.state.lock() {\n            Ok(state) => state,\n            Err(poisoned) => {\n                // Retain every actual handle even on poison. This does not\n                // repair the state: every final observation remains an error.\n                let mut state = poisoned.into_inner();\n                state.poisoned = true;\n                state\n            }\n        }\n    }\n\n    /// Request the original process group's TERM -> two-second KILL policy.\n    /// The actual termination thread is owned by a retained join task.\n    pub fn request_stop(&self) {\n        self.stopping.store(true, Ordering::Release);\n        let mut state = self.state();\n        if !state.termination_attempted\n            && let (Some(process_id), Some(runtime)) =\n                (state.process_id, state.runtime.clone())\n        {\n            self.start_termination(&mut state, process_id, &runtime);\n        }\n        drop(state);\n        self.changed.notify_waiters();\n    }\n\n    #[cfg(target_os = \"linux\")]\n    fn start_termination(&self, state: &mut CustodyState, process_id: u32, runtime: &Handle) {\n        state.termination_attempted = true;\n        let thread = std::thread::Builder::new()\n            .name(\"mcp-owned-stdio-stop\".to_owned())\n            .spawn(move || -> io::Result<()> {\n                let exists = terminate_process_group(process_id)?;\n                if exists {\n                    sleep(PROCESS_GROUP_TERM_GRACE_PERIOD);\n                    kill_process_group(process_id)?;\n                }\n                Ok(())\n            });\n        match thread {\n            Ok(thread) => {\n                // Keep the thread in shared storage until the actual blocking\n                // join starts. A cancelled Tokio scheduling attempt cannot\n                // silently discard an unjoined std::thread::JoinHandle.\n                let retained = Arc::new(Mutex::new(Some(thread)));\n                let join_owner = Arc::clone(&retained);\n                let handle = runtime.spawn_blocking(move || {\n                    let (mut slot, poisoned) = match join_owner.lock() {\n                        Ok(slot) => (slot, false),\n                        Err(error) => (error.into_inner(), true),\n                    };\n                    let thread = slot.take().ok_or_else(|| {\n                        io::Error::other(\"owned stdio termination thread already taken\")\n                    })?;\n                    drop(slot);\n                    let result = thread.join().map_err(|_| {\n                        io::Error::other(\"owned stdio termination thread panicked\")\n                    })?;\n                    if poisoned {\n                        if let Err(error) = result {\n                            return Err(io::Error::other(format!(\n                                \"owned stdio termination slot poisoned; actual thread: {error}\"\n                            )));\n                        }\n                        return Err(io::Error::other(\n                            \"owned stdio termination-thread slot poisoned\",\n                        ));\n                    }\n                    result\n                });\n                // Retain the ACTUAL blocking join handle, without an async\n                // wrapper whose cancellation could detach that handle.\n                state._termination_thread = Some(retained);\n                state.termination = Some(OwnedJob::track(handle));\n            }\n            Err(error) => state.failures.push(RecordedFailure::io(error)),\n        }\n    }\n\n    #[cfg(not(target_os = \"linux\"))]\n    fn start_termination(&self, state: &mut CustodyState, _process_id: u32, _runtime: &Handle) {\n        state.termination_attempted = true;\n        state.failures.push(RecordedFailure::io(unsupported()));\n    }\n\n    pub(super) fn launch(\n        self: Arc<Self>,\n        command: StdioServerCommand,\n        fallback_cwd: PathBuf,\n    ) -> BoxFuture<'static, io::Result<StdioServerTransport>> {\n        async move {\n            let launch = self.start_launch(command, fallback_cwd)?;\n            let mut state = launch.join().await;\n            match state.result.take() {\n                Some(Ok(transport)) => {\n                    if self.stopping.load(Ordering::Acquire) {\n                        drop(state);\n                        // Drop outside the job lock transfers the SAME child\n                        // into this custody's actual child-wait job.\n                        drop(transport);\n                        Err(io::Error::other(\"owned stdio launch was stopped\"))\n                    } else {\n                        Ok(transport)\n                    }\n                }\n                Some(Err(error)) => {\n                    let returned = error.to_io();\n                    state.result = Some(Err(error));\n                    Err(returned)\n                }\n                None => Err(io::Error::other(\"owned stdio launch result already consumed\")),\n            }\n        }\n        .boxed()\n    }\n\n    fn start_launch(\n        self: &Arc<Self>,\n        command: StdioServerCommand,\n        fallback_cwd: PathBuf,\n    ) -> io::Result<Arc<OwnedJob<StdioServerTransport>>> {\n        if !cfg!(target_os = \"linux\") || command.protocol_mode != McpProtocolMode::Legacy {\n            return Err(unsupported());\n        }\n        let runtime = Handle::try_current().map_err(io::Error::other)?;\n        let mut state = self.state();\n        if state.poisoned || state.launch.is_some() || self.stopping.load(Ordering::Acquire) {\n            return Err(io::Error::other(\"owned stdio launch is closed or already attempted\"));\n        }\n        let original = Arc::clone(self);\n        let launch = OwnedJob::track(runtime.spawn_blocking(move || {\n            LocalStdioServerLauncher::launch_server_owned(command, fallback_cwd, original)\n        }));\n        state.runtime = Some(runtime);\n        state.launch = Some(Arc::clone(&launch));\n        Ok(launch)\n    }\n\n    fn register_process(&self, process_id: Option<u32>) -> io::Result<()> {\n        let mut state = self.state();\n        if state.process_id.is_some() {\n            state.failures.push(RecordedFailure::io(io::Error::other(\n                \"owned stdio attempted a second process\",\n            )));\n            return Err(io::Error::other(\"owned stdio attempted a second process\"));\n        }\n        let process_id = process_id.ok_or_else(|| {\n            io::Error::other(\"actual owned stdio child has no process id\")\n        })?;\n        state.process_id = Some(process_id);\n        drop(state);\n        if self.stopping.load(Ordering::Acquire) {\n            self.request_stop();\n        }\n        self.changed.notify_waiters();\n        Ok(())\n    }\n\n    fn retain_stderr(\n        &self,\n        stderr: tokio::process::ChildStderr,\n        program_name: String,\n    ) -> io::Result<()> {\n        let mut state = self.state();\n        let Some(runtime) = state.runtime.clone() else {\n            state.failed_child_owners.push(Box::new(stderr));\n            let error = RecordedFailure::io(io::Error::other(\n                \"owned stdio lost its actual launch runtime\",\n            ));\n            state.failures.push(error.clone());\n            return Err(error.to_io());\n        };\n        let handle = runtime.spawn(async move {\n            let mut reader = BufReader::new(stderr).lines();\n            loop {\n                match reader.next_line().await {\n                    Ok(Some(line)) => info!(\"MCP server stderr ({program_name}): {line}\"),\n                    Ok(None) => return Ok(()),\n                    Err(error) => {\n                        warn!(\"Failed to read MCP server stderr ({program_name}): {error}\");\n                        return Err(error);\n                    }\n                }\n            }\n        });\n        state.stderr.push(OwnedJob::track(handle));\n        Ok(())\n    }\n\n    fn retain_child(self: &Arc<Self>, transport: TokioChildProcess) {\n        self.request_stop();\n        let child = transport.into_inner();\n        let mut state = self.state();\n        let Some(runtime) = state.runtime.clone() else {\n            if let Some(child) = child {\n                state.failed_child_owners.push(Box::new(child));\n            }\n            state.failures.push(RecordedFailure::io(io::Error::other(\n                \"owned child cleanup lost the actual launch runtime\",\n            )));\n            drop(state);\n            self.changed.notify_waiters();\n            return;\n        };\n        let original = Arc::clone(self);\n        let termination = state.termination.clone();\n        let handle = runtime.spawn(async move {\n            let Some(mut child) = child else {\n                return Err(io::Error::other(\n                    \"owned transport lost its actual child before an observed wait\",\n                ));\n            };\n            let termination_failed = if let Some(termination) = termination {\n                let terminal = termination.join().await;\n                !matches!(terminal.result.as_ref(), Some(Ok(())))\n            } else {\n                true\n            };\n            if termination_failed {\n                // Preserve the original helper error while still attempting\n                // to reap this real child. Normally the original TERM/KILL\n                // thread has already been genuinely joined before this wait.\n                if let Err(error) = Box::into_pin(child.kill()).await {\n                    let failure = RecordedFailure::io(error);\n                    original.state().failed_child_owners.push(Box::new(child));\n                    return Err(failure.to_io());\n                }\n            }\n            match child.wait().await {\n                Ok(status) => Ok(status),\n                Err(error) => {\n                    let failure = RecordedFailure::io(error);\n                    if let Err(kill_error) = Box::into_pin(child.kill()).await {\n                        original.state().failures.push(RecordedFailure::io(kill_error));\n                    }\n                    if let Err(wait_error) = child.wait().await {\n                        original.state().failures.push(RecordedFailure::io(wait_error));\n                        original.state().failed_child_owners.push(Box::new(child));\n                    }\n                    Err(failure.to_io())\n                }\n            }\n        });\n        state.child.push(OwnedJob::track(handle));\n        drop(state);\n        self.changed.notify_waiters();\n    }\n\n    /// Close admission, then genuinely join every actual owned job. Cancelling\n    /// this waiter retains all handles and unconsumed launch output for a\n    /// subsequent call. This has no \"empty means successful exit\" shortcut.\n    pub async fn join_original_stdio(&self) -> io::Result<OriginalStdioShutdownObservation> {\n        self.request_stop();\n        let launch = self.state().launch.clone();\n        let Some(launch) = launch else {\n            let state = self.state();\n            if state.poisoned {\n                return Err(io::Error::other(\"owned stdio custody poisoned before launch\"));\n            }\n            return Ok(OriginalStdioShutdownObservation {\n                process_id: None,\n                status: None,\n            });\n        };\n        let mut failures = Vec::new();\n        let mut launch_state = launch.join().await;\n        let abandoned = match launch_state.result.take() {\n            Some(Ok(transport)) => Some(transport),\n            Some(Err(error)) => {\n                failures.push((\"launch\", error.clone()));\n                launch_state.result = Some(Err(error));\n                None\n            }\n            None => None,\n        };\n        drop(launch_state);\n        drop(abandoned);\n\n        // A delivered transport may still be held by the SDK. Do not infer\n        // that its real child has been handed back from process exit or EOF.\n        // The caller must cancel/join the actual SDK driver, or drop that\n        // exact transport, before this step can finish.\n        let (process_id, children, stderr, termination) = loop {\n            let notified = self.changed.notified();\n            tokio::pin!(notified);\n            notified.as_mut().enable();\n            let snapshot = {\n                let state = self.state();\n                if state.process_id.is_none()\n                    || !state.child.is_empty()\n                    || !state.failed_child_owners.is_empty()\n                {\n                    Some((\n                        state.process_id,\n                        state.child.clone(),\n                        state.stderr.clone(),\n                        state.termination.clone(),\n                    ))\n                } else {\n                    None\n                }\n            };\n            if let Some(snapshot) = snapshot {\n                break snapshot;\n            }\n            notified.await;\n        };\n\n        let mut status = None;\n        for child in &children {\n            let child_state = child.join().await;\n            match child_state.result.as_ref() {\n                Some(Ok(exit)) => status = Some(*exit),\n                Some(Err(error)) => failures.push((\"child wait\", error.clone())),\n                None => failures.push((\"child wait\", RecordedFailure::io(io::Error::other(\n                    \"owned stdio child result missing\",\n                )))),\n            }\n        }\n        for reader in &stderr {\n            let reader_state = reader.join().await;\n            if let Some(Err(error)) = reader_state.result.as_ref() {\n                failures.push((\"stderr\", error.clone()));\n            }\n        }\n        if let Some(termination) = &termination {\n            let termination_state = termination.join().await;\n            if let Some(Err(error)) = termination_state.result.as_ref() {\n                failures.push((\"process-group termination join\", error.clone()));\n            }\n        }\n        let state = self.state();\n        failures.extend(state.failures.iter().cloned().map(|error| (\"custody\", error)));\n        if state.poisoned {\n            failures.push((\"custody\", RecordedFailure::io(io::Error::other(\n                \"owned stdio custody mutex poisoned\",\n            ))));\n        }\n        if process_id.is_some() && (children.len() != 1 || stderr.len() != 1) {\n            failures.push((\"custody\", RecordedFailure::io(io::Error::other(\n                \"owned stdio did not retain exactly one child and stderr reader\",\n            ))));\n        }\n        if !failures.is_empty() {\n            return Err(io::Error::other(ShutdownFailures(failures)));\n        }\n        Ok(OriginalStdioShutdownObservation { process_id, status })\n    }\n}\n\npub(super) struct OriginalOwnedStdioTransport {\n    transport: Option<TokioChildProcess>,\n    custody: Arc<OriginalStdioShutdownCustody>,\n}\n\nimpl OriginalOwnedStdioTransport {\n    fn retire_transport(&mut self) {\n        if let Some(transport) = self.transport.take() {\n            self.custody.retain_child(transport);\n        }\n    }\n}\n\nimpl Drop for OriginalOwnedStdioTransport {\n    fn drop(&mut self) {\n        self.retire_transport();\n    }\n}\n\nimpl Transport<RoleClient> for OriginalOwnedStdioTransport {\n    type Error = io::Error;\n\n    fn send(\n        &mut self,\n        item: TxJsonRpcMessage<RoleClient>,\n    ) -> impl Future<Output = io::Result<()>> + Send + 'static {\n        match self.transport.as_mut() {\n            Some(transport) => transport.send(item).boxed(),\n            None => futures::future::ready(Err(io::Error::new(\n                io::ErrorKind::BrokenPipe,\n                \"owned stdio transport already retired\",\n            )))\n            .boxed(),\n        }\n    }\n\n    fn receive(&mut self) -> impl Future<Output = Option<RxJsonRpcMessage<RoleClient>>> + Send {\n        match self.transport.as_mut() {\n            Some(transport) => transport.receive().boxed(),\n            None => futures::future::ready(None).boxed(),\n        }\n    }\n\n    async fn close(&mut self) -> io::Result<()> {\n        self.retire_transport();\n        let observation = self.custody.join_original_stdio().await?;\n        observation.require_original_child_exited()\n    }\n}\n\nimpl LocalStdioServerLauncher {\n    pub fn new_with_owned_shutdown(\n        fallback_cwd: PathBuf,\n        custody: Arc<OriginalStdioShutdownCustody>,\n    ) -> Self {\n        Self {\n            fallback_cwd,\n            owned_shutdown: Some(custody),\n        }\n    }\n\n    fn launch_server_owned(\n        command: StdioServerCommand,\n        fallback_cwd: PathBuf,\n        custody: Arc<OriginalStdioShutdownCustody>,\n    ) -> io::Result<StdioServerTransport> {\n        if !cfg!(target_os = \"linux\") || command.protocol_mode != McpProtocolMode::Legacy {\n            return Err(unsupported());\n        }\n        let StdioServerCommand {\n            program,\n            args,\n            env,\n            env_vars,\n            cwd,\n            protocol_mode: _,\n        } = command;\n        let program_name = program.to_string_lossy().into_owned();\n        let envs = create_env_for_mcp_server(env, &env_vars).map_err(io::Error::other)?;\n        let cwd = cwd.map(PathBuf::from).unwrap_or(fallback_cwd);\n        let resolved_program =\n            program_resolver::resolve(program, &envs, &cwd).map_err(io::Error::other)?;\n        if custody.stopping.load(Ordering::Acquire) {\n            return Err(io::Error::other(\"owned stdio stopped before process spawn\"));\n        }\n        let mut command = Command::new(&resolved_program);\n        command\n            .kill_on_drop(true)\n            .stdin(Stdio::piped())\n            .stdout(Stdio::piped())\n            .current_dir(&cwd)\n            .env_clear()\n            .envs(&envs)\n            .args(&args);\n        #[cfg(unix)]\n        command.process_group(0);\n        let (transport, stderr) = TokioChildProcess::builder(command)\n            .stderr(Stdio::piped())\n            .spawn()?;\n        // Install the actual drop transfer immediately. Every later return\n        // transfers the same child to custody instead of the SDK best-effort\n        // ChildWithCleanup::drop task.\n        let transport = OriginalOwnedStdioTransport {\n            transport: Some(transport),\n            custody: Arc::clone(&custody),\n        };\n        let process_id = transport.transport.as_ref().and_then(TokioChildProcess::id);\n        custody.register_process(process_id)?;\n        let stderr = stderr.ok_or_else(|| io::Error::other(\"owned stdio stderr missing\"))?;\n        custody.retain_stderr(stderr, program_name.clone())?;\n        let process = StdioServerProcessHandle {\n            inner: Arc::new(StdioServerProcessHandleInner {\n                program_name,\n                kind: StdioServerProcessKind::OwnedLocal(Arc::clone(&custody)),\n                terminated: AtomicBool::new(false),\n            }),\n        };\n        Ok(StdioServerTransport {\n            inner: StdioServerTransportInner::OwnedLocalLegacy(transport),\n            process,\n        })\n    }\n}\n\nfn unsupported() -> io::Error {\n    io::Error::new(\n        io::ErrorKind::Unsupported,\n        \"owned stdio shutdown supports Linux local Legacy transport only\",\n    )\n}\n"
+        }
+      ]
+    }
+  ],
+  "path_count": 2,
+  "operation_count": 12,
+  "upstream": {
+    "repository": "modelcontextprotocol/rust-sdk",
+    "child_blob": "5f8cb02a5a8990c6203198573b1e9edb133922b9",
+    "readback": {
+      "blob": "5f8cb02a5a8990c6203198573b1e9edb133922b9",
+      "bytes": 13715,
+      "sha256": "c06150833e9c10b977d609dbf248aa90196035a6f585b94e5d9cf95a6ef036a8"
+    },
+    "version": "tag rmcp-v3.9.0",
+    "registry_tarball_checksum_independently_verified": false,
+    "actual_api": "TokioChildProcess::into_inner consumes its own ChildWithCleanup.inner and drops the original AsyncRwTransport. send/receive continue to use the same original TokioChildProcess framing. The strict branch never relies on ChildWithCleanup::Drop as proof of child exit."
+  },
+  "interface": {
+    "custody": "OriginalStdioShutdownCustody::new()->Arc<Self>; request_stop(&self); async join_original_stdio(&self)->io::Result<OriginalStdioShutdownObservation>",
+    "observation": "require_original_child_exited(&self)->io::Result<()>; only actual process_id plus actual Child.wait ExitStatus is accepted, unstarted refused",
+    "launcher": "LocalStdioServerLauncher::new_with_owned_shutdown(PathBuf,Arc<OriginalStdioShutdownCustody>)->Self",
+    "needed_lib_exports": [
+      "pub use stdio_server_launcher::OriginalStdioShutdownCustody;",
+      "pub use stdio_server_launcher::OriginalStdioShutdownObservation;"
+    ],
+    "upper_owner": "runtime_access owns rmcp_client.rs, lib reexports and the actual SDK service-driver join. This source does not edit them."
+  },
+  "custody": [
+    {
+      "resource": "original launch spawn_blocking",
+      "owner": "shared OwnedJob in custody before first await",
+      "cancel": "same JoinHandle remains; completed unconsumed actual transport is taken and dropped by cleanup"
+    },
+    {
+      "resource": "actual TokioChildProcess / underlying ChildWrapper",
+      "owner": "strict transport until close/Drop, then same child into retained real wait task",
+      "cancel": "SDK handshake or close waiter cancellation cannot transfer the child to an untracked best-effort Drop task"
+    },
+    {
+      "resource": "stderr reader",
+      "owner": "actual task Handle in custody",
+      "cancel": "cleanup joins actual reader and preserves its original io::Error"
+    },
+    {
+      "resource": "original TERM then two-second KILL thread",
+      "owner": "actual std::thread::JoinHandle slot plus actual spawn_blocking join Handle",
+      "cancel": "no async wrapper detaches the join handle; terminal poison remains Err while actual join is attempted"
+    },
+    {
+      "resource": "original stdin/stdout framing",
+      "owner": "same TokioChildProcess until into_inner drops original async_rw transport",
+      "scope": "Underlying SDK protocol tails that hold no phase authority are not claimed fully joined by this component"
+    },
+    {
+      "resource": "failed/unreaped owner",
+      "owner": "actual owner retained in custody with sticky error; no successful observation",
+      "scope": "OS wait/signal/panic failure is an error, not evidence of a reaped child"
+    }
+  ],
+  "safety": {
+    "ordinary_none_body_exact": true,
+    "original_launch_server_region": {
+      "blob": "f303aa83ab7a5e4d7966a238ebe347e45873ccb2",
+      "bytes": 5382,
+      "sha256": "6d94df6e32bb57bd709f58507439809b90776e0ab5859dbe3135e89e003168e9"
+    },
+    "original_test_suffix": {
+      "blob": "9ee799f78c7ccffc461db3899b1e6a6b8356b118",
+      "bytes": 2702,
+      "sha256": "b2629877d2c45f521a5e134a44506279194e41b7b76ea94bf4b2e5cc3dc92b38"
+    },
+    "new_mode_linux_legacy_only": true,
+    "unsupported_before_spawn": true,
+    "no_added_dependency": true,
+    "one_launch_no_restart": true,
+    "one_group_termination_attempt": true,
+    "no_new_deadline": true,
+    "actual_cleanup_can_outlast_cancel_but_no_success_before_join": true,
+    "empty_registry_not_child_exit": true,
+    "io_and_task_errors_retained": true
+  },
+  "verification": {
+    "source_hashes_checked": true,
+    "source_get_exact": true,
+    "operations_forward_reverse_unique": true,
+    "compiler": false,
+    "formatter": false,
+    "original_checker": false,
+    "native": false,
+    "h": false,
+    "refs": false
+  },
+  "integration": "Add the two actual library reexports through runtime_access's owned lib delta. A final combined caller inventory must use the real RmcpClient strict constructor/custody calls; this package does not invent an outer caller or business completion."
+}

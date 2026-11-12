@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "four-real-receiver-UFCS-followup",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "isolated static source candidate; not compiled, formatted, checker-executed, installed or ref-updated",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+      "pre": "a77a131a7c5340d1b5e8a5f7fe6c19181b6db3ff",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs",
+        "blob": "d032ef016d8b45df1eb15f3d25c95c9c30282e57",
+        "bytes": 4883,
+        "sha256": "48d7398c3249e33806be8175bc20dd1d1dc3814f0ed12714879242485af79f0c",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "    custody.require_original_origin(context.identity(), context.gate())?;",
+          "after": "    crate::circuit_task::OriginalCircuitOwnerCustody::require_original_origin(&custody, context.identity(), context.gate())?;"
+        }
+      ],
+      "proof": {
+        "unique_exact_forward_reverse": true,
+        "all_other_bytes_unchanged": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+      "pre": "80c206437d590f6f864a43f58fbf9cac5cbc4fa2",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs",
+        "blob": "55c1386d733cbb96bf6ce771b3010debc634ffd7",
+        "bytes": 7305,
+        "sha256": "675dd88c0fa4030aee47c480b256cd6ea733a853b89beefcbeb2c490aea124e6",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "        intent.require_original_origin(&identity, &gate)?;",
+          "after": "        OriginalRootRetirementIntent::require_original_origin(&intent, &identity, &gate)?;"
+        }
+      ],
+      "proof": {
+        "unique_exact_forward_reverse": true,
+        "all_other_bytes_unchanged": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+      "pre": "d93b92644d601459fea98a31d0f86035a6aaec02",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs",
+        "blob": "6d953d086a4f554ace72c1ab3a211be24447123f",
+        "bytes": 3883,
+        "sha256": "93191c2b143ae1583f24c0b547e981068de3c01458c82f6a404fc5323200e8b4",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "        retained.require_original_origin(identity, gate)?;",
+          "after": "        OriginalDeploymentRetained::require_original_origin(&retained, identity, gate)?;"
+        }
+      ],
+      "proof": {
+        "unique_exact_forward_reverse": true,
+        "all_other_bytes_unchanged": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+      "pre": "8d5b6bc11513a197a025f3035ed7e89ab750be51",
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs",
+        "blob": "1e372ebdd687f38d718433a1fcd096c39260d151",
+        "bytes": 9436,
+        "sha256": "a43ffb0d11c4606a7dbff4cff92d1e7cf854455aee02f4dd9bde1bee5434f704",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "        self.intent.require_original_origin(\n            self.intent.client.context.identity(), self.intent.client.context.gate(),\n        )",
+          "after": "        OriginalRootRetirementIntent::require_original_origin(\n            &self.intent, self.intent.client.context.identity(), self.intent.client.context.gate(),\n        )"
+        }
+      ],
+      "proof": {
+        "unique_exact_forward_reverse": true,
+        "all_other_bytes_unchanged": true
+      }
+    }
+  ],
+  "definition_sources": {
+    "OriginalCircuitOwnerCustody": "635ddfbc986ac228518fde194b12537fc4cc5620",
+    "OriginalRootRetirementIntent": "80c206437d590f6f864a43f58fbf9cac5cbc4fa2",
+    "OriginalDeploymentRetained": "d93b92644d601459fea98a31d0f86035a6aaec02"
+  },
+  "semantics": [
+    "Each callee retains its actual &self signature. &custody uses the same Arc dereference coercion as the previous method call; the other three receivers are the same borrowed concrete objects.",
+    "The exact actual return, question mark, other arguments, await order, guards, authority checks and ownership transfers are unchanged. No caller set, receiver strategy, checker or metadata field is modified by this source-only packet.",
+    "Final metadata must spell these actual expressions; the independent bounded typed scan requested exactly these four author-owned sites. The audit-owned fifth site is separate."
+  ],
+  "validation": {
+    "source_create_get_equal": true,
+    "unique_exact_forward_reverse": true,
+    "operations": 4,
+    "paths": 4,
+    "native": 0,
+    "tests": 0,
+    "checker": 0,
+    "refs": 0
+  }
+}

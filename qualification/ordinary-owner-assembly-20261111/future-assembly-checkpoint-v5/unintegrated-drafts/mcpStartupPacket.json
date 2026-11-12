@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "kind": "actual-original-MCP-startup-registry-draft",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "isolated static candidate, Configured/outer caller and stdio source pending; not compiled or installed",
+  "files": [
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "blob": "d79f477158cda9a31c025ab62ded8bfe84b8f6c0",
+        "bytes": 13374,
+        "sha256": "ebf2c958a79c6c34c0c7e91300e8cfa4331890fa496d4e34d548066663336f0a",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Custody for one actual configured local Legacy MCP startup.\n//! Admission is closed before cleanup. Actual startup and driver handles\n//! remain owned through waiter cancellation; no count substitutes for join.\n\nuse std::sync::Arc;\nuse std::sync::Mutex as StdMutex;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::Ordering;\n\nuse anyhow::Result;\nuse anyhow::anyhow;\nuse anyhow::ensure;\nuse codex_config::McpServerTransportConfig;\nuse codex_rmcp_client::OriginalMcpClientShutdown;\nuse codex_rmcp_client::OriginalMcpClientShutdownObservation;\nuse tokio::sync::Mutex;\nuse tokio::sync::Notify;\nuse tokio::task::JoinHandle;\nuse tokio::task::JoinSet;\nuse tokio_util::sync::CancellationToken;\n\nuse crate::McpProtocolMode;\nuse crate::McpRuntimeInput;\nuse crate::McpStartupPolicy;\nuse crate::mcp::CODEX_APPS_MCP_SERVER_NAME;\nuse crate::rmcp_client::ManagedClient;\nuse crate::rmcp_client::StartupOutcomeError;\n\ntype StartupOutput = (String, Result<ManagedClient, StartupOutcomeError>);\n\n/// Externally retained before the actual configured initializer is polled.\n/// This empty object cannot choose a server, command, credential or policy.\npub struct OriginalMcpRuntimeShutdown {\n    stopped: AtomicBool,\n    state: StdMutex<OriginalRuntimeState>,\n    changed: Notify,\n    cleanup: StdMutex<Option<Arc<OriginalCleanupJob>>>,\n}\n\nstruct OriginalRuntimeState {\n    constructor_used: bool,\n    constructing: bool,\n    startup: Option<CancellationToken>,\n    client: Option<Arc<OriginalMcpClientShutdown>>,\n    startup_jobs: Vec<Arc<OriginalStartupJob>>,\n    custody_failure: Option<String>,\n}\n\npub(crate) struct OriginalMcpConstructionGuard {\n    owner: Arc<OriginalMcpRuntimeShutdown>,\n}\n\nstruct OriginalStartupJob {\n    state: Mutex<OriginalStartupJobState>,\n}\n\nstruct OriginalStartupJobState {\n    handle: Option<JoinHandle<OriginalStartupJoined>>,\n    joined: Option<OriginalStartupJoined>,\n}\n\n#[derive(Clone)]\nstruct OriginalStartupJoined {\n    ready: usize,\n    errors: Vec<String>,\n}\n\nstruct OriginalCleanupJob {\n    state: Mutex<OriginalCleanupJobState>,\n}\n\nstruct OriginalCleanupJobState {\n    handle: Option<JoinHandle<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,\n    result: Option<Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,\n}\n\n/// Actual cleanup facts, not business completion or authority permission.\npub struct OriginalMcpRuntimeShutdownObservation {\n    startups: Vec<OriginalStartupJoined>,\n    client: Option<OriginalMcpClientShutdownObservation>,\n}\n\nimpl OriginalMcpRuntimeShutdownObservation {\n    pub fn require_original_ready_runtime_joined(&self) -> Result<()> {\n        ensure!(self.startups.len() == 1, \"original MCP startup custody is incomplete\");\n        let startup = &self.startups[0];\n        ensure!(startup.ready == 1 && startup.errors.is_empty(),\n            \"original MCP startup did not join with one successful configured client\");\n        self.client.as_ref()\n            .ok_or_else(|| anyhow!(\"original MCP client was never constructed\"))?\n            .require_original_ready_client_joined()\n    }\n}\n\nimpl OriginalMcpRuntimeShutdown {\n    pub fn new() -> Arc<Self> {\n        Arc::new(Self {\n            stopped: AtomicBool::new(false),\n            state: StdMutex::new(OriginalRuntimeState {\n                constructor_used: false,\n                constructing: false,\n                startup: None,\n                client: None,\n                startup_jobs: Vec::new(),\n                custody_failure: None,\n            }),\n            changed: Notify::new(),\n            cleanup: StdMutex::new(None),\n        })\n    }\n\n    pub(crate) fn reserve_original_input(\n        self: &Arc<Self>, input: &McpRuntimeInput,\n    ) -> Result<OriginalMcpConstructionGuard> {\n        ensure!(cfg!(target_os = \"linux\"), \"owned MCP cleanup requires Linux\");\n        ensure!(input.startup_policy == McpStartupPolicy::Eager,\n            \"owned MCP startup cannot be deferred\");\n        ensure!(input.config.protocol_mode == McpProtocolMode::Legacy,\n            \"owned MCP startup requires the actual retained Legacy profile\");\n        ensure!(input.tx_event.is_none()\n            && input.elicitation_reviewer.is_none()\n            && input.elicitation_lifecycle.is_none(),\n            \"owned MCP profile requires its original threadless handler policy\");\n        ensure!(input.mcp_servers.len() == 1,\n            \"owned MCP startup requires one explicitly configured server\");\n        let (name, server) = input.mcp_servers.iter().next()\n            .ok_or_else(|| anyhow!(\"original MCP server is absent\"))?;\n        ensure!(name != CODEX_APPS_MCP_SERVER_NAME && server.enabled(),\n            \"owned MCP startup cannot reconnect hosted Apps or a disabled server\");\n        ensure!(server.config().is_local_environment()\n            && matches!(&server.config().transport, McpServerTransportConfig::Stdio { .. }),\n            \"owned MCP shutdown supports the configured local stdio transport only\");\n        let mut state = self.state.lock()\n            .map_err(|_| anyhow!(\"original MCP startup custody is poisoned\"))?;\n        ensure!(!self.stopped.load(Ordering::Acquire) && !state.constructor_used,\n            \"original MCP startup cannot be reopened\");\n        state.constructor_used = true;\n        state.constructing = true;\n        state.startup = Some(input.startup_cancellation_token.clone());\n        state.client = Some(OriginalMcpClientShutdown::new(\n            input.runtime_context.local_process_cwd(),\n        ));\n        Ok(OriginalMcpConstructionGuard { owner: Arc::clone(self) })\n    }\n\n    pub(crate) fn original_client_custody(&self) -> Result<Arc<OriginalMcpClientShutdown>> {\n        let state = self.state.lock()\n            .map_err(|_| anyhow!(\"original MCP startup custody is poisoned\"))?;\n        ensure!(!self.stopped.load(Ordering::Acquire) && state.constructor_used\n            && state.custody_failure.is_none(),\n            \"original MCP construction is no longer admitted\");\n        state.client.as_ref().map(Arc::clone)\n            .ok_or_else(|| anyhow!(\"actual MCP construction custody is absent\"))\n    }\n\n    pub(crate) fn require_original_construction(&self) -> Result<()> {\n        let state = self.state.lock()\n            .map_err(|_| anyhow!(\"original MCP startup custody is poisoned\"))?;\n        ensure!(!self.stopped.load(Ordering::Acquire)\n            && state.constructing && state.custody_failure.is_none(),\n            \"actual original MCP construction was cancelled or refused\");\n        Ok(())\n    }\n\n    pub(crate) fn retain_original_startup(&self, mut actual: JoinSet<StartupOutput>) {\n        let poisoned = self.state.is_poisoned();\n        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());\n        if poisoned || !state.constructing || !state.startup_jobs.is_empty() {\n            state.custody_failure = Some(\"original startup handle registration was refused\".into());\n        }\n        // No await separates creation of this actual task from registration\n        // of its handle. Unlike JoinSet::join_all, one failed child does not\n        // discard the remaining original child handles.\n        let handle = tokio::spawn(async move {\n            let mut joined = OriginalStartupJoined { ready: 0, errors: Vec::new() };\n            while let Some(result) = actual.join_next().await {\n                match result {\n                    Ok((_name, Ok(client))) => {\n                        joined.ready += 1;\n                        drop(client);\n                    }\n                    Ok((name, Err(error))) => joined.errors.push(format!(\"{name}: {error}\")),\n                    Err(error) => joined.errors.push(format!(\"actual MCP startup task: {error}\")),\n                }\n            }\n            joined\n        });\n        state.startup_jobs.push(Arc::new(OriginalStartupJob {\n            state: Mutex::new(OriginalStartupJobState { handle: Some(handle), joined: None }),\n        }));\n    }\n\n    pub fn request_stop(&self) {\n        self.stopped.store(true, Ordering::Release);\n        let state = self.state.lock().unwrap_or_else(|error| error.into_inner());\n        if let Some(startup) = &state.startup { startup.cancel(); }\n        if let Some(client) = &state.client { client.request_stop(); }\n        drop(state);\n        self.changed.notify_waiters();\n    }\n\n    /// Starts and retains the real cleanup task before returning its waiter.\n    /// Dropping the waiter cannot take the handle or the original result.\n    pub fn stop_and_join_original_runtime(\n        self: &Arc<Self>,\n    ) -> impl std::future::Future<Output = Result<Arc<OriginalMcpRuntimeShutdownObservation>>> + Send + 'static {\n        self.request_stop();\n        let job = {\n            let mut slot = self.cleanup.lock().unwrap_or_else(|error| error.into_inner());\n            if let Some(job) = slot.as_ref() {\n                Arc::clone(job)\n            } else {\n                let owner = Arc::clone(self);\n                let handle = tokio::spawn(async move { owner.join_original_resources().await });\n                let job = Arc::new(OriginalCleanupJob {\n                    state: Mutex::new(OriginalCleanupJobState { handle: Some(handle), result: None }),\n                });\n                *slot = Some(Arc::clone(&job));\n                job\n            }\n        };\n        async move { job.receive_original_cleanup().await.map_err(|error| anyhow!(error)) }\n    }\n\n    async fn join_original_resources(self: Arc<Self>) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {\n        // A cancelled constructor drops its guard before cleanup can snapshot\n        // the registered real handles. A stop before reservation rejects start.\n        loop {\n            let changed = self.changed.notified();\n            tokio::pin!(changed);\n            changed.as_mut().enable();\n            let constructing = self.state.lock().unwrap_or_else(|error| error.into_inner()).constructing;\n            if !constructing { break; }\n            changed.await;\n        }\n        let (jobs, client, mut first_error) = {\n            let state = self.state.lock().unwrap_or_else(|error| error.into_inner());\n            let failure = if self.state.is_poisoned() || self.cleanup.is_poisoned() {\n                Some(\"original MCP cleanup custody is poisoned\".to_string())\n            } else { state.custody_failure.clone() };\n            (state.startup_jobs.clone(), state.client.clone(), failure)\n        };\n        let mut startups = Vec::new();\n        for job in jobs {\n            let joined = job.join_original_startup().await;\n            if first_error.is_none() && !joined.errors.is_empty() {\n                first_error = Some(joined.errors.join(\"; \"));\n            }\n            startups.push(joined);\n        }\n        // The real startup jobs have ended; no client/service can appear after\n        // this cut. Always drive driver/Child cleanup even after startup errors.\n        let client = if let Some(client) = client {\n            match client.join_original_client().await {\n                Ok(observed) => Some(observed),\n                Err(error) => {\n                    if first_error.is_none() { first_error = Some(error.to_string()); }\n                    else { tracing::error!(error = %error, \"additional original MCP cleanup failure\"); }\n                    None\n                }\n            }\n        } else { None };\n        if let Some(error) = first_error { return Err(error); }\n        Ok(Arc::new(OriginalMcpRuntimeShutdownObservation { startups, client }))\n    }\n}\n\nimpl Drop for OriginalMcpConstructionGuard {\n    fn drop(&mut self) {\n        let mut state = self.owner.state.lock().unwrap_or_else(|error| error.into_inner());\n        state.constructing = false;\n        drop(state);\n        self.owner.changed.notify_waiters();\n    }\n}\n\nimpl OriginalStartupJob {\n    async fn join_original_startup(&self) -> OriginalStartupJoined {\n        let mut state = self.state.lock().await;\n        if let Some(joined) = &state.joined { return joined.clone(); }\n        let joined = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(joined) => joined,\n                Err(error) => OriginalStartupJoined {\n                    ready: 0, errors: vec![format!(\"actual MCP startup join owner: {error}\")],\n                },\n            },\n            None => OriginalStartupJoined {\n                ready: 0, errors: vec![\"actual MCP startup handle is missing\".into()],\n            },\n        };\n        state.handle.take();\n        state.joined = Some(joined.clone());\n        joined\n    }\n}\n\nimpl OriginalCleanupJob {\n    async fn receive_original_cleanup(&self) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>, String> {\n        let mut state = self.state.lock().await;\n        if let Some(result) = &state.result { return result.clone(); }\n        let result = match state.handle.as_mut() {\n            Some(handle) => match handle.await {\n                Ok(result) => result,\n                Err(error) => Err(format!(\"actual MCP cleanup owner failed: {error}\")),\n            },\n            None => Err(\"actual MCP cleanup handle is missing\".into()),\n        };\n        state.handle.take();\n        state.result = Some(result.clone());\n        result\n    }\n}\n\nimpl Drop for OriginalMcpRuntimeShutdown {\n    fn drop(&mut self) { self.request_stop(); }\n}\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/runtime.rs",
+      "pre": "0ff4d56a281d00936d0e26fef67ea85315d577e1",
+      "post": {
+        "path": "codex-rs/codex-mcp/src/runtime.rs",
+        "blob": "3e2f2dd91b18cdf0f6886eb31782b9b5d5af9516",
+        "bytes": 41330,
+        "sha256": "bd563c88351727863e9cefe4d15432cd186c570e5789e99f50b048a6433a9e3f",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "    pub async fn new(input: McpRuntimeInput) -> Self {\n        let runtime = Self::empty(input.config.prefix_mcp_tool_names);\n        runtime.replace(input).await;\n        runtime\n    }\n",
+          "after": "    pub async fn new(input: McpRuntimeInput) -> Self {\n        let runtime = Self::empty(input.config.prefix_mcp_tool_names);\n        runtime.replace(input).await;\n        runtime\n    }\n\n    /// The explicitly selected local Legacy runtime keeps its actual startup\n    /// and service owners in the externally retained cleanup custody.\n    pub async fn new_with_owned_shutdown(\n        mut input: McpRuntimeInput,\n        owner: &Arc<crate::OriginalMcpRuntimeShutdown>,\n    ) -> anyhow::Result<Self> {\n        let construction = owner.reserve_original_input(&input)?;\n        input.runtime_context.original_owned_shutdown = Some(Arc::clone(owner));\n        let runtime = Self::empty(input.config.prefix_mcp_tool_names);\n        runtime.publish(input, None).await;\n        owner.require_original_construction()?;\n        drop(construction);\n        Ok(runtime)\n    }\n"
+        },
+        {
+          "before": "    local_http_client: Arc<dyn HttpClient>,\n}\n\n",
+          "after": "    local_http_client: Arc<dyn HttpClient>,\n    original_owned_shutdown: Option<Arc<crate::OriginalMcpRuntimeShutdown>>,\n}\n\n"
+        },
+        {
+          "before": "            local_process_cwd,\n            local_http_client,\n        }\n",
+          "after": "            local_process_cwd,\n            local_http_client,\n            original_owned_shutdown: None,\n        }\n"
+        },
+        {
+          "before": "    pub(crate) fn local_process_cwd(&self) -> PathBuf {\n        self.local_process_cwd.clone()\n    }\n",
+          "after": "    pub(crate) fn local_process_cwd(&self) -> PathBuf {\n        self.local_process_cwd.clone()\n    }\n\n    pub(crate) fn original_owned_shutdown(&self) -> Option<Arc<crate::OriginalMcpRuntimeShutdown>> {\n        self.original_owned_shutdown.as_ref().map(Arc::clone)\n    }\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+      "pre": "46ea8dc63df82880994b221a629972c753c0b78d",
+      "post": {
+        "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+        "blob": "53d84d1ad2c2fcce708f0aeeb0052f13ad24a0a7",
+        "bytes": 40340,
+        "sha256": "9472200315e7d521c613df1d203f3b1bea9c6fe1670aa841c62c412b0dc985fe",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "        let summary_publication_gate = publication_gate;\n        tokio::spawn(async move {",
+          "after": "        if let Some(owner) = runtime_context.original_owned_shutdown() {\n            // The selected profile is eager, threadless, fresh and one-server.\n            // Retain the actual startup set before returning to publication.\n            owner.retain_original_startup(join_set);\n            return manager;\n        }\n        let summary_publication_gate = publication_gate;\n        tokio::spawn(async move {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/lib.rs",
+      "pre": "3e5ece9c4bf07a1bb17f581b0333b35f2e9a4236",
+      "post": {
+        "path": "codex-rs/codex-mcp/src/lib.rs",
+        "blob": "6ce21ff6c41696a003279681878ec5ebf5e04f2f",
+        "bytes": 4675,
+        "sha256": "495855d53c28c329e3c72941ba3d3a61bf3c1c0ecab89338b59facdf019c3a64",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "pub use runtime::McpRuntime;\n",
+          "after": "pub use original_owned_shutdown::OriginalMcpRuntimeShutdown;\npub use original_owned_shutdown::OriginalMcpRuntimeShutdownObservation;\npub use runtime::McpRuntime;\n"
+        },
+        {
+          "before": "mod openai_docs_source_attribution;\n",
+          "after": "mod openai_docs_source_attribution;\nmod original_owned_shutdown;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+      "pre": "ff1e0c900aa52a1bce51a858763707c1df8b70cb",
+      "post": {
+        "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+        "blob": "55360d6a660e907cffd0f4e5a251f3f6eb0fcb4c",
+        "bytes": 51541,
+        "sha256": "3db3fbe349915311450514b6fbf6a1d447ab0edc62013c9074e42804bf9148e1",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "before": "#[path = \"rmcp_client/status.rs\"]\nmod status;\n",
+          "after": "#[path = \"rmcp_client/status.rs\"]\nmod status;\n\n#[path = \"rmcp_client_owned_shutdown.rs\"]\nmod original_owned;\n"
+        },
+        {
+          "before": "                let client = match tokio::time::timeout(\n                    startup_timeout,\n                    make_rmcp_client(\n                        &server_name,\n                        server.clone(),\n                        store_mode,\n                        keyring_backend_kind,\n                        runtime_context,\n                        resolved_environment,\n                        runtime_auth_provider,\n                        protocol_mode,\n                    ),\n                )\n                .await\n                {\n                    Ok(result) => Arc::new(result?),\n                    Err(_) => {\n                        return Err(StartupOutcomeError::from(anyhow!(\n                            \"MCP client startup timed out after {startup_timeout:?}\"\n                        )));\n                    }\n                };",
+          "after": "                let client = if let Some(owner) = runtime_context.original_owned_shutdown() {\n                    match tokio::time::timeout(\n                        startup_timeout,\n                        original_owned::make_original_owned_rmcp_client(\n                            &server_name, server.clone(), resolved_environment,\n                            protocol_mode, owner,\n                        ),\n                    ).await {\n                        Ok(result) => result?,\n                        Err(_) => {\n                            return Err(StartupOutcomeError::from(anyhow!(\n                                \"MCP client startup timed out after {startup_timeout:?}\"\n                            )));\n                        }\n                    }\n                } else {\n                    match tokio::time::timeout(\n                    startup_timeout,\n                    make_rmcp_client(\n                        &server_name,\n                        server.clone(),\n                        store_mode,\n                        keyring_backend_kind,\n                        runtime_context,\n                        resolved_environment,\n                        runtime_auth_provider,\n                        protocol_mode,\n                    ),\n                )\n                .await\n                {\n                    Ok(result) => Arc::new(result?),\n                    Err(_) => {\n                        return Err(StartupOutcomeError::from(anyhow!(\n                            \"MCP client startup timed out after {startup_timeout:?}\"\n                        )));\n                    }\n                }\n                };"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/rmcp_client_owned_shutdown.rs",
+      "pre": null,
+      "post": {
+        "path": "codex-rs/codex-mcp/src/rmcp_client_owned_shutdown.rs",
+        "blob": "26e9d03f351819e95fd161848e4d2c36c7e24650",
+        "bytes": 2090,
+        "sha256": "555596a47690a56873d8d45c030162a8210f64e311ccbbdeed71f58259c1752e",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! The existing configured local Legacy command, with externally held\n//! concrete startup custody. No command, role or policy is invented here.\n\nuse super::*;\nuse crate::OriginalMcpRuntimeShutdown;\n\npub(super) async fn make_original_owned_rmcp_client(\n    server_name: &str,\n    server: EffectiveMcpServer,\n    resolved_environment: std::result::Result<Option<Arc<Environment>>, String>,\n    protocol_mode: McpProtocolMode,\n    owner: Arc<OriginalMcpRuntimeShutdown>,\n) -> Result<Arc<RmcpClient>, StartupOutcomeError> {\n    let config = server.config().clone();\n    if !cfg!(target_os = \"linux\")\n        || !config.is_local_environment()\n        || protocol_mode != McpProtocolMode::Legacy\n        || server_name == CODEX_APPS_MCP_SERVER_NAME\n    {\n        return Err(StartupOutcomeError::from(anyhow!(\n            \"original owned MCP requires the selected local Legacy stdio profile\"\n        )));\n    }\n    // Preserve the original environment resolution refusal even though local\n    // launch, exactly as before, uses the original local cwd and launcher.\n    let _resolved_environment = resolved_environment\n        .map_err(|error| StartupOutcomeError::from(anyhow!(error)))?;\n    let McpServerTransportConfig::Stdio {\n        command, args, env, env_vars, cwd,\n    } = config.transport else {\n        return Err(StartupOutcomeError::from(anyhow!(\n            \"original owned MCP transport is not local stdio\"\n        )));\n    };\n    let command_os: OsString = command.into();\n    let args_os: Vec<OsString> = args.into_iter().map(Into::into).collect();\n    let env_os = env.map(|env| {\n        env.into_iter()\n            .map(|(key, value)| (key.into(), value.into()))\n            .collect::<HashMap<_, _>>()\n    });\n    let cwd = cwd.map(codex_utils_path_uri::LegacyAppPathString::into_string);\n    let custody = owner.original_client_custody().map_err(StartupOutcomeError::from)?;\n    RmcpClient::new_stdio_client_with_owned_shutdown(\n        command_os, args_os, env_os, &env_vars, cwd, custody,\n    )\n    .await\n    .map_err(|error| StartupOutcomeError::from(anyhow!(error)))\n}\n"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "lower_driver": "6e9c2cc1a1b24ab51cc5e2ae67db64c63dd8b417",
+    "handler_owner_proof": "2c5c1e4055ba0bd7fd79c0b40973c5edd69dfb7a",
+    "stdio_owner": "chain_nextuse separate actual local Legacy launcher slice pending"
+  },
+  "semantics": [
+    "Only explicit new_with_owned_shutdown captures this empty external registry into the real RuntimeContext. Existing new/replace/publish defaults and old ConnectionSet shutdown remain unchanged.",
+    "Pre-start selection requires Linux, local stdio, Legacy, one enabled configured non-Apps server, Eager startup, and original threadless callback owners. Existing config/policy/environment/command inputs are retained.",
+    "The same real startup JoinSet is synchronously moved into an owned summary task before publication. Each original child JoinHandle is joined even after another child fails.",
+    "Construction guard seals handle registration on return or cancellation; cleanup waits for that guard then joins actual startup tasks before lower driver and Child cleanup.",
+    "Cleanup task is registered before returning its future. Wait cancellation leaves real JoinHandle/result in the same registry. Observations cannot certify business completion and require actual one-ready startup plus lower driver/Child joins for the normal path."
+  ],
+  "validation": {
+    "paths": 6,
+    "operations": 11,
+    "create_get_equal": true,
+    "unique_exact_forward_reverse": true,
+    "native": 0,
+    "tests": 0,
+    "checker": 0,
+    "refs": 0
+  }
+}

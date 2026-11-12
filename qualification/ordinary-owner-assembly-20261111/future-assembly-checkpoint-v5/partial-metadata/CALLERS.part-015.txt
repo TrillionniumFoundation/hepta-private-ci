@@ -1,0 +1,553 @@
+path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn replace_notes_policy(", sequence = [".request_lock",".lock()","self.require_new_same_actor_phase_effect()?","compare_and_set(STATE_OWNER, &state, &changed)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_text.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn text_until_checked(", sequence = [".request_lock",".lock()","self.require_new_same_actor_phase_effect()?",".sign(&claims.signing_bytes())","compare_and_set(STATE_OWNER, &state, &next)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn retain_writer_authorization(", sequence = ["self.require_new_same_actor_phase_effect()?","compare_and_set(STATE_OWNER, state, &reserved)",".sign(&bytes)","compare_and_set(STATE_OWNER, &reserved, &retained)"] },
+]
+
+# Actual Learning normal-retirement custody: source 5959a6 and real C callers ad5d950.
+[[boundary]]
+id = "q24_learning_normal_identity"
+symbol = "OriginalSameActorLearningWork::require_original_retirement_identity"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)require_original_retirement_identity\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn require_original_retirement_identity(","self.context.identity() != identity","!Arc::ptr_eq(self.gate(), gate)","self.gate().require_open()"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs","codex-rs/hepta-agentd/src/root_production_learning_inputs.rs","codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_delivery_binding"
+symbol = "OriginalSameActorLearningWork::require_original_delivery_request"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)require_original_delivery_request\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn require_original_delivery_request(","request != &self.prepared.initial().request","owners != &self.prepared.initial().owners","validate_request(request, owners)"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs","codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs","codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_terminal_snapshot"
+symbol = "OriginalSameActorLearningWork::require_original_terminal_snapshot"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)require_original_terminal_snapshot\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn require_original_terminal_snapshot(","validate_snapshot(snapshot)","coordinator.next_stage().is_some()"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_request"
+symbol = "OriginalSameActorLearningWork::request_original_normal_retirement"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)request_original_normal_retirement\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn request_original_normal_retirement(","quiescence: OriginalSameActorCQuiescence","OriginalLearningRetirementState::Requested(Box::new(quiescence))"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_take_request"
+symbol = "OriginalSameActorLearningWork::take_original_normal_retirement"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)take_original_normal_retirement\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn take_original_normal_retirement(","OriginalLearningRetirementState::Taken","closing.disarm()"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_authorize_stop"
+symbol = "OriginalSameActorLearningWork::authorize_original_learning_stop"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)authorize_original_learning_stop\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn authorize_original_learning_stop(","OriginalDurableLearningAcknowledgement::require_original_work","OriginalLearningRetirementState::StopAuthorized("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_take_stop"
+symbol = "OriginalSameActorLearningWork::take_original_learning_stop"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)take_original_learning_stop\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn take_original_learning_stop(","OriginalLearningRetirementState::StopTaken","OriginalLearningStop { work: Arc::clone(self)"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_work_join"
+symbol = "OriginalSameActorLearningWork::join_original_normal_work"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)join_original_normal_work\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["fn join_original_normal_work(","self.jobs.join_original_normal().await","Ok(OriginalLearningWorkJoined { work: Arc::clone(self) })"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_stop_binding"
+symbol = "OriginalLearningStop::require_original_work"
+receiver_type = "OriginalLearningStop"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["impl OriginalLearningStop","work.require_original_terminal_snapshot(&self.snapshot)"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_join_binding"
+symbol = "OriginalLearningWorkJoined::require_original_work"
+receiver_type = "OriginalLearningWorkJoined"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+definition_markers = ["impl OriginalLearningWorkJoined","work.require_original_retirement_identity(work.context.identity(), work.gate())"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_loop_run"
+symbol = "LearningIterationRuntimeBootstrapV1::run_original_retirable"
+receiver_type = "LearningIterationRuntimeBootstrapV1"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"
+definition_markers = ["fn run_original_retirable(","OriginalRetirableLearningAttempt","run_original_retirable_commands("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_loop_binding"
+symbol = "OriginalLearningLoopRetired::require_original_work"
+receiver_type = "OriginalLearningLoopRetired"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"
+definition_markers = ["impl OriginalLearningLoopRetired","OriginalLearningStop::require_original_work","self.bootstrap.original_q24.is_none()"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_delivery_run"
+symbol = "CircuitLearningDeliveryRuntimeV1::run_original_retirable"
+receiver_type = "CircuitLearningDeliveryRuntimeV1"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs"
+definition_markers = ["fn run_original_retirable(","OriginalRetirableDeliveryAttempt","CircuitLearningDeliveryRuntimeV1::run_original_ack("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_delivery_owner_binding"
+symbol = "OriginalLearningDeliveryRetired::require_original_work"
+receiver_type = "OriginalLearningDeliveryRetired"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs"
+definition_markers = ["impl OriginalLearningDeliveryRetired","self.runtime.requests.as_slice() != std::slice::from_ref(&snapshot.request)","self.runtime.retained_source.is_none()"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_delivery_ack_cap"
+symbol = "OriginalLearningDeliveryRetired::acknowledgement"
+receiver_type = "OriginalLearningDeliveryRetired"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs"
+definition_markers = ["fn acknowledgement(","&self.acknowledged"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_ack_binding"
+symbol = "OriginalDurableLearningAcknowledgement::require_original_work"
+receiver_type = "OriginalDurableLearningAcknowledgement"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs"
+definition_markers = ["impl OriginalDurableLearningAcknowledgement","!Arc::ptr_eq(&self.work, work)","work.require_original_terminal_snapshot(&self.snapshot)"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs","codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_ack_create"
+symbol = "deliver_original_same_actor_ack"
+definition_path = "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs"
+definition_markers = ["fn deliver_original_same_actor_ack(","DeliveryMode::FirstAttempt","work.require_original_terminal_snapshot(&snapshot)?","Ok(OriginalDurableLearningAcknowledgement {"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_owners_binding"
+symbol = "OriginalRetiredLearningOwners::require_original_work"
+receiver_type = "OriginalRetiredLearningOwners"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+definition_markers = ["impl OriginalRetiredLearningOwners","OriginalLearningLoopRetired::require_original_work","OriginalLearningDeliveryRetired::require_original_work","OriginalLearningWorkJoined::require_original_work"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_joined_binding"
+symbol = "OriginalSameActorLearningJoined::require_original_phase"
+receiver_type = "OriginalSameActorLearningJoined"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+definition_markers = ["impl OriginalSameActorLearningJoined","OriginalSameActorCJoined::require_original_phase(&self.original, identity, gate)"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs","codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_joined_c"
+symbol = "OriginalSameActorLearningJoined::original_c_joined"
+receiver_type = "OriginalSameActorLearningJoined"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+definition_markers = ["fn original_c_joined(","&self.original"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_normal_worker_run"
+symbol = "OriginalSameActorLearningWorker::run_original_retirable"
+receiver_type = "OriginalSameActorLearningWorker"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+definition_markers = ["fn run_original_retirable(","OriginalRetirableLearningWorker","OriginalSameActorLearningWorker::run_original_retirable_lanes("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_learning_original_job_with_join_cause"
+symbol = "OriginalSameActorLearningWork::receive_original_job_with_join_cause"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)receive_original_job_with_join_cause\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs"
+definition_markers = ["fn receive_original_job_with_join_cause<","Result<Result<T, E>, OriginalJobReceiveError>","self.jobs.receive_registered_job_with_join_cause(job).await"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs","codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs"
+required = ["Requested(Box<OriginalSameActorCQuiescence>)","StopAuthorized(Box<LearningIterationSnapshotV1>)","pub(crate) struct OriginalLearningStop {","pub(crate) struct OriginalLearningWorkJoined {","changed: Notify","original_normal_retirement_change"]
+forbidden = ["unsafe","AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".abort(","abort_handle(","#[derive(Clone)]","Deserialize","Serialize"]
+required_order = [["enum OriginalLearningRetirementState","Open,","Requested(Box<OriginalSameActorCQuiescence>)","Taken,","StopAuthorized(Box<LearningIterationSnapshotV1>)","StopTaken,"],["impl OriginalLearningStop","fn require_original_work(","!Arc::ptr_eq(&self.work, work)","self.work.gate().close()","work.gate().close()","return Err(refused(","work.require_original_terminal_snapshot(&self.snapshot)","fn snapshot("],["impl OriginalLearningWorkJoined","fn require_original_work(","!Arc::ptr_eq(&self.work, work)","self.work.gate().close()","work.gate().close()","return Err(refused(","work.require_original_retirement_identity(work.context.identity(), work.gate())","fn refused("]]
+required_function_order = [
+  { function = "fn require_original_retirement_identity(", sequence = ["self.context.identity() != identity","!Arc::ptr_eq(self.gate(), gate)","self.gate().close()","return Err(refused(","self.gate().require_open().map(|_| ()).map_err(refused)"] },
+  { function = "fn require_original_delivery_request(", sequence = ["self.require_original_retirement_identity(self.context.identity(), self.gate())?","request != &self.prepared.initial().request","owners != &self.prepared.initial().owners","self.gate().close()","return Err(refused(","self.prepared.scope().validate_request(request, owners).map_err(refused)"] },
+  { function = "fn require_original_terminal_snapshot(", sequence = ["self.require_original_retirement_identity(self.context.identity(), self.gate())?","snapshot.request != self.prepared.initial().request","snapshot.owners != self.prepared.initial().owners","self.gate().close()","return Err(refused(","self.prepared.scope().validate_snapshot(snapshot).map_err(refused)?","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())",".map_err(refused)?","if coordinator.next_stage().is_some()","self.gate().close()","return Err(refused(","Ok(())"] },
+  { function = "fn request_original_normal_retirement(", sequence = ["let mut closing = self.original_failure_scope()","self.require_identity_and_gate(self.context.identity(), self.gate())?","OriginalSameActorCQuiescence::require_original_phase(","OriginalSameActorCQuiescence::require_original_learning_work(&quiescence, self)?","self.retirement.state.lock().map_err(refused)?","!matches!(*state, OriginalLearningRetirementState::Open)","return Err(refused(","*state = OriginalLearningRetirementState::Requested(Box::new(quiescence))","drop(state)","self.retirement.changed.notify_waiters()","self.gate().notify_original_waiters()","closing.disarm()","Ok(())"] },
+  { function = "fn take_original_normal_retirement(", sequence = ["self.original_failure_scope()","self.retirement.changed.notified()","changed.as_mut().enable()","self.require_original_retirement_identity(self.context.identity(), self.gate())?","self.retirement.state.lock().map_err(refused)?","OriginalLearningRetirementState::Open => None","OriginalLearningRetirementState::Requested(_)","std::mem::replace(&mut *state, OriginalLearningRetirementState::Taken)","Some(*original)","_ => return Err(refused(","if let Some(original) = taken","OriginalSameActorCQuiescence::require_original_phase(","OriginalSameActorCQuiescence::require_original_learning_work(&original, self)?","closing.disarm()","return Ok(original)","_ = changed","_ = self.gate().cancelled()","return Err(refused(","self.gate().deadline().instant()","return Err(refused("] },
+  { function = "fn authorize_original_learning_stop(", sequence = ["self.original_failure_scope()","OriginalSameActorCQuiescence::require_original_phase(","OriginalSameActorCQuiescence::require_original_learning_work(quiescence, self)?","OriginalDurableLearningAcknowledgement::require_original_work(acknowledged, self)?","OriginalSameActorCQuiescence::require_original_learning_snapshot(","self.require_original_terminal_snapshot(acknowledged.snapshot())?","self.retirement.state.lock().map_err(refused)?","!matches!(*state, OriginalLearningRetirementState::Taken)","return Err(refused(","*state = OriginalLearningRetirementState::StopAuthorized(","Box::new(acknowledged.snapshot().clone())","drop(state)","self.retirement.changed.notify_waiters()","self.gate().notify_original_waiters()","closing.disarm()","Ok(())"] },
+  { function = "fn take_original_learning_stop(", sequence = ["self.require_original_retirement_identity(self.context.identity(), self.gate())?","self.retirement.state.lock()","self.gate().close()","!matches!(*state, OriginalLearningRetirementState::StopAuthorized(_))","OriginalLearningRetirementState::StopTaken =>","self.gate().close()","Err(refused(","_ => Ok(None)","std::mem::replace(&mut *state, OriginalLearningRetirementState::StopTaken)","self.gate().close()","return Err(refused(","drop(state)","Ok(Some(OriginalLearningStop { work: Arc::clone(self), snapshot: *snapshot }))"] },
+  { function = "fn join_original_normal_work(", sequence = ["self.original_failure_scope()","OriginalLearningLoopRetired::require_original_work(learning, self)?","OriginalLearningDeliveryRetired::require_original_work(delivery, self)?","self.jobs.join_original_normal().await","if let Err(error) = result","self.gate().close()","self.close_and_join_original_work().await","return Err(refused(","self.require_original_retirement_identity(self.context.identity(), self.gate())?","OriginalLearningLoopRetired::require_original_work(learning, self)?","OriginalLearningDeliveryRetired::require_original_work(delivery, self)?","closing.disarm()","Ok(OriginalLearningWorkJoined { work: Arc::clone(self) })"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"
+required = ["pub(crate) struct OriginalLearningLoopRetired {","bootstrap: LearningIterationRuntimeBootstrapV1","stop: OriginalLearningStop","self.receiver.close()"]
+forbidden = ["unsafe","AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".abort(","abort_handle(","#[derive(Clone)]","Deserialize","Serialize"]
+required_order = [["struct OriginalLearningLoopRetired","_closing: CloseSameActorPhaseOnDrop","bootstrap: LearningIterationRuntimeBootstrapV1","stop: OriginalLearningStop"],["struct OriginalRetirableLearningAttempt","closing: CloseSameActorPhaseOnDrop","bootstrap: LearningIterationRuntimeBootstrapV1","work: Arc<OriginalSameActorLearningWork>"]]
+required_function_order = [
+  { function = "fn require_original_work(", sequence = ["OriginalLearningStop::require_original_work(&self.stop, work)?","let snapshot = self.stop.snapshot()","self.bootstrap.owners != snapshot.owners","self.bootstrap.original_q24.is_none()","!self.bootstrap.enforce_circuit_admission","self.bootstrap.circuit_delivery_source","CircuitLearningSourceV1::OriginalQ24","work.gate().close()","return Err(refused(",".require_frozen_scope(&snapshot.request)",".map_err(refused)"] },
+  { function = "fn run_original_retirable(", sequence = ["let attempt = OriginalRetirableLearningAttempt {","closing: work.original_failure_scope()","bootstrap: self","async move","LearningIterationRuntimeBootstrapV1::run_original_retirable_commands(","&mut attempt.bootstrap,","&attempt.work,",").await","Err(error) =>","attempt.work.gate().close()","attempt.work.close_and_join_original_work().await","return Err(","if attempt.cancellation.is_cancelled()","attempt.work.gate().close()","attempt.work.close_and_join_original_work().await","return Err(","OriginalLearningStop::require_original_work(&stop, &attempt.work)?","Ok(OriginalLearningLoopRetired {","_closing: attempt.closing","bootstrap: attempt.bootstrap","stop,"] },
+  { function = "fn run_original_retirable_commands(", sequence = ["self.require_identity(state.identity())?","work.require_identity_and_gate(state.identity(), work.gate())?","let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1>","self.original_q24.as_ref().ok_or_else(","OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(original, work)",".map_err(refused)?","loop {","work.original_normal_retirement_change().notified()","changed.as_mut().enable()","work.require_original_work_entry().map_err(refused)?","if cancellation.is_cancelled()","return Err(","if let Some(stop) = work.take_original_learning_stop()?","self.receiver.close()","let remaining = tokio::select!","_ = cancellation.cancelled()","return Err(","_ = work.gate().cancelled()","return Err(","work.gate().deadline().instant()","return Err(","command = self.receiver.recv() => command","if let Some(command) = remaining","command.response.send(Err(","LearningIterationRuntimeErrorV1::CommitUncertain","return Err(","OriginalLearningStop::require_original_work(&stop, work)?","return Ok(stop)","let command = tokio::select!","_ = changed => continue","command = self.receiver.recv() => command","let Some(command) = command else","return Err(","if response.is_closed()","return Err(","tokio::time::timeout_at(","work.gate().deadline().instant()","self.process_with_deadline(state, *request, mode)","_ = response.closed() => Err(LearningIterationRuntimeErrorV1::CommitUncertain)","result = &mut process => result","if let Err(error) = &result","work.gate().close()","work.close_and_join_original_work().await","response.send(result)","return Err(","work.require_original_work_entry().map_err(refused)?","if response.send(result).is_err()","return Err("] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs"
+required = ["pub(crate) struct OriginalLearningDeliveryRetired {","runtime: CircuitLearningDeliveryRuntimeV1","acknowledged: OriginalDurableLearningAcknowledgement"]
+forbidden = ["unsafe","AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".abort(","abort_handle(","#[derive(Clone)]","Deserialize","Serialize"]
+required_order = [["struct OriginalLearningDeliveryRetired","_closing: CloseSameActorPhaseOnDrop","runtime: CircuitLearningDeliveryRuntimeV1","acknowledged: OriginalDurableLearningAcknowledgement"],["struct OriginalRetirableDeliveryAttempt","closing: CloseSameActorPhaseOnDrop","runtime: CircuitLearningDeliveryRuntimeV1","work: Arc<OriginalSameActorLearningWork>"]]
+required_function_order = [
+  { function = "fn acknowledgement(", sequence = ["fn acknowledgement(","&self.acknowledged"] },
+  { function = "fn require_original_work(", sequence = ["OriginalDurableLearningAcknowledgement::require_original_work(&self.acknowledged, work)?","let snapshot = self.acknowledged.snapshot()","self.runtime.requests.as_slice() != std::slice::from_ref(&snapshot.request)","self.runtime.owners != snapshot.owners","!matches!(self.runtime.source, CircuitLearningSourceV1::OriginalQ24)","self.runtime.retained_source.is_none()","work.gate().close()","return Err(","Ok(())"] },
+  { function = "fn run_original_retirable(", sequence = ["let attempt = OriginalRetirableDeliveryAttempt {","closing: work.original_failure_scope()","runtime: self,","async move","CircuitLearningDeliveryRuntimeV1::run_original_ack(","&attempt.runtime,","&attempt.work,",").await?","if attempt.cancellation.is_cancelled()","return Err(","OriginalDurableLearningAcknowledgement::require_original_work(","&acknowledged, &attempt.work,","Ok(OriginalLearningDeliveryRetired {","_closing: attempt.closing","runtime: attempt.runtime","acknowledged,"] },
+  { function = "fn run_original_ack(", sequence = ["work.require_identity_and_gate(state.identity(), work.gate())?","self.requests.len() != 1","!matches!(self.source, CircuitLearningSourceV1::OriginalQ24)","state.identity().spawn_generation != self.spawn_generation","return Err(","let source: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>","self.retained_source.as_ref()","source.observe_retained_learning(state.identity()).await?","let request = self.requests[0].clone()","if &request != source.request()","return Err(","source.original_outbox(state.identity(), &request)?","drop(store)","original_store.owner_agent_id().as_str() != request.agent_id.as_str()","state.identity().agent_id.as_str() != request.agent_id.as_str()","return Err(","work.require_original_delivery_request(&request, &self.owners)?","tokio::time::interval(Duration::from_secs(1))","interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip)","loop {","_ = cancellation.cancelled()","_ = work.gate().cancelled()","work.gate().deadline().instant()","_ = interval.tick()","work.require_original_delivery_request(&request, &self.owners)?","if require_ready(state).is_err()","continue;","row = original_store.circuit_learning_delivery(request.source_run_id.as_str())","let Some(row) = row else","continue;","if row.request_digest.is_none()","if !state.automation_admission_ready()?","continue;","AgentdState::require_circuit_learning_source(state, &request) => result?","let acknowledged = tokio::select!","result = deliver_original_same_actor_ack(","&original_store, &self.handle, request.clone(), self.owners.clone()","Arc::clone(state), Arc::clone(work)","OriginalDurableLearningAcknowledgement::require_original_work(&acknowledged, work)?","return Ok(acknowledged)"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs"
+required = ["pub(crate) struct OriginalDurableLearningAcknowledgement {","_store: AutomationStore","DeliveryMode::FirstAttempt"]
+forbidden = ["unsafe","AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".abort(","abort_handle(","#[derive(Clone)]","Deserialize","Serialize"]
+required_order = [["pub(crate) struct OriginalDurableLearningAcknowledgement","_closing: CloseSameActorPhaseOnDrop","work: Arc<OriginalSameActorLearningWork>","snapshot: LearningIterationSnapshotV1","_store: AutomationStore"]]
+required_function_order = [
+  { function = "fn require_original_work(", sequence = ["!Arc::ptr_eq(&self.work, work)","self.work.gate().close()","work.gate().close()","return Err(AgentdError::GenerationFenced(","work.require_original_terminal_snapshot(&self.snapshot)"] },
+  { function = "fn deliver_original_same_actor_ack(", sequence = ["let closing = work.original_failure_scope()","work.require_identity_and_gate(state.identity(), work.gate())?","work.require_original_delivery_request(&request, &owners)?","let source_state: Arc<AgentdState> = Arc::clone(&state)","let source_request = request.clone()","let source_work: Arc<OriginalSameActorLearningWork> = Arc::clone(&work)","let snapshot = delivery(","store,","Some(backend),","request,","owners,","DeliveryMode::FirstAttempt,","Some(Box::pin(async move","source_work.require_original_work_entry()?","AgentdState::require_circuit_learning_source(&source_state, &source_request)",".await.map_err(|_| Error::WrongScope)?","source_work.require_original_work_entry()",".await\n    .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?","work.require_original_terminal_snapshot(&snapshot)?","Ok(OriginalDurableLearningAcknowledgement {","_closing: closing,","work,","snapshot,","_store: store.clone()"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+required = ["pub(crate) struct OriginalRetiredLearningOwners {","pub(crate) struct OriginalSameActorLearningJoined {","joined: OriginalLearningWorkJoined","OriginalSameActorCQuiescence::finish_original_successor_join("]
+forbidden = ["unsafe","AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".abort(","abort_handle(","#[derive(Clone)]","Deserialize","Serialize"]
+required_order = [["struct OriginalRetiredLearningOwners","_closing: CloseSameActorPhaseOnDrop","work: Arc<OriginalSameActorLearningWork>","learning: OriginalLearningLoopRetired","delivery: OriginalLearningDeliveryRetired","joined: OriginalLearningWorkJoined"],["struct OriginalSameActorLearningJoined","original: OriginalSameActorCJoined","struct OriginalRetirableLearningWorker","closing: CloseSameActorPhaseOnDrop","worker: OriginalSameActorLearningWorker"]]
+required_function_order = [
+  { function = "fn require_original_work(", sequence = ["!Arc::ptr_eq(&self.work, work)","self.work.gate().close()","work.gate().close()","return Err(","OriginalLearningLoopRetired::require_original_work(&self.learning, work)?","OriginalLearningDeliveryRetired::require_original_work(&self.delivery, work)?","OriginalLearningWorkJoined::require_original_work(&self.joined, work)"] },
+  { function = "fn require_original_phase(", sequence = ["fn require_original_phase(","OriginalSameActorCJoined::require_original_phase(&self.original, identity, gate)"] },
+  { function = "fn original_c_joined(", sequence = ["fn original_c_joined(","&self.original"] },
+  { function = "fn run_original_retirable(", sequence = ["let attempt = OriginalRetirableLearningWorker {","closing: self.work.original_failure_scope()","worker: self,","async move","let work = Arc::clone(&attempt.worker.work)","OriginalSameActorLearningWorker::run_original_retirable_lanes(","attempt.worker,","attempt.store, attempt.state, attempt.cancellation,","match result","Ok(joined)","attempt.closing.disarm()","Ok(joined)","Err(error)","work.gate().close()","work.close_and_join_original_work().await","Err(match cleanup"] },
+  { function = "fn run_original_retirable_lanes(", sequence = ["OriginalSameActorRootContext::require_current(&self.context)?","self.work.require_identity_and_gate(state.identity(), self.context.gate())?","CircuitLearningDeliveryRuntimeV1::attach_sources(&self.delivery, &state)?","let OriginalSameActorLearningWorker {","_closing: mut closing,","let stopped = cancellation.child_token()","Box::pin(LearningIterationRuntimeBootstrapV1::run_original_retirable(","Box::pin(CircuitLearningDeliveryRuntimeV1::run_original_retirable(","Box::pin(PendingSuccessorOwner::run_original_retirable(","Box::pin(work.take_original_normal_retirement())","let mut stop_authorized = false","let mut successor_stop_requested = false","if cancellation.is_cancelled()","if let Err(error) = context.gate().require_open()","if !stop_authorized","if let (Some(original), Some(Ok(delivered)))","OriginalLearningDeliveryRetired::acknowledgement(delivered)","work.authorize_original_learning_stop(original, acknowledged)","stop_authorized = true","if stop_authorized && !successor_stop_requested","if let Some(Ok(learning_owner))","let Some(original) = &quiescence else","OriginalLearningLoopRetired::require_original_work(","OriginalSameActorCQuiescence::request_original_successor_retirement(original)","successor_stop_requested = true","if successor_stop_requested","&& learning_result.is_some()","&& delivery_result.is_some()","&& successor_result.is_some()","break None","tokio::select!","result = &mut learning, if learning_result.is_none()","learning_result = Some(result)","if !stop_authorized","result = &mut delivery, if delivery_result.is_none()","delivery_result = Some(result)","result = &mut successor, if successor_result.is_none()","successor_result = Some(result)","if !successor_stop_requested","result = &mut retirement, if quiescence.is_none()","Ok(original) => quiescence = Some(original)","_ = cancellation.cancelled()","_ = context.gate().cancelled()","context.gate().deadline().instant()","drop(retirement)","if let Some(primary) = failed","context.gate().close()","stopped.cancel()","tokio::join!(","match learning_result.take()","None => learning.as_mut().await","match delivery_result.take()","None => delivery.as_mut().await","match successor_result.take()","None => successor.as_mut().await","if let Err(error) = &learning_done","if let Err(error) = &delivery_done","if let Err(error) = &successor_done","drop((learning_done, delivery_done, successor_done, quiescence))","return Err(refused(causes.join(","let learning = learning_result.take()","let delivery = delivery_result.take()","let successor = successor_result.take()","let quiescence = quiescence.take()","if cancellation.is_cancelled()","return Err(","work.join_original_normal_work(&learning, &delivery).await?","if cancellation.is_cancelled()","return Err(","let owners = OriginalRetiredLearningOwners {","_closing: work.original_failure_scope()","work: Arc::clone(&work)","learning,","delivery,","joined,","OriginalRetiredLearningOwners::require_original_work(&owners, &work)?","OriginalSameActorCQuiescence::finish_original_successor_join(","quiescence, successor, owners,","OriginalSameActorCJoined::require_original_phase(","&original, context.identity(), context.gate(),","closing.disarm()","Ok(OriginalSameActorLearningJoined { original })"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs"
+required = ["join_error: Option<tokio::task::JoinError>","pub(crate) enum OriginalJobReceiveError {","normal_closed: AtomicBool","retirement: retirement::OriginalLearningRetirement","#[path = \"same_actor_q24_phase_learning_retirement.rs\"]","pub(crate) use retirement::OriginalLearningStop;","pub(crate) use retirement::OriginalLearningWorkJoined;"]
+forbidden = ["unsafe","AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".abort(","abort_handle("]
+required_order = [["mod retirement;","pub(crate) use retirement::OriginalLearningStop;","pub(crate) use retirement::OriginalLearningWorkJoined;"],["fn receive_original_job_with_join_cause<","Result<Result<T, E>, OriginalJobReceiveError>","self.jobs.receive_registered_job_with_join_cause(job).await","fn close_and_join_original_work("],["fn receive_registered_job_with_join_cause<","!Arc::ptr_eq(&self.gate, &job.gate)","!Arc::ptr_eq(&self.pending, &job.pending)","self.gate.close()","job.gate.close()","return Err(OriginalJobReceiveError::WrongOriginalJob)","job.receive_with_join_cause().await","match self.release(&job)","Ok(()) => result","Err(custody) => match result","Err(original) => Err(OriginalJobReceiveError::Release","original: Box::new(original)","custody,","Ok(output)","drop(output)","Err(OriginalJobReceiveError::Custody(custody))","fn reserve("],["impl<T: Send + 'static, E: Send + 'static> OriginalJobCustody","fn join_for_normal_retirement(","self.state.lock().await","self.join_locked(&mut state).await","let output = state.output.take()","let succeeded = !state.join_failed && output.is_none()","drop(state)","drop(output)","if !succeeded","self.join_failed.store(true, Ordering::Release)","self.gate.close()","succeeded","fn join_and_discard("]]
+required_function_order = [
+  { function = "fn from_original_scope(", sequence = ["OriginalSameActorRootContext::require_current(&context)?","CellQ24PreparedLearningV1::revalidate_source(&prepared)","normal_closed: AtomicBool::new(false)","OriginalEvaluationExchange::new(Arc::clone(context.gate()))","Ok(Arc::new(Self","retirement: retirement::OriginalLearningRetirement::new()"] },
+  { function = "fn reserve(", sequence = ["self.retained.lock()","self.gate.close()","self.gate\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?","if self.normal_closed.load(Ordering::Acquire)","self.gate.close()","return Err(Error::CommitUncertain)","self.pending",".fetch_update(Ordering::AcqRel, Ordering::Acquire","value.checked_add(1)","Ok(OriginalBlockingAdmission {","retained,","armed: true"] },
+  { function = "fn join_original_normal(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","self.retained.lock()","self.gate.close()","self.gate.require_open()","if self.normal_closed.swap(true, Ordering::AcqRel)","return Err(","loop {","self.gate.require_open()","let jobs = self.retained.lock()","self.gate.close()","?.clone()","if jobs.is_empty()","let notified = self.changed.notified()","tokio::pin!(notified)","notified.as_mut().enable()","self.pending.load(Ordering::Acquire) == 0","self.join_failed.load(Ordering::Acquire)","return Err(","self.gate.require_open()","closing.disarm()","return Ok(())","tokio::select!","_ = notified","_ = self.gate.cancelled()","return Err(","self.gate.deadline().instant()","self.gate.close()","return Err(","continue;","for job in jobs","result = job.join_for_normal_retirement() => result","_ = self.gate.cancelled()","return Err(","self.gate.deadline().instant()","self.gate.close()","return Err(","self.retained.lock()","self.gate.close()",".retain(|entry| !Arc::ptr_eq(entry, &job))","if !joined","self.join_failed.store(true, Ordering::Release)","return Err("] },
+  { function = "fn receive_with_join_cause(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","self.state.lock().await","self.join_locked(&mut state).await","let failed = state.join_failed","let join_error = state.join_error.take()","let output = state.output.take()","drop(state)","if let Some(error) = join_error","drop(output)","return Err(OriginalJobReceiveError::Join(error))","if failed","drop(output)","return Err(OriginalJobReceiveError::ResultUnavailable)","let output = output.ok_or(OriginalJobReceiveError::ResultUnavailable)?","if output.is_err()","self.gate.close()","return Ok(output)","if let Err(error) = self.gate.require_open()","drop(output)","return Err(OriginalJobReceiveError::Phase(error))","closing.disarm()","Ok(output)"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"
+required = ["pub(crate) use work::OriginalJobReceiveError;","pub(crate) use work::OriginalLearningStop;","pub(crate) use work::OriginalLearningWorkJoined;","pub(crate) use worker::OriginalRetiredLearningOwners;","pub(crate) use worker::OriginalSameActorLearningJoined;"]
+forbidden = []
+required_order = [["pub(crate) use work::OriginalJobReceiveError;","pub(crate) use work::OriginalLearningStop;","pub(crate) use work::OriginalLearningWorkJoined;","pub(crate) use worker::OriginalRetiredLearningOwners;","pub(crate) use worker::OriginalSameActorLearningJoined;"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
+required = ["pub(crate) use delivery::OriginalLearningDeliveryRetired;","pub(crate) use same_actor::OriginalLearningLoopRetired;"]
+forbidden = []
+required_order = [["pub(crate) use delivery::OriginalLearningDeliveryRetired;","pub(crate) use same_actor::OriginalLearningLoopRetired;"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+required = ["#[path = \"learning_iteration_delivery_same_actor.rs\"]","mod same_actor;","pub(crate) use same_actor::OriginalLearningDeliveryRetired;","if !claimed && self.source.requires_original_objective()","state.require_circuit_learning_source(request)"]
+forbidden = []
+required_order = [["mod same_actor;","pub(crate) use same_actor::OriginalLearningDeliveryRetired;"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs"
+required = ["#[path = \"circuit_learning_delivery_same_actor.rs\"]","mod same_actor;","pub(crate) use same_actor::OriginalDurableLearningAcknowledgement;","pub(crate) use same_actor::deliver_original_same_actor_ack;"]
+forbidden = []
+required_order = [["mod same_actor;","pub(crate) use same_actor::OriginalDurableLearningAcknowledgement;","pub(crate) use same_actor::deliver_original_same_actor_ack;"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs"
+required = ["#[path = \"same_actor_q24_phase_learning_worker_retirement.rs\"]","mod retirement;","pub(crate) use retirement::OriginalRetiredLearningOwners;","pub(crate) use retirement::OriginalSameActorLearningJoined;"]
+forbidden = []
+required_order = [["mod retirement;","pub(crate) use retirement::OriginalRetiredLearningOwners;","pub(crate) use retirement::OriginalSameActorLearningJoined;"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs"
+required = ["#[path = \"learning_iteration_same_actor_retirement.rs\"]","mod retirement;","pub(crate) use retirement::OriginalLearningLoopRetired;"]
+forbidden = []
+required_order = [["mod retirement;","pub(crate) use retirement::OriginalLearningLoopRetired;"]]
+
+# Actual retained Learning/Model/CURRENT shutdown under original Root Intent.
+# Existing joined-owner function guards retain their original unique extents.
+
+[[boundary]]
+id = "q24_purpose_checkpoint_ports"
+symbol = "AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners"
+receiver_type = "AgentdLearningCheckpointClientV1"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs"
+definition_markers = ["fn with_original_retirable_stage_owners(","Checkpoint::SameActorRootClient(client)","Ok((ports, retirement))"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_checkpoint_capture"
+symbol = "AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint"
+receiver_type = "AgentdLearningCheckpointClientV1"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"
+definition_markers = ["fn into_original_retirable_checkpoint(","!Arc::ptr_eq(phase.gate(), work.gate())","work.require_original_delivery_request(","if self.scope.is_none()"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_checkpoint_idle"
+symbol = "AgentdLearningCheckpointClientV1::lock_original_retirement_channel"
+receiver_type = "AgentdLearningCheckpointClientV1"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"
+definition_markers = ["fn lock_original_retirement_channel(",".try_lock()","if held.is_none()","Ok(held)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_checkpoint_origin"
+symbol = "OriginalLearningCheckpointRetirement::require_original_work"
+receiver_type = "OriginalLearningCheckpointRetirement"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"
+definition_markers = ["fn require_original_work(","!Arc::ptr_eq(&self.work, work)","work.require_original_retirement_identity(&self.identity, work.gate())"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_checkpoint_close"
+symbol = "OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent"
+receiver_type = "OriginalLearningCheckpointRetirement"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"
+definition_markers = ["fn retire_original_checkpoint_after_root_intent(","lock_original_retirement_channel(","phase.shutdown_original_after_root_intent(intent)?"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_runtime_assembly"
+symbol = "AgentdRootLearningInputsV1::into_original_retirable_learning_runtime"
+receiver_type = "AgentdRootLearningInputsV1"
+definition_path = "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+definition_markers = ["fn into_original_retirable_learning_runtime(","crate::learning_iteration_channel_scoped_v2(",".with_original_circuit_learning_delivery(self.initial.request)?",".with_original_q24_stage_owners(stages)?"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_model_close"
+symbol = "AgentdRootQ24ModelFactoryV1::retire_original_model_after_root_intent"
+receiver_type = "AgentdRootQ24ModelFactoryV1"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs"
+definition_markers = ["fn retire_original_model_after_root_intent(","self.fenced = true","phase.shutdown_original_after_root_intent(intent)?"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_stage_close"
+symbol = "OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose"
+receiver_type = "OriginalCellQ24LearningStageOwnersV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs"
+definition_markers = ["fn retire_original_model_purpose(","self.inner.lane.try_acquire()","self.inner.owners.try_lock()","self.inner.lane.close()"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_loop_close"
+symbol = "OriginalLearningLoopRetired::retire_original_model_purpose"
+receiver_type = "OriginalLearningLoopRetired"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs"
+definition_markers = ["fn retire_original_model_purpose(","self.bootstrap.original_q24.as_ref()","OriginalCellQ24LearningStageOwnersV1::retire_original_model_purpose("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_learning_owners_close"
+symbol = "OriginalRetiredLearningOwners::retire_original_root_purposes"
+receiver_type = "OriginalRetiredLearningOwners"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+definition_markers = ["fn retire_original_root_purposes(","OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(","Ok(OriginalRetiredLearningPurposes { owners: self })"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_learning_owners_retained"
+symbol = "OriginalRetiredLearningPurposes::require_original_work"
+receiver_type = "OriginalRetiredLearningPurposes"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs"
+definition_markers = ["fn require_original_work(","impl OriginalRetiredLearningPurposes","OriginalRetiredLearningOwners::require_original_work(&self.owners, work)"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_learning_joined_close"
+symbol = "OriginalSameActorLearningJoined::retire_original_root_purposes"
+receiver_type = "OriginalSameActorLearningJoined"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+definition_markers = ["fn retire_original_root_purposes(","OriginalSameActorCJoined::retire_original_root_purposes(","Ok(OriginalSameActorLearningPurposesRetired { original })"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_learning_retired_origin"
+symbol = "OriginalSameActorLearningPurposesRetired::require_original_phase"
+receiver_type = "OriginalSameActorLearningPurposesRetired"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs"
+definition_markers = ["fn require_original_phase(","crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_publication_stream_close"
+symbol = "OriginalPublicationStream::retire_original_scoped_purpose_after_root_intent"
+receiver_type = "OriginalPublicationStream"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
+definition_markers = ["fn retire_original_scoped_purpose_after_root_intent(","phase.initial_retirement.is_some()","phase.retired = true","self.stream.shutdown(std::net::Shutdown::Both)?"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_current_client.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_current_client_close"
+symbol = "RootGenerationCurrentClient::retire_original_current_after_root_intent"
+receiver_type = "RootGenerationCurrentClient"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+definition_markers = ["fn retire_original_current_after_root_intent(","self.connection.original_launch_binding().1 != identity","self.fenced.swap(true, Ordering::AcqRel)","self.lane.try_lock()"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_current_store_close"
+symbol = "CurrentStore::retire_original_root_client_after_intent"
+receiver_type = "CurrentStore"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+definition_markers = ["fn retire_original_root_client_after_intent(","Store::Root(original)","RootGenerationCurrentClient::retire_original_current_after_root_intent("]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_current_owner_close"
+symbol = "NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent"
+receiver_type = "NeuronGenerationCurrentOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+definition_markers = ["fn retire_original_root_purpose_after_intent(","store::CurrentStore::retire_original_root_client_after_intent("]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_update_live.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_live_current_close"
+symbol = "LiveGenerationCurrent::retire_original_current_purpose"
+receiver_type = "LiveGenerationCurrent"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs"
+definition_markers = ["fn retire_original_current_purpose(","self.authorities.artifacts.try_lock()","self.selected.try_lock()","NeuronGenerationCurrentOwnerV1::retire_original_root_purpose_after_intent("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_purpose_published_task_close"
+symbol = "PublishedCircuitFeatureTaskV1::retire_original_root_current_after_intent"
+receiver_type = "PublishedCircuitFeatureTaskV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"
+definition_markers = ["fn retire_original_root_current_after_intent(","Publication::Update { .. }","self.0.original.try_lock()","LiveGenerationCurrent::retire_original_current_purpose("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs"
+required = ["pub(crate) struct OriginalLearningCheckpointRetirement {","client: Arc<AgentdLearningCheckpointClientV1>","work: Arc<OriginalSameActorLearningWork>"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes"]
+required_order = [["struct OriginalLearningCheckpointRetirement","_closing: CloseSameActorPhaseOnDrop","client: Arc<AgentdLearningCheckpointClientV1>","identity: AgentdIdentity","work: Arc<OriginalSameActorLearningWork>"]]
+required_function_order = [
+  { function = "fn lock_original_retirement_channel(", sequence = ["self",".channel",".try_lock()",".map_err(|_| refused(","if held.is_none()","return Err(refused(","Ok(held)"] },
+  { function = "fn into_original_retirable_checkpoint(", sequence = ["work.original_failure_scope()","work.require_original_retirement_identity(identity, work.gate())?","self.phase.as_ref()","!Arc::ptr_eq(phase.gate(), work.gate())","return Err(refused(","phase.require_open()?","work.require_original_delivery_request(&self.initial.request, &self.initial.owners)?","self.scope.is_none()","return Err(refused(","let client = Arc::new(self)","OriginalLearningCheckpointRetirement {","_closing: closing","client: Arc::clone(&client)","identity: identity.clone()","work: Arc::clone(work)","Ok((client, retirement))"] },
+  { function = "fn require_original_work(", sequence = ["!Arc::ptr_eq(&self.work, work)","self.work.gate().close()","work.gate().close()","return Err(refused(","work.require_original_retirement_identity(&self.identity, work.gate())"] },
+  { function = "fn retire_original_checkpoint_after_root_intent(", sequence = ["self.work.original_failure_scope()","self.require_original_work(&self.work)?","intent.require_original_origin(&self.identity, self.work.gate())?","self.client.phase.as_ref()","!Arc::ptr_eq(phase.gate(), self.work.gate())","return Err(refused(","AgentdLearningCheckpointClientV1::lock_original_retirement_channel(","&self.client",")?","held.as_ref()","RootObservationStream::root_lifetime(&channel.transport)","check_lifetime(root.get_ref())",".map_err(refused)?","phase.shutdown_original_after_root_intent(intent)?","check_lifetime(root.get_ref())",".map_err(refused)?","intent.require_original_origin(&self.identity, self.work.gate())?","drop(held)","closing.disarm()","Ok(())"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs"
+required = ["SameActorRootClient(Arc<AgentdLearningCheckpointClientV1>)","Checkpoint::SameActorRootClient(client)"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes"]
+required_order = []
+required_function_order = [
+  { function = "fn with_original_retirable_stage_owners(", sequence = ["OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(","&stages, work,",".map_err(","AgentdLearningCheckpointClientV1::into_original_retirable_checkpoint(","self, identity, work,","let ports = Arc::new(CheckpointedIterationPorts {","initial: client.initial.clone()","checkpoint: Checkpoint::SameActorRootClient(client)","stages,","Ok((ports, retirement))"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+required = ["pub(crate) fn into_original_retirable_learning_runtime("]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes"]
+required_order = []
+required_function_order = [
+  { function = "fn into_original_retirable_learning_runtime(", sequence = ["self.require_prepared_q24(stages.prepared())?","work.require_original_retirement_identity(&self.identity, work.gate())?","self.scope.ok_or_else(","AgentdLearningCheckpointClientV1::with_original_retirable_stage_owners(","self.client,","Arc::clone(&stages)","&self.identity,","work,","crate::learning_iteration_channel_scoped_v2(","self.identity.agent_id","self.identity.spawn_generation","self.initial.owners","ports,","verifier,","capacity,","scope,",".with_original_circuit_learning_delivery(self.initial.request)?",".with_original_q24_stage_owners(stages)?","Ok((handle, bootstrap, checkpoint))"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs"
+required = ["checkpoint: OriginalLearningCheckpointRetirement,"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes"]
+required_order = [["struct OriginalSameActorLearningWorker","context: Arc<OriginalSameActorRootContext>","work: Arc<OriginalSameActorLearningWork>","checkpoint: OriginalLearningCheckpointRetirement","learning: LearningIterationRuntimeBootstrapV1","delivery: CircuitLearningDeliveryRuntimeV1","pending: PendingSuccessorOwner","_closing: CloseSameActorPhaseOnDrop"]]
+required_function_order = [
+  { function = "fn from_original_parts(", sequence = ["CloseSameActorPhaseOnDrop::new(context.gate())","OriginalSameActorRootContext::require_current(&context)?","work.require_identity_and_gate(context.identity(), context.gate())?","learning.require_identity(context.identity())?","OriginalLearningCheckpointRetirement::require_original_work(&checkpoint, &work)?","Ok(Self {","context,","work,","checkpoint,","learning,","delivery,","pending,","_closing: closing"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"
+required = ["pub(crate) struct OriginalRetiredLearningPurposes {","pub(crate) struct OriginalSameActorLearningPurposesRetired {","identity: AgentdIdentity,","checkpoint: OriginalLearningCheckpointRetirement,"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".abort(","#[derive(Clone)]","Deserialize"]
+required_order = [["struct OriginalRetiredLearningOwners","_closing: CloseSameActorPhaseOnDrop","work: Arc<OriginalSameActorLearningWork>","identity: AgentdIdentity","checkpoint: OriginalLearningCheckpointRetirement","learning: OriginalLearningLoopRetired","delivery: OriginalLearningDeliveryRetired","joined: OriginalLearningWorkJoined"],["impl OriginalRetiredLearningOwners {\n    pub(crate) fn require_original_work(","!Arc::ptr_eq(&self.work, work)","self.work.gate().close()","work.gate().close()","return Err(","work.require_original_retirement_identity(&self.identity, work.gate())?","OriginalLearningCheckpointRetirement::require_original_work(&self.checkpoint, work)?","OriginalLearningLoopRetired::require_original_work(&self.learning, work)?","OriginalLearningDeliveryRetired::require_original_work(&self.delivery, work)?","OriginalLearningWorkJoined::require_original_work(&self.joined, work)"],["impl OriginalRetiredLearningOwners {\n    pub(crate) fn retire_original_root_purposes(","OriginalRetiredLearningOwners::require_original_work(&self, &self.work)?","intent.require_original_origin(&self.identity, self.work.gate())?","OriginalLearningCheckpointRetirement::retire_original_checkpoint_after_root_intent(","&self.checkpoint, intent,","OriginalLearningLoopRetired::retire_original_model_purpose(","&self.learning, intent, &self.identity, &self.work,","intent.require_original_origin(&self.identity, self.work.gate())?","Ok(OriginalRetiredLearningPurposes { owners: self })"],["impl OriginalSameActorLearningJoined {","fn retire_original_root_purposes(","OriginalSameActorCJoined::retire_original_root_purposes(","self.original, intent,","Ok(OriginalSameActorLearningPurposesRetired { original })"]]
+required_function_order = [

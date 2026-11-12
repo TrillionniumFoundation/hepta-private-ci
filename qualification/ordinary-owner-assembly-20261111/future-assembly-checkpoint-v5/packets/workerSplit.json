@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "kind": "purpose-binding-private-child-original-unique-function-guard-preservation",
+  "status": "static source; no execution",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "predecessors": [
+    "a057e64a38fbf551740f8575430b1464d43d98fc",
+    "bc50a65b06cc69e4e40da0f34920427d1dafa08e"
+  ],
+  "equivalent_previous_full_packet": "2d66c3546e60adaad37fd902e9dc6ff3bab20ff6",
+  "path_count": 2,
+  "operation_count": 2,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "preimage": {
+        "blob": "4b59b6cfe1bc15eba250bbf07ba12a28f321e45a",
+        "bytes": 17053,
+        "sha256": "dddc0d45b6a749e3bc5677a681aad7c630ce7e410b6993c54d520ec9da0961a3"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+        "blob": "ca68307fdf233666176933acc0285580708efe85",
+        "bytes": 16501,
+        "sha256": "455aee239c668062a813e13c5027522a29f0e2870de713b84c5ba71e44e096de"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+          "kind": "replace_once",
+          "old": "impl OriginalRetiredLearningPurposes {\n    pub(crate) fn require_original_work(\n        &self,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(), AgentdError> {\n        OriginalRetiredLearningOwners::require_original_work(&self.owners, work)\n    }\n}\n\nimpl OriginalSameActorLearningPurposesRetired {\n    pub(crate) fn require_original_phase(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase(\n            &self.original, identity, gate,\n        )\n    }\n}\n\nimpl OriginalSameActorLearningJoined {\n",
+          "new": "#[path = \"same_actor_q24_phase_learning_purpose_bindings.rs\"]\nmod purpose_bindings;\n\nimpl OriginalSameActorLearningJoined {\n",
+          "reason": "Move only the two new returned-capability binding impls verbatim to a private child, preserving original function-order uniqueness and every caller signature"
+        }
+      ],
+      "forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+      "preimage": null,
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+        "blob": "69ae313a6b592de998636cc8f7a39476525e0424",
+        "bytes": 888,
+        "sha256": "22c434605a778d1c65a703df528942878f17a37eae54c0204412088021b2c0a8"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs",
+          "kind": "add",
+          "content": "//! Binding checks for the two actual returned purpose-retired owner bundles.\n//! Keep their methods separate so the original joined-owner function guards\n//! retain unique function extents. No constructor or new authority lives here.\n\nuse super::*;\n\nimpl OriginalRetiredLearningPurposes {\n    pub(crate) fn require_original_work(\n        &self,\n        work: &Arc<OriginalSameActorLearningWork>,\n    ) -> Result<(), AgentdError> {\n        OriginalRetiredLearningOwners::require_original_work(&self.owners, work)\n    }\n}\n\nimpl OriginalSameActorLearningPurposesRetired {\n    pub(crate) fn require_original_phase(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        crate::circuit_task::OriginalSameActorCPurposesRetired::require_original_phase(\n            &self.original, identity, gate,\n        )\n    }\n}\n\n",
+          "reason": "Two new returned-capability binding impls moved verbatim; original predecessor function guards remain unchanged"
+        }
+      ],
+      "original_absent_at": "63539d08933cec325fa41c3a8bfe14b71f73425b"
+    }
+  ],
+  "specific_blocker": "Original checker 7a6709691c372504ca11b5d2a74e14ba819fca8f requires each required_function_order marker to name exactly one actual function. The draft added another require_original_work and require_original_phase in the same protected worker-retirement file.",
+  "resolution": "Move only the two NEW binding impls, byte-for-byte, to one private child. Structs/private fields/producers stay in the parent; all callers and public(crate) signatures are unchanged. The original 5959 two required_function_order objects remain byte-for-byte, with unique parent extents restored. No whole-file order substitute is used.",
+  "moved_impls_exact": true,
+  "original_parent_guard_sha256": "bcd62225856d6b914510d84cb9f71068372ec07bb4f414166f72ac5a0ef985ff",
+  "metadata_note": "The temporary isolated CALLERS object 6595d31439a1fd3b303dac6990b743ada2de741f used global impl anchors and is superseded, never supplied as the final integration annex. Final metadata retains the original function-extent guards.",
+  "not_changed": [
+    "actual RootIntent validation",
+    "complete original owner and alias retention",
+    "shutdown ordering and Gate semantics",
+    "any old business method or deadline",
+    "all caller signatures",
+    "the three bc50 component tests"
+  ],
+  "qualification": "Not formatted, compiled, tested or checked with the original checker. No h/native/ref action."
+}

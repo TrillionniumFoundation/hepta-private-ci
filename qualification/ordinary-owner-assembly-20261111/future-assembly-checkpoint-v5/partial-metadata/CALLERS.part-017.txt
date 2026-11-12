@@ -1,0 +1,139 @@
+  { function = "fn receive_original_acknowledgement(", sequence = ["CloseSameActorPhaseOnDrop::new(gate)","gate.original_wait_epoch()?","receiver.try_recv()","gate.require_open()?","closing.disarm()","return Ok(value)","gate.wait_original_change(epoch)?","Err(mpsc::TryRecvError::Disconnected)","return Err("] },
+  { function = "fn require_original_acknowledgement(", sequence = ["match (stage, acknowledgement)","RootSameActorHostAcknowledgementV1::InitialRegistered","RootSameActorHostAcknowledgementV1::CurrentRegistered","binding.parse::<Digest32>()","digest.is_zero()","return Err(","Ok(Some(binding))","RootSameActorHostAcknowledgementV1::ScopedRightsSent","Ok(None)","_ => Err("] },
+]
+
+[[boundary]]
+id = "product_original_holdout_release_permit"
+symbol = "OriginalFinalHoldoutReleasePermitV1"
+call_pattern = "\\bOriginalFinalHoldoutReleasePermitV1\\s*\\{"
+definition_path = "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+definition_markers = ["pub struct OriginalFinalHoldoutReleasePermitV1<'a> {\n    plan: &'a ProductFrozenEvaluationPlanV1,\n    receipt: &'a FinalHoldoutJournalReceiptV1,\n}"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "product_file_holdout_original_open"
+symbol = "LockedFileFinalHoldoutProviderV1::open"
+receiver_type = "LockedFileFinalHoldoutProviderV1"
+definition_path = "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs"
+definition_markers = ["pub fn open(file: File, expected: &ProductFrozenEvaluationPlanV1)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "product_file_holdout_original_release"
+symbol = "LockedFileFinalHoldoutProviderV1::release_original_consumption"
+call_pattern = "(?:\\b(?:FinalHoldoutProviderV1|LockedFileFinalHoldoutProviderV1)\\s*::\\s*release_original_consumption|\\.\\s*release_original_consumption)\\s*\\("
+definition_path = "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs"
+definition_markers = ["impl FinalHoldoutProviderV1 for LockedFileFinalHoldoutProviderV1 {", "fn release_original_consumption("]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/product_runner.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "product_file_qualification_create"
+symbol = "LockedFileProductQualificationEvidenceSinkV1::create"
+receiver_type = "LockedFileProductQualificationEvidenceSinkV1"
+definition_path = "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs"
+definition_markers = ["pub fn create(file: File, owner_binding: Digest32)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "product_file_qualification_recover"
+symbol = "LockedFileProductQualificationEvidenceSinkV1::recover"
+receiver_type = "LockedFileProductQualificationEvidenceSinkV1"
+definition_path = "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs"
+definition_markers = ["pub fn recover("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "product_file_qualification_persist"
+symbol = "ProductQualificationEvidenceSinkV1::persist"
+receiver_type = "ProductQualificationEvidenceSinkV1"
+definition_path = "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs"
+definition_markers = ["impl ProductQualificationEvidenceSinkV1 for LockedFileProductQualificationEvidenceSinkV1 {", "fn persist("]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/product_runner.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "product_file_qualification_readback"
+symbol = "LockedFileProductQualificationEvidenceSinkV1::readback"
+receiver_type = "LockedFileProductQualificationEvidenceSinkV1"
+definition_path = "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs"
+definition_markers = ["pub fn readback("]
+product_callers = []
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/product_runner.rs"
+required = ["pub struct OriginalFinalHoldoutReleasePermitV1<'a> {\n    plan: &'a ProductFrozenEvaluationPlanV1,\n    receipt: &'a FinalHoldoutJournalReceiptV1,\n}", "#[path = \"product_holdout_file.rs\"]\nmod product_holdout_file;", "pub use product_holdout_file::LockedFileFinalHoldoutProviderV1;", "pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>("]
+forbidden = ["pub plan: &'a ProductFrozenEvaluationPlanV1", "pub receipt: &'a FinalHoldoutJournalReceiptV1"]
+required_order = [["pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(", "product_plan.validate_integrity()?;", "candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest", "baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest", "let manifest = provider.manifest_digest()?;", "manifest != product_plan.frozen_plan.final_holdout_digest", "let holdout = self.holdout.consume(&product_plan.frozen_plan)?;", "match holdout.disposition {", "HoldoutUseDispositionV1::Recorded => {}", "HoldoutUseDispositionV1::IdempotentReplay => {", "return Err(ProductEvaluationError::Binding(", "));", "let mut inputs = provider.release_original_consumption(", "OriginalFinalHoldoutReleasePermitV1 {", "plan: product_plan,", "receipt: &holdout,", "        )?;", "validate_released_inputs(&product_plan.frozen_plan, &inputs)?;", "validate_comparable_observations(", "normalize_unique_ids(&mut inputs.snapshot_ids)?;", "normalize_unique_ids(&mut inputs.future_window_ids)?;", "let candidate = evaluate_temporal_holdout(", "let baseline = evaluate_temporal_holdout(", "candidate.validate_integrity()?;", "baseline.validate_integrity()?;", "let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;"]]
+required_function_order = [
+  { function = "fn release_original_consumption(", sequence = ["permit: OriginalFinalHoldoutReleasePermitV1<'_>", "self.release_after_consumption(permit.receipt)"] },
+  { function = "fn qualify_and_persist(", sequence = ["let bundle = self.qualification_bundle(temporal, context)?;", "decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?", "decide_with_signed_longitudinal_evidence_v3(", "let publication_digest = sink.persist(temporal.execution_digest, &decision)?;", "if publication_digest.is_zero()", "return Err(ProductEvaluationError::Integrity(", "));", "let mut receipt = ProductQualificationReceiptV1 {", "receipt.receipt_seal = product_qualification_seal(&receipt);", "receipt.validate_integrity()?;", "Ok(receipt)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs"
+required = ["#[path = \"product_holdout_file_codec.rs\"]\nmod codec;", "const MAX_MATERIAL_BYTES: u64 = 32 * 1024 * 1024;", "material_file: HeldMaterialFile,", "expected_product: ProductFrozenEvaluationPlanV1,", "release_attempted: bool,"]
+forbidden = ["pub material_file", "pub release_attempted", "unsafe", "transmute", "File::try_clone", "OpenOptions", "set_permissions", "set_len"]
+required_order = []
+required_function_order = [
+  { function = "fn drop(", sequence = ["fn drop(", "let _ = self.0.unlock();"] },
+  { function = "fn open(", sequence = [".validate_integrity()", ".map_err(|_| FileError::Binding)?;", "File::metadata(&file).map_err(io_error)?;", "if !metadata.is_file()", "return Err(FileError::NotRegular);", "File::try_lock_shared(&file)", "TryLockError::WouldBlock => FileError::Busy", "let material_file = HeldMaterialFile(file);", "material_length == 0 || material_length > MAX_MATERIAL_BYTES", "return Err(FileError::Capacity);", "release_attempted: false", "provider.require_original_material()?;", "Ok(provider)"] },
+  { function = "fn require_original_material(", sequence = ["let file: &mut File = &mut self.material_file.0;", "File::metadata(file).map_err(io_error)?.len() != self.material_length", "return Err(FileError::Corrupt);", "Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;", "Digest32::of_reader(&mut *file, MAX_MATERIAL_BYTES).map_err(io_error)?;", "File::metadata(file).map_err(io_error)?.len() != self.material_length", "digest != self.expected_product.frozen_plan.final_holdout_digest", "return Err(FileError::Corrupt);", "Ok(())"] },
+  { function = "fn read_original_material(", sequence = ["let file: &mut File = &mut self.material_file.0;", "File::metadata(file).map_err(io_error)?.len() != self.material_length", "return Err(FileError::Corrupt);", "Seek::seek(file, SeekFrom::Start(0)).map_err(io_error)?;", "Read::take(&mut *file, MAX_MATERIAL_BYTES + 1)", ".read_to_end(&mut bytes)", ".map_err(io_error)?;", "bytes.len() as u64 != self.material_length", "File::metadata(file).map_err(io_error)?.len() != self.material_length", "Digest32::of_bytes(&bytes)", "!= self.expected_product.frozen_plan.final_holdout_digest", "return Err(FileError::Corrupt);", "codec::decode_original_material(&bytes, &self.expected_product.frozen_plan)"] },
+  { function = "fn manifest_digest(", sequence = ["if self.release_attempted", "return Err(ProductProviderErrorV1::Rejected);", "self.require_original_material().map_err(provider_error)?;", "Ok(self.expected_product.frozen_plan.final_holdout_digest)"] },
+  { function = "fn release_after_consumption(", sequence = ["_receipt: &FinalHoldoutJournalReceiptV1", "Err(ProductProviderErrorV1::Rejected)"] },
+  { function = "fn release_original_consumption(", sequence = ["if std::mem::replace(&mut self.release_attempted, true)", "return Err(ProductProviderErrorV1::Rejected);", "let frozen = &self.expected_product.frozen_plan;", "permit.plan != &self.expected_product", "permit.receipt.disposition != HoldoutUseDispositionV1::Recorded", "permit.receipt.use_receipt.disposition != HoldoutUseDispositionV1::Recorded", "permit.receipt.sequence == 0", "permit.receipt.record_digest.is_zero()", "permit.receipt.head_digest.is_zero()", "permit.receipt.authority.grants_any()", "permit.receipt.use_receipt.authority.grants_any()", "permit.receipt.use_receipt.plan_digest != frozen.plan_digest", "permit.receipt.use_receipt.holdout_digest != frozen.final_holdout_digest", "return Err(ProductProviderErrorV1::Rejected);", "self.read_original_material().map_err(provider_error)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs"
+required = ["const MAGIC: &[u8; 8] = b\"HPFHMT01\";", "const MAX_ROWS: usize = 100_000;", "const MAX_ACTIONS: usize = 128;", "const MAX_IDS: usize = 1_000_000;"]
+forbidden = ["unsafe", "transmute", "File", "OpenOptions", "Signer", "sign("]
+required_order = [["impl Reader<'_> {", "fn count(", "let count = u32::from_be_bytes(", "if count > limit || count > self.0.len()", "return Err(FileError::Capacity);", "fn id(", "if !(1..=128).contains(&count)", "return Err(FileError::Corrupt);", "std::str::from_utf8(self.take(count)?)", "StableId::new(name).map_err(|_| FileError::Corrupt)"]]
+required_function_order = [
+  { function = "fn decode_original_material(", sequence = ["bytes.len() as u64 > MAX_MATERIAL_BYTES", "return Err(FileError::Capacity);", "let mut reader = Reader(bytes);", "reader.take(8)? != MAGIC", "reader.digest()? != frozen.objective_digest", "reader.digest()? != frozen.dataset_digest", "reader.id()? != frozen.final_holdout_window_id", "return Err(FileError::Binding);", "reader.count(MAX_ROWS)?;", "let candidate_observations = reader.observations()?;", "let baseline_observations = reader.observations()?;", "reader.count(MAX_ROWS)?;", "let snapshot_ids = reader.ids(MAX_IDS)?;", "let future_window_ids = reader.ids(MAX_IDS)?;", "if !reader.0.is_empty()", "return Err(FileError::Corrupt);", "Ok(TemporalComparisonInputsV1 {"] },
+  { function = "fn bytes(", sequence = [".checked_add(bytes.len())", ".is_none_or(|length| length as u64 > MAX_MATERIAL_BYTES)", "return Err(FileError::Capacity);", "self.0.extend_from_slice(bytes);"] },
+  { function = "fn take(", sequence = ["self.0.split_at_checked(count).ok_or(FileError::Corrupt)?;", "self.0 = tail;", "Ok(head)"] },
+  { function = "fn probability(", sequence = ["fn probability(", "ProbabilityQ32::from_raw(self.u64()?).map_err(|_| FileError::Corrupt)"] },
+  { function = "fn observations(", sequence = ["self.count(MAX_ROWS)?;", "let complete_candidates = match self.take(1)?[0]", "0 => false,", "1 => true,", "_ => return Err(FileError::Corrupt),", "self.count(MAX_ACTIONS)?;", "behavior_probability: self.probability()?", "evaluation_probability: self.probability()?", "let finalized_outcome = match self.take(1)?[0]", "0 => None,", "1 => Some(self.fixed()?),", "_ => return Err(FileError::Corrupt),", "outcome_observed_at: self.u64()?", "outcome_evidence: self.digest()?", "outcome_model_evidence: self.digest()?", "Ok(rows)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs"
+required = ["publication_store: LockedFileProductEvaluationExecutionStoreV1,", "terminal_uncertainty: bool,", "b\"hepta.product-qualification.evidence-namespace.v1\"", "b\"hepta.product-qualification.evidence-key.v1\"", "b\"HPQLEV01\"", "b\"hepta.product-qualification.durable-publication.v1\""]
+forbidden = ["unsafe", "transmute", "Signer", "sign(", "ProductQualificationReceiptV1 {", "OpenOptions", "set_len", "set_permissions"]
+required_order = []
+required_function_order = [
+  { function = "fn create(", sequence = ["let binding = evidence_namespace(owner_binding)?;", "LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?;", "publication_store,", "owner_binding,", "terminal_uncertainty: false"] },
+  { function = "fn recover(", sequence = ["let binding = evidence_namespace(owner_binding)?;", "LockedFileProductEvaluationExecutionStoreV1::recover(file, binding, minimum)?;", "publication_store,", "owner_binding,", "terminal_uncertainty: false"] },
+  { function = "fn readback(", sequence = ["if self.terminal_uncertainty", "return Err(SinkError::Indeterminate);", "let payload = encode_decision(self.owner_binding, execution_digest, decision)?;", "let key = publication_key(self.owner_binding, execution_digest)?;", "ProductEvaluationExecutionStoreV1::readback(", "&mut self.publication_store,", "&key,", ".map_err(store_error)?;", "match state {", "ProductEvaluationExecutionStateV1::Completed(bytes) if bytes == payload", "Ok(publication_digest(&payload))", "ProductEvaluationExecutionStateV1::Completed(_) => Err(SinkError::Rejected)", "ProductEvaluationExecutionStateV1::Pending", "self.terminal_uncertainty = true;", "Err(SinkError::Indeterminate)"] },
+  { function = "fn persist(", sequence = ["if self.terminal_uncertainty", "return Err(SinkError::Indeterminate);", "let payload = encode_decision(self.owner_binding, execution_digest, decision)?;", "let key = publication_key(self.owner_binding, execution_digest)?;", "ProductEvaluationExecutionStoreV1::claim(", "&mut self.publication_store,", "&key,", ".map_err(store_error)?;", "match claim {", "ProductEvaluationExecutionStateV1::Completed(bytes)", "if bytes != payload", "return Err(SinkError::Rejected);", "ProductEvaluationExecutionStateV1::Pending", "self.terminal_uncertainty = true;", "return Err(SinkError::Indeterminate);", "ProductEvaluationExecutionClaimV1::Claimed", "ProductEvaluationExecutionStoreV1::complete(", "&mut self.publication_store,", "&key,", "&payload,", ".is_err()", "self.terminal_uncertainty = true;", "return Err(SinkError::Indeterminate);", "match ProductEvaluationExecutionStoreV1::readback(", "&mut self.publication_store,", "&key,", "Ok(ProductEvaluationExecutionStateV1::Completed(bytes)) if bytes == payload", "Ok(publication_digest(&payload))", "Ok(_) | Err(_)", "self.terminal_uncertainty = true;", "Err(SinkError::Indeterminate)"] },
+  { function = "fn evidence_namespace(", sequence = ["if owner_binding.is_zero()", "return Err(FileError::Binding);", "Ok(Digest32::of_parts(&[", "owner_binding.as_array(),"] },
+  { function = "fn publication_key(", sequence = ["let plan_id = StableId::new(execution_digest.to_string()).map_err(|_| SinkError::Rejected)?;", "Ok(ProductEvaluationExecutionKeyV1 {", "plan_id,", "binding_digest: Digest32::of_parts(&[", "owner_binding.as_array(),", "execution_digest.as_array(),"] },
+  { function = "fn encode_decision(", sequence = ["owner_binding.is_zero()", "execution_digest.is_zero()", "decision.evidence_digest.is_zero()", "signed.trust_digest.is_zero()", "signed.authentication_digest.is_zero()", "decision.authority.grants_any()", "decision.failed_metrics.len() > 128", "return Err(SinkError::Rejected);", "bytes.extend_from_slice(owner_binding.as_array());", "bytes.extend_from_slice(execution_digest.as_array());", "&decision.evaluation_id,", "&decision.candidate_id,", "&decision.baseline_id,", "put_id(&mut bytes, id)?;", "bytes.push(match decision.disposition", "decision.failed_metrics.len() as u32", "for id in &decision.failed_metrics", "put_id(&mut bytes, id)?;", "decision.evidence_digest,", "signed.trust_digest,", "signed.authentication_digest,", "bytes.len() > MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1", "return Err(SinkError::Rejected);", "Ok(bytes)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/lib.rs"
+required = ["mod product_qualification_file;", "pub use product_qualification_file::LockedFileProductQualificationEvidenceSinkV1;", "pub use product_runner::FileFinalHoldoutErrorV1;", "pub use product_runner::LockedFileFinalHoldoutProviderV1;", "pub use product_runner::OriginalFinalHoldoutReleasePermitV1;", "pub use product_runner::encode_file_final_holdout_material_v1;"]
+forbidden = []
+required_order = []
+required_function_order = [
+
+]
+
+
+[[boundary]]
+id = "root_retirement_peer_eof_ordering"
+symbol = "HostAuthorityPeerChannel::wait_for_original_peer_eof"
+receiver_type = "HostAuthorityPeerChannel"
+methods = ["wait_for_original_peer_eof"]
+definition_path = "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+definition_markers = ["pub fn wait_for_original_peer_eof(","self.stream.take().ok_or(HostIssuerTransportError::Closed)?","let end = self.owner.end();","self.owner.read(&mut stream, &mut byte, end)? != 0","return Err(HostIssuerTransportError::InvalidRequest);","self.owner.check(end)?;"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs"]
+caller_markers = ["HostAuthorityPeerChannel::wait_for_original_peer_eof(&mut self.channel)"]

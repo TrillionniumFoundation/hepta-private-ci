@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "status": "FAILED_NATIVE_COMPONENTS",
+  "source_sha": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "source_tree": "6449ad41525799e42166ffca8131f0d63af7c0b3",
+  "attempt": "ordinary-63539d0-seven-final-v20",
+  "original_session": "dpty-1d3165a9fbb94101477785c4628ef511836eb52d7603ac0c069c08c8b5279824",
+  "terminal_observation": {
+    "state": "exited",
+    "exit_code": 1,
+    "bytes": 17965,
+    "output_complete": true,
+    "capture_error": null,
+    "observed_at_utc": "2026-11-12 20:01:23 UTC"
+  },
+  "qa": {
+    "passed": 236,
+    "failed": 0
+  },
+  "full_caller": {
+    "passed": true,
+    "boundaries": 638,
+    "protected_files": 440,
+    "rust_files": 6533,
+    "execution_sha256": "c63987368dc5c44eb073449a6bb4acdf9d0283c85decba228120578a345511e3",
+    "stdout_sha256": "3b90947169a2084f07ad2d737e137a8d825a1f1341f1c7b47e98c0e76c97004c"
+  },
+  "ordinary": {
+    "passed": 1988,
+    "failed": 9,
+    "exit_code": 100,
+    "timed_out": false,
+    "execution_sha256": "d70de26c64950dc93a4d1042ec38e15530ccb7a1c7af1231575172f74ebec6e6",
+    "stdout_sha256": "0c43e958e2c9fd54b94877a7c8bbdaa752650463ea65653fb2a72bfe66ca4784"
+  },
+  "root": {
+    "passed": 16,
+    "failed": 1,
+    "expected_parents": 17,
+    "exit_code": 100,
+    "timed_out": false,
+    "execution_sha256": "0ca9df37b0ccba02e0363bdc39dfecc0c8d3733e66a35ce47fda9de23e6a10a8",
+    "stdout_sha256": "b1b1fc104a1bab30972c036d9bfb6c269a19d32075babb1957e432046c131960"
+  },
+  "diagnostics": [
+    {
+      "name": "root-failure.stderr.txt",
+      "blob": "096196201ec7486f2b74fdd31b0010dd5f326a0e",
+      "bytes": 63110,
+      "sha256": "b16587974f16ee75c4c742dc1e99d3d5c6ff67f672928a2363d3d29f792ee66a"
+    },
+    {
+      "name": "root-failure.stdout.txt",
+      "blob": "689a4b8a7d535a81e93cb8a9872d64ab3b2cdd73",
+      "bytes": 396,
+      "sha256": "0ac5eb4c631869037831b42e29be2ae62be8c05092469a0750ee7a33920fdf31"
+    },
+    {
+      "name": "selected-failures.json",
+      "blob": "4c1b2b949519ddd3232548f902e43f11b6fb6871",
+      "bytes": 10274,
+      "sha256": "a45c39394c22d467f16a4d38041e8ed49aff6220b38598cffd96aafffcc87d49"
+    },
+    {
+      "name": "progress-summary.json",
+      "blob": "da05c6d2f943b9d555019aacb15ca169846dd00d",
+      "bytes": 20722,
+      "sha256": "bd03caec797edff7f8669bebb3649de010ce807db6d6130b32457e711109ce7e"
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "unmount-witness-bind",
+      "status": "passed"
+    },
+    {
+      "name": "unmount-bind",
+      "status": "passed"
+    },
+    {
+      "name": "remove-owned-fixture",
+      "status": "passed"
+    },
+    {
+      "name": "record-ownership",
+      "status": "passed"
+    },
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "full_original_archives": {
+    "retained_on_original_operator_host": true,
+    "original_files": 124,
+    "original_bytes": 13956746,
+    "zip": {
+      "bytes": 3817976,
+      "sha256": "48422a430081154f6b7f924bf690c52fadd368cffd1c174c21e797fb0f08e757"
+    },
+    "tar_xz": {
+      "bytes": 1842836,
+      "sha256": "a73df763716e800ddcfe218c20ef9823d1cfe7ab54be7a2ce945266c6e556994"
+    },
+    "git_transfer": "Only the linked original diagnostic extracts are included in this checkpoint; full archive transfer is not claimed"
+  },
+  "finding": {
+    "ordinary": "All nine failures reach the one invalid AgentId fixture literal before the intended queue assertions.",
+    "root": "RetiredSession before_drop callback holds the same serial permit needed by the live feed; actual original cache expires at509605142ns. Fixed500ms protection rejects. Root test fix is being independently reviewed; this failed source is not reclassified."
+  },
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "known_failure_exemptions": false,
+  "predecessor_results_used": false,
+  "promotion": false
+}

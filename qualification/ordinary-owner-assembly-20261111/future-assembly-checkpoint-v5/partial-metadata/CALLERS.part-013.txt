@@ -1,0 +1,836 @@
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes","unsafe"]
+required_order = [["async fn in_lane<","if let Some(phase) = &self.same_actor_work","return self.in_original_same_actor_lane(phase, work).await","if self.cancelled.load(Ordering::Acquire)","try_acquire_owned()","tokio::task::spawn_blocking"]]
+required_function_order = [
+  { function = "fn from_original_owners(", sequence = ["OriginalCellQ24TrainingStageV1::from_original_owners(","same_actor_work: None"] },
+  { function = "fn install_published_generation(", sequence = ["self.inner.require_snapshot(&snapshot)?","self.require_current().await?","if let Some(phase) = &self.inner.same_actor_work","self.open_original_same_actor_generation(original, phase)\n                .await?","} else {","tokio::task::spawn_blocking(move || original.into_receipt_owners(&prepared))","self.install_generation(snapshot, selection, next_use).await"] },
+  { function = "fn install_independent_evaluation(", sequence = ["trainer_source.require_original_owner(","training.readback(&inner.dataset_cut)","cut.record(","inner.require_original_phase_entry()?","let mut evaluation: OriginalCellQ24EvaluationStageV1 = original",".into_stage(","evaluation.require_training(","evaluation.require_original_training_evidence(","owners.evaluation = Some(evaluation)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+required = ["#[cfg(target_os = \"linux\")]\n#[path = \"cell_q24_training_same_actor.rs\"]","same_actor_work:\n        Option<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>","same_actor_work: None"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes","unsafe"]
+required_order = [["fn with_original_trainer<","self\n            .same_actor_work\n            .as_ref()\n            .map(|phase| phase.original_failure_scope())","self.require_dataset(dataset)",".try_acquire_owned()",".try_lock()","training",".require_original_dataset_provenance()",".require_original_dataset_scope(dataset, &scope)","if let Some(phase) = &self.same_actor_work","phase.require_original_work_entry()?","let result = work(training)?",".require_original_dataset_provenance()","if let Some(phase) = &self.same_actor_work","phase.require_original_work_entry()?","if let Some(closing) = &mut closing","closing.disarm()","Ok(result)"],["async fn in_lane<","if let Some(phase) = &self.same_actor_work","return self.in_original_same_actor_training_lane(phase, work).await","let permit = Arc::clone(&self.lane)",".try_acquire_owned()","tokio::task::spawn_blocking","let _permit = permit","owners.try_lock()","training.require_original_dataset_scope(","work(&mut owners)"]]
+required_function_order = [
+  { function = "fn from_original_owners(", sequence = ["let stage = Self {","same_actor_work: None",".in_lane(","super::validate_config(",".await?","Ok(stage)"] },
+  { function = "fn execute_training(", sequence = ["if let Some(phase) = &self.same_actor_work","return self\n                .execute_original_same_actor_training(dataset, cancellation, phase)\n                .await","self.require_dataset(dataset)?","self.in_lane(","training.fit_or_readback(&cancellation)?","receipts.attest_original_completion(training)?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+required = ["if let Some(phase) = &inner.same_actor_work","local.attest_original_same_actor_decision("]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes","unsafe"]
+required_function_order = [
+  { function = "fn model_action(", sequence = ["training.readback(&inner.dataset_cut)","evaluation.require_training(","evaluation.read_execution()?","training.with_original_trainer(","Action::CommitDecision => {","if let Some(phase) = &inner.same_actor_work","local.attest_original_same_actor_decision(","factory,\n                            trainer,\n                            &inner.dataset_cut,\n                            &inputs,\n                            snapshot,\n                            phase,","} else {","local.attest_original_decision(","factory,\n                            trainer,\n                            &inner.dataset_cut,\n                            &inputs,\n                            snapshot,","result\n                        .map(|(receipt, signed)| (receipt, Some(signed)))\n                        .map_err(unavailable)","Action::ReadDecision","local.readback(","evaluation.complete(snapshot,","true)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs"
+required = ["#[cfg(target_os = \"linux\")]\n#[path = \"cell_q24_local_decision_same_actor.rs\"]\nmod same_actor;"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes","unsafe"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
+required = ["#[cfg(target_os = \"linux\")]\n#[path = \"learning_iteration_same_actor.rs\"]\nmod same_actor;"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes","unsafe"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs"
+required = ["#[path = \"circuit_task_same_actor_learning.rs\"]","learning_work:\n        OnceLock<Arc<crate::same_actor_q24_phase_learning::OriginalSameActorLearningWork>>","learning_work: OnceLock::new()"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes","unsafe","learning_work.take(","learning_work.get_mut(","learning_work.clear("]
+required_function_order = [
+  { function = "fn pending_original(", sequence = ["Phase::PendingA","learning_work: OnceLock::new()","Arc::new(PhaseInvocation {"] },
+  { function = "fn pending_count(", sequence = ["self.state.lock()","Err(_) => return 1","original.handle.pending.load(Ordering::Acquire)","slot.pending_count()","state\n            .tickets\n            .saturating_add(work)\n            .saturating_add(","self.learning_work.get().map_or(0, |original|","OriginalSameActorLearningWork::pending_count(","original,"] },
+]
+
+# Same-actor actual Training checkpoint and original independent Evaluation installation.
+
+[[boundary]]
+id = "q24_same_actor_training_checkpoint_notice"
+symbol = "OriginalSameActorLearningWork::original_training_snapshot"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+definition_markers = ["fn original_training_snapshot(","self.evaluation.training_snapshot().await"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)original_training_snapshot\\s*\\("
+
+[[boundary]]
+id = "q24_same_actor_evaluation_original_wait"
+symbol = "OriginalSameActorLearningWork::wait_original_evaluation_installation"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+definition_markers = ["fn wait_original_evaluation_installation(","OriginalCellQ24TrainingReadbackV1::require_training(","coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)wait_original_evaluation_installation\\s*\\("
+
+[[boundary]]
+id = "q24_same_actor_evaluation_install_begin"
+symbol = "OriginalSameActorLearningWork::begin_original_evaluation_installation"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+definition_markers = ["fn begin_original_evaluation_installation(","self.evaluation.begin_installation(snapshot)"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)begin_original_evaluation_installation\\s*\\("
+
+[[boundary]]
+id = "q24_same_actor_evaluation_effect_entry"
+symbol = "OriginalSameActorLearningWork::require_original_evaluation_installation"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+definition_markers = ["fn require_original_evaluation_installation(","self.evaluation.require_installing(snapshot)"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)require_original_evaluation_installation\\s*\\("
+
+[[boundary]]
+id = "q24_same_actor_evaluation_install_complete"
+symbol = "OriginalSameActorLearningWork::complete_original_evaluation_installation"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+definition_markers = ["fn complete_original_evaluation_installation(","installation: OriginalEvaluationInstallation<'_>","self.evaluation\n            .complete_installation(snapshot, installation)"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)complete_original_evaluation_installation\\s*\\("
+
+[[boundary]]
+id = "q24_same_actor_evaluation_aggregate_wait"
+symbol = "OriginalCellQ24LearningStageOwnersV1::wait_original_same_actor_evaluation"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+definition_markers = ["fn wait_original_same_actor_evaluation(","OriginalCellQ24LearningStageOwnersV1::original_training_readback(","OriginalSameActorLearningWork::wait_original_evaluation_installation("]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)wait_original_same_actor_evaluation\\s*\\("
+
+[[boundary]]
+id = "q24_same_actor_evaluation_aggregate_install"
+symbol = "OriginalCellQ24LearningStageOwnersV1::install_original_same_actor_evaluation"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+definition_markers = ["fn install_original_same_actor_evaluation(","OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original)\n            .await?","OriginalSameActorLearningWork::complete_original_evaluation_installation("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)install_original_same_actor_evaluation\\s*\\("
+
+[[boundary]]
+id = "q24_same_actor_evaluation_process_wait"
+symbol = "LearningIterationRuntimeBootstrapV1::wait_original_same_actor_evaluation_stage"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs"
+definition_markers = ["fn wait_original_same_actor_evaluation_stage(","stage != LearningIterationStageV1::Evaluation","OriginalCellQ24LearningStageOwnersV1::wait_original_same_actor_evaluation("]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)wait_original_same_actor_evaluation_stage\\s*\\("
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_evaluation.rs"
+required = ["training: Option<LearningIterationSnapshotV1>","gate: Arc<SameActorPhaseGate>","changed: Notify","#[path = \"same_actor_q24_phase_learning_evaluation_tests.rs\"]","pub(crate) struct OriginalEvaluationInstallation<'a>","original: &'a OriginalEvaluationExchange","training: LearningIterationSnapshotV1","closing: CloseSameActorPhaseOnDrop"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes",".fit(",".sign(",".abort(","tokio::spawn(","spawn_blocking(","from_secs("]
+required_function_order = [
+  { function = "fn original_training_snapshot(", sequence = ["self.require_original_work_entry()?","self.evaluation.training_snapshot().await"] },
+  { function = "fn wait_original_evaluation_installation(", sequence = ["self.original_failure_scope()","self.require_training_context(snapshot, self.prepared.scope())?","OriginalCellQ24TrainingReadbackV1::require_training(","original,","snapshot,","self.prepared.scope(),",")?;","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?","coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)","return Err(Error::WrongScope)","self.evaluation.announce_original_training(snapshot)?","self.evaluation.wait_installed(snapshot).await?","self.require_original_work_entry()?","closing.disarm()","Ok(())"] },
+  { function = "fn begin_original_evaluation_installation(", sequence = ["self.require_training_context(snapshot, self.prepared.scope())?","self.evaluation.begin_installation(snapshot)"] },
+  { function = "fn require_original_evaluation_installation(", sequence = ["self.require_training_context(snapshot, self.prepared.scope())?","self.evaluation.require_installing(snapshot)"] },
+  { function = "fn complete_original_evaluation_installation(", sequence = ["installation: OriginalEvaluationInstallation<'_>","self.require_training_context(snapshot, self.prepared.scope())?","self.evaluation\n            .complete_installation(snapshot, installation)"] },
+  { function = "fn new(", sequence = ["gate,","training: None","installation: Installation::Awaiting","changed: Notify::new()"] },
+  { function = "fn require_entry(", sequence = ["self.gate\n            .require_open()\n            .map_err(|_| Error::CommitUncertain)?","SystemTime::now()",".duration_since(UNIX_EPOCH)","self.gate.close()","Error::OwnerUnavailable(",".as_secs()","now >= snapshot.request.envelope.expiry_unix_seconds","self.gate.close()","return Err(Error::DeadlineExceeded)","Ok(())"] },
+  { function = "fn locked(", sequence = ["self.state.lock()","self.gate.close()","Error::CommitUncertain"] },
+  { function = "fn announce_original_training(", sequence = ["self.require_entry(snapshot)?","let mut state = self.locked()?","self.require_entry(snapshot)?","match &state.training","None => state.training = Some(snapshot.clone())","Some(retained) if retained == snapshot","Some(_) =>","self.gate.close()","return Err(Error::WrongScope)","drop(state)","self.changed.notify_waiters()","Ok(())"] },
+  { function = "fn training_snapshot(", sequence = ["loop {","self.gate\n                .require_open()\n                .map_err(|_| Error::CommitUncertain)?","self.changed.notified()","notified.as_mut().enable()","self.locked()?.training.clone()","if let Some(snapshot)","self.require_entry(&snapshot)?","return Ok(snapshot)","self.gate.cancelled()","Err(Error::CommitUncertain)","self.gate.deadline().instant()","self.gate.close()","return Err(Error::CommitUncertain)","_ = &mut notified"] },
+  { function = "fn begin_installation(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","self.require_entry(snapshot)?","let mut state = self.locked()?","self.require_entry(snapshot)?","state.training.as_ref() != Some(snapshot)","state.installation != Installation::Awaiting","return Err(Error::WrongScope)","state.installation = Installation::Installing","drop(state)","Ok(OriginalEvaluationInstallation {","original: self","training: snapshot.clone()","closing,"] },
+  { function = "fn require_installing(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","self.require_entry(snapshot)?","let state = self.locked()?","self.require_entry(snapshot)?","state.training.as_ref() != Some(snapshot)","state.installation != Installation::Installing","return Err(Error::WrongScope)","drop(state)","closing.disarm()","Ok(())"] },
+  { function = "fn complete_installation(", sequence = ["mut installation: OriginalEvaluationInstallation<'_>","CloseSameActorPhaseOnDrop::new(&self.gate)","self.require_entry(snapshot)?","!std::ptr::eq(self, installation.original)","&installation.training != snapshot","return Err(Error::WrongScope)","let mut state = self.locked()?","self.require_entry(snapshot)?","state.training.as_ref() != Some(snapshot)","state.installation != Installation::Installing","return Err(Error::WrongScope)","state.installation = Installation::Installed","drop(state)","self.changed.notify_waiters()","installation.closing.disarm()","closing.disarm()","Ok(())"] },
+  { function = "fn wait_installed(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","loop {","self.require_entry(snapshot)?","self.changed.notified()","notified.as_mut().enable()","let state = self.locked()?","state.training.as_ref() != Some(snapshot)","return Err(Error::WrongScope)","state.installation == Installation::Installed","if installed","self.require_entry(snapshot)?","closing.disarm()","return Ok(())","self.gate.cancelled()","Err(Error::CommitUncertain)","self.gate.deadline().instant()","Err(Error::CommitUncertain)","_ = &mut notified"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_phase.rs"
+required = ["OriginalCellQ24EvaluationInputsV1","OriginalCellQ24TrainingReadbackV1"]
+forbidden = ["AllowVerifier","permit_all","SigningKey::generate","SigningKey::from_bytes","tokio::spawn(","spawn_blocking(","TrainingNoUpdateV2(",".fit(",".sign("]
+required_function_order = [
+  { function = "fn wait_original_same_actor_evaluation(", sequence = ["self.inner.same_actor_work","return Ok(false)","phase.original_failure_scope()","OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(self, phase)?","self.inner.require_snapshot(snapshot)?","OriginalCellQ24LearningStageOwnersV1::original_training_readback(","self,","snapshot.clone(),",")\n            .await?;","OriginalSameActorLearningWork::wait_original_evaluation_installation(","phase,","snapshot,","&original,",")\n        .await?;","closing.disarm()","Ok(true)"] },
+  { function = "fn install_original_same_actor_evaluation(", sequence = ["self\n            .inner\n            .same_actor_work\n            .as_ref()\n            .ok_or(Error::WrongScope)?","phase.original_failure_scope()","OriginalCellQ24LearningStageOwnersV1::require_original_same_actor_work(self, phase)?","self.inner.require_snapshot(snapshot)?","let installation =","OriginalSameActorLearningWork::begin_original_evaluation_installation(phase, snapshot)?","OriginalCellQ24LearningStageOwnersV1::install_independent_evaluation(self, original)\n            .await?","OriginalSameActorLearningWork::complete_original_evaluation_installation(","phase,","snapshot,","installation,",")?;","closing.disarm()","Ok(())"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs"
+forbidden = []
+required = ["evaluation: evaluation::OriginalEvaluationExchange","#[path = \"same_actor_q24_phase_learning_evaluation.rs\"]"]
+required_function_order = [
+  { function = "fn from_original_scope(", sequence = ["OriginalSameActorRootContext::require_current(&context)?","CellQ24PreparedLearningV1::revalidate_source(&prepared)","OriginalEvaluationExchange::new(Arc::clone(context.gate()))","Ok(Arc::new(Self","context,","prepared,","jobs,","evaluation,"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+forbidden = []
+required = ["#[path = \"cell_q24_learning_evaluation_phase.rs\"]"]
+required_function_order = [
+  { function = "fn install_independent_evaluation(", sequence = ["let inner = Arc::clone(&self.inner)",".in_lane(","if owners.evaluation.is_some()","return Err(Error::WrongScope)","trainer_source.require_original_owner(",".block_on(training.readback(&inner.dataset_cut))","LearningIterationCoordinatorV1::from_snapshot(inner.dataset_cut.clone())?","cut.record(","inner.require_original_phase_entry()?","if let Some(phase) = &inner.same_actor_work","OriginalSameActorLearningWork::require_original_evaluation_installation(","phase,","cut.snapshot(),",")?;","let mut evaluation: OriginalCellQ24EvaluationStageV1 = original",".into_stage(cut.snapshot().clone(), inner.prepared.scope().clone())?","evaluation.require_training(cut.snapshot(), inner.prepared.scope())?","evaluation.require_original_training_evidence(&completed.attestation)",")?;","if let Some(phase) = &inner.same_actor_work","OriginalSameActorLearningWork::require_original_evaluation_installation(","phase,","cut.snapshot(),",")?;","owners.evaluation = Some(evaluation)","Ok(())",".await"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs"
+required = []
+forbidden = []
+required_function_order = [
+  { function = "fn wait_original_same_actor_evaluation_stage(", sequence = ["stage != LearningIterationStageV1::Evaluation","return Ok(())","let Some(original) = &self.original_q24","return Ok(())","if !OriginalCellQ24LearningStageOwnersV1::wait_original_same_actor_evaluation(","original,","snapshot,",")\n        .await?","return Ok(())","self.require_stage_admission(state)?","self.require_frozen_scope(&snapshot.request)?","now_unix_seconds()? >= snapshot.request.envelope.expiry_unix_seconds","return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded)","Ok(())"] }
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
+required = []
+forbidden = []
+required_function_order = [
+  { function = "fn process(", sequence = ["LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?","self.ports.restore(&request).await?","authenticate_restored_iteration_v1(","while let Some(stage) = coordinator.next_stage()","self.require_stage_admission(state)?","clock()? >= request.envelope.expiry_unix_seconds","return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded)","self.wait_original_same_actor_evaluation_stage(state, coordinator.snapshot(), stage)",".await?;","self.wait_original_successor_stage(state, coordinator.snapshot(), stage)",".await?;","self.ports.execute_stage(coordinator.snapshot(), stage)","coordinator.record(receipt, clock()?)?",".checkpoint(previous, coordinator.snapshot())",".await?;","committed != coordinator.snapshot().head_digest","return Err(LearningIterationRuntimeErrorV1::CommitUncertain)"] }
+]
+
+# Actual same-session same-actor phase: fixed-source closed boundaries and owner checks.
+[[boundary]]
+id = "root_same_actor_phase_open"
+symbol = "PreparedRootSameActorQ24PhaseV1::open"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+definition_markers = ["pub fn open(","SameActorPhaseDeadline::at_original_service_start(","PreparedHostAuthoritySession::open("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_phase_fresh"
+symbol = "PreparedRootSameActorQ24PhaseV1::prepare_fresh_from_registered"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+definition_markers = ["pub async fn prepare_fresh_from_registered(","SameActorPhaseDeadline::at_original_service_start(","PreparedHostAuthoritySession::prepare_fresh_from_registered("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_phase_start"
+symbol = "PreparedRootSameActorQ24PhaseV1::take_start"
+receiver_type = "PreparedRootSameActorQ24PhaseV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+definition_markers = ["pub fn take_start(","self\n            .start\n            .take()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_phase_seal"
+symbol = "PreparedRootSameActorQ24PhaseV1::seal_bootstrap"
+receiver_type = "PreparedRootSameActorQ24PhaseV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+definition_markers = ["pub fn seal_bootstrap(","self.original.seal_bootstrap(consumer_state_root)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_phase_serve"
+symbol = "PreparedRootSameActorQ24PhaseV1::serve_with_ready"
+receiver_type = "PreparedRootSameActorQ24PhaseV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"
+definition_markers = ["pub fn serve_with_ready(","worker::serve_original_phase(self, ready)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_phase_host"
+symbol = "PreparedRootSameActorQ24PhaseV1::serve_original_same_actor_host"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_original_same_actor_host\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+definition_markers = ["pub fn serve_original_same_actor_host(","send_root_production_writer_handoff(","RootSameActorScopeEnrollmentCapabilityV1::register("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_deadline_start"
+symbol = "SameActorPhaseDeadline::at_original_service_start"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+definition_markers = ["pub(crate) fn at_original_service_start(","let boot = crate::root_observation_cache::boottime_ns()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_deadline_receive"
+symbol = "SameActorPhaseDeadline::from_original_receive"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+definition_markers = ["pub(crate) fn from_original_receive(","session_boottime_ns.min(root_phase_boottime_ns)"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_gate_construct"
+symbol = "SameActorPhaseGate::from_original_deadline"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+definition_markers = ["pub(crate) fn from_original_deadline(","deadline.remaining_at(now)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs","codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_durable_reserve"
+symbol = "OriginalPhaseRecord::reserve"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs"
+definition_markers = ["pub(crate) fn reserve(","HostAuthorityFrontierStore::initialize_bounded(","state: PhaseState::Reserved"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_durable_claim"
+symbol = "OriginalPhaseRecord::claim_before_namespaces"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)claim_before_namespaces\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs"
+definition_markers = ["pub(crate) fn claim_before_namespaces(","self\n            .expected\n            .take()","state: PhaseState::Claimed { claim }"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_durable_scope"
+symbol = "OriginalPhaseRecord::mark_scoped_before_rights"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)mark_scoped_before_rights\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs"
+definition_markers = ["pub(crate) fn mark_scoped_before_rights(","state: PhaseState::Scoped {\n                claim: claim.clone(),\n                factory,\n            }"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_actual_a_claim"
+symbol = "HostAuthorityService::claim_same_actor_phase_after_original_a"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)claim_same_actor_phase_after_original_a\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs"
+definition_markers = ["pub(crate) fn claim_same_actor_phase_after_original_a(","self.with_learning_profile(","record.claim_before_namespaces(claim)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_retire"
+symbol = "RegisteredGenerationInitial::retire_original_phase_slot"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)retire_original_phase_slot\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs"
+definition_markers = ["pub(crate) fn retire_original_phase_slot(","drop(current);","previous: target,"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_cap"
+symbol = "RootGenerationInitialEnrollmentCapabilityV1::into_same_actor_phase"
+receiver_type = "RootGenerationInitialEnrollmentCapabilityV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs"
+definition_markers = ["pub(in super::super) fn into_same_actor_phase(","RootSameActorInitialEnrollmentCapabilityV1"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_register"
+symbol = "RootSameActorInitialEnrollmentCapabilityV1::register"
+receiver_type = "RootSameActorInitialEnrollmentCapabilityV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs"
+definition_markers = ["pub fn register(","self.original\n            .sender\n            .try_send(","self.gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_publication_cap"
+symbol = "RootGenerationPublicationEnrollmentCapabilityV1::into_same_actor_phase"
+receiver_type = "RootGenerationPublicationEnrollmentCapabilityV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs"
+definition_markers = ["pub(in super::super) fn into_same_actor_phase(","RootSameActorPublicationEnrollmentCapabilityV1"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_publication_register"
+symbol = "RootSameActorPublicationEnrollmentCapabilityV1::register"
+receiver_type = "RootSameActorPublicationEnrollmentCapabilityV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs"
+definition_markers = ["pub fn register(","self.original\n            .sender\n            .try_send(","self.gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_scope_register"
+symbol = "RootSameActorScopeEnrollmentCapabilityV1::register"
+receiver_type = "RootSameActorScopeEnrollmentCapabilityV1"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs"
+definition_markers = ["pub fn register(","self.sender\n            .try_send(ScopeSubmission","Arc::ptr_eq(&enrolled.gate, &self.gate)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_join_accept"
+symbol = "accept_original_phase_join"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs"
+definition_markers = ["pub(crate) fn accept_original_phase_join(","retirement\n                                .state\n                                .compare_exchange(","joined.require_original_profile("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_worker_serve"
+symbol = "serve_original_phase"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+definition_markers = ["pub(super) fn serve_original_phase(","listeners::bind_runtime_lanes(&original.config, || Ok(()))?","let scoped = threads.spawn("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_lane_serve"
+symbol = "HostAuthorityService::serve_original_phase_lane_until"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_original_phase_lane_until\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs"
+definition_markers = ["pub(crate) fn serve_original_phase_lane_until(","HostAuthorityPeerChannel::from_stream_until(","self.handle_original_same_actor_phase_lane("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_listeners.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_issuer_bind"
+symbol = "HostAuthorityService::bind_original_same_actor_phase_issuer"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)bind_original_same_actor_phase_issuer\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs"
+definition_markers = ["pub(crate) fn bind_original_same_actor_phase_issuer(","self.issuer.bind_original_same_actor_phase(phase)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_issuer_attachment"
+symbol = "DeploymentFinalUseIssuer::bind_original_same_actor_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)bind_original_same_actor_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_issuer.rs"
+definition_markers = ["pub(crate) fn bind_original_same_actor_phase(","same_actor_phase","self.same_actor_phase.set(Arc::clone(phase))"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_learning_reserve"
+symbol = "HostAuthorityService::reserve_original_learning_profile_in_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)reserve_original_learning_profile_in_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+definition_markers = ["pub(crate) fn reserve_original_learning_profile_in_phase(","phase: Option<\n            &crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext<\n                '_,\n            >,\n        >","phase.require_claimed()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_learning_open"
+symbol = "HostAuthorityService::open_original_learning_profile_in_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)open_original_learning_profile_in_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+definition_markers = ["pub(crate) fn open_original_learning_profile_in_phase(","StoreMode::Reopen","phase.require_claimed()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_model_reserve"
+symbol = "HostAuthorityService::reserve_original_phase_q24_model_factory"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)reserve_original_phase_q24_model_factory\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+definition_markers = ["pub(crate) fn reserve_original_phase_q24_model_factory(","phase.require_claimed()?","HostAuthorityFrontierStore::initialize("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_model_open"
+symbol = "HostAuthorityService::open_original_phase_q24_model_reservation"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)open_original_phase_q24_model_reservation\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+definition_markers = ["pub(crate) fn open_original_phase_q24_model_reservation(","phase.require_claimed()?","retained.profile != profile"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_until"
+symbol = "HostAuthorityService::serve_generation_initial_until"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_generation_initial_until\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+definition_markers = ["pub(crate) fn serve_generation_initial_until(","HostAuthorityPeerChannel::from_stream_until("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_learning_until"
+symbol = "HostAuthorityService::serve_learning_checkpoint_until"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_learning_checkpoint_until\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"
+definition_markers = ["pub(crate) fn serve_learning_checkpoint_until(","HostAuthorityPeerChannel::from_stream_until("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_model_until"
+symbol = "HostAuthorityService::serve_q24_model_factory_until"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_q24_model_factory_until\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs"
+definition_markers = ["pub(crate) fn serve_q24_model_factory_until(","HostAuthorityPeerChannel::from_stream_until("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_publication_until"
+symbol = "HostAuthorityService::serve_generation_publication_until"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_generation_publication_until\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+definition_markers = ["pub(crate) fn serve_generation_publication_until(","HostAuthorityPeerChannel::from_stream_until("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_service"
+symbol = "BoundInitial::serve_same_actor_phase_initial"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_initial\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"
+definition_markers = ["pub(in super::super) fn serve_same_actor_phase_initial(","gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_learning_service"
+symbol = "BoundLearning::serve_same_actor_phase_learning"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_learning\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+definition_markers = ["pub(super) fn serve_same_actor_phase_learning(","gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_model_service"
+symbol = "BoundFactory::serve_same_actor_phase_factory"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_factory\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+definition_markers = ["pub(super) fn serve_same_actor_phase_factory(","gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_receive_start"
+symbol = "OriginalPhaseReceiveStart::capture"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+definition_markers = ["pub(crate) fn capture()","Instant::now()","boottime_ns()"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_receive_inputs"
+symbol = "receive_original_same_actor_inputs"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+definition_markers = ["pub(crate) async fn receive_original_same_actor_inputs(","AgentdRootAuthoritySession::connect_same_actor_phase_until(","activate_original_phase_final_use_owners("]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_context_current"
+symbol = "OriginalSameActorRootContext::require_current"
+receiver_type = "OriginalSameActorRootContext"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+definition_markers = ["pub(crate) fn require_current(","self.session","self.gate.require_open()"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs","codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs","codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_scoped_descriptor"
+symbol = "OriginalSameActorRootContext::accept_original_scoped_descriptor"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)accept_original_scoped_descriptor\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+definition_markers = ["pub(crate) fn accept_original_scoped_descriptor(","scoped"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_session_connect"
+symbol = "AgentdRootAuthoritySession::connect_same_actor_phase_until"
+definition_path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
+definition_markers = ["pub(crate) fn connect_same_actor_phase_until(","CloseSameActorPhaseOnDrop::new","connect_original_phase_stream("]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_session_activate"
+symbol = "AgentdRootAuthoritySession::activate_original_phase_final_use_owners"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)activate_original_phase_final_use_owners\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
+definition_markers = ["pub(crate) fn activate_original_phase_final_use_owners(","activate_final_use_owners("]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_session_origin"
+symbol = "AgentdRootAuthoritySession::require_original_same_actor_phase_origin"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)require_original_same_actor_phase_origin\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
+definition_markers = ["pub(crate) fn require_original_same_actor_phase_origin(","Arc::ptr_eq("]
+product_callers = ["codex-rs/hepta-agentd/src/root_q24_successor_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_grant_gate"
+symbol = "AgentdUnixFinalUseGrantProvider::into_same_actor_phase"
+receiver_type = "AgentdUnixFinalUseGrantProvider"
+definition_path = "codex-rs/hepta-agentd/src/final_use_issuer.rs"
+definition_markers = ["pub(crate) fn into_same_actor_phase(","retain_required_original_stream("]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_send_start"
+symbol = "send_root_same_actor_phase_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs"
+definition_markers = ["pub fn send_root_same_actor_phase_handoff(","gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_send_scope"
+symbol = "send_root_same_actor_scoped_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs"
+definition_markers = ["pub fn send_root_same_actor_scoped_handoff(","gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_take_start_rights"
+symbol = "receive_original_phase_start"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs"
+definition_markers = ["pub(crate) fn receive_original_phase_start(","START_FRAME"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_take_scope_rights"
+symbol = "receive_original_scoped_phase"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs"
+definition_markers = ["pub(crate) fn receive_original_scoped_phase(","SCOPED_FRAME"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_retire_ack"
+symbol = "OriginalDaemonPhaseRetirement::begin_original_retirement"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs"
+definition_markers = ["pub(crate) fn begin_original_retirement(","accept_original_retirement_ack("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_join_after_a_drop"
+symbol = "OriginalDaemonPhaseRetirement::join_after_original_a_drop"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)join_after_original_a_drop\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs"
+definition_markers = ["pub(crate) async fn join_after_original_a_drop(","original_join_exchange("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_joined_parts"
+symbol = "OriginalJoinedSameActorA::into_original_learning_parts"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)into_original_learning_parts\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs"
+definition_markers = ["pub(crate) fn into_original_learning_parts(","self.prepared","self.retained"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_scope_receive"
+symbol = "receive_original_same_actor_scoped_owners"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+definition_markers = ["pub(crate) fn receive_original_same_actor_scoped_owners(","receive_original_scoped_phase(","AgentdRootQ24ModelFactoryV1::from_original_same_actor_handoff("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_scope_parts"
+symbol = "OriginalSameActorScopedOwners::into_original_parts"
+receiver_type = "OriginalSameActorScopedOwners"
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+definition_markers = ["pub(crate) fn into_original_parts(","Arc<CellQ24PreparedLearningV1>","OriginalScopedPublicationTicket"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_ticket_session"
+symbol = "OriginalScopedPublicationTicket::claim_original_session"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)claim_original_session\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+definition_markers = ["pub(crate) fn claim_original_session(","std::ptr::eq(","self\n                .consumed\n                .compare_exchange("]
+product_callers = ["codex-rs/hepta-agentd/src/root_q24_successor_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_ticket_connect"
+symbol = "OriginalScopedPublicationTicket::connect_original_current"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)connect_original_current\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+definition_markers = ["pub(crate) async fn connect_original_current(","take_original_scoped_publication_connection(&self)?"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_connect"
+symbol = "RootGenerationInitialHandoffV1::connect_original_same_actor_initial"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)connect_original_same_actor_initial\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+definition_markers = ["pub(crate) fn connect_original_same_actor_initial(","connection.require_same_successor_session(","from_original_initial_phase_stream_until("]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_publication_connect"
+symbol = "RootGenerationPublicationHandoffV1::connect_original_same_actor_publication"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)connect_original_same_actor_publication\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+definition_markers = ["pub(crate) fn connect_original_same_actor_publication(","from_original_scoped_phase_stream_until("]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_stream"
+symbol = "OriginalPublicationStream::from_original_initial_phase_stream_until"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
+definition_markers = ["pub(crate) fn from_original_initial_phase_stream_until(","OriginalInitialPhaseLifetime"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_scoped_stream"
+symbol = "OriginalPublicationStream::from_original_scoped_phase_stream_until"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
+definition_markers = ["pub(crate) fn from_original_scoped_phase_stream_until(","gate.deadline().instant(),\n            gate,\n            None,"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_successor_capture"
+symbol = "OriginalQ24SuccessorSession::capture_original_same_actor_successor_session"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+definition_markers = ["pub(crate) fn capture_original_same_actor_successor_session(","require_original_same_actor_phase_origin("]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_successor_origin"
+symbol = "OriginalQ24SuccessorSession::require_original_same_actor_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)require_original_same_actor_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+definition_markers = ["pub(crate) fn require_original_same_actor_phase(","require_original_same_actor_phase_origin("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs","codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs","codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs","codex-rs/hepta-agentd/src/root_q24_model_factory.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_successor_scope_take"
+symbol = "OriginalQ24SuccessorSession::take_original_scoped_publication_connection"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)take_original_scoped_publication_connection\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+definition_markers = ["pub(crate) fn take_original_scoped_publication_connection(","ticket.claim_original_session(self)?"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_successor_factory"
+symbol = "prepare_original_same_actor_successor"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs"
+definition_markers = ["pub(crate) async fn prepare_original_same_actor_successor(","prepare_original_successor_context(","new_pending_slot("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_successor_task_parts"
+symbol = "OriginalSameActorSuccessorTaskParts::into_task_parts"
+receiver_type = "OriginalSameActorSuccessorTaskParts"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs"
+definition_markers = ["pub(crate) fn into_task_parts(","Arc::ptr_eq("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_artifact_publish"
+symbol = "OriginalCellQ24ArtifactPublicationDriverV1::publish_original_same_actor_candidate"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)publish_original_same_actor_candidate\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"
+definition_markers = ["pub(crate) fn publish_original_same_actor_candidate(","require_original_same_actor_work("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_current_connect"
+symbol = "OriginalCellQ24SelectedArtifactForRootV1::connect_original_same_actor_current"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)connect_original_same_actor_current\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"
+definition_markers = ["pub(crate) fn connect_original_same_actor_current(","ticket.connect_original_current(timeout).await?"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_startup"
+symbol = "AgentdOriginalSameActorPhaseStartupV1::from_process_environment"
+definition_path = "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+definition_markers = ["pub fn from_process_environment(","OriginalPhaseReceiveStart::capture()?","require_disjoint_phase_descriptors("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_run"
+symbol = "AgentdOriginalSameActorPhaseStartupV1::run_original_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)run_original_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+definition_markers = ["pub async fn run_original_phase(","launch.run(config, arg0_paths).await?","original phase completion and physical owner join are not acknowledged"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_initial_install"
+symbol = "install_original_initial_task"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+definition_markers = ["pub(crate) fn install_original_initial_task(","OriginalRootGenerationInitialV1::prepare_feature(","prepared.publish(&signed)?"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_task_worker"
+symbol = "OriginalSameActorTaskWorker::new"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs"
+definition_markers = ["pub(super) fn new(","CloseSameActorPhaseOnDrop::new("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_task_worker_run"
+symbol = "OriginalSameActorTaskWorker::run"
+receiver_type = "OriginalSameActorTaskWorker"
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs"
+definition_markers = ["pub(crate) async fn run(","run_original_a(","run_original_scoped("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_a_controller"
+symbol = "OriginalPhaseExecution::run_original_a"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)run_original_a\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+definition_markers = ["pub(super) async fn run_original_a(","OriginalDaemonPhaseRetirement::begin_original_retirement(","join_after_original_a_drop("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_scoped_controller"
+symbol = "OriginalPhaseExecution::run_original_scoped"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)run_original_scoped\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"
+definition_markers = ["pub(super) async fn run_original_scoped(","PreparedLearningBuilder::new(","close_and_join_original_work("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_same_actor_c_controller"
+symbol = "OriginalPhaseExecution::publish_and_observe_original_c"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)publish_and_observe_original_c\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+definition_markers = ["pub(super) async fn publish_and_observe_original_c(","decision.as_mut()","install_original_same_actor_evaluation("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_initial_enroll"
+symbol = "HostAuthorityService::enroll_generation_initial_in_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)enroll_generation_initial_in_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"
+definition_markers = ["pub(crate) fn enroll_generation_initial_in_phase(","phase: Option<","gate.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_publication_enroll"
+symbol = "HostAuthorityService::enroll_generation_publication_for_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)enroll_generation_publication_for_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs"
+definition_markers = ["pub(crate) fn enroll_generation_publication_for_phase(","context.require_before_enrollment()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_publication_service"
+symbol = "BoundPublication::serve_same_actor_phase_publication"

@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "kind": "strict-stdio-actual-sdk-writer-close-and-components-successor",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "frozen Git/static-only candidate; not installed or executed",
+  "predecessor": "7c9fc2019eb327e4ce7f8955e0577e5f73614ec4",
+  "specific_blocker": "SDK AsyncRwTransport::send clones the actual write Arc. Merely dropping that AsyncRw through TokioChildProcess::into_inner does not prove the Writer/ChildStdin released while an outstanding send future retains that Arc. The first packet did not establish full IO closure.",
+  "resolution": "Only the opt-in strict branch now spawns the same configured Tokio Command directly and keeps its actual Child alongside the exact same public SDK AsyncRwTransport<RoleClient,ChildStdout,ChildStdin>. On close/Drop one retained actual child job first awaits AsyncRw.close, whose original write-Mutex critical section takes and drops the real Writer, then drops the actual stdout reader, joins the real TERM/KILL thread, and waits/reaps the same Child. The default TokioChildProcess launcher remains unchanged.",
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+      "preimage": {
+        "blob": "13c608a77bdc2a38e5d23fe715d77f8c7b841625",
+        "bytes": 24464,
+        "sha256": "78b2faeab99cd9a14d4ec113e90a89f357a6904015153495653ac3828e8bfe16"
+      },
+      "postimage": {
+        "blob": "09ce4b8a677003b4e11edb701bd444a26edda917",
+        "bytes": 25592,
+        "sha256": "314ee989d65d3908ee78fcc5c69999e4db86de3ac65acc9c488325e4ea85aebf"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "use tokio::runtime::Handle;\n",
+          "new": "use rmcp::transport::async_rw::AsyncRwTransport;\nuse tokio::process::Child;\nuse tokio::process::ChildStdin;\nuse tokio::process::ChildStdout;\nuse tokio::runtime::Handle;\n",
+          "reason": "Actual SDK Legacy framing with independently owned child"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "use super::*;\n",
+          "new": "use super::*;\n\ntype OriginalStdioIo = AsyncRwTransport<RoleClient, ChildStdout, ChildStdin>;\ntype TerminationThreadOwner = Arc<Mutex<Option<std::thread::JoinHandle<io::Result<()>>>>>;\n",
+          "reason": "Name exact actual IO and retained thread types"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "    _termination_thread: Option<Arc<Mutex<Option<std::thread::JoinHandle<io::Result<()>>>>>>,\n",
+          "new": "    _termination_thread: Option<TerminationThreadOwner>,\n",
+          "reason": "Retain same field with named type"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "    fn retain_child(self: &Arc<Self>, transport: TokioChildProcess) {\n        self.request_stop();\n        let child = transport.into_inner();\n",
+          "new": "    fn retain_child(self: &Arc<Self>, mut child: Child, mut transport: Option<OriginalStdioIo>) {\n        self.request_stop();\n",
+          "reason": "Same raw child and actual SDK IO enter one owned cleanup job"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "            if let Some(child) = child {\n                state.failed_child_owners.push(Box::new(child));\n            }\n",
+          "new": "            state.failed_child_owners.push(Box::new((child, transport)));\n",
+          "reason": "Retain actual child and IO on runtime loss"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "            let Some(mut child) = child else {\n                return Err(io::Error::other(\n                    \"owned transport lost its actual child before an observed wait\",\n                ));\n            };\n",
+          "new": "            // SDK send futures retain this same write Arc. Its actual close\n            // waits for the original write lock and takes the real Writer.\n            // Dropping AsyncRw alone would not prove the stdin FD released.\n            if let Some(transport) = transport.as_mut()\n                && let Err(error) = transport.close().await\n            {\n                original.state().failures.push(RecordedFailure::io(error));\n            }\n            // AsyncRw has no background reader task. Its actual stdout owner\n            // is released here, after any borrowed receive future has ended.\n            drop(transport);\n",
+          "reason": "Actual write-lock close and stdout owner release before physical child observation"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "                if let Err(error) = Box::into_pin(child.kill()).await {\n",
+          "new": "                if let Err(error) = child.kill().await {\n",
+          "reason": "Actual raw Tokio Child kill/reap API"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "                    if let Err(kill_error) = Box::into_pin(child.kill()).await {\n",
+          "new": "                    if let Err(kill_error) = child.kill().await {\n",
+          "reason": "Preserve wait error while actual raw child fallback reaps"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "pub(super) struct OriginalOwnedStdioTransport {\n    transport: Option<TokioChildProcess>,\n    custody: Arc<OriginalStdioShutdownCustody>,\n}",
+          "new": "pub(super) struct OriginalOwnedStdioTransport {\n    transport: Option<OriginalStdioIo>,\n    child: Option<Child>,\n    custody: Arc<OriginalStdioShutdownCustody>,\n}",
+          "reason": "Actual child and IO are separately owned; no hidden SDK child Drop task"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "        if let Some(transport) = self.transport.take() {\n            self.custody.retain_child(transport);\n        }\n",
+          "new": "        if let Some(child) = self.child.take() {\n            self.custody.retain_child(child, self.transport.take());\n        }\n",
+          "reason": "Transfer both actual child and IO exactly once"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "        let (transport, stderr) = TokioChildProcess::builder(command)\n            .stderr(Stdio::piped())\n            .spawn()?;\n        // Install the actual drop transfer immediately. Every later return\n        // transfers the same child to custody instead of the SDK best-effort\n        // ChildWithCleanup::drop task.\n        let transport = OriginalOwnedStdioTransport {\n            transport: Some(transport),\n            custody: Arc::clone(&custody),\n        };\n        let process_id = transport.transport.as_ref().and_then(TokioChildProcess::id);\n        custody.register_process(process_id)?;\n        let stderr = stderr.ok_or_else(|| io::Error::other(\"owned stdio stderr missing\"))?;\n        custody.retain_stderr(stderr, program_name.clone())?;\n",
+          "new": "        let child = command.stderr(Stdio::piped()).spawn()?;\n        // Retain the actual child immediately, including every later pipe or\n        // registration error. The strict branch uses the SAME SDK AsyncRw\n        // framing as TokioChildProcess, but owns its Child and IO separately.\n        let mut transport = OriginalOwnedStdioTransport {\n            transport: None,\n            child: Some(child),\n            custody: Arc::clone(&custody),\n        };\n        let child = transport.child.as_mut().ok_or_else(|| {\n            io::Error::other(\"owned stdio lost its newly spawned child\")\n        })?;\n        custody.register_process(child.id())?;\n        let stdin = child.stdin.take()\n            .ok_or_else(|| io::Error::other(\"owned stdio stdin missing\"))?;\n        let stdout = child.stdout.take()\n            .ok_or_else(|| io::Error::other(\"owned stdio stdout missing\"))?;\n        let stderr = child.stderr.take()\n            .ok_or_else(|| io::Error::other(\"owned stdio stderr missing\"))?;\n        transport.transport = Some(AsyncRwTransport::new(stdout, stdin));\n        custody.retain_stderr(stderr, program_name.clone())?;\n",
+          "reason": "Direct raw child spawn plus identical SDK codec exposes precise IO ownership"
+        },
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs",
+          "kind": "replace_once",
+          "old": "fn unsupported() -> io::Error {\n    io::Error::new(\n        io::ErrorKind::Unsupported,\n        \"owned stdio shutdown supports Linux local Legacy transport only\",\n    )\n}\n",
+          "new": "fn unsupported() -> io::Error {\n    io::Error::new(\n        io::ErrorKind::Unsupported,\n        \"owned stdio shutdown supports Linux local Legacy transport only\",\n    )\n}\n\n#[cfg(all(test, target_os = \"linux\"))]\n#[path = \"stdio_server_owned_shutdown_tests.rs\"]\nmod tests;\n",
+          "reason": "Compile only the six actual Linux process/IO/cancellation components"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "c04eb322c3bf927ab7afa2ea7a886f877cda887c",
+        "bytes": 8515,
+        "sha256": "063e046c5d91fab865916019eb667fe38fd52da9618b0a50411d819e2e9e9a3e"
+      },
+      "operations": [
+        {
+          "path": "codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs",
+          "kind": "add",
+          "content": "//! Components for actual local processes and retained join handles.\n//! These do not run an MCP handshake, carry phase authority, or prove a\n//! complete Hepta shutdown. No completion or RootIntent fixture is forged.\n\nuse super::*;\nuse pretty_assertions::assert_eq;\nuse std::time::Duration;\n\nfn original_command(directory: &Path, script: &str) -> StdioServerCommand {\n    StdioServerCommand::new(\n        OsString::from(\"/bin/sh\"),\n        vec![OsString::from(\"-c\"), OsString::from(script)],\n        None,\n        Vec::new(),\n        Some(directory.to_string_lossy().into_owned()),\n        McpProtocolMode::Legacy,\n    )\n}\n\nasync fn joined(custody: &OriginalStdioShutdownCustody) -> io::Result<OriginalStdioShutdownObservation> {\n    tokio::time::timeout(Duration::from_secs(30), custody.join_original_stdio())\n        .await\n        .expect(\"actual child/helper cleanup did not finish\")\n}\n\nasync fn require_actual_handles_joined(custody: &OriginalStdioShutdownCustody) {\n    let (launch, children, stderr, termination, termination_thread) = {\n        let state = custody.state();\n        (\n            state.launch.clone().unwrap(),\n            state.child.clone(),\n            state.stderr.clone(),\n            state.termination.clone().unwrap(),\n            state._termination_thread.clone().unwrap(),\n        )\n    };\n    let launch = launch.state.lock().await;\n    assert!(launch.joined);\n    assert!(launch.handle.is_none());\n    assert!(launch.result.is_none(), \"actual transport must leave launch output\");\n    drop(launch);\n    assert_eq!(children.len(), 1);\n    assert_eq!(stderr.len(), 1);\n    for child in children {\n        let state = child.state.lock().await;\n        assert!(state.joined);\n        assert!(state.handle.is_none());\n        assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n    }\n    for reader in stderr {\n        let state = reader.state.lock().await;\n        assert!(state.joined);\n        assert!(state.handle.is_none());\n    }\n    let state = termination.state.lock().await;\n    assert!(state.joined);\n    assert!(state.handle.is_none());\n    assert!(matches!(state.result.as_ref(), Some(Ok(()))));\n    assert!(\n        termination_thread.lock().unwrap().is_none(),\n        \"the actual std::thread::JoinHandle must have been consumed by join\"\n    );\n}\n\n#[tokio::test]\nasync fn empty_custody_cannot_attest_a_child_exit_or_start_after_stop() {\n    let custody = OriginalStdioShutdownCustody::new();\n    let observation = joined(&custody).await.unwrap();\n    assert!(observation.require_original_child_exited().is_err());\n    let directory = tempfile::tempdir().unwrap();\n    let launcher = LocalStdioServerLauncher::new_with_owned_shutdown(\n        directory.path().to_path_buf(),\n        Arc::clone(&custody),\n    );\n    assert!(\n        launcher\n            .launch(original_command(directory.path(), \"exit 0\"))\n            .await\n            .is_err()\n    );\n    assert!(custody.state().launch.is_none());\n}\n\n#[tokio::test]\nasync fn unsupported_modern_mode_refuses_before_an_actual_launch() {\n    let custody = OriginalStdioShutdownCustody::new();\n    let directory = tempfile::tempdir().unwrap();\n    let launcher = LocalStdioServerLauncher::new_with_owned_shutdown(\n        directory.path().to_path_buf(),\n        Arc::clone(&custody),\n    );\n    let mut command = original_command(directory.path(), \"exit 0\");\n    command.protocol_mode = McpProtocolMode::V20260728;\n    let error = match launcher.launch(command).await {\n        Err(error) => error,\n        Ok(transport) => {\n            drop(transport);\n            panic!(\"strict modern launch must refuse\");\n        }\n    };\n    assert_eq!(error.kind(), io::ErrorKind::Unsupported);\n    assert!(custody.state().launch.is_none());\n    assert!(joined(&custody).await.unwrap().require_original_child_exited().is_err());\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn abandoned_actual_launch_output_is_taken_and_its_child_reaped() {\n    let custody = OriginalStdioShutdownCustody::new();\n    let directory = tempfile::tempdir().unwrap();\n    // Use the same concrete start path without consuming its actual output:\n    // this is the state left by cancellation of the launch waiter.\n    let launch = custody\n        .start_launch(\n            original_command(directory.path(), \"printf 'original-stderr\\\\n' >&2; exec sleep 30\"),\n            directory.path().to_path_buf(),\n        )\n        .unwrap();\n    let state = launch.join().await;\n    assert!(matches!(state.result.as_ref(), Some(Ok(_))));\n    drop(state);\n    let original_pid = custody.state().process_id.unwrap();\n\n    let observation = joined(&custody).await.unwrap();\n    observation.require_original_child_exited().unwrap();\n    assert_eq!(observation.process_id, Some(original_pid));\n    require_actual_handles_joined(&custody).await;\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn cancelled_cleanup_waiter_keeps_the_same_undropped_transport_and_jobs() {\n    let custody = OriginalStdioShutdownCustody::new();\n    let directory = tempfile::tempdir().unwrap();\n    let launcher = LocalStdioServerLauncher::new_with_owned_shutdown(\n        directory.path().to_path_buf(),\n        Arc::clone(&custody),\n    );\n    let transport = launcher\n        .launch(original_command(directory.path(), \"exec sleep 30\"))\n        .await\n        .unwrap();\n    let original_pid = custody.state().process_id.unwrap();\n\n    let mut cleanup = Box::pin(custody.join_original_stdio());\n    tokio::select! {\n        biased;\n        result = &mut cleanup => {\n            panic!(\"cleanup cannot finish while the actual transport remains owned: {}\", result.is_ok());\n        }\n        () = async {} => {}\n    }\n    assert!(custody.state().child.is_empty());\n    drop(cleanup);\n    // Cancelling the waiter above does not consume the retained handles.\n    // Only this real transport Drop returns the same actual child to custody.\n    drop(transport);\n    let observation = joined(&custody).await.unwrap();\n    observation.require_original_child_exited().unwrap();\n    assert_eq!(observation.process_id, Some(original_pid));\n    require_actual_handles_joined(&custody).await;\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn actual_stderr_error_is_preserved_after_child_and_helper_joins() {\n    let custody = OriginalStdioShutdownCustody::new();\n    let directory = tempfile::tempdir().unwrap();\n    let launcher = LocalStdioServerLauncher::new_with_owned_shutdown(\n        directory.path().to_path_buf(),\n        Arc::clone(&custody),\n    );\n    let transport = launcher\n        .launch(original_command(directory.path(), \"printf '\\\\377\\\\n' >&2; exec sleep 30\"))\n        .await\n        .unwrap();\n    let reader = custody.state().stderr[0].clone();\n    let actual_read = tokio::time::timeout(Duration::from_secs(30), reader.join())\n        .await\n        .expect(\"original invalid UTF-8 stderr was not read\");\n    assert!(matches!(actual_read.result.as_ref(), Some(Err(_))));\n    drop(actual_read);\n\n    drop(transport);\n    let error = match joined(&custody).await {\n        Err(error) => error,\n        Ok(_) => panic!(\"actual stderr failure must not turn into successful shutdown\"),\n    };\n    assert!(error.to_string().contains(\"stderr\"));\n    require_actual_handles_joined(&custody).await;\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn retained_sdk_send_future_cannot_keep_the_closed_actual_writer_live() {\n    let custody = OriginalStdioShutdownCustody::new();\n    let directory = tempfile::tempdir().unwrap();\n    let launcher = LocalStdioServerLauncher::new_with_owned_shutdown(\n        directory.path().to_path_buf(),\n        Arc::clone(&custody),\n    );\n    let mut transport = launcher\n        .launch(original_command(directory.path(), \"exec sleep 30\"))\n        .await\n        .unwrap();\n    let message: TxJsonRpcMessage<RoleClient> =\n        serde_json::from_str(r#\"{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\"}\"#).unwrap();\n    // This actual SDK future retains its write Arc but has not sent anything.\n    // A mere AsyncRw Drop would leave its Writer inside that Arc.\n    let pending_send: BoxFuture<'static, io::Result<()>> = transport.send(message).boxed();\n    drop(transport);\n    let observation = joined(&custody).await.unwrap();\n    observation.require_original_child_exited().unwrap();\n    let error = pending_send.await.unwrap_err();\n    assert_eq!(error.kind(), io::ErrorKind::NotConnected);\n    require_actual_handles_joined(&custody).await;\n}\n",
+          "reason": "Actual Linux children, retained handles, original SDK Writer close and strict refusals; no authority fixtures"
+        }
+      ]
+    }
+  ],
+  "path_count": 2,
+  "operation_count": 13,
+  "unchanged_parent": {
+    "path": "codex-rs/rmcp-client/src/stdio_server_launcher.rs",
+    "blob": "d2f6edcbf032138fcd774628ec739091668264b7",
+    "bytes": 28282,
+    "sha256": "7b8a9999c1418c18f1f5888852c6d9c5f85eac122058b9f844d23ee66b5d28ac"
+  },
+  "source_dependencies": [
+    {
+      "repository": "modelcontextprotocol/rust-sdk",
+      "role": "actual original async_rw implementation",
+      "blob": "47d0e05b2a8f0ad4ca89b4f8f8810c01f8049ebc",
+      "bytes": 39039,
+      "sha256": "b9819a4ed326d1e450c8b79fc2fdc2748d6a84a0320afdd9c91647f629a37c16"
+    },
+    {
+      "repository": "modelcontextprotocol/rust-sdk",
+      "role": "actual public transport-async-rw module export",
+      "blob": "a539927d1c00c248d984fca3328ba90cdc5501c8",
+      "bytes": 11125,
+      "sha256": "901a0a5f2b06740fde47f6c3e54a966ad7024ab3d82ae8983f0a08f5ea00880d"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "role": "actual original process-group TERM/KILL helpers",
+      "path": "codex-rs/utils/pty/src/process_group.rs",
+      "blob": "3d2e3ca4524cb094e926a90abed16d939e86d2e1",
+      "bytes": 9395,
+      "sha256": "4c9c062f990c9bfef8c61641956765379586c4f4bb8fc61db67cf1a515d084d3"
+    }
+  ],
+  "api_unchanged": [
+    "OriginalStdioShutdownCustody::new()->Arc<Self>",
+    "request_stop(&self)",
+    "join_original_stdio(&self)->io::Result<OriginalStdioShutdownObservation>",
+    "OriginalStdioShutdownObservation::require_original_child_exited(&self)->io::Result<()>",
+    "LocalStdioServerLauncher::new_with_owned_shutdown(PathBuf,Arc<Custody>)->Self"
+  ],
+  "components": {
+    "tests": [
+      "empty_custody_cannot_attest_a_child_exit_or_start_after_stop",
+      "unsupported_modern_mode_refuses_before_an_actual_launch",
+      "abandoned_actual_launch_output_is_taken_and_its_child_reaped",
+      "cancelled_cleanup_waiter_keeps_the_same_undropped_transport_and_jobs",
+      "actual_stderr_error_is_preserved_after_child_and_helper_joins",
+      "retained_sdk_send_future_cannot_keep_the_closed_actual_writer_live"
+    ],
+    "executed": false,
+    "real_resources": "Linux /bin/sh children, original stderr bytes, original SDK send future holding its write Arc, actual stored handles; no fabricated authority, phase completion or RootIntent",
+    "cancellation": "A real transport remains held while cleanup is polled first and must be Pending. The waiter is dropped, then that exact transport is dropped and the same custody genuinely joins. Completed unclaimed launch output is tested through the actual concrete start path.",
+    "unsupported": "Modern mode refuses before launch; empty/stopped custody cannot prove actual child exit.",
+    "errors": "Actual invalid UTF-8 stderr error remains an error even after the same child and helper joins."
+  },
+  "scope_limits": [
+    "This component proves its actual child and own helper cleanup only, not successful MCP initialization or application work.",
+    "SDK service-driver JoinSet tail behavior is not upgraded to all tasks joined. Original AsyncRw.close ensures any retained send future sees no Writer after actual close.",
+    "The six components have not been compiled or executed; unchanged original gates and an appropriate rmcp-client test target still need Root scheduling."
+  ],
+  "verification": {
+    "all_get_hashes": true,
+    "exact_ops_forward_reverse": true,
+    "default_parent_unchanged": true,
+    "no_new_dependencies": true,
+    "no_new_deadline": true,
+    "no_restart": true,
+    "native": false,
+    "original_checker": false,
+    "formatter": false,
+    "refs": false,
+    "h": false
+  },
+  "source_graph": "7c9fc (two paths/twelve ops) then this successor (two paths/thirteen ops) = three distinct paths/twenty-five operations. Do not keep both old and new null->post for the same new child file."
+}

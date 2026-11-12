@@ -1,0 +1,78 @@
+//! Return the actual coordinator's owners only after its real thread joined.
+//! The C event is only an owner handoff. It cannot create a C terminal cap,
+//! a Root permission, or an acknowledgement by itself.
+
+use super::*;
+use crate::AgentdIdentity;
+use crate::circuit_task::OriginalCircuitNaturalJoin;
+use crate::production_launcher::OriginalSameActorRuntimeStopped;
+use crate::root_authority_session::OriginalRootSessionPaused;
+use crate::same_actor_q24_deployment::OriginalRootRetirementIntent;
+use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+use crate::same_actor_q24_phase_learning::OriginalSameActorLearningJoined;
+
+impl OriginalDeploymentCoordinatorOwner {
+    /// A real natural Circuit join and the owner-bearing Runtime result are
+    /// required before taking this thread's result. This operation never
+    /// requests failure stop and never substitutes an event for physical join.
+    pub(crate) fn take_original_after_c_join(
+        &mut self,
+        stopped: &OriginalSameActorRuntimeStopped,
+        learning: &OriginalSameActorLearningJoined,
+        natural: &OriginalCircuitNaturalJoin,
+    ) -> Result<OriginalDeploymentRetained, AgentdError> {
+        let mut closing = CloseSameActorPhaseOnDrop::new(self.context.gate());
+        let identity = self.context.identity();
+        let gate = self.context.gate();
+        stopped.require_original_origin(identity, gate)?;
+        learning.require_original_phase(identity, gate)?;
+        natural.require_original_phase(identity, gate)?;
+        let thread = self.thread.take()
+            .ok_or_else(|| deployment_refused("actual coordinator result was already taken"))?;
+        let retained = join_original_thread(thread)?;
+        if !Arc::ptr_eq(&retained.context, &self.context) {
+            return Err(deployment_refused("actual joined coordinator context differs"));
+        }
+        OriginalDeploymentRetained::require_original_origin(&retained, identity, gate)?;
+        stopped.require_original_origin(identity, gate)?;
+        learning.require_original_phase(identity, gate)?;
+        natural.require_original_phase(identity, gate)?;
+        // Both original event-loop and pre-spawn failure guards now live in
+        // retained. The joining handle cannot be used again or recreated.
+        closing.disarm();
+        Ok(retained)
+    }
+}
+
+impl OriginalDeploymentRetained {
+    pub(crate) fn require_original_origin(
+        &self,
+        identity: &AgentdIdentity,
+        gate: &Arc<SameActorPhaseGate>,
+    ) -> Result<(), AgentdError> {
+        if self.context.identity() != identity || !Arc::ptr_eq(self.context.gate(), gate) {
+            self.context.gate().close();
+            return Err(deployment_refused("actual retained coordinator origin differs"));
+        }
+        self.coordinator.require_original_retirement_origin(identity, gate)
+    }
+
+    /// Retain every actual material/ledger/model/evidence owner while the one
+    /// original progress client moves into the real seq1 Intent. The returned
+    /// tuple owns both; dropping either before final completion still closes.
+    pub(crate) fn authorize_original_root_retirement(
+        mut self,
+        stopped: &OriginalSameActorRuntimeStopped,
+        learning: &OriginalSameActorLearningJoined,
+        natural: &OriginalCircuitNaturalJoin,
+        session: &OriginalRootSessionPaused,
+    ) -> Result<(OriginalRootRetirementIntent, Self), AgentdError> {
+        self.require_original_origin(self.context.identity(), self.context.gate())?;
+        let client = self.coordinator.take_original_retirement_client()?;
+        let intent = super::super::client::OriginalDeploymentClient::authorize_original_root_retirement(
+            client, stopped, learning, natural, session,
+        )?;
+        self.require_original_origin(self.context.identity(), self.context.gate())?;
+        Ok((intent, self))
+    }
+}

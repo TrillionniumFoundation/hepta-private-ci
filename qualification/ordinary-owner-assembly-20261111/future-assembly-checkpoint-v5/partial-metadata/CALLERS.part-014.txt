@@ -1,0 +1,499 @@
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)serve_same_actor_phase_publication\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
+definition_markers = ["pub(in super::super) fn serve_same_actor_phase_publication(","phase.require_original(&slot)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_session.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_bound_five_lanes"
+symbol = "serve_bound_phase_lanes_until"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_listeners.rs"
+definition_markers = ["pub(super) fn serve_bound_phase_lanes_until(","serve_original_phase_lane_until("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_issuer_effect_entry"
+symbol = "DeploymentFinalUseIssuer::require_new_same_actor_phase_effect"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)require_new_same_actor_phase_effect\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_issuer.rs"
+definition_markers = ["fn require_new_same_actor_phase_effect(","self.same_actor_phase.get()"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_authbus.rs","codex-rs/hepta-agentd/src/deployment_desktop.rs","codex-rs/hepta-agentd/src/deployment_notes.rs","codex-rs/hepta-agentd/src/deployment_text.rs","codex-rs/hepta-agentd/src/deployment_writer.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_checkpoint_effect"
+symbol = "RegisteredWriter::exchange_checkpoint_in_same_actor_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)exchange_checkpoint_in_same_actor_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+definition_markers = ["pub(super) fn exchange_checkpoint_in_same_actor_phase(","self.registration\n            .with_live(","phase.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_consumer_effect"
+symbol = "RegisteredWriter::exchange_consumer_in_same_actor_phase"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)exchange_consumer_in_same_actor_phase\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+definition_markers = ["pub(super) fn exchange_consumer_in_same_actor_phase(","self.registration\n            .with_live(","phase.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_learning_effect"
+symbol = "RegisteredWriter::exchange_same_actor_learning_checkpoint"
+call_pattern = "(?:\\.\\s*|\\b[\\w:]+::)exchange_same_actor_learning_checkpoint\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+definition_markers = ["pub(super) fn exchange_same_actor_learning_checkpoint(","self.registration\n            .with_live(","phase.require_open()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_same_actor_checkpoint_until"
+symbol = "AgentdUnixCognitiveCheckpointTransport::from_original_phase_stream_until"
+definition_path = "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs"
+definition_markers = ["pub(crate) fn from_original_phase_stream_until(","phase.deadline().instant()","phase: Some("]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs"
+required = ["pub(crate) struct SameActorPhaseGate","closed: CancellationToken","state: Mutex<GateState>"]
+forbidden = []
+required_order = [["impl Drop for CloseSameActorPhaseOnDrop","if self.armed","self.gate.close()"],["impl Drop for OriginalSameActorPhaseWatch","self.gate.close()","self.worker.take()","worker.join()"]]
+required_function_order = [
+  { function = "fn at_original_service_start(", sequence = ["lifetime.is_zero()","Duration::from_secs(300)","boottime_ns()","Instant::now()","checked_add(lifetime)","checked_add("] },
+  { function = "fn from_original_receive(", sequence = ["session_boottime_ns == 0","root_phase_boottime_ns == 0","session_boottime_ns.min(root_phase_boottime_ns)","deadline.remaining_at("] },
+  { function = "fn check_locked(", sequence = ["state.closed","self.closed.is_cancelled()","boottime_ns()","now < state.last_boottime_ns","self.deadline.remaining_at(now)?","state.last_boottime_ns = now"] },
+  { function = "fn enter_original_lane(", sequence = ["self\n                .state\n                .lock()","self.check_locked(&mut state)?","state\n                .active\n                .checked_add(1)","SameActorPhaseAdmission","if admitted.is_err()","self.close()"] },
+  { function = "fn retain_original_stream(", sequence = ["stream.try_clone()?","self\n                .state\n                .lock()","self.check_locked(&mut state)?","state.streams.len() >= MAX_STREAMS","state.next_stream","checked_add(1)","state.streams.insert(","self.close()"] },
+  { function = "fn retain_required_original_stream(", sequence = ["CloseSameActorPhaseOnDrop::new(self)","self.retain_original_stream(stream)?","self.require_open()?","RequiredSameActorPhaseChannel"] },
+  { function = "fn close(", sequence = ["self.closed.cancel()","self.state.lock()","state.closed = true","std::mem::take(&mut state.streams)","self.changed.notify_all()","stream.shutdown()"] },
+  { function = "fn watch_original_deadline(", sequence = ["self.state.lock()","self.check_locked(&mut state)","self.changed.wait_timeout(state, remaining.min(STOP_PROBE))"] },
+  { function = "fn start(", sequence = ["gate.require_open()?","Arc::clone(gate)","CloseSameActorPhaseOnDrop::new(gate)",".spawn(move ||","let _closing = closing","watched.watch_original_deadline()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_record.rs"
+required = ["expected: Option<PhaseRecord>","Reserved,","Claimed { claim: PhaseClaim }","Scoped { claim: PhaseClaim, factory: String }"]
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn reserve(", sequence = ["identity.initial.target.digest()","state: PhaseState::Reserved","HostAuthorityFrontierStore::initialize_bounded(","RECORD_BOUND,","store.load(&owner)","!= initial","expected: Some(initial)"] },
+  { function = "fn claim_before_namespaces(", sequence = ["self\n            .expected\n            .take()","matches!(before.state, PhaseState::Reserved)","self.store.load(&self.owner)","!= before","state: PhaseState::Claimed { claim }","self.store\n            .compare_and_set(&self.owner, &before, &next)","self.store.load(&self.owner)","!= next","self.expected = Some(next)"] },
+  { function = "fn mark_scoped_before_rights(", sequence = ["self\n            .expected\n            .take()","PhaseState::Claimed { claim }","self.store.load(&self.owner)","!= before","state: PhaseState::Scoped","self.store\n            .compare_and_set(&self.owner, &before, &next)","self.store.load(&self.owner)","!= next","self.expected = Some(next)"] },
+  { function = "fn require_claimed(", sequence = ["self\n            .expected\n            .as_ref()","PhaseState::Claimed","self.store.load(&self.owner)","!= *expected","return Err("] },
+  { function = "fn require_scoped(", sequence = ["self\n            .expected\n            .as_ref()","PhaseState::Scoped","self.store.load(&self.owner)","!= *expected","return Err("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_namespace.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn enter_claimed(", sequence = ["self.gate.enter_original_lane()?","self.require_claimed()?","Ok(admission)"] },
+  { function = "fn require_claimed(", sequence = ["self.gate.require_open()?","self.record.require_claimed()?","self.gate.require_open()?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_publication.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn require_before_enrollment(", sequence = ["self.gate.require_open()?","self.record.require_scoped()?","self.original.require_retained_predecessor()?","self.gate.require_open()?"] },
+  { function = "fn require_original(", sequence = ["self.gate.require_open()?","self.record.require_scoped()?","self.original.require_retained_predecessor()?","profile.intent.previous != self.original.owner","profile.previous_files != self.original.files","profile.intent.previous_checkpoint != self.original.checkpoint","profile.intent.previous_observation != self.original.observation","profile.consumer_slot != self.original.consumer_slot","profile.consumer_trust != self.original.consumer_trust","profile.local_consumer != self.original.local_consumer","return Err(","self.gate.require_open()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn claim_same_actor_phase_after_original_a(", sequence = ["self.with_learning_profile(","gate.enter_original_lane()?","profile.require_cell_scope(&initial)?","original.mode != RootGenerationInitialModeV1::Reserve","original.require_profile()?","original.require_selection(now)?","original.target.observe()","!observed.is_drained()","crate::neuron_generation_current::initial_root::original_initial_record(","gate.require_open()?","record.claim_before_namespaces(claim)?","gate.require_open()?","original.target.observe()","!= observed","original.require_profile()?","original.require_selection(","gate.require_open()?"] },
+  { function = "fn retire_original_phase_slot(", sequence = ["Arc::ptr_eq(&self.root, &claim.root)","self.require_profile()?","self.target.observe()","!observed.is_drained()","self\n                .current\n                .try_lock()","drop(current)","previous: target"] },
+  { function = "fn require_retained_predecessor(", sequence = ["self.previous.observe()","self.previous.files_binding().to_string() != self.files","return Err("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn require_expected_eof(", sequence = ["gate.require_open()?","Arc::ptr_eq(gate, &self.gate)","RETIRE_ACCEPTED | JOIN_ACCEPTED","return Err("] },
+  { function = "fn require_original_profile(", sequence = ["gate.require_open()?","self.phase != phase","retirement.state.load(Ordering::Acquire) != JOIN_ACCEPTED","return Err("] },
+  { function = "fn accept_original_phase_join(", sequence = ["gate.retain_original_stream(&stream)?","retirement.phase != phase","Arc::ptr_eq(gate, &retirement.gate)","HostAuthorityPeerChannel::from_stream_until(","gate.deadline().instant()","for sequence in [1_u8, 2_u8]","channel\n            .exchange(","gate.enter_original_lane()","service\n                    .with_learning_profile(","request.schema != 1","retirement\n                                .state\n                                .compare_exchange(","gate.require_open()?","if !received","return Err(","gate.require_open()?","joined.require_original_profile(","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_initial_cap.rs"
+required = ["gate: Arc<SameActorPhaseGate>","original: RootGeneration"]
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn register(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","self.gate.enter_original_lane()?","inputs.mode != crate::RootGenerationInitialModeV1::Reserve","self\n                .original\n                .phase\n                .compare_exchange(","self.original\n            .sender\n            .try_send(","self.gate.original_wait_epoch()?","receiver.try_recv()","self.gate.wait_original_change(epoch)?","self.gate.require_open()?","self.original.phase.load(Ordering::Acquire) != CONSUMED","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_publication_cap.rs"
+required = ["gate: Arc<SameActorPhaseGate>","original: RootGeneration"]
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn register(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","self.gate.enter_original_lane()?","inputs.mode != crate::RootGenerationPublicationModeV1::Reserve","self\n                .original\n                .phase\n                .compare_exchange(","self.original\n            .sender\n            .try_send(","self.gate.original_wait_epoch()?","receiver.try_recv()","self.gate.wait_original_change(epoch)?","self.gate.require_open()?","self.original.phase.load(Ordering::Acquire) != CONSUMED","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_scope_cap.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn register(", sequence = ["self.gate.require_open()?","self.root.uid != 0","self\n                .phase\n                .compare_exchange(","self.sender\n            .try_send(ScopeSubmission","self.gate.original_wait_epoch()?","receiver.try_recv()","self.gate.wait_original_change(epoch)?","self.gate.require_open()?","Arc::ptr_eq(&enrolled.gate, &self.gate)","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn serve_original_phase(", sequence = ["if start.is_some()","gate.require_open()?","generation_initial::BoundInitial::bind(","BoundPhaseControl::bind(","initial.activate_same_actor_phase()?","scope_runtime.activate()?","listeners::bind_runtime_lanes(&original.config, || Ok(()))?","OriginalInitialRetirement::new(&gate, &descriptor.phase)","threads.spawn(|| gate.watch_original_deadline())","let first = threads.spawn(","let scoped = threads.spawn(","gate.require_open()?","ready()?","gate.require_open()?","listeners::serve_bound_phase_lanes_until(","drop(scope_close)","first\n            .join()","scoped\n            .join()","watcher\n            .join()"] },
+  { function = "fn run_original_scoped_phase(", sequence = ["CloseSameActorPhaseOnDrop::new(gate)","scope.receiver.try_recv()","accept_original_phase_join(","initial_receiver.try_recv()","joined.require_original_profile(","claim_same_actor_phase_after_original_a(","joined.require_original_profile(","initial.retire_original_phase_slot(claim)?","record.require_claimed()?","reserve_original_learning_profile_in_phase(","open_original_learning_profile_in_phase(","HostAuthorityService::reserve_original_phase_q24_model_factory(","open_original_phase_q24_model_reservation(","factory.profile != factory_profile","seal_learning_checkpoint(","record.require_claimed()?","gate.require_open()?","record.mark_scoped_before_rights(","gate.require_open()?","seal_q24_model_factory_offer(","record.require_scoped()?","lane.serve_same_actor_phase_learning("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn serve_original_phase_lane_until(", sequence = ["CloseSameActorPhaseOnDrop::new(gate)","gate.require_open().map_err(unavailable)?","gate.retain_original_stream(&stream).map_err(unavailable)?","checkpoint.validate_peer(policy.peer)","HostAuthorityPeerChannel::from_stream_until(","gate.deadline().instant()","while channel.exchange(","gate.enter_original_lane()","self.handle_original_same_actor_phase_lane(","gate.require_open().map_err(unavailable)?","gate.require_open().map_err(unavailable)?","Err(HostIssuerTransportError::Closed)"] },
+  { function = "fn handle_original_same_actor_phase_lane(", sequence = ["phase.require_open()","self.check_logind_lifetime()","HostAuthorityLane::Observation => self.observe(bytes)","HostAuthorityLane::Issuer => self.issue(bytes)","HostAuthorityLane::Checkpoint","exchange_checkpoint_in_same_actor_phase(","HostAuthorityLane::DeviceConsumerFrontier","HostAuthorityLane::NotesConsumerFrontier","exchange_consumer_in_same_actor_phase(","self.check_logind_lifetime()","phase.require_open()","result"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn serve_original_same_actor_host(", sequence = ["self.gate.require_open()?","Duration::from_millis(500)","original_root()?","self.seal_bootstrap(","self.take_start()?","gate.retain_original_datagram(&writer_handoff)?","gate.retain_original_datagram(&phase_handoff)?","gate.retain_original_datagram(&scoped_handoff)?","std::thread::scope(","CloseSameActorPhaseOnDrop::new(&gate)","threads.spawn(","receive_host_value(&received_ready, &worker_gate)?","RootSameActorInitialEnrollmentCapabilityV1::register(","RootSameActorScopeEnrollmentCapabilityV1::register(","send_root_same_actor_scoped_handoff(","RootSameActorPublicationEnrollmentCapabilityV1::register(","self.serve_with_ready(","send_root_production_writer_handoff(","send_root_same_actor_phase_handoff(","ready\n                    .try_send(())","gate.close()","registration\n                .join()","served.and(registered)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs"
+required = ["_closing: CloseSameActorPhaseOnDrop,","_deadline_watch: crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch,"]
+forbidden = []
+required_order = [["_closing: CloseSameActorPhaseOnDrop,","_deadline_watch: crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch,"]]
+required_function_order = [
+  { function = "fn capture(", sequence = ["boottime_ns()","Instant::now()","Ok(Self {\n            instant,\n            boottime_ns,\n        })"] },
+  { function = "fn finish(", sequence = ["lifetime.is_zero()","Duration::from_secs(300)","self\n            .instant\n            .checked_add(lifetime)","self\n            .boottime_ns\n            .checked_add(","remaining(instant)?","boottime_ns()","checked < self.boottime_ns","checked >= boottime_ns","OriginalPhaseReceiveDeadline"] },
+  { function = "fn restrict_original_launcher_end(", sequence = ["self.instant = self.instant.min(","self.remaining()"] },
+  { function = "fn remaining(", sequence = ["boottime_ns()","now < self.last_boottime_ns","self.last_boottime_ns = now","self\n            .boottime_ns\n            .checked_sub(now)","remaining(self.instant)?.min(boot)"] },
+  { function = "fn require_current(", sequence = ["CloseSameActorPhaseOnDrop::new(&self.gate)","self.session.require_original_same_actor_phase(&self.gate)?","self.gate.require_open()?","closing.disarm()"] },
+  { function = "fn accept_original_scoped_descriptor(", sequence = ["OriginalSameActorRootContext::require_current(self)?","self\n            .scoped_consumed\n            .compare_exchange(","scoped.purpose !=","scoped.original != self.descriptor","scoped.claim.learning_profile != serde_json::to_string(&scoped.learning)?","prepared\n            .require_profile(","OriginalSameActorRootContext::require_current(self)?","closing.disarm()"] },
+  { function = "fn receive_original_same_actor_inputs(", sequence = ["Duration::from_millis(500)","read_bootstrap(bootstrap, expected)?","read_original_phase_descriptor(phase_bootstrap)?","validate_original_phase_binding(","check_lifetime(&phase_pidfd)","check_lifetime(&root_pidfd)","SameActorPhaseGate::from_original_deadline(","receiver.instant,\n            receiver.boottime_ns,\n            descriptor.original.root_end_boottime_ns","OriginalSameActorPhaseWatch::start(&gate)?","connect(&bundle.sockets.observation, timeout, end).await?","connect(&bundle.sockets.issuer, timeout, end).await?","connect(&bundle.sockets.checkpoint, timeout, end).await?","connect(&bundle.sockets.device_frontier, timeout, end).await?","connect(&bundle.sockets.notes_frontier, timeout, end).await?","VerifiedRootWriterProof::verify(","AgentdRootAuthoritySession::connect_same_actor_phase_until(","root_pidfd.try_clone()?,\n        timeout,\n        receiver.boottime_ns,\n        trust,\n        Arc::clone(&gate)","session.original_session_end_boottime_ns() != receiver.boottime_ns","AgentdUnixFinalUseGrantProvider::into_same_actor_phase(","AgentdUnixFinalUseGrantProvider::from_root_stream_until(","issuer,\n                bundle.root.pid,\n                root_pidfd.try_clone()?,\n                timeout,\n                end,","&gate,","AgentdUnixCognitiveCheckpointTransport::from_original_phase_stream_until(","into_protected_inputs(bundle.checkpoint.clone())\n    .await","open_original_phase_consumer(","open_original_phase_consumer(","session\n        .activate_original_phase_final_use_owners(","verify_sender_process_binding(","RootGenerationPublicationSlot::capture_after_original_receive(","OriginalQ24SuccessorSession::capture_original_same_actor_successor_session(","OriginalSameActorRootContext::require_current(&context)?","closing.disarm()"] },
+  { function = "fn validate_original_phase_binding(", sequence = ["Digest32::of_parts(","serde_json::to_vec(&phase.original)?","phase.purpose !=","phase.original.root.uid != original_root.uid","phase.original.root.pid != original_root.pid","phase.original.root.boot_id != original_root.boot_id","phase.original.root.process_start_ticks != original_root.process_start_ticks","phase.original.consumer != original.consumer","phase.original.writer != original.writer_proof.sha256()?.as_str()","validate_lane_paths("] },
+  { function = "fn open_original_phase_consumer(", sequence = ["gate.retain_required_original_stream(&stream)?","tokio::task::spawn_blocking(move ||","worker_gate.require_open()?","RootFinalUseFrontierClient::from_stream_until(","frontier.load(&consumer.owner_id)","!= consumer.frontier","FinalUseAuthority::open_state_dir_with_issuer_keys(","worker_gate.require_open()?","closing.disarm()","})\n    .await","gate.require_open()?","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn accept_original_retirement_ack(", sequence = ["self.require_original_gate(context.gate())?","OriginalSameActorRootContext::require_current(context)?","self.phase != context.descriptor().phase","self\n                .accepted\n                .compare_exchange(false, true","OriginalSameActorRootContext::require_current(context)"] },
+  { function = "fn begin_original_retirement(", sequence = ["CloseSameActorPhaseOnDrop::new(context.gate())","async move","Duration::from_millis(500)","require_same_actor_phase_prepared(&prepared, context.identity())\n                .await?","RootObservationStream::from_stream_until(","context.gate().deadline().instant()","original_join_exchange(&transport, &context, &profile, 1).await?","require_same_actor_phase_prepared(&prepared, context.identity())\n                .await?","accept_original_retirement_ack("] },
+  { function = "fn join_after_original_a_drop(", sequence = ["OriginalSameActorRootContext::require_current(&self.context)?","require_same_actor_phase_prepared(&self.prepared, self.context.identity())\n            .await?","original_join_exchange(&self.transport, &self.context, &self.profile, 2).await?","require_same_actor_phase_prepared(&self.prepared, self.context.identity())\n            .await?","OriginalSameActorRootContext::require_current(&self.context)?","self.closing.disarm()","OriginalJoinedSameActorA"] },
+  { function = "fn original_join_exchange(", sequence = ["OriginalSameActorRootContext::require_current(context)?","serde_json::to_string(profile)?","serde_json::to_vec(&request)?.len() > 16 * 1024","transport.read(&request).await","response.schema != 1","response.purpose != PURPOSE","response.sequence != sequence","OriginalSameActorRootContext::require_current(context)?","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_same_actor_phase_handoff.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn receive_original_phase_start(", sequence = ["root_pair(&socket, bounded_timeout(timeout, original_receiver_end)?)?","receive_phase_packet(","START_FRAME,\n        3","validate_bootstrap(&bootstrap)?","validate_bootstrap(&initial)?","require_root_pin(&root_pidfd, peer.pid as u32)?","bounded_timeout(timeout, original_receiver_end)?","OriginalSameActorPhaseHandoff"] },
+  { function = "fn receive_original_scoped_phase(", sequence = ["CloseSameActorPhaseOnDrop::new(gate)","gate.require_open()?","gate.retain_original_datagram(&socket)?","root_pair(","receive_phase_packet(","SCOPED_FRAME,\n        7","validate_bootstrap(sealed)?","require_root_pin(&root_pidfd, peer.pid as u32)?","OriginalSameActorScopedHandoff","gate.require_open()?","closing.disarm()"] },
+  { function = "fn send_root_same_actor_phase_handoff(", sequence = ["gate.require_open()?","require_original_sender(","send_packet(","gate.require_open()?"] },
+  { function = "fn send_root_same_actor_scoped_handoff(", sequence = ["gate.require_open()?","require_original_sender(","send_packet(","gate.require_open()?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_same_actor_scoped_inputs.rs"
+required = []
+forbidden = []
+required_order = [["pub(crate) async fn connect_original_current(\n        mut self,\n        timeout: Duration,\n    )"," -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError> {"]]
+required_function_order = [
+  { function = "fn claim_original_session(", sequence = ["OriginalSameActorRootContext::require_current(&self.context)?","std::ptr::eq(self.context.successor_session().as_ref(), session)","self.scoped.original != *self.context.descriptor()","self\n                .consumed\n                .compare_exchange(","session.require_original_same_actor_phase(self.context.gate())?","closing.disarm()"] },
+  { function = "fn connect_original_current(", sequence = [") -> Result<Arc<crate::NeuronGenerationCurrentOwnerV1>, AgentdError> {","OriginalSameActorRootContext::require_current(&self.context)?","take_original_scoped_publication_connection(&self)?","connect_original_same_actor_publication(","OriginalSameActorRootContext::require_current(&self.context)?","self.closing.disarm()"] },
+  { function = "fn receive_original_same_actor_scoped_owners(", sequence = ["CloseSameActorPhaseOnDrop::new(joined.context().gate())","async move","joined.require_original().await?","tokio::task::spawn_blocking(move ||","receive_original_scoped_phase(","joined.require_original().await?","context.accept_original_scoped_descriptor(","serde_json::to_vec(&scoped.learning)? != serde_json::to_vec(joined.profile())?","connect_original_same_actor_learning(","connect_original_same_actor_model(","joined.require_original().await?","closing.disarm()"] },
+  { function = "fn connect_original_same_actor_learning(", sequence = ["CloseSameActorPhaseOnDrop::new(context.gate())","async move","Duration::from_millis(500)","OriginalSameActorRootContext::require_current(&context)?","scoped.learning.require_binding(","scoped.learning.require_cell_scope(","initial != expected_initial","scope != expected_scope","prepared\n                .require_initial(&initial, &scope)","AgentdLearningCheckpointClientV1::from_original_same_actor_stream_until(","client\n                .restore(&initial.request)\n                .await","OriginalSameActorRootContext::require_current(&context)?","closing.disarm()"] },
+  { function = "fn connect_original_same_actor_model(", sequence = ["OriginalSameActorRootContext::require_current(context)?","bundle.root != original.root","bundle.consumer != original.consumer","bundle.profile.require_context(","bundle\n        .profile\n        .require_files(&handoff.journal, &handoff.witness)?","let stream = stream.into_std()?","context.gate().retain_required_original_stream(&stream)?","RootObservationStream::from_stream_until(","context.gate().deadline().instant()","AgentdRootQ24ModelFactoryV1::from_original_same_actor_handoff(","(handoff.journal, handoff.witness)","OriginalSameActorRootContext::require_current(context)?","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn capture_original_same_actor_successor_session(", sequence = ["CloseSameActorPhaseOnDrop::new(phase)","session\n            .require_original_same_actor_phase_origin(phase)","Self::capture_original_successor_session(session, original, identity)?","captured.phase = Some(Arc::clone(phase))","captured.require_original_same_actor_phase(phase)?","closing.disarm()"] },
+  { function = "fn require_original_same_actor_phase(", sequence = ["phase\n            .require_open()","self\n            .phase\n            .as_ref()\n            .is_some_and(|original| Arc::ptr_eq(original, phase))","self.require_current_successor_session()?","phase\n            .require_open()"] },
+  { function = "fn take_original_scoped_publication_connection(", sequence = ["ticket.claim_original_session(self)?","self.require_original_same_actor_phase(ticket.gate())?","RootGenerationPublicationConnectionV1","connection.require_same_successor_session(self)?","self.require_original_same_actor_phase(ticket.gate())?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_authority_session.rs"
+required = ["phase: Option<Arc<SameActorPhaseGate>>"]
+forbidden = []
+required_order = [["impl Drop for AgentdRootAuthoritySession","self.live.cache.fence()","if let Some(phase) = &self.live.phase","phase.close()","self.worker.abort()"],["impl Drop for FenceOnDrop","self.0.cache.fence()","if let Some(phase) = &self.0.phase","phase.close()"],["impl Drop for ActivationAttempt","if !self.complete","self.live.cache.fence()","if let Some(phase) = &self.live.phase","phase.close()"]]
+required_function_order = [
+  { function = "fn connect_same_actor_phase_until(", sequence = ["CloseSameActorPhaseOnDrop::new(&phase)","async move","phase\n                .require_open()","original_session_end_boottime_ns == 0","phase.deadline().boottime_ns() > original_session_end_boottime_ns","phase\n                .retain_original_stream(&stream)","RootObservationStream::from_stream_until(","phase.deadline().instant()","Self::connect_original_phase_stream(","original_session_end_boottime_ns","phase\n                .require_open()","closing.disarm()"] },
+  { function = "fn connect_original_phase_stream(", sequence = ["stream",".read(&HostWriterAuthorizationReadRequestV1","phase\n            .require_open()","response.schema_version != 1","VerifiedRootWriterProof::verify(","end_boottime_ns: original_session_end_boottime_ns","phase: Some(Arc::clone(&phase))","refresh(&live, &stream, &writer_file).await?","let worker_close = CloseSameActorPhaseOnDrop::new(&phase)","tokio::spawn(RootWorker","future: Box::pin(async move","let _worker_close = worker_close","let _stream_stop = stop","FenceOnDrop(Arc::clone(&background))","refresh(&background, &stream, &background_file)","_writer_file: Arc::clone(&writer_file)"] },
+  { function = "fn activate_original_phase_final_use_owners(", sequence = ["self.live.phase.as_ref().map(CloseSameActorPhaseOnDrop::new)","async move","self\n                .live\n                .phase\n                .as_ref()\n                .ok_or(","phase\n                .require_open()","self.activate_final_use_owners(consumers).await?","phase\n                .require_open()","closing.disarm()"] },
+  { function = "fn require_original_same_actor_phase_origin(", sequence = ["self\n            .live\n            .phase\n            .as_ref()\n            .is_some_and(|original| Arc::ptr_eq(original, phase))","return Err(AgentdRootAuthorityError::Unavailable)","phase\n            .require_open()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn from_original_phase_stream_until(", sequence = ["phase\n            .retain_required_original_stream(&stream)","phase.deadline().instant()","end\n            .checked_duration_since(Instant::now())","timeout > Duration::from_secs(5)","lifetime > Duration::from_secs(300)","check_lifetime(&root_pidfd)?","actual.uid() != 0","AsyncFd::register_with_interest(","check_lifetime(root.get_ref())?","held.require_open()","phase: Some(held)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/final_use_issuer.rs"
+required = []
+forbidden = []
+required_order = [["fn exchange_guarded<T>(","self\n            .phase\n            .as_ref()\n            .map(super::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::failure_scope)","phase\n                .require_open()","self.stream.try_lock()","let mut stream = slot","take()","let deadline = (Instant::now() + self.timeout).min(","let result =","self.check_root()?","remaining(deadline)?","exchange(&mut stream, deadline)?","self.check_root()?","remaining(deadline)?","phase\n                    .require_open()","match result","*slot = Some(stream)","phase\n                        .require_open()","closing.disarm()","stream.shutdown(Shutdown::Both)","fn check_root("]]
+required_function_order = [
+  { function = "fn into_same_actor_phase(", sequence = ["CloseSameActorPhaseOnDrop::new(gate)","self.phase.is_some()","root.end != gate.deadline().instant()","self\n            .stream\n            .get_mut()","gate\n            .retain_required_original_stream(stream)","phase\n            .require_open()","self.phase = Some(phase)","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn from_original_initial_phase_stream_until(", sequence = ["Self::from_original_phase_stream_until(","gate.deadline().instant(),\n            gate,\n            Some(retirement),"] },
+  { function = "fn from_original_scoped_phase_stream_until(", sequence = ["Self::from_original_phase_stream_until(","gate.deadline().instant(),\n            gate,\n            None,"] },
+  { function = "fn from_original_phase_stream_until(", sequence = ["CloseSameActorPhaseOnDrop::new(gate)","gate.require_open()?","end != gate.deadline().instant()","end\n            .checked_duration_since(Instant::now())","gate.retain_original_stream(&stream)?","timeout > Duration::from_millis(500)","lifetime > Duration::from_secs(300)","actual.uid != 0","check_lifetime(&root)","stream.set_nonblocking(true)?","gate.require_open()?","retirement\n                .require_original_gate(gate)","closing.disarm()","phase: Some(OriginalPhasePublicationChannel"] },
+  { function = "fn exchange(", sequence = ["self.phase.as_ref().map(","phase.gate.require_open()?","let end = (Instant::now() + self.timeout).min(self.end)","check_lifetime(&self.root)","self.write(request, end)?","self.read(&mut response, end)?","check_lifetime(&self.root)","Instant::now() >= end","phase.gate.require_open()?","closing.disarm()","Ok(response)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn connect_original_same_actor_initial(", sequence = ["CloseSameActorPhaseOnDrop::new(context.gate())","async move","OriginalSameActorRootContext::require_current(&context)?","connection.require_same_successor_session(","Duration::from_millis(500)","connection.require_original_publication_session()?","validate_sealed(&self.bootstrap, size)?","validate_sealed(&self.bootstrap, size)?","bundle.purpose != PURPOSE","bundle.identity.identity()? != *identity","OriginalPublicationStream::from_original_initial_phase_stream_until(","Ok::<_, AgentdError>(OriginalRootGenerationInitialV1 { client })","OriginalSameActorRootContext::require_current(&context)?","closing.disarm()"] },
+  { function = "fn connect_original_same_actor_publication(", sequence = ["CloseSameActorPhaseOnDrop::new(context.gate())","async move","OriginalSameActorRootContext::require_current(&context)?","connection.require_same_successor_session(","connection.require_original_publication_session()?","validate_sealed(&self.bootstrap, size)?","validate_sealed(&self.bootstrap, size)?","OriginalPublicationStream::from_original_scoped_phase_stream_until(","NeuronGenerationCurrentOwnerV1::from_original_root_publication(","OriginalSameActorRootContext::require_current(&context)?","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn into_task_parts(", sequence = ["self.context.identity() != identity","!Arc::ptr_eq(&self.gate, gate)","self.context\n            .session()\n            .require_original_same_actor_phase(gate)?","self.slot\n            .require_open()","gate.require_open()","self.phase_close.disarm()","self.slot_close.disarm()","Ok((self.slot, self.invocation))"] },
+  { function = "fn prepare_original_same_actor_successor(", sequence = ["CloseSameActorPhaseOnDrop::new(&gate)","session.require_original_same_actor_phase(&gate)?","learning.require_identity(identity)?","!(1..=64).contains(&capacity)","SuccessorSlot::new_pending_slot()","CloseOnDrop::new(&slot)","learning\n        .prepare_original_successor_context(identity, session, &slot)\n        .await?","context.session().require_original_same_actor_phase(&gate)?","original_pending_successor_invocation(Arc::clone(&slot))","PendingSuccessorOwner::new(","OriginalQ24SuccessorHandoffV1 {","OriginalSameActorSuccessorTaskParts {","gate.require_open()","slot_close.disarm()","phase_close.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_publication_same_actor.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn publish_original_same_actor_candidate(", sequence = ["CloseSameActorPhaseOnDrop::new(&gate)","async move","self.original\n                .owners\n                .require_original_same_actor_work(&work)?","OriginalDecision::require_current(original).await?","original.decision.require_new_work()?","validation::artifact_request(","owners\n                .with_original_publication(","self.original.decision.require_new_work()?","effect_gate\n                            .require_open()","gate.require_open().map_err(|_| Error::CommitUncertain)?","closing.disarm()"] },
+  { function = "fn connect_original_same_actor_current(", sequence = ["CloseSameActorPhaseOnDrop::new(&gate)","async move","gate.require_open()","OriginalDecision::require_current(&self.original).await?","ticket.connect_original_current(timeout).await?","current.require_original_root_selection(","OriginalDecision::require_current(&self.original).await?","gate.require_open()","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs"
+required = []
+forbidden = []
+required_order = [["pub async fn run_original_phase(\n        self,\n        mut business: OriginalSameActorBusinessInputsV1,\n        arg0_paths: Arg0DispatchPaths,\n    )"," -> Result<(), AgentdError> {"]]
+required_function_order = [
+  { function = "fn from_process_environment(", sequence = ["OriginalPhaseReceiveStart::capture()?","require_disjoint_phase_descriptors(","late_startup::select_original_startup_entry(arguments)?","inputs::parse(arguments)?","late_writer::require_late_owner(inputs.uid, inputs.gid)?","inputs.learning_handoff.is_some()","inputs.q24_model_handoff.is_some()","inputs.publication_handoff.is_some()","inputs.initial_handoff.is_some()","!matches!(&inputs.primary, PrimaryInputs::Android","start\n            .finish(inputs.lifetime)?",".restrict_original_launcher_end(inputs.bootstrap_deadline)?","crate::config::read_original_late_writer_starting_identity()?"] },
+  { function = "fn run_original_phase(", sequence = [") -> Result<(), AgentdError> {","tokio::runtime::Handle::try_current()","RuntimeFlavor::MultiThread","late_writer::require_late_owner(uid, gid)?","receive_root_production_writer_handoff(","receiver.remaining()?","receive_original_phase_start(","receiver.instant()","receive_original_same_actor_inputs(","CloseSameActorPhaseOnDrop::new(context.gate())","AgentdConfig::from_root_writer_handoff(","config.identity() != &identity","InputsOpened","InitialRootEnrolled","crate::AgentdRootProductionInputs::take_generation_publication_connection(&mut root)?","connect_original_same_actor_initial(","tokio::task::block_in_place(","install_original_initial_task(","OriginalSameActorRootContext::require_current(&context)?","AgentdProductionLaunch","launch.run(config, arg0_paths).await?","Err(refused("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn install_original_initial_task(", sequence = ["CloseSameActorPhaseOnDrop::new(context.gate())","OriginalSameActorRootContext::require_current(&context)?","config.identity() != context.identity()","CircuitQ24TaskOpenModeV1::Create","OriginalRootGenerationInitialV1::prepare_feature(","AgentdUnixFinalUseGrantProvider::request_grant(","prepared.publish(&signed)?","circuit_q24_task_channel_v1(","into_original_same_actor_task_parts(","SameActorTaskRoute::pending_original(","SameActorTaskRoute::install_original_a(","OriginalSameActorTaskWorker::new(","CircuitTaskRuntimeBootstrapV1::from_original_same_actor_worker(","config.with_circuit_task_bootstrap(","OriginalSameActorRootContext::require_current(&context)?","closing.disarm()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn run(", sequence = ["let Self {\n            context,\n            route,\n            owners,\n            authorities,\n            scoped,\n            mut host,\n            _closing,\n        } = self","execution.require_original_execution()?","execution.run_original_a(owners, &mut host).await?","execution.require_original_execution()?","execution\n            .run_original_scoped("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn run_original_a(", sequence = ["self.require_original_execution()?","CircuitTaskRuntimeBootstrapV1::run_in_original_successor_lane(","tokio::select!","SameActorTaskRoute::release_original_a(self.route.as_ref())","let joined = work.as_mut().await","drop(work)","drop(readback)","self.require_original_execution()?","prepared.retirement.join_after_original_a_drop().await?","self.require_original_execution()?"] },
+  { function = "fn prepare_original_a(", sequence = ["host.receive_original(&self.context).await?","SameActorTaskRoute::begin_closing_original_a(","SameActorTaskRoute::wait_original_a_quiescent(","OriginalCellQ24TaskLedgerProducerV1::submit_original_terminal_outcome(","OriginalCellQ24TaskLedgerStatusV1::Complete","OriginalCellQ24TaskLedgerProducerV1::prepare_learning(","OriginalCellQ24TaskLedgerProducerV1::retained_learning_source(","PublishedCircuitFeatureTaskV1::drain_completed_task(","CellQ24PreparedLearningV1::root_profile(","OriginalDaemonPhaseRetirement::begin_original_retirement(","Duration::from_millis(500)","self.require_original_execution()?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn run_original_scoped(", sequence = ["self.require_original_execution()?","receive_original_same_actor_scoped_owners(","OriginalSameActorPhaseCommandV1::Learning(inputs)","Arc::ptr_eq(&inputs.original.prepared, &prepared)","PreparedLearningBuilder::new(scoped, inputs.original)?","builder.cleanup()","SameActorTaskRoute::attach_original_learning_work(","builder.assemble(capacity)","let activation = match assembled","self\n            .run_original_activated(","self.close_original_execution()","cleanup.close_and_join_original_work().await","preserve_scoped_result("] },
+  { function = "fn run_original_activated(", sequence = ["activation.into_original_parts()?","SameActorTaskRoute::install_original_c(","self.require_original_execution()?","stop.clone().drop_guard()","OriginalSameActorLearningWorker::run(","self.publish_and_observe_original_c(flow, host)","tokio::pin!(progress)","tokio::select!","let exit = match first","self.close_original_execution()","stop.cancel()","let result = match exit","let joined = work.as_mut().await","drop(work)","preserve_scoped_result("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn publish_and_observe_original_c(", sequence = ["self.require_original_execution()?","owners\n            .require_original_same_actor_work(&work)\n            .map_err(phase_owner_error)?","let mut decision = Box::pin(","OriginalQ24SuccessorHandoffV1::decision_snapshot(&handoff)","decision.as_mut()","OriginalSameActorLearningWork::original_training_snapshot(","OriginalCellQ24LearningStageOwnersV1::read_original_training_material(","OriginalCellQ24LearningStageOwnersV1::original_training_readback(","OriginalSameActorPhaseEventV1::OriginalTraining","OriginalSameActorPhaseCommandV1::Evaluation","OriginalCellQ24LearningStageOwnersV1::install_original_same_actor_evaluation(","decision.as_mut().await.map_err(phase_owner_error)?","OriginalSameActorPhaseEventV1::OriginalDecision","OriginalSameActorPhaseCommandV1::Artifact","OriginalSameActorArtifactInputsV1::PublishQualified","OriginalCellQ24ArtifactPublicationDriverV1::for_qualified_adoption(","self.require_original_execution()?","driver\n                        .publish_original_same_actor_candidate(","OriginalSameActorArtifactInputsV1::RetainOriginal","OriginalCellQ24RetainedArtifactForRootV1::from_original_result(","self.require_original_execution()?","OriginalSameActorPhaseCommandV1::Selection","OriginalCellQ24PublishedArtifactForRootV1::accept_selection(","OriginalCellQ24RetainedArtifactForRootV1::accept_selection(","self.require_original_execution()?","OriginalSameActorPhaseCommandV1::PublishOriginalC","&inputs.execution.source_mode,\n            CircuitQ24TaskOpenModeV1::Create","OriginalQ24SuccessorFeedbackV1::OriginalLedger(ledger)","ledger.open_mode == CircuitQ24TaskOpenModeV1::Create","self.require_original_execution()?","selected\n            .connect_original_same_actor_current(","Duration::from_millis(500)","self.require_original_execution()?","driver\n            .prepare_original_successor(","handoff, inputs.predecessor, target, inputs.execution","self.require_original_execution()\n            .map_err(uncertain_original_c)?","AgentdUnixFinalUseGrantProvider::request_grant(","OriginalQ24PreparedSuccessorV1::final_use_binding(&prepared)","self.require_original_execution()\n            .map_err(uncertain_original_c)?","OriginalQ24PreparedSuccessorV1::publish(prepared, signed)","self.require_original_execution()\n            .map_err(uncertain_original_c)?","OriginalSameActorPhaseEventV1::OriginalCOwnersInstalled","OriginalSameActorPhaseCommandV1::ObserveOriginalC","self.require_original_execution()?","OriginalQ24InstalledSuccessorV1::original_task_ledger(&installed)","OriginalCellQ24TaskLedgerProducerV1::submit_original_terminal_outcome(","ledger.as_ref(),\n            input.outcome,\n            &input.signed","OriginalCellQ24TaskLedgerStatusV1::Complete","self.require_original_execution()?","OriginalSameActorPhaseEventV1::OriginalCOutcomeAccepted"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn reserve_original_learning_profile_in_phase(", sequence = ["self.with_learning_profile(","phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?","profile.frozen_scope(&initial)?","phase.require_claimed()?","learning_store(&config.state_dir, &initial, StoreMode::Register, scope)?","phase.require_claimed()?","production_ready: false"] },
+  { function = "fn open_original_learning_profile_in_phase(", sequence = ["self.with_learning_profile(","phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?","learning_store(","StoreMode::Reopen","profile.frozen_scope(&initial)?","phase.require_claimed()?","validate_lane_paths(","phase.require_claimed()?","q24_model: None"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn reserve_original_phase_q24_model_factory(", sequence = ["self.with_learning_profile(","phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?","learning.require_cell_scope(&initial)?","now >= initial.request.envelope.expiry_unix_seconds","phase.require_claimed()?","std::fs::DirBuilder::new().mode(0o700).create(&directory)?","HostAuthorityQ24ModelFactoryProfileV1::new(","HostAuthorityFrontierStore::initialize(","config.required_bind.verify()?","witness_domain(config, reservation)?","phase.require_claimed()?"] },
+  { function = "fn open_original_phase_q24_model_reservation(", sequence = ["self.with_learning_profile(","phase.map(crate::authority_host_same_actor_q24_phase_namespace::OriginalPhaseNamespaceContext::enter_claimed).transpose()?","learning.require_cell_scope(&initial)?","store.load(OWNER)","retained.validate()?","phase.require_claimed()?","open_file(&journal_path)?","open_file(&witness_path)?","retained.profile != profile","profile.require_files(&journal, &witness)?","factory.current(config)?","phase.require_claimed()?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn enroll_generation_initial_in_phase(", sequence = ["original_root()?","self.with_initial_publication_context(","phase\n                .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)\n                .transpose()?","HostGenerationInitialDeploymentV1::new(","gate.require_open()?","let profile_store = match &recovered","HostAuthorityFrontierStore::initialize(","RegisteredGenerationInitial {"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn enroll_original_publication_body(", sequence = ["original_root()?","self.with_learning_profile(","context.gate.enter_original_lane()?","context.require_before_enrollment()?","scope.validate_snapshot(&actual)","context.require_before_enrollment()?","let control = current.original_broker_head()","context.require_before_enrollment()?","let profile_store = match recovered","HostAuthorityFrontierStore::initialize(","enrolled.require_profile()?","enrolled.require_history(","enrolled.require_previous()?","enrolled.require_selection(","context.require_original(&enrolled)?"] },
+  { function = "fn enroll_generation_publication_for_phase(", sequence = ["phase.gate.require_open()?","phase.record.require_scoped()?","!Arc::ptr_eq(&inputs.current_directory, &phase.original.root)","inputs.consumer != phase.original.consumer_slot","previous.files_binding().to_string() != phase.original.files","previous.owner_binding() != &phase.original.owner","observed.observation().owner_checkpoint().into_array() != phase.original.checkpoint","phase.gate.require_open()?","self.enroll_original_publication_body(","Some(phase)","self.with_learning_profile(","phase.require_original(&slot)?","slot\n                    .current\n                    .original_broker_head()","phase.require_original(&slot)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn serve_generation_initial_until(", sequence = ["CloseSameActorPhaseOnDrop::new(phase)","phase.require_open()?","phase.retain_original_stream(&stream)?","HostAuthorityPeerChannel::from_stream_until(","phase.deadline().instant()","self.serve_initial_original_channel(","Some(phase)","phase.require_open()?","closing.disarm()"] },
+  { function = "fn serve_initial_original_channel(", sequence = [".map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)","self.with_initial_publication_context(","gate.require_open()?","Command::Prepare","gate.require_open()?","NeuronGenerationCurrentOwnerV1::prepare_initial(","Command::Publish","gate.require_open()?","original_broker_initial_publish(","slot.require_profile()?","encoded_response = Some(raw)","gate.require_open()","Ok(encoded)","gate.require_open()?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn serve_generation_publication_until(", sequence = ["CloseSameActorPhaseOnDrop::new(phase.gate)","phase.require_original(slot)?","phase.gate.retain_original_stream(&stream)?","HostAuthorityPeerChannel::from_stream_until(","phase.gate.deadline().instant()","self.serve_original_publication_channel(","Some((phase, None))","Err(io::Error::other("] },
+  { function = "fn serve_original_publication_channel(", sequence = ["phase\n                    .map(|context| context.gate.enter_original_lane())\n                    .transpose()","context.require_original(slot)","self.with_learning_profile(","let raw = serde_json::to_vec(&response)","context.require_original(slot)?","match &request.command","original_broker_prepare(intent)","original_broker_publish(intent, signed, witness)","slot.require_profile()?","slot.require_history(","slot.require_previous()?","context.require_original(slot)","Ok(response)","context.require_original(slot)?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn serve_learning_checkpoint_until(", sequence = ["CloseSameActorPhaseOnDrop::new(phase)","phase.require_open()","phase.retain_original_stream(&stream)","backend.registered_agent_id() != self.identity.agent_id.to_string()","HostAuthorityPeerChannel::from_stream_until(","phase.deadline().instant()","phase.enter_original_lane()","self.check_logind_lifetime()","writer.exchange_same_actor_learning_checkpoint(","self.check_logind_lifetime()","phase.require_open()","Ok(response)","phase.require_open()","Err(HostIssuerTransportError::Closed)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn serve_q24_model_factory_until(", sequence = ["CloseSameActorPhaseOnDrop::new(phase)","phase.require_open()?","phase.retain_original_stream(&stream)?","HostAuthorityPeerChannel::from_stream_until(","phase.deadline().instant()","self.serve_original_q24_model_channel(","Some((phase, None))","Err(io::Error::other("] },
+  { function = "fn serve_original_q24_model_channel(", sequence = ["phase\n                    .map(crate::same_actor_q24_phase_gate::SameActorPhaseGate::enter_original_lane)\n                    .transpose()","self\n                    .with_learning_profile(","gate.require_open()?","factory.profile.require_context(","request.request_id != next_request_id","factory.current(config)?","transition(&before, lease, request.command, now)?","if after != before","gate.require_open()?","compare_and_set(OWNER, &before, &after)","factory.current(config)? != after","gate.require_open()","Ok(response)","gate.require_open()?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_writer.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn exchange_consumer_in_same_actor_phase(", sequence = [".with_live(&self.leases, |_|","phase.enter_original_lane()?","issuer.retained_writer_authorization(&self.registration)? != self.proof","let before = issuer.revocations()?","phase.require_open()?","backend.exchange(bytes, &before)","let after = issuer.revocations()?","after != before","validate_observation_lease(","phase.require_open()?","Ok(response)"] },
+  { function = "fn exchange_checkpoint_in_same_actor_phase(", sequence = [".with_live(&self.leases, |_|","phase.enter_original_lane()?","issuer.retained_writer_authorization(&self.registration)? != self.proof","phase.require_open()?","backend.exchange(bytes)","let head = issuer.revocations()?","validate_observation_lease(","phase.require_open()?","Ok(response)"] },
+  { function = "fn exchange_same_actor_learning_checkpoint(", sequence = [".with_live(&self.leases, |_|","phase.enter_original_lane()?","issuer.retained_writer_authorization(&self.registration)? != self.proof","let before = issuer.revocations()?","validate_observation_lease(","phase.require_open()?","exchange_learning_checkpoint(bytes, next_request_id)","let after = issuer.revocations()?","before != after","validate_observation_lease(","phase.require_open()?","Ok(response)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_issuer.rs"
+required = ["same_actor_phase:\n        std::sync::OnceLock<Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,"]
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn bind_original_same_actor_phase(", sequence = ["phase.require_open()?","self\n            .request_lock\n            .lock()","phase.require_open()?","self.lease.is_none()","self.same_actor_phase.set(Arc::clone(phase)).is_err()","phase.require_open()?"] },
+  { function = "fn require_new_same_actor_phase_effect(", sequence = ["self.same_actor_phase.get()","phase.require_open()?"] },
+  { function = "fn issue_until_checked(", sequence = [".request_lock",".lock()","self.store.load(STATE_OWNER)","check(&state)?","epoch.is_some_and(","grant.signing_bytes()","self.require_new_same_actor_phase_effect()?","compare_and_set(STATE_OWNER, &state, &next)","self.key.sign(&bytes)","Ok(Some(signed))"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_authbus.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn sign_objective_until(", sequence = [".request_lock",".lock()","self.require_new_same_actor_phase_effect()?","compare_and_set(STATE_OWNER, &state, &next)",".sign(&claims.signing_bytes())"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_desktop.rs"
+required = []
+forbidden = []
+required_order = []
+required_function_order = [
+  { function = "fn replace_desktop_policy(", sequence = [".request_lock",".lock()","self.require_new_same_actor_phase_effect()?","compare_and_set(STATE_OWNER, &state, &changed)"] },
+]
+
+[[protected_file]]

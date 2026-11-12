@@ -1,0 +1,524 @@
+required_order = [["fn with_pinned_issuer_readback_boundary<T>(", "self.pair_token_owner(&token, expected)?", "let state = self.lock_state()?", "validate_live(&token.lease, &state, token.lease.revision, expected, now)?", "let issuer = live_pinned_issuer(issuer_pin, &state, now);", "let result = boundary(issuer, &token.lease, state.store_revision)", "drop(state)"], ["fn with_pinned_issuer_dispatch_boundary<T>(", "self.pair_token_owner(&token, expected)?", "let state = self.lock_state()?", "let issuer = live_pinned_issuer(issuer_pin, &state, now)?", "validate_live(&token.lease, &state, token.lease.revision, expected, now)?", "let result = boundary(issuer, &token.lease, state.store_revision)", "drop(state)"], ["fn with_pinned_issuer_joint_dispatch_boundary<T>(", "self.pair_token_owner(&first, expected_first)?", "self.pair_token_owner(&second, expected_second)?", "if first.lease.lease_id == second.lease.lease_id", "return Err(AuthorityLeaseError::BindingMismatch)", "let state = self.lock_state()?", "let issuer = live_pinned_issuer(issuer_pin, &state, now)?", "validate_live(\n            &first.lease,", "&state,", "first.lease.revision,", "expected_first,", "validate_live(\n            &second.lease,", "&state,", "second.lease.revision,", "expected_second,", "let result = boundary(issuer, &first.lease, &second.lease, state.store_revision)", "drop(state)"], ["fn with_retired_predecessor_for_pinned_issuer_boundary<T>(", "predecessor.validate()?", "self.pair_token_owner(&successor, expected_successor)?", "if predecessor.lease_id == successor.lease.lease_id", "let state = self.lock_state()?", "unrevoked_pinned_issuer(issuer_pin, &state, now)?", "validate_live(\n            &successor.lease,", "successor.lease.revision,", "expected_successor,", "if predecessor.authority_epoch != state.authority_epoch", "retired_predecessor(predecessor, &state, now)?", "let result = boundary(&successor.lease, retirement, state.store_revision)", "drop(state)"]]
+required_function_order = [{function = "fn unrevoked_pinned_issuer(", sequence = ["validate_pin(pin)?", "state.revocations.contains_key(pin.0)", "return Err(AuthorityLeaseError::Revoked)", "issuer.authority_epoch != state.authority_epoch", "issuer.revision != pin.1", "now < issuer.issued_at_unix_ms", "None if state.retired_revisions.get(pin.0) == Some(&pin.1) => Ok(())", "None => Err(AuthorityLeaseError::LeaseNotFound)"]}]
+
+[[protected_file]]
+path = "codex-rs/hepta-memory/src/cognitive_store_barrier.rs"
+required = ["let transaction = self\n            .pool\n            .begin_with(\"BEGIN IMMEDIATE\")"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{function = "fn begin_write_transaction(", sequence = ["self.commit_gate.require_open()?", "let transaction = self", ".begin_with(", "if let Some(publication) = &self.bound_publication", "publication.begin_writes().await.map_err(unavailable)?", "else if self.commit_gate.is_managed()", "drop(self.commit_gate.transition_attempt())", "return Err(CognitiveStoreError::Unavailable(", "self.commit_gate.require_open()?", "Ok(transaction)"]}]
+
+# ACT-1 is a decorator over the original durable/FinalUse owner, not an authority.
+# These source-order checks are lexical invariants, not a control-flow proof.
+[[protected_file]]
+path = "codex-rs/hepta-automation/src/action_skill_driver.rs"
+required = ["pub struct GoalCheckedActionSkillDriver", "impl<A: ProviderEffectAdapter, O: ActionSkillObserver> AsyncAuthorizedEffectDriver"]
+forbidden = []
+required_order = [
+  [
+    "impl<A: ProviderEffectAdapter, O: ActionSkillObserver> AsyncAuthorizedEffectDriver",
+    "for GoalCheckedActionSkillDriver<A, O>",
+    "fn dispatch<'a>(",
+    "Box::pin(async move {",
+    "if request.intent.destination_id != self.contract.destination_id",
+    "|| self.provider.adapter().capability()",
+    "!= ProviderEffectIdempotencyCapability::KeyAndStatusLookup",
+    "return Err(AuthorizedEffectDriverError::BeforeProviderContact);",
+    "let (binding, invocation) = self",
+    ".bind_invocation(",
+    "request.intent_digest,",
+    "&request.provider_intent,",
+    "request.wire_payload,",
+    ".map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;",
+    "let initiation = tokio::time::timeout(",
+    "self.observer.check_initiation(&binding, &invocation.body),",
+    "let Ok(Ok(initiation)) = initiation else {",
+    "return Err(AuthorizedEffectDriverError::BeforeProviderContact);",
+    "if initiation.binding != binding",
+    "|| initiation.observer_id != self.contract.observer_id",
+    "|| initiation.condition != ActionConditionV1::Met",
+    "|| Sha256Digest::parse(initiation.evidence_digest.as_str()).is_err()",
+    "return Err(AuthorizedEffectDriverError::BeforeProviderContact);",
+    "let provider = match tokio::time::timeout(",
+    "self.provider.dispatch(request),",
+    "Ok(Ok(receipt)) => receipt,",
+    "_ => unresolved(&binding,",
+    "Ok(self.check_goal(&binding, provider).await)",
+  ],
+]
+[[protected_file.required_function_order]]
+function = "fn new("
+sequence = [
+  "let contract_digest = contract.digest()?;",
+  "if observer.observer_id() != contract.observer_id",
+  "return Err(ActionSkillError::Contract);",
+  "let provider = ProviderEffectTaskFlowDriver::new(contract.destination_id.clone(), adapter)",
+  "Ok(Self {",
+]
+[[protected_file.required_function_order]]
+function = "fn bind_invocation("
+sequence = [
+  "if wire_payload.len() > self.contract.budget.max_wire_bytes as usize",
+  "|| provider_intent.validate().is_err()",
+  "|| Sha256Digest::parse(effect_intent_digest.as_str()).is_err()",
+  "|| Sha256Digest::for_bytes(wire_payload) != provider_intent.payload_sha256",
+  "return Err(ActionSkillError::Invocation);",
+  "let invocation: ActionSkillInvocationV1 =",
+  "serde_json::from_slice(wire_payload).map_err(|_| ActionSkillError::Invocation)?;",
+  "if invocation.schema_version != ACTION_SKILL_SCHEMA_VERSION",
+  "|| invocation.contract_digest != self.contract_digest",
+  "|| invocation.destination_id != self.contract.destination_id",
+  "return Err(ActionSkillError::Invocation);",
+  "ActionSkillBindingV1 {",
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-automation/src/authorized_effect.rs"
+required = ["pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>", ".with_verified_use_async(token, expected_binding, || driver.dispatch(request))"]
+forbidden = []
+required_order = [
+  [
+    "pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(",
+    "let provider_intent = provider_effect_intent(intent, wire_payload)?;",
+    "let operation_intent = intent.operation_intent_v1()?;",
+    "let intent_digest = intent.digest()?;",
+    ".read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)",
+    "if current.state != TaskFlowStepState::Claimed",
+    "|| current.intent_digest != intent_digest",
+    "|| current.payload_digest != *payload_digest",
+    "if expected_binding.subject_id != intent.subject_id",
+    "|| expected_binding.destination_id != intent.destination_id",
+    "|| expected_binding.request_sha256 != digest_bytes(&intent_digest)?",
+    "|| expected_binding.scope_sha256 != digest_bytes(&intent.final_use_scope_digest)?",
+    "|| expected_binding.payload_sha256 != digest_bytes(payload_digest)?",
+    "return Err(AuthorizedEffectError::BindingMismatch);",
+    "if let Some(existing) = self",
+    ".effect_dispatch_attempt(&intent.run_id, &intent.step_id, intent.attempt)",
+    "ensure_attempt_binding(",
+    "return match self",
+    ".settle_effect_dispatch_attempt(&existing, fence)",
+    "let token = authority",
+    ".claim(signed_grant, expected_binding)",
+    ".begin_effect_dispatch_attempt(",
+    "EffectDispatchStart::Existing(durable) => {",
+    "return match self.settle_effect_dispatch_attempt(&durable, fence).await?",
+    "let request = AuthorizedProviderEffectRequest {",
+    "let provider = match authority",
+    ".with_verified_use_async(token, expected_binding, || driver.dispatch(request))",
+    ".await",
+    "validate_receipt_digest(&provider.receipt_digest)?;",
+  ],
+]
+
+[[boundary]]
+id = "root_learning_explicit_registration"
+symbol = "register_host_learning_checkpoint"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+definition_markers = ["pub fn register_host_learning_checkpoint(", "read_root_json(config_file)?", "read_root_json(registration_file)?", "open_registered_writer(&config, &registration, owner_pidfd)?", "service.register_learning_checkpoint("]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_learning_original_store_registration"
+symbol = "HostAuthorityService::register_learning_checkpoint"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+definition_markers = ["pub(crate) fn register_learning_checkpoint(", "read_root_json(profile_file)?", "self.with_learning_profile(", "StoreMode::Register"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)register_learning_checkpoint\\s*\\("
+
+[[boundary]]
+id = "root_learning_original_store_reopen"
+symbol = "HostAuthorityService::open_registered_learning_checkpoint"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+definition_markers = ["pub(crate) fn open_registered_learning_checkpoint(", "StoreMode::Reopen", "validate_lane_paths(&paths, config.peer_gid)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_session.rs", "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_registered_learning_checkpoint\\s*\\("
+
+[[boundary]]
+id = "root_learning_original_owner_install"
+symbol = "PreparedHostAuthoritySession::with_registered_learning"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+definition_markers = ["pub fn with_registered_learning(", "self.learning.is_some()", "self.service.open_registered_learning_checkpoint("]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_registered_learning\\s*\\("
+
+[[boundary]]
+id = "root_learning_original_scope_seal"
+symbol = "PreparedHostAuthoritySession::seal_learning_bootstrap"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+definition_markers = ["pub fn seal_learning_bootstrap(", "self\n            .learning\n            .as_ref()", "self.service.seal_learning_checkpoint("]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_learning_bootstrap\\s*\\("
+
+[[boundary]]
+id = "root_learning_original_scope_capture"
+symbol = "HostAuthorityService::seal_learning_checkpoint"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+definition_markers = ["pub(crate) fn seal_learning_checkpoint(", "self.with_learning_profile(", "learning\n                    .backend\n                    .restore(&initial.request)", "seal_bytes(&bytes)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_session.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_learning_checkpoint\\s*\\("
+
+[[boundary]]
+id = "root_learning_same_service_serve"
+symbol = "HostAuthorityService::serve_learning_checkpoint"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs"
+definition_markers = ["pub fn serve_learning_checkpoint(", "let writer: &RegisteredWriter", "HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?", "writer.exchange_learning_checkpoint("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_session.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_learning_checkpoint\\s*\\("
+
+[[boundary]]
+id = "root_learning_registered_checkpoint_constructor"
+symbol = "LearningIterationCheckpointOwnerV1::from_registered"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
+definition_markers = ["pub fn from_registered(", "HostAuthorityFrontierStore<LearningIterationCheckpointRecordV1>", "owner.load()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_learning_original_client_constructor"
+symbol = "AgentdLearningCheckpointClientV1::from_root_stream"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
+definition_markers = ["pub fn from_root_stream(", "expected.snapshot() != &initial", "RootObservationStream::from_stream("]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_learning_original_purpose_send"
+symbol = "send_root_learning_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs"
+definition_markers = ["pub fn send_root_learning_handoff(", "libc::getuid()", "libc::geteuid()", "peer.pid as u32 != std::process::id()", "require_root_pin(root_pidfd, std::process::id())?", "LEARNING_FRAME"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_learning_original_purpose_receive"
+symbol = "receive_root_learning_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs"
+definition_markers = ["pub fn receive_root_learning_handoff(", "root_pair(&socket, timeout)?", "receive_learning_packet(&socket, timeout)?", "require_root_pin(&root_pidfd, peer.pid as u32)?"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs","codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_learning_original_handoff_consume"
+symbol = "RootLearningHandoffV1::connect"
+definition_path = "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+definition_markers = ["pub(crate) async fn connect(", "validate_sealed(&self.bootstrap, length)?", "validate_binding(&bundle, &production.bootstrap, expected, self.root_pid)?", "AgentdLearningCheckpointClientV1::from_root_stream(", "client\n            .restore(&initial.request)\n            .await"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs","codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"]
+caller_markers = []
+receiver_type = "RootLearningHandoffV1"
+
+[[boundary]]
+id = "root_learning_original_config_hold"
+symbol = "AgentdConfig::with_root_learning_inputs"
+definition_path = "codex-rs/hepta-agentd/src/config_root_learning.rs"
+definition_markers = ["pub(crate) fn with_root_learning_inputs(", "inputs.require_identity(&self.identity)?", "self.root_learning_inputs.is_some() || self.learning_iteration_bootstrap.is_some()", "self.root_learning_inputs = Some(inputs)"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs","codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_root_learning_inputs\\s*\\("
+
+[[boundary]]
+id = "root_learning_original_stage_assembly"
+symbol = "AgentdConfig::with_root_learning_stage_owners"
+definition_path = "codex-rs/hepta-agentd/src/config_root_learning.rs"
+definition_markers = ["pub fn with_root_learning_stage_owners(", "self.root_learning_inputs.take()", "inputs.into_learning_runtime(stages, verifier, capacity)?", "self.with_learning_iteration_bootstrap(bootstrap)?"]
+product_callers = []
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_root_learning_stage_owners\\s*\\("
+
+[[boundary]]
+id = "root_learning_original_runtime_consume"
+symbol = "AgentdRootLearningInputsV1::into_learning_runtime"
+definition_path = "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+definition_markers = ["pub fn into_learning_runtime(", "crate::learning_iteration_channel_v1(", "self.initial.owners", "self.client.with_stage_owners(stages)", "bootstrap.with_original_circuit_learning_delivery(self.initial.request)?"]
+product_callers = ["codex-rs/hepta-agentd/src/config_root_learning.rs"]
+caller_markers = []
+receiver_type = "AgentdRootLearningInputsV1"
+
+[[boundary]]
+id = "root_original_registered_ready_serve"
+symbol = "PreparedHostAuthoritySession::serve_with_ready"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+definition_markers = ["pub fn serve_with_ready(", "self.serve_selected(/*text_ui*/ None, ready)"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_with_ready\\s*\\("
+
+[[boundary]]
+id = "root_original_private_sealed_bytes"
+symbol = "seal_bytes"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs"
+definition_markers = ["pub(crate) fn seal_bytes(", "require_root()?", "bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND", "libc::memfd_create(", "libc::F_ADD_SEALS", "validate_sealed(&file, bytes.len() as u64)?", "retained != bytes"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_registration.rs","codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs","codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs","codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs"
+required = ["#[serde(deny_unknown_fields)]", "runtime.learning.bootstrap.v1", "schema_version: u32", "writer_proof_digest: String", "initial_snapshot: String", "runtime.learning.bootstrap.v2", "update_scope: Option<HostAuthorityLearningScopeV2>", "skip_serializing_if = \"Option::is_none\"", ".is_none_or(|scope| scope.scope != \"cell\")"]
+forbidden = ["AllowVerifier", "permit_all", "HostAuthorityFrontierStore", "initialize_host_authority"]
+required_order = [["fn decode_initial(encoded: &str)", "encoded.len() > codec::MAX_BYTES.div_ceil(3) * 4", "STANDARD_NO_PAD.decode(encoded)", "codec::decode(&bytes)", "LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())", "STANDARD_NO_PAD.encode(&bytes) != encoded", "expected.snapshot() != &initial", "codec::encode(&initial)", "!= bytes", "Ok(initial)"], ["impl HostAuthorityLearningScopeV2 {", "fn freeze(", "self.scope.as_str()", "LearningUpdateScopeV2::BaseRelease", "self\n            .update_rule\n            .parse::<Digest32>()", "FrozenLearningScopeV2::freeze(", "self.update_rule != update_rule.to_string()", "self.binding != frozen.binding().to_string()", "Ok(frozen)"], ["impl HostAuthorityLearningBootstrapV1 {", "fn frozen_scope(", "match self.schema_version", "1 => HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1", "2 => HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2", "self.operation != expected", "decode_scope(self.schema_version, self.update_scope.as_ref(), initial)"]]
+
+[[protected_file.required_function_order]]
+function = "fn require_binding("
+sequence = ["decode_initial(&self.initial_snapshot)?", "self\n            .writer_proof_digest\n            .parse::<Digest32>()", "!matches!(self.schema_version, 1 | 2)", "proof.is_zero()", "self.writer_proof_digest != writer_proof_digest", "self.identity_digest\n                !=", "neuron_generation_process_identity_digest_v1(identity)", "initial.request.agent_id.as_str() != identity.agent_id.as_str()", "self.frozen_scope(&initial)?", "Ok(initial)"]
+
+[[protected_file.required_function_order]]
+function = "fn decode_scope("
+sequence = ["match (schema, description)", "(1, None) => Ok(None)", "(2, Some(scope)) => scope.freeze(initial).map(Some)", "_ => Err("]
+
+[[protected_file.required_function_order]]
+function = "fn new_scoped_v2("
+sequence = ["FrozenLearningScopeV2::freeze(", "Self::new(", "profile.schema_version = 2", "profile.update_scope = Some(", "binding: frozen.binding().to_string()", "profile.require_binding("]
+
+[[protected_file.required_function_order]]
+function = "fn require_cell_scope("
+sequence = ["self\n            .update_scope", ".as_ref()", ".is_none_or(|scope| scope.scope !=", "return Err(io::Error::other(", "self.frozen_scope(initial)?", ".ok_or_else(", "io::Error::other(\"Q24 factory cannot upgrade a legacy learning profile\")"]
+literal_calls = ["io::Error::other(\"Q24 factory cannot upgrade a legacy learning profile\")"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"
+required = ["root-learning-checkpoint-v1", "learning-checkpoint-v1.sock", "learning-checkpoint", "production_ready: false", "self.with_learning_profile(", "frozen_scope_binding: Option<String>"]
+forbidden = ["AllowVerifier", "permit_all", "create_protected", "put_lease"]
+required_function_order = [
+  { function = "fn register_learning_checkpoint(", sequence = ["read_root_json(profile_file)?","HostAuthorityService::reserve_original_learning_profile(","self,\n            config,\n            registration,\n            owner_pidfd,\n            &profile,"] },
+  { function = "fn open_registered_learning_checkpoint(", sequence = ["read_root_json(profile_file)?","HostAuthorityService::open_original_learning_profile(","self,\n            config,\n            registration,\n            owner_pidfd,\n            profile,"] },
+  { function = "fn seal_learning_checkpoint(", sequence = ["self.with_learning_profile(","learning.profile.frozen_scope(&initial)?","learning.backend.frozen_scope_binding()","scope.as_ref().map(FrozenLearningScopeV2::binding)","let before = learning\n                    .backend\n                    .restore(&initial.request)","HostAuthorityLearningBootstrapV1 {","crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V2","crate::HOST_AUTHORITY_LEARNING_BOOTSTRAP_V1","writer_proof_digest: proof","learning.profile.encoded_initial()","learning.profile.update_scope.clone()","serde_json::to_vec(&bundle)","seal_bytes(&bytes)?","learning\n                    .backend\n                    .restore(&initial.request)","!= before","Ok(sealed)"] },
+  { function = "fn learning_store(", sequence = ["scope.validate_snapshot(initial)","RootAuthorityDirectory::open(state_dir)","let path = state_dir.join(","let store = match mode","StoreMode::Register =>","create(&path)?","File::open(state_dir)?.sync_all()?","match &scope","LearningIterationCheckpointRecordV1::vacant_scoped_v2(","LearningIterationCheckpointRecordV1::vacant(","HostAuthorityFrontierStore::initialize(","StoreMode::Reopen => HostAuthorityFrontierStore::open(","match scope","LearningIterationCheckpointOwnerV1::from_registered_scoped_v2(","LearningIterationCheckpointOwnerV1::from_registered("] },
+  { function = "fn reserve_original_learning_profile(", sequence = ["self.reserve_original_learning_profile_in_phase(","config,\n            registration,\n            owner_pidfd,\n            profile,\n            None,"] },
+  { function = "fn reserve_original_learning_profile_in_phase(", sequence = ["self.with_learning_profile(","profile.frozen_scope(&initial)?","learning_store(","StoreMode::Register","HostAuthorityLearningRegistrationV1"] },
+  { function = "fn open_original_learning_profile(", sequence = ["self.open_original_learning_profile_in_phase(","config,\n            registration,\n            owner_pidfd,\n            profile,\n            None,"] },
+  { function = "fn open_original_learning_profile_in_phase(", sequence = ["self.with_learning_profile(","learning_store(","StoreMode::Reopen","profile.frozen_scope(&initial)?","validate_runtime_lanes(config)?","paths.push(&socket_path)","validate_lane_paths(&paths, config.peer_gid)?","RegisteredHostLearningCheckpointV1"] },
+]
+required_order = [["fn with_learning_profile<T>(", "config.required_bind.verify()?", "RootAuthorityDirectory::open(&config.state_dir)", "config.schema_version != 1", "registration.schema_version != 1", "config.peer_uid == 0\n            || config.peer_gid == 0", "!(1..=500).contains(&config.timeout_ms)", "!(1..=300_000).contains(&config.lifetime_ms)", "!config\n                .state_dir\n                .starts_with(&config.required_bind.mountpoint)", "registration.registered_identity.identity()? != self.identity", "verify_pinned_process(", "self.check_logind_lifetime()?", "config.writer.as_ref() != Some(&writer.registration)", ".with_live(&writer.leases", "retained_writer_authorization(&writer.registration)?\n                != writer.proof", "profile.require_binding(&self.identity, &proof)?", "let before = self.issuer.revocations()?", "validate_observation_lease(", "let result = action(initial, proof)?", "self.issuer.revocations()? != before", "retained_writer_authorization(&writer.registration)?\n                    != writer.proof", "validate_observation_lease(", "self.check_logind_lifetime()?", "verify_pinned_process(", "Ok(result)"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_learning_session.rs"
+required = ["self.learning.is_some()", "same retained Root", "stream.shutdown(Shutdown::Both)", "entry.dev() == self.device && entry.ino() == self.inode"]
+forbidden = ["AllowVerifier", "permit_all", "HostAuthorityFrontierStore::initialize", "initialize_host_authority"]
+required_function_order = [{ function = "fn with_registered_learning(", sequence = ["self.learning.is_some()", "self.service.open_registered_learning_checkpoint(", "Ok(self)"] }, { function = "fn seal_learning_bootstrap(", sequence = ["self\n            .learning\n            .as_ref()", "self.service.seal_learning_checkpoint("] }, { function = "fn bind(", sequence = ["validate_runtime_lanes(config)?", "validate_lane_paths(&paths, config.peer_gid)?", "UnixListener::bind(&learning.socket_path)?", "metadata.uid() != 0 || metadata.gid() != config.peer_gid", "set_permissions(", "set_nonblocking(true)?", "Ok(bound)"] }, { function = "fn serve_optional(", sequence = ["let Some(learning) = learning", "AtomicBool::new(false)", "Mutex::new(None::<UnixStream>)", "owner_alive(owner, end)?", "learning.listener.accept()", "verify_pinned_process(", "stopping.load(Ordering::Acquire)", "stream.try_clone()?", "HostAuthorityPeerPolicy {", "service\n                .serve_learning_checkpoint(", "owner.try_clone()?", "let result = super::generation_publication::serve_optional(", "stopping.store(true, Ordering::Release)", "stream.shutdown(Shutdown::Both)", "worker\n            .join()", "result.and(learned)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
+required = ["registered learning requires the consuming original session serve scope", "registered Initial publication requires the consuming original session serve scope"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn serve_retained(", sequence = ["self.learning.is_some()", "return Err(io::Error::other(", "self.initial_publication.is_some()", "return Err(io::Error::other(", "self.root_admin.is_none()", "listeners::serve_lanes("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs"
+required = ["HEPTA_ROOT_LEARNING_INPUTS_V1", "pub struct RootLearningHandoffV1", "pub(crate) root_pidfd: OwnedFd", "libc::MSG_CMSG_CLOEXEC"]
+forbidden = ["AllowVerifier", "permit_all", "initialize_host_authority", "create_protected"]
+required_function_order = [{ function = "fn send_root_learning_handoff(", sequence = ["libc::getuid()", "libc::geteuid()", "root_pair(&socket, timeout)?", "peer.pid as u32 != std::process::id()", "validate_bootstrap(bootstrap)?", "require_root_pin(root_pidfd, std::process::id())?", "send_packet(", "LEARNING_FRAME", "&[bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()]"] }, { function = "fn receive_root_learning_handoff(", sequence = ["root_pair(&socket, timeout)?", "receive_learning_packet(&socket, timeout)?", "validate_bootstrap(&bootstrap)?", "require_root_pin(&root_pidfd, peer.pid as u32)?", "RootLearningHandoffV1 {"] }, { function = "fn receive_learning_packet(", sequence = ["libc::recvmsg(", "libc::MSG_CMSG_CLOEXEC", "received_descriptors(&message)", "if !valid", "libc::MSG_TRUNC | libc::MSG_CTRUNC", "descriptors.len() != 2", "length as usize != LEARNING_FRAME.len()", "&bytes[..LEARNING_FRAME.len()] != LEARNING_FRAME", "let root = descriptors\n        .pop()", "let bootstrap = descriptors\n        .pop()", "Ok((File::from(bootstrap), root))"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+required = ["learning-checkpoint-v1.sock", "AgentdRootLearningInputsV1", "self.client.with_stage_owners(stages)", "bootstrap.with_original_circuit_learning_delivery(self.initial.request)?", "bundle.frozen_scope(&initial)?", "AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(", "crate::learning_iteration_channel_scoped_v2("]
+forbidden = ["AllowVerifier", "permit_all", "initialize_host_authority", "create_protected"]
+required_function_order = [
+  { function = "fn connect(", sequence = ["timeout.is_zero()", "timeout > Duration::from_millis(500)", "lifetime.is_zero()", "lifetime > Duration::from_secs(300)", "let end = Instant::now() + lifetime", "length > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND", "validate_sealed(&self.bootstrap, length)?", "self.bootstrap.rewind()?", "read_to_end(&mut bytes)?", "validate_sealed(&self.bootstrap, length)?", "bytes.len() as u64 != length", "serde_json::from_slice(&bytes)?", "validate_binding(&bundle, &production.bootstrap, expected, self.root_pid)?", "let scope = bundle.frozen_scope(&initial)?", "validate_lane_paths(", "tokio::net::UnixStream::connect(&bundle.socket_path)", "match scope.clone()", "AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2(", "AgentdLearningCheckpointClientV1::from_root_stream(", "client\n            .restore(&initial.request)\n            .await", "remaining(end)?", "Ok(AgentdRootLearningInputsV1"] },
+  { function = "fn validate_binding(", sequence = ["!matches!(bundle.schema_version, 1 | 2)", "bundle.root != original.root", "bundle.consumer != original.consumer", "bundle.root.pid != root_pid", "bundle.root.uid != 0", "bundle.registered_identity.identity()? != *expected", "original.registered_identity.identity()? != *expected", "bundle.writer_proof_digest != original.writer_proof.sha256()?.as_str()", "bundle.socket_path != socket", "bundle.decode_initial()?", "bundle.frozen_scope(&initial)?", "initial.request.agent_id.as_str() != expected.agent_id.as_str()", "Ok(initial)"] },
+  { function = "fn into_learning_runtime(", sequence = ["self.client.with_stage_owners(stages)", "match self.scope", "crate::learning_iteration_channel_scoped_v2(", "self.identity.agent_id", "self.identity.spawn_generation", "self.initial.owners", "crate::learning_iteration_channel_v1(", "bootstrap.with_original_circuit_learning_delivery(self.initial.request)?"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config_root_learning.rs"
+required = ["original learning checkpoint received, but actual stage owners are not assembled"]
+forbidden = ["AllowVerifier", "permit_all", "initialize_host_authority", "create_protected"]
+required_function_order = [{ function = "fn with_root_learning_inputs(", sequence = ["inputs.require_identity(&self.identity)?", "self.root_learning_inputs.is_some()", "self.learning_iteration_bootstrap.is_some()", "self.root_learning_inputs = Some(inputs)", "Ok(self)"] }, { function = "fn with_root_learning_stage_owners(", sequence = ["self.root_learning_inputs.take()", "inputs.into_learning_runtime(stages, verifier, capacity)?", "self.with_learning_iteration_bootstrap(bootstrap)?"] }, { function = "fn require_root_learning_assembled(", sequence = ["self.root_learning_inputs.is_some()", "return Err(AgentdError::Invalid(", "Ok(())"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["config.require_root_learning_assembled()?"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn run_with_shutdown(", top_level = ["config.require_root_learning_assembled()?"], sequence = ["config.require_root_learning_assembled()?", "config.take_circuit_task_bootstrap()?", "config.take_production_operations()"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+required = ["pub fn register_host_learning_checkpoint("]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn register_host_learning_checkpoint(", sequence = ["read_root_json(config_file)?", "read_root_json(registration_file)?", "open_registered_writer(&config, &registration, owner_pidfd)?", "service.register_learning_checkpoint(&config, &registration, owner_pidfd, profile_file)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+required = ["learning: Option<crate::authority_host_service::RegisteredHostLearningCheckpointV1>"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn serve_selected(", sequence = ["learning::BoundLearning::bind(owner, &config, publication)", "text.validate(&service)?", "service.with_live_human_text(", "listeners::bind_runtime_lanes(&config, ready)?", "learning::serve_optional(", "service.serve_text_ui(", "listeners::serve_bound_lanes("] }, { function = "fn serve_with_ready(", sequence = ["self.serve_selected(", "None, ready)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_launcher.rs"
+required = ["let learning: crate::RootLearningHandoffV1 = learning;","config.require_root_learning_assembled()?","pub fn take_generation_publication_connection(","let inputs: &mut AgentdRootProductionInputs = &mut self.root;","publication: Option<crate::RootGenerationPublicationHandoffV1>","crate::receive_root_generation_publication_handoff(","pub fn take_generation_publication_handoff(","self.publication.is_some()","initial_publication: Option<crate::RootGenerationInitialHandoffV1>","crate::receive_root_generation_initial_handoff(","pub fn take_generation_initial_handoff(","self.initial_publication.is_some()"]
+forbidden = ["AllowVerifier", "permit_all", "initialize_host_authority", "create_protected"]
+required_function_order = [{ function = "fn from_process_environment(", sequence = ["inputs::parse(arguments)?", "AgentdConfig::from_process_environment()?", "config.prepare_root_handoff(uid, gid)?.drop_to_owner()?", "crate::receive_root_production_handoff(", "crate::receive_root_learning_handoff(", "crate::receive_root_generation_publication_handoff(", "crate::receive_root_generation_initial_handoff(","Startup::Root("] }, { function = "fn receive(", sequence = ["crate::receive_root_production_inputs(", "finish(&root)?", "let learning: crate::RootLearningHandoffV1 = learning;", "session_end\n                        .checked_duration_since(Instant::now())", "learning\n                        .connect(", "config.with_root_learning_inputs(inputs)?"] }, { function = "fn run(", top_level = ["config.require_root_learning_assembled()?"], sequence = ["config.require_root_learning_assembled()?", "self.initial_publication.is_some()","self.publication.is_some()", "let RuntimeInputs {", "let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None", "codex_app_server::initialize_configured_mcp_server("] }, { function = "fn take_generation_publication_connection(", sequence = ["let inputs: &mut AgentdRootProductionInputs = &mut self.root;", "inputs.take_generation_publication_connection()"] }, { function = "fn take_generation_publication_handoff(", sequence = ["self.publication.take()", "AgentdError::Invalid("] }, { function = "fn take_generation_initial_handoff(", sequence = ["self.initial_publication.take()","AgentdError::Invalid("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+required = ["--root-generation-publication-handoff-fd","publication_handoff.is_some() && learning_handoff.is_none()","--root-learning-handoff-fd","original production descriptors must be distinct","flags | libc::FD_CLOEXEC","--root-generation-initial-handoff-fd","initial_handoff.is_some() && publication_handoff.is_some()"]
+forbidden = ["AllowVerifier", "permit_all", "initialize_host_authority", "create_protected"]
+required_function_order = [{ function = "fn parse(", sequence = ["let handoff = descriptor_number(","let learning_handoff = selected","let publication_handoff = selected","publication_handoff.is_some() && learning_handoff.is_none()","let initial_handoff = selected","initial_handoff.is_some() && publication_handoff.is_some()","let numbers = [","learning_handoff,","publication_handoff,","initial_handoff,","numbers.iter().copied().collect::<BTreeSet<_>>().len() != numbers.len()","let handoff = UnixDatagram::from(take_descriptor(handoff)?)","learning_handoff\n        .map(take_descriptor)","publication_handoff\n        .map(take_descriptor)","initial_handoff\n        .map(take_descriptor)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+required = ["register-learning","--learning-profile","--root-learning-handoff-fd","learning_profile.is_some() != learning_handoff.is_some()","learning_profile.is_some() && root_fd.is_none()","PreparedHostAuthoritySession::open(&config, &registration, owner)?","prepared.with_registered_learning(&profile)?","prepared.seal_learning_bootstrap()","send_root_learning_handoff(","prepared.serve_with_ready(ready)","--generation-publication-deployment","--root-generation-publication-handoff-fd","publication_deployment.is_some() != publication_handoff.is_some()","capability.with_original_deployment(&path)?","deployment.wait_and_register(stop_ref)","PublicationDeploymentStop","let served = match","drop(stop)","served?","--generation-initial-deployment","--root-generation-initial-handoff-fd","initial_deployment.is_some() != initial_handoff.is_some()","initial and learned publication require separate original Root sessions","RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(","prepared.enable_generation_initial(files.deployment().clone())","capability.with_original_initial_deployment(files)?","deployment.wait_and_register_initial(stop_ref)?","initial_registered_binding","PreparedHostAuthoritySession::prepare_fresh_from_registered","Some(profile), None","prepared.launch_native_with_ready(&config, &registration, &profile, ready)","worker.join()"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_order = [["let learning_handoff = learning_handoff\n            .as_deref()","inherited_descriptor(fd, &mut claimed)","learning_profile.is_some() != learning_handoff.is_some()","let owner = std::io::stdin().as_fd().try_clone_to_owned()?","prepared.with_registered_learning(&profile)?","prepared.seal_learning_bootstrap()","let ready = ||","send_root_learning_handoff(","prepared.launch_native_with_ready(","prepared.serve_with_text_and_ready(","prepared.serve_with_ready(ready)"],["publication_deployment.is_some() != publication_handoff.is_some()","let publication_handoff = publication_handoff","inherited_descriptor(fd, &mut claimed)","let owner = std::io::stdin().as_fd().try_clone_to_owned()?","prepared.with_registered_learning(&profile)?","prepared.enable_generation_publication()?","capability.with_original_deployment(&path)?","send_root_generation_publication_handoff(","let stop = PublicationDeploymentStop","deployment.wait_and_register(stop_ref)","let served = match","prepared.serve_with_ready(ready)","drop(stop)","worker.join()","served?"],["let registered = deployment.wait_and_register(stop_ref)?","let stdout = std::io::stdout()","let mut output = stdout.lock()","writeln!(output,","output.flush()","Ok::<_, std::io::Error>(registered)","let served = match","drop(stop)","worker.join()","served?","registered?"],["let initial_handoff =\n            options.remove","if (initial_deployment.is_some() || initial_handoff.is_some())","if initial_deployment.is_some() != initial_handoff.is_some()","if publication_deployment.is_some() != publication_handoff.is_some()","let mut claimed =","let initial_handoff = initial_handoff","inherited_descriptor(fd, &mut claimed)","let owner = std::io::stdin().as_fd().try_clone_to_owned()?","RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(","prepared.enable_generation_initial(files.deployment().clone())","capability.with_original_initial_deployment(files)?","send_root_generation_initial_handoff(","if let Some(session) = initial_ready","std::io::stdout().flush()?","let stop = PublicationDeploymentStop","deployment.wait_and_register_initial(stop_ref)?","let mut output = stdout.lock()","writeln!(output,","output.flush()","Ok::<_, std::io::Error>(registered)","let served = match","drop(stop)","initial_worker","worker.join()","served?","initial_registered"],["drop(stop)","let registered = match worker","worker\n                        .join()","let initial_registered = match initial_worker","worker.join()","served?","if let Some(registered) = initial_registered","registered?","if let Some(registered) = registered","registered?"],["fn main() -> Result<(), Box<dyn std::error::Error>> {","PreparedHostAuthoritySession::prepare_fresh_from_registered(","let served = match (native_profile, text) {","(Some(profile), None) => {","prepared.launch_native_with_ready(&config, &registration, &profile, ready)","drop(stop);","worker.join()","served?;","\nstruct PublicationDeploymentStop<'a>"]]
+
+required_function_order = [{ function = "fn drop(", sequence = ["self.0\n            .store(","std::sync::atomic::Ordering::Release"] }]
+[[boundary]]
+id = "root_learning_scoped_checkpoint_constructor"
+symbol = "LearningIterationCheckpointOwnerV1::from_registered_scoped_v2"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
+definition_markers = ["pub fn from_registered_scoped_v2(", "scope\n            .validate_request(&request, &owners)", "store: Store::Host(store)", "scope: Some(scope)", "owner.load()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"]
+caller_markers = ["profile.frozen_scope(&initial)?", "LearningIterationCheckpointOwnerV1::from_registered_scoped_v2("]
+
+[[boundary]]
+id = "root_learning_scoped_client_constructor"
+symbol = "AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
+definition_markers = ["pub fn from_root_stream_scoped_v2(", "scope.validate_snapshot(&initial)", "Some(scope)"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"]
+caller_markers = ["let scope = bundle.frozen_scope(&initial)?", "match scope.clone()", "AgentdLearningCheckpointClientV1::from_root_stream_scoped_v2("]
+
+[[boundary]]
+id = "root_learning_scoped_runtime_constructor"
+symbol = "learning_iteration_channel_scoped_v2"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
+definition_markers = ["pub fn learning_iteration_channel_scoped_v2(", "Some(scope)", "ports.frozen_scope_binding() != scope.as_ref().map(FrozenLearningScopeV2::binding)"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"]
+caller_markers = ["match self.scope", "crate::learning_iteration_channel_scoped_v2("]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
+required = ["schema: u8", "scope: Option<FrozenLearningScopeV2>", "Some(binding) => (2, binding.to_string())", "None => (1, self.initial.head_digest.to_string())"]
+forbidden = ["AllowVerifier", "permit_all", "create_protected", "initialize_host_authority"]
+required_function_order = [
+  { function = "fn vacant_scoped_v2(", sequence = ["scope\n            .validate_request(&request, &owners)", "Self::vacant(request, owners)?", "record.schema = 2", "record.binding = scope.binding().to_string()"] },
+  { function = "fn from_registered(", sequence = ["LearningIterationCoordinatorV1::new(", "scope: None", "owner.load()?"] },
+  { function = "fn from_registered_scoped_v2(", sequence = ["scope\n            .validate_request(&request, &owners)", "LearningIterationCoordinatorV1::new(", "scope: Some(scope)", "owner.load()?"] },
+  { function = "fn checkpoint(", sequence = ["next.request != self.initial.request", "next.owners != self.initial.owners", "LearningIterationCoordinatorV1::from_snapshot(next.clone())", "scope.validate_snapshot(next)", "predecessor != expected_head", "self.profile_identity()", "codec::encode(next)?", "self.load()?", "current == record", "previous.head_digest != expected_head", "next.receipts.len() != previous.receipts.len() + 1", "!next.receipts.starts_with(&previous.receipts)", "store.compare_and_set(", "Error::CommitUncertain(error)"] },
+  { function = "fn load(", sequence = ["store.load(&self.owner_id)", "self.profile_identity()", "record.schema != schema", "record.binding != binding", "let Some(encoded)", "record.predecessor != Digest32::ZERO.to_string()", "codec::MAX_BYTES.div_ceil(3) * 4", "STANDARD_NO_PAD.encode(bytes) != *encoded", "codec::decode(bytes)?", "scope\n                .validate_snapshot(&snapshot)", "snapshot.request != self.initial.request", "snapshot.owners != self.initial.owners", "record.predecessor != predecessor.to_string()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
+required = ["scope: Option<FrozenLearningScopeV2>", "const MAX_READBACK_SECONDS: u64 = 30;"]
+forbidden = ["AllowVerifier", "permit_all"]
+required_function_order = [
+  { function = "fn learning_iteration_channel_v1(", sequence = ["learning_iteration_channel(", "None"] },
+  { function = "fn learning_iteration_channel_scoped_v2(", sequence = ["learning_iteration_channel(", "Some(scope)"] },
+  { function = "fn learning_iteration_channel(", sequence = ["owners.evidence_trust_digest != verifier.trust_digest()", "ports.frozen_scope_binding() != scope.as_ref().map(FrozenLearningScopeV2::binding)", "mpsc::channel(capacity)", "LearningIterationRuntimeBootstrapV1 {"] },
+  { function = "fn process_with_deadline(", sequence = ["let timeout_seconds = match &mode", "LearningIterationModeV1::Readback => MAX_READBACK_SECONDS", "LearningIterationModeV1::Submit =>", ".saturating_sub(now_unix_seconds()?)", "if remaining > MAX_ITERATION_SECONDS", "remaining.max(1)", "tokio::time::timeout(Duration::from_secs(timeout_seconds), async", "LearningIterationModeV1::Readback =>", "self.process_readback(state, request, now_unix_seconds)", "LearningIterationModeV1::Submit =>", "self.process(state, request, now_unix_seconds).await", ".map_err(|_| LearningIterationRuntimeErrorV1::CommitUncertain)?"] },
+  { function = "fn require_frozen_scope(", sequence = ["self.ports.frozen_scope_binding()", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)", "scope.validate_request(request, &self.owners)?"] },
+  { function = "fn process_readback(", sequence = ["self.require_frozen_scope(&request)?", ".restore(&request)", "LearningIterationCoordinatorV1::from_snapshot(snapshot)?", "scope.validate_snapshot(restored.snapshot())?", "authenticate_restored_iteration_v1("] },
+  { function = "fn process(", sequence = ["self.require_frozen_scope(&request)?", "self.ports.restore(&request)", "LearningIterationCoordinatorV1::from_snapshot(snapshot)?", "scope.validate_snapshot(restored.snapshot())?", "authenticate_restored_iteration_v1(", "self.ports.execute_stage(", "authenticate_iteration_receipt_v1(", "&receipt,", "scope.validate_observation(&receipt.observation)?", "coordinator.record(receipt, clock()?)?", ".checkpoint(previous, coordinator.snapshot())"] },
+]
+
+[[boundary]]
+id = "learning_frozen_update_scope_constructor"
+symbol = "FrozenLearningScopeV2::freeze"
+definition_path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs"
+definition_markers = ["pub fn freeze(", "LearningIterationError::SlowReleaseRequired", "update_rule.is_zero()", "initial_head.as_array()", "update_rule.as_array()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_profile.rs", "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs", "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"]
+caller_markers = ["FrozenLearningScopeV2::freeze("]
+
+[[boundary]]
+id = "root_learning_scoped_profile_constructor"
+symbol = "HostAuthorityLearningProfileV1::new_scoped_v2"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs"
+definition_markers = ["pub fn new_scoped_v2(", "FrozenLearningScopeV2::freeze(", "profile.schema_version = 2", "profile.require_binding("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"]
+caller_markers = ["HostAuthorityLearningProfileV1::new_scoped_v2("]
+
+[[boundary]]
+id = "root_learning_scoped_checkpoint_record"
+symbol = "LearningIterationCheckpointRecordV1::vacant_scoped_v2"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
+definition_markers = ["pub fn vacant_scoped_v2(", "scope\n            .validate_request(&request, &owners)", "record.schema = 2", "record.binding = scope.binding().to_string()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_registration.rs"]
+caller_markers = ["profile.frozen_scope(&initial)?", "LearningIterationCheckpointRecordV1::vacant_scoped_v2("]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs"
+required = ["hepta.learning.frozen-update-scope.v2", "components: CellBundleComponentsV1", "update_rule: Digest32", "binding: Digest32"]
+forbidden = ["preserved.base =", "preserved.encoder =", "preserved.tokenizer =", "preserved.normalizer =", "preserved.numeric_profile =", "preserved.output_schema =", "preserved.state_schema =", "preserved.state_semantics ="]
+required_function_order = [
+  { function = "fn freeze(", sequence = ["LearningUpdateScopeV2::Cell => 1", "LearningUpdateScopeV2::Organ => 2", "LearningIterationError::SlowReleaseRequired", "update_rule.is_zero()", "LearningIterationCoordinatorV1::new(", "initial.snapshot().head_digest", "initial_head.as_array()", "&[tag]", "update_rule.as_array()", "request.selected_bundle.components.clone()"] },
+  { function = "fn validate_request(", sequence = ["initial_digest(request, owners)? != self.initial_head", "LearningIterationError::UpdateScopeMismatch"] },
+  { function = "fn validate_observation(", sequence = ["LearningIterationObservationV1::Training", "let mut preserved = candidate.components.clone()", "preserved.heads = self.components.heads", "preserved.calibration = self.components.calibration", "preserved.composition = self.components.composition", "match self.scope", "LearningUpdateScopeV2::Cell =>", "preserved.cell_adapter = self.components.cell_adapter", "LearningUpdateScopeV2::Organ =>", "preserved.organ_adapter = self.components.organ_adapter", "preserved != self.components", ".training_lineage", ".map(|lineage| lineage.update_rule)", "!= Some(self.update_rule)", "LearningIterationError::UpdateScopeMismatch"] },
+  { function = "fn validate_snapshot(", sequence = ["self.validate_request(&snapshot.request, &snapshot.owners)?", "for receipt in &snapshot.receipts", "self.validate_observation(&receipt.observation)?"] },
+]
+
+[[boundary]]
+id = "learning_evidence_original_owner_constructor"
+symbol = "LearningIterationEvidenceClientV1::from_owner_stream"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+definition_markers = ["pub fn from_owner_stream(", "let same_uid", "expected.snapshot() != &initial", "RootObservationStream::from_stream_for_uid("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_evidence_original_owner_readback"
+symbol = "LearningIterationEvidenceClientV1::readback"
+receiver_type = "LearningIterationEvidenceClientV1"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+definition_markers = ["pub async fn readback(", "learning_iteration_receipt_signing_bytes_v1(receipt)?", ".verify(role, &signature, &payload, now)"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs", "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "original_pinned_stream_explicit_uid"
+symbol = "RootObservationStream::from_stream_for_uid"
+receiver_type = "RootObservationStream"
+definition_path = "codex-rs/hepta-agentd/src/root_observation_stream.rs"
+definition_markers = ["pub(super) fn from_stream_for_uid(", "actual.uid() != uid", "check_lifetime(root.get_ref())?"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+required = ["Mutex<Option<Channel>>", "same_uid", "peer.pid == std::process::id()", "initial.owners.evidence_trust_digest != verifier.trust_digest()", "initial.request.envelope.objective_digest != verifier.objective_digest()", "LearningIterationStageV1::Proposal =>", "SystemTime::now()"]
+forbidden = ["SigningKey", "UnixStream::connect", "File::open", "initialize_host_authority", "create_protected", "AllowVerifier", "permit_all"]
+required_function_order = [
+  { function = "fn from_owner_stream(", sequence = ["LearningIterationCoordinatorV1::new(", "let same_uid", "expected.snapshot() != &initial", "initial.owners.evidence_trust_digest != verifier.trust_digest()", "RootObservationStream::from_stream_for_uid(", "channel: Mutex::new(Some(Channel"] },
+  { function = "fn readback(", sequence = ["let stage = receipt.observation.stage()", "snapshot.request != self.initial.request", "receipt.actor_id != self.actor_id", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "let mut channel = self", ".take()", "request_id.checked_add(1)", "wire::Request {", ".read(&request)", "response.schema != 1", "response.operation != request.operation", "response.request_id != request_id", "response.binding != request.binding", "response.snapshot_head != request.snapshot_head", "response.receipt_digest != request.receipt_digest", "response.evidence.decode()?", "SystemTime::now()", ".verify(role, &signature, &payload, now)", "verified.principal().principal_id != self.actor_id", "check_lifetime(", "= Some(channel)", "Ok(signature)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_evidence_wire.rs"
+required = ["runtime.learning.evidence.readback.v1", "#[serde(deny_unknown_fields)]", "STANDARD_NO_PAD.encode(&signature) != self.signature", "signature: signature.try_into()"]
+forbidden = ["SigningKey", ".sign(", "UnixStream::connect", "File::open", "payload: Vec", "payload: String"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_observation_stream.rs"
+required = ["timeout > Duration::from_millis(500)", "lifetime > Duration::from_secs(300)", "request.len() > 16_384", "length == 0 || length > 16_384", "actual.uid() != uid", "actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)", "slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?", "anon_inode:[pidfd]", "Self::from_stream_for_uid(stream, peer, root_pidfd, timeout, lifetime, 0)"]
+forbidden = ["UnixStream::connect", "AllowVerifier", "permit_all"]
+required_function_order = [
+  { function = "fn from_stream(", sequence = ["Self::from_stream_for_uid(", "lifetime, 0)"] },
+  { function = "fn from_stream_for_uid(", sequence = ["peer.pid == 0", "peer.pid > i32::MAX as u32", "peer.process_start_ticks == 0", "timeout.is_zero()", "timeout > Duration::from_millis(500)", "lifetime.is_zero()", "lifetime > Duration::from_secs(300)", "root_pidfd.as_raw_fd()", "std::fs::read_link(", "Path::new(", "!= Some(peer.pid)", "peer.boot_id", "start != Some(peer.process_start_ticks)", "check_lifetime(&root_pidfd)?", "stream.peer_cred()", "actual.uid() != uid", "actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)", "AsyncFd::register_with_interest", "check_lifetime(root.get_ref())?", "Ok(Self"] },
+  { function = "fn from_stream_until(", sequence = ["fn from_stream_until(","Self::from_stream_for_uid_until(stream, peer, root_pidfd, timeout, end, 0)"] },
+  { function = "fn from_stream_for_uid_until(", literal_calls = ["Path::new(\"anon_inode:[pidfd]\")",".strip_prefix(\"Pid:\")",".rsplit_once(\") \")"], sequence = ["let lifetime = end",".checked_duration_since(Instant::now())",".ok_or(AgentdRootAuthorityError::Refused)?","peer.pid == 0","peer.pid > i32::MAX as u32","peer.process_start_ticks == 0","timeout.is_zero()","timeout > Duration::from_millis(500)","lifetime.is_zero()","lifetime > Duration::from_secs(300)","return Err(AgentdRootAuthorityError::Refused)","root_pidfd.as_raw_fd()","std::fs::read_link(","!=","Path::new(\"anon_inode:[pidfd]\")",".strip_prefix(\"Pid:\")",".parse::<u32>().ok()","!= Some(peer.pid)","bounded_text(","128)?.trim() != peer.boot_id","return Err(AgentdRootAuthorityError::Refused)","let stat = bounded_text(","peer.pid), 8192)?",".rsplit_once(\") \")",".split_whitespace().nth(19)",".parse::<u64>().ok()","start != Some(peer.process_start_ticks)","return Err(AgentdRootAuthorityError::Refused)","check_lifetime(&root_pidfd)?","stream.set_nonblocking(true)","tokio::net::UnixStream::from_std(stream)","stream.peer_cred()","actual.uid() != uid","actual.pid().and_then(|pid| u32::try_from(pid).ok()) != Some(peer.pid)","return Err(AgentdRootAuthorityError::Refused)","AsyncFd::register_with_interest(root_pidfd, tokio::io::Interest::READABLE)","check_lifetime(root.get_ref())?","if Instant::now() >= end","return Err(AgentdRootAuthorityError::Unavailable)","Ok(Self {","exchange: tokio::sync::Semaphore::new(1)","stream: Mutex::new(Some(stream))","root: Arc::new(root)","timeout,","end,"] },
+  { function = "fn framed_exchange(", sequence = ["write_all(&(request.len() as u32).to_be_bytes())", "read_exact(&mut prefix)", "length == 0 || length > 16_384", "read_exact(&mut response)"] },
+]
+required_order = [["async fn read<R:", "serde_json::to_vec(request)", "request.len() > 16_384", ".try_acquire()", "let mut stream =", "slot.take()", "check_lifetime(self.root.get_ref())?", "let deadline =", "tokio::select!", "framed_exchange(&mut stream, &request)", "check_lifetime(self.root.get_ref())?", "serde_json::from_slice(&response)", "Instant::now() >= deadline", "= Some(stream)", "Ok(parsed)"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs"
+required = ["pub evaluation_profile: Digest32"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs"
+required = ["hepta.learning.iteration-checkpoint.v2", "request.evaluation_profile"]
+forbidden = ["hepta.learning.iteration-checkpoint.v1"]
+required_function_order = [{ function = "fn initial_digest(", sequence = ["request.selected_artifact_digest", "request.evaluation_profile", "request.selected_bundle.digest()?"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs"
+required = ["request.evaluation_profile.is_zero()", "lineage.evaluation_profile == request.evaluation_profile", "*evaluation_profile == request.evaluation_profile"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs"

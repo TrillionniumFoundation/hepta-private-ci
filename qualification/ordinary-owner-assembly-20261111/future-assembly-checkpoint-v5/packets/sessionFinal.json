@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "kind": "original-root-session-final-field-and-file-retirement",
+  "status": "isolated-future-source-not-installed-or-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "dependencies": {
+    "actual_fault_session_custody": "0fceb869f60ff960fa01a0192ff13071e14536c1",
+    "actual_normal_session_pause": "d155830d536047b850573adc91392ef728d4e089",
+    "actual_observation_purpose_retirement": "9c810add14d85d7f40b2222dda2958a842e4a2f6",
+    "actual_root_workers_ack_and_held_pidfd_exit": "c7f7a1c0031f352afe96ee989bbc933719d70995",
+    "root_exit_type_source": "8d5b6bc11513a197a025f3035ed7e89ab750be51",
+    "test_support_source": "dcb7f34482eb489a707b0c02d19abaa831e2a40c"
+  },
+  "path_count": 6,
+  "operation_count": 6,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "1cb2e1f7394806673bf6cadd0318870fe11eb941",
+        "bytes": 7052,
+        "sha256": "3c0c75abdebbcf64455ea545e1a1764e1b9594e5e91ea941d8ca3d6a8feb7f33"
+      },
+      "operations": [
+        {
+          "op": "add",
+          "content": "//! Final Session field retirement after the actual Root-exit observation.\n//! The real paused-purpose cap is consumed, every already observed handle is\n//! rechecked, and the original writer File is released only after all owners.\n\nuse super::*;\nuse crate::same_actor_q24_deployment::OriginalRootProcessExited;\n\n/// No public constructor or Clone. The exact original Session fields and\n/// sole retained writer File have actually been dropped before this returns.\n/// This is local resource evidence, never authority or daemon OS-exit proof.\npub(crate) struct OriginalRootSessionFullyRetired {\n    identity: AgentdIdentity,\n    gate: Arc<SameActorPhaseGate>,\n    consumers: OriginalConsumerJoinSummary,\n}\n\nimpl OriginalRootSessionCustodySlot {\n    /// Called after the actual Runtime/Learning/C/coordinator/Context owners\n    /// have been released. The supplied real observation-purpose cap is the\n    /// last expected extra Session-resource custodian, not decoded status.\n    pub(crate) fn finish_original_retired_session_after_root_exit(\n        &self,\n        retired: OriginalRootSessionObservationRetired,\n        exited: &OriginalRootProcessExited,\n    ) -> Result<OriginalRootSessionFullyRetired, AgentdError> {\n        OriginalRootProcessExited::require_original_cleanup_origin(\n            exited,\n            &retired.original.identity,\n            &retired.original.original.gate,\n        )?;\n        let finished = self.finish_original_retired_fields(retired)?;\n        OriginalRootSessionFullyRetired::require_original_cleanup_origin(\n            &finished, &finished.identity, &finished.gate, exited,\n        )?;\n        Ok(finished)\n    }\n\n    fn finish_original_retired_fields(\n        &self,\n        retired: OriginalRootSessionObservationRetired,\n    ) -> Result<OriginalRootSessionFullyRetired, AgentdError> {\n        let identity = retired.original.identity.clone();\n        let gate = Arc::clone(&retired.original.original.gate);\n        let summary = retired.original.consumers;\n        let mut state = self.state.lock().map_err(join_error)?;\n        if state.stopped {\n            return Err(join_error(\"fault-stopped Session cannot become normal retirement\"));\n        }\n        let original = state.original.as_ref()\n            .ok_or_else(|| join_error(\"actual Session custody was never registered or consumed\"))?;\n        if !Arc::ptr_eq(original, &retired.original.original)\n            || !original.session_retired.load(Ordering::Acquire)\n            || retired.original.resources._stream.is_some()\n            || retired.original.resources._stop.is_some()\n            || retired.original.resources.live.active.load(Ordering::Acquire)\n            || !Arc::ptr_eq(&original._writer_file, &retired.original.resources._writer_file)\n            || !original.pause.requested()\n        {\n            return Err(join_error(\"actual Session fields or observation purpose remain live\"));\n        }\n        if !retired.original.resources.live.proof.matches_registered_process(\n            &identity.agent_id, identity.spawn_generation,\n        ) || !retired.original.resources.live.phase.as_ref()\n            .is_some_and(|phase| Arc::ptr_eq(phase, &gate))\n        {\n            return Err(join_error(\"retired Session has a different original process or Gate\"));\n        }\n        {\n            let worker = original.worker.try_lock().map_err(join_error)?;\n            if worker.handle.is_some()\n                || worker.observed != Some(OriginalRootWorkerTermination::Returned)\n            {\n                return Err(join_error(\"original Session worker has no normal observed join\"));\n            }\n        }\n        OriginalConsumerJobs::require_original_joined_summary(&original.consumers, &summary)\n            .map_err(join_error)?;\n        {\n            let paused = original.pause.state.lock().map_err(join_error)?;\n            if !matches!(*paused, OriginalPauseState::Taken) {\n                return Err(join_error(\"original observation resources are still parked\"));\n            }\n        }\n\n        // All real joins and the Session's final-field notification were\n        // checked above. Drop the exact parked resources and failure guards,\n        // including their File share, before taking the last custody below.\n        // The Slot mutex prevents any concurrent cleanup from taking a new\n        // strong custody share during this synchronous transition.\n        drop(retired);\n        {\n            let original = Arc::get_mut(state.original.as_mut()\n                .ok_or_else(|| join_error(\"original Session custody disappeared\"))?)\n                .ok_or_else(|| join_error(\"another actual Session custodian is still held\"))?;\n            let writer = Arc::get_mut(&mut original._writer_file)\n                .ok_or_else(|| join_error(\"another original writer custody share is still held\"))?;\n            let file = writer.get_mut()\n                .ok_or_else(|| join_error(\"original writer File was never retained\"))?;\n            // Exclusive access checks a real retained object, not a count\n            // used as a replacement for task completion. Any extra strong or\n            // weak File owner conservatively refuses this normal result.\n            Arc::get_mut(file)\n                .ok_or_else(|| join_error(\"another owner of the original writer File remains\"))?;\n        }\n        let original = state.original.take()\n            .ok_or_else(|| join_error(\"original Session custody cannot be consumed twice\"))?;\n        state.stopped = true;\n        drop(state);\n        // Its original Drop requests fault closure only after real Root exit;\n        // every actual task was already joined. The original field order\n        // drops worker/consumers/pause before its last writer File field.\n        drop(original);\n        Ok(OriginalRootSessionFullyRetired { identity, gate, consumers: summary })\n    }\n\n    /// Exercise the same actual fields/File transition in same-UID component\n    /// tests, without fabricating Root-exit or business capabilities.\n    #[cfg(test)]\n    pub(in super::super::super) fn component_finish_original_retired_session(\n        &self,\n        retired: OriginalRootSessionObservationRetired,\n    ) -> Result<OriginalRootSessionFullyRetired, AgentdError> {\n        self.finish_original_retired_fields(retired)\n    }\n}\n\nimpl OriginalRootSessionFullyRetired {\n    pub(crate) fn require_original_cleanup_origin(\n        &self,\n        identity: &AgentdIdentity,\n        gate: &Arc<SameActorPhaseGate>,\n        exited: &OriginalRootProcessExited,\n    ) -> Result<(), AgentdError> {\n        if &self.identity != identity || !Arc::ptr_eq(&self.gate, gate)\n            || self.consumers.registered != self.consumers.joined\n            || self.consumers.first_observed_failure.is_some()\n            || self.consumers.admission_poisoned\n        {\n            self.gate.close();\n            return Err(join_error(\"actual final Session cleanup origin differs\"));\n        }\n        OriginalRootProcessExited::require_original_cleanup_origin(exited, identity, gate)\n    }\n}\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+      "preimage": {
+        "blob": "140a174b10b636e17b3e222fb6a5ae5b7edf3406",
+        "bytes": 19193,
+        "sha256": "8632a95dd4f0782f9b276527c4af2053b3ca74c5aff4277773fc4a5690fdcd11"
+      },
+      "postimage": {
+        "blob": "f7687d22cc285378d93e0cfd60bd0fbcf73e54d1",
+        "bytes": 19337,
+        "sha256": "6f2c413cfd4a101a4fe129a74c1371efe01a7858131f42610c22c262da822a68"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "use tokio::sync::Notify;\n",
+          "new": "use tokio::sync::Notify;\n\n#[path = \"root_authority_session_final_retirement.rs\"]\nmod final_retirement;\npub(crate) use final_retirement::OriginalRootSessionFullyRetired;\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "preimage": {
+        "blob": "bb2e863474e2e2b3878e9717a3adde5930722aaf",
+        "bytes": 10482,
+        "sha256": "9ddbffe52452b4d71c832bc8b1ec24c2529dbc5c78bedff580001f1e888d4da7"
+      },
+      "postimage": {
+        "blob": "8449457ada15115c86a159bef03b7d7061b843ea",
+        "bytes": 11662,
+        "sha256": "7193915f851388d216fdd0ad8afbf1034d7f92c36e3e0dcbe387fd8b5bc0d4f7"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "    pub(in super::super) fn close(&self) {\n",
+          "new": "    /// Recheck the stored results of the actual joins after ordinary phase\n    /// admission has closed. Only the consumed paused-purpose cap supplies\n    /// this expected observation; no counter alone creates that capability.\n    pub(in super::super) fn require_original_joined_summary(\n        &self,\n        expected: &OriginalConsumerJoinSummary,\n    ) -> Result<(), AgentdRootAuthorityError> {\n        let state = self.state.lock().map_err(|_| {\n            self.gate.close();\n            AgentdRootAuthorityError::Unavailable\n        })?;\n        let actual = OriginalConsumerJoinSummary {\n            registered: state.registered,\n            joined: state.joined,\n            first_observed_failure: state.first_observed_failure,\n            admission_poisoned: false,\n        };\n        if !state.stopped || !state.retained.is_empty()\n            || state.worker_failure.is_some()\n            || actual != *expected\n            || actual.registered != actual.joined\n            || actual.first_observed_failure.is_some()\n            || expected.admission_poisoned\n        {\n            return Err(AgentdRootAuthorityError::Unavailable);\n        }\n        Ok(())\n    }\n\n    pub(in super::super) fn close(&self) {\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "preimage": {
+        "blob": "fdcba1999c48f95c61be1a91d0d6e012f7285050",
+        "bytes": 12603,
+        "sha256": "704985886652f5d44aad0e4847a1bc07144587ef562ef4ab5be108ac46afda38"
+      },
+      "postimage": {
+        "blob": "56b475314e9c1b1b76f1a0997b9dfcd422207df1",
+        "bytes": 12659,
+        "sha256": "2015d654be5f4d3e85ad0c4863539cb634eb841ad458d3cdfa4f75bf4482bdab"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use normal::OriginalRootSessionObservationRetired;\n",
+          "new": "pub(crate) use normal::OriginalRootSessionObservationRetired;\npub(crate) use normal::OriginalRootSessionFullyRetired;\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "blob": "b117392faa7fb5af08b3f03ef84d3d06e7375ce2",
+        "bytes": 34918,
+        "sha256": "9df47e48bb71519cdc205de890a9a4b2cf22a4f9430ea1e9fb5e3f98aedf8177"
+      },
+      "postimage": {
+        "blob": "1bcff69e283840d43964e52d94ddae582d248078",
+        "bytes": 34977,
+        "sha256": "f595c94c9b863d28d68ae9dc52e33c52a410bbd92260addb5cd638cdb812d931"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "pub(crate) use lifecycle::OriginalRootSessionObservationRetired;\n",
+          "new": "pub(crate) use lifecycle::OriginalRootSessionObservationRetired;\npub(crate) use lifecycle::OriginalRootSessionFullyRetired;\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_normal_tests.rs",
+      "preimage": {
+        "blob": "6ed8909b62cb886a93d04860a5f65d8846bd926a",
+        "bytes": 12051,
+        "sha256": "48dff29a240ca76b1216bfdc60380726e8fcd9c1ef4c39d58d8a05929246e294"
+      },
+      "postimage": {
+        "blob": "b50d02e7dc6b965be9d132608a735fb2bae0c7ab",
+        "bytes": 17333,
+        "sha256": "34dab8cdee6c094a2235413627ff75698fee9b23f008892a6c25c6b03f2084c7"
+      },
+      "operations": [
+        {
+          "op": "replace",
+          "old": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn releasing_the_joined_observation_fd_preserves_failure_guards_and_original_file()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, peer, key, gate, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let (device, _, _device_directory) = owner(&session, key);\n    session.activate_original_phase_final_use_owners(vec![device]).await?;\n    let (_directory, config, contender) = bind_original_writer(&session)?;\n    let identity = config.identity().clone();\n    drop(config);\n    let waiter = slot.component_request_original_normal_pause(&identity)?;\n    let paused = tokio::time::timeout(Duration::from_secs(5), waiter.join_original_paused()).await??;\n    // Component-only entry exercises the very same actual stream/alias take.\n    // No Root intent or C capability is manufactured by this FD custody test.\n    let retired = paused.component_release_original_observation_purpose()?;\n    tokio::time::timeout(Duration::from_secs(5), join_peer(peer)).await?;\n    gate.require_open()?;\n    crate::root_authority_session::OriginalRootSessionObservationRetired::require_original_origin(\n        &retired, &identity, &gate,\n    )?;\n    assert!(!takes_lock(&contender)?);\n    // Armed failure closure was retained after purpose EOF, not discarded.\n    drop(retired);\n    assert!(gate.require_open().is_err());\n    drop(session);\n    let observed = slot.stop_and_join_retired_session_tasks().await?;\n    assert!(matches!(observed, OriginalRootSessionJoinObservation::Joined {\n        worker: OriginalRootWorkerTermination::Returned, recorded_worker_failure: None, ..\n    }));\n    drop(slot);\n    assert!(takes_lock(&contender)?);\n    Ok(())\n}\n",
+          "new": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn releasing_the_joined_observation_fd_preserves_failure_guards_and_original_file()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, peer, key, gate, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let (device, _, _device_directory) = owner(&session, key);\n    session.activate_original_phase_final_use_owners(vec![device]).await?;\n    let (_directory, config, contender) = bind_original_writer(&session)?;\n    let identity = config.identity().clone();\n    drop(config);\n    let waiter = slot.component_request_original_normal_pause(&identity)?;\n    let paused = tokio::time::timeout(Duration::from_secs(5), waiter.join_original_paused()).await??;\n    // Component-only entry exercises the very same actual stream/alias take.\n    // No Root intent or C capability is manufactured by this FD custody test.\n    let retired = paused.component_release_original_observation_purpose()?;\n    tokio::time::timeout(Duration::from_secs(5), join_peer(peer)).await?;\n    gate.require_open()?;\n    crate::root_authority_session::OriginalRootSessionObservationRetired::require_original_origin(\n        &retired, &identity, &gate,\n    )?;\n    assert!(!takes_lock(&contender)?);\n    // Armed failure closure was retained after purpose EOF, not discarded.\n    drop(retired);\n    assert!(gate.require_open().is_err());\n    drop(session);\n    let observed = slot.stop_and_join_retired_session_tasks().await?;\n    assert!(matches!(observed, OriginalRootSessionJoinObservation::Joined {\n        worker: OriginalRootWorkerTermination::Returned, recorded_worker_failure: None, ..\n    }));\n    drop(slot);\n    assert!(takes_lock(&contender)?);\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn final_session_field_retirement_releases_the_actual_file_while_slot_is_still_owned()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, peer, key, gate, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let (device, _, _device_directory) = owner(&session, key);\n    session.activate_original_phase_final_use_owners(vec![device]).await?;\n    let (_directory, config, contender) = bind_original_writer(&session)?;\n    let identity = config.identity().clone();\n    drop(config);\n    let waiter = slot.component_request_original_normal_pause(&identity)?;\n    let paused = tokio::time::timeout(Duration::from_secs(5), waiter.join_original_paused()).await??;\n    assert_eq!((paused.consumer_join_observation().registered,\n        paused.consumer_join_observation().joined), (1, 1));\n    let retired = paused.component_release_original_observation_purpose()?;\n    tokio::time::timeout(Duration::from_secs(5), join_peer(peer)).await?;\n    gate.require_open()?;\n    assert!(!takes_lock(&contender)?);\n\n    // These components exercise only real fields/File cleanup. They do not\n    // fabricate the production Root-exit capability or a business completion.\n    drop(session);\n    assert!(gate.require_open().is_err());\n    let finished = slot.component_finish_original_retired_session(retired)?;\n    assert!(takes_lock(&contender)?);\n    // Keep both the finished observation and original outer slot alive: the\n    // original File was consumed by the actual transition, not by their Drop.\n    assert!(matches!(slot.stop_and_join_retired_session_tasks().await?,\n        OriginalRootSessionJoinObservation::NotRegistered { slot_poisoned: false }));\n    drop(finished);\n    drop(slot);\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn final_session_field_retirement_refuses_a_still_owned_actual_session()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, peer, key, gate, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let (device, _, _device_directory) = owner(&session, key);\n    session.activate_original_phase_final_use_owners(vec![device]).await?;\n    let (_directory, config, contender) = bind_original_writer(&session)?;\n    let identity = config.identity().clone();\n    drop(config);\n    let waiter = slot.component_request_original_normal_pause(&identity)?;\n    let paused = tokio::time::timeout(Duration::from_secs(5), waiter.join_original_paused()).await??;\n    let retired = paused.component_release_original_observation_purpose()?;\n    tokio::time::timeout(Duration::from_secs(5), join_peer(peer)).await?;\n    assert!(slot.component_finish_original_retired_session(retired).is_err());\n    assert!(gate.require_open().is_err());\n    assert!(!takes_lock(&contender)?);\n\n    // Refusal retained the actual outer custody. Fault cleanup still observes\n    // the same already returned handles after the real Session finally drops.\n    drop(session);\n    let observed = slot.stop_and_join_retired_session_tasks().await?;\n    assert!(matches!(observed, OriginalRootSessionJoinObservation::Joined {\n        worker: OriginalRootWorkerTermination::Returned, recorded_worker_failure: None, ..\n    }));\n    assert!(!takes_lock(&contender)?);\n    drop(slot);\n    assert!(takes_lock(&contender)?);\n    Ok(())\n}\n\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn final_session_field_retirement_refuses_an_extra_original_file_owner()\n-> Result<(), Box<dyn Error>> {\n    let slot = OriginalRootSessionCustodySlot::new();\n    let PhaseConnection { session, peer, key, gate, .. } = phase_connection(&slot).await;\n    let session = session?;\n    let (device, _, _device_directory) = owner(&session, key);\n    session.activate_original_phase_final_use_owners(vec![device]).await?;\n    let (_directory, config, contender) = bind_original_writer(&session)?;\n    let identity = config.identity().clone();\n    let extra_file_owner = Arc::clone(session.writer_file.get()\n        .ok_or(\"actual original writer File was not retained\")?);\n    drop(config);\n    let waiter = slot.component_request_original_normal_pause(&identity)?;\n    let paused = tokio::time::timeout(Duration::from_secs(5), waiter.join_original_paused()).await??;\n    let retired = paused.component_release_original_observation_purpose()?;\n    tokio::time::timeout(Duration::from_secs(5), join_peer(peer)).await?;\n    drop(session);\n\n    // The actual Session's last field and all joins have completed, but this\n    // separate real File owner still exists. That cannot become FullyRetired.\n    assert!(slot.component_finish_original_retired_session(retired).is_err());\n    assert!(gate.require_open().is_err());\n    assert!(!takes_lock(&contender)?);\n    drop(extra_file_owner);\n    assert!(!takes_lock(&contender)?);\n    let observed = slot.stop_and_join_retired_session_tasks().await?;\n    assert!(matches!(observed, OriginalRootSessionJoinObservation::Joined {\n        worker: OriginalRootWorkerTermination::Returned, recorded_worker_failure: None, ..\n    }));\n    drop(slot);\n    assert!(takes_lock(&contender)?);\n    Ok(())\n}\n"
+        }
+      ],
+      "verification": {
+        "unique_forward_reverse": true,
+        "full_create_get_equal": true
+      }
+    }
+  ],
+  "interfaces": [
+    "OriginalRootSessionCustodySlot::finish_original_retired_session_after_root_exit(&self, retired: OriginalRootSessionObservationRetired, exited: &OriginalRootProcessExited) -> Result<OriginalRootSessionFullyRetired, AgentdError>",
+    "OriginalRootSessionFullyRetired::require_original_cleanup_origin(&self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>, exited: &OriginalRootProcessExited) -> Result<(), AgentdError>"
+  ],
+  "actual_sequence": [
+    "The actual outer caller must first release Runtime/Learning/C/coordinator/Context owners after their separate real joins and purpose/Root protocol. That caller is not supplied or certified by this packet.",
+    "The production entry checks the private actual RootProcessExited capability for this exact identity/Gate. The retained original pidfd must still show real exit; no Current, ordinary admission, Root-alive check or refreshed deadline is used.",
+    "Lock the original external single-use Slot; stopped or absent original custody is an error, never a NotRegistered success.",
+    "Require exact Arc identity of the retained paused-purpose custody and Slot, actual Session final-field retirement flag, absent observation descriptors, inactive LiveRoot, same writer custody, requested pause and same registered process/Gate.",
+    "Require the exact original stored observation JoinHandle to have been awaited (handle None, stored Returned), no recorded consumer/worker failure, actual stopped/empty consumer registry and actual stored join summary equal to the sealed paused-purpose observation, and the actual parked resource state Taken.",
+    "While holding the Slot lock and with no await, drop the exact retired-purpose cap: its original armed closing/fence and LiveRoot/consumer fields drop before its actual writer-custody share. This is after actual Root exit in production.",
+    "Require exclusive access to the remaining actual custody Arc, its original WriterCustody Arc/OnceLock, and the original Arc<File>. These exclusivity checks occur only after real join and final-field evidence; they do not replace task completion.",
+    "Take the actual original custody once, permanently mark the Slot stopped, release the Slot lock, then drop that exact custody. Its original field order releases task/consumer/pause custody before its final writer File field.",
+    "Construct the private no-Clone/no-Serde FullyRetired observation after those actual local fields have been dropped, and repeat actual Root-exit cleanup provenance. It holds only identity/Gate/sealed consumer observations, no Session, LiveRoot, File, Context or task handle."
+  ],
+  "resource_order": {
+    "before_entry": [
+      "external Slot -> original worker/consumer/pause custody -> final WriterCustody",
+      "consumed ObservationRetired -> original paused cap -> original armed closing/fence, parked LiveRoot and writer-custody share"
+    ],
+    "required_outer_release": "All other actual Session-bearing owners are dropped by the real outer caller before this consuming entry. Session itself has an existing final-field notice; File/custody Arc exclusivity conservatively rejects residual shares.",
+    "inside_slot_lock": [
+      "verify actual stored joins and Session last-field notice",
+      "drop ObservationRetired and actual parked fields",
+      "verify exclusive access to actual retained custody and Arc<File>",
+      "take original Slot value; mark permanently stopped"
+    ],
+    "after_slot_lock": [
+      "drop original custody: unchanged fault-closing destructor, then original worker/consumers/pause/weak-live/Gate/AbortHandle/flag, then its writer File field",
+      "construct local FullyRetired observation",
+      "real RootExited provenance postcheck"
+    ],
+    "on_refusal": "The input retired-purpose cap remains one-shot and drops fail-closed. If failure occurs after that cap has dropped, the original Slot still retains its exact original task/File custody for explicit terminal fault cleanup. No reset, replacement file, repeat spawn, normal-success fallback or NotRegistered acceptance is added.",
+    "scope": "This proves destruction of the actual tracked Session fields and its uniquely held original Arc<File> allocation. It does not claim absence of arbitrary untracked OS dup descriptors or daemon process exit."
+  },
+  "preservation": {
+    "original_default_none": "Unchanged. Existing production files have only a new private child/export or the added read-only summary method; no old function body is replaced.",
+    "old_fault_paths": "All old stop-and-join, Drop, error mapping and NotRegistered observations are byte-preserved. Normal finish does not invoke fault join to manufacture success.",
+    "original_started_and_budget": "No request-start, 500ms, absolute end, retry, clock sampling, lease, authority, witness, purpose registration or ordinary business effect changes.",
+    "original_tests": "The entire prior 12051-byte six-test source is an exact prefix. Three new actual component tests are appended; all prior assertions remain byte-identical.",
+    "guard_scope": "All original failure guards remain armed. Production checks real Root exit before their final destruction. No disarm or Gate resurrection.",
+    "source_metadata": "No CALLERS, QA, allowlist, checker, typed helper, harness, dependency manifest or public/default entry changed. New method boundary/actual caller and protected-row metadata remain to be supplied during the isolated future integration."
+  },
+  "tests": {
+    "executed": false,
+    "new_count": 3,
+    "old_count": 6,
+    "methods": [
+      "final_session_field_retirement_releases_the_actual_file_while_slot_is_still_owned",
+      "final_session_field_retirement_refuses_a_still_owned_actual_session",
+      "final_session_field_retirement_refuses_an_extra_original_file_owner"
+    ],
+    "facts": "Same-UID synthetic observation fixtures drive actual RootSession refresh/consumer JoinHandles, actual Unix streams/EOF and actual File lock ownership. The positive case verifies the original lock is released while the original Slot and final observation still exist. Negative cases retain either the actual Session or an extra original Arc<File>, require refusal, and verify the actual lock remains held until real fault custody is released.",
+    "capability_limit": "A cfg(test) method restricted to the root_authority_session ancestor calls the same private fields/File transition. It does not fabricate RootProcessExited, C terminal, RuntimeStopped or business capabilities, and does not test the production Root authorization itself."
+  },
+  "validation": {
+    "source_files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs",
+        "unique_forward_reverse": true,
+        "post_create_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_normal.rs",
+        "unique_forward_reverse": true,
+        "post_create_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+        "unique_forward_reverse": true,
+        "post_create_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+        "unique_forward_reverse": true,
+        "post_create_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "unique_forward_reverse": true,
+        "post_create_get_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_normal_tests.rs",
+        "unique_forward_reverse": true,
+        "post_create_get_equal": true
+      }
+    ],
+    "new_path_absence": {
+      "ref": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs",
+      "actual_git_contents_response": "404 Not Found"
+    },
+    "source_gets": "All five preimages and all six CREATE postimages independently GET with full Git/byte/SHA match.",
+    "git_read_retry": {
+      "request": {
+        "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha": "bb2e863474e2e2b3878e9717a3adde5930722aaf"
+      },
+      "first_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "RemoteProtocolError: Server disconnected without sending a response."
+          }
+        ],
+        "structuredContent": {
+          "error": "RemoteProtocolError: Server disconnected without sending a response.",
+          "error_code": "UNKNOWN"
+        },
+        "isError": true
+      },
+      "same_blob_retry": "GET succeeded; exact bytes, Git and SHA verified. No source or remote files changed."
+    },
+    "compiler": false,
+    "formatter": false,
+    "original_checker": false,
+    "tests": false,
+    "native": false,
+    "refs_modified": false
+  },
+  "limits": [
+    "This packet is a final local Session resource seam, not the full normal termination protocol.",
+    "Actual outer one-time caller wiring and final CALLERS/protected metadata are pending independent integration.",
+    "The producer requires real Root exit, but Root exit is not daemon exit and does not certify C effects, arbitrary Runtime tasks or MCP subprocess termination.",
+    "The strict MCP ownership/child wait gap remains separately recorded in inventory434368d0a5b32595c73b7cbf4241796039a967af; no Startup success is enabled here.",
+    "Source has not been formatted, compiled, run through the original checker or executed. Existing failed/native attempts keep their original status."
+  ]
+}

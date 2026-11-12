@@ -1,0 +1,752 @@
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
+required_function_order = [{ function = "fn original_selection(", sequence = ["Ok(SignedArtifactSelectionV1","self\n                .signature\n                .as_slice()\n                .try_into()"] }, { function = "fn from_original_selection(", sequence = ["original.artifact_kind != ArtifactKind::Model","let data = Self","data.original_selection()? != *original","Ok(data)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs"
+required = ["self.require_original_inputs()?","read_dataset_withdrawal_snapshot(","data.selector_trust.original_selector(&trust)?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","locate_selected_original_files(","OriginalFile::open_original(","RootGenerationPublicationEnrollmentV1","Mode::Reserve","Mode::Recover"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
+required_function_order = [{ function = "fn enrollment_inputs(", sequence = ["self.require_original_inputs()?","material.schema_version != 1","data.owner_trust.original_owner_trust()?","data.selector_trust.original_selector(&trust)?","read_dataset_withdrawal_snapshot(","material.selection.original_selection()?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","reader\n            .locate_selected_original_files(","OriginalFile::open_original(&paths.0)?","OriginalFile::open_original(&paths.1)?","reader\n            .locate_selected_original_files(","RootGenerationPublicationEnrollmentV1","self.require_original_inputs()?","Ok((inputs"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs"
+required = ["self.read_original_registry(now)?","self.read_original_withdrawals()?","selector\n            .verify(","view.registry_snapshot_path(before.receipt())","before.receipt() != after.receipt()","before.witness_digest() != after.witness_digest()","before.trust_digest() != after.trust_digest()","withdrawals.head_digest() != withdrawals_after.head_digest()"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
+required_function_order = [{ function = "fn locate_selected_original_files(", sequence = ["self.read_original_registry(now)?","self.read_original_withdrawals()?","selector\n            .verify(","directory(&self.root","view.registry_snapshot_path(before.receipt())","fs::canonicalize(&registry)?","self.read_original_registry(now)?","self.read_original_withdrawals()?","before.receipt() != after.receipt()","selector\n            .verify(","Ok((registry, payload))"] }]
+
+
+[[boundary]]
+id = "root_initial_original_writer_context"
+symbol = "HostAuthorityService::with_initial_publication_context"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_context.rs"
+definition_markers = ["fn with_initial_publication_context(","let writer: &RegisteredWriter","writer.registration.with_live(&writer.leases","action(proof)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs","codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs","codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_initial_publication_context\\s*\\("
+
+[[boundary]]
+id = "root_initial_separate_purpose_enable"
+symbol = "PreparedHostAuthoritySession::enable_generation_initial"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs"
+definition_markers = ["fn enable_generation_initial(","self.service.with_initial_publication_context(","InitialBootstrap {","AtomicU8::new(PREPARED)"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enable_generation_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_one_shot_enrollment"
+symbol = "RootGenerationInitialEnrollmentCapabilityV1::register"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs"
+definition_markers = ["fn register(","compare_exchange(ACTIVE, CONSUMED","self.sender","recv_timeout(self.lifetime)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"]
+caller_markers = []
+receiver_type = "RootGenerationInitialEnrollmentCapabilityV1"
+
+[[boundary]]
+id = "root_initial_original_registration"
+symbol = "HostAuthorityService::enroll_generation_initial"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"
+definition_markers = ["fn enroll_generation_initial(","self.with_initial_publication_context(","RootGenerationInitialModeV1::Recover","fence_initial_record(store, &profile_owner)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enroll_generation_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_original_serve"
+symbol = "HostAuthorityService::serve_generation_initial"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+definition_markers = ["fn serve_generation_initial(","HostAuthorityPeerChannel::from_stream(","self.with_initial_publication_context(","original_broker_initial_publish("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_generation_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_original_sticky_fence"
+symbol = "fence_initial_record"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs"
+definition_markers = ["fn fence_initial_record(","next.fenced = true","store\n            .compare_and_set(owner, &before, &next)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"]
+caller_markers = []
+call_pattern = "\\bfence_initial_record\\s*\\("
+
+[[boundary]]
+id = "root_initial_purpose_send"
+symbol = "send_root_generation_initial_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs"
+definition_markers = ["fn send_root_generation_initial_handoff(","libc::getuid()","require_root_pin(root_pidfd, std::process::id())?"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+call_pattern = "\\bsend_root_generation_initial_handoff\\s*\\("
+
+[[boundary]]
+id = "root_initial_purpose_receive"
+symbol = "receive_root_generation_initial_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs"
+definition_markers = ["fn receive_root_generation_initial_handoff(","libc::MSG_CMSG_CLOEXEC","descriptors.len() != 2","require_root_pin(&root_pidfd, peer.pid as u32)?"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs","codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"]
+caller_markers = []
+call_pattern = "\\breceive_root_generation_initial_handoff\\s*\\("
+
+[[boundary]]
+id = "root_initial_original_connection"
+symbol = "RootGenerationInitialHandoffV1::connect"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs"
+definition_markers = ["fn connect(","connection.require_original_publication_session()?","OriginalPublicationStream::from_stream(","RootGenerationInitialClient::from_original_initial_stream("]
+product_callers = []
+caller_markers = []
+receiver_type = "RootGenerationInitialHandoffV1"
+
+[[boundary]]
+id = "root_initial_original_stream"
+symbol = "RootGenerationInitialClient::from_original_initial_stream"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+definition_markers = ["fn from_original_initial_stream(","Command::Observe","profile.digest()? != profile.binding","validate_head(profile, response.head.as_ref())?"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs","codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)from_original_initial_stream\\s*\\("
+
+[[boundary]]
+id = "root_initial_client_prepare"
+symbol = "RootGenerationInitialClient::prepare_initial_current"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+definition_markers = ["fn prepare_initial_current(","RootGenerationInitialModeV1::Reserve","Command::Prepare","Some(&self.profile.prepared)"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_initial_current\\s*\\("
+
+[[boundary]]
+id = "root_initial_client_observe"
+symbol = "RootGenerationInitialClient::observe_initial_current"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+definition_markers = ["fn observe_initial_current(","self.exchange(Command::Observe)?","self.fence()"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)observe_initial_current\\s*\\("
+
+[[boundary]]
+id = "root_initial_client_publish"
+symbol = "RootGenerationInitialClient::publish_initial_current"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+definition_markers = ["fn publish_initial_current(","expected != &self.profile.prepared","original_initial_record(","Command::Publish"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)publish_initial_current\\s*\\("
+
+[[boundary]]
+id = "root_initial_current_store_bridge"
+symbol = "CurrentStore::from_original_initial"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+definition_markers = ["fn from_original_initial(","owner_id(original.scope())?","store: Store::RootInitial(original)"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)from_original_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_current_from_original_route"
+symbol = "NeuronGenerationCurrentOwnerV1::from_original_root_initial"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+definition_markers = ["fn from_original_root_initial(","store::CurrentStore::from_original_initial(original)?","store.load()?"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)from_original_root_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_current_original_publish"
+symbol = "NeuronGenerationCurrentOwnerV1::original_broker_initial_publish"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+definition_markers = ["fn original_broker_initial_publish(","!self.store.is_original_host()","original_initial_next(expected, signed, witness)?","self.store.replace(expected, &next)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_broker_initial_publish\\s*\\("
+
+[[boundary]]
+id = "root_initial_complete_description"
+symbol = "original_initial_description"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+definition_markers = ["fn original_initial_description(","initial::initial_head_and_prepared(operation, target, selected)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"]
+caller_markers = []
+call_pattern = "\\boriginal_initial_description\\s*\\("
+
+[[boundary]]
+id = "root_initial_exact_retained_record"
+symbol = "original_initial_record"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+definition_markers = ["fn original_initial_record(","intent.supersedes.is_some()","actual != &expected","record.validate()?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs","codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs","codex-rs/hepta-agentd/src/root_generation_initial_client.rs","codex-rs/hepta-agentd/src/authority_host_generation_initial_phase.rs"]
+caller_markers = []
+call_pattern = "\\boriginal_initial_record\\s*\\("
+
+[[boundary]]
+id = "root_initial_exact_published_record"
+symbol = "original_initial_next"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+definition_markers = ["fn original_initial_next(","InitialState::Prepared","signed_grant_digest(signed)?","original_initial_record(prepared, &next)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"]
+caller_markers = []
+call_pattern = "\\boriginal_initial_next\\s*\\("
+
+[[boundary]]
+id = "root_initial_entire_contract"
+symbol = "require_original_initial_contract"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+definition_markers = ["fn require_original_initial_contract(","original_initial_record(head, head)?","intent.digest()? != intent_digest","intent.binding()? != binding"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_initial_client.rs"]
+caller_markers = []
+call_pattern = "\\brequire_original_initial_contract\\s*\\("
+
+[[boundary]]
+id = "root_initial_actual_consumer_prepare"
+symbol = "OriginalRootGenerationInitialV1::prepare_original_initial"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"
+definition_markers = ["fn prepare_original_initial(","observer.require_original_unwritten()","validate_initial_target(&selected, &target)?","self.client.prepare_initial_current()?","CellGenerationJournalV2::open_guarded("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_original_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_actual_consumer_recover"
+symbol = "OriginalRootGenerationInitialV1::recover_original_initial"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"
+definition_markers = ["fn recover_original_initial(","RootGenerationInitialModeV1::Recover","current.read_initial_operation(&retained)?","crate::recover_agentd_generation_initial_v1("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)recover_original_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_executable_feature_prepare"
+symbol = "OriginalRootGenerationInitialV1::prepare_feature"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"
+definition_markers = ["fn prepare_feature(","require_feature(","self.prepare_original_initial("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"]
+caller_markers = []
+receiver_type = "OriginalRootGenerationInitialV1"
+
+[[boundary]]
+id = "root_initial_executable_feature_recover"
+symbol = "OriginalRootGenerationInitialV1::recover_feature"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"
+definition_markers = ["fn recover_feature(","require_feature(","self.recover_original_initial("]
+product_callers = []
+caller_markers = []
+receiver_type = "OriginalRootGenerationInitialV1"
+
+[[boundary]]
+id = "root_initial_actual_feature_publish"
+symbol = "PreparedRootInitialFeatureV1::publish"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"
+definition_markers = ["fn publish(","require_feature(","let original: PreparedAgentdGenerationInitialV1<FileAnchorWitnessStore>","original\n            .publish(signed)?"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs"]
+caller_markers = []
+receiver_type = "PreparedRootInitialFeatureV1"
+
+[[boundary]]
+id = "root_initial_original_unwritten_target"
+symbol = "CellGenerationJournalObserverV1::require_original_unwritten"
+definition_path = "codex-rs/hepta-neuron/src/cell_generation_observer.rs"
+definition_markers = ["fn require_original_unwritten(","self.stamps()?","before.0.0 != 0","self.witness_head()?.is_some()"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial.rs","codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs","codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_original_unwritten\\s*\\("
+
+[[boundary]]
+id = "root_initial_complete_configuration"
+symbol = "validate_initial_configuration"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_initial.rs"
+definition_markers = ["fn validate_initial_configuration(","selected.manifest() != &config.manifest","CellGenerationOwnerBindingV1::new(config, max_records)"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"]
+caller_markers = []
+call_pattern = "\\bvalidate_initial_configuration\\s*\\("
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_context.rs"
+required = ["writer.registration.with_live(&writer.leases","retained_writer_authorization(&writer.registration)?","validate_observation_lease("]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","initialize_host_authority","put_lease","LearningIterationSnapshotV1"]
+required_function_order = [{ function = "fn with_initial_publication_context(", sequence = ["config.required_bind.verify()?","verify_pinned_process(","self.check_logind_lifetime()?","let writer: &RegisteredWriter","writer.registration.with_live(","retained_writer_authorization(","let before = self.issuer.revocations()?","validate_observation_lease(","action(proof)?","self.issuer.revocations()? != before","validate_observation_lease(","self.check_logind_lifetime()?","verify_pinned_process("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs"
+required = ["runtime.cell-generation.initial-publication.v1","profile_store: Arc<HostAuthorityFrontierStore<InitialRecord>>","fenced: bool","self.target.observe()","fence_initial_record("]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","FinalUseAuthority::new","LearningIterationSnapshotV1"]
+required_function_order = [{ function = "fn require_genesis(", sequence = ["self.target.observe()","!observed.is_genesis()","self.fence()?"] },{ function = "fn require_target(", sequence = ["self.target.require_original_unwritten()","self.target.require_original_unwritten_or_genesis()","self.fence()?"] },{ function = "fn verify_recorded_use(", sequence = ["self.verify_retained(signed, witness)","self.fence()?"] },{ function = "fn fence_initial_record(", sequence = ["store.load(owner)","next.fenced = true","store\n            .compare_and_set(owner, &before, &next)","store.load(owner)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs"
+required = ["RootGenerationInitialModeV1","retained_current: String","LearningArtifactReadViewV1::open_original(","CellGenerationJournalObserverV1::from_original_files(","RootFinalUseObserverV1::open_original("]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","FinalUseAuthority::new"]
+required_function_order = [{ function = "fn open_artifacts(", sequence = ["LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","AgentdSelectedGenerationV1::load_from_original_artifacts("] },{ function = "fn open_initial_consumer(", sequence = ["self.consumers.is_none()","self.issuer.trust_key()?","!issuer_keys.contains(&key)","local_root.canonicalize()? != local_root","HostAuthorityFrontierStore::<FinalUseFrontier>::open(","RootFinalUseObserverV1::open_original(","consumer.consumer_uid() != config.peer_uid"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs"
+required = ["RootGenerationInitialModeV1::Reserve","RootGenerationInitialModeV1::Recover","record.fenced","record.profile != profile","fence_initial_record(store, &profile_owner)?"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","claim_final_use","dispatch_final_use","LearningIterationSnapshotV1","NeuronGenerationCurrentOwnerV1::prepare_initial"]
+required_function_order = [
+  { function = "fn enroll_generation_initial(", sequence = ["self.enroll_generation_initial_in_phase(","config,\n            registration,\n            owner,\n            deployment,\n            inputs,\n            None,"] },
+  { function = "fn enroll_generation_initial_in_phase(", sequence = ["original_root()?","self.with_initial_publication_context(","HostAuthorityFrontierStore::<InitialRecord>::open(","if record.fenced","let retained_result =","inputs::open_artifacts(","validate_initial_configuration(","inputs::open_target(","self.open_initial_consumer(","profile.binding = profile.digest()?","record.profile != profile","enrolled.require_profile()?","enrolled.require_selection(","fence_initial_record(store, &profile_owner)?","enrolled_result = Some(enrolled)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+required = ["slot.require_target(/*fresh*/ true)?","request.purpose != PURPOSE","request.request_id != sequence","Command::Prepare","Command::Publish","RootGenerationInitialModeV1::Reserve","read_current(slot, current.as_ref())?","slot.require_genesis()?","original_broker_initial_publish(","slot.fence()?"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","claim_final_use","dispatch_final_use","prepare_forward_recovery"]
+required_function_order = [
+  { function = "fn serve_generation_initial(", sequence = ["let sequence = 1_u64;","let pin = owner.try_clone()?","HostAuthorityPeerChannel::from_stream(stream, policy, owner)",".map_err(io::Error::other)?","self.serve_initial_original_channel(\n            slot,\n            config,\n            registration,\n            pin,\n            channel,\n            sequence,\n            None,\n        )"] },
+  { function = "fn read_current(", sequence = ["original_broker_head()","Err(error)","slot.fence()?"] },
+  { function = "fn require_observation(", sequence = ["original_initial_record(","slot.fence()?","slot.verify_recorded_use(","slot.observe_published_target()?"] },
+  { function = "fn serve_initial_original_channel(", sequence = ["channel\n            .exchange(","self.with_initial_publication_context(","request.purpose != PURPOSE","slot.require_profile()?","slot.require_selection(now)?","read_current(slot, current.as_ref())?","slot.require_target(          true)?","require_fresh_window(now, signed, witness)?","slot.verify_retained(signed, witness)?","slot.require_genesis()?","let raw = serde_json::to_vec(","NeuronGenerationCurrentOwnerV1::prepare_initial(","read_current(slot, Some(&owner))?","original_broker_initial_publish(","slot.require_selection(after_time)?","read_current(slot, current.as_ref())? != after","encoded_response = Some(raw)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs"
+required = ["self.initial_publication.is_some()","pub struct RootGenerationInitialEnrollmentCapabilityV1","RootGenerationInitialOfferV1","compare_exchange(ACTIVE, CONSUMED","consumer_uid: u32","consumer_uid: self.config.peer_uid"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","LearningIterationSnapshotV1","register_host_learning","FinalUseAuthority::new"]
+required_function_order = [{ function = "fn register(", sequence = ["original_root()?","std::process::id() != self.root_pid","root_start()? != self.process_start_ticks","compare_exchange(ACTIVE, CONSUMED","try_send(Submission","recv_timeout(self.lifetime)","self.phase.load(Ordering::Acquire) != CONSUMED"] },{ function = "fn enable_generation_initial(", sequence = ["original_root()?","self.initial_publication.is_some()","self.service.with_initial_publication_context(","seal_bytes(","AtomicU8::new(PREPARED)","self.initial_publication = Some(InitialRuntime"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_generation_initial_runtime.rs"
+required = ["initial.runtime.phase.store(CLOSED","owner_alive(owner, end)?","submission.acknowledgement","service.serve_generation_initial("]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","LearningIterationSnapshotV1","FinalUseAuthority::new"]
+required_function_order = [{ function = "fn serve_optional(", sequence = ["compare_exchange(PREPARED, ACTIVE","scope.spawn(","receiver.try_recv()","service.enroll_generation_initial(","initial.listener.accept()","verify_pinned_process(","service.serve_generation_initial(","let result = original()","stopping.store(true","stream.shutdown(Shutdown::Both)","worker","join()"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+required = ["RootGenerationInitialUncertain","Mutex<Option<Lane>>","from_original_initial_stream","observe_initial_current","publish_initial_current","self.fence();"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","CurrentStore::initialize","connect(","claim_final_use","prepare_forward_recovery"]
+required_function_order = [{ function = "fn from_original_initial_stream(", sequence = ["connection.require_original_publication_session()?","Command::Observe","stream\n            .exchange(","profile.digest()? != profile.binding","RootGenerationInitialModeV1::Reserve","validate_profile(profile)?","validate_head(profile, response.head.as_ref())?","connection.require_original_publication_session()?","Ok(Self {"] },{ function = "fn observe_initial_current(", sequence = ["self.exchange(Command::Observe)?","None =>","self.fence()"] },{ function = "fn exchange(", sequence = ["self.fenced.load(","self\n            .connection\n            .require_original_publication_session()","self.lane.try_lock()","held.take()","lane\n            .stream\n            .exchange(","response.profile != self.profile","validate_head(&self.profile","self\n            .connection\n            .require_original_publication_session()","*held = Some(lane)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs"
+required = ["pub struct OriginalRootGenerationInitialV1","RootGenerationPublicationConnectionV1","bundle.purpose != PURPOSE","bundle.writer != original.writer_proof.sha256()?.as_str()","RootGenerationInitialClient::from_original_initial_stream("]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","FinalUseAuthority::new","SigningKey","CurrentStore::initialize"]
+required_function_order = [{ function = "fn connect(", sequence = ["connection.require_original_publication_session()?","validate_sealed(","connection.original_launch_binding()","bundle.purpose != PURPOSE","bundle.root.pid != self.root_pid","validate_lane_paths(","connection.require_original_publication_session()?","tokio::net::UnixStream::connect(","OriginalPublicationStream::from_stream(","tokio::task::spawn_blocking(","connection.require_original_publication_session()?","RootGenerationInitialClient::from_original_initial_stream("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs"
+required = ["HEPTA_ROOT_GENERATION_INITIAL_V1","descriptors.len() != 2","libc::MSG_CMSG_CLOEXEC","require_root_pin("]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","CurrentStore::initialize"]
+required_function_order = [{ function = "fn send_root_generation_initial_handoff(", sequence = ["libc::getuid()","root_pair(&socket, timeout)?","validate_bootstrap(&offer.bootstrap)?","require_root_pin(root_pidfd, std::process::id())?","send_packet("] },{ function = "fn receive_root_generation_initial_handoff(", sequence = ["root_pair(&socket, timeout)?","libc::recvmsg(","received_descriptors(&message)","descriptors.len() != 2","validate_bootstrap(&bootstrap)?","require_root_pin(&root_pidfd, peer.pid as u32)?"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"
+required = ["Arc::clone(&authorities.artifacts)","uncertain_after_prepare","CellGenerationJournalV2::open_guarded(","prepared.target() != &profile.deployment.target","observed.owner_binding() != prepared.target()"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","claim_final_use","prepare_forward_recovery","create(true)","create_new"]
+required_function_order = [{ function = "fn prepare_original_initial(", sequence = ["RootGenerationInitialModeV1::Reserve","self.require_original_target(&files)?","observer.require_original_unwritten()","artifact_owner.lock()","selected.revalidate(","validate_initial_target(&selected, &target)?","observer.require_original_unwritten()","self.client.prepare_initial_current()?","let completed =","from_original_root_initial(\n                self.client,\n            )?","current.recover_initial_operation(","CellGenerationJournalV2::open_guarded(","journal.prepared_checkpoint()","observer.observe()","PreparedAgentdGenerationInitialV1::from_parts(","completed.map_err("] },{ function = "fn recover_original_initial(", sequence = ["RootGenerationInitialModeV1::Recover","self.require_original_target(&files)?","from_original_root_initial(\n            self.client,\n        )?","current.recover_initial_operation(","current.read_initial_operation(&retained)?","observer.observe()","crate::recover_agentd_generation_initial_v1("] },{ function = "fn require_original_target(", sequence = ["HostGenerationInitialDeploymentV1::new(","files.witness.metadata()?.len() == 0","CellGenerationJournalObserverV1::from_original_files(","observer.files_binding().to_string() != profile.target_files"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"
+required = ["pub struct OriginalRootInitialFeatureTargetV1","model: Arc<LoadedCellQ24ModelV1>","config.task_digest != crate::circuit_feature_task_digest_v1","scope.agent_id != source.scope.agent_id.as_str()","require_executable_feature("]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","claim_final_use","dispatch_final_use","FinalUseAuthority::new"]
+required_function_order = [{ function = "fn prepare_feature(", sequence = ["require_feature(","self.prepare_original_initial("] },{ function = "fn recover_feature(", sequence = ["require_feature(","self.recover_original_initial(","ready.into_circuit_feature_task("] },{ function = "fn publish(", sequence = ["require_feature(","let original: PreparedAgentdGenerationInitialV1<FileAnchorWitnessStore>","original\n            .publish(signed)?","into_circuit_feature_task("] },{ function = "fn require_feature(", sequence = ["circuit_feature_task_digest_v1(","config.source_frontier","scope.agent_id","manifest.profile","require_executable_feature("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+required = ["actual != &expected","intent.supersedes.is_some()","!self.store.is_original_host()","store::CurrentStore::from_original_initial(original)?"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","CurrentStore::initialize","claim_final_use","SigningKey"]
+required_function_order = [{ function = "fn original_initial_record(", sequence = ["prepared.validate_initial()?","intent.supersedes.is_some()","actual == prepared","actual.validate_initial()?","actual != &expected","record.validate()?"] },{ function = "fn original_broker_initial_publish(", sequence = ["!self.store.is_original_host()","original_initial_next(expected, signed, witness)?","self.store.replace(expected, &next)"] },{ function = "fn from_original_root_initial(", sequence = ["store::CurrentStore::from_original_initial(original)?","store.load()?"] },{ function = "fn require_original_initial_contract(", sequence = ["original_initial_record(head, head)?","intent.operation_id != operation","intent.digest()? != intent_digest","intent.binding()? != binding"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+required = ["RootInitial(crate::root_generation_initial_client::RootGenerationInitialClient)","Store::RootInitial(original) => original.observe_initial_current()?","Store::RootInitial(original) => original.publish_initial_current(expected, next)"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL"]
+required_function_order = [{ function = "fn from_original_initial(", sequence = ["owner_id(original.scope())?","store: Store::RootInitial(original)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/cell_generation_observer.rs"
+required = ["pub fn require_original_unwritten("]
+forbidden = ["AllowVerifier","permit_all"]
+required_function_order = [{ function = "fn require_original_unwritten(", sequence = ["let before = self.stamps()?","before.0.0 != 0","self.witness_head()?.is_some()","self.stamps()? != before","CellGenerationErrorV2::Pending"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_session.rs"
+required = ["initial_publication: Option<generation_initial::InitialRuntime>","generation_initial::BoundInitial::bind","generation_initial::serve_optional("]
+forbidden = ["AllowVerifier","permit_all"]
+required_function_order = [{ function = "fn serve_selected(", sequence = ["initial_publication,","learning::BoundLearning::bind","generation_initial::BoundInitial::bind","generation_initial::serve_optional("] }]
+
+[[boundary]]
+id = "root_initial_launch_handoff_take"
+symbol = "AgentdProductionLaunch::take_generation_initial_handoff"
+definition_path = "codex-rs/hepta-agentd/src/production_launcher.rs"
+definition_markers = ["pub fn take_generation_initial_handoff(","self.initial_publication.take()"]
+product_callers = []
+caller_markers = []
+receiver_type = "AgentdProductionLaunch"
+
+[[boundary]]
+id = "root_initial_deployment_original_files"
+symbol = "RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+definition_markers = ["pub fn open_original_initial_deployment(","original_root()?","MetadataFile::open_metadata(path)?","RootAuthorityDirectory::open(","HostGenerationInitialDeploymentV1::new("]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_original_initial_deployment\\s*\\("
+
+[[boundary]]
+id = "root_initial_deployment_capture"
+symbol = "RootGenerationInitialEnrollmentCapabilityV1::with_original_initial_deployment"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+definition_markers = ["pub fn with_original_initial_deployment(","std::process::id() != self.root_pid","INITIAL_ATTEMPTS\n            .fetch_update(","purpose: PURPOSE.into()"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_original_initial_deployment\\s*\\("
+
+[[boundary]]
+id = "root_initial_deployment_wait"
+symbol = "RootGenerationInitialDeploymentV1::wait_and_register_initial"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+definition_markers = ["pub fn wait_and_register_initial(","self.require_initial_trigger(&trigger)?","let original_inputs: &InitialOriginalFiles","capability.register(inputs)?","map_err(initial_registration_uncertain)"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)wait_and_register_initial\\s*\\("
+
+[[boundary]]
+id = "root_initial_deployment_original_inputs"
+symbol = "InitialOriginalFiles::initial_enrollment_inputs"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+definition_markers = ["pub(super) fn initial_enrollment_inputs(","read_dataset_withdrawal_snapshot(","LearningArtifactReadViewV1::open_original(","RootGenerationInitialEnrollmentV1"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs","codex-rs/hepta-agentd/src/authority_host_initial_phase_deployment.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)initial_enrollment_inputs\\s*\\("
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+required = ["#[serde(deny_unknown_fields)]","root_boot_id","root_start_ticks","descriptor_digest","purpose: PURPOSE.into()","INITIAL_ATTEMPTS\n            .fetch_update(","self.capability.consumer_uid","RootGenerationInitialEnrollmentCapabilityV1","RootGenerationInitialDeploymentFilesV1"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize","from_test_store","impl Clone for RootGenerationInitialDeploymentV1","impl Default for RootGenerationInitialDeploymentV1","impl Clone for RootGenerationInitialDeploymentFilesV1"]
+required_function_order = [{ function = "fn open_original_initial_deployment(", sequence = ["original_root()?","MetadataFile::open_metadata(path)?","serde_json::from_slice(&bytes)","data.schema_version != 1","DirectoryPin::capture_root(","RootAuthorityDirectory::open(","OriginalFile::open_original(","HostGenerationInitialDeploymentV1::new(","files.require_original_initial_files()?","Ok(files)"] },{ function = "fn with_original_initial_deployment(", sequence = ["original_root()?","std::process::id() != self.root_pid","super::root_start()? != self.process_start_ticks","self.phase.load(Ordering::Acquire)","files.require_original_initial_files()?","INITIAL_ATTEMPTS\n            .fetch_update(","purpose: PURPOSE.into()","descriptor_digest: files.descriptor.digest().to_string()","Ok(RootGenerationInitialDeploymentV1"] },{ function = "fn wait_and_register_initial(", sequence = ["self.capability.lifetime","self.files.require_original_initial_files()?","self.require_initial_wait(","self.capability.phase.load","ACTIVE => match MetadataFile::open_metadata(","self.require_initial_trigger(&trigger)?","let original_inputs: &InitialOriginalFiles","initial_enrollment_inputs(","self.files.require_original_initial_files()?","trigger_file.require_metadata_unchanged()?","file.require_original_file()?","self.require_initial_wait(","capability.register(inputs)?","self.files\n            .require_original_initial_files()\n            .map_err(initial_registration_uncertain)?","trigger_file\n            .require_metadata_unchanged()\n            .map_err(initial_registration_uncertain)?","file.require_original_file()\n                .map_err(initial_registration_uncertain)?","stopping.load(Ordering::Acquire)","Ok(result)"] },{ function = "fn require_initial_trigger(", sequence = ["trigger.session != self.session","trigger.session.purpose != PURPOSE","return Err("] },{ function = "fn require_initial_wait(", sequence = ["stopping.load(Ordering::Acquire)","Instant::now() >= end","io::ErrorKind::Interrupted"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment_data.rs"
+required = ["#[serde(deny_unknown_fields)]","pub mode: RootGenerationInitialModeV1","pub operation: String","pub target: ObserverData","pub selection: SelectionData","pub issuer_keys: Vec<IssuerKeyData>","pub trigger: PathBuf"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize","from_test_store","#[serde(default)]","pub previous","pub learning","pub late_material"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+required = ["pub(super) struct InitialOriginalFiles","pub current: Arc<RootAuthorityDirectory>","consumer_uid: u32","let reader: LearningArtifactReadViewV1","mode: data.mode","consumer: data.consumer","issuer_keys: data\n                .issuer_keys\n                .iter()"]
+forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize","from_test_store",".write(true)",".create(true)",".create_new(true)"]
+required_function_order = [{ function = "fn initial_enrollment_inputs(", sequence = ["self.require_initial_files()?","data.owner_trust.original_owner_trust()?","data.selector_trust.original_selector(&trust)?","read_dataset_withdrawal_snapshot(","data.selection.original_selection()?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","reader\n            .locate_selected_original_files(","OriginalFile::open_original(&paths.0)?","OriginalFile::open_original(&paths.1)?","reader\n            .locate_selected_original_files(","let inputs = RootGenerationInitialEnrollmentV1","self.require_initial_files()?","Ok((inputs, vec![registry, payload]))"] }]
+
+
+# Same-session original Root Q24 successor. No inferred or renewed authority.
+[[boundary]]
+id = "q24_successor_original_session_capture"
+symbol = "OriginalQ24SuccessorSession::capture_original_successor_session"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+definition_markers = ["fn capture_original_successor_session("]
+product_callers = ["codex-rs/hepta-agentd/src/production_q24_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)capture_original_successor_session\\s*\\("
+
+[[boundary]]
+id = "q24_successor_original_session_current"
+symbol = "OriginalQ24SuccessorSession::require_current_successor_session"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+definition_markers = ["fn require_current_successor_session("]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_successor.rs","codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs","codex-rs/hepta-agentd/src/root_q24_model_factory.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_current_successor_session\\s*\\("
+
+[[boundary]]
+id = "q24_successor_same_root_connection"
+symbol = "RootGenerationPublicationConnectionV1::require_same_successor_session"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+definition_markers = ["fn require_same_successor_session("]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_current_client.rs","codex-rs/hepta-agentd/src/root_generation_same_actor_inputs.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_same_successor_session\\s*\\("
+
+[[boundary]]
+id = "q24_successor_model_factory_context"
+symbol = "AgentdRootQ24ModelFactoryV1::require_successor_session"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+definition_markers = ["fn require_successor_session("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_successor_session\\s*\\("
+
+[[boundary]]
+id = "q24_successor_root_current_context"
+symbol = "RootGenerationCurrentClient::require_successor_context"
+definition_path = "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
+definition_markers = ["fn require_successor_context("]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_successor_context\\s*\\("
+
+[[boundary]]
+id = "q24_successor_current_owner_context"
+symbol = "NeuronGenerationCurrentOwnerV1::require_original_root_successor"
+definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
+definition_markers = ["fn require_original_root_successor("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"]
+caller_markers = []
+receiver_type = "NeuronGenerationCurrentOwnerV1"
+
+[[boundary]]
+id = "q24_successor_context_from_registered_root"
+symbol = "LearningIterationRuntimeBootstrapV1::prepare_original_successor_context"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+definition_markers = ["fn prepare_original_successor_context("]
+product_callers = ["codex-rs/hepta-agentd/src/config_q24_successor.rs","codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_original_successor_context\\s*\\("
+
+[[boundary]]
+id = "q24_successor_context_live"
+symbol = "OriginalQ24SuccessorContext::require_current_successor_context"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+definition_markers = ["fn require_current_successor_context("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs","codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_current_successor_context\\s*\\("
+
+[[boundary]]
+id = "q24_successor_aggregate_registration"
+symbol = "OriginalCellQ24LearningStageOwnersV1::register_original_successor"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+definition_markers = ["fn register_original_successor("]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)register_original_successor\\s*\\("
+
+[[boundary]]
+id = "q24_successor_generation_notification"
+symbol = "OriginalCellQ24LearningStageOwnersV1::notify_original_successor_generation"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"
+definition_markers = ["fn notify_original_successor_generation("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)notify_original_successor_generation\\s*\\("
+
+[[boundary]]
+id = "q24_successor_original_generation_installed"
+symbol = "SuccessorSlot::original_generation_installed"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+definition_markers = ["fn original_generation_installed("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_generation_installed\\s*\\("
+
+[[boundary]]
+id = "q24_successor_wait_original_generation"
+symbol = "SuccessorSlot::wait_original_generation"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+definition_markers = ["fn wait_original_generation("]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)wait_original_generation\\s*\\("
+
+[[boundary]]
+id = "q24_successor_wait_after_checkpoint"
+symbol = "LearningIterationRuntimeBootstrapV1::wait_original_successor_stage"
+definition_path = "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+definition_markers = ["fn wait_original_successor_stage("]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)wait_original_successor_stage\\s*\\("
+
+[[boundary]]
+id = "q24_successor_actual_owner_install"
+symbol = "SuccessorSlot::install_original_owner"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+definition_markers = ["fn install_original_owner("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)install_original_owner\\s*\\("
+
+[[boundary]]
+id = "q24_successor_effect_cancellation"
+symbol = "SuccessorSlot::require_installation_open"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+definition_markers = ["fn require_installation_open("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_installation_open\\s*\\("
+
+[[boundary]]
+id = "q24_successor_actual_task_handle"
+symbol = "SuccessorSlot::actual_handle"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+definition_markers = ["fn actual_handle("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_task_runtime.rs","codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)actual_handle\\s*\\("
+
+[[boundary]]
+id = "q24_successor_pending_runtime"
+symbol = "compose_original_successor_runtime"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+definition_markers = ["fn compose_original_successor_runtime("]
+product_callers = ["codex-rs/hepta-agentd/src/config_q24_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)compose_original_successor_runtime\\s*\\("
+
+[[boundary]]
+id = "q24_successor_worker_bootstrap"
+symbol = "CircuitTaskRuntimeBootstrapV1::from_original_successor_worker"
+definition_path = "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs"
+definition_markers = ["fn from_original_successor_worker("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)from_original_successor_worker\\s*\\("
+
+[[boundary]]
+id = "q24_successor_pending_handle"
+symbol = "CircuitTaskHandleV1::original_pending_successor_handle"
+definition_path = "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs"
+definition_markers = ["fn original_pending_successor_handle("]
+product_callers = []
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_pending_successor_handle\\s*\\("
+
+[[boundary]]
+id = "q24_successor_actual_runtime"
+symbol = "CircuitTaskRuntimeBootstrapV1::run_in_original_successor_lane"
+definition_path = "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs"
+definition_markers = ["fn run_in_original_successor_lane("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs","codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)run_in_original_successor_lane\\s*\\("
+
+[[boundary]]
+id = "q24_successor_root_prepare_request"
+symbol = "OriginalCellQ24RootPublicationDriverV1::prepare_original_successor"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+definition_markers = ["fn prepare_original_successor("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_original_successor\\s*\\("
+
+[[boundary]]
+id = "q24_successor_root_prepare_worker"
+symbol = "OriginalCellQ24RootPublicationDriverV1::prepare_in_original_successor_worker"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+definition_markers = ["fn prepare_in_original_successor_worker("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_in_original_successor_worker\\s*\\("
+
+[[boundary]]
+id = "q24_successor_proof_current"
+symbol = "OriginalSuccessorProof::require_current_successor_publication"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"
+definition_markers = ["fn require_current_successor_publication("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)require_current_successor_publication\\s*\\("
+
+[[boundary]]
+id = "q24_successor_actual_prepare"
+symbol = "OriginalCellQ24RootPublicationDriverV1::prepare_successor_current"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+definition_markers = ["fn prepare_successor_current("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_successor_current\\s*\\("
+
+[[boundary]]
+id = "q24_successor_actual_publish"
+symbol = "OriginalCellQ24PreparedPublicationV1::publish_successor_current"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+definition_markers = ["fn publish_successor_current("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)publish_successor_current\\s*\\("
+
+[[boundary]]
+id = "q24_successor_running_admission"
+symbol = "require_successor_admission"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs"
+definition_markers = ["fn require_successor_admission("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+caller_markers = []
+call_pattern = "\\brequire_successor_admission\\s*\\("
+
+[[boundary]]
+id = "q24_successor_execution_preflight"
+symbol = "OriginalQ24SuccessorExecutionInputsV1::validate_original_successor_execution"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+definition_markers = ["fn validate_original_successor_execution("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)validate_original_successor_execution\\s*\\("
+
+[[boundary]]
+id = "q24_successor_original_channel"
+symbol = "OriginalQ24SuccessorExecutionInputsV1::open_original_successor_channel"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+definition_markers = ["fn open_original_successor_channel("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_original_successor_channel\\s*\\("
+
+[[boundary]]
+id = "q24_successor_launch_prepare"
+symbol = "AgentdProductionLaunch::prepare_original_q24_successor"
+definition_path = "codex-rs/hepta-agentd/src/production_q24_successor.rs"
+definition_markers = ["fn prepare_original_q24_successor("]
+product_callers = []
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_original_q24_successor\\s*\\("
+
+[[boundary]]
+id = "q24_successor_config_install"
+symbol = "AgentdConfig::with_original_pending_successor"
+definition_path = "codex-rs/hepta-agentd/src/config_q24_successor.rs"
+definition_markers = ["fn with_original_pending_successor("]
+product_callers = ["codex-rs/hepta-agentd/src/production_q24_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_original_pending_successor\\s*\\("
+
+[[boundary]]
+id = "q24_successor_original_feedback_ledger"
+symbol = "OriginalQ24InstalledSuccessorV1::original_task_ledger"
+receiver_type = "OriginalQ24InstalledSuccessorV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+definition_markers = ["fn original_task_ledger(", "self.ledger.as_ref().map(Arc::clone)"]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "q24_successor_original_c_ingress"
+symbol = "OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+definition_markers = ["fn original_installed_successor_ingress("]
+product_callers = []
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_installed_successor_ingress\\s*\\("
+
+[[boundary]]
+id = "q24_successor_handoff_request"
+symbol = "OriginalQ24SuccessorHandoffV1::prepare_from_original_root"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+definition_markers = ["fn prepare_from_original_root("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_from_original_root\\s*\\("
+
+[[boundary]]
+id = "q24_successor_original_signed_finish"
+symbol = "OriginalQ24PreparedSuccessorV1::publish"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor.rs"
+definition_markers = ["fn publish("]
+product_callers = ["codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs"]
+caller_markers = []
+receiver_type = "OriginalQ24PreparedSuccessorV1"
+
+[[boundary]]
+id = "q24_successor_slot_new"
+symbol = "SuccessorSlot::new_pending_slot"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs"
+definition_markers = ["fn new_pending_slot("]
+product_callers = ["codex-rs/hepta-agentd/src/config_q24_successor.rs","codex-rs/hepta-agentd/src/circuit_q24_successor_same_actor.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)new_pending_slot\\s*\\("
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_q24_successor_session.rs"
+required = ["pub(crate) struct OriginalQ24SuccessorSession","verifier: Arc<dyn ProductionAuthorityVerifier>"]
+forbidden = ["AllowVerifier","permit_all","SigningKey","RootAuthorityDirectory","UnixStream::connect","Deserialize","impl Clone for OriginalQ24SuccessorSession"]
+required_function_order = [{ function = "fn capture_original_successor_session(", sequence = ["original.registered_identity.identity()? != *identity","session.authority().grant_digest != original.writer_proof.sha256()?","verifier: session.verifier()","observed.require_current_successor_session()?"] },{ function = "fn require_current_successor_session(", sequence = ["libc::getuid()","uid == 0","uid != self.original.consumer.uid","std::process::id() != self.original.consumer.pid","verify_sender_process_binding("] },{ function = "fn require_same_successor_session(", sequence = ["self.require_original_publication_session()?","expected.require_current_successor_session()?","!Arc::ptr_eq(&self.verifier, &expected.verifier)","self.identity != expected.identity","serde_json::to_vec(&self.original)?","self.authority.grant_digest != expected.authority.grant_digest","self.require_original_publication_session()?","expected.require_current_successor_session()"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+required = ["fn require_successor_session("]
+forbidden = ["AllowVerifier","permit_all"]

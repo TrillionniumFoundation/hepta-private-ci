@@ -1,0 +1,634 @@
+required_order = [["fn drain_completed_task<", "Arc::ptr_eq(&self.0, &cell.task.0)", "source\n            .read_run_publication(", "cell.committed(&before)?", "source\n            .read_run_publication(", "original.require_current()?", "original.drain()?", "original.is_drained()?", "drop(original)", "source\n            .read_run_publication(", "self.require_current()?", "Ok(PublishedCircuitFeatureCompletionV1"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs"
+required = ["original: P", "task: PublishedCircuitFeatureTaskV1", "if task.require_active().is_err()", "return u64::MAX", "admission.snapshot.revision != 0\n            || admission.snapshot.checkpoint.is_some()", "admission.semantic_request_digest\n                != canonical_cell_step_request_digest_v1(", "admission.deadline_micros != input.deadline_micros"]
+forbidden = ["pub original:", "pub task:", "SigningKey", ".sign(", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_order = [["fn control<", "self.require_current()", "if task.require_active().is_err()", "clock()", "ControlledNeuronFeaturePortV1::new(", "self.require_current()", "Ok(PublishedCircuitFeatureControlV1"]]
+required_function_order = [
+  { function = "fn bind_cell_inference(", sequence = ["self.task\n            .require_active()", "self.task.require_admission(admission)?", "self.original.bind_cell_inference(admission)?", "self.task\n            .require_active()"] },
+  { function = "fn execute_feature(", sequence = ["self.task\n            .require_active()", "self.original.execute_feature(request)?", "self.task\n            .require_current()", "Ok(result)"] },
+  { function = "fn bind_cell_readback(", sequence = ["self.task.require_admission(admission)?", "self.original.bind_cell_readback(admission)?", "self.task\n            .require_current()"] },
+  { function = "fn read_feature(", sequence = ["self.task\n            .require_current()", "self.original.read_feature(request)?", "self.task\n            .require_current()", "Ok(result)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs"
+required = ["previous.receipt.checkpoint_after.as_array()", "receipt.checkpoint_before.as_array()", "previous.source.publication_digest().as_array()"]
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", ".drain(", "unwrap_or", "permit_all"]
+required_order = [["fn read_learning_next_use<", "LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())", "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix\n            .receipts\n            .pop()", "prefix.head_digest = selection.predecessor", "self.read_learning_selection(&prefix)?", "actual_selection != selection.observation", "source\n            .read_run_publication(", "self.committed(&before)?", "receipt.bundle_digest != candidate_bundle", "previous.source.input().scope.run_id != coordinator.snapshot().request.source_run_id", "source\n            .read_run_publication(", "self.task.require_current()?", "Ok(result)"]]
+required_function_order = [{ function = "fn read_learning_selection(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(", "self.task.require_current()?", "Publication::Update", ".selection(\n            original,\n            coordinator,\n            &previous.manifest,\n        )?", "self.task.require_current()?", "Ok(result)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs"
+required = ["struct HistoricalRead", "successor: Arc<LiveGenerationCurrent>", "publication: PublishedNeuronGenerationUpdateV1", "CellOwnerJournalReadbackV1::open_guarded("]
+forbidden = ["CellOwnerJournalV1::", "CellStateOwnerV1", "SigningKey", ".sign(", "File::open", "UnixStream::connect", "compare_and_swap", ".drain(", "unwrap_or", "permit_all"]
+required_function_order = [{ function = "fn check_current(", sequence = ["binding != self.publication.previous()", "return Err(CellGenerationErrorV2::InvalidBinding)", "self.successor.check_current(self.publication.target())"] }]
+required_order = [["fn recover_predecessor<", "current\n        .check_current(publication.target())", "let previous = publication.previous()", "NeuronGenerationPredecessorCompletionV1::OwnerDrained\n                | crate::NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel", "previous.task_digest()\n            != circuit_feature_task_digest_v1(", "files.manifest.digest()", "previous.source_frontier() != files.source.source_frontier.into_array()", "source\n        .read_run_publication(", "input != &source_input(", "canonical_cell_step_request_digest_v1(", "HistoricalRead {\n        successor: Arc::clone(current),\n        publication: publication.clone(),\n    }", "CellOwnerJournalReadbackV1::open_guarded(", "reader\n        .pending_inference(", "reader\n        .lookup(", "before.require_decision(&receipt)", "reader.snapshot(", "snapshot.revision != 1", "receipt.checkpoint_after != before.checkpoint_digest()", "source\n        .read_run_publication(", "current\n        .check_current(publication.target())", "Ok(PublishedCircuitFeatureCompletionV1"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/cell_journal_readback.rs"
+required = ["pub struct CellOwnerJournalReadbackV1<W: AnchorWitnessStore>(CellOwnerJournalV1<W>)", "OpenMode::ReadOnlyAcknowledged"]
+forbidden = ["CellStateOwnerV1 for", "Deref", "into_inner", ".sync_all(", ".set_len(", ".write_all(", ".compare_and_swap(", ".admit_inference(", ".commit("]
+required_function_order = [
+  { function = "fn open_guarded(", sequence = ["CellOwnerJournalV1::open_guarded_inner(", "OpenMode::ReadOnlyAcknowledged,\n        )\n        .map(Self)"] },
+  { function = "fn snapshot(", sequence = ["self.0.snapshot(scope)?", "self.0.require_current()?", "Ok(result)"] },
+  { function = "fn lookup(", sequence = ["self\n            .0\n            .lookup(scope, operation_id, semantic_request_digest)?", "self.0.require_current()?", "Ok(result)"] },
+  { function = "fn pending_inference(", sequence = ["self.0.pending_inference(scope)?", "self.0.require_current()?", "Ok(result)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/cell_journal.rs"
+required = ["header = b\"HPTACJ04\".to_vec()", "if mode == OpenMode::ReadOnlyAcknowledged", "if head.is_none() || head != expected || offset != bytes.len()"]
+forbidden = []
+required_function_order = [
+  { function = "fn open_guarded_inner(", sequence = ["specs.len() != 1", "spec.writer_epoch != binding.writer_epoch()", "current\n            .check_current(&binding)", "Self::open_inner(", "Some((current, binding))"] },
+  { function = "fn recover(", sequence = ["self.healthy = false", "self.require_current()?", "let expected =", "if !witnessed", "self.require_current()?", "self.mode == OpenMode::ReadOnlyAcknowledged", "head.is_none() || head != expected || offset != bytes.len()", "self.owner = owner", "self.require_current()?", "self.healthy = true"] },
+  { function = "fn reset_at_frontier(", sequence = ["self.require_healthy()?", "if self.current.is_some()", "return Err(CellExecutionError::ScopeMismatch)", "self.persist(payload)?"] },
+  { function = "fn require_healthy(", sequence = ["self.require_current()?", "if self.healthy", "Err(CellExecutionError::CommitUncertain)"] },
+  { function = "fn persist(", sequence = ["self.require_healthy()?", "self.mode == OpenMode::ReadOnlyAcknowledged", "self.healthy = false", ".write_all(&frame)", ".sync_all()", ".compare_and_swap(self.head, next)", "self.require_current()\n            .map_err(|_| CellExecutionError::CommitUncertain)?", "self.healthy = true"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+required = ["original: DurableCircuitTaskSourceV1<W>", "self.original.read_publication(identity, record)", "self.original.read_run_publication(identity, run_id)"]
+forbidden = ["pub original:", "Deref", "into_inner", "AgentdCircuitTaskInvocationProviderV1 for", "CircuitTaskInputProviderV1 for", ".withdraw(", ".publish_result(", ".build(", ".resolve(", "SigningKey", "File::open"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+required = ["pub published_task: PublishedCircuitFeatureTaskV1", "invocation: Arc<DurableCircuitTaskSourceV1<SW>>", "source: Arc<CircuitTaskSourceReadbackV1<SW>>", "pub source: Arc<CircuitTaskSourceReadbackV1<SW>>"]
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "CellStateOwnerV1", "pub invocation:", "pub bootstrap:", "unwrap_or", "permit_all"]
+required_order = [["fn circuit_q24_task_channel_v1<", "profile.fence.owner_agent_id != identity.agent_id", "identity.spawn_generation == 0", "identity.spawn_generation.checked_add(1) != Some(profile.fence.generation)", "!(1..=64).contains(&profile.queue_capacity)", "published.require_bundle(&profile.bundle)?", "CircuitCellRegistryV1::new(", "CellQ24FeatureWorkerV1::new(", "let source = match profile.source_mode", "DurableCircuitTaskSourceV1::create(", "DurableCircuitTaskSourceV1::recover(", "published.open_cell(", "published\n        .control(", "AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder)", "circuit_task_channel_v1(", "DurableCircuitTaskSourceV1::readback(&source)", "Ok(CircuitQ24TaskRuntimeV1"]]
+required_function_order = [{ function = "fn install(", sequence = ["config.with_circuit_task_bootstrap(", "self.bootstrap, self.invocation)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"
+required = []
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_order = [["fn with_q24_circuit_task_profile<", "self.require_no_circuit_task_profile()?", "self.require_circuit_task_execution_profile()?", "circuit_q24_task_channel_v1(self.identity(), profile)?", "runtime.source()", "runtime.cell()", "runtime.install(self)?", "Ok(AgentdQ24CircuitTaskRuntimeV1"]]
+
+[[boundary]]
+id = "learning_original_training_receipt_create"
+symbol = "OriginalCellQ24TrainingReceiptOwnerV1::create"
+receiver_type = "OriginalCellQ24TrainingReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+definition_markers = ["pub fn create("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_receipt_recover"
+symbol = "OriginalCellQ24TrainingReceiptOwnerV1::recover"
+receiver_type = "OriginalCellQ24TrainingReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+definition_markers = ["pub fn recover("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_receipt_attest"
+symbol = "OriginalCellQ24TrainingReceiptOwnerV1::attest_original_completion"
+receiver_type = "OriginalCellQ24TrainingReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+definition_markers = ["pub fn attest_original_completion("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_stage.rs","codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_receipt_readback"
+symbol = "OriginalCellQ24TrainingReceiptOwnerV1::readback"
+receiver_type = "OriginalCellQ24TrainingReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+definition_markers = ["pub fn readback("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+required = ["pub struct OriginalCellQ24TrainingReceiptOwnerV1", "training: &mut CellQ24TrainingOwnerV1<impl AnchorWitnessStore>"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "fit_or_readback(", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "unwrap_or", "permit_all"]
+required_function_order = [
+  { function = "fn create(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self"], top_level = ["let saved = validate_config(&config, &key)?"] },
+  { function = "fn recover(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self"], top_level = ["let saved = validate_config(&config, &key)?"] },
+  { function = "fn attest_original_completion(", sequence = ["training.read_learning_observation(&self.config.dataset)?", "require_observation(&self.config, &observation)?", "self.journal.commit_once(saved, ||", "training_receipt(config, &observation, now()?)", "learning_iteration_receipt_signing_bytes_v1(&receipt)", "sign_original(config, key, &receipt, &payload, saved.binding_digest)?", "learning_owner_evidence::encode(&payload, &signed)", "self.authenticate_completed(training, &observation, &bytes)"], top_level = ["let observation = training.read_learning_observation(&self.config.dataset)?", "require_observation(&self.config, &observation)?", "let bytes = self.journal.commit_once(saved, ||", "self.authenticate_completed(training, &observation, &bytes)"] },
+  { function = "fn readback(", sequence = ["training.read_learning_observation(&self.config.dataset)?", "require_observation(&self.config, &observation)?", "self.journal.read(&self.saved)?", "self.authenticate_completed(training, &observation, &bytes)"], top_level = ["let bytes = self.journal.read(&self.saved)?"] },
+  { function = "fn authenticate_completed(", sequence = ["learning_owner_evidence::decode(bytes)?", "training_receipt(&self.config, observation, signed.issued_at)?", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "self.config.verifier.verify(", "LearningEvidenceRoleV1::Generator", "verified.principal() != &self.config.signer.principal", "verified.controller_id() != &self.config.signer.controller_id", "signed.evidence_id != evidence_id(self.saved.binding_digest)?", "if training.read_learning_observation(&self.config.dataset)? != *observation", "self.journal.read(&self.saved)? != bytes", "Ok((receipt, signed))"], top_level = ["if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "let verified = self.config.verifier.verify(", "if training.read_learning_observation(&self.config.dataset)? != *observation"] },
+  { function = "fn validate_config(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.dataset.clone())?", "config.scope.validate_snapshot(&config.dataset)?", "coordinator.next_stage() != Some(LearningIterationStageV1::Training)", "key.verifying_key().to_bytes() != config.signer.verifying_key", "config.signer.principal.principal_id != config.dataset.owners.trainer", "config.dataset.owners.evidence_trust_digest != config.verifier.trust_digest()", "config.dataset.request.envelope.objective_digest != config.verifier.objective_digest()", "config.verifier.require_signer_binding(", "LearningEvidenceRoleV1::Generator", "Ok(ProductEvaluationExecutionKeyV1", "config.dataset.head_digest.as_array()", "config.scope.binding().as_array()", "config.verifier.trust_digest().as_array()", "config.signer.principal.principal_id.as_str().as_bytes()", "&config.signer.verifying_key", "&config.maximum_signature_lifetime_seconds.to_be_bytes()"], top_level = ["config.scope.validate_snapshot(&config.dataset)?", "config.verifier.require_signer_binding("] },
+  { function = "fn require_observation(", sequence = ["observation.iteration_head() != config.dataset.head_digest", "observation.scope_binding() != config.scope.binding()", "observation.evidence_digest().is_zero()", "config\n        .scope\n        .validate_observation(observation.observation())?"], top_level = ["config\n        .scope\n        .validate_observation(observation.observation())?"] },
+  { function = "fn training_receipt(", sequence = ["require_observation(config, observation)?", "operation_id: config.dataset.request.operation_id.clone()", "predecessor: config.dataset.head_digest", "actor_id: config.dataset.owners.trainer.clone()", "evidence_digest: observation.evidence_digest()", "observation: observation.observation().clone()", "LearningIterationCoordinatorV1::from_snapshot(config.dataset.clone())?", "coordinator.record(receipt.clone(), observed_unix_seconds)?", "config.scope.validate_snapshot(coordinator.snapshot())?"], top_level = ["coordinator.record(receipt.clone(), observed_unix_seconds)?", "config.scope.validate_snapshot(coordinator.snapshot())?"] },
+  { function = "fn sign_original(", sequence = ["let issued_at = receipt.observed_unix_seconds", "config.verifier.require_signer_binding(", "issued_at", "config.maximum_signature_lifetime_seconds", ".min(config.signer.principal.expires_at)", "evidence_id: evidence_id(identity)?", "role: LearningEvidenceRoleV1::Generator", "key.sign(&signed.signing_bytes()).to_bytes()", "config.verifier.verify(", "Ok(signed)"], top_level = [] },
+]
+
+[[boundary]]
+id = "cell_q24_original_training_execute"
+symbol = "CellQ24TrainingOwnerV1::fit_or_readback"
+receiver_type = "CellQ24TrainingOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+definition_markers = ["pub fn fit_or_readback("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_stage.rs","codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"]
+caller_markers = ["training.fit_or_readback(&cancellation)?"]
+
+[[boundary]]
+id = "cell_q24_original_training_pair_binding"
+symbol = "CellQ24TrainingOwnerV1::require_original_dataset_scope"
+receiver_type = "CellQ24TrainingOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+definition_markers = ["pub(crate) fn require_original_dataset_scope("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_stage.rs","codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs","codex-rs/hepta-agentd/src/cell_q24_training_same_actor.rs"]
+caller_markers = ["training.require_original_dataset_scope("]
+
+[[boundary]]
+id = "learning_original_training_stage_constructor"
+symbol = "OriginalCellQ24TrainingStageV1::from_original_owners"
+receiver_type = "OriginalCellQ24TrainingStageV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+definition_markers = ["pub async fn from_original_owners("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_stage_execute"
+symbol = "OriginalCellQ24TrainingStageV1::execute_training"
+receiver_type = "OriginalCellQ24TrainingStageV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+definition_markers = ["pub async fn execute_training("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_stage_readback"
+symbol = "OriginalCellQ24TrainingStageV1::readback"
+receiver_type = "OriginalCellQ24TrainingStageV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+definition_markers = ["pub async fn readback("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs", "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"]
+caller_markers = ["training.readback("]
+
+[[boundary]]
+id = "learning_original_training_stage_attestation"
+symbol = "OriginalCellQ24TrainingStageV1::receipt_attestation"
+receiver_type = "OriginalCellQ24TrainingStageV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+definition_markers = ["pub async fn receipt_attestation("]
+product_callers = []
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+required = []
+forbidden = []
+required_function_order = [{ function = "fn require_original_dataset_scope(", sequence = ["dataset != &self.plan.prefix || scope != &self.plan.scope", "return Err(Error::Binding(", "self.require_current()"], top_level = ["if dataset != &self.plan.prefix || scope != &self.plan.scope", "self.require_current()"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+required = ["struct OriginalCellQ24TrainingStageV1", "Arc<Mutex<Owners<TW, RW>>>", "Semaphore::new(/*permits*/ 1)", "AnchorWitnessStore + Send + 'static"]
+forbidden = ["SigningKey", "File::open", "UnixStream::connect", ".sign(", ".claim(", ".complete(", "LearningIterationStageOwnerPortsV1", "with_root_learning_stage_owners(", ".acquire().await", ".acquire_owned().await", "unwrap_or", "permit_all", "if false"]
+required_order = [["async fn in_lane<T:", "let permit = Arc::clone(&self.lane)", ".try_acquire_owned()", "Error::Busy", "tokio::task::spawn_blocking(move ||", "let _permit = permit;", "owners.try_lock()", "training.require_original_dataset_scope(", "work(&mut owners)"]]
+required_function_order = [
+  { function = "fn from_original_owners(", sequence = ["dataset: receipts.config.dataset.clone()", "stage", ".in_lane(", "super::validate_config(", "owners.receipts.journal.read(&owners.receipts.saved)", "Ok(_) => owners.read_original_completion().map(|_| ())", "ProductEvaluationExecutionStoreErrorV1::Missing", "Ok(stage)"], top_level = [] },
+  { function = "fn execute_training(", sequence = ["self.require_dataset(dataset)?", "self.in_lane(\n            move |owners|", "owners.receipts.journal.read(&owners.receipts.saved)", "Ok(_) => owners.read_original_completion()", "Err(LearningOriginalOwnerErrorV1::Store(", "ProductEvaluationExecutionStoreErrorV1::Missing", "let retained_outcome = match training.readback()", "Ok(outcome) => Some(outcome)", "Err(CellQ24TrainingOwnerErrorV1::Store(", "ProductEvaluationExecutionStoreErrorV1::Missing", ")) => None", "Err(error) => return Err(error.into())", "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator", "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)", "let outcome = match retained_outcome", "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?"], top_level = ["self.require_dataset(dataset)?;"] },
+  { function = "fn read_original_dataset_completion(", sequence = ["self.require_dataset(dataset)?", "self.in_lane(|owners|", "training.require_original_dataset_provenance()?", "owners.read_original_completion()?", "training.require_original_dataset_provenance()?", "Ok(completed)"] },
+  { function = "fn readback(", sequence = ["self.require_dataset(dataset)?", "self.in_lane(Owners::read_original_completion).await"], top_level = ["self.require_dataset(dataset)?;"] },
+  { function = "fn receipt_attestation(", sequence = ["self.readback(dataset).await?", "if &completed.receipt != expected", "return Err(Error::Binding(", "Ok(completed.attestation)"], top_level = ["let completed = self.readback(dataset).await?;", "if &completed.receipt != expected"] },
+  { function = "fn require_dataset(", sequence = ["if dataset != &self.dataset", "return Err(Error::Binding(", "Ok(())"], top_level = ["if dataset != &self.dataset"] },
+  { function = "fn read_original_completion(", sequence = ["self.receipts.readback(training)?", "training.readback()?", "Ok(OriginalCellQ24TrainingCompletionV1"], top_level = [] },
+]
+
+
+[[boundary]]
+id = "learning_original_training_snapshot_readback"
+symbol = "read_cell_q24_training_snapshot_v1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+definition_markers = ["pub async fn read_cell_q24_training_snapshot_v1(", "training.readback(dataset.snapshot()).await?", "if &completed.receipt != expected"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+required = ["pub enum OriginalCellQ24TrainingReadbackErrorV1", "AnchorWitnessStore + Send + 'static"]
+forbidden = ["SigningKey", ".sign(", "execute_training(", "fit_or_readback(", "attest_original_completion(", ".checkpoint(", "SystemTime", "Semaphore", "Mutex", "File::open", "UnixStream::connect", "LearningIterationStageOwnerPortsV1", "with_root_learning_stage_owners(", "unwrap_or", "permit_all", "if false"]
+required_function_order = [{ function = "fn read_cell_q24_training_snapshot_v1(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "if expected.observation.stage() != LearningIterationStageV1::Training", "LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?", "for retained in &snapshot.receipts", "if retained.observation.stage() == LearningIterationStageV1::Training", "if retained != expected", "break;", "dataset.record(retained.clone(), retained.observed_unix_seconds)?", "if dataset.next_stage() != Some(LearningIterationStageV1::Training)", "let mut extension = dataset.clone()", "extension.record(expected.clone(), expected.observed_unix_seconds)?", "let completed = training.readback(dataset.snapshot()).await?", "if &completed.receipt != expected", "Ok(completed)"], top_level = ["LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;", "if expected.observation.stage() != LearningIterationStageV1::Training", "let mut dataset =", "for retained in &snapshot.receipts", "if dataset.next_stage() != Some(LearningIterationStageV1::Training)", "extension.record(expected.clone(), expected.observed_unix_seconds)?;", "let completed = training.readback(dataset.snapshot()).await?;", "if &completed.receipt != expected", "Ok(completed)"] }]
+[[boundary]]
+id = "cell_q24_model_material_owner_create"
+symbol = "CellQ24ModelProposalOwnerV1::create"
+receiver_type = "CellQ24ModelProposalOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
+definition_markers = ["pub fn create<"]
+product_callers = ["codex-rs/hepta-agentd/src/root_q24_model_factory.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "cell_q24_model_material_owner_recover"
+symbol = "CellQ24ModelProposalOwnerV1::recover"
+receiver_type = "CellQ24ModelProposalOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
+definition_markers = ["pub fn recover<"]
+product_callers = ["codex-rs/hepta-agentd/src/root_q24_model_factory.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "cell_q24_model_material_owner_commit"
+symbol = "CellQ24ModelProposalOwnerV1::commit_or_readback"
+receiver_type = "CellQ24ModelProposalOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
+definition_markers = ["pub fn commit_or_readback<"]
+product_callers = ["codex-rs/hepta-agentd/src/root_q24_model_factory.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "cell_q24_model_material_owner_readback"
+symbol = "CellQ24ModelProposalOwnerV1::readback"
+receiver_type = "CellQ24ModelProposalOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
+definition_markers = ["pub fn readback<"]
+product_callers = ["codex-rs/hepta-agentd/src/root_q24_model_factory.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
+required = ["AuthorityPosture::DENY_ALL", "self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())?)"]
+forbidden = ["SigningKey", ".sign(", "File::open", "with_root_learning_stage_owners(", "ResearchExternalTrainedArtifact", "inputs.request.now"]
+required_order = [["fn create<", "admission::owner_binding(trainer, &dataset_cut)?", "witness.current()?.is_some()", "LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?", "compare_and_swap(None, anchor(journal.anchor())?)", "Ok(Self"], ["fn recover<", "admission::owner_binding(trainer, &dataset_cut)?", ".current()?", "LockedFileProductEvaluationExecutionStoreV1::recover(", "if current != minimum", "compare_and_swap(Some(minimum), current)", "Ok(Self"], ["fn commit_or_readback<", "let now = self.now()?", "self.admit(trainer, inputs, now)?", "self.journal.readback(&key)", "admission.encode(now)?", "self.require_current()?", "self.journal.claim(&key)", "self.journal.complete(&key, &payload)", "self.anchor_append(before)?", "self.decode_current(&admission, state)"], ["fn readback<", "self.admit(trainer, inputs, self.now()?)?", "self.journal.readback(&admission.key(self.binding))?", "self.decode_current(&admission, state)"], ["fn admit<", "self.require_current()?", "admission::validate(", "&self.dataset_cut", "self.scope", "self.binding", "inputs", "now", "self.require_current()?", "Ok(admission)"]]
+required_function_order = [
+  { function = "fn now(", sequence = ["SystemTime::now()", ".duration_since(UNIX_EPOCH)", ".as_secs()"] },
+  { function = "fn decode_current(", sequence = ["admission.decode(state)?", "self.require_current()?", "Ok(receipt)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs"
+required = ["NoUpdate has no model proposal", "original.scope_binding() != scope", "original_binding(dataset_cut, &original) != owner_binding", "verified.principal() != &inputs.qualification.product().generator", "original.observation() != &training.observation", "complete Q24 generation manifest"]
+forbidden = ["SigningKey", ".sign(", "File::open", "with_root_learning_stage_owners(", "permit_all", "inputs.request.now"]
+required_order = [["fn validate<", "LearningIterationCoordinatorV1::from_snapshot(inputs.training_cut.clone())?", "CellQ24TrainingOwnerV1::read_learning_observation(trainer, dataset_cut)?", "cut.request != dataset_cut.request", "original_binding(dataset_cut, &original) != owner_binding", "original.evidence_digest() != training.evidence_digest", "LearningEvidenceRoleV1::Generator", "learning_iteration_receipt_signing_bytes_v1(training)?", "verified.principal() != &inputs.qualification.product().generator", "verified.trust_digest() != cut.owners.evidence_trust_digest", "validate_manifest(bundle, manifest)", "let request = CellEvaluationQualificationRequestV1 {", "verifier: inputs.request.verifier", "now,", "prepare_cell_learning_evaluation_v1(", "&request", "LearningEvaluationDispositionV1::Qualified", "coordinator.record(evaluation.clone(), evaluation.observed_unix_seconds)?"]]
+required_function_order = [
+  { function = "fn encode(", sequence = ["observed_unix_seconds", "at < lower || at >= self.cut.request.envelope.expiry_unix_seconds", "return Err(Error::Binding(", "let mut bytes =", "bytes.extend_from_slice(&at.to_le_bytes())"] },
+  { function = "fn decode(", sequence = ["ProductEvaluationExecutionStateV1::Completed(bytes)", "Error::Pending", "self.encode(at)? != bytes", "return Err(Error::Binding(", "LearningProposalDispositionV1::UpdateCandidates", "coordinator.record(receipt.clone(), at)?"] },
+]
+
+[[boundary]]
+id = "learning_original_evaluation_receipt_create"
+symbol = "OriginalCellEvaluationReceiptOwnerV1::create"
+receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+definition_markers = ["pub fn create("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_evaluation_receipt_recover"
+symbol = "OriginalCellEvaluationReceiptOwnerV1::recover"
+receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+definition_markers = ["pub fn recover("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_evaluation_receipt_attest"
+symbol = "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion"
+receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+definition_markers = ["pub async fn attest_original_completion<"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_evaluation_receipt_readback"
+symbol = "OriginalCellEvaluationReceiptOwnerV1::readback"
+receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+definition_markers = ["pub async fn readback<"]
+product_callers = []
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+required = ["self.attest_original_sources(source.into()).await", "self.readback_sources(source.into()).await", "pub struct OriginalCellEvaluationReceiptOwnerV1", "SystemTime::now()", "key: &self.execution,", "ProductEvaluationExecutionStoreErrorV1::Conflict", "if self.journal.read(&self.saved)? != bytes"]
+forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "evaluate_or_readback(", "qualify_and_persist(", "unwrap_or", "permit_all"]
+required_order = [["fn attest_original_sources<", "if now()? >= self.config.training.request.envelope.expiry_unix_seconds", "let prepared = self.prepare(&mut source)?", "readback(source.snapshot, self.training()?)", "self.authenticate_roles(&source, &prepared.1, &training)?", "if self.prepare(&mut source)? != prepared", "learning_iteration_receipt_signing_bytes_v1(&prepared.0)?", "self.journal.commit_once(&self.saved, ||", "let issued_at = now()?", "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds", "key.sign(&signed.signing_bytes()).to_bytes()", "config.verifier.verify(", "learning_owner_evidence::encode(&payload, &signed)", "self.authenticate_completed(&mut source, prepared, &bytes)", "pub(crate) async fn readback_sources<"], ["fn readback_sources<", "let prepared = self.prepare(&mut source)?", "let bytes = self.journal.read(&self.saved)?", "self.authenticate_completed(&mut source, prepared, &bytes)", "fn training("], ["fn prepare<", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?", "self.config.scope.validate_snapshot(source.snapshot)?", "source.snapshot.request != self.config.training.request", "starts_with(&self.config.training.receipts)", "source.context.evaluator != self.config.signing.signer.principal", "let clock = || now()", "runner.readback_completed(", "clock: &clock,", "key: &self.execution,", "prepare_cell_learning_evaluation_v1(", "get(self.config.training.receipts.len())", ".is_some_and(|saved| saved != &receipt)", "Ok((receipt, evaluation))", "fn authenticate_roles<"], ["fn authenticate_roles<", "let now = now()?", "config.verifier.require_signer_binding(", "LearningEvidenceRoleV1::Generator", "learning_iteration_receipt_signing_bytes_v1(self.training()?)?", "qualification_bundle(execution, source.context)?", "evaluation_signing_payload_v2(", "LearningEvidenceRoleV1::Evaluator", "generator.principal() != &source.context.generator", "generator.principal().principal_id != self.config.training.owners.trainer", "evaluator.principal() != &config.signer.principal", "evaluator.controller_id() != &config.signer.controller_id", "verify_signed_actor_separation(&generator, &evaluator, now)?", "async fn authenticate_completed<"], ["fn authenticate_completed<", "learning_owner_evidence::decode(bytes)?", "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?", "readback(source.snapshot, self.training()?)", "if self.prepare(source)? != prepared", "self.authenticate_roles(source, &prepared.1, &training)?", ".verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?", "verified.principal() != &config.signer.principal", "verified.controller_id() != &config.signer.controller_id", "signed.evidence_id != evidence_id(self.saved.binding_digest)?", "if self.journal.read(&self.saved)? != bytes", "Ok((prepared.0, signed))", "fn validate_config("], ["impl<E: ProductEvaluationExecutionStoreV1> ProductEvaluationExecutionStoreV1", "fn claim(", "Err(ProductEvaluationExecutionStoreErrorV1::Rejected)", "fn complete(", "Err(ProductEvaluationExecutionStoreErrorV1::Rejected)", "fn readback(", "if key != self.key", "return Err(ProductEvaluationExecutionStoreErrorV1::Conflict)", "ProductEvaluationExecutionStoreV1::readback(self.inner, key)"]]
+required_function_order = [
+  { function = "fn create(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self"], top_level = ["let (execution, saved) = validate_config(&config, &key)?"] },
+  { function = "fn recover(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self"], top_level = ["let (execution, saved) = validate_config(&config, &key)?"] },
+  { function = "fn validate_config(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?", "config.scope.validate_snapshot(&config.training)?", "coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)", "key.verifying_key().to_bytes() != signing.signer.verifying_key", "signing.signer.principal.principal_id != config.training.owners.evaluator", "config.training.owners.evidence_trust_digest != signing.verifier.trust_digest()", "config.training.request.envelope.objective_digest != signing.verifier.objective_digest()", "config.plan.product_plan() != &signing.plan", "signing.verifier.require_signer_binding(", "product_evaluation_execution_key_v1(", "config.training.head_digest.as_array()", "config.scope.binding().as_array()", "execution.binding_digest.as_array()", "signing.verifier.trust_digest().as_array()"], top_level = ["config.scope.validate_snapshot(&config.training)?", "signing.verifier.require_signer_binding("] },
+]
+
+# Typed Dataset provenance: the host still supplies the original live owners.
+[[boundary]]
+id = "cell_q24_original_dataset_batch"
+symbol = "CellQ24TrainingBatchV1::from_original_dataset"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
+definition_markers = ["pub fn from_original_dataset(", "batch.source = Some(source)"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs", "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"]
+caller_markers = ["CellQ24TrainingBatchV1::from_original_dataset("]
+
+[[boundary]]
+id = "cell_q24_original_dataset_task"
+symbol = "CellQ24DatasetTaskV1::capture"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
+definition_markers = ["pub fn capture(", ".committed(&publication)"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs","codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs","codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"]
+caller_markers = ["CellQ24DatasetTaskV1::capture("]
+
+[[boundary]]
+id = "circuit_feature_original_committed_decision"
+symbol = "PublishedCircuitCellOwnerV1::committed"
+receiver_type = "PublishedCircuitCellOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs"
+definition_markers = ["pub(crate) fn committed(", "source.require_decision(&decision)"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs","codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs","codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs","codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs","codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"]
+caller_markers = [".committed("]
+
+[[boundary]]
+id = "cell_q24_original_dataset_revalidation"
+symbol = "CellQ24TrainingBatchV1::revalidate_source"
+receiver_type = "CellQ24TrainingBatchV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs"
+definition_markers = ["pub(super) fn revalidate_source(", "source.require_batch(self)?"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"]
+caller_markers = ["self.batch.revalidate_source()?"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
+required = ["trait OriginalTask: Send + Sync", "source: Arc<dyn OriginalTask>", "ledger: Arc<Mutex<LedgerWriter>>", "HQ24T002", "inherited_inclusion_policy", "target: raw / 256", "outcome.correction_predecessor.is_some()", "outcome.unit_profile_digest != self.projection.unit_profile_digest", "outcome.terminality != AuthenticatedOutcomeTerminality::Terminal", "outcome.value.ok_or(", "decision.selected_propensity != ProbabilityQ32::ONE", "original_candidates.sort();", "decision.candidate_ids != original_candidates", "candidate-set=ledger-sorted;policy-order=source-output", "rows256;ledger4096"]
+forbidden = ["SigningKey", ".sign(", ".claim(", ".complete(", ".writer(", "pub trait OriginalTask", "pub source:", "pub publication:", "File::open", "unwrap_or", "permit_all"]
+required_function_order = [
+  { function = "fn cell_q24_dataset_run_snapshot_digest_v1(", sequence = ["publication.original_record().snapshot", "Digest32::of_parts(&[", "snapshot.run_id", "snapshot.objective_digest", "snapshot.hard_constraint_digest", "snapshot.preference_state_digest", "snapshot.model_tuple_digest", "snapshot.prompt_registry_digest", "snapshot.artifact_set_digest", "snapshot.authority_epoch", "snapshot.generation", "snapshot.fence_digest"] },
+  { function = "fn capture(", sequence = ["let publication = source.read()?", ".committed(&publication)", "if source.read()? != publication", "Ok(Self"] },
+  { function = "fn from_original_dataset(", sequence = ["Arc::new(OriginalDataset", "source.materialize()?", "batch.source = Some(source)", "Ok(batch)"] },
+  { function = "fn require_batch(", sequence = ["self.materialize()?", "current.encoded != expected.encoded || current.digest != expected.digest", "return Err", "Ok(())"] },
+  { function = "fn materialize(", sequence = ["self.projection.inclusion_policy_digest()?", "!(1..=256).contains(&self.tasks.len())", "self.frozen.records().len() > 4096", "self.receipt.snapshot.pending_outcomes != 0", "self.receipt.snapshot.censored_outcomes != 0", ".lock()", "ledger.witness_frontier()?", "frontier.anchor.sequence > 4096", "ledger.snapshot()?", "!current.records().starts_with(self.frozen.records())", "dataset_freeze_signing_payload_v2(", "ledger.verifier().verify(", "freeze_dataset_from_ledger(", "!= self.receipt", "ledger.read_dataset_records(", "outcomes", ".insert(", "decisions.len() != self.tasks.len() || outcomes.len() != decisions.len()", "task.require_current()?", "for (record, decision) in decisions", "original_candidates.sort()", "cell_q24_dataset_run_snapshot_digest_v1(publication)", "decision.candidate_ids != original_candidates", "outcome.value.ok_or(", "if !(-(8_i64 << 32)..=(8_i64 << 32)).contains(&raw)", "codec::input(", "target: raw / 256", "batch.encoded[..8].copy_from_slice(", "batch.digest = Digest32::of_bytes(&batch.encoded)", "task.require_current()?", "ledger.witness_frontier()? != frontier", "ledger.snapshot()? != current", ".read_dataset_records(", "!= selected", "ledger.verifier().verify(", "now()?", "Ok(batch)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs"
+required = ["source: Option<Arc<dataset::OriginalDataset>>", "#[derive(Clone)]", "source.require_batch(self)?"]
+forbidden = ["pub source:", "pub fn decode(", "source: None.into()"]
+required_function_order = [
+  { function = "fn new(", sequence = ["let mut encoded =", "digest: Digest32::of_bytes(&encoded)", "source: None"] },
+  { function = "fn validate_fit_input(", sequence = ["batch.revalidate_source()?", "source.require_baseline(", "let optimizer = rule.digest(batch)?"] },
+  { function = "fn fit(", sequence = ["self.validate_fit_input(&batch, rule)?", "if heads == plan.baseline.heads", "batch.revalidate_source()?", "CellQ24TrainingOutcomeV1::NoUpdate", "plan.rebuild_candidate(", "batch.revalidate_source()?", "CellQ24TrainingOutcomeV1::Candidate"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+required = []
+forbidden = []
+required_function_order = [{ function = "fn require_current(", sequence = ["if self.fenced", "return Err(Error::CommitUncertain)", "self.batch.revalidate_source()?", "Ok(())"] }]
+
+[[boundary]]
+id = "cell_q24_original_dataset_capability"
+symbol = "CellQ24TrainingBatchV1::require_original_dataset_provenance"
+receiver_type = "CellQ24TrainingBatchV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs"
+definition_markers = ["pub(crate) fn require_original_dataset_provenance("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs", "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"]
+caller_markers = [".require_original_dataset_provenance("]
+
+[[boundary]]
+id = "cell_q24_original_trainer_dataset_capability"
+symbol = "CellQ24TrainingOwnerV1::require_original_dataset_provenance"
+receiver_type = "CellQ24TrainingOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+definition_markers = ["pub(crate) fn require_original_dataset_provenance("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs", "codex-rs/hepta-agentd/src/root_q24_model_factory.rs", "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"]
+caller_markers = [".require_original_dataset_provenance("]
+
+[[boundary]]
+id = "cell_q24_original_dataset_freeze_create"
+symbol = "OriginalCellQ24DatasetFreezeOwnerV1::create"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+definition_markers = ["pub fn create("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "cell_q24_original_dataset_freeze_recover"
+symbol = "OriginalCellQ24DatasetFreezeOwnerV1::recover"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+definition_markers = ["pub fn recover("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "cell_q24_original_dataset_freeze_authorize"
+symbol = "OriginalCellQ24DatasetFreezeOwnerV1::authorize_or_readback"
+receiver_type = "OriginalCellQ24DatasetFreezeOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+definition_markers = ["pub fn authorize_or_readback("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"]
+caller_markers = ["owner.authorize_or_readback("]
+
+[[boundary]]
+id = "cell_q24_original_dataset_freeze_readback"
+symbol = "OriginalCellQ24DatasetFreezeOwnerV1::readback"
+receiver_type = "OriginalCellQ24DatasetFreezeOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+definition_markers = ["pub fn readback("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs"
+required = []
+forbidden = []
+required_function_order = [
+  { function = "fn require_original_dataset_provenance(", sequence = ["self.source.as_ref().ok_or(", "source.require_batch(self)?", "Ok(())"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+required = []
+forbidden = []
+required_function_order = [
+  { function = "fn require_original_dataset_provenance(", sequence = ["self.batch.require_original_dataset_provenance()?", "self.require_current()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_learning_preparation.rs"
+required = ["batch: CellQ24TrainingBatchV1", "facts: CellQ24PreparedLearningFactsV1", "pub struct CellQ24FrozenDatasetV1"]
+forbidden = ["SigningKey", "File::open", "pub batch: Option", "pub facts:"]
+required_function_order = [
+  { function = "fn require_configuration(", sequence = ["LearningIterationCoordinatorV1::new(", "config.baseline.components()", "task.read_current()?", "input.scope.principal_digest.to_string()", "publication.bundle_digest() != bundle", "input.scope.run_id == config.request.source_run_id", "publication.history_digest().as_str()", "source.ok_or("] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+required = ["hepta.agentd.original-q24-dataset-preparation.v1", "ledger.binding_digest()", "self.config.rule.epochs", "self.config.rule.learning_rate_q24"]
+forbidden = ["SigningKey", ".sign(", "File::open", "HostAuthorityLearningProfileV1::new("]
+
+[[protected_file.required_function_order]]
+function = "fn authorize_and_materialize("
+sequence = ["owner.authorize_or_readback(&self)?", "self.materialize_retained(signed)?"]
+
+[[protected_file.required_function_order]]
+function = "fn capture_original("
+sequence = ["CellQ24DatasetTaskV1::capture(", "Self::capture("]
+
+[[protected_file.required_function_order]]
+function = "fn capture("
+sequence = ["require_configuration(", "expiry_unix_seconds", "owner.snapshot()?", "owner.witness_frontier()?", "preparation.signing_payload()?"]
+
+[[protected_file.required_function_order]]
+function = "fn recover("
+sequence = ["witness_frontier()?", "let preparation: CellQ24DatasetFreezePreparationV1 =", "preparation.revalidate_source()?", "Ok(preparation)"]
+
+[[protected_file.required_function_order]]
+function = "fn identity("
+sequence = ["self.revalidate_source()?", "LearningIterationCoordinatorV1::new(", "dataset_freeze_signing_payload_v2(", "ledger.binding_digest()", "self.config.rule.epochs", "self.config.rule.learning_rate_q24"]
+
+[[protected_file.required_function_order]]
+function = "fn signing_payload("
+sequence = ["require_configuration(", "self.require_frozen_cut(&owner)?", "dataset_freeze_signing_payload_v2("]
+
+[[protected_file.required_function_order]]
+function = "fn materialize("
+sequence = ["expiry_unix_seconds", "self.require_frozen_cut(&owner)?", "owner.freeze_dataset(", "CellQ24PreparedLearningV1::from_original("]
+
+[[protected_file.required_function_order]]
+function = "fn materialize_retained("
+sequence = ["self.validate_authorization(&authorization)?", "CellQ24PreparedLearningV1::from_original("]
+
+[[protected_file.required_function_order]]
+function = "fn validate_authorization("
+sequence = ["self.revalidate_source()?", "owner.verifier().verify(", "LearningEvidenceRoleV1::Evaluator", "freeze_dataset_from_ledger(", "CellQ24TrainingBatchV1::from_original_dataset(", ".require_original_dataset_provenance()?"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+required = ["hepta.agentd.original-q24-experience-facts.v1", "hepta.agentd.original-q24-dataset-facts.v1", "frozen.authorization.signature", "withdrawal_frontier: frozen.receipt.revocation_cut_digest"]
+forbidden = ["SigningKey", ".sign(", "File::open", "HostAuthorityLearningProfileV1::new("]
+
+[[protected_file.required_function_order]]
+function = "fn from_original("
+sequence = ["require_configuration(", "CellQ24TrainingBatchV1::from_original_dataset(", "batch.require_original_dataset_provenance()?", "config.rule.digest(&batch)?", "FrozenLearningScopeV2::freeze(", "LearningIterationCoordinatorV1::new(", "publication\n            .history_digest()", "publication.publication_digest()", "prepared.revalidate_source()?"]
+
+[[protected_file.required_function_order]]
+function = "fn require_initial("
+sequence = ["self.revalidate_source()?", "initial != &self.initial || scope != &self.scope", "return Err(Error::Binding("]
+
+[[protected_file.required_function_order]]
+function = "fn require_profile("
+sequence = ["profile.require_binding(", "profile\n            .frozen_scope(", ".ok_or(", "self.require_initial("]
+
+[[protected_file.required_function_order]]
+function = "fn training_material("
+sequence = ["self.read_validated_facts()?", "scope != self.scope", "dataset.receipts.len() != 2", "facts.experience_evidence", "facts.dataset_evidence", "CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(", "self.revalidate_source()?", "self.batch.clone()"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+required = ["hepta.agentd.original-q24-dataset-freeze-owner.v1", "LearningEvidenceRoleV1::Evaluator", "ProductEvaluationExecutionStoreErrorV1::Missing"]
+forbidden = ["File::open", "LearningEvidenceRoleV1::Observer", "LearningEvidenceRoleV1::Generator"]
+
+[[protected_file.required_function_order]]
+function = "fn create("
+sequence = ["preparation.signing_payload()?", "validate_config(", "LearningOwnerJournalV1::create("]
+
+[[protected_file.required_function_order]]
+function = "fn recover("
+sequence = ["validate_config(", "LearningOwnerJournalV1::recover("]
+
+[[protected_file.required_function_order]]
+function = "fn authorize_or_readback("
+sequence = ["validate_config(", "self.journal.read(&self.saved)", "ProductEvaluationExecutionStoreErrorV1::Missing", "expiry_unix_seconds", "preparation.signing_payload()?", "self.journal.commit_once(", "sign_original(", "preparation.validate_authorization(", "preparation.signing_payload()", "learning_owner_evidence::encode(", "self.authenticate("]
+
+[[protected_file.required_function_order]]
+function = "fn readback("
+sequence = ["validate_config(", "self.journal.read(&self.saved)?", "self.authenticate("]
+
+[[protected_file.required_function_order]]
+function = "fn authenticate("
+sequence = ["learning_owner_evidence::decode(", "dataset_freeze_signing_payload_v2(", "self.config.verifier.verify(", "verified.principal()", "verified.controller_id()", "preparation.validate_authorization(&signed)?", "validate_config(", "self.journal.read(&self.saved)? != bytes", "Ok(signed)"]
+
+[[protected_file.required_function_order]]
+function = "fn validate_config("
+sequence = ["preparation.identity()?", "preparation\n        .ledger\n        .lock()", "ledger.verifier()", "config.verifier.trust_digest()", "key.verifying_key()", "original.require_signer_binding(", "config.verifier.require_signer_binding(", "ProductEvaluationExecutionKeyV1"]
+
+[[boundary]]
+id = "root_q24_factory_explicit_reserve"
+symbol = "register_host_q24_model_factory"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+definition_markers = ["pub fn register_host_q24_model_factory(", "open_registered_writer(", "open_registered_learning_checkpoint(", "HostAuthorityService::reserve_q24_model_factory("]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_q24_factory_open_original"
+symbol = "HostAuthorityService::open_q24_model_factory"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+definition_markers = ["pub(crate) fn open_q24_model_factory(", "HostAuthorityFrontierStore::open(", "retained.profile != profile"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)open_q24_model_factory\\s*\\("
+
+[[boundary]]
+id = "root_q24_factory_install_original"
+symbol = "PreparedHostAuthoritySession::with_registered_q24_model_factory"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+definition_markers = ["pub fn with_registered_q24_model_factory(", "learning.q24_model.is_some()", "self.service.open_q24_model_factory("]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_registered_q24_model_factory\\s*\\("
+
+[[boundary]]
+id = "root_q24_factory_capture_original"
+symbol = "HostAuthorityService::seal_q24_model_factory_offer"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs"
+definition_markers = ["pub(crate) fn seal_q24_model_factory_offer(", "factory\n            .files\n            .take()", "self.with_learning_profile(", "seal_bytes(&bytes)?"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs","codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)seal_q24_model_factory_offer\\s*\\("
+
+[[boundary]]
+id = "root_q24_factory_take_offer"
+symbol = "PreparedHostAuthoritySession::take_q24_model_factory_offer"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"
+definition_markers = ["pub fn take_q24_model_factory_offer(", "self.service.seal_q24_model_factory_offer("]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)take_q24_model_factory_offer\\s*\\("
+
+[[boundary]]
+id = "root_q24_factory_serve_original"
+symbol = "HostAuthorityService::serve_q24_model_factory"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs"
+definition_markers = ["pub(crate) fn serve_q24_model_factory(", "HostAuthorityPeerChannel::from_stream(", "self\n                    .with_learning_profile(", "factory\n                                    .store\n                                    .compare_and_set("]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs"]
+caller_markers = []
+call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_q24_model_factory\\s*\\("
+
+[[boundary]]
+id = "root_q24_factory_purpose_send"
+symbol = "send_root_q24_model_factory_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_q24_model_handoff.rs"
+definition_markers = ["pub fn send_root_q24_model_factory_handoff(", "offer: RootQ24ModelFactoryOfferV1", "libc::getuid()", "libc::geteuid()", "MODEL_FRAME"]
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_q24_factory_purpose_receive"
+symbol = "receive_root_q24_model_factory_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_production_q24_model_handoff.rs"
+definition_markers = ["pub fn receive_root_q24_model_factory_handoff(", "rights.len() != 4", "require_root_pin(&root_pidfd, peer.pid as u32)?"]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs","codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_q24_factory_original_handoff_connect"
+symbol = "RootQ24ModelFactoryHandoffV1::connect"
+definition_path = "codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs"
+definition_markers = ["pub(crate) async fn connect(", "bundle.root != original.root", "bundle.consumer != original.consumer", "bundle.profile.require_files(", "RootObservationStream::from_stream("]
+product_callers = ["codex-rs/hepta-agentd/src/production_launcher.rs","codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"]
+caller_markers = []
+receiver_type = "RootQ24ModelFactoryHandoffV1"
+
+[[boundary]]
+id = "root_q24_factory_original_constructor"
+symbol = "AgentdRootQ24ModelFactoryV1::from_original_handoff"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+definition_markers = ["pub(crate) async fn from_original_handoff(", "profile.require_files(", "factory.exchange(Command::Observe).await?"]
+product_callers = ["codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "root_q24_factory_live_observation"
+symbol = "AgentdRootQ24ModelFactoryV1::require_current"
+definition_path = "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+definition_markers = ["fn require_current("]

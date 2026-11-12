@@ -1,0 +1,596 @@
+{
+  "cleanup": [
+    {
+      "name": "unmount-witness-bind",
+      "status": "passed"
+    },
+    {
+      "name": "unmount-bind",
+      "status": "passed"
+    },
+    {
+      "name": "remove-owned-fixture",
+      "status": "passed"
+    },
+    {
+      "name": "record-ownership",
+      "status": "passed"
+    },
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "independent_consumer_accepted": false,
+  "known_failure_exemptions": false,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "original_progress_keys": [
+    "after_maintenance",
+    "after_tests",
+    "before_tests",
+    "classification",
+    "cleanup",
+    "current_stage",
+    "errors",
+    "execution_records",
+    "expected_root_parents",
+    "external_tools_after",
+    "external_tools_before",
+    "format_base",
+    "helper_manifest_before",
+    "independent_consumer_accepted",
+    "known_failure_exemptions",
+    "maintenance_patch",
+    "operator_euid",
+    "operator_gid",
+    "operator_uid",
+    "ordinary_complete_chains",
+    "ordinary_counts",
+    "ordinary_no_update_rollback_chains",
+    "ordinary_packages",
+    "physical_daemon_root_restart_accepted",
+    "positive_adoption_chains",
+    "predecessor_results_used",
+    "reference_after",
+    "reference_before",
+    "reference_path",
+    "root_completion",
+    "root_counts",
+    "root_packages",
+    "root_uid_proofs",
+    "schema",
+    "source_path",
+    "source_sha",
+    "source_tree",
+    "status",
+    "steps"
+  ],
+  "physical_daemon_root_restart_accepted": false,
+  "positive_adoption_chains": 0,
+  "predecessor_results_used": false,
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "source": "Derived verbatim field projection; complete original progress is retained in the archive",
+  "source_sha": "63539d08933cec325fa41c3a8bfe14b71f73425b",
+  "source_tree": "6449ad41525799e42166ffca8131f0d63af7c0b3",
+  "status": "failed-native-components",
+  "steps": [
+    {
+      "elapsed_seconds": 0.032863630913197994,
+      "exit_code": 0,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.8157675820402801,
+      "exit_code": 0,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/isolated-clone.launch.log",
+        "sha256": "6b44078a3e2c369632fd6247e23693c4be1645b2ece13afda1a5adc322f05514"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 13.248744001844898,
+      "exit_code": 0,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/fetch-exact-source.launch.log",
+        "sha256": "4c79daf76c8f41d418c19f461f1feac2d49e42ad9a682cdad09110e27ae5c023"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.5742508021648973,
+      "exit_code": 0,
+      "log": {
+        "bytes": 194,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/checkout-exact-source.launch.log",
+        "sha256": "908cf6334cb0dcfb6f2d020ae041f47a34272143aa2e9128d14d41d93e4b7a65"
+      },
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.004249485908076167,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.4664388429373503,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1505,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/operator-toolchain.launch.log",
+        "sha256": "7a0089f224c0b2675519086323e9bb4ebf40d323964e6677671f35743579be09"
+      },
+      "name": "operator-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 3.5708191769663244,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1322,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/fmt-before.launch.log",
+        "sha256": "6bfc7f3db60ecf374f9f65c776aa432bb82f93fc8f51281e1c44ed9fcff7ee89"
+      },
+      "name": "fmt-before",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 128.51629298808984,
+      "exit_code": 0,
+      "log": {
+        "bytes": 73457,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/fix-seven-crates.launch.log",
+        "sha256": "cdbaa32c72b6d0b0135582dacfb6ef3c49e900e5acb647eb1d79a0ccdc486085"
+      },
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 3.5685885148122907,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1320,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/fmt-after.launch.log",
+        "sha256": "d20dea7446f04ef417390ad53d1f42ac0970fad2aaf1baeb48dce3c6fac0a4d8"
+      },
+      "name": "fmt-after",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 67.46231405995786,
+      "exit_code": 0,
+      "log": {
+        "bytes": 41052,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/bins-check.launch.log",
+        "sha256": "1508c837a0b0f67aec6fdcd4575ca5dbdd1b92a5b1ca5cd7b7af843629a7b6f9"
+      },
+      "name": "bins-check",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 19.94376477599144,
+      "exit_code": 0,
+      "log": {
+        "bytes": 45150,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/qa-b4-no-bypass.launch.log",
+        "sha256": "467eee77856a236452d26df10b02e83dc306c082bbcd4a2e150b2e3c1fafa4ce"
+      },
+      "name": "qa-b4-no-bypass",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.11501257983036339,
+      "exit_code": 0,
+      "log": {
+        "bytes": 2166,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/qa-fault-matrix.launch.log",
+        "sha256": "9b8cbb4ba625ed855ed89eade6cd6c602b7690bc011745ce9d435bc81a5005f4"
+      },
+      "name": "qa-fault-matrix",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.11490916414186358,
+      "exit_code": 0,
+      "log": {
+        "bytes": 2154,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/qa-performance.launch.log",
+        "sha256": "52c4eaf1ddff3d56161b6136584cf869867621617c2cf35ad0acb6bc71fe79fa"
+      },
+      "name": "qa-performance",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.11477230908349156,
+      "exit_code": 0,
+      "log": {
+        "bytes": 2167,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/qa-vertical-slice.launch.log",
+        "sha256": "ceb5d95a3f945ef966b55f6579e493484607ccba13216c3026ed27d34eecff86"
+      },
+      "name": "qa-vertical-slice",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.11406297399662435,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1368,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/caller-self-test.launch.log",
+        "sha256": "7cf9c2030c7e8e180f3978804e5bd7ec7c191828750af8d73c2215fed7de6dc4"
+      },
+      "name": "caller-self-test",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 2134.7692570779473,
+      "exit_code": 0,
+      "log": {
+        "bytes": 302435,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/caller-full-verify.launch.log",
+        "sha256": "3da920f794d130e639ed00d5dee36fc1ce0416f93d65e6e00acb99eb3be167da"
+      },
+      "name": "caller-full-verify",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 246.74583499808796,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1691,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/same-source-helper-build.launch.log",
+        "sha256": "e3b75e9d98905f8764659e02a4a7ee9d1df5fb7d812bd51a179262e3301b0608"
+      },
+      "name": "same-source-helper-build",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.1648525141645223,
+      "exit_code": 0,
+      "log": {
+        "bytes": 2685,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/same-source-helper-preverify.launch.log",
+        "sha256": "d766839c4f8c358b11d3200a27c7b7544c0049a48666db76b38c96d7d4b040b4"
+      },
+      "name": "same-source-helper-preverify",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 529.3240545678418,
+      "exit_code": 100,
+      "log": {
+        "bytes": 1320322,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/ordinary.launch.log",
+        "sha256": "24c37d10cad984f621ea6b6e80dc4d9c492232e1b433bcdd6df42244f8e9eb23"
+      },
+      "name": "ordinary",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.06480563106015325,
+      "exit_code": 1,
+      "log": {
+        "bytes": 1143,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/ordinary-junit.launch.log",
+        "sha256": "5514926845fa9388a41a550ddf48bc1b090cad08f2d5eff5de722e09fd5ae03d"
+      },
+      "name": "ordinary-junit",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.032680190866813064,
+      "exit_code": 0,
+      "log": {
+        "bytes": 86,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-cache.launch.log",
+        "sha256": "fb32d551b99487414e7a3fd2a20cc2b47cde487517dad02dff1e42b7097d06a2"
+      },
+      "name": "root-cache",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.11491492111235857,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1517,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-toolchain.launch.log",
+        "sha256": "b6d93c20fd91ddbf18e68cd122737b6abee2da2465ba713d85f7c1967ab73b54"
+      },
+      "name": "root-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.03288734401576221,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1683,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-toolchain-root-record-read.launch.log",
+        "sha256": "a73089561a39e067e5f833c583c1ebc1cb3da82b5332c11cb6f8150240b89216"
+      },
+      "name": "root-toolchain-root-record-read",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.007983383955433965,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-toolchain-terminal-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "root-toolchain-terminal-record-ownership",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.16517506400123239,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1022978,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-cargo-metadata.launch.log",
+        "sha256": "3125b89e17066fd778046175bec4b3f6bcccf975107d9dd562bdb5379dacdf80"
+      },
+      "name": "root-cargo-metadata",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.032703409902751446,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1742,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-cargo-metadata-root-record-read.launch.log",
+        "sha256": "3036a4570911f20a3b1c924f93b11f55f9f9cbf762b53c274b32da55449e0872"
+      },
+      "name": "root-cargo-metadata-root-record-read",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.007886798121035099,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-cargo-metadata-terminal-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "root-cargo-metadata-terminal-record-ownership",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 200.6144908189308,
+      "exit_code": 0,
+      "log": {
+        "bytes": 326336,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-binary-list.launch.log",
+        "sha256": "ed05aa530e052911dae9ed655b1fd26c0e217654d96cc6abe2430a2b424b16bf"
+      },
+      "name": "root-binary-list",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.03240741416811943,
+      "exit_code": 0,
+      "log": {
+        "bytes": 4172,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-binary-list-root-record-read.launch.log",
+        "sha256": "c1e4e472c4ecb1f2f8bc21d5af548a02e7811bd8c619a4987b1962eabd627a7d"
+      },
+      "name": "root-binary-list-root-record-read",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.016568258870393038,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-binary-list-terminal-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "root-binary-list-terminal-record-ownership",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.03286626795306802,
+      "exit_code": 0,
+      "log": {
+        "bytes": 277,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-fixture-setup.launch.log",
+        "sha256": "c3a819fb69862c7ac7cab8ec84edbdc1f5ec1a70358065b812bed650848c3f19"
+      },
+      "name": "root-fixture-setup",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 36.107069412013516,
+      "exit_code": 100,
+      "log": {
+        "bytes": 134035,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root.launch.log",
+        "sha256": "f800bac49cb773351c55df28a48c9280c9f5b6f951fcd6a06f3486ab27601c45"
+      },
+      "name": "root",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.032359613105654716,
+      "exit_code": 0,
+      "log": {
+        "bytes": 4122,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-root-record-read.launch.log",
+        "sha256": "081b95a6026f9f002675f7f56c2548bde622addfba52ae2bf98d38aa3848ebb0"
+      },
+      "name": "root-root-record-read",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.007959341164678335,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-terminal-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "root-terminal-record-ownership",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.008079026127234101,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "root-record-ownership",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.03261715406551957,
+      "exit_code": 1,
+      "log": {
+        "bytes": 3199,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/root-junit.launch.log",
+        "sha256": "84aa34ef7e47da56fe18af661d40e31144e3f9472d28798f72766ef071dc81ff"
+      },
+      "name": "root-junit",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.16452961810864508,
+      "exit_code": 0,
+      "log": {
+        "bytes": 2686,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/same-source-helper-postverify.launch.log",
+        "sha256": "917ad3f9870b504389810fbc44a527b4b5bc43549bd4b8b352687527ae9e7d50"
+      },
+      "name": "same-source-helper-postverify",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.03215143992565572,
+      "exit_code": 0,
+      "log": {
+        "bytes": 124,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/cleanup-unmount-witness-bind.launch.log",
+        "sha256": "0ec43e705394cc3aac477f89349f454b5f7a34de4f6528c1e5556ac981ada4e8"
+      },
+      "name": "cleanup-unmount-witness-bind",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.03216866008006036,
+      "exit_code": 0,
+      "log": {
+        "bytes": 116,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/cleanup-unmount-bind.launch.log",
+        "sha256": "02be1c99335cdb2a9176d290bf65c361c07798fd12c208d544956ebc8313d5d6"
+      },
+      "name": "cleanup-unmount-bind",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.03223031689412892,
+      "exit_code": 0,
+      "log": {
+        "bytes": 97,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/cleanup-owned-fixture.launch.log",
+        "sha256": "62fbcc3da57287c6f66b4639d519de957269be9369ad2bcbf3627443a6464104"
+      },
+      "name": "cleanup-owned-fixture",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.00790731213055551,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-63539d0-seven-final-v20/records/cleanup-record-ownership.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "cleanup-record-ownership",
+      "state": "completed",
+      "timed_out": false
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.future-original-circuit-custody-ufcs.v1",
+  "scope": "Future isolated source overlay only, not part of the V45 UUID or RetiredSession fix. No ref/native/checker changes.",
+  "depends_on": {
+    "source_packet": "bce023f31547d4cab39996bb3463383d4d344119",
+    "preimage": "8af6d0f93f528ddafa486cc940ed21da3b057ab5"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs",
+      "preimage": {
+        "git_blob": "8af6d0f93f528ddafa486cc940ed21da3b057ab5",
+        "bytes": 20506,
+        "sha256": "99df1c5e7da1fb3c382e61c968f7600652407823f8654a1bd7a88b92376a73e6"
+      },
+      "postimage": {
+        "git_blob": "f8158cf557e4b2cf022494cd0bc97be5cd5b75e5",
+        "bytes": 20583,
+        "sha256": "fb2a5e02962bbb1d333d61f2c3729826e049a72383308183975f7c912e22f387"
+      },
+      "operations": [
+        {
+          "kind": "replace_exact_once",
+          "before": "        custody.require_original_origin(&self.identity, &original.gate)?;",
+          "after": "        OriginalCircuitOwnerCustody::require_original_origin(\n            custody,\n            &self.identity,\n            &original.gate,\n        )?;"
+        }
+      ]
+    }
+  ],
+  "actual_types": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "git_blob": "a8b7d55807e5cd7c61899af97c22f14134ffb549",
+      "field": "original_phase_custody: Option<Arc<OriginalCircuitOwnerCustody>>",
+      "visibility": "pub(crate) use lifecycle::OriginalCircuitOwnerCustody; inherited by child via use super::*."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "git_blob": "635ddfbc986ac228518fde194b12537fc4cc5620",
+      "signature": "pub(crate) fn require_original_origin(&self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>) -> Result<(), AgentdError>"
+    }
+  ],
+  "semantics": [
+    "The existing as_ref().ok_or_else(...) result is the same &Arc<OriginalCircuitOwnerCustody>; UFCS passes that borrowed value with the same ordinary dereference coercion to &OriginalCircuitOwnerCustody.",
+    "No added clone/move/lookup/lock/clock or authority. Original require_identity check precedes the same call; original ? and following Arc::clone(custody) remain unchanged.",
+    "The method body, same identity/Gate checks, stop-on-mismatch and Gate check remain byte-identical in the separate lifecycle definition.",
+    "Original typed resolver e23bb8aa42241b429ef5dbce5a4660853b66eb2f recognizes the explicit real target type rather than relying on a method-return binding across target-specific field indexes. No helper or receiver boundary is weakened."
+  ],
+  "metadata": "The forthcoming owned Session/Circuit/C annex must protect this actual UFCS spelling. No current CALLERS table is changed by this one-op source packet; other independent annexes merge semantically under Root.",
+  "verification": {
+    "unique_forward_reverse": true,
+    "post_created_and_get_verified": true,
+    "all_other_source_bytes_identical": true,
+    "compiler": false,
+    "formatter": false,
+    "original_checker": false,
+    "native": false,
+    "refs_changed": false
+  }
+}
