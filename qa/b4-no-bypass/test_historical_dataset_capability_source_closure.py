@@ -97,7 +97,8 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertEqual(rows["q24_original_source_receipt_signature"]["product_callers"], [SOURCE])
         self.assertIn(SOURCE, rows["q24_original_prepared_operation"]["product_callers"])
-        self.assertEqual(rows["q24_original_prepared_operation_owner"]["product_callers"], [SOURCE])
+        self.assertEqual(rows["q24_original_prepared_operation_owner"]["product_callers"],
+                         [AGENT + "cell_q24_prepared_learning.rs", SOURCE])
         self.check_markers(SOURCE, "fn require_prepared(", (
             "self.config.stage != stage", "self.prepared.initial() != prepared.initial()",
             "self.prepared.scope() != prepared.scope()", "!std::ptr::eq(self.prepared.as_ref(), prepared)",
@@ -116,6 +117,19 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
             ".open(Arc::clone(&prepared), experience, mode)?",
             "self.dataset.open(Arc::clone(&prepared), dataset, mode)?",
             "prepared.revalidate_source()?"))
+
+    def test_training_material_is_compared_within_the_same_prepared_borrow(self):
+        self.check_markers(AGENT + "cell_q24_prepared_learning.rs", "fn training_material(", (
+            "self.with_original_prepared_operation(|read|",
+            "OriginalPreparedReadV1::read_validated_facts(read)?",
+            "scope != self.scope", "dataset.request != self.initial.request",
+            "dataset.owners != self.initial.owners", "dataset.receipts.len() != 2",
+            "dataset.receipts[0].observation != facts.experience",
+            "dataset.receipts[1].observation != facts.dataset",
+            "dataset.receipts[0].evidence_digest != facts.experience_evidence",
+            "dataset.receipts[1].evidence_digest != facts.dataset_evidence",
+            "CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(",
+            "OriginalPreparedReadV1::require_prepared(read, self)?", "self.batch.clone()"))
 
     def test_source_signing_stays_after_actual_claim_and_between_complete_reads(self):
         self.check_markers(SOURCE, "fn attest_at(", (
