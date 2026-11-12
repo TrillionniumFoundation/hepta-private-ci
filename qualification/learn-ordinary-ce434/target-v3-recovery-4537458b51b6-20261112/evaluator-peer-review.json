@@ -1,0 +1,155 @@
+{
+  "schema": "learn-original-target-v3-independent-peer-review.v1",
+  "status": "static_review_complete_no_blocking_finding",
+  "reviewer": "/root/learn_evaluator_budget",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1"
+  },
+  "preserved_source": {
+    "sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1"
+  },
+  "inputs": [
+    {
+      "purpose": "original_v2_script",
+      "git_blob": "a1d3c18689b0957ec11190c24a58b73d60854567",
+      "bytes": 5561,
+      "sha256": "ad15f71c5de838cccd5554055746dd205b1b30e329a36791142ce0f78d8599a2"
+    },
+    {
+      "purpose": "v3_script",
+      "git_blob": "67c8ae900edfdecef3816a4cc40849be9043f7c4",
+      "bytes": 8992,
+      "sha256": "e2737b180ce360497344d3571736a2d72cb85fec58f4e1a97e72eef8be906270"
+    },
+    {
+      "purpose": "typed_request",
+      "git_blob": "15d6e1c17bf2bbb72f855cbe45ff334fa45040e9",
+      "bytes": 9656,
+      "sha256": "46d5c63032eaeb755f6f1ef17b0182e831469ae517080d217ea3fd3cac7a746a"
+    },
+    {
+      "purpose": "exact_edits",
+      "git_blob": "3a200848c0100160b7416bbdd1e27bafb3be7d50",
+      "bytes": 9278,
+      "sha256": "246f7bee3be17839677bc9b69ca2d3ca8f44622178fc508d16249088992d47f3"
+    },
+    {
+      "purpose": "unified_patch",
+      "git_blob": "09bca7737328af992f518a85c1b0492765925e12",
+      "bytes": 6555,
+      "sha256": "12af5d7f60c82eac07a8212cc9551fd1f0780e9e70bcb26e46cf0a17e3c35cd7"
+    },
+    {
+      "purpose": "final_contract",
+      "git_blob": "eed8435dd950343f3b780a931e073b774c18d1a0",
+      "bytes": 7198,
+      "sha256": "79696706681c706ae2994f1c46514037f5e3ac8ee9267ec99d4fee762144089f"
+    },
+    {
+      "purpose": "original_native_failure",
+      "git_blob": "a02cbaf22fe79ef3af3fd7978b96e0b72f200fdd",
+      "bytes": 677,
+      "sha256": "79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8"
+    },
+    {
+      "purpose": "historical_actual_v2_creation_record",
+      "git_blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+      "bytes": 2506,
+      "sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb"
+    }
+  ],
+  "verification": {
+    "exact_edits": 8,
+    "whole_forward_equal": true,
+    "whole_inverse_equal": true,
+    "functions": [
+      {
+        "name": "identity",
+        "exact_bytes_equal": true
+      },
+      {
+        "name": "meta",
+        "exact_bytes_equal": true
+      },
+      {
+        "name": "hash_owned",
+        "exact_bytes_equal": true
+      },
+      {
+        "name": "save",
+        "exact_bytes_equal": true
+      }
+    ],
+    "pins_assignment_exact": true,
+    "data_parent_and_64GiB_gate_exact": true,
+    "new_directory_creation_validation_block_exact": true,
+    "patch": {
+      "hunks": 10,
+      "removed_lines": 14,
+      "added_lines": 56,
+      "whole_postimage_equal": true
+    },
+    "typed_request": {
+      "fields": [
+        "host",
+        "executable",
+        "args",
+        "cwd",
+        "env",
+        "idempotency_key"
+      ],
+      "script_full_equal": true,
+      "changed_fields": [
+        "args[2]",
+        "idempotency_key"
+      ],
+      "all_other_fields_and_arg_prefix_equal": true,
+      "key": "learn-ce434-453-private-build-target-recovery-v3"
+    },
+    "actual_creation_or_test_pass": false
+  },
+  "findings": [
+    {
+      "area": "Current original failure",
+      "conclusion": "The complete 677-byte original traceback reaches native driver target_root.lstat at line 36 and reports FileNotFoundError for the v2 target. The driver has already created its output directory but has not reached helper-build or just test. Missing native result is not treated as evidence that no directory was created. The reason the v2 target is absent remains unknown."
+    },
+    {
+      "area": "Real filesystem preconditions",
+      "conclusion": "The script checks the actual normal invoking UID, exact clean source roots and HEAD/tree values, and uses lstat for new root/output and old v1/v2 targets. Only FileNotFoundError is accepted as absence; permission and other errors propagate. Prior H directory file_info refusals are not used as absence evidence."
+    },
+    {
+      "area": "Original storage and asset gates",
+      "conclusion": "The original /data canonical-directory/owner/dev 2067/inode 2/minimum 68719476736 free-byte gate is byte-identical. The original manifest and dependency-recovery hashes, both original V8 paths/lengths/hashes and exact 0400 modes are preserved. The original stable no-follow full-hash helper and metadata comparison remain unchanged. All original assets and the historical v2 receipt are verified before the first mkdir."
+    },
+    {
+      "area": "Exclusive creation and real new identity",
+      "conclusion": "Only the distinct v3 root, its target child, and the dedicated recovery evidence directory are created. Exclusive mkdir modes and the original actual dev/inode/UID/mode validation block are unchanged. The success receipt records observed new identities. The historical e5c/v2 receipt is explicitly recorded as provenance, not as the new target identity."
+    },
+    {
+      "area": "Preserved source and failure behavior",
+      "conclusion": "Both current 453 and preserved a671 sources are observed before and after creation; complete observations must remain equal. Failure retains any created paths, records failure with best-effort read-only source observations, and does not cleanup, switch, reset, force, remove, signal or automatically replay. The script makes no claim that a failed partial creation is a reusable success."
+    },
+    {
+      "area": "Subprocess and typed request",
+      "conclusion": "The only subprocess operations in the recovery script are read-only Git observations, using one owned Popen handle with communicate/wait including the exception path. There is no Cargo/helper/test invocation, download or installation. The current six-field request changes only args[2] and idempotency_key from the approved current envelope; the embedded script equals the full reviewed postimage. No timeout, rows, resource or credential setting is added."
+    },
+    {
+      "area": "Later native execution boundary",
+      "conclusion": "This preparation does not rewrite native driver 21cb or freeze a native-only request. The later request must be separately bound to a successful actual v3 creation receipt and its complete readback hash, preserving strict current target identity checks and all original commands/resources/budgets. Existing source-suite success remains attached to its original failed outer execution; it is not combined into a synthetic main-native success."
+    }
+  ],
+  "limitations": [
+    "Pure static review of fixed Git blobs and JavaScript byte replays only; no Python parser, original verifier, Rust compiler, H call or filesystem execution was performed by this reviewer.",
+    "The proposed recovery has not produced an actual v3 identity, creation receipt, native result or maintenance result in this review.",
+    "The historical v2 receipt does not prove its target or V8 assets currently exist; the reviewed script must perform its actual checks.",
+    "No connection failure cause, current /data capacity, new target suitability for a complete build, or successful native/Root29/fullcaller result is inferred.",
+    "This storage recovery supplies no training/evaluation/selection/adoption authority and changes no ordinary A/B/C/cold acceptance result."
+  ],
+  "actual_creation_receipt": null,
+  "actual_native_result": null,
+  "blocking_findings": []
+}
