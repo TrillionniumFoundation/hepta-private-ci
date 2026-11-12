@@ -116,8 +116,8 @@
       "tree": "2aa9a592262d5197cdd96e79128dc18a30332ebd",
       "job_id": "1a1cccec57a-2564-1088",
       "request_digest": "8c7a0a9a2acda20d7db3c5cf985e3e22d9a1293e66a681ec08929bfe7378c754",
-      "outer_terminal": null,
-      "outer_last_observed_state": "running",
+      "outer_terminal": true,
+      "outer_last_observed_state": "failed",
       "source_checks": {
         "executed": 230,
         "passed": 230,
@@ -225,14 +225,35 @@
         }
       ],
       "full_caller_proof": {
-        "state": "pending",
-        "latest_log_bytes_observed": 0,
-        "meaning": "The original full proof is running; an empty interim log is not a passing result."
+        "exit_code": 0,
+        "elapsed_seconds": 3903.4994641707744,
+        "log": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/caller-proof-full.log",
+        "log_bytes": 170993,
+        "log_sha256": "f62811f323ae51fd2d64c64a87cfba3684824903ace38255d57cb842ecea0922",
+        "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+        "rust_files_scanned": 6411,
+        "boundaries": 373,
+        "protected_files": 290,
+        "authority_granted": false,
+        "source_sha": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+        "not_inherited_by_later_sources": true
       },
       "source_after": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
       "source_status_after": "",
       "outer_process_observation": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json",
-      "exact_request_blob": "f920d23cba04fd79d9cb991c0ea2ab8d69488ff0"
+      "exact_request_blob": "f920d23cba04fd79d9cb991c0ea2ab8d69488ff0",
+      "retained_interim_observations": [
+        "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json"
+      ],
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "final_preparation_result": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-preparation-result.json",
+      "final_terminal_observation": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-terminal-observation.json"
     },
     {
       "sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
@@ -428,6 +449,50 @@
       "performance_gain_established": false,
       "exact_request_blob": "dd22c4fb9d63c05413d83ecf4cb1f0aa468737f4",
       "exact_request_sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf"
+    },
+    {
+      "sha": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+      "tree": "4946a614e16a33aae78437a4771d0381291a54f4",
+      "host_format_qualification": {
+        "controller_terminal_observed": false,
+        "preparation_state": "failed",
+        "reported_error": "RuntimeError('formatter changed outside the fixed reviewed Rust delta')",
+        "format_exit_code": 0,
+        "source_tests_executed": 0,
+        "parser_tests_executed": 0,
+        "native_tests_executed": 0,
+        "source_after": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "source_status_after": "M codex-rs/hepta-agentd/src/authority_host_learning_resident.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_metadata_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs\n M codex-rs/hepta-agentd/src/authority_host_resident_registration.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_command_transport_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_material_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_support_tests.rs\n M codex-rs/hepta-agentd/src/config.rs\n M codex-rs/hepta-agentd/src/deployment_issuer.rs\n M codex-rs/hepta-agentd/src/deployment_learning_resident.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/objective_learning_source.rs\n M codex-rs/hepta-agentd/src/resident_learning_delivery.rs\n M codex-rs/hepta-agentd/src/runtime.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current_tests.rs\n M codex-rs/hepta-neuron/src/witness.rs\n M scripts/verify_hepta_callers.py",
+        "original_result": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/result.json",
+        "note": "just fmt changed 53 reviewed Rust files and the reviewed Python verifier; the qualification's Rust-only allowlist rejected before tests. No formatted child committed."
+      },
+      "local_source_qualification": {
+        "fixed_source": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "source_tree": "4946a614e16a33aae78437a4771d0381291a54f4",
+        "source_after": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "source_status_after": "",
+        "source_inventory": 259,
+        "unittest_reported_tests": 11,
+        "errors": 47,
+        "passed": 0,
+        "cause": "TOML inline required_function_order array followed by array-of-tables for the same namespace at CALLERS.toml:11205",
+        "parser": {
+          "passed": 16,
+          "failed": 0
+        },
+        "caller_self_test_exit_code": 0,
+        "full_caller_proof_executed": false,
+        "native_tests_executed": 0,
+        "result": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/result.json",
+        "sparse_checkout_excluded_only_historical_archive_qualification_files": true,
+        "all_tracked_rust_files_present": 6573
+      },
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      },
+      "known_equivalent_toml_repair": "77bfe71c6021e8da78ff917db3347f7e7a503d65"
     }
   ],
   "full_chain_acceptance": {
@@ -687,6 +752,55 @@
       "bytes": 1026,
       "sha256": "580100770aa7bf263f9668e92a7537726adcfda1fb987fc8020296c700387afd",
       "original_version": "2050:11862598:1026:1794441921564323520:1794441921564323520"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-preparation-result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/result.json",
+      "bytes": 3893,
+      "sha256": "7fb93b81fe6dc2cd963072b388c623d7dcf7b3004bb30b39a25661732058666d",
+      "original_version": "2050:58065573:3893:1794441493082201855:1794441493082201855"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/caller-proof-full.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/caller-proof-full.log",
+      "bytes": 170993,
+      "sha256": "f62811f323ae51fd2d64c64a87cfba3684824903ace38255d57cb842ecea0922",
+      "original_version": "2050:58132165:170993:1794441492985204752:1794441492985204752"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/resident-owners-source-v1/result.json",
+      "bytes": 5538,
+      "sha256": "2333bb064982313caa8507cea1208ef8bcafbe75fd8db0de52f309c72c93eac8",
+      "original_version": "2050:12385611:5538:1794446525766795618:1794446525766795618"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "d13b01c52dfb734dcad3e6beb35af7f87c48bace922d13830d865a03f3400a73",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/result.json",
+      "bytes": 9198,
+      "sha256": "a0acc312b692ad90887a8104ccab31cd53858981616d4920d6a80fc5b91005d7",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/source-closure.log",
+      "bytes": 60150,
+      "sha256": "52c604ea613ba259c5ade09141e7ebdaf80e0dee47da96d6ce345f9de43506e2",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
     }
   ],
   "normalized_observations": [
@@ -739,6 +853,30 @@
       "job_id": "1a1cd1615b1-2564-117e",
       "representation": "normalized_terminal_process_status_observation",
       "normalization": "Parsed original durable status from reused same-key process_start response, then serialized with two-space indentation. Exact request identity is retained separately; this is not a raw host file or original MCP envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-terminal-observation.json",
+      "note": "Authoritative original SDK process_status decoded from the hash-verified immutable result; normalized JSON serialization, not a raw host file."
+    }
+  ],
+  "retained_typed_requests": [
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/b514-source-only.json",
+      "bytes": 8856,
+      "sha256": "becf76bf63726e628b97663384191f6f77ae4a3680299d6097c1aa71b64c5d98",
+      "note": "Exact frozen typed process_start arguments, not proof of admission/completion."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/f8-resident-source-only.json",
+      "bytes": 7674,
+      "sha256": "7ceabcd85b84212abcf6dd60e188bff7fc41a7be524d6aa755deb78203ce4892",
+      "note": "Exact frozen typed process_start arguments, not proof of admission/completion."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/dcf7-crypto-only.json",
+      "bytes": 18025,
+      "sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf",
+      "note": "Exact frozen request bytes reconstructed from typed arguments and verified against the previously recorded immutable SHA-256; no completion claim."
     }
   ]
 }

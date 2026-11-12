@@ -1,0 +1,63 @@
+{
+  "state": "failed",
+  "purpose": "same fixed Resident/NoUpdate/Candidate-material source and parser qualification; no native or ordinary acceptance",
+  "fixed_input_sha": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+  "fixed_input_tree": "4946a614e16a33aae78437a4771d0381291a54f4",
+  "steps": [
+    {
+      "name": "fetch-fixed",
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "origin",
+        "f8ea08942b68c84ccc105d17371f95ddd372d355"
+      ],
+      "exit_code": 0,
+      "seconds": 9.253951027058065,
+      "log_bytes": 144,
+      "log_sha256": "042310d7e7f42f75a330b7a15cbb06c8de83e2a07999f27b883365c32656664c"
+    },
+    {
+      "name": "create-worktree",
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "-b",
+        "codex/learn-resident-owners-formatted-ce434-20261112-v1",
+        "/home/qian-qi/hepta-learn-resident-owners-ce434-20261112-source-v1",
+        "f8ea08942b68c84ccc105d17371f95ddd372d355"
+      ],
+      "exit_code": 0,
+      "seconds": 2.3229048158973455,
+      "log_bytes": 3360,
+      "log_sha256": "82ce48ca4a7f8567d616e5f54d0975d851d31aed05fb62939d7b0db0e30512a3"
+    },
+    {
+      "name": "format",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "7a6c00b8201f685db97ff52bc0b41094b9af1ed2"
+      ],
+      "exit_code": 0,
+      "seconds": 6.248879849212244,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_tests_expected": 259,
+  "parser_tests_expected": 16,
+  "native_tests_executed": 0,
+  "full_caller_proof_executed": false,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "error": "RuntimeError('formatter changed outside the fixed reviewed Rust delta')",
+  "source_after": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+  "source_status_after": "M codex-rs/hepta-agentd/src/authority_host_learning_resident.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_metadata_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs\n M codex-rs/hepta-agentd/src/authority_host_resident_registration.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_command_transport_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_material_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_support_tests.rs\n M codex-rs/hepta-agentd/src/config.rs\n M codex-rs/hepta-agentd/src/deployment_issuer.rs\n M codex-rs/hepta-agentd/src/deployment_learning_resident.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/objective_learning_source.rs\n M codex-rs/hepta-agentd/src/resident_learning_delivery.rs\n M codex-rs/hepta-agentd/src/runtime.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current_tests.rs\n M codex-rs/hepta-neuron/src/witness.rs\n M scripts/verify_hepta_callers.py"
+}
