@@ -1,0 +1,54 @@
+{
+  "added_scope": [
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs"
+  ],
+  "base_head": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+  "candidate_tree": "3903f56aab53d6a97b30c92afe3240c3bb79b186",
+  "changed_files": 40,
+  "error_block_count": 0,
+  "errors": [],
+  "fix_result": {
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "finished_at": "2026-11-12T08:44:06.841342+00:00",
+    "log_bytes": 87608,
+    "log_sha256": "ea5cb72e03c29478bbb77de1665e45aa0a9392db7a2e0c017fd9183053916565",
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "timed_out": false
+  },
+  "formatted_input_tree": "74c4313c45a53e3573ff23960482c1e4fd47688d",
+  "last_lines": "   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:1\n    |\n437 | / pub(super) fn material_with_profile(\n438 | |     root: &std::path::Path,\n439 | |     writer: &mut LedgerWriter,\n440 | |     credentials: &Credentials,\n...   |\n446 | |     evaluation_profile: Digest32,\n447 | | ) -> anyhow::Result<Material> {\n    | |_____________________________^\n    |\n    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments\n\nwarning: `codex-hepta-agentd` (lib test) generated 88 warnings (60 duplicates) (run `cargo clippy --fix --lib -p codex-hepta-agentd --tests -- --no-deps` to apply 5 suggestions)\n    Finished `dev` profile [unoptimized] target(s) in 8m 02s",
+  "raw": {
+    "bytes": 87608,
+    "gzip_bytes": 11580,
+    "gzip_path": "/home/qian-qi/hepta-utility-36fa-evidence/review-prepublish-maintenance-v1/fix.log.gz",
+    "gzip_sha256": "31b3f05496105ba0353701ea21c329eabe847badcfec9c046be10946412e999a",
+    "sha256": "ea5cb72e03c29478bbb77de1665e45aa0a9392db7a2e0c017fd9183053916565"
+  },
+  "wrapper_error": "RuntimeError: maintenance changed files outside reviewed 22; root review required",
+  "wrapper_status": "failed"
+}

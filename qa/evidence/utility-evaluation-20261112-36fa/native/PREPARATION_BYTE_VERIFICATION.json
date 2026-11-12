@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.utility-evaluation.preparation-byte-verification.v1",
+  "source_head": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+  "formatted_preparation": {
+    "base": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+    "base_tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500",
+    "candidate_tree": "74c4313c45a53e3573ff23960482c1e4fd47688d",
+    "qualification": "Formatted candidate postimages only; no compilation or behavioral tests",
+    "verified_files": [
+      {
+        "after_blob": "80faebd0661512735b5524cce3aed72f257a518f",
+        "before_blob": "f38405227b85a01c77dacbbfdf242bf635fdea21",
+        "bytes": 13212,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+        "sha256": "a9dd05ee2e8159074ab68878d0b4a859667a529fc709437e4594ce09273e23fc"
+      },
+      {
+        "after_blob": "0418a532daa7460954bec6d421d608c7aa1f16ee",
+        "before_blob": "c29c9431f90b7ef499f592d4e20a58e7b6ba96ea",
+        "bytes": 9119,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+        "sha256": "578c7df9e0391209e63151dafcee53ae1d76d00d4ef6e67da51a98633a2687b6"
+      },
+      {
+        "after_blob": "fd9c0684eec7f3ec700167ab64ab9b32d95d38ce",
+        "before_blob": "0064aef61f48479535f129bf3f9564df42add58f",
+        "bytes": 6906,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+        "sha256": "1a682e8c14bba94df2604c5de7c51099f7316ef5d191a0e4558f5aef0e888f17"
+      },
+      {
+        "after_blob": "ae51e8314c790641d3b1ebd64198073d9033e9dd",
+        "before_blob": "7d549230eb748ad55a33d993003b7d3727227358",
+        "bytes": 13488,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+        "sha256": "4e5d7d5080677d2726569dbfe0857e1d66e07ae29f55c82046bc149c93afdaf9"
+      },
+      {
+        "after_blob": "80e37d6b6f41081cc661850ea29b9ff61a5787ef",
+        "before_blob": "2a55f1171c4e23f7f995a8d4f54ec015df1ecbcc",
+        "bytes": 13580,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+        "sha256": "3467bd8da71f36e932e4c4386cbc7a075066d24564fcc7fc4310059fb6c4a8df"
+      },
+      {
+        "after_blob": "9dd91ec0e81aff907a7760cdcee880226945993d",
+        "before_blob": "05035ec2741bf1f33829a06317bbd506fe2eed22",
+        "bytes": 12136,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+        "sha256": "9f86e375f6af5a369cc2d8536e7dcdc381e42ee0f66ff3057d7951d65171f6c4"
+      },
+      {
+        "after_blob": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4",
+        "before_blob": "70c01ac12012441a3074b3cfacdc27103125fb72",
+        "bytes": 14395,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "sha256": "02acc8cf7be792f4d9ec6030dd0653e9d262a2d77b0961f5d4b1b7fc83baeba1"
+      },
+      {
+        "after_blob": "212bdf2a13005c2f9281e1772b225e508bc39d9b",
+        "before_blob": "050f149f948bf42fa4d66167b1a7461cda58280c",
+        "bytes": 21859,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_support_tests.rs",
+        "sha256": "5a5aa9e1f793f187f6bc2b88b764a7f14efc82df29ea91c4bcb7859ae1cac625"
+      },
+      {
+        "after_blob": "165792415bda2de4b5e27d2aafe6892847ed6cc6",
+        "before_blob": "fb7a503746c73baaac46d52ed523b6636479ba95",
+        "bytes": 12668,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+        "sha256": "99d1c6a9d1804590519b13e2747ef7c6aa2f48f4a7ffed3f4be4591aeb42934b"
+      },
+      {
+        "after_blob": "5e55a55d9a6a39b41c4180719e59da97a9dded4f",
+        "before_blob": "69010268db6932d97e1dc810fbed52d305ba061b",
+        "bytes": 11422,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+        "sha256": "ba7e51dc021be91cb1180dd21c0336a9bf795c5bd2abf23c97eb00a3452a5e6a"
+      },
+      {
+        "after_blob": "f3e2359b83e9b88d8a4cd2751629bda29d7ca7fa",
+        "before_blob": "9c0b806cf23653a776d3cf75232fec8f06027f78",
+        "bytes": 19782,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "sha256": "2e1dd5cef58853c7beebd2c047d8479512e312f97f08d585551c62ccaf87e76b"
+      },
+      {
+        "after_blob": "e04fc4992adfab3ee3732672f70f2a18d8a2b130",
+        "before_blob": "2d08884e9b1d4916bbd3ec3444d4961c0660b78d",
+        "bytes": 4435,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_decision_binding_tests.rs",
+        "sha256": "28206450ab3cae014e6c78045d9cafd2eb7ede37868a7f5cd5010173458e6f35"
+      },
+      {
+        "after_blob": "a285e5277c9ab7077183bf6cd77b2dd26112e1a8",
+        "before_blob": "97f0ca35bfad5e2603469dfe294ad2ebcae402bc",
+        "bytes": 12501,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "sha256": "39f34e333e232813a78adde76c5eafe102b0b3053f19453077f2816507c4b5ae"
+      },
+      {
+        "after_blob": "2db768378a7fca74daf64367e32756452cc9e894",
+        "before_blob": "af2a90caddcc4ef972d9af8434e963e503123a06",
+        "bytes": 1947,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+        "sha256": "52e31683fa2bc12944ce54076abb04a68228554b6e9dde7305aab395f7004270"
+      },
+      {
+        "after_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+        "before_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+        "bytes": 10807,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+        "sha256": "281d4befb8661b56055607e9f7beb704fdca589cab8b178fa33874a36a01ab3c"
+      },
+      {
+        "after_blob": "771a33453238653a587632c04bf62b988421fb1b",
+        "before_blob": "78e0f8f1a74be2c0496840b0f1b4444b637fcf66",
+        "bytes": 11680,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+        "sha256": "fb91e9d5ab09b5dc2ab2d28b3e0880f20d795ea35ea2a8c4b71a9b35c8a8ce56"
+      },
+      {
+        "after_blob": "15e500215e19d8ee1603535418a1be5cfbb0f353",
+        "before_blob": "c93287d1ee34e9ef740d68c9cb17696d63f51b68",
+        "bytes": 18555,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "sha256": "4777b2a81fa7630afaed0aec07dc11f4038ee6b2b62c18d9ea5ca952178a7877"
+      },
+      {
+        "after_blob": "7cc094eca0b5f2a9593d9d0b47f5e1dda1709b4e",
+        "before_blob": "48eabb640773531545f71845697c6a6513870716",
+        "bytes": 13744,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "sha256": "99c7e7390e78cb1a146b681fc86db36e9d6afd2898d279fcca7af930dd2b1889"
+      },
+      {
+        "after_blob": "772a9733b7a77f0bfb41271903df5a753657adee",
+        "before_blob": "f9c2df78995f3d23123b415904ac00926a76fd75",
+        "bytes": 69603,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "sha256": "f79f48daec052312be625b8853c6605d25fa7770330e2e83d2ee97a5095b8db2"
+      },
+      {
+        "after_blob": "086a50cd688da7e06d4e290dabd56d68ff975e86",
+        "before_blob": "01b7c378981b75e6234dc35e6b4f4d494b226bca",
+        "bytes": 13827,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+        "sha256": "31d7f57de40c69a6ef20ed7edc30efc9fbb0819ba0a0ceb3f12b5eecfb7044c3"
+      },
+      {
+        "after_blob": "4223b3fc47afd5c72ed42b62bd1a7129d1c0747e",
+        "before_blob": "a998ae96bb4669e6d1fc51bb84d744f327b8c37d",
+        "bytes": 19222,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+        "sha256": "e9586933feb4476d3a7d22aef249fde1491650814dd0225907473a654aee5abc"
+      },
+      {
+        "after_blob": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+        "before_blob": "b0ea87b5282a7fa61274ac03bbdcfe671c95d8b7",
+        "bytes": 11022,
+        "mode": "100644",
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+        "sha256": "b6928800b4a9192745c4f1942b5de17c08ce8b2550b3ffa890defba5b1332b46"
+      }
+    ]
+  },
+  "formatted_packet": {
+    "bytes": 63511,
+    "sha256": "49426557523e916114d47623617a78f847296a0df3436c4e5b90e2dfee5edb70",
+    "raw_bytes": 355831,
+    "raw_sha256": "a1235b51696b7749203315988962bf227ead089d8e18e0d92ed8fa46e2bb2761",
+    "gzip_git_blob": "e7ad692019a43d25e8f9728a4f80e4b790826922",
+    "base64_git_blob": "c80cfcbb84fc00d53e9ee683325684f202c98418"
+  },
+  "github_tree_reconstruction": {
+    "formatted_input": "74c4313c45a53e3573ff23960482c1e4fd47688d",
+    "maintenance_postimage": "3903f56aab53d6a97b30c92afe3240c3bb79b186",
+    "both_equal_original_desktop_reports": true,
+    "original_22_postimages_unchanged_by_second_maintenance": true,
+    "maintenance_files": 40,
+    "added_files": 18
+  },
+  "maintenance_raw_integrity": {
+    "gzip_bytes": 11580,
+    "gzip_sha256": "31b3f05496105ba0353701ea21c329eabe847badcfec9c046be10946412e999a",
+    "raw_bytes": 87608,
+    "raw_sha256": "ea5cb72e03c29478bbb77de1665e45aa0a9392db7a2e0c017fd9183053916565",
+    "error_diagnostic_blocks": 0,
+    "tail": [
+      "",
+      "warning: `codex-hepta-agentd` (lib test) generated 88 warnings (60 duplicates) (run `cargo clippy --fix --lib -p codex-hepta-agentd --tests -- --no-deps` to apply 5 suggestions)",
+      "    Finished `dev` profile [unoptimized] target(s) in 8m 02s"
+    ],
+    "qualification": "Independent archive byte checks, not a behavior-test execution"
+  },
+  "qualification": "Static byte and Git-object verification only. The original maintenance returncode 0 applies to an unpublished preparation; wrapper scope rejection and zero behavior tests remain distinct. No integrated 726 execution is claimed."
+}

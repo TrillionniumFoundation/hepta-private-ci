@@ -1,0 +1,31 @@
+diff --git a/CALLERS.toml b/CALLERS.toml
+index 44918e0d7e06eb2afcbf42fe8e38229eea4bf4a2..1f6c7677c46d4e1076c1ec944ddbd9e46c998517 100644
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -7135,7 +7135,7 @@
+ path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+ required = []
+ forbidden = []
+-required_order = [["async fn in_lane<T:","training.require_live_source_if_captured()?","let result = work(&mut owners)","if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","if owners.require_captured_tail_current().is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","result"]]
++required_order = [["async fn in_lane<T:","training.require_live_source_if_captured()?","let result = work(&mut owners)","if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","&& owners.require_captured_tail_current().is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","result"]]
+ required_function_order = [
+   { function = "fn require_captured_tail_current(", sequence = [".require_original_dataset_scope(", "&self.receipts.config.dataset,", "&self.receipts.config.scope,", ")?", "match self.receipts.journal.read(&self.receipts.saved)", "Ok(_) =>", "self.read_original_completion()?", "self.require_retained_attestation_current(&completed)?", "ProductEvaluationExecutionStoreErrorV1::Missing", "LearningOriginalOwnerErrorV1::Pending", "Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into())", "Ok(())"] },
+   { function = "fn require_retained_attestation_current(", sequence = ["learning_iteration_receipt_signing_bytes_v1(", "&completed.receipt", "self.receipts", ".verifier", ".verify(", "LearningEvidenceRoleV1::Generator", "&completed.attestation", "&payload", "super::now()", ".map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?", "Ok(())"] },
+@@ -7155,7 +7155,7 @@
+ path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+ required = ["source_fenced: bool", "source_fenced: false"]
+ forbidden = []
+-required_order = [["async fn in_lane<T:", "owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let result = work(&mut owners)", "if owners.require_captured_tail_current().is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
++required_order = [["async fn in_lane<T:", "owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let result = work(&mut owners)", "&& owners.require_captured_tail_current().is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
+ 
+ 
+ 
+diff --git a/.github/blob-size-allowlist.txt b/.github/blob-size-allowlist.txt
+index b53cb67cefe37bc0c277c342dc36fce4639f708d..674d53420bc09883b1b6f50ff5098e3a8e0aab67 100644
+--- a/.github/blob-size-allowlist.txt
++++ b/.github/blob-size-allowlist.txt
+@@ -89,3 +89,4 @@
+ sha256:b76d9fc58c178d9e1edb33efb3e5ed12b397c028b9e0ec218f94a9161ca3830d CALLERS.toml
+ sha256:6a8ebaaed565060351cd7e5861206659c9b191b367bf2e42937e8df008ef7e5f CALLERS.toml
+ sha256:a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b CALLERS.toml
++sha256:103904d43ead801b3752c5ab861b8cccf11bcd064c575bf720153efcd74161b6 CALLERS.toml
