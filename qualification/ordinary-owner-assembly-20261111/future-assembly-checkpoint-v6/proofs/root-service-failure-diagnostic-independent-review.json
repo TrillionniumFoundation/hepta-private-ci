@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "independent_short_review_of_actual_V46_authority_lane_error_diagnostics",
+  "status": "STATIC_REVIEW_NO_LOCAL_BLOCKER_NOT_QUALIFICATION",
+  "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+  "pre": {
+    "blob": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2",
+    "bytes": 23362,
+    "sha256": "9cf07c375803d5de9a8f5eccb6c37f10bfad4487b9523464e0b99fb433eb2670"
+  },
+  "post": {
+    "blob": "a8df9b4203334a7e53d1d42dc1e6202b4752677e",
+    "bytes": 24200,
+    "sha256": "68488ab6939d216d1e2f26f1c7aba90a042d3729d98d7f5e14bc09cf84075330"
+  },
+  "verified": {
+    "actual_both_sources_GET": true,
+    "two_unique_exact_operations_forward_reverse_full_bytes": true,
+    "old_full_source_restored_by_removing_only_diagnostic_additions": true,
+    "handler_body_unchanged": true,
+    "existing_peer_policy_limits_and_checkpoint_validate_peer_order_unchanged": true,
+    "actual_constructor_and_exchange_each_called_once": true,
+    "actual_error_values_and_question_mark_return_preserved": true,
+    "original_EOF_boolean_and_final_Ok_preserved": true,
+    "helper_and_each_call_cfg_test": true,
+    "stderr_write_error_ignored": true
+  },
+  "findings": [
+    "The constructor Result is inspected only on its existing Err before the original question mark. No re-open or second from_stream call was added.",
+    "The exact original handle(lane, bytes) runs once in the same exchange closure. inspect_err borrows its existing error and returns the same Result; outer exchange Err is then observed at its original return boundary.",
+    "The new helper writes only the actual lane, fixed stage label, and original error Debug enum to stderr under cfg(test). It does not affect authorization, Frame bounds, deadlines, clocks, EOF handling or error mapping.",
+    "A test-only diagnostic write still has normal I/O cost after the observed failure; this review does not infer that the first emitted lane was the initiating cause, or that a failed native run is repaired."
+  ],
+  "limits": [
+    "No h/native/shell/checker/compiler/formatter invocation.",
+    "No failure leaf inferred from read-prefix Closed or a later Observation PeerDenied.",
+    "Root should overlay this diagnostic onto the actual next source with its own exact protected-marker adaptation; the future phase source graph is separate."
+  ],
+  "authority_granted": false
+}

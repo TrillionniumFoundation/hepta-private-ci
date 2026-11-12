@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "kind": "Root independent full source replay of concrete receiver clarification",
+  "predecessor_manifest": "b891adb07f46bca5dd636ba53f4b3db70ca24d87",
+  "manifest": {
+    "blob": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+    "bytes": 56896,
+    "sha256": "2f8577610e00ad1719f3594ff41f566d87aa93d920ca4595f9dc77f988b07908"
+  },
+  "base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+  "base_tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+  "paths": 14,
+  "operations": 38,
+  "files": [
+    {
+      "path": "codex-rs/rmcp-client/src/rmcp_client.rs",
+      "pre": {
+        "blob": "a15842cdeb3b7ee298211e5567f7a5291e669f3f",
+        "bytes": 63276,
+        "sha256": "f4f42776ddd0b83f1cf8bd8eb5f32b7a341f9993b218bfcf61cc17982c4afc5e"
+      },
+      "post": {
+        "blob": "29d93e86c279aa45f006e9b4911d0ddc89e2d254",
+        "bytes": 63304,
+        "sha256": "3f87f16cc94066f9c5254989072ae46fb160b76ad9bbbef2b373680e403d8077",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": {
+        "blob": "d79f477158cda9a31c025ab62ded8bfe84b8f6c0",
+        "bytes": 13374,
+        "sha256": "ebf2c958a79c6c34c0c7e91300e8cfa4331890fa496d4e34d548066663336f0a"
+      },
+      "post": {
+        "blob": "24b181104af7d476136667f97c0393ce00a2d0ea",
+        "bytes": 13478,
+        "sha256": "3f4ff61e0e0784d1c593bf53435fdc72dbbd4c2b4776ce23a3c0e8f097b23c96",
+        "create_get_equal": true
+      },
+      "operations": 3,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+      "pre": {
+        "blob": "53d84d1ad2c2fcce708f0aeeb0052f13ad24a0a7",
+        "bytes": 40340,
+        "sha256": "9472200315e7d521c613df1d203f3b1bea9c6fe1670aa841c62c412b0dc985fe"
+      },
+      "post": {
+        "blob": "3801128bd59fa176baeaea31cdb6cc39cca448a5",
+        "bytes": 40412,
+        "sha256": "650ee6ec9205ef8f14c25cda2d4244091b019a2cdb0cb1d24aa8aeb966b14358",
+        "create_get_equal": true
+      },
+      "operations": 2,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+      "pre": {
+        "blob": "55360d6a660e907cffd0f4e5a251f3f6eb0fcb4c",
+        "bytes": 51541,
+        "sha256": "3db3fbe349915311450514b6fbf6a1d447ab0edc62013c9074e42804bf9148e1"
+      },
+      "post": {
+        "blob": "9be80863bbd6aca092387740e444495a73977d8b",
+        "bytes": 51560,
+        "sha256": "f586e7705d1a9197cbac3e7d0c97509bd410b1057e2b887143cddb7adde67814",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/configured_mcp_runtime_owned_shutdown.rs",
+      "pre": {
+        "blob": "46cd1c62cd7ea24e14a8350a3fb1f18ba6bb7bd5",
+        "bytes": 7392,
+        "sha256": "1426ba3f17b5f31db173f11b7b809d5ae57051526d4d8ae61c903095bfb45fc0"
+      },
+      "post": {
+        "blob": "35aee83996fe4ab83549c4fb2789437033477ea8",
+        "bytes": 7458,
+        "sha256": "3a553d4bbe988b313bc96d9d9c9fe89f0031bbb22dbeeca516cb9e09214edf3d",
+        "create_get_equal": true
+      },
+      "operations": 2,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "pre": {
+        "blob": "89011645e5d8fc23d7d87c3c20fd8aa9170c772c",
+        "bytes": 17012,
+        "sha256": "83a0118d46bf69d1c245f9a5381dcc3113b8687709a08ed09a590fbb70a3b054"
+      },
+      "post": {
+        "blob": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+        "bytes": 17186,
+        "sha256": "ad7480a7bbe96283b73006c4cec706cb58b0623998099c0a16c5496e6d967217",
+        "create_get_equal": true
+      },
+      "operations": 5,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": {
+        "blob": "03ac047122ad4f15bfc1c32ee8cfd5eaf53c7b38",
+        "bytes": 11518,
+        "sha256": "715958ca48afe71407e899e2fadc6a0cfc4bda9e6c308c6fb4a800bd8171974a"
+      },
+      "post": {
+        "blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "bytes": 11788,
+        "sha256": "74d7a6d168faa960804b7b21ce3bba56ebbe6de3922485736a972356411fe725",
+        "create_get_equal": true
+      },
+      "operations": 6,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+      "pre": {
+        "blob": "24f9aac495c88c1f742511a3d6d43ed0bbe23381",
+        "bytes": 8054,
+        "sha256": "ef1c7645a123ea2f95834f54d12de301d1e585e67d67795b68a5c0d6092266d7"
+      },
+      "post": {
+        "blob": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+        "bytes": 8156,
+        "sha256": "afddb4f71668a80d0b86e9a4af2ec17e40fe637fcf7a4c173a0be7efa2750e3b",
+        "create_get_equal": true
+      },
+      "operations": 2,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": {
+        "blob": "d32a23d2db0e2fcd201d4c5edae4b5e98feaaead",
+        "bytes": 5975,
+        "sha256": "32b85a26bacdb75caa120fbeefc4e756a32293a3ab3a3f6b0fb1d522511e0d48"
+      },
+      "post": {
+        "blob": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+        "bytes": 6068,
+        "sha256": "dc518defb682662fbef3471774508f1849579ebadef2cd4844dee400cd366d75",
+        "create_get_equal": true
+      },
+      "operations": 3,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "pre": {
+        "blob": "1d7bd062368cc0de6e0d340f6ce7484377faf612",
+        "bytes": 13013,
+        "sha256": "f22c1defae3690a1416a3aa19350e98a59996dea794f6c0113f8f893acf3905a"
+      },
+      "post": {
+        "blob": "04613d19c4b9b89715d57978ec6e226abd6bd4a7",
+        "bytes": 13042,
+        "sha256": "ecbd492b4687a2089864204bf14fed273b4b301a5de8d93f187fa1446dc67a34",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_original_shutdown.rs",
+      "pre": {
+        "blob": "5d9891761b0e178be3fcff8a4bea0884a1ed280a",
+        "bytes": 693,
+        "sha256": "077a087078c5f5d84823061d737884c3933fcd4a1e98fea81533fddf1938d6e3"
+      },
+      "post": {
+        "blob": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca",
+        "bytes": 748,
+        "sha256": "e2399b5f4ee280e83bfec53c1fa0baca35d007e82001a6451dfc1eb89e1ac681",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/codex_delegate.rs",
+      "pre": {
+        "blob": "83342027ae59f07116ab5a0589bcb523538b8410",
+        "bytes": 13948,
+        "sha256": "e223ed10f73f880503e4209eb0c50a172ebdbb2b9e3fe428a0ed446dac603aaa"
+      },
+      "post": {
+        "blob": "50b7345c20029c33dc18fb0ad53a6295995f260e",
+        "bytes": 13978,
+        "sha256": "a16add28cd6cc5712f7be4c51de94f73be49635000c0ec6da7d32a32f9f96ad0",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "pre": {
+        "blob": "431d242e6d9eef1b0d202094b4b0d6d4629ea8a5",
+        "bytes": 82010,
+        "sha256": "62f5e2d38115df3704fa97eb8080db6102c84224371b9dbaf6f7224776971951"
+      },
+      "post": {
+        "blob": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+        "bytes": 82345,
+        "sha256": "6fed2a6ba6605fcee839cd4b2e7ae11e2cefad90cd60368b9b801eda1994b33a"
+      },
+      "operations": 8,
+      "packet": "e6082b028714c1385587f7d7895808d07fe55039",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+      "pre": {
+        "blob": "a089ff3568f4919b13026116d36d57fc22329e59",
+        "bytes": 34768,
+        "sha256": "84e44303f79badb9d5642efae5aca27f9c72d3e674cb870979301c7dc52b8c5c"
+      },
+      "post": {
+        "blob": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+        "bytes": 34808,
+        "sha256": "37dde11fd47e6b59bbd22a59ab043c4ce10d8aa4e7cac22a8fde13d2ac0e5346"
+      },
+      "operations": 2,
+      "packet": "e6082b028714c1385587f7d7895808d07fe55039",
+      "full_forward_equal": true,
+      "full_reverse_equal": true
+    }
+  ],
+  "status": "UNFORMATTED_UNCOMPILED_UNQUALIFIED",
+  "checks": {
+    "full_preimage_git_size_sha256": true,
+    "full_postimage_get_git_size_sha256": true,
+    "all_exact_operations_unique_forward_reverse": true,
+    "all_final_bytes_equal": true,
+    "existing_manifest_paths_and_base_preimages_unchanged": true
+  },
+  "limits": [
+    "Mechanical full-byte replay; static annotations do not prove compiler or original checker success.",
+    "No native qualification or business acceptance inherited."
+  ]
+}

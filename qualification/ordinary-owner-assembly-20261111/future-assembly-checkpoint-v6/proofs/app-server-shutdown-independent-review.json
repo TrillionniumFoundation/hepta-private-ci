@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "kind": "independent_AppServer_actual_owner_custody_and_UFCS_review",
+  "reviewer": "/root/hepta_audit",
+  "verdict": "No confirmed local static blocker in the reviewed actual-owner slice and the exact receiver-spelling followups. This is not a compiler, checker, native-test, complete-daemon-exit, or business-qualification result.",
+  "reviewed_packages": [
+    "bda702227403b6de5c738ee094236f0617f8f9ce",
+    "ea02c41a45458e02f3a50acbcf19a251bf0978e1",
+    "e6082b028714c1385587f7d7895808d07fe55039",
+    "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9"
+  ],
+  "detail": {
+    "sha": "43303fe6880285dd2bdda4367b61a8e3142d3122",
+    "bytes": 35278,
+    "sha256": "7c79c3e3a164c27537ac0d100881b29b27ea7bc9123597cef92948325360565e",
+    "create_get_exact": true
+  },
+  "scope": {
+    "main_source": "bda702: 15 paths / 59 operations; ea02: 3 component/module operations",
+    "receiver_followups": "e608: 2 paths / 10 operations; 31c24: 12 paths / 28 operations",
+    "total_source_operation_occurrences": 100,
+    "final_distinct_paths": 28,
+    "exact_verification": "Independent Git GET of all needed full pre/post images; size, SHA-256, Git-blob identity and unique forward/reverse operation application. All 28 final paths equal the actual ef7c2c composite entries.",
+    "composite": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+    "core_previous_review": "0645658c578f1807043ead364b9826468145e8b0",
+    "core_followup": "The three Core expressions in 31c24 were checked against their actual &self/&Arc receivers. The earlier Core review is not silently rewritten to imply it included this later delta.",
+    "mcp_limit": "31c24's MCP changes were reviewed as exact receiver/borrow/move spelling deltas. This report does not independently re-review all lower MCP/stdio/SDK cleanup implementation."
+  },
+  "findings": [
+    {
+      "topic": "Concrete entry and original origin",
+      "sources": [
+        "6717b2ee713ce8fd3df6a94f7456225470930782",
+        "7f2b8a465b3f55e71484e16ad5c871dfb8352c32",
+        "b28a6ee2ae3060d345dfdc283ae156c3ed61a8b0",
+        "91900627409741a362513bf6b37dd0184682ed49"
+      ],
+      "finding": "The original Control-created registry is attached once to AgentdConfig, taken by actual runtime construction, and paired with the existing inherited RootBound socket. Only Linux Standard profile selects this branch. The AppServer wrapper also requires the inherited Unix listener, disabled-ephemeral remote control, no independently installed shutdown signal handler, and the real original drain. Unsupported profiles fail; there is no fallback to an ordinary invocation that could supply a joined observation."
+    },
+    {
+      "topic": "Actual main and registration cut",
+      "sources": [
+        "503628dd6225dc886d23e5432bab81692572a7ce",
+        "91900627409741a362513bf6b37dd0184682ed49"
+      ],
+      "finding": "The strict registry takes its state lock, rejects a second/stopped invocation, spawns the original inner main future, and stores the same actual JoinHandle before the caller's next await. A cancellation guard requests stop if the external waiting future is lost. The selected inherited acceptor is registered synchronously before the next awaited startup step; the selected profile avoids the unrelated persisted-remote-control branch. Telemetry, outbound and processor handles likewise enter the same owner. The processor Arc is retained before the fallible Core preparation await.",
+      "limit": "This observes actual registered work. Neither an unpolled public wrapper nor an empty new registry is called a completed AppServer."
+    },
+    {
+      "topic": "Cancellation and repeated observation",
+      "source": "503628dd6225dc886d23e5432bab81692572a7ce",
+      "finding": "OriginalAppServerJob owns the actual handle in an AsyncMutex<Option<...>>. A waiter borrows it across await, so canceling the waiter does not detach or replace the actual task. After terminal await, removal and storing the original result occur under the same lock without another await. Re-observation returns the stored result and never polls a completed handle. JoinError and original io::Error remain real error sources. Main and processor-cleanup jobs follow the same mechanism.",
+      "limit": "Dropping all supervision is not itself a join. The actual external Control registry is a required ownership premise, and is present in the reviewed outer call path."
+    },
+    {
+      "topic": "Lock order and no self-join",
+      "sources": [
+        "503628dd6225dc886d23e5432bab81692572a7ce",
+        "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+        "6f0b553ec6b0843bb5db7e903d0de47d876e4662"
+      ],
+      "finding": "Registry std::Mutex guards are released after snapshots/registration and before awaited joins. Queue admission holds its own queue lock through request insertion and registering that actual drain; cleanup does not hold the registry lock while awaiting the queue lock. Per-job async locks intentionally serialize observers of one handle. The outer run_original_main waiter is separate from the spawned inner main; only the former joins the main registry, so the inner main's processor cleanup does not await its own main handle."
+    },
+    {
+      "topic": "Actual admission closure before producer joins",
+      "sources": [
+        "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+        "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+        "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1",
+        "250a3c8aebfabf40fce4d622c483935bc3109b27"
+      ],
+      "finding": "The processor stops actual RPC dispatch and closes each original RPC gate. Strict cleanup seals plugin admission and joins the previously admitted real callback tasks before sealing queues. Plugin work is registered before upgrading the weak manager. Queue admission and drain creation use the same mutex; a late queue request is rejected and recorded rather than run unregistered. The original queue drain body is byte-identical. Cleanup waits the registered queue, RPC and connection-cleanup jobs, then checks queue emptiness only as an additional invariant. The strict connection-cleanup abort path records failure and retains handles rather than turning abort into completion."
+    },
+    {
+      "topic": "Core and processor resource order",
+      "sources": [
+        "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+        "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+        "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+        "04613d19c4b9b89715d57978ec6e226abd6bd4a7"
+      ],
+      "finding": "After the actual request producers finish, cleanup closes and waits the real TaskTracker and joins the captured ThreadStartup jobs. It then invokes the strict Core startup/session/delegate-loop shutdown, clears original listeners, and awaits actual listener and unload jobs. Only after those awaits does it try to take the real MessageProcessor. A successful take permits borrowing and awaiting its original models-refresh and turn-cost handles before dropping that processor. A remaining Arc is retained in unreleased_processors, poisons success, and returns an error; its reference count is not used as a positive join substitute.",
+      "limit": "On a residual-ownership failure the retained processor/auxiliary ownership is explicitly unresolved, not reported physically retired. The successful observation requires the real cleanup job to have returned success."
+    },
+    {
+      "topic": "Errors cannot become a nominal successful join",
+      "sources": [
+        "503628dd6225dc886d23e5432bab81692572a7ce",
+        "6f0b553ec6b0843bb5db7e903d0de47d876e4662"
+      ],
+      "finding": "Each cleanup group collects actual errors while continuing the subsequent groups. The main's old let-underscore local awaits do not suppress strict failure: their original jobs cache the real terminal errors, and the final registry rechecks them. A forced processor shutdown records a permanent failure. Main and cleanup failures are aggregated without replacing the original source. Missing actual main/processor cleanup/required task kinds, poison, changed task identity, or any recorded failure prevents OriginalAppServerJoined.",
+      "limit": "Required-kind presence and task-list equality are additional checks after real terminal awaits, not evidence of completion by counts."
+    },
+    {
+      "topic": "Real phase owners and final outer",
+      "sources": [
+        "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+        "39d127250b8e825292c25f8c34ec360d5d94ff60",
+        "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd",
+        "798fb1c705e20545b35e0276839483da2f857c05",
+        "50b52c44ff9e9dc790660b176c251fb7b69fefc5"
+      ],
+      "finding": "RuntimeStopped is formed only after the original run_with_shutdown returned Ok and the same AppServer registry actually joined and revalidated its returned observation. Generic Runtime Ok alone is insufficient. The actual Root attachment, device, configured MCP runtime, context and held Root pidfd remain in RuntimeStopped; AppServer cleanup therefore does not release that independent Root session owner. The original production mutation capability retains the same ProductionDurableWriter Arc, and PromptRuntimeHost retains its actual owner callbacks. Processor cleanup releases its copies after real joins. The final outer re-observes the same AppServer registry and preserves any cleanup error; it does not construct a replacement Joined from an event.",
+      "limit": "OriginalAppServerJoined proves this registered owner scope only. It does not prove C effect, durable delivery, Root retirement, all SDK/background tails, writer-File final retirement, or daemon process exit. Those require their separate actual capabilities and observations."
+    },
+    {
+      "topic": "Default None branch",
+      "sources": [
+        "91900627409741a362513bf6b37dd0184682ed49",
+        "3fc930e1e619661049f59b6aac815077031ab62d",
+        "250a3c8aebfabf40fce4d622c483935bc3109b27"
+      ],
+      "finding": "Default configuration and runtime options select None. The new wrapper directly awaits the original inner main with the same owned arguments; strict admission/queue/cleanup checks are selected only by the explicit Some registry. Ordinary ConnectionCleanupTasks still uses its original JoinSet/abort paths, and ordinary optional-task waits still await the same original JoinHandle at the original call sites. Seven selected old full functions were independently compared byte-for-byte, including original queue drain, models spawn/shutdown, turn-cost shutdown, listener clearing, ordinary connection_closed, and ordinary plugin callback.",
+      "precision": "The files contain deliberate new optional wrappers and fields; this is preserved ordinary behavior and specified exact original segments, not a false assertion that every entire ordinary source file is unchanged."
+    },
+    {
+      "topic": "UFCS followups",
+      "sources": [
+        "e6082b028714c1385587f7d7895808d07fe55039",
+        "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9"
+      ],
+      "finding": "All 38 changes use the actual same receiver and preserve arguments, move/borrow kind, evaluation order, await, question-mark propagation and error branches. The real ModelsRefreshWorker needs &mut; TurnCostWorker is already the mutable Some binding; ThreadStateManager is owned and is explicitly borrowed. The three Core changes retain the original loop observation/Origin/AgentControl objects. ConfiguredMcpRuntime shutdown remains a consuming call; returned observation Arcs are borrowed, not rebuilt. Twenty actual receiver signatures were checked against source. Reversing each operation restores every prior byte.",
+      "limit": "These changes remove the identified source-expression ambiguity for the unchanged checker; this report does not claim original typed-helper execution or a complete metadata union pass."
+    }
+  ],
+  "components": {
+    "new_count": 10,
+    "executed": false,
+    "review": "Read all eight owner task/FD/panic/queue/cancel components and both profile/actual-descriptor components. They exercise the real added private primitives and do not manufacture a business, Root, or successful full AppServer receipt.",
+    "old_tests": "Existing test bodies in this slice are retained; no original failure assertion was weakened."
+  },
+  "not_performed": [
+    "compiler or typecheck",
+    "Cargo",
+    "native or h/PTY",
+    "formatter",
+    "original checker/typed-helper execution",
+    "ref update",
+    "full-repository behavioral or all-background-task proof"
+  ],
+  "metadata_scope": "The separately frozen AppServer and MCP/Core annexes were received but are not yet included as a completed independent metadata review in this source verdict.",
+  "qualifications": {
+    "HQ1": 0,
+    "HQ2": 0,
+    "HQ3": 0
+  },
+  "source_edit_by_reviewer": false
+}

@@ -1,0 +1,948 @@
+{
+  "schema_version": 1,
+  "kind": "independent_AppServer_and_actual_owner_UFCS_static_review_detail",
+  "reviewer": "/root/hepta_audit",
+  "original_core_review": "0645658c578f1807043ead364b9826468145e8b0",
+  "packages": [
+    {
+      "sha": "bda702227403b6de5c738ee094236f0617f8f9ce",
+      "bytes": 86927,
+      "sha256": "44c812d30c7635ac0062c42c828a011ad4f3d1dbb731e257c30db369890a3bbc",
+      "scope": "15-path actual AppServer task/processor custody; 59 operations"
+    },
+    {
+      "sha": "ea02c41a45458e02f3a50acbcf19a251bf0978e1",
+      "bytes": 17342,
+      "sha256": "737a95b5323d59f1780a4921c3ef65f66bb0cfa50dc20186e9981a3c628c4484",
+      "scope": "3 operations: actual component tests and their module attachment"
+    },
+    {
+      "sha": "e6082b028714c1385587f7d7895808d07fe55039",
+      "bytes": 40758,
+      "sha256": "08f42637ebe0b0392f14e4bd595b10f3177addb7203ed76a4cf60a83830d30ba",
+      "scope": "2 files, 10 actual receiver UFCS replacements"
+    },
+    {
+      "sha": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "bytes": 20332,
+      "sha256": "abe271380260fba6ee5c0cf1f60dbd8e2c6fccb661025534fe67a87dd2749a28",
+      "scope": "12 files, 28 actual receiver UFCS replacements, including 3 Core methods from the previously reviewed slice; no re-review claim for all MCP implementation"
+    }
+  ],
+  "app_source_replay": [
+    {
+      "packet": "bda702227403b6de5c738ee094236f0617f8f9ce",
+      "files": 15,
+      "operations": 59,
+      "rows": [
+        {
+          "path": "codex-rs/app-server/src/lib.rs",
+          "preimage": {
+            "git_blob": "b134db10170e90aee737de3b9177b63cdf673cda",
+            "bytes": 80431,
+            "sha256": "13b8de476ccb72d5f0e6c07e673c7399650c96f902874b7dc9e437652f2076ce"
+          },
+          "postimage": {
+            "git_blob": "91900627409741a362513bf6b37dd0184682ed49",
+            "bytes": 87084,
+            "sha256": "6e276e8fb33bf59376aed77731453547f252550ad97eb5808025bbee1dce4fe0"
+          },
+          "ops": 20,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "preimage": {
+            "git_blob": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+            "bytes": 39198,
+            "sha256": "9fff4256e5275a652cc4eec07bd8f704bbc748fed0f33f80d4684a33c9b94b19"
+          },
+          "postimage": {
+            "git_blob": "6717b2ee713ce8fd3df6a94f7456225470930782",
+            "bytes": 40081,
+            "sha256": "3cb30d774a8c6947d66ebe6eebd96857a2c83452b9de3b972d2145b222f9375d"
+          },
+          "ops": 3,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "preimage": {
+            "git_blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+            "bytes": 31648,
+            "sha256": "90ef4ed86913dfea27cc1d8d0d7d80b44e5c4ceae97af5f44a6ce9a67be3448c"
+          },
+          "postimage": {
+            "git_blob": "7f2b8a465b3f55e71484e16ad5c871dfb8352c32",
+            "bytes": 32022,
+            "sha256": "7580096c9c949410372efccf18520e27a481141d798e09d2eaa68dc5291ba245"
+          },
+          "ops": 2,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+          "preimage": {
+            "git_blob": "a634d8844ecbcf87774286d3333bc7d560092d6d",
+            "bytes": 18923,
+            "sha256": "fd6b0dcabf2796c333366bf2ec365c9b939e51c8ad0f9be3afae872ac3f6bed3"
+          },
+          "postimage": {
+            "git_blob": "ef0c1a85ab0ed104d5e96efb80888554b09458d8",
+            "bytes": 21033,
+            "sha256": "0662e64060364cd18aaffb9725942aa4a6d17882a062f0843495c639d3093935"
+          },
+          "ops": 3,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/message_processor.rs",
+          "preimage": {
+            "git_blob": "1834cb01640e1b847d3a1ce363a686c5c1d1d68a",
+            "bytes": 75040,
+            "sha256": "43684cfd7b4ca689888fdab98950e81d1c98e382d8eb0c9ac025537d2987bbce"
+          },
+          "postimage": {
+            "git_blob": "431d242e6d9eef1b0d202094b4b0d6d4629ea8a5",
+            "bytes": 82010,
+            "sha256": "62f5e2d38115df3704fa97eb8080db6102c84224371b9dbaf6f7224776971951"
+          },
+          "ops": 6,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/connection_cleanup.rs",
+          "preimage": {
+            "git_blob": "529020fe3ff9a563c25f9fef4657e9a66c758310",
+            "bytes": 1128,
+            "sha256": "d60cd9c02422559440cd1c74302ca3cc21dcfac8913d9127463418873f4dbb45"
+          },
+          "postimage": {
+            "git_blob": "250a3c8aebfabf40fce4d622c483935bc3109b27",
+            "bytes": 3525,
+            "sha256": "775f7a9af1875813baae5c69681459a9465755bfdadd69bd8f640aedc3f757d3"
+          },
+          "ops": 8,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+          "preimage": {
+            "git_blob": "ab785867a6f48ea77000a5447bbae5f23d6df45b",
+            "bytes": 1938,
+            "sha256": "7990ba5acb1367cb14a00c89b9e20f3bc9da8c976d719535e855f9f260ea74bf"
+          },
+          "postimage": {
+            "git_blob": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+            "bytes": 2098,
+            "sha256": "4d19cd651afd092b00db18bada7cb5ad2e90ed7fea780e8ccd83213c684a50e7"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+          "preimage": {
+            "git_blob": "08c9b82bf0f5229de1b487d83d2982132e32a329",
+            "bytes": 17494,
+            "sha256": "3931f22cdc9af3c665bb43349161e0ccdbdc2707b00a6f1cc4104c94c3285b2c"
+          },
+          "postimage": {
+            "git_blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+            "bytes": 17654,
+            "sha256": "c8a7de5471768871e117df543800e9ff4dec131a9ebad495cbfd7fb6393cb4ca"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/thread_state.rs",
+          "preimage": {
+            "git_blob": "3795638cdd36d377afcbf4d7026d15d77dbf64ca",
+            "bytes": 22695,
+            "sha256": "d6af02611b001c06cd33f4e4c7ed964518b4361a7e5c94bc1f27e4e6102cf40c"
+          },
+          "postimage": {
+            "git_blob": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9",
+            "bytes": 23142,
+            "sha256": "19ca37120dc0b9bccbdded650e0c78568ccb694aa1df0b47cca7fd3d8ba0702b"
+          },
+          "ops": 2,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/request_serialization.rs",
+          "preimage": {
+            "git_blob": "ae897271ca73f78c9122d5a3ae191348c9b9fa7e",
+            "bytes": 33294,
+            "sha256": "afad58b53d6a8ce410efc85c26551ffd7ed3475448265bef9ecaa39454388fac"
+          },
+          "postimage": {
+            "git_blob": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+            "bytes": 36728,
+            "sha256": "72611f3861616bbb1c90bfdc140c4d2b0de7e2eeebf468ecaddf4a57d7d1a789"
+          },
+          "ops": 3,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+          "preimage": {
+            "git_blob": "aa0e5cbda87f6a71e9e6cd2e824a6c188ddbe0c1",
+            "bytes": 251280,
+            "sha256": "b73f7433dbe3113f79e72d8a4cba94776c4e630c11eebc0f4e2581f319c89547"
+          },
+          "postimage": {
+            "git_blob": "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+            "bytes": 252538,
+            "sha256": "9f24f5f648df2886c66abcb044e5d8197628674a4e074e42c673730e60182d17"
+          },
+          "ops": 2,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+          "preimage": {
+            "git_blob": "debe83f10960391fc831556168f38e13ea5a4272",
+            "bytes": 34056,
+            "sha256": "10ef13ba70452478760d5666121d8a62187ab0b08e173ad09055bdab8dd2739e"
+          },
+          "postimage": {
+            "git_blob": "a089ff3568f4919b13026116d36d57fc22329e59",
+            "bytes": 34768,
+            "sha256": "84e44303f79badb9d5642efae5aca27f9c72d3e674cb870979301c7dc52b8c5c"
+          },
+          "ops": 4,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+          "preimage": null,
+          "postimage": {
+            "git_blob": "2d4bbc7e5909ae2d859b3b78620f0e7ed61012d6",
+            "bytes": 18975,
+            "sha256": "6a1d6c9b59a130b7978e18287df82229080d0bff17d05e64eacb17cd5e5dccc6"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/inherited_transport.rs",
+          "preimage": {
+            "git_blob": "305ec40bf7a358f0738b5916b56de8be94217210",
+            "bytes": 2326,
+            "sha256": "6d9d11f6c148706b15f1c07bd606b8a4561308715ef31f941d01c23804c38f43"
+          },
+          "postimage": {
+            "git_blob": "3fc930e1e619661049f59b6aac815077031ab62d",
+            "bytes": 2324,
+            "sha256": "91953948330eb9a2dafa6e009bab71b5e53093722776f14943c06586a4e8914a"
+          },
+          "ops": 2,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+          "preimage": {
+            "git_blob": "ca0c95dbf301574ed4f8a3109f886635e6b7667c",
+            "bytes": 7487,
+            "sha256": "eb1a592dfb14b033f27d957ae7c66dc562314c20e098504ac45f1409af88cdd0"
+          },
+          "postimage": {
+            "git_blob": "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1",
+            "bytes": 10853,
+            "sha256": "c24bde53876b6a66c70599c636c296e48b08adf8f42649a051171dba0c72a324"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true
+        }
+      ]
+    },
+    {
+      "packet": "ea02c41a45458e02f3a50acbcf19a251bf0978e1",
+      "files": 3,
+      "operations": 3,
+      "rows": [
+        {
+          "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+          "preimage": {
+            "git_blob": "2d4bbc7e5909ae2d859b3b78620f0e7ed61012d6",
+            "bytes": 18975,
+            "sha256": "6a1d6c9b59a130b7978e18287df82229080d0bff17d05e64eacb17cd5e5dccc6"
+          },
+          "postimage": {
+            "git_blob": "503628dd6225dc886d23e5432bab81692572a7ce",
+            "bytes": 19045,
+            "sha256": "e1bc0d0c39db2e4b8e584cf3150d246e4433146514daf059854e1a9c7445c5ff"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+          "preimage": null,
+          "postimage": {
+            "git_blob": "c53e30e16ed2b5c9f6aee80a14f459a1e5c16568",
+            "bytes": 9171,
+            "sha256": "59ae3369190061df6d809264f37c224ea9a5831412c79bdf9cc1e7b1f9ebbd3d"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+          "preimage": {
+            "git_blob": "ef0c1a85ab0ed104d5e96efb80888554b09458d8",
+            "bytes": 21033,
+            "sha256": "0662e64060364cd18aaffb9725942aa4a6d17882a062f0843495c639d3093935"
+          },
+          "postimage": {
+            "git_blob": "b28a6ee2ae3060d345dfdc283ae156c3ed61a8b0",
+            "bytes": 23617,
+            "sha256": "9aeb8c3fde899b339fc6478b55052b1f9eb4155d5157bb1cbf799c67119359fc"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true
+        }
+      ]
+    }
+  ],
+  "ufcs_source_replay": [
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/rmcp-client/src/rmcp_client.rs",
+      "pre": "a15842cdeb3b7ee298211e5567f7a5291e669f3f",
+      "post": "29d93e86c279aa45f006e9b4911d0ddc89e2d254",
+      "ops": 1,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": "d79f477158cda9a31c025ab62ded8bfe84b8f6c0",
+      "post": "24b181104af7d476136667f97c0393ce00a2d0ea",
+      "ops": 3,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+      "pre": "53d84d1ad2c2fcce708f0aeeb0052f13ad24a0a7",
+      "post": "3801128bd59fa176baeaea31cdb6cc39cca448a5",
+      "ops": 2,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+      "pre": "55360d6a660e907cffd0f4e5a251f3f6eb0fcb4c",
+      "post": "9be80863bbd6aca092387740e444495a73977d8b",
+      "ops": 1,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/app-server/src/configured_mcp_runtime_owned_shutdown.rs",
+      "pre": "46cd1c62cd7ea24e14a8350a3fb1f18ba6bb7bd5",
+      "post": "35aee83996fe4ab83549c4fb2789437033477ea8",
+      "ops": 2,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "pre": "89011645e5d8fc23d7d87c3c20fd8aa9170c772c",
+      "post": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+      "ops": 5,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": "03ac047122ad4f15bfc1c32ee8cfd5eaf53c7b38",
+      "post": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+      "ops": 6,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+      "pre": "24f9aac495c88c1f742511a3d6d43ed0bbe23381",
+      "post": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+      "ops": 2,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": "d32a23d2db0e2fcd201d4c5edae4b5e98feaaead",
+      "post": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+      "ops": 3,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+      "pre": "1d7bd062368cc0de6e0d340f6ce7484377faf612",
+      "post": "04613d19c4b9b89715d57978ec6e226abd6bd4a7",
+      "ops": 1,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/core/src/agent/control_original_shutdown.rs",
+      "pre": "5d9891761b0e178be3fcff8a4bea0884a1ed280a",
+      "post": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca",
+      "ops": 1,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9",
+      "path": "codex-rs/core/src/codex_delegate.rs",
+      "pre": "83342027ae59f07116ab5a0589bcb523538b8410",
+      "post": "50b7345c20029c33dc18fb0ad53a6295995f260e",
+      "ops": 1,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "e6082b028714c1385587f7d7895808d07fe55039",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "pre": "431d242e6d9eef1b0d202094b4b0d6d4629ea8a5",
+      "post": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+      "ops": 8,
+      "unique_full_forward_reverse": true
+    },
+    {
+      "packet": "e6082b028714c1385587f7d7895808d07fe55039",
+      "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+      "pre": "a089ff3568f4919b13026116d36d57fc22329e59",
+      "post": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+      "ops": 2,
+      "unique_full_forward_reverse": true
+    }
+  ],
+  "ufcs_image_checks": [
+    {
+      "sha": "1d7bd062368cc0de6e0d340f6ce7484377faf612",
+      "bytes": 13013,
+      "fetched": false
+    },
+    {
+      "sha": "5d9891761b0e178be3fcff8a4bea0884a1ed280a",
+      "bytes": 693,
+      "fetched": false
+    },
+    {
+      "sha": "83342027ae59f07116ab5a0589bcb523538b8410",
+      "bytes": 13948,
+      "fetched": false
+    },
+    {
+      "sha": "431d242e6d9eef1b0d202094b4b0d6d4629ea8a5",
+      "bytes": 82010,
+      "fetched": false
+    },
+    {
+      "sha": "a089ff3568f4919b13026116d36d57fc22329e59",
+      "bytes": 34768,
+      "fetched": false
+    },
+    {
+      "sha": "35aee83996fe4ab83549c4fb2789437033477ea8",
+      "bytes": 7458,
+      "fetched": true
+    },
+    {
+      "sha": "d79f477158cda9a31c025ab62ded8bfe84b8f6c0",
+      "bytes": 13374,
+      "fetched": true
+    },
+    {
+      "sha": "a15842cdeb3b7ee298211e5567f7a5291e669f3f",
+      "bytes": 63276,
+      "fetched": true
+    },
+    {
+      "sha": "53d84d1ad2c2fcce708f0aeeb0052f13ad24a0a7",
+      "bytes": 40340,
+      "fetched": true
+    },
+    {
+      "sha": "04613d19c4b9b89715d57978ec6e226abd6bd4a7",
+      "bytes": 13042,
+      "fetched": true
+    },
+    {
+      "sha": "55360d6a660e907cffd0f4e5a251f3f6eb0fcb4c",
+      "bytes": 51541,
+      "fetched": true
+    },
+    {
+      "sha": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+      "bytes": 17186,
+      "fetched": true
+    },
+    {
+      "sha": "d32a23d2db0e2fcd201d4c5edae4b5e98feaaead",
+      "bytes": 5975,
+      "fetched": true
+    },
+    {
+      "sha": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+      "bytes": 11788,
+      "fetched": true
+    },
+    {
+      "sha": "03ac047122ad4f15bfc1c32ee8cfd5eaf53c7b38",
+      "bytes": 11518,
+      "fetched": true
+    },
+    {
+      "sha": "24f9aac495c88c1f742511a3d6d43ed0bbe23381",
+      "bytes": 8054,
+      "fetched": true
+    },
+    {
+      "sha": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+      "bytes": 6068,
+      "fetched": true
+    },
+    {
+      "sha": "3801128bd59fa176baeaea31cdb6cc39cca448a5",
+      "bytes": 40412,
+      "fetched": true
+    },
+    {
+      "sha": "24b181104af7d476136667f97c0393ce00a2d0ea",
+      "bytes": 13478,
+      "fetched": true
+    },
+    {
+      "sha": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca",
+      "bytes": 748,
+      "fetched": true
+    },
+    {
+      "sha": "89011645e5d8fc23d7d87c3c20fd8aa9170c772c",
+      "bytes": 17012,
+      "fetched": true
+    },
+    {
+      "sha": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+      "bytes": 82345,
+      "fetched": true
+    },
+    {
+      "sha": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+      "bytes": 34808,
+      "fetched": true
+    },
+    {
+      "sha": "46cd1c62cd7ea24e14a8350a3fb1f18ba6bb7bd5",
+      "bytes": 7392,
+      "fetched": true
+    },
+    {
+      "sha": "29d93e86c279aa45f006e9b4911d0ddc89e2d254",
+      "bytes": 63304,
+      "fetched": true
+    },
+    {
+      "sha": "50b7345c20029c33dc18fb0ad53a6295995f260e",
+      "bytes": 13978,
+      "fetched": true
+    },
+    {
+      "sha": "9be80863bbd6aca092387740e444495a73977d8b",
+      "bytes": 51560,
+      "fetched": true
+    },
+    {
+      "sha": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+      "bytes": 8156,
+      "fetched": true
+    }
+  ],
+  "actual_ufcs_receiver_signatures": [
+    {
+      "blob": "01aeb2b67389d1ad21cc87fc7a2c3ffd8cb7089f",
+      "method": "retain_original_service",
+      "actual_signature": "fn retain_original_service(&self, service: &Arc<OriginalService>) -> Result<()> {"
+    },
+    {
+      "blob": "01aeb2b67389d1ad21cc87fc7a2c3ffd8cb7089f",
+      "method": "request_stop",
+      "actual_signature": "fn request_stop(&self) {"
+    },
+    {
+      "blob": "01aeb2b67389d1ad21cc87fc7a2c3ffd8cb7089f",
+      "method": "join_original_client",
+      "actual_signature": "fn join_original_client(&self) -> Result<OriginalMcpClientShutdownObservation> {"
+    },
+    {
+      "blob": "01aeb2b67389d1ad21cc87fc7a2c3ffd8cb7089f",
+      "method": "require_original_ready_client_joined",
+      "actual_signature": "fn require_original_ready_client_joined(&self) -> Result<()> {"
+    },
+    {
+      "blob": "24b181104af7d476136667f97c0393ce00a2d0ea",
+      "method": "stop_and_join_original_runtime",
+      "actual_signature": "fn stop_and_join_original_runtime(\n        self: &Arc<Self>,\n    ) -> impl std::future::Future<Output = Result<Arc<OriginalMcpRuntimeShutdownObservation>>> + Send + 'static {"
+    },
+    {
+      "blob": "24b181104af7d476136667f97c0393ce00a2d0ea",
+      "method": "retain_original_startup",
+      "actual_signature": "fn retain_original_startup(&self, mut actual: JoinSet<StartupOutput>) {"
+    },
+    {
+      "blob": "24b181104af7d476136667f97c0393ce00a2d0ea",
+      "method": "request_stop",
+      "actual_signature": "fn request_stop(&self) {"
+    },
+    {
+      "blob": "24b181104af7d476136667f97c0393ce00a2d0ea",
+      "method": "require_original_ready_runtime_joined",
+      "actual_signature": "fn require_original_ready_runtime_joined(&self) -> Result<()> {"
+    },
+    {
+      "blob": "35aee83996fe4ab83549c4fb2789437033477ea8",
+      "method": "shutdown_original_owned",
+      "actual_signature": "fn shutdown_original_owned(\n        self,\n    ) -> Result<Arc<OriginalMcpRuntimeShutdownObservation>> {"
+    },
+    {
+      "blob": "04613d19c4b9b89715d57978ec6e226abd6bd4a7",
+      "method": "spawn_original_delegate",
+      "actual_signature": "fn spawn_original_delegate(\n        &self,\n        args: SessionSpawnArgs,\n    ) -> CodexResult<(Arc<Session>, SessionIo)> {"
+    },
+    {
+      "blob": "7ca2e84183a4e74191f172cb64467d444f5e9b11",
+      "method": "join_original_loop",
+      "actual_signature": "fn join_original_loop(\n        &self,\n    ) -> Result<(), Arc<OriginalCoreTaskFailure>> {"
+    },
+    {
+      "blob": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca",
+      "method": "spawn_original_delegate_session",
+      "actual_signature": "fn spawn_original_delegate_session(\n        &self,\n        args: SessionSpawnArgs,\n    ) -> CodexResult<(Arc<Session>, SessionIo)> {"
+    },
+    {
+      "blob": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+      "method": "join_original",
+      "actual_signature": "fn join_original(&mut self) -> Result<(), tokio::task::JoinError> {"
+    },
+    {
+      "blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+      "method": "join_original",
+      "actual_signature": "fn join_original(&mut self) -> Result<(), tokio::task::JoinError> {"
+    },
+    {
+      "blob": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9",
+      "method": "original_owner",
+      "actual_signature": "fn original_owner(&self) -> Option<Arc<crate::OriginalAppServerOwnerCustody>> {"
+    },
+    {
+      "blob": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+      "method": "original_owner",
+      "actual_signature": "fn original_owner(&self) -> Option<Arc<crate::OriginalAppServerOwnerCustody>> {"
+    },
+    {
+      "blob": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+      "method": "seal_original_queues",
+      "actual_signature": "fn seal_original_queues(&self) {"
+    },
+    {
+      "blob": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+      "method": "require_original_queues_drained",
+      "actual_signature": "fn require_original_queues_drained(&self) -> std::io::Result<()> {"
+    },
+    {
+      "blob": "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+      "method": "drain_original_background_tasks",
+      "actual_signature": "fn drain_original_background_tasks(&self) {"
+    },
+    {
+      "blob": "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+      "method": "shutdown_original_threads",
+      "actual_signature": "fn shutdown_original_threads(&self) -> std::io::Result<()> {"
+    }
+  ],
+  "unchanged_original_full_functions": [
+    {
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "method": "drain",
+      "pre": "ae897271ca73f78c9122d5a3ae191348c9b9fa7e",
+      "post": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+      "full_function_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "method": "spawn",
+      "pre": "ab785867a6f48ea77000a5447bbae5f23d6df45b",
+      "post": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+      "full_function_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "method": "shutdown",
+      "pre": "ab785867a6f48ea77000a5447bbae5f23d6df45b",
+      "post": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+      "full_function_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "method": "shutdown",
+      "pre": "08c9b82bf0f5229de1b487d83d2982132e32a329",
+      "post": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+      "full_function_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "method": "clear_all_listeners",
+      "pre": "3795638cdd36d377afcbf4d7026d15d77dbf64ca",
+      "post": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9",
+      "full_function_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "method": "connection_closed",
+      "pre": "1834cb01640e1b847d3a1ce363a686c5c1d1d68a",
+      "post": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+      "full_function_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "method": "effective_plugins_changed_callback",
+      "pre": "ca0c95dbf301574ed4f8a3109f886635e6b7667c",
+      "post": "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1",
+      "full_function_bytes_equal": true
+    }
+  ],
+  "external_owner_field_sources": [
+    {
+      "sha": "39d127250b8e825292c25f8c34ec360d5d94ff60",
+      "bytes": 27044,
+      "sha256": "ce7c64920815d9735c4025ee11af122496f6376d10da3609212da6d366c67034"
+    },
+    {
+      "sha": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd",
+      "bytes": 172904,
+      "sha256": "5899048c5b316dcf7acf4f5eca7ac2edf9cbf38f6832131f862bac04d361c9cb"
+    },
+    {
+      "sha": "798fb1c705e20545b35e0276839483da2f857c05",
+      "bytes": 32593,
+      "sha256": "3a2aaf1775b799112006a573b7e392d5d42f48b5befd3a550ae7a9c9c0477fa4"
+    },
+    {
+      "sha": "50b52c44ff9e9dc790660b176c251fb7b69fefc5",
+      "bytes": 49082,
+      "sha256": "5444a8040306d1e61c3d94ca52c1f17ec678d5ef19880faf5cfd5b524a0afd97"
+    }
+  ],
+  "component_inventory": [
+    {
+      "blob": "c53e30e16ed2b5c9f6aee80a14f459a1e5c16568",
+      "tests": [
+        "never_started_owner_cannot_report_joined_app_server",
+        "cancelled_job_waiter_retains_actual_task_and_fd_until_join",
+        "real_task_panic_keeps_the_original_join_error_after_reobservation",
+        "original_io_failure_is_not_replaced_by_a_successful_join",
+        "sealed_background_admission_keeps_admitted_job_and_never_runs_late_future",
+        "actual_connection_cleanup_panic_reaches_owner_even_after_local_waiter_drops",
+        "actual_queue_close_does_not_discard_an_admitted_drain_or_its_fd",
+        "cancelled_main_wrapper_keeps_actual_job_and_never_restarts_it"
+      ],
+      "scope": "Eight concrete actual task/socket/cancellation/panic/queue/constructor-negative components. No successful AppServerJoined or Root receipt manufactured.",
+      "executed": false
+    },
+    {
+      "blob": "b28a6ee2ae3060d345dfdc283ae156c3ed61a8b0",
+      "tests": [
+        "strict_app_server_rejects_bind_and_other_original_profiles",
+        "standard_socket_custody_transfers_the_same_actual_descriptor"
+      ],
+      "scope": "Two exact descriptor/profile components; a socketpair tests transfer only, not Root listener authentication.",
+      "executed": false
+    }
+  ],
+  "constraints": [
+    "Git immutable GET and pure V8 static inspection only",
+    "No h/PTY/native/ref/shell/compiler/formatter/test/original checker",
+    "No qualification inherited from previous attempts",
+    "Future source may require actual formatter literal adaptation before the original checker"
+  ],
+  "current_composite_crosscheck": {
+    "manifest": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+    "base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "all_28_final_paths_match": true,
+    "rows": [
+      {
+        "path": "codex-rs/app-server/src/lib.rs",
+        "final": "91900627409741a362513bf6b37dd0184682ed49",
+        "manifest_post": "91900627409741a362513bf6b37dd0184682ed49",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "final": "6717b2ee713ce8fd3df6a94f7456225470930782",
+        "manifest_post": "6717b2ee713ce8fd3df6a94f7456225470930782",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "final": "7f2b8a465b3f55e71484e16ad5c871dfb8352c32",
+        "manifest_post": "7f2b8a465b3f55e71484e16ad5c871dfb8352c32",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "final": "b28a6ee2ae3060d345dfdc283ae156c3ed61a8b0",
+        "manifest_post": "b28a6ee2ae3060d345dfdc283ae156c3ed61a8b0",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/message_processor.rs",
+        "final": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+        "manifest_post": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/connection_cleanup.rs",
+        "final": "250a3c8aebfabf40fce4d622c483935bc3109b27",
+        "manifest_post": "250a3c8aebfabf40fce4d622c483935bc3109b27",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+        "final": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+        "manifest_post": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+        "final": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+        "manifest_post": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/thread_state.rs",
+        "final": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9",
+        "manifest_post": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/request_serialization.rs",
+        "final": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+        "manifest_post": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "final": "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+        "manifest_post": "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+        "final": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+        "manifest_post": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "final": "503628dd6225dc886d23e5432bab81692572a7ce",
+        "manifest_post": "503628dd6225dc886d23e5432bab81692572a7ce",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/inherited_transport.rs",
+        "final": "3fc930e1e619661049f59b6aac815077031ab62d",
+        "manifest_post": "3fc930e1e619661049f59b6aac815077031ab62d",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+        "final": "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1",
+        "manifest_post": "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+        "final": "c53e30e16ed2b5c9f6aee80a14f459a1e5c16568",
+        "manifest_post": "c53e30e16ed2b5c9f6aee80a14f459a1e5c16568",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/rmcp-client/src/rmcp_client.rs",
+        "final": "29d93e86c279aa45f006e9b4911d0ddc89e2d254",
+        "manifest_post": "29d93e86c279aa45f006e9b4911d0ddc89e2d254",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+        "final": "24b181104af7d476136667f97c0393ce00a2d0ea",
+        "manifest_post": "24b181104af7d476136667f97c0393ce00a2d0ea",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/connection_manager.rs",
+        "final": "3801128bd59fa176baeaea31cdb6cc39cca448a5",
+        "manifest_post": "3801128bd59fa176baeaea31cdb6cc39cca448a5",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/rmcp_client.rs",
+        "final": "9be80863bbd6aca092387740e444495a73977d8b",
+        "manifest_post": "9be80863bbd6aca092387740e444495a73977d8b",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/app-server/src/configured_mcp_runtime_owned_shutdown.rs",
+        "final": "35aee83996fe4ab83549c4fb2789437033477ea8",
+        "manifest_post": "35aee83996fe4ab83549c4fb2789437033477ea8",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+        "final": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+        "manifest_post": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+        "final": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "manifest_post": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+        "final": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+        "manifest_post": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+        "final": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+        "manifest_post": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+        "final": "04613d19c4b9b89715d57978ec6e226abd6bd4a7",
+        "manifest_post": "04613d19c4b9b89715d57978ec6e226abd6bd4a7",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/core/src/agent/control_original_shutdown.rs",
+        "final": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca",
+        "manifest_post": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca",
+        "matched": true
+      },
+      {
+        "path": "codex-rs/core/src/codex_delegate.rs",
+        "final": "50b7345c20029c33dc18fb0ad53a6295995f260e",
+        "manifest_post": "50b7345c20029c33dc18fb0ad53a6295995f260e",
+        "matched": true
+      }
+    ]
+  }
+}

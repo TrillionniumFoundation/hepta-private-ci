@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "Root independent replay of diagnostic-only service addition",
+  "parent_manifest": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+  "manifest": {
+    "blob": "658549a54628df700158c30011f9eb640e21cd78",
+    "bytes": 57198,
+    "sha256": "52f0e102dfa2cef0e1d4585ad733f54f8f72b13d50f86cdf94451f319fb3b83c"
+  },
+  "base_proof": {
+    "blob": "1fa4a7719de5b8dc31d37c85508e4661074208bb",
+    "bytes": 42602,
+    "sha256": "b08511f839c870e87de947952c9ac86b85029992c54f3622668b58995a603922"
+  },
+  "packet": "65ba19fed94db0f9cb31a17934af6cc267646097",
+  "independent_review": "6e34f314d9d3352f05ca70e2c0c9ac867b4c055c",
+  "source": {
+    "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+    "pre": {
+      "sha": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2",
+      "bytes": 23362,
+      "sha256": "9cf07c375803d5de9a8f5eccb6c37f10bfad4487b9523464e0b99fb433eb2670"
+    },
+    "post": {
+      "sha": "a8df9b4203334a7e53d1d42dc1e6202b4752677e",
+      "bytes": 24200,
+      "sha256": "68488ab6939d216d1e2f26f1c7aba90a042d3729d98d7f5e14bc09cf84075330"
+    },
+    "post_create_get_exact": true
+  },
+  "operations": 2,
+  "forward_unique": true,
+  "reverse_unique": true,
+  "full_reverse_preimage_equal": true,
+  "base_path_git_tree_verified": true,
+  "status": "UNCOMPILED_DIAGNOSTIC_ONLY_NOT_A_REPAIR",
+  "nativeV46_status": "failed-native-components",
+  "nativeV46_business_counts": [
+    0,
+    0,
+    0
+  ],
+  "limitations": [
+    "Diagnostics preserve original errors; no initiating leaf has yet been established.",
+    "The new source and complete assembly have not been formatted, compiled or checked by the original native entry."
+  ]
+}

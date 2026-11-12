@@ -1,0 +1,428 @@
+{
+  "schema_version": 1,
+  "kind": "independent-readonly-v46-terminal-text-evidence-review",
+  "subject_index": {
+    "git_blob": "9002c7fc3097aad111e902cde6597042e0fc4869",
+    "bytes": 60548,
+    "sha256": "7e41b3998c8ad4fd0722140456419e59d004166229a7165f144499746f1a0d6d"
+  },
+  "checked_blobs": {
+    "index": {
+      "git_blob": "9002c7fc3097aad111e902cde6597042e0fc4869",
+      "bytes": 60548,
+      "sha256": "7e41b3998c8ad4fd0722140456419e59d004166229a7165f144499746f1a0d6d"
+    },
+    "result": {
+      "git_blob": "39644ad60327fbcc4c5841e126e0e2a5b827a153",
+      "bytes": 3961,
+      "sha256": "f79e0d44a28836678405cfe2723b5b065e89a6490aa03f0b21880a7af264e3df"
+    },
+    "summary": {
+      "git_blob": "54f1f7c8d7d15d9268d24570bcfd9f49920aef44",
+      "bytes": 20081,
+      "sha256": "91c9ee3439bbe84508c37e580d251c575634d89f93dd59b35a8f972a4ff6c990"
+    },
+    "ordinary": {
+      "git_blob": "d9e383f75e1a9eafb7fe808b185e7c67dc47a26c",
+      "bytes": 1870,
+      "sha256": "383416c126002b68a5d1ddd1ef30d7d51cce64a2b86fb6403de4cf253e9886f3"
+    },
+    "root": {
+      "git_blob": "107f25db317630c6105f2a1ea1ccfd644be1fc1b",
+      "bytes": 3965,
+      "sha256": "0a4b3c378e6a76c560d14cafa67444f5b04cbcc4cdbe7322c1ead476f4a57246"
+    },
+    "caller": {
+      "git_blob": "d1a3709ed007608deb09dff58e4d5b15ec4a4078",
+      "bytes": 1458,
+      "sha256": "246b47266b8cd43f4a9df2aba962026eb749b1806e61d44ddd36cc687bb3af81"
+    },
+    "archive": {
+      "git_blob": "a07a88884686e759c5632299c584cef446846cab",
+      "bytes": 3148,
+      "sha256": "08ed7fe3b50eb81fc720d9d6f1ccf8d6bbdb7529a73225cabc2dfcc43f9b89d7"
+    },
+    "ordinary_junit": {
+      "git_blob": "4580d322d5194d2e5717ae1c0f67fc3546323b26",
+      "bytes": 1286,
+      "sha256": "3929366509d2faa9996f3ed9a865dfc5bd40848f7b2688e6021a73625a30967d"
+    },
+    "root_junit": {
+      "git_blob": "c6a3e07cb6caf95d1bb147b28ad78942b6a2d198",
+      "bytes": 3327,
+      "sha256": "da97ce7c90a51f386183cc5a744c9b4d30b257369a4a37a7f3f0e63205b79570"
+    },
+    "stderr": {
+      "git_blob": "5cdf146c78b850c4bd779e4697616e7b00b837e6",
+      "bytes": 62550,
+      "sha256": "10a596fdbb91c7aac8492ef0eadaeb7225dde083ba7f8d734c323367202c256f"
+    },
+    "terminal": {
+      "git_blob": "a266434d83b9153af84e69c0445438086077011a",
+      "bytes": 17965,
+      "sha256": "fff6d4c67a4f0083ac9cb3f2b8dacdf1e24452f8789ca5cfeae6d8c133e9bbbf"
+    },
+    "terminal_tail": {
+      "git_blob": "5c2c9cdfb8d1664c0318f463974c00aacf8703ba",
+      "bytes": 38304,
+      "sha256": "9259fdb1df0fbaefd3c74109d9064289743053bc3ea607ab932e4aa9d018b162"
+    },
+    "root_junit_launch": {
+      "git_blob": "cc280969f82ea5724b869c62988a063929b146e8",
+      "bytes": 3199,
+      "sha256": "adc628d1d6457a627a4d1c014f633a83d02e3e6bba10e9d32207e08b855e182c"
+    },
+    "archive_receipt": {
+      "git_blob": "35d4dffbef2b0126cb455fa65cd40cde81d62ed9",
+      "bytes": 3581,
+      "sha256": "0ee66248f7be671109292f9f60a05ccfd84f2a464b28299e28ddebd09d1c6da5"
+    },
+    "archive_index": {
+      "git_blob": "1217c90044d17234de72dad1ae0db42093173ed6",
+      "bytes": 38073,
+      "sha256": "4f9d21f8da2b84394523a2e31b78f5d8a778aa1a3c0fd508535efb7a8e6378b4"
+    },
+    "text_index": {
+      "git_blob": "034f2bddaf2bc10f40cc86aed80a31290e94c0cf",
+      "bytes": 22767,
+      "sha256": "86e6a4e69c85ea72d6550210196015cbd95ccf8e26408dc650396e80e8083628"
+    },
+    "child_source": {
+      "git_blob": "2115df57da689a3a2a6328fc432ad22b41d0d3e7",
+      "bytes": 14949,
+      "sha256": "3987957ea050e7373b46ce8a6d88c36b6209bbfb288a43e0dd7afd428e9f2aa9"
+    }
+  },
+  "comparisons": [
+    {
+      "claim": "result-summary status",
+      "matched": true
+    },
+    {
+      "claim": "same tested source/tree",
+      "matched": true
+    },
+    {
+      "claim": "ordinary 1997/0",
+      "matched": true
+    },
+    {
+      "claim": "Root 16/1",
+      "matched": true
+    },
+    {
+      "claim": "caller original verify no filter",
+      "matched": true
+    },
+    {
+      "claim": "not timed out",
+      "matched": true
+    },
+    {
+      "claim": "zero ordinary business",
+      "matched": true
+    },
+    {
+      "claim": "cleanup9",
+      "matched": true
+    },
+    {
+      "claim": "reference unchanged",
+      "matched": true
+    },
+    {
+      "claim": "source clean",
+      "matched": true
+    },
+    {
+      "claim": "index same result",
+      "matched": true
+    }
+  ],
+  "execution_binding": [
+    {
+      "name": "ordinary",
+      "execution": {
+        "git_blob": "d9e383f75e1a9eafb7fe808b185e7c67dc47a26c",
+        "bytes": 1870,
+        "sha256": "383416c126002b68a5d1ddd1ef30d7d51cce64a2b86fb6403de4cf253e9886f3"
+      },
+      "log": {
+        "name": "records/ordinary.execution.json.1ca12a0712b24833ae7cd9f854f485fb.log",
+        "bytes": 1312195,
+        "sha256": "e3299bdf7fcd4cf41103a2111c7e897159ac983cfa5d9dcda337a0a8bb1b5a89"
+      },
+      "summary": {
+        "execution_filename": "ordinary.execution.json",
+        "execution_hash_matches": true,
+        "command_matches": true,
+        "source_matches": true,
+        "junit_bytes": 467821,
+        "junit_sha256": "6fcbaabdb9c7839a462b5b4e7a298d06d3a060af6a6aedcb855582ce4f76a9fc",
+        "junit_original_entry": "records/ordinary.junit.xml"
+      }
+    },
+    {
+      "name": "root",
+      "execution": {
+        "git_blob": "107f25db317630c6105f2a1ea1ccfd644be1fc1b",
+        "bytes": 3965,
+        "sha256": "0a4b3c378e6a76c560d14cafa67444f5b04cbcc4cdbe7322c1ead476f4a57246"
+      },
+      "log": {
+        "name": "records/root.execution.json.fea54378332940839764c1d34c544086.log",
+        "bytes": 129532,
+        "sha256": "8e4e77cd19cd664c3f305ec2e71cfe7c18d90bbc65f075154fe6d0faef97abc3"
+      },
+      "summary": {
+        "execution_filename": "root.execution.json",
+        "execution_hash_matches": true,
+        "command_matches": true,
+        "source_matches": true,
+        "junit_bytes": 77399,
+        "junit_sha256": "2b3b65cd95780158779700541501097a09c1e9aac2218866accd56f45036f33b",
+        "junit_original_entry": "records/root.junit.xml"
+      }
+    },
+    {
+      "name": "caller",
+      "execution": {
+        "git_blob": "d1a3709ed007608deb09dff58e4d5b15ec4a4078",
+        "bytes": 1458,
+        "sha256": "246b47266b8cd43f4a9df2aba962026eb749b1806e61d44ddd36cc687bb3af81"
+      },
+      "log": {
+        "name": "records/caller-full-verify.execution.json.52be1cb75a804f278955735ec088f3d9.log",
+        "bytes": 301113,
+        "sha256": "3b90947169a2084f07ad2d737e137a8d825a1f1341f1c7b47e98c0e76c97004c"
+      },
+      "summary": null
+    }
+  ],
+  "terminal": {
+    "blob": {
+      "git_blob": "a266434d83b9153af84e69c0445438086077011a",
+      "bytes": 17965,
+      "sha256": "fff6d4c67a4f0083ac9cb3f2b8dacdf1e24452f8789ca5cfeae6d8c133e9bbbf"
+    },
+    "last_original_read": {
+      "git_blob": "5c2c9cdfb8d1664c0318f463974c00aacf8703ba",
+      "bytes": 38304,
+      "sha256": "9259fdb1df0fbaefd3c74109d9064289743053bc3ea607ab932e4aa9d018b162"
+    },
+    "session_id": "dpty-560277fedc3c77059024458257fbea0e96ceca48f98f8f83c299d486cfd6774e",
+    "offset": 6452,
+    "next_offset": 17965,
+    "chunk_sha256": "8319e32409224786958bff1890195c8bd174de1916acbec8a4d1818c9e4e199a",
+    "chunk_matches_complete_blob": true,
+    "actual_exit_code": 1,
+    "actual_state": "exited",
+    "actual_output_complete": true,
+    "actual_capture_error": null,
+    "earlier_prefix_read_receipts_reaudited": false
+  },
+  "text_archive_bytes": {
+    "parts": [
+      {
+        "index": 0,
+        "offset": 0,
+        "next_offset": 65536,
+        "encoded": {
+          "git_blob": "16dbe27dece0f1e0d3b5daa2eec4abe74c21c414",
+          "bytes": 87385,
+          "sha256": "74d8775800e11949a260f5d9d4f09d83bc11cf2eebca9c85cb106d4301a69c5d"
+        },
+        "decoded_bytes": 65536,
+        "decoded_sha256": "16675402b09d138c8f8ec4c846d5cdcd3b847c69018d781b32c7a0e723c8199f"
+      },
+      {
+        "index": 1,
+        "offset": 65536,
+        "next_offset": 131072,
+        "encoded": {
+          "git_blob": "f7b11abde6ce983c3b339f97b8f9dd9b088a0834",
+          "bytes": 87385,
+          "sha256": "4bd32789ce1e2b14eb60a84d0bcce545847e8c7ccd6d180480b336c37d2995df"
+        },
+        "decoded_bytes": 65536,
+        "decoded_sha256": "bc699f77f842277cee8c5f474845c661968c52028d5658897d3cac8e5990dec7"
+      },
+      {
+        "index": 2,
+        "offset": 131072,
+        "next_offset": 196608,
+        "encoded": {
+          "git_blob": "c5e24b97614cb70d287e12517ff7385378f76c75",
+          "bytes": 87385,
+          "sha256": "d86fad47b237c501144fd92451ca81bbd80284a5a7056186e638e9e2c57cfc85"
+        },
+        "decoded_bytes": 65536,
+        "decoded_sha256": "7f391afa29730d43dd306be09197a43f97caea4f60ada0577be3e743d0a77fcc"
+      },
+      {
+        "index": 3,
+        "offset": 196608,
+        "next_offset": 262144,
+        "encoded": {
+          "git_blob": "52e829dac0d066956e3332ce8cb6a563aef3331b",
+          "bytes": 87385,
+          "sha256": "affb7d06092ca31ff7d5e068c7e6ade40137b156bcd94965d9be640dde5e1a49"
+        },
+        "decoded_bytes": 65536,
+        "decoded_sha256": "9451b146872f63719c581d411f518a300db39f0e82dbda01568566c78140da6a"
+      },
+      {
+        "index": 4,
+        "offset": 262144,
+        "next_offset": 268708,
+        "encoded": {
+          "git_blob": "ff0b929be0b8d701bad9b17d16873ecab55b295b",
+          "bytes": 8753,
+          "sha256": "8d7ceb72d8793b42b0b392c366f48aae4ddc5beee5f7f03a8d23e98b3d807b29"
+        },
+        "decoded_bytes": 6564,
+        "decoded_sha256": "467793281a4fd22d6ee745ec81679cee45abc9205929b1deef7310446ba06e0b"
+      }
+    ],
+    "total_decoded_bytes": 268708,
+    "whole_sha256": "defff527e6da8ee14f410acbdc66532a0abe49bf8559ce337a763e2aa59cd3c6",
+    "whole_git_blob": "d091aa2990dd0d42bd27a71e8c4ac07722e8e106",
+    "offsets_contiguous": true,
+    "decoded_each_part_before_concatenating": true,
+    "original_base64_bytes_preserved": true,
+    "decompressed": false,
+    "tar_members_reparsed": false
+  },
+  "archive_partition": {
+    "total_original_records": 124,
+    "total_original_bytes": 13893302,
+    "included_original_text": 121,
+    "text_archive_entries": 122,
+    "extra_entry": {
+      "bytes": 38073,
+      "name": "ARCHIVE_INDEX.json",
+      "sha256": "4f9d21f8da2b84394523a2e31b78f5d8a778aa1a3c0fd508535efb7a8e6378b4"
+    },
+    "binary_originals": [
+      {
+        "bytes": 1437512,
+        "name": "records/helpers/bin/hepta-joint-propose",
+        "reason": "Binary original remains in both complete original archives",
+        "sha256": "8121269817acfc2fece91f89cd9f4d1ed29a8c424d32b17efa5916e5b0331ffa"
+      },
+      {
+        "bytes": 1186501,
+        "name": "records/source-before.inventory.json.gz",
+        "reason": "Binary original remains in both complete original archives",
+        "sha256": "5ca3d97e3e0dffff4d3414de8505fd95d7628282965b33dcdba0e754da50b304"
+      },
+      {
+        "bytes": 1186501,
+        "name": "records/source-final.inventory.json.gz",
+        "reason": "Binary original remains in both complete original archives",
+        "sha256": "5ca3d97e3e0dffff4d3414de8505fd95d7628282965b33dcdba0e754da50b304"
+      }
+    ],
+    "all_originals_exactly_partitioned": true,
+    "full_tar_and_zip_only_host_receipt": {
+      "tar": {
+        "bytes": 1838228,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/terminal-archive-v1/original-records.tar.xz",
+        "sha256": "c7bc016b59e7130a1237288e9f0ee00d3c1d24a8ebec77bd6c4776b75370aeb4"
+      },
+      "zip": {
+        "bytes": 3836827,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/terminal-archive-v1/original-records.zip",
+        "sha256": "ad56cc444a45c0b263f0e24175d047a07fa019a64abf2b6f1052ecdce7bb3717"
+      }
+    },
+    "full_tar_or_zip_transferred_and_verified_by_this_reviewer": false
+  },
+  "failure": {
+    "actual_phase": "RetiredSession",
+    "first_observed_child_error": "frontier.read-prefix: Unavailable; transport_error Some(Closed)",
+    "child_context": "initial child RetiredSession: reading original published Feature",
+    "later_parent_error": "PeerDenied; awaiting RETIRE_READY; EAGAIN 11",
+    "actual_child_source": {
+      "git_blob": "2115df57da689a3a2a6328fc432ad22b41d0d3e7",
+      "bytes": 14949,
+      "sha256": "3987957ea050e7373b46ce8a6d88c36b6209bbfb288a43e0dd7afd428e9f2aa9"
+    },
+    "source_order": "initial.recover_feature(...).with_context(...)? occurs before task.require_bundle, RETIRE_READY, parent RETIRE and drop_original_production_after_idle.",
+    "retired_session_drop_helper_reached": false,
+    "retirement_assertions_after_that_call_reached": false,
+    "initiating_server_leaf": "Not established by these original records.",
+    "prior_v45_cache_age_cause_reused": false,
+    "child_timing_record_cap": 64,
+    "exact_parent_failed_test_from_result": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+    "raw_root_junit_xml_reparsed": false
+  },
+  "acceptance": {
+    "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+    "status": "FAILED_NATIVE_COMPONENTS",
+    "ordinary": {
+      "passed": 1997,
+      "failed": 0,
+      "errors": 0,
+      "total": 1997
+    },
+    "root": {
+      "passed": 16,
+      "failed": 1,
+      "errors": 0,
+      "total": 17
+    },
+    "root_exact_selected_roster_count": 17,
+    "root_selected_roster_unique": true,
+    "retries": 0,
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "qa_reported_count": 236,
+    "qa_four_original_steps_exit_zero": true,
+    "qa_counts_independently_recounted_from_full_logs": false,
+    "future_sources_native_qualification_inferred": false
+  },
+  "precision": {
+    "raw_summary_preserved_by_git_and_sha": true,
+    "derived_result_and_candidate_index_have_no_unsafe_integer_values": true,
+    "exact_original_progress_decimal_strings": {
+      "ctime_ns": "1794520867561841502",
+      "mtime_ns": "1794520867553841794"
+    },
+    "original_junit_mtime_ns_decimal_strings": {
+      "ordinary": "1794520626661634660",
+      "root": "1794520866239889726"
+    },
+    "raw_original_json_never_reserialized_as_an_original": true
+  },
+  "publication_findings": [
+    {
+      "id": "F1",
+      "scope": "index presentation",
+      "status": "Root acknowledged; replacement index not yet inspected",
+      "detail": "9002 files has 195 future .rs evidence names. Root will retain bytes and move source snapshots to <actual path>.txt before tree/ref, including Chain proposal; avoid formatter treating copies as source. This reviewer changed no artifact."
+    },
+    {
+      "id": "F2",
+      "scope": "index presentation",
+      "status": "Root planned correction; replacement index not yet inspected",
+      "detail": "Rename terminal/result-execution.json to ordinary.execution.json to match original JUnit execution_file; blob d9e383 remains exact."
+    },
+    {
+      "id": "F3",
+      "scope": "index semantics",
+      "status": "Root planned correction; replacement index not yet inspected",
+      "detail": "Rename native_launches_for_this_checkpoint to native_qualification_launches. The checkpoint adds no qualification run, but archive operations have separate original receipts."
+    }
+  ],
+  "remaining_limits": [
+    "No h/PTY/native/original checker/test execution or refs changed.",
+    "No XZ decompression or tar member reparse.",
+    "The 268708-byte text archive was fully reassembled and hashed; complete binary-inclusive tar/zip only have observed original host receipts in this review.",
+    "The 196-source future assembly, revised index and eventual tree are not newly qualified or fully source-audited by this evidence review.",
+    "The original Root server initiating cause remains unknown."
+  ]
+}

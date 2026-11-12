@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "Complete reached V46 original text record archive",
+  "source_sha": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+  "source_tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+  "host_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-cbf6ca7-seven-final-v21/terminal-archive-v1/original-text-records.tar.xz",
+  "host_version": "66306:78561244:268708:1794521823067689239:1794521823067689239",
+  "bytes": 268708,
+  "sha256": "defff527e6da8ee14f410acbdc66532a0abe49bf8559ce337a763e2aa59cd3c6",
+  "archive_receipt_blob": "35d4dffbef2b0126cb455fa65cd40cde81d62ed9",
+  "archive_index_blob": "1217c90044d17234de72dad1ae0db42093173ed6",
+  "text_index_blob": "034f2bddaf2bc10f40cc86aed80a31290e94c0cf",
+  "entries": 122,
+  "original_text_records": 121,
+  "excluded_binary_originals": 3,
+  "reconstruction": "Decode each UTF-8 base64 part independently, then concatenate decoded bytes by offset; do not concatenate padded base64 strings.",
+  "parts": [
+    {
+      "offset": 0,
+      "next_offset": 65536,
+      "decoded_bytes": 65536,
+      "decoded_sha256": "16675402b09d138c8f8ec4c846d5cdcd3b847c69018d781b32c7a0e723c8199f",
+      "base64_utf8": {
+        "blob": "16dbe27dece0f1e0d3b5daa2eec4abe74c21c414",
+        "bytes": 87385,
+        "sha256": "74d8775800e11949a260f5d9d4f09d83bc11cf2eebca9c85cb106d4301a69c5d"
+      }
+    },
+    {
+      "offset": 65536,
+      "next_offset": 131072,
+      "decoded_bytes": 65536,
+      "decoded_sha256": "bc699f77f842277cee8c5f474845c661968c52028d5658897d3cac8e5990dec7",
+      "base64_utf8": {
+        "blob": "f7b11abde6ce983c3b339f97b8f9dd9b088a0834",
+        "bytes": 87385,
+        "sha256": "4bd32789ce1e2b14eb60a84d0bcce545847e8c7ccd6d180480b336c37d2995df"
+      }
+    },
+    {
+      "offset": 131072,
+      "next_offset": 196608,
+      "decoded_bytes": 65536,
+      "decoded_sha256": "7f391afa29730d43dd306be09197a43f97caea4f60ada0577be3e743d0a77fcc",
+      "base64_utf8": {
+        "blob": "c5e24b97614cb70d287e12517ff7385378f76c75",
+        "bytes": 87385,
+        "sha256": "d86fad47b237c501144fd92451ca81bbd80284a5a7056186e638e9e2c57cfc85"
+      }
+    },
+    {
+      "offset": 196608,
+      "next_offset": 262144,
+      "decoded_bytes": 65536,
+      "decoded_sha256": "9451b146872f63719c581d411f518a300db39f0e82dbda01568566c78140da6a",
+      "base64_utf8": {
+        "blob": "52e829dac0d066956e3332ce8cb6a563aef3331b",
+        "bytes": 87385,
+        "sha256": "affb7d06092ca31ff7d5e068c7e6ade40137b156bcd94965d9be640dde5e1a49"
+      }
+    },
+    {
+      "offset": 262144,
+      "next_offset": 268708,
+      "decoded_bytes": 6564,
+      "decoded_sha256": "467793281a4fd22d6ee745ec81679cee45abc9205929b1deef7310446ba06e0b",
+      "base64_utf8": {
+        "blob": "ff0b929be0b8d701bad9b17d16873ecab55b295b",
+        "bytes": 8753,
+        "sha256": "8d7ceb72d8793b42b0b392c366f48aae4ddc5beee5f7f03a8d23e98b3d807b29"
+      }
+    }
+  ],
+  "full_bytes_sha256_independently_verified": true,
+  "host_all_originals_roundtrip_verified": true,
+  "qualification_rerun": false,
+  "acceptance": "FAILED_NATIVE_COMPONENTS; ordinary1997/1997; Root16/17; business0/0/0"
+}

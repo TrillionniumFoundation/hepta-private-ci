@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "kind": "independent_git_static_review",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "subject": {
+    "packet": "821e349ae41845894baeed0a8cb52fbe133167a2",
+    "bytes": 49291,
+    "sha256": "1235bf97329eb960ca61523a4000b1fdc18b7e5250e7dacf506121a0ec62d132",
+    "paths": 11,
+    "operations": 24
+  },
+  "verdict": "No confirmed local static blocker in the reviewed Core startup and Session-loop custody slice. This is not compilation, checker, component execution, full shutdown qualification, or native acceptance.",
+  "verification": {
+    "packet": "821e349ae41845894baeed0a8cb52fbe133167a2",
+    "paths": 11,
+    "ops": 24,
+    "rows": [
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "preimage": {
+          "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08",
+          "bytes": 215824,
+          "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39"
+        },
+        "postimage": {
+          "git_blob": "f335c2173beed441d633772ae5f1bee00ef6d2ee",
+          "bytes": 216337,
+          "sha256": "5e87dc636275ef11a5506bfdce23d479ac33689285f65a8900833b55bc5ea89b"
+        },
+        "operation_count": 3,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 73,
+            "after_bytes": 355,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 65,
+            "after_bytes": 144,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 222,
+            "after_bytes": 374,
+            "forward_matches": 1
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/session/original_shutdown.rs",
+        "preimage": null,
+        "postimage": {
+          "git_blob": "7ca2e84183a4e74191f172cb64467d444f5e9b11",
+          "bytes": 5022,
+          "sha256": "e62afb9057624a6ba1e7222c56b3238a3aa81fb412d60701c17c8e8aaceeeadd"
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "add_new_file",
+            "bytes": 5022
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager.rs",
+        "preimage": {
+          "git_blob": "4e19ab877f9ca84df282c7a72328726de3ec7251",
+          "bytes": 116349,
+          "sha256": "d9631505c673632e53d91122f9d1491dcea0ca1d3ac4360f7aa0fa95e5934f89"
+        },
+        "postimage": {
+          "git_blob": "5d26b78cac7a15592f61c37062cf4242f78c0a44",
+          "bytes": 117381,
+          "sha256": "754f57e98f730a8e7eb8619b29c2633dd0d4e846d696fbab6637e2eefaef2f98"
+        },
+        "operation_count": 6,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 53,
+            "after_bytes": 190,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 94,
+            "after_bytes": 172,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 223,
+            "after_bytes": 329,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 283,
+            "after_bytes": 389,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 1471,
+            "after_bytes": 2009,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 94,
+            "after_bytes": 161,
+            "forward_matches": 1
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager_original_shutdown.rs",
+        "preimage": null,
+        "postimage": {
+          "git_blob": "1d7bd062368cc0de6e0d340f6ce7484377faf612",
+          "bytes": 13013,
+          "sha256": "f22c1defae3690a1416a3aa19350e98a59996dea794f6c0113f8f893acf3905a"
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "add_new_file",
+            "bytes": 13013
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/agent/control.rs",
+        "preimage": {
+          "git_blob": "3d6adc42465b12aeeb6068ea18b5b856ae878cea",
+          "bytes": 32344,
+          "sha256": "1b96a6f76cf207402f03e8a6b1ff20bf388dfaa4ef9daf15ea8a8808d99dba21"
+        },
+        "postimage": {
+          "git_blob": "a36c9559db1bfd6ef96441ae2bf6566c77d5adea",
+          "bytes": 32647,
+          "sha256": "4a5809ae237fb72ffbbcdbf7534e7481c2401f7778144910e879682b8c34145c"
+        },
+        "operation_count": 3,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 71,
+            "after_bytes": 156,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 96,
+            "after_bytes": 249,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 49,
+            "after_bytes": 114,
+            "forward_matches": 1
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/agent/control_original_shutdown.rs",
+        "preimage": null,
+        "postimage": {
+          "git_blob": "5d9891761b0e178be3fcff8a4bea0884a1ed280a",
+          "bytes": 693,
+          "sha256": "077a087078c5f5d84823061d737884c3933fcd4a1e98fea81533fddf1938d6e3"
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "add_new_file",
+            "bytes": 693
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/codex_delegate.rs",
+        "preimage": {
+          "git_blob": "70c9fda4381bbeb3db0fe4a9bc893412d58e9c8e",
+          "bytes": 13693,
+          "sha256": "3bcd287dfeb7526080e81e24f4185507de15bcd2950a134c7373ae4e6044a9e8"
+        },
+        "postimage": {
+          "git_blob": "83342027ae59f07116ab5a0589bcb523538b8410",
+          "bytes": 13948,
+          "sha256": "e223ed10f73f880503e4209eb0c50a172ebdbb2b9e3fe428a0ed446dac603aaa"
+        },
+        "operation_count": 4,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 71,
+            "after_bytes": 153,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 72,
+            "after_bytes": 155,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 64,
+            "after_bytes": 99,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 67,
+            "after_bytes": 122,
+            "forward_matches": 1
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/guardian/review_session.rs",
+        "preimage": {
+          "git_blob": "15ca837540c5bdf87e2af93abac2504ad1ff7656",
+          "bytes": 97885,
+          "sha256": "5dce34d8c613c0b922bf4389945a4ecdaf771c9534084f984daa4a5229e7d563"
+        },
+        "postimage": {
+          "git_blob": "2d617ce0fa03f9e1ca4037f76bc3be473d6cea07",
+          "bytes": 97934,
+          "sha256": "fdb7e4c65a66f4ce4f3c90e6ea9d8e728331c79f942d9c323668f8e410d00187"
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 100,
+            "after_bytes": 149,
+            "forward_matches": 1
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/codex_delegate_tests.rs",
+        "preimage": {
+          "git_blob": "f79ff413fb81d6f3bbf4bcac20063cc0e32b543e",
+          "bytes": 10922,
+          "sha256": "f640ffd874a4cda75dbbe04da26f374d738edaac6c50923e8cdf2897f1802dd4"
+        },
+        "postimage": {
+          "git_blob": "44e30df042f4a8144cb70a946427db8f631194d4",
+          "bytes": 10996,
+          "sha256": "73284edcdd5e99f8aaea322ee2e880aa261f487d14279525437084d55d7803e2"
+        },
+        "operation_count": 2,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 206,
+            "after_bytes": 243,
+            "forward_matches": 1
+          },
+          {
+            "kind": "replace_exact_once",
+            "before_bytes": 205,
+            "after_bytes": 242,
+            "forward_matches": 1
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/session/original_shutdown_tests.rs",
+        "preimage": null,
+        "postimage": {
+          "git_blob": "bff9d771b91505baa1f662c99fcc186d3bf46402",
+          "bytes": 3163,
+          "sha256": "1b8202cced6541c11667208c87d774f4a6985ba84e986af2f341726a516e526b"
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "add_new_file",
+            "bytes": 3163
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager_original_shutdown_tests.rs",
+        "preimage": null,
+        "postimage": {
+          "git_blob": "9deddaa8be7f501baa89fcc5a5736293294c2976",
+          "bytes": 4742,
+          "sha256": "e83d7a7e68031c3c4fd238d1f8f29b7464bd454a6b7b7a2970109a5f3d00730f"
+        },
+        "operation_count": 1,
+        "unique_forward_reverse": true,
+        "all_full_bytes_equal": true,
+        "steps": [
+          {
+            "kind": "add_new_file",
+            "bytes": 4742
+          }
+        ]
+      }
+    ]
+  },
+  "preserved_function_scopes": {
+    "note": "Offsets start at the actual fn token and include its complete brace body; pub/async prefixes are excluded identically in both images. These byte counts therefore need not equal the author's larger declaration spans.",
+    "items": [
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "fn": "shutdown_and_wait",
+        "bytes": 402,
+        "sha256": "255233e74c3b731b57ee03fb0b52fc3c423ca1d760d6c96c35b418ba465c8d5d",
+        "equal": true
+      },
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "fn": "session_loop_termination_from_handle",
+        "bytes": 180,
+        "sha256": "91c78dd4d943158142689ff089d0315df863ef74cf79ccd6d156f9d730b9f9a5",
+        "equal": true
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager.rs",
+        "fn": "shutdown_all_threads_bounded",
+        "bytes": 1824,
+        "sha256": "198bd534bd9e41efdc13b37495e3eb7ae4e703fe23481467713cd8bf13e1d95d",
+        "equal": true
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager.rs",
+        "fn": "cleanup_unclaimed_thread",
+        "bytes": 2667,
+        "sha256": "31149ada5257ab1f58afaee73d7dcc9d6ff32c3ddfbad4ed16395f7495d0dff9",
+        "equal": true
+      }
+    ]
+  },
+  "findings": [
+    {
+      "topic": "Actual admission and handle",
+      "assessment": "ThreadManagerState::spawn_thread reserves the same custody mutex before the unchanged concrete tokio::spawn closure. The exact returned JoinHandle is synchronously registered before the result await. Sealing uses that same mutex. The admission guard seals/poisons on incomplete registration. Disabled/default retains no new startup handle. The original closure still sends the same result, waits the same delivery ACK, and performs the same unclaimed cleanup."
+    },
+    {
+      "topic": "Session creation cut",
+      "assessment": "The actual Session::spawn retains its original submission_loop JoinHandle in one shared unit observer. That observer awaits the handle once, then stores the real Result<(),Arc<JoinError>> in OnceLock. Strict ThreadManager startup captures the same SessionIo termination/outcome synchronously before its next await or finalize. Original default unit completion remains unit-valued; this adds outcome observation and allocation, not a second spawned observer."
+    },
+    {
+      "topic": "Startup-before-loop ordering",
+      "assessment": "Strict shutdown first seals admission and joins every retained startup, including startup delivery acknowledgement or original unclaimed cleanup. Only then does it snapshot all captured loop caps and concurrently submit original Shutdown and await those actual loop handles. The synchronous admission mutex is not held over an await. Existing unclaimed cleanup already requests and awaits its own original thread shutdown; its whole function remains identical. The AppServer caller must first close admission and complete its actual RPC owners; this slice does not independently establish that external precondition."
+    },
+    {
+      "topic": "Cancel-safe repeat observation",
+      "assessment": "Startup jobs borrow the original JoinHandle behind an AsyncMutex across await, then remove it and cache the exact outcome without an intervening await. Cancelling a waiter releases the lock without dropping that stored handle. Loop cleanup uses a retained Shared future; cancelling one waiter neither resubmits Shutdown nor discards the same underlying observer. Repeated joins return recorded results and do not poll a completed handle twice."
+    },
+    {
+      "topic": "Error preservation",
+      "assessment": "All actual startup/loop JoinErrors are retained as Arc-backed concrete causes and collected without abandoning the remaining jobs. Poisoned/incomplete admission and missing loop outcome refuse success. Ordinary startup business/domain errors still travel through the original result channel; the custody aggregate is an observation of owned task joins, not proof that every requested operation succeeded. Missing side evidence is not converted from unit completion to success."
+    },
+    {
+      "topic": "Direct delegate route",
+      "assessment": "The actual codex_delegate Session::spawn call now reaches its original AgentControl weak registry origin with identical SessionSpawnArgs and unchanged or_cancel behavior. In enabled mode its original concrete startup job and successful loop are registered before result delivery; cancellation of the result waiter leaves those real handles in custody. Disabled/None routes await the same original Session::spawn directly. An activated origin whose registry vanished refuses instead of silently falling back. Both existing SessionIo wrappers forward the same side record."
+    },
+    {
+      "topic": "Ownership and cycles",
+      "assessment": "Session AgentControl keeps a Weak custody registry plus its original activation Arc, not a strong back-reference. Startup workers may temporarily own ThreadManagerState while the registry retains their handles; actual task return breaks that temporary ownership, so explicit shutdown remains required. The retained loop cap owns the original channel/Shared/outcome, not a fabricated Session. Registry history protects loops removed from the ordinary thread map. The thread map is released only after all retained loop joins complete."
+    },
+    {
+      "topic": "Default behavior and scope",
+      "assessment": "Original SessionIo shutdown_and_wait, original unit helper, bounded ThreadManager shutdown, and unclaimed startup cleanup are byte-identical in their full function scopes. Existing test-only SessionIo literals add None, which cannot qualify strict success. No Root/BOOTTIME/500ms/request-start/body guard/checker/typed helper changes are in this packet. Existing delegate event/op forwarders and unrelated Core/SDK background owners are outside this task-registry claim; their existence is not a full physical process-exit proof."
+    },
+    {
+      "topic": "Components",
+      "assessment": "Read all seven new tests: real panic source, cancellation with a real UnixStream owner and eventual EOF, missing evidence refusal, late activation refusal, panic while another actual handle remains owned, loop survival after SessionIo/cancelled-cleanup drop, and dropped admission refusing new starts. These exercise actual task/channel/FD custody; they do not construct Root or business capabilities. All seven are unexecuted in this review."
+    }
+  ],
+  "limits": [
+    "Git blobs and pure V8 byte/static analysis only; no h/PTY/native/Cargo/fmt/Python checker/ref actions.",
+    "All 17 declared existing/new source images were independently GET and full-hash verified. New-path absence and a complete fixed-tree literal inventory were not independently scanned here; packet's bounded discovery limitation is retained.",
+    "The actual AppServer enable/close-admission/requests/Core-cleanup call graph is a separate next review, not inferred complete from this Core packet.",
+    "No claim that normal Session-loop completion proves effect completion, all SDK tasks joined, process exit, or successful phase acceptance."
+  ]
+}

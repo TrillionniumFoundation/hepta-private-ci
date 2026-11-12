@@ -1,0 +1,1182 @@
+{
+  "schema_version": 1,
+  "kind": "Evidence-only V46 terminal and future v6 assembly checkpoint",
+  "parent": "76b0a74cdb97fb99443b478e410e692107d799b0",
+  "parent_tree": "e2a635000cec67c6eed4a2e919d046fa48e5f7a4",
+  "native_result": {
+    "schema_version": 1,
+    "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+    "status": "FAILED_NATIVE_COMPONENTS",
+    "source": {
+      "commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+      "unchanged_before_after": true,
+      "maintenance_patch_bytes": 0
+    },
+    "terminal": {
+      "session_id": "dpty-560277fedc3c77059024458257fbea0e96ceca48f98f8f83c299d486cfd6774e",
+      "exit_code": 1,
+      "output_complete": true,
+      "capture_error": null,
+      "complete_bytes": 17965,
+      "complete_blob": "a266434d83b9153af84e69c0445438086077011a"
+    },
+    "fixed_contract": {
+      "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+      "harness_bytes": 50167,
+      "harness_sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2",
+      "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "request_timeout_ms": 500,
+      "deadline_origin": "original request_started_ns",
+      "retries": 0,
+      "overall_timeout_seconds": 27000,
+      "full_caller_timeout_seconds": 3600,
+      "ordinary_packages": 7,
+      "root_parent_roster": 17
+    },
+    "same_attempt_results": {
+      "qa": {
+        "passed": 236,
+        "failed": 0,
+        "breakdown": [
+          221,
+          5,
+          5,
+          5
+        ]
+      },
+      "full_unfiltered_caller_verify": {
+        "status": "passed",
+        "execution_blob": "d1a3709ed007608deb09dff58e4d5b15ec4a4078",
+        "timed_out": false
+      },
+      "ordinary": {
+        "passed": 1997,
+        "failed": 0,
+        "errors": 0,
+        "total": 1997,
+        "execution_blob": "d9e383f75e1a9eafb7fe808b185e7c67dc47a26c",
+        "junit_summary_blob": "4580d322d5194d2e5717ae1c0f67fc3546323b26",
+        "timed_out": false
+      },
+      "root": {
+        "passed": 16,
+        "failed": 1,
+        "errors": 0,
+        "total": 17,
+        "execution_blob": "107f25db317630c6105f2a1ea1ccfd644be1fc1b",
+        "junit_summary_blob": "c6a3e07cb6caf95d1bb147b28ad78942b6a2d198",
+        "timed_out": false,
+        "failed_test": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+      },
+      "helper_postverify": "passed"
+    },
+    "original_failure": {
+      "phase": "RetiredSession",
+      "call": "initial.recover_feature",
+      "child": "frontier.read-prefix: Unavailable; transport_error Some(Closed)",
+      "parent": "PeerDenied; waiting for RETIRE_READY ended with EAGAIN",
+      "drop_helper_reached": false,
+      "initiating_server_leaf": "not yet established",
+      "prior_V45_cache_age_not_reused": true,
+      "raw_stderr_blob": "5cdf146c78b850c4bd779e4697616e7b00b837e6",
+      "analysis_and_diagnostic_only_package": "65ba19fed94db0f9cb31a17934af6cc267646097"
+    },
+    "cleanup": {
+      "passed": 9,
+      "failed": 0,
+      "reference_before_after_equal": true,
+      "reference_commit": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "reference_tree": "6fe2c2426f22383416697016445cf444aafdd2ff",
+      "reference_status": "",
+      "original_summary_blob": "54f1f7c8d7d15d9268d24570bcfd9f49920aef44"
+    },
+    "evidence": {
+      "original_records": 124,
+      "original_records_modified": false,
+      "archive_qualification_rerun": false,
+      "complete_archives_receipt": "35d4dffbef2b0126cb455fa65cd40cde81d62ed9",
+      "text_archive_manifest": "a07a88884686e759c5632299c584cef446846cab",
+      "text_archive_sha256": "defff527e6da8ee14f410acbdc66532a0abe49bf8559ce337a763e2aa59cd3c6",
+      "text_archive_bytes": 268708,
+      "text_archive_entries": 122
+    },
+    "ordinary_business": {
+      "complete_chains": 0,
+      "positive_adoption_chains": 0,
+      "genuine_no_update_or_rollback_chains": 0,
+      "independent_consumer_accepted": false,
+      "physical_daemon_and_root_restart_accepted": false
+    },
+    "prohibited_substitutions": {
+      "predecessor_results_used": false,
+      "known_failure_exemptions": false,
+      "failure_as_no_update": false,
+      "deadline_rearmed": false
+    }
+  },
+  "source_manifest": {
+    "blob": "658549a54628df700158c30011f9eb640e21cd78",
+    "bytes": 57198,
+    "sha256": "52f0e102dfa2cef0e1d4585ad733f54f8f72b13d50f86cdf94451f319fb3b83c"
+  },
+  "base_path_proof": {
+    "blob": "1fa4a7719de5b8dc31d37c85508e4661074208bb",
+    "bytes": 42602,
+    "sha256": "b08511f839c870e87de947952c9ac86b85029992c54f3622668b58995a603922"
+  },
+  "files": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/ordinary.execution.json",
+      "blob": "d9e383f75e1a9eafb7fe808b185e7c67dc47a26c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/root.execution.json",
+      "blob": "107f25db317630c6105f2a1ea1ccfd644be1fc1b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/caller-full-verify.execution.json",
+      "blob": "d1a3709ed007608deb09dff58e4d5b15ec4a4078"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/ordinary.junit.summary.json",
+      "blob": "4580d322d5194d2e5717ae1c0f67fc3546323b26"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/root.junit.summary.json",
+      "blob": "c6a3e07cb6caf95d1bb147b28ad78942b6a2d198"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/root-junit.launch.log",
+      "blob": "cc280969f82ea5724b869c62988a063929b146e8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-terminal.txt",
+      "blob": "a266434d83b9153af84e69c0445438086077011a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-terminal-tail-tool-result.json",
+      "blob": "5c2c9cdfb8d1664c0318f463974c00aacf8703ba"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-summary.json",
+      "blob": "54f1f7c8d7d15d9268d24570bcfd9f49920aef44"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/root-failure-original.stderr.txt",
+      "blob": "5cdf146c78b850c4bd779e4697616e7b00b837e6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/archive-index.json",
+      "blob": "1217c90044d17234de72dad1ae0db42093173ed6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/archive-receipt.json",
+      "blob": "35d4dffbef2b0126cb455fa65cd40cde81d62ed9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/text-archive-index.json",
+      "blob": "034f2bddaf2bc10f40cc86aed80a31290e94c0cf"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/archive-script.py",
+      "blob": "49e7c4383b43c3870a724ed814107e54b6c91855"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/archive-request.json",
+      "blob": "84a98599d827e6a578e8f2557cecfb9949667c46"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/archive-start-tool-result.json",
+      "blob": "07aa4d483affb124398427e12df04a372ce623f2"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/archive-terminal-tool-result.json",
+      "blob": "5197d55c750d116874904247f8dfa2345077269d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/executions-read-tool-result.json",
+      "blob": "ee206b5697cda580b4fb0423ffbf69cce28ff55b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/archive-small-files-tool-result.json",
+      "blob": "9cefb7b92d8e68f09869853d1270f9b0484a2309"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/root-stderr-binary-read-tool-result.json",
+      "blob": "9c3fa3f5b45f4aea5dea247dbd34fa4e448b742a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/text-archive-manifest.json",
+      "blob": "a07a88884686e759c5632299c584cef446846cab"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-text-records.part-000.b64",
+      "blob": "16dbe27dece0f1e0d3b5daa2eec4abe74c21c414"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-text-records.part-001.b64",
+      "blob": "f7b11abde6ce983c3b339f97b8f9dd9b088a0834"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-text-records.part-002.b64",
+      "blob": "c5e24b97614cb70d287e12517ff7385378f76c75"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-text-records.part-003.b64",
+      "blob": "52e829dac0d066956e3332ce8cb6a563aef3331b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/original-text-records.part-004.b64",
+      "blob": "ff0b929be0b8d701bad9b17d16873ecab55b295b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/product_runner.rs.txt",
+      "blob": "95a320cc46e3374e8b3a48cd8c92b4def7ccf4a6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/lib.rs.txt",
+      "blob": "fc41ebe6849ef99eb2c2729fd3ef255a9cbd8f00"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs.txt",
+      "blob": "9adaec10e1fa0cb92326a2427c8f9f584fabd1fe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md.txt",
+      "blob": "3787b6100130259c960d4354ca6eb6ffd165d2f9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/product_holdout_file.rs.txt",
+      "blob": "4ca06cad35a5bcff1e3536b7c76dd15d8569cc29"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/product_holdout_file_codec.rs.txt",
+      "blob": "401dd79fa92ee4d48f0921bc395935ac3f7d5265"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/product_qualification_file.rs.txt",
+      "blob": "aca6df9dafc55af5ece5d39b22f8d1f30dca285f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/product_file_backed_tests.rs.txt",
+      "blob": "f05245349f29b80832260a9cfbde8e08e8e8882f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-intelligence-eval/src/product_qualification_file_tests.rs.txt",
+      "blob": "0db853c1f7a46b415b4bb2eed1a7198b583a5187"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_runtime.rs.txt",
+      "blob": "e68da81ff18066a6be86b3d7df699b220ca48944"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_same_actor_phase.rs.txt",
+      "blob": "f8158cf557e4b2cf022494cd0bc97be5cd5b75e5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs.txt",
+      "blob": "438aceea54b2654354dbe10abaaf4b2ef1f85c1b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task.rs.txt",
+      "blob": "d16dd65de0dac36dc845467512580349f31c6a37"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs.txt",
+      "blob": "be9f9216580f9117f9660177f2f98cbe86dcf4e9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle_tests.rs.txt",
+      "blob": "ba27e2d009a64f2089b41fe06a038e186f52b05b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session.rs.txt",
+      "blob": "a3dfcf2169b88c7ed3981cd1cfc54e3a8c91942b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_tests.rs.txt",
+      "blob": "191fb6a5db52cdbf7e4ded2857120336c28cfff4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs.txt",
+      "blob": "22cc4ce3416d98c84cb39b7dae220997ca3dabef"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs.txt",
+      "blob": "be3ccc0f4f0189b658605cb2bb192db458b9f151"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs.txt",
+      "blob": "4d19796d0d38f6358f589bf1e1f3bf3b0ce3d194"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs.txt",
+      "blob": "dcb7f34482eb489a707b0c02d19abaa831e2a40c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment.rs.txt",
+      "blob": "6701f711e626f2d84a15fe37e080d97cd2468c16"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_bridge.rs.txt",
+      "blob": "8d1f32fb15bb08defe5c028a1917306e32cdc0f2"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_initial_phase_deployment.rs.txt",
+      "blob": "e974f3750247a905d37032a088e98403b0db3c4c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_publication_phase_deployment.rs.txt",
+      "blob": "2a2dcf6c0956ea0c21d6b0f3fde3849a56c38776"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_tests.rs.txt",
+      "blob": "cf8ae2782033b9716232dbc97a6d23050f4fb4e0"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs.txt",
+      "blob": "8f9ec66ee0e5d45f2c69d60c267079104d171cf1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase.rs.txt",
+      "blob": "78d76b418b3d15245934f2f1e35dcb622ee69539"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs.txt",
+      "blob": "c1b4c145bc874eb61cbbfb235bd2f6419e9a8762"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs.txt",
+      "blob": "d96388344b2ffa6b3f6448712bb4fabac86adcb7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_session.rs.txt",
+      "blob": "7ba7c2e12e6d8ee510226ccbfc2b841a61633f67"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_runtime.rs.txt",
+      "blob": "818d48bd88c53f188563bcde33584fb171ffae94"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/lib.rs.txt",
+      "blob": "536db47601d36631575e7c660e079f2a28b81351"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_protocol.rs.txt",
+      "blob": "aabe32bbce2e3e88aaf55173b61ec6c57ddd9fe7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs.txt",
+      "blob": "6c7416f4471dd7cdff6fb80e8f312bf626a31b59"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs.txt",
+      "blob": "c4174a13da61e0dc138648c0bee198e4538a967f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_root_retirement_protocol.rs.txt",
+      "blob": "77cba7adc7a61b0177306a56ad608229e9d56d65"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_worker.rs.txt",
+      "blob": "aa1b04235d21b9c0843d4ce0e9e4e125fad5df9e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs.txt",
+      "blob": "5a014bcc8b64df475ae3ca9d96f040c734f41cf6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_phase_lanes.rs.txt",
+      "blob": "12aa0dd9fc71ebcb8905af82b8b90ae1cb777784"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs.txt",
+      "blob": "5ab56d766a58febae490cd7c49985ac85be22470"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs.txt",
+      "blob": "93a091c6b7789e30bb3df8dd2fc77422dc9df759"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs.txt",
+      "blob": "e3aa481c47d398ae1af75e54a662d9933ab6164b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_q24_model_session.rs.txt",
+      "blob": "1c486eb7fa62c8ec315926fae97574102461bdbe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs.txt",
+      "blob": "a565ac202db73b38e7f8ed8a10fa465c8c43afdd"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_learning_session.rs.txt",
+      "blob": "9e039ee8a2f965ff8823241ecccef63df3693e73"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_listeners.rs.txt",
+      "blob": "35ea7ae69be1c9a4c0d63dbe712256537d73370f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_host.rs.txt",
+      "blob": "2c3d72e02c038c81152a1846aa606f1763205e46"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement_tests.rs.txt",
+      "blob": "b6ee1b7393c9e96c54ed1754117a676f0f1307cf"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-contracts/src/authority_host_peer.rs.txt",
+      "blob": "2cbe42c91de941a1dd162bc72a9b472615dcd96c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-contracts/src/authority_host_peer_tests.rs.txt",
+      "blob": "5caf2ac3fdd3941694efac25c14d7142b535b69c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs.txt",
+      "blob": "4ef3f49734c60efac985b75216e6ac8463b3aae4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_a.rs.txt",
+      "blob": "b4ca8e174be906350d1206e5a8cdf92f1a700518"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_phase.rs.txt",
+      "blob": "055e180d0f5d5e42e5f944b9a9f9879c65e97669"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs.txt",
+      "blob": "6dad9c84b41bc21f9b3be7502f49e9287237aa94"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_initial.rs.txt",
+      "blob": "d032ef016d8b45df1eb15f3d25c95c9c30282e57"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher.rs.txt",
+      "blob": "0295dcae5e3ef047a2c4dc4d902388da35694a2d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs.txt",
+      "blob": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs.txt",
+      "blob": "62b24247f475dc824bfb920c7e13958248dcc23e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody_tests.rs.txt",
+      "blob": "8d3f27072e73826e98030db72b38d3c786bd38ad"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs.txt",
+      "blob": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs.txt",
+      "blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_deployment.rs.txt",
+      "blob": "00d485fd1b533ff0c6e599e4367587d27d7e9b46"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work.rs.txt",
+      "blob": "d081138bdc4a7ba4dac33cfc0f7dc97e8b12f34d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs.txt",
+      "blob": "26c4d7d2120bd753f107db7d93827e30794ca3e0"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_work_tests.rs.txt",
+      "blob": "12d82aa40a353299d3d94047ced8a187816fb8fe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_source_readback.rs.txt",
+      "blob": "7e1157e21db3408e9f466e17ee029a468fd96563"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs.txt",
+      "blob": "1596d6a8d1593c523d0590a1c2c247d80db7ac1b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs.txt",
+      "blob": "48f805e36647ead8a9daf9d58618a080db308a46"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_same_actor_learning.rs.txt",
+      "blob": "928d9d5feaddffb761e7beabdfccffa44886d476"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs.txt",
+      "blob": "1359c703eeabe8db89888d2eb2cde74e40233e60"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_q24_successor.rs.txt",
+      "blob": "023b9e25eb5de02ccc49038caa3f51be89d61f0b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_same_actor_admission.rs.txt",
+      "blob": "c185418398abcd84bbe12bc606bc00821cf5ff93"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_publish.rs.txt",
+      "blob": "f4be0fb2769ec29f72a6f643b07090d79e155c63"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_c.rs.txt",
+      "blob": "3d5c2b9fd2beef6533205759af0ea88a89175fd7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_worker.rs.txt",
+      "blob": "4869ccce2c29236a2f60484146031af56c685f51"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_same_actor_retirement.rs.txt",
+      "blob": "48db453b840dd7e1312d246c2ae4715e6de96f94"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_q24_successor_retirement.rs.txt",
+      "blob": "4e648876c60830cdff827f7070d5f4cc1deaaa68"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration.rs.txt",
+      "blob": "7b6f0a9a1f39a7ca8f50662540dbf0a91101f323"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs.txt",
+      "blob": "fba0fe3b2474483df9c3cbfece7d378ce34f30a5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_learning_delivery.rs.txt",
+      "blob": "fac1881533d073b89cf6eecdf6fa207a36e31fbe"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker.rs.txt",
+      "blob": "7fb771f554123b248d878ce8bc643c45019762d0"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_same_actor.rs.txt",
+      "blob": "c3f5d7ad858e7a5cdabed130da28358851f16c2e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_retirement.rs.txt",
+      "blob": "a3220069dd7f4d481fbd04e9aec733f371d7322e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_same_actor_retirement.rs.txt",
+      "blob": "1b5784ecca33d8fc00d4ae63540d8804ff224292"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_delivery_same_actor.rs.txt",
+      "blob": "ee25461f13f1b955ec41a1ecf40fe95f591480a3"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_learning_delivery_same_actor.rs.txt",
+      "blob": "7554c854899b7e389bdb4bc6afeea1faa2c900c1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs.txt",
+      "blob": "ca68307fdf233666176933acc0285580708efe85"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_normal_work_tests.rs.txt",
+      "blob": "d185ec05ea6ee2ef5b99ae31ce24b1e619776268"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs.txt",
+      "blob": "2f13eb143049dcbf87c0791a036a852abd3d3e4e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs.txt",
+      "blob": "a0c1592e8054b4eba7c2b486230271baeb475228"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs.txt",
+      "blob": "76475a83fd3680c9601a6582749e649d626979b8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs.txt",
+      "blob": "8e3b7ab14f90587f7430378f3a30ce4e1f79da97"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs.txt",
+      "blob": "b66660a510dce52b517c45e30a0a374a8c9ca32a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs.txt",
+      "blob": "2d3b10595febddae8c09ef08aac35c7ce3e9f6bf"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs.txt",
+      "blob": "f18b59cd1dd642ba98706db065934e7c630c7bd8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_file_origin.rs.txt",
+      "blob": "4c5ee7d25ea6e86bb6a17a856fe194198edb9c2c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_data.rs.txt",
+      "blob": "33dfd853e29f011ab4a9c899fdf7193ea3dfc600"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs.txt",
+      "blob": "24d9b803a93d8b61e183928e797a0622a70e114f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs.txt",
+      "blob": "05895538b32b08bba514cc2741d0787357588482"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_preparation.rs.txt",
+      "blob": "55a6c955fa9f416a81bf570181fbc3fe11f9876e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_cell_data.rs.txt",
+      "blob": "cc35d786fba07685d911038da4abdbd78399421f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_bundle_data.rs.txt",
+      "blob": "c1ddb59ea63b6dc135b2570220a2df693d8527af"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs.txt",
+      "blob": "7ba5e3e61787dee0064059a46870a1467e62c6f3"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs.txt",
+      "blob": "fee8914c509e93d63109117b818fc2c0b9ebdd3d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs.txt",
+      "blob": "2a60e2dd058abe2bc73fcff25d0d1bc4bc0d9cbf"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifact_data.rs.txt",
+      "blob": "7c6909e197b4410a6dc55bead2c206a8d1ce28a1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs.txt",
+      "blob": "81fd249e2d8c53fd2873153332c921356df441d7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_exchange.rs.txt",
+      "blob": "801620ea5ba7fee5ca88bff214acfce10296a393"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_temporal_data.rs.txt",
+      "blob": "1a5f75d2e392b0c5f16a7f52adb16388430c8b16"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_comparison_data.rs.txt",
+      "blob": "5d18debf33eb8c1d54a03f0bc27814cb9c13b01b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_data.rs.txt",
+      "blob": "17c5193608486a738bffd3100f3b3747060bc48a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs.txt",
+      "blob": "595ac3b2a66468e222794e7f539873bbb88a6462"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs.txt",
+      "blob": "d87cf348143f122353e928c11cfa5ba46aceaa02"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs.txt",
+      "blob": "0b609bfb7eb16e3a8a0056a4ce8f8cc3f8ae84a4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_observation_data.rs.txt",
+      "blob": "a895514e7f23a9ab66a265478bea2122eebfa7d7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_data.rs.txt",
+      "blob": "be4ca92a49cc1cbdf15cb368751ddcb7f09c3cc0"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs.txt",
+      "blob": "3a89520c8c07521eb3370a291732dc8ac282c89e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment.rs.txt",
+      "blob": "52c5b7df648b1639bbf71721cfd7846ef3afd125"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/main.rs.txt",
+      "blob": "9d9cf5a296423f8ca2a0bfe84a4a9b59be2d4312"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs.txt",
+      "blob": "1c81065347bc7cc8f58bbf4805df94658d34bc49"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_normal.rs.txt",
+      "blob": "27c63323fd0d583506c0c4db7061071242abfa5a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_normal_tests.rs.txt",
+      "blob": "b50d02e7dc6b965be9d132608a735fb2bae0c7ab"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_retirement.rs.txt",
+      "blob": "55c1386d733cbb96bf6ce771b3010debc634ffd7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_retained.rs.txt",
+      "blob": "6d953d086a4f554ace72c1ab3a211be24447123f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs.txt",
+      "blob": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs.txt",
+      "blob": "a691263dce886a35a73b0759b9740e711b76ffb1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/final_use_issuer.rs.txt",
+      "blob": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs.txt",
+      "blob": "9ba4eafef98caa9c3c20ff883770204475443a34"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs.txt",
+      "blob": "bc430c0f787237f3e233e66e536b1a1b151811b4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs.txt",
+      "blob": "9a48409403cb3f751f59c7c00317c55d202b9d0a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs.txt",
+      "blob": "3b191d183d3bd13e3cdcdc6dad608425e29da8eb"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs.txt",
+      "blob": "4fd09ce5ac09c0de4ba6cb98c65df2c032e6c115"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_production_learning_inputs.rs.txt",
+      "blob": "3aa6411dbf600d4ce36f57866a92cba85d84076f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs.txt",
+      "blob": "eea6bbb366386a2320df86692fd37a6ca417cf35"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/cell_q24_learning_retirement.rs.txt",
+      "blob": "c79dfccadac99fb2e987ab031491881233801254"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs.txt",
+      "blob": "72ac61e5887858558142b38ee363cd0ebc6878d7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_generation_publication_stream.rs.txt",
+      "blob": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_generation_current_client.rs.txt",
+      "blob": "dc30a2d9de377a3c43221470b408df64962b76db"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/neuron_generation_current_store.rs.txt",
+      "blob": "4d65369bd1c394ed6aeb2e45c7b0e2a6720ba7d7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/neuron_generation_current_root.rs.txt",
+      "blob": "03d02251d457311fc0ac8e6ca6a5b909c2d0fe3d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs.txt",
+      "blob": "1d522ce0553ebc30d8228fa46a41970ed8c589b5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs.txt",
+      "blob": "60e50bd7db42d13a80df225044ca883c942ac899"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_deployment_root_exit.rs.txt",
+      "blob": "1e372ebdd687f38d718433a1fcd096c39260d151"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs.txt",
+      "blob": "ae34b666ab9c7f83e446c23bf524cf10dee556fd"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement_tests.rs.txt",
+      "blob": "4e7bbd87d48d8c0016a7690b82754be943a55d16"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_final_retirement.rs.txt",
+      "blob": "1cb2e1f7394806673bf6cadd0318870fe11eb941"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_purpose_bindings.rs.txt",
+      "blob": "69ae313a6b592de998636cc8f7a39476525e0424"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_same_actor_joined.rs.txt",
+      "blob": "ffc4913af86170f34efca6a229f2b1c0d01017d9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/circuit_task_same_actor_purposes.rs.txt",
+      "blob": "b9a2f42af81e4c071a6f91d9abd01a7622805398"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/root_authority_session_observation_retired.rs.txt",
+      "blob": "60d754585aa6d0c08f991974d73574c4a34c3e9c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/rmcp-client/src/stdio_server_launcher.rs.txt",
+      "blob": "640a092df83ae0ffae22483e32b123807fea7afa"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/rmcp-client/src/stdio_server_owned_shutdown.rs.txt",
+      "blob": "09ce4b8a677003b4e11edb701bd444a26edda917"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/rmcp-client/src/stdio_server_owned_shutdown_tests.rs.txt",
+      "blob": "c04eb322c3bf927ab7afa2ea7a886f877cda887c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/rmcp-client/src/rmcp_client_owned_shutdown.rs.txt",
+      "blob": "01aeb2b67389d1ad21cc87fc7a2c3ffd8cb7089f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/rmcp-client/src/rmcp_client.rs.txt",
+      "blob": "29d93e86c279aa45f006e9b4911d0ddc89e2d254"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/rmcp-client/src/lib.rs.txt",
+      "blob": "4def78433dd57c5d7a762d1b8f86e6197297620c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/codex-mcp/src/original_owned_shutdown.rs.txt",
+      "blob": "24b181104af7d476136667f97c0393ce00a2d0ea"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/codex-mcp/src/runtime.rs.txt",
+      "blob": "3e2f2dd91b18cdf0f6886eb31782b9b5d5af9516"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/codex-mcp/src/connection_manager.rs.txt",
+      "blob": "3801128bd59fa176baeaea31cdb6cc39cca448a5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/codex-mcp/src/lib.rs.txt",
+      "blob": "6ce21ff6c41696a003279681878ec5ebf5e04f2f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/codex-mcp/src/rmcp_client.rs.txt",
+      "blob": "9be80863bbd6aca092387740e444495a73977d8b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/codex-mcp/src/rmcp_client_owned_shutdown.rs.txt",
+      "blob": "26e9d03f351819e95fd161848e4d2c36c7e24650"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/configured_mcp_runtime.rs.txt",
+      "blob": "e9bb61775c50098bd0e85bbb246498165b4fd051"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/configured_mcp_runtime_owned_shutdown.rs.txt",
+      "blob": "35aee83996fe4ab83549c4fb2789437033477ea8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/lib.rs.txt",
+      "blob": "91900627409741a362513bf6b37dd0184682ed49"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_completion.rs.txt",
+      "blob": "9da72af3ff2452b148664cb87ffad2015388cf75"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs.txt",
+      "blob": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/session/mod.rs.txt",
+      "blob": "f335c2173beed441d633772ae5f1bee00ef6d2ee"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/session/original_shutdown.rs.txt",
+      "blob": "7ca2e84183a4e74191f172cb64467d444f5e9b11"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/thread_manager.rs.txt",
+      "blob": "5d26b78cac7a15592f61c37062cf4242f78c0a44"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/thread_manager_original_shutdown.rs.txt",
+      "blob": "04613d19c4b9b89715d57978ec6e226abd6bd4a7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/agent/control.rs.txt",
+      "blob": "a36c9559db1bfd6ef96441ae2bf6566c77d5adea"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/agent/control_original_shutdown.rs.txt",
+      "blob": "7c5b95031edb1c7eaa9f2633d1cdb9e1d1ece2ca"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/codex_delegate.rs.txt",
+      "blob": "50b7345c20029c33dc18fb0ad53a6295995f260e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/guardian/review_session.rs.txt",
+      "blob": "2d617ce0fa03f9e1ca4037f76bc3be473d6cea07"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/codex_delegate_tests.rs.txt",
+      "blob": "44e30df042f4a8144cb70a946427db8f631194d4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/session/original_shutdown_tests.rs.txt",
+      "blob": "bff9d771b91505baa1f662c99fcc186d3bf46402"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/core/src/thread_manager_original_shutdown_tests.rs.txt",
+      "blob": "9deddaa8be7f501baa89fcc5a5736293294c2976"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/config.rs.txt",
+      "blob": "6717b2ee713ce8fd3df6a94f7456225470930782"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/runtime.rs.txt",
+      "blob": "7f2b8a465b3f55e71484e16ad5c871dfb8352c32"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/app_runtime.rs.txt",
+      "blob": "b28a6ee2ae3060d345dfdc283ae156c3ed61a8b0"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/message_processor.rs.txt",
+      "blob": "6f0b553ec6b0843bb5db7e903d0de47d876e4662"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/connection_cleanup.rs.txt",
+      "blob": "250a3c8aebfabf40fce4d622c483935bc3109b27"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/models_refresh_worker.rs.txt",
+      "blob": "59e93bb9ef7cd1255930bc712d7f359891f06ca4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/turn_cost_worker.rs.txt",
+      "blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/thread_state.rs.txt",
+      "blob": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/request_serialization.rs.txt",
+      "blob": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/request_processors/thread_processor.rs.txt",
+      "blob": "93937de2aa51d03afa1f547e7b7338bf7a2981c5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/request_processors/thread_lifecycle.rs.txt",
+      "blob": "2d1075b49cc064c5af047d3f4a0b115884df2c27"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/original_owned_shutdown.rs.txt",
+      "blob": "503628dd6225dc886d23e5432bab81692572a7ce"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/inherited_transport.rs.txt",
+      "blob": "3fc930e1e619661049f59b6aac815077031ab62d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/effective_plugin_change.rs.txt",
+      "blob": "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/app-server/src/original_owned_shutdown_tests.rs.txt",
+      "blob": "c53e30e16ed2b5c9f6aee80a14f459a1e5c16568"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/same_actor_q24_required_purpose_retirement.rs.txt",
+      "blob": "a6f0a27e32047dbb015c3d3de034de2fb2796e79"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/sources/codex-rs/hepta-agentd/src/authority_host_service.rs.txt",
+      "blob": "a8df9b4203334a7e53d1d42dc1e6202b4752677e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/SOURCE_MANIFEST.json",
+      "blob": "658549a54628df700158c30011f9eb640e21cd78"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/BASE_PATH_PROOF.json",
+      "blob": "1fa4a7719de5b8dc31d37c85508e4661074208bb"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/receiver-38-op-replay.json",
+      "blob": "080143dc90ee25936f6096b8504a13bb48364a21"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/diagnostic-addition-replay.json",
+      "blob": "3150452d963a6e7ef105fb17cb694b5023909187"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/runtime-receiver-28-op-package.json",
+      "blob": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/app-server-receiver-10-op-package.json",
+      "blob": "e6082b028714c1385587f7d7895808d07fe55039"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/root-service-failure-diagnostic-package.json",
+      "blob": "65ba19fed94db0f9cb31a17934af6cc267646097"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/root-service-failure-diagnostic-independent-review.json",
+      "blob": "6e34f314d9d3352f05ca70e2c0c9ac867b4c055c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/core-shutdown-independent-review.json",
+      "blob": "0645658c578f1807043ead364b9826468145e8b0"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/root-receiver-and-private-module-independent-review.json",
+      "blob": "65bb919cd7929c230d349cae9561ac3cc77bb825"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/partial-owned-union.CALLERS.toml",
+      "blob": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/root-whole-code-guard-draft.json",
+      "blob": "c9815b6842ed51866a0ab058d1e9069cd60ef26b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/root-boundary-draft-v1.json",
+      "blob": "73c83a0f436d0b4326568f136cf5b0f105cbac9e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/root-boundary-draft-v2.json",
+      "blob": "b9db22f4ddce9907e2674b737e6fa61c06aea99f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/runtime-mcp-core-outer-annex.json",
+      "blob": "e6da443d18aefcfb345a222cdbc025195271af72"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/runtime-mcp-core-outer-baseline-ops.json",
+      "blob": "29bb72869003f7441f0549810201a4c992cda0de"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/runtime-mcp-core-outer-bounded-projection.json",
+      "blob": "4e2f563acf502040549f387c949917dce8d6b842"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/app-server-annex-manifest.json",
+      "blob": "f0c6e0fc16ee64605c0b8193969cd375d59e8ec7"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/app-server-semantic-annex.json",
+      "blob": "40133ee467b53d972b93c5753e9142fadf100d45"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/app-server-append-draft.toml",
+      "blob": "a889c7cceac4bf027db0c0f3a6980f106d4577b5"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/metadata/app-server-reference-baseline-ops.json",
+      "blob": "0cdcb570c176558b60bebf4a998c9cb2709ca9c2"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/RESULT.json",
+      "blob": "39644ad60327fbcc4c5841e126e0e2a5b827a153"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/README.md",
+      "blob": "4ab0c3bb3289f116e51dc7060134d38ee20b0286"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/app-server-shutdown-independent-review.json",
+      "blob": "68f8b6b1072dde6a64e06035feae987061f7f9f2"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/future-assembly-checkpoint-v6/proofs/app-server-shutdown-independent-review-detail.json",
+      "blob": "43303fe6880285dd2bdda4367b61a8e3142d3122"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/independent-terminal-review.md",
+      "blob": "eed20d8b475f2e49c47af4b99be569bda1a96db3"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-cbf6ca7-seven/v21/terminal/independent-terminal-byte-proof.json",
+      "blob": "4add4c2ee251827be6092da045d4425218ef0801"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/chain-native-use-join-proposal-v1/MANIFEST.json",
+      "blob": "33746eddf59b10b9d4faab6e20482cb1b582e4b9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/chain-native-use-join-proposal-v1/exact-source-operations.json",
+      "blob": "9801f64e0f4714995edc81f6bfa8be57f59f10d4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/chain-native-use-join-proposal-v1/source-bound-review.md",
+      "blob": "76631fd5f5b62c668412a21fd909f8eec20f0fb9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/chain-native-use-join-proposal-v1/original-pr-909-guard.json",
+      "blob": "fa17286002db342c3d2738bd1914c12dee88c028"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/chain-native-use-join-proposal-v1/sources/scripts/cell_learning_local_decision_join.py.txt",
+      "blob": "dabf403b0988de6a6dad9ad198ac22cad1542fa8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/chain-native-use-join-proposal-v1/sources/scripts/test_cell_learning_local_decision_join.py.txt",
+      "blob": "a8c35861954c6b68dd2af5453fa1365020380217"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/chain-native-use-join-proposal-v1/sources/docs/development/specs/pon/HEPLCP04_LOCAL_DECISION_INTEROP_V1.md.txt",
+      "blob": "0e21285b51a45a865fcb44b2b0089c9ebbcc5543"
+    }
+  ],
+  "product_paths_changed": 0,
+  "source_snapshot_status": "UNFORMATTED_UNCOMPILED_UNQUALIFIED",
+  "native_qualification_launches_for_this_checkpoint": 0,
+  "source_snapshot_path_rule": "sources/<actual repository path>.txt; actual product paths remain exactly in SOURCE_MANIFEST.json; bytes unchanged",
+  "archive_provenance": {
+    "read_only_archive_python_pty_completed": true,
+    "qualification_rerun": false,
+    "text_originals": 121,
+    "extra_archive_index_entries": 1,
+    "binary_originals_retained_in_complete_host_archives": 3,
+    "complete_binary_archives_independently_transferred_to_git": false
+  },
+  "chain_proposal": {
+    "manifest": "33746eddf59b10b9d4faab6e20482cb1b582e4b9",
+    "status": "UNINSTALLED_UNEXECUTED_HEPTA_EVIDENCE_ONLY",
+    "chain_product_or_ref_mutations": false,
+    "required_write_channel_verified": false,
+    "successful_new_v4_native_pair": false
+  },
+  "predecessor_unpublished_index": {
+    "blob": "9002c7fc3097aad111e902cde6597042e0fc4869",
+    "corrections": [
+      "all source evidence path suffixes .txt",
+      "ordinary.execution.json filename",
+      "native_qualification_launches distinguishes archive Python PTY"
+    ]
+  }
+}

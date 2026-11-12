@@ -1,0 +1,2620 @@
+{
+  "schema_version": 1,
+  "kind": "Final AppServer / Agentd strict actual-owner metadata annex",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "Frozen immutable Git/static-only annex; not installed, not compiled, original checker and all components unexecuted.",
+  "source_graph": {
+    "git_blob": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+    "bytes": 56896,
+    "sha256": "2f8577610e00ad1719f3594ff41f566d87aa93d920ca4595f9dc77f988b07908",
+    "base_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "base_tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350",
+    "source_paths": 195,
+    "owned_and_external_source_pins_checked_against_graph": 19
+  },
+  "dependencies": [
+    {
+      "kind": "actual 15-path product packet; 59 unique exact operations",
+      "git_blob": "bda702227403b6de5c738ee094236f0617f8f9ce"
+    },
+    {
+      "kind": "10 unexecuted real task/FD/profile components; 3 exact operations",
+      "git_blob": "ea02c41a45458e02f3a50acbcf19a251bf0978e1"
+    },
+    {
+      "kind": "two-path original-receiver UFCS successor; 10 unique exact operations",
+      "git_blob": "e6082b028714c1385587f7d7895808d07fe55039",
+      "bytes": 40758,
+      "sha256": "08f42637ebe0b0392f14e4bd595b10f3177addb7203ed76a4cf60a83830d30ba"
+    },
+    {
+      "kind": "external author actual outer/Core/MCP UFCS; three AppServer caller paths are adopted from it",
+      "git_blob": "31c24fdee80e6168bcd53b1db68d3cbeb9db55e9"
+    },
+    {
+      "kind": "actual Core startup and original Session-loop custody dependency; no AppServer-owned code is supplied by this annex",
+      "git_blob": "821e349ae41845894baeed0a8cb52fbe133167a2"
+    },
+    {
+      "kind": "runtime author independently owns MCP/Configured/Core/outer annex; retain it conjunctively",
+      "git_blob": "e6da443d18aefcfb345a222cdbc025195271af72"
+    }
+  ],
+  "deliverables": {
+    "semantic": {
+      "git_blob": "40133ee467b53d972b93c5753e9142fadf100d45",
+      "bytes": 178896,
+      "sha256": "f8d94609b4a62346803db5e2fe62ae90902dc1c1da50e6bbc45979155c003217"
+    },
+    "toml_append_only": {
+      "git_blob": "a889c7cceac4bf027db0c0f3a6980f106d4577b5",
+      "bytes": 130938,
+      "sha256": "26d9fbdc111beb6e58f5f83e8cf7b30d64544c96fb857babeb221d2e2e2ce2ef"
+    },
+    "exact_v45_reference_ops": {
+      "git_blob": "0cdcb570c176558b60bebf4a998c9cb2709ca9c2",
+      "bytes": 198174,
+      "sha256": "feb0b3dce576292743d07db060ebe47591c3ef0e456a2a084ed7501b5c5362d2"
+    },
+    "instructions": "Use the semantic object with old_row_changes/new_boundaries/new_protected on the current registry. Never replace Root's current whole CALLERS.toml with a predecessor snapshot."
+  },
+  "scope": {
+    "owned_product_paths": 15,
+    "new_component_file": 1,
+    "actual_external_caller_paths": 3,
+    "new_boundary_ids": 38,
+    "new_protected_rows": 15,
+    "new_function_order_rows": 64,
+    "new_file_order_spans": 18,
+    "required_raw_markers": 23,
+    "existing_boundary_rows_modified": 0,
+    "existing_protected_rows_modified": 0,
+    "minimum_function_order_markers": 3
+  },
+  "source_inventory": [
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "postimage": {
+        "git_blob": "91900627409741a362513bf6b37dd0184682ed49",
+        "bytes": 87084,
+        "sha256": "6e276e8fb33bf59376aed77731453547f252550ad97eb5808025bbee1dce4fe0"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "postimage": {
+        "git_blob": "6717b2ee713ce8fd3df6a94f7456225470930782",
+        "bytes": 40081,
+        "sha256": "3cb30d774a8c6947d66ebe6eebd96857a2c83452b9de3b972d2145b222f9375d"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "postimage": {
+        "git_blob": "7f2b8a465b3f55e71484e16ad5c871dfb8352c32",
+        "bytes": 32022,
+        "sha256": "7580096c9c949410372efccf18520e27a481141d798e09d2eaa68dc5291ba245"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "postimage": {
+        "git_blob": "b28a6ee2ae3060d345dfdc283ae156c3ed61a8b0",
+        "bytes": 23617,
+        "sha256": "9aeb8c3fde899b339fc6478b55052b1f9eb4155d5157bb1cbf799c67119359fc"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "postimage": {
+        "git_blob": "6f0b553ec6b0843bb5db7e903d0de47d876e4662",
+        "bytes": 82345,
+        "sha256": "6fed2a6ba6605fcee839cd4b2e7ae11e2cefad90cd60368b9b801eda1994b33a"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/connection_cleanup.rs",
+      "postimage": {
+        "git_blob": "250a3c8aebfabf40fce4d622c483935bc3109b27",
+        "bytes": 3525,
+        "sha256": "775f7a9af1875813baae5c69681459a9465755bfdadd69bd8f640aedc3f757d3"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+      "postimage": {
+        "git_blob": "59e93bb9ef7cd1255930bc712d7f359891f06ca4",
+        "bytes": 2098,
+        "sha256": "4d19cd651afd092b00db18bada7cb5ad2e90ed7fea780e8ccd83213c684a50e7"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+      "postimage": {
+        "git_blob": "8fb9a0f140f4cc4dd37ca20133ec324c7232f77e",
+        "bytes": 17654,
+        "sha256": "c8a7de5471768871e117df543800e9ff4dec131a9ebad495cbfd7fb6393cb4ca"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/thread_state.rs",
+      "postimage": {
+        "git_blob": "7ceddc4c249cd3ed9f464889b9ab0804575a05f9",
+        "bytes": 23142,
+        "sha256": "19ca37120dc0b9bccbdded650e0c78568ccb694aa1df0b47cca7fd3d8ba0702b"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_serialization.rs",
+      "postimage": {
+        "git_blob": "1cc11dc7ac2398c9eabfcff9ffc469d1a85f8cb8",
+        "bytes": 36728,
+        "sha256": "72611f3861616bbb1c90bfdc140c4d2b0de7e2eeebf468ecaddf4a57d7d1a789"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "postimage": {
+        "git_blob": "93937de2aa51d03afa1f547e7b7338bf7a2981c5",
+        "bytes": 252538,
+        "sha256": "9f24f5f648df2886c66abcb044e5d8197628674a4e074e42c673730e60182d17"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+      "postimage": {
+        "git_blob": "2d1075b49cc064c5af047d3f4a0b115884df2c27",
+        "bytes": 34808,
+        "sha256": "37dde11fd47e6b59bbd22a59ab043c4ce10d8aa4e7cac22a8fde13d2ac0e5346"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "postimage": {
+        "git_blob": "503628dd6225dc886d23e5432bab81692572a7ce",
+        "bytes": 19045,
+        "sha256": "e1bc0d0c39db2e4b8e584cf3150d246e4433146514daf059854e1a9c7445c5ff"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/inherited_transport.rs",
+      "postimage": {
+        "git_blob": "3fc930e1e619661049f59b6aac815077031ab62d",
+        "bytes": 2324,
+        "sha256": "91953948330eb9a2dafa6e009bab71b5e53093722776f14943c06586a4e8914a"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "postimage": {
+        "git_blob": "ca662efa1410a0c9e77469fd4d5ca9370fb31ab1",
+        "bytes": 10853,
+        "sha256": "c24bde53876b6a66c70599c636c296e48b08adf8f42649a051171dba0c72a324"
+      },
+      "role": "owned_product"
+    },
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown_tests.rs",
+      "postimage": {
+        "git_blob": "c53e30e16ed2b5c9f6aee80a14f459a1e5c16568",
+        "bytes": 9171,
+        "sha256": "59ae3369190061df6d809264f37c224ea9a5831412c79bdf9cc1e7b1f9ebbd3d"
+      },
+      "role": "component_source"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "postimage": {
+        "git_blob": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+        "bytes": 17186,
+        "sha256": "ad7480a7bbe96283b73006c4cec706cb58b0623998099c0a16c5496e6d967217"
+      },
+      "role": "external_actual_caller"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "postimage": {
+        "git_blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "bytes": 11788,
+        "sha256": "74d7a6d168faa960804b7b21ce3bba56ebbe6de3922485736a972356411fe725"
+      },
+      "role": "external_actual_caller"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+      "postimage": {
+        "git_blob": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+        "bytes": 8156,
+        "sha256": "afddb4f71668a80d0b86e9a4af2ec17e40fe637fcf7a4c173a0be7efa2750e3b"
+      },
+      "role": "external_actual_caller"
+    }
+  ],
+  "semantic_inventory": {
+    "required_boundary_ids_append": [
+      "app_server_original_owner_new",
+      "app_server_original_owner_stop",
+      "app_server_original_main_custody",
+      "app_server_original_transport_registration",
+      "app_server_original_background_seal",
+      "app_server_original_background_admission",
+      "app_server_original_processor_quarantine",
+      "app_server_original_failure_retention",
+      "app_server_original_processor_registration",
+      "app_server_original_task_registration",
+      "app_server_original_optional_task",
+      "app_server_original_group_join",
+      "app_server_original_processor_join",
+      "app_server_original_owner_join",
+      "app_server_original_joined_binding",
+      "app_server_original_job_join",
+      "app_server_original_processor_new",
+      "app_server_original_processor_prepare",
+      "app_server_original_processor_owners_join",
+      "app_server_original_connection_close",
+      "app_server_original_threads_prepare",
+      "app_server_original_thread_startups_drain",
+      "app_server_original_thread_loops_join",
+      "app_server_original_queues_new",
+      "app_server_original_queues_binding",
+      "app_server_original_queues_seal",
+      "app_server_original_queues_drained",
+      "app_server_original_thread_state_new",
+      "app_server_original_thread_state_binding",
+      "app_server_original_connection_cleanup_new",
+      "app_server_original_models_join",
+      "app_server_original_turn_cost_join",
+      "agentd_original_app_server_custody_attach",
+      "agentd_original_app_server_custody_take",
+      "agentd_original_app_server_socket_custody",
+      "app_server_original_entry",
+      "app_server_original_plugin_callback",
+      "app_server_original_failure_aggregate"
+    ],
+    "actual_callers": [
+      {
+        "id": "app_server_original_owner_new",
+        "symbol": "OriginalAppServerOwnerCustody::new",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_owner_stop",
+        "symbol": "OriginalAppServerOwnerCustody::request_stop",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/connection_cleanup.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_main_custody",
+        "symbol": "OriginalAppServerOwnerCustody::run_original_main",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_transport_registration",
+        "symbol": "OriginalAppServerOwnerCustody::retain_original_transport",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_background_seal",
+        "symbol": "OriginalAppServerOwnerCustody::seal_original_background",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_background_admission",
+        "symbol": "OriginalAppServerOwnerCustody::spawn_original_background",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/effective_plugin_change.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_processor_quarantine",
+        "symbol": "OriginalAppServerOwnerCustody::retain_unreleased_original_processor",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_failure_retention",
+        "symbol": "OriginalAppServerOwnerCustody::record_original_failure",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/connection_cleanup.rs",
+          "codex-rs/app-server/src/lib.rs",
+          "codex-rs/app-server/src/request_serialization.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_processor_registration",
+        "symbol": "OriginalAppServerOwnerCustody::retain_original_processor",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_task_registration",
+        "symbol": "OriginalAppServerOwnerCustody::retain_original_task",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/connection_cleanup.rs",
+          "codex-rs/app-server/src/message_processor.rs",
+          "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+          "codex-rs/app-server/src/request_processors/thread_processor.rs",
+          "codex-rs/app-server/src/request_serialization.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_optional_task",
+        "symbol": "OriginalAppServerOwnerCustody::optional_original_task",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_group_join",
+        "symbol": "OriginalAppServerOwnerCustody::join_original_group",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_processor_join",
+        "symbol": "OriginalAppServerOwnerCustody::finish_original_processor",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_owner_join",
+        "symbol": "OriginalAppServerOwnerCustody::join_original_app_server",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_joined_binding",
+        "symbol": "OriginalAppServerJoined::require_original_custody",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_job_join",
+        "symbol": "OriginalAppServerJob::join_original",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/connection_cleanup.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_processor_new",
+        "symbol": "MessageProcessor::new_original_owner",
+        "definition_path": "codex-rs/app-server/src/message_processor.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_processor_prepare",
+        "symbol": "MessageProcessor::prepare_original_shutdown",
+        "definition_path": "codex-rs/app-server/src/message_processor.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_processor_owners_join",
+        "symbol": "MessageProcessor::finish_original_owners",
+        "definition_path": "codex-rs/app-server/src/message_processor.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/original_owned_shutdown.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_connection_close",
+        "symbol": "MessageProcessor::connection_closed_original",
+        "definition_path": "codex-rs/app-server/src/message_processor.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_threads_prepare",
+        "symbol": "ThreadRequestProcessor::prepare_original_shutdown",
+        "definition_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_thread_startups_drain",
+        "symbol": "ThreadRequestProcessor::drain_original_background_tasks",
+        "definition_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_thread_loops_join",
+        "symbol": "ThreadRequestProcessor::shutdown_original_threads",
+        "definition_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_queues_new",
+        "symbol": "RequestSerializationQueues::new_original_owner",
+        "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_queues_binding",
+        "symbol": "RequestSerializationQueues::original_owner",
+        "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_queues_seal",
+        "symbol": "RequestSerializationQueues::seal_original_queues",
+        "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_queues_drained",
+        "symbol": "RequestSerializationQueues::require_original_queues_drained",
+        "definition_path": "codex-rs/app-server/src/request_serialization.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_thread_state_new",
+        "symbol": "ThreadStateManager::new_original_owner",
+        "definition_path": "codex-rs/app-server/src/thread_state.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_thread_state_binding",
+        "symbol": "ThreadStateManager::original_owner",
+        "definition_path": "codex-rs/app-server/src/thread_state.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+          "codex-rs/app-server/src/request_processors/thread_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_connection_cleanup_new",
+        "symbol": "ConnectionCleanupTasks::new_original",
+        "definition_path": "codex-rs/app-server/src/connection_cleanup.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/lib.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_models_join",
+        "symbol": "ModelsRefreshWorker::join_original",
+        "definition_path": "codex-rs/app-server/src/models_refresh_worker.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_turn_cost_join",
+        "symbol": "TurnCostWorker::join_original",
+        "definition_path": "codex-rs/app-server/src/turn_cost_worker.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "agentd_original_app_server_custody_attach",
+        "symbol": "AgentdConfig::attach_original_app_server_custody",
+        "definition_path": "codex-rs/hepta-agentd/src/config.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+        ]
+      },
+      {
+        "id": "agentd_original_app_server_custody_take",
+        "symbol": "AgentdConfig::take_original_app_server_custody",
+        "definition_path": "codex-rs/hepta-agentd/src/config.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/runtime.rs"
+        ]
+      },
+      {
+        "id": "agentd_original_app_server_socket_custody",
+        "symbol": "AppServerSocket::with_original_custody",
+        "definition_path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/runtime.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_entry",
+        "symbol": "run_main_with_original_owner_options",
+        "definition_path": "codex-rs/app-server/src/lib.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/inherited_transport.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_plugin_callback",
+        "symbol": "effective_plugins_changed_callback_original",
+        "definition_path": "codex-rs/app-server/src/effective_plugin_change.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      },
+      {
+        "id": "app_server_original_failure_aggregate",
+        "symbol": "finish_original_failures",
+        "definition_path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "product_callers": [
+          "codex-rs/app-server/src/message_processor.rs"
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "source_pins": "All nineteen supplied current source texts match the final ef7c2c manifest exact Git/length/SHA values, including the two e608 successors and the three 31c24 outer successors.",
+    "parser_and_projection_sources": {
+      "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "rust_and_typed_projection": "c82daa6cd3614f74a84097aeb003f45fbb8720fd",
+      "toml_parser": "e53b3c7beb51d71cf7f5afe76701909444feebd3",
+      "semantic_and_guard_utility": "25639e0cae8a6eb78c7ef3cce6a29968d5196d17"
+    },
+    "projection_kind": "Pure JavaScript bounded static projection of supplied original checker rules. This is not the original Python checker, formatter, compiler or a native run.",
+    "typed_scope": {
+      "product_sources": 18,
+      "boundaries": 38,
+      "unresolved_in_supplied_scope": 0,
+      "whole_repository_field_index_rebuilt": false,
+      "rows": [
+        {
+          "id": "app_server_original_owner_new",
+          "observed": [
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 3038,
+                  "text": "OriginalAppServerOwnerCustody::new("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_owner_stop",
+          "observed": [
+            "codex-rs/app-server/src/connection_cleanup.rs",
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/connection_cleanup.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 3214,
+                  "text": "OriginalAppServerOwnerCustody::request_stop("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 6959,
+                  "text": "OriginalAppServerOwnerCustody::request_stop("
+                },
+                {
+                  "kind": "dot",
+                  "offset": 6203,
+                  "receiver": "custody",
+                  "owner": "OriginalPhaseRunControl",
+                  "resolved": "OriginalCircuitOwnerCustody"
+                },
+                {
+                  "kind": "dot",
+                  "offset": 8448,
+                  "receiver": "self",
+                  "owner": "OriginalPhaseRunControl",
+                  "resolved": "OriginalPhaseRunControl"
+                },
+                {
+                  "kind": "dot",
+                  "offset": 13122,
+                  "receiver": "worker_control",
+                  "owner": "OriginalPhaseRunOwner",
+                  "resolved": "OriginalPhaseRunControl"
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 10603,
+                  "text": "OriginalAppServerOwnerCustody::request_stop("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_main_custody",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 27488,
+                  "text": "OriginalAppServerOwnerCustody::run_original_main("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_transport_registration",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 39658,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_transport("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_background_seal",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 35286,
+                  "text": "OriginalAppServerOwnerCustody::seal_original_background("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_background_admission",
+          "observed": [
+            "codex-rs/app-server/src/effective_plugin_change.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 5208,
+                  "text": "OriginalAppServerOwnerCustody::spawn_original_background("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_processor_quarantine",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 38643,
+                  "text": "OriginalAppServerOwnerCustody::retain_unreleased_original_processor("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_failure_retention",
+          "observed": [
+            "codex-rs/app-server/src/connection_cleanup.rs",
+            "codex-rs/app-server/src/lib.rs",
+            "codex-rs/app-server/src/request_serialization.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 70633,
+                  "text": "OriginalAppServerOwnerCustody::record_original_failure("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/app-server/src/connection_cleanup.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 1945,
+                  "text": "OriginalAppServerOwnerCustody::record_original_failure("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 2565,
+                  "text": "OriginalAppServerOwnerCustody::record_original_failure("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 3005,
+                  "text": "OriginalAppServerOwnerCustody::record_original_failure("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/app-server/src/request_serialization.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 6676,
+                  "text": "OriginalAppServerOwnerCustody::record_original_failure("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_processor_registration",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 51893,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_processor("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_task_registration",
+          "observed": [
+            "codex-rs/app-server/src/connection_cleanup.rs",
+            "codex-rs/app-server/src/message_processor.rs",
+            "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+            "codex-rs/app-server/src/request_processors/thread_processor.rs",
+            "codex-rs/app-server/src/request_serialization.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 46592,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_task("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/app-server/src/connection_cleanup.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 1177,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_task("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/app-server/src/request_serialization.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 7779,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_task("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 57878,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_task("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 15631,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_task("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 18780,
+                  "text": "OriginalAppServerOwnerCustody::retain_original_task("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_optional_task",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 42710,
+                  "text": "OriginalAppServerOwnerCustody::optional_original_task("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 45864,
+                  "text": "OriginalAppServerOwnerCustody::optional_original_task("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 46351,
+                  "text": "OriginalAppServerOwnerCustody::optional_original_task("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 49170,
+                  "text": "OriginalAppServerOwnerCustody::optional_original_task("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 71712,
+                  "text": "OriginalAppServerOwnerCustody::optional_original_task("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_group_join",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 35586,
+                  "text": "OriginalAppServerOwnerCustody::join_original_group("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 36189,
+                  "text": "OriginalAppServerOwnerCustody::join_original_group("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 36755,
+                  "text": "OriginalAppServerOwnerCustody::join_original_group("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 37493,
+                  "text": "OriginalAppServerOwnerCustody::join_original_group("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_processor_join",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 72000,
+                  "text": "OriginalAppServerOwnerCustody::finish_original_processor("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_owner_join",
+          "observed": [
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "dot",
+                  "offset": 9672,
+                  "receiver": "self.app_server",
+                  "owner": "OriginalPhaseRunControl",
+                  "resolved": "OriginalAppServerOwnerCustody"
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 9704,
+                  "text": "OriginalAppServerOwnerCustody::join_original_app_server("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 10713,
+                  "text": "OriginalAppServerOwnerCustody::join_original_app_server("
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "dot",
+                  "offset": 5097,
+                  "receiver": "self.app_server",
+                  "owner": "OriginalPhaseRunControl",
+                  "resolved": "OriginalAppServerOwnerCustody"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_joined_binding",
+          "observed": [
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 9943,
+                  "text": "OriginalAppServerJoined::require_original_custody("
+                },
+                {
+                  "kind": "dot",
+                  "offset": 3555,
+                  "receiver": "self.app_server_joined",
+                  "owner": "OriginalSameActorRuntimeStopped",
+                  "resolved": "OriginalAppServerJoined"
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 5183,
+                  "text": "OriginalAppServerJoined::require_original_custody("
+                },
+                {
+                  "kind": "dot",
+                  "offset": 7986,
+                  "receiver": "app_server",
+                  "owner": "OriginalPhaseRunControl",
+                  "resolved": "OriginalAppServerJoined"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_job_join",
+          "observed": [
+            "codex-rs/app-server/src/connection_cleanup.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/connection_cleanup.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 1512,
+                  "text": "OriginalAppServerJob::join_original("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_processor_new",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 51671,
+                  "text": "MessageProcessor::new_original_owner("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_processor_prepare",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 52044,
+                  "text": "MessageProcessor::prepare_original_shutdown("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_processor_owners_join",
+          "observed": [
+            "codex-rs/app-server/src/original_owned_shutdown.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 14142,
+                  "text": "MessageProcessor::finish_original_owners("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_connection_close",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 60208,
+                  "text": "MessageProcessor::connection_closed_original("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 70259,
+                  "text": "MessageProcessor::connection_closed_original("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_threads_prepare",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "dot",
+                  "offset": 34776,
+                  "receiver": "self.thread_processor",
+                  "owner": "MessageProcessor",
+                  "resolved": "ThreadRequestProcessor"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_thread_startups_drain",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 36628,
+                  "text": "ThreadRequestProcessor::drain_original_background_tasks("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_thread_loops_join",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 37078,
+                  "text": "ThreadRequestProcessor::shutdown_original_threads("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_queues_new",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 18669,
+                  "text": "RequestSerializationQueues::new_original_owner("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_queues_binding",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 34385,
+                  "text": "RequestSerializationQueues::original_owner("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 46476,
+                  "text": "RequestSerializationQueues::original_owner("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_queues_seal",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 35832,
+                  "text": "RequestSerializationQueues::seal_original_queues("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_queues_drained",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 36398,
+                  "text": "RequestSerializationQueues::require_original_queues_drained("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_thread_state_new",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 13047,
+                  "text": "ThreadStateManager::new_original_owner("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_thread_state_binding",
+          "observed": [
+            "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+            "codex-rs/app-server/src/request_processors/thread_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "dot",
+                  "offset": 57839,
+                  "receiver": "self.thread_state_manager",
+                  "owner": "ThreadRequestProcessor",
+                  "resolved": "ThreadStateManager"
+                },
+                {
+                  "kind": "dot",
+                  "offset": 58334,
+                  "receiver": "self.thread_state_manager",
+                  "owner": "ThreadRequestProcessor",
+                  "resolved": "ThreadStateManager"
+                }
+              ]
+            },
+            {
+              "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 9503,
+                  "text": "ThreadStateManager::original_owner("
+                },
+                {
+                  "kind": "qualified",
+                  "offset": 16971,
+                  "text": "ThreadStateManager::original_owner("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_connection_cleanup_new",
+          "observed": [
+            "codex-rs/app-server/src/lib.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/lib.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 52469,
+                  "text": "ConnectionCleanupTasks::new_original("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_models_join",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 38041,
+                  "text": "ModelsRefreshWorker::join_original("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_turn_cost_join",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 38362,
+                  "text": "TurnCostWorker::join_original("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "agentd_original_app_server_custody_attach",
+          "observed": [
+            "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "dot",
+                  "offset": 7280,
+                  "receiver": "config",
+                  "owner": "AgentdProductionLaunch",
+                  "resolved": "AgentdConfig"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "agentd_original_app_server_custody_take",
+          "observed": [
+            "codex-rs/hepta-agentd/src/runtime.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/hepta-agentd/src/runtime.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "dot",
+                  "offset": 2146,
+                  "receiver": "config",
+                  "owner": "Future",
+                  "resolved": "AgentdConfig"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "agentd_original_app_server_socket_custody",
+          "observed": [
+            "codex-rs/hepta-agentd/src/runtime.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/hepta-agentd/src/runtime.rs",
+              "found": true,
+              "calls": [
+                {
+                  "kind": "qualified",
+                  "offset": 16157,
+                  "text": "AppServerSocket::with_original_custody("
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_entry",
+          "observed": [
+            "codex-rs/app-server/src/inherited_transport.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/inherited_transport.rs",
+              "found": true
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_plugin_callback",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true
+            }
+          ]
+        },
+        {
+          "id": "app_server_original_failure_aggregate",
+          "observed": [
+            "codex-rs/app-server/src/message_processor.rs"
+          ],
+          "errors": [],
+          "calls": [
+            {
+              "path": "codex-rs/app-server/src/message_processor.rs",
+              "found": true
+            }
+          ]
+        }
+      ]
+    },
+    "new_guard_projection": [
+      {
+        "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+        "required": [
+          {
+            "marker": "handle: AsyncMutex<Option<ActualAppServerHandle>>",
+            "offset": 2475
+          },
+          {
+            "marker": "terminal: OnceLock<Result<(), OriginalAppServerFailure>>",
+            "offset": 2530
+          },
+          {
+            "marker": "struct StopOriginalAppServerOnDrop(Option<Arc<OriginalAppServerOwnerCustody>>);",
+            "offset": 18233
+          },
+          {
+            "marker": "#[cfg(test)]",
+            "offset": 18976
+          },
+          {
+            "marker": "#[path = \"original_owned_shutdown_tests.rs\"]",
+            "offset": 18989
+          },
+          {
+            "marker": "mod tests;",
+            "offset": 19034
+          }
+        ],
+        "forbidden": [
+          ".abort(",
+          ".abort_all(",
+          "tokio::time::timeout(",
+          "SigningKey::generate",
+          "CompletionProof",
+          "Serialize",
+          "Deserialize"
+        ],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          },
+          {
+            "index": 1,
+            "marker_count": 2
+          },
+          {
+            "index": 2,
+            "marker_count": 2
+          },
+          {
+            "index": 3,
+            "marker_count": 2
+          },
+          {
+            "index": 4,
+            "marker_count": 2
+          },
+          {
+            "index": 5,
+            "marker_count": 2
+          },
+          {
+            "index": 6,
+            "marker_count": 2
+          },
+          {
+            "index": 7,
+            "marker_count": 2
+          },
+          {
+            "index": 8,
+            "marker_count": 2
+          },
+          {
+            "index": 9,
+            "marker_count": 2
+          },
+          {
+            "index": 10,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn from_io(",
+            "start": 842,
+            "end": 925,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn from_join(",
+            "start": 932,
+            "end": 1030,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn to_io(",
+            "start": 1048,
+            "end": 1122,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn unit(",
+            "start": 2623,
+            "end": 2828,
+            "marker_count": 6,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn result(",
+            "start": 2835,
+            "end": 3056,
+            "marker_count": 6,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn join_original(",
+            "start": 3080,
+            "end": 4170,
+            "marker_count": 21,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn require_original_success(",
+            "start": 4177,
+            "end": 4455,
+            "marker_count": 7,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn into_future(",
+            "start": 4883,
+            "end": 5300,
+            "marker_count": 12,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn require_original_custody(",
+            "start": 6520,
+            "end": 7529,
+            "marker_count": 24,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "start": 7579,
+            "end": 7754,
+            "marker_count": 6,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn state(",
+            "start": 7761,
+            "end": 8067,
+            "marker_count": 10,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn request_stop(",
+            "start": 8078,
+            "end": 8476,
+            "marker_count": 10,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn run_original_main(",
+            "start": 8500,
+            "end": 10035,
+            "marker_count": 32,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn retain_original_transport(",
+            "start": 10053,
+            "end": 10394,
+            "marker_count": 8,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn seal_original_background(",
+            "start": 10412,
+            "end": 10500,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn spawn_original_background(",
+            "start": 10518,
+            "end": 11066,
+            "marker_count": 11,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn retain_unreleased_original_processor(",
+            "start": 11084,
+            "end": 11293,
+            "marker_count": 5,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn record_original_failure(",
+            "start": 11311,
+            "end": 11447,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn retain_original_processor(",
+            "start": 11465,
+            "end": 11745,
+            "marker_count": 7,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn retain_original_task(",
+            "start": 11763,
+            "end": 12281,
+            "marker_count": 11,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn optional_original_task(",
+            "start": 12299,
+            "end": 12716,
+            "marker_count": 12,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn join_original_group(",
+            "start": 12740,
+            "end": 13381,
+            "marker_count": 17,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn finish_original_processor(",
+            "start": 13405,
+            "end": 15220,
+            "marker_count": 39,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn join_original_app_server(",
+            "start": 15237,
+            "end": 18228,
+            "marker_count": 62,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn finish_original_failures(",
+            "start": 18599,
+            "end": 18973,
+            "marker_count": 13,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/lib.rs",
+        "required": [
+          {
+            "marker": "mod original_owned_shutdown;",
+            "offset": 4881
+          },
+          {
+            "marker": "pub use original_owned_shutdown::OriginalAppServerJoined;",
+            "offset": 4910
+          },
+          {
+            "marker": "pub use original_owned_shutdown::OriginalAppServerOwnerCustody;",
+            "offset": 4968
+          },
+          {
+            "marker": "pub original_owner_custody: Option<Arc<OriginalAppServerOwnerCustody>>,",
+            "offset": 17388
+          },
+          {
+            "marker": "original_owner_custody: None,",
+            "offset": 25568
+          }
+        ],
+        "forbidden": [],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn run_main_with_original_owner_options(",
+            "start": 26238,
+            "end": 28302,
+            "marker_count": 59,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn run_main_with_transport_options_inner(",
+            "start": 28348,
+            "end": 72289,
+            "marker_count": 870,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "required": [
+          {
+            "marker": "original_app_server_custody:\n        Option<std::sync::Arc<codex_app_server::OriginalAppServerOwnerCustody>>,",
+            "offset": 5597
+          },
+          {
+            "marker": "if !cfg!(target_os = \"linux\") || self.original_app_server_custody.is_some()",
+            "offset": 6049
+          },
+          {
+            "marker": "original_app_server_custody: None,",
+            "offset": 11526
+          },
+          {
+            "marker": "_writer_lock: std::sync::Arc<File>,",
+            "offset": 5791
+          }
+        ],
+        "forbidden": [],
+        "structures": [],
+        "functions": [
+          {
+            "function": "fn attach_original_app_server_custody(",
+            "start": 5865,
+            "end": 6360,
+            "marker_count": 12,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn take_original_app_server_custody(",
+            "start": 6378,
+            "end": 6569,
+            "marker_count": 5,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn load_with_writer_source(",
+            "start": 8373,
+            "end": 13076,
+            "marker_count": 111,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [],
+        "functions": [
+          {
+            "function": "fn run_with_shutdown(",
+            "start": 1837,
+            "end": 21133,
+            "marker_count": 461,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "required": [
+          {
+            "marker": "#[cfg(target_os = \"linux\")]",
+            "offset": 1197
+          },
+          {
+            "marker": "OriginalOwned {\n        socket: std::os::fd::OwnedFd,\n        custody: Arc<codex_app_server::OriginalAppServerOwnerCustody>,",
+            "offset": 1298
+          },
+          {
+            "marker": "#[cfg(test)]",
+            "offset": 7598
+          },
+          {
+            "marker": "mod tests {",
+            "offset": 12152
+          }
+        ],
+        "forbidden": [],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn with_original_custody(",
+            "start": 1471,
+            "end": 2143,
+            "marker_count": 17,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn run_app_server(",
+            "start": 2835,
+            "end": 6749,
+            "marker_count": 91,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/message_processor.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn new_original_owner(",
+            "start": 11976,
+            "end": 12176,
+            "marker_count": 6,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn new_with_original_owner(",
+            "start": 12183,
+            "end": 27503,
+            "marker_count": 354,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn prepare_original_shutdown(",
+            "start": 34212,
+            "end": 34823,
+            "marker_count": 14,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn finish_original_owners(",
+            "start": 34847,
+            "end": 39090,
+            "marker_count": 93,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn connection_closed_original(",
+            "start": 39114,
+            "end": 39809,
+            "marker_count": 18,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn dispatch_initialized_client_request(",
+            "start": 43815,
+            "end": 46856,
+            "marker_count": 75,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/connection_cleanup.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn new_original(",
+            "start": 652,
+            "end": 824,
+            "marker_count": 6,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "start": 842,
+            "end": 1008,
+            "marker_count": 7,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn spawn(",
+            "start": 1026,
+            "end": 1645,
+            "marker_count": 14,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn reap_next(",
+            "start": 1669,
+            "end": 2324,
+            "marker_count": 20,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn drain(",
+            "start": 2348,
+            "end": 2897,
+            "marker_count": 16,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn abort(",
+            "start": 2915,
+            "end": 3335,
+            "marker_count": 11,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/models_refresh_worker.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn join_original(",
+            "start": 582,
+            "end": 718,
+            "marker_count": 4,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/turn_cost_worker.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [],
+        "functions": [
+          {
+            "function": "fn join_original(",
+            "start": 3922,
+            "end": 4058,
+            "marker_count": 4,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/thread_state.rs",
+        "required": [
+          {
+            "marker": "original_owner: Option<Arc<crate::OriginalAppServerOwnerCustody>>,",
+            "offset": 12910
+          }
+        ],
+        "forbidden": [],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn new_original_owner(",
+            "start": 13380,
+            "end": 13583,
+            "marker_count": 8,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn original_owner(",
+            "start": 13601,
+            "end": 13738,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/request_serialization.rs",
+        "required": [
+          {
+            "marker": "original_owner: Option<Arc<crate::OriginalAppServerOwnerCustody>>,",
+            "offset": 4638
+          },
+          {
+            "marker": "original_closed: Arc<std::sync::atomic::AtomicBool>,",
+            "offset": 4709
+          }
+        ],
+        "forbidden": [],
+        "structures": [
+          {
+            "index": 0,
+            "marker_count": 2
+          }
+        ],
+        "functions": [
+          {
+            "function": "fn new_original_owner(",
+            "start": 4903,
+            "end": 5106,
+            "marker_count": 8,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn original_owner(",
+            "start": 5124,
+            "end": 5261,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn seal_original_queues(",
+            "start": 5285,
+            "end": 5462,
+            "marker_count": 5,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn require_original_queues_drained(",
+            "start": 5486,
+            "end": 6071,
+            "marker_count": 13,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn enqueue_original(",
+            "start": 6084,
+            "end": 8033,
+            "marker_count": 48,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn enqueue(",
+            "start": 8512,
+            "end": 9978,
+            "marker_count": 41,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [],
+        "functions": [
+          {
+            "function": "fn prepare_original_shutdown(",
+            "start": 58148,
+            "end": 58700,
+            "marker_count": 12,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn drain_original_background_tasks(",
+            "start": 58724,
+            "end": 58855,
+            "marker_count": 4,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn shutdown_original_threads(",
+            "start": 58879,
+            "end": 59025,
+            "marker_count": 3,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn thread_start_inner(",
+            "start": 52183,
+            "end": 58124,
+            "marker_count": 148,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/request_processors/thread_lifecycle.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [],
+        "functions": [
+          {
+            "function": "fn ensure_listener_task_running(",
+            "start": 7128,
+            "end": 15853,
+            "marker_count": 203,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn unload_thread_without_subscribers(",
+            "start": 16234,
+            "end": 18987,
+            "marker_count": 56,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/inherited_transport.rs",
+        "required": [
+          {
+            "marker": "#[cfg(target_os = \"linux\")]",
+            "offset": 1409
+          }
+        ],
+        "forbidden": [],
+        "structures": [],
+        "functions": [
+          {
+            "function": "fn run_main_with_transport_options(",
+            "start": 386,
+            "end": 1106,
+            "marker_count": 25,
+            "literal_calls": [],
+            "top_level": []
+          },
+          {
+            "function": "fn run_main_with_inherited_unix_listener(",
+            "start": 1484,
+            "end": 2322,
+            "marker_count": 28,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+        "required": [],
+        "forbidden": [],
+        "structures": [],
+        "functions": [
+          {
+            "function": "fn effective_plugins_changed_callback_original(",
+            "start": 4319,
+            "end": 7441,
+            "marker_count": 65,
+            "literal_calls": [],
+            "top_level": []
+          }
+        ]
+      }
+    ],
+    "prior_guards_on_supplied_sources": [
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "status": "preserved"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+        "status": "preserved"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "status": "preserved"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "status": "preserved"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "status": "preserved"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "status": "preserved"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "status": "preserved"
+      }
+    ],
+    "exact_union": {
+      "v45": {
+        "base": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+        "old_boundary": 638,
+        "old_protected": 440,
+        "ops": 2,
+        "result": {
+          "boundary": 676,
+          "required": 676,
+          "protected": 455
+        }
+      },
+      "root_partial": {
+        "base": "0f0cc13187dd3f9a09f78ef9ce33f52009c96678",
+        "old_boundary": 789,
+        "old_protected": 512,
+        "ops": 2,
+        "result": {
+          "boundary": 827,
+          "required": 827,
+          "protected": 527
+        }
+      },
+      "old_row_values_and_order_unchanged": true,
+      "all_existing_same_path_guards_retained_conjunctively": true,
+      "new_required_ids_equal_new_declared_ids": true,
+      "unique_forward_reverse": true,
+      "idempotent_second_semantic_application": true,
+      "note": "Counts describe only these two named reference inputs plus this annex, not Root's eventual full union with other concurrently frozen annexes."
+    },
+    "toml_roundtrip": "The standalone TOML rows parse exactly equal to the semantic rows; required/forbidden keys explicitly exist in every new protected row.",
+    "guard_limits": [
+      "Function orders require one actual original exact function name and include its complete masked code line sequence; nested functions are masked by the original projection.",
+      "MessageProcessor::new shares a name with ConnectionSessionState::new. The original unique signature and complete actual masked constructor span are protected by original file-order rules, not falsely declared as a unique function-order row.",
+      "Structural, Drop and trait implementation spans use actual unique headers and the complete remaining masked span; no checker capability is changed.",
+      "Raw literals, attributes and module declarations retain the original raw-presence limits. No claim is made that diagnostic text or raw cfg syntax is a signature or runtime authority.",
+      "The final full source universe and original typed caller checker remain Root's validation gate."
+    ]
+  },
+  "components": {
+    "new_count": 10,
+    "app_server_job_components": 8,
+    "agentd_profile_fd_components": 2,
+    "names": [
+      "never_started_owner_cannot_report_joined_app_server",
+      "cancelled_job_waiter_retains_actual_task_and_fd_until_join",
+      "real_task_panic_keeps_the_original_join_error_after_reobservation",
+      "original_io_failure_is_not_replaced_by_a_successful_join",
+      "sealed_background_admission_keeps_admitted_job_and_never_runs_late_future",
+      "actual_connection_cleanup_panic_reaches_owner_even_after_local_waiter_drops",
+      "actual_queue_close_does_not_discard_an_admitted_drain_or_its_fd",
+      "cancelled_main_wrapper_keeps_actual_job_and_never_restarts_it",
+      "strict_app_server_rejects_bind_and_other_original_profiles",
+      "standard_socket_custody_transfers_the_same_actual_descriptor"
+    ],
+    "actual_mechanisms": [
+      "original Tokio JoinHandles, oneshot task barriers and cancellation of borrowed waiter",
+      "real Unix socketpair ownership/EOF before a recorded job is treated as joined",
+      "original JoinError panic and io::Error source preserved across reobservation",
+      "real admission seal rejects unstarted late callback; already admitted actual job still awaited",
+      "real ConnectionCleanup task retained after local waiter collection drops",
+      "actual RequestSerializationQueues drain retains real job/FD after seal; late request refused",
+      "actual main wrapper cancellation requests drain without discarding same job or restarting",
+      "private Standard/RootBound descriptor transfer and rejection of Bind/Notes/Desktop; socketpair is not Root listener authentication"
+    ],
+    "status": "All ten unexecuted; component mechanisms use actual task/FD/queue/cleanup objects and private profile transfer. They do not manufacture a successful AppServerJoined, C, Root, FinalUse or OS-exit proof."
+  },
+  "resources": [
+    {
+      "owner": "main, inherited acceptors, processor, outbound, otel",
+      "source": "codex-rs/app-server/src/lib.rs",
+      "custody": "original actual JoinHandles in same Arc jobs; terminal result saved while handle is borrowed under async mutex",
+      "normal_release": "after actual main and inner joins; failures remain original source errors"
+    },
+    {
+      "owner": "RPC, serialization drains, connection cleanup, tracked thread startup, listeners, idle unload",
+      "source": "15-path source slice",
+      "custody": "same actual spawned handle registered before caller next await; queue accepted request and drain registration share original mutex",
+      "normal_release": "only after real awaited handles, never current-map/active-count proof"
+    },
+    {
+      "owner": "plugin completion background manager upgrade",
+      "source": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "custody": "same custody mutex seals admission; admitted future is registered before weak manager upgrade/effects",
+      "normal_release": "all admitted jobs joined before sealing/draining original serialized queues"
+    },
+    {
+      "owner": "Core manager and direct delegate loops",
+      "source_packet": "821e349ae41845894baeed0a8cb52fbe133167a2",
+      "custody": "external author's same registry actual startup handles and original Session loop observations including removed history",
+      "normal_release": "strict Core method actual awaits; not all unrelated Core/SDK background tasks"
+    },
+    {
+      "owner": "models refresh and optional turn cost",
+      "source": "actual fields of original MessageProcessor",
+      "custody": "actual original JoinHandle borrowed after unique real owner is recovered; shutdown signal does not itself qualify",
+      "normal_release": "after actual auxiliary join then original processor drop"
+    },
+    {
+      "owner": "production mutation facade",
+      "source_blob": "39d127250b8e825292c25f8c34ec360d5d94ff60",
+      "implementation_blob": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd",
+      "fact": "original host returns an Arc clone of the same ProductionCognitiveMutationCapability; actual capability holds Arc<ProductionDurableWriter> with no separate Drop impl in the defining source",
+      "normal_release": "AppServer clone drops after original tasks/loops; RuntimeStopped retains original Root attachment independently through ACK2/Root exit"
+    },
+    {
+      "owner": "PromptRuntimeHost callbacks",
+      "source_blob": "798fb1c705e20545b35e0276839483da2f857c05",
+      "actual_host_blob": "50b52c44ff9e9dc790660b176c251fb7b69fefc5",
+      "fact": "three Arc callbacks clone the original AgentdPromptRuntimeOwner; Host has no Drop impl; original PromptPipeline stores the same runtime Arc",
+      "normal_release": "AppServer callbacks drop after real joins; last independent PromptRuntimeStore drops its own file lock, not a common Root Gate"
+    }
+  ],
+  "default_none_preservation": {
+    "entry": "None delegates the same original AppServer inner function and arguments; bind/noninherited/Notes/Desktop do not activate this mode",
+    "original_methods": "Original connection_closed, bounded thread drain/shutdown, callback, serialization enqueue/drain, and ordinary config defaults remain their original branches",
+    "top_waiters": "Ordinary OptionalAppServerTask still awaits its original handle; ignored ordinary result remains ignored",
+    "no_authority": "No Root credential, role, cap, file authority, phase deadline or completion proof is created; original fd, profile, runtime options remain actual"
+  },
+  "handoff_ownership": {
+    "this_annex": "AppServer/Agentd actual task custody, background registration, strict inherited Standard entry and exact new source protections.",
+    "runtime_annex": "MCP/Configured/Core/outer, including the original stdio168 five boundaries/two protections. Core enable/shutdown direct caller remains only request_processors/thread_processor.rs.",
+    "audit_annex": "C/Session/Circuit and their own real completion consumers.",
+    "no_scope_expansion": "No new authority socket, credential, signed outcome, Root permission, deadline, retry, fixture-based business result or relaxed validator."
+  },
+  "qualification": {
+    "native_executed": false,
+    "checker_executed": false,
+    "tests_executed": false,
+    "refs_modified": false,
+    "h_calls": 0,
+    "ordinary_complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer_c_accepted": 0,
+    "daemon_and_root_os_restart_accepted": 0
+  }
+}

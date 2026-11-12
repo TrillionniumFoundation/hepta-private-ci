@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "kind": "independent_static_mechanical_delta_review",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "packets": [
+    {
+      "blob": "c3d02b6603143ef9e245f3c95ba038b6769c25b8",
+      "bytes": 9166,
+      "sha256": "d9f162acccd545397821f549350b50f9c70845d6e447b73a606af4e923264695",
+      "paths": 7,
+      "operations": 15
+    },
+    {
+      "blob": "125427f43f3c2f263a391c73f9ea7affa19ee569",
+      "bytes": 9336,
+      "sha256": "1901426df9f2464a821e9805361b530ad28d990f4a5e1528f1ff22b674f44e5c",
+      "paths": 4,
+      "operations": 6
+    }
+  ],
+  "verdict": "No confirmed local static blocker. All 21 exact operations uniquely replay forward and reverse, with independent GET/full-byte identity checks for the 21 distinct pre/post source blobs. This is a mechanical source review, not checker/formatter/typecheck execution or whole future-assembly qualification.",
+  "receipts": [
+    {
+      "packet": "root_private_material",
+      "rows": [
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+          "preimage": {
+            "blob": "962147b26db8d7ef6488811cedb8940d9fe396ab",
+            "bytes": 18244,
+            "sha256": "337760f583b9ccd64ff52a817158e02e788bafaaed91e068e7a50997a991f6db"
+          },
+          "postimage": {
+            "blob": "f18b59cd1dd642ba98706db065934e7c630c7bd8",
+            "bytes": 18264,
+            "sha256": "37f9cbb97b1d15faf60a5aa22c7b934b2c0af274365ecb93f5e651f781e8ee3f"
+          },
+          "ops": 2,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": true,
+          "new_unique_function_scopes": [
+            {
+              "name": "require_original_directory_pin",
+              "start": 4695,
+              "end": 5101,
+              "sha256": "ba4a9c3d6d6194924208213f7d29ffaac9652783c2a4c7a1cfa41c35d187db58"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+          "preimage": {
+            "blob": "1f295958468344bfc99e71b3830a37dff0a3d5c4",
+            "bytes": 10940,
+            "sha256": "187a478cd60ca4a70eff05e7a543811dcdc29a299c6295983139f52f44545287"
+          },
+          "postimage": {
+            "blob": "81fd249e2d8c53fd2873153332c921356df441d7",
+            "bytes": 11024,
+            "sha256": "9dbf0ea176381fdc3f585becf0b1fdabee994769b1c1f423f92f023654f1d8cf"
+          },
+          "ops": 6,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": true,
+          "new_unique_function_scopes": [
+            {
+              "name": "open_original_selection_files",
+              "start": 9514,
+              "end": 10369,
+              "sha256": "12c4eb9108bd7cfaabe104eead7158021abbd26ae336ce2cc778cb74fb5317db"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+          "preimage": {
+            "blob": "1594718f4a9ecc4c904cef50c86565662b5ccc54",
+            "bytes": 12573,
+            "sha256": "fcc7b637f6221df5932a0e3fb05b1a919cd3894acfedbb47739a0e5f0f558ea8"
+          },
+          "postimage": {
+            "blob": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+            "bytes": 12603,
+            "sha256": "a5a0e292391940386e2b5eeff3f9447188a31af973219944ca6f29f1e1da9de0"
+          },
+          "ops": 3,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": true,
+          "new_unique_function_scopes": [
+            {
+              "name": "open_original_task_files",
+              "start": 7168,
+              "end": 9211,
+              "sha256": "d16b76fcb20418389f3cbb33c96714bd3489000f8c70d981950c5adf1ae1d0ef"
+            },
+            {
+              "name": "open_original_circuit",
+              "start": 9749,
+              "end": 11282,
+              "sha256": "7994502cdc8755a139abae1292835af2d210ec28ae3f3fff4b0059baf5781e18"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+          "preimage": {
+            "blob": "62bfd57b3059fdc8f1d68fb3a02d08334ea84649",
+            "bytes": 6149,
+            "sha256": "bc711a99ef6c41a4cd7e7ecceffaba94dfd80cad094e1f337a3490e3949822f4"
+          },
+          "postimage": {
+            "blob": "8e3b7ab14f90587f7430378f3a30ce4e1f79da97",
+            "bytes": 6157,
+            "sha256": "db223d389fd608185314a6e04fb21c4589e83120e70f7e7a36d482972527695b"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": true,
+          "new_unique_function_scopes": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+          "preimage": {
+            "blob": "c84cc17c5792c7f10a11c62d4de3836ee5addbc3",
+            "bytes": 5701,
+            "sha256": "461c1ee34b25de45cc7bfd5cbc42b47c3810e2cf71a1964b16afebfb93203d8b"
+          },
+          "postimage": {
+            "blob": "2a60e2dd058abe2bc73fcff25d0d1bc4bc0d9cbf",
+            "bytes": 5709,
+            "sha256": "13e413e76e7a576dd9957a2b2518fa07e5b4e7f11f67cd1be194e400a51ebe2a"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": true,
+          "new_unique_function_scopes": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+          "preimage": {
+            "blob": "5ddacddb99924751d37ef72fc244150bccac3dc5",
+            "bytes": 8157,
+            "sha256": "ba344bdf7f66e02435542faeea3fa4a55f6aa29bb3f07ded03b2351e2c144ac9"
+          },
+          "postimage": {
+            "blob": "d87cf348143f122353e928c11cfa5ba46aceaa02",
+            "bytes": 8165,
+            "sha256": "0f8f090b04d975510f8d96cde345288622422f579ee201a6121e81df2ef85a2e"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": true,
+          "new_unique_function_scopes": [
+            {
+              "name": "open_original_holdout",
+              "start": 3424,
+              "end": 5583,
+              "sha256": "95de873af13e5690e139307ba5678d7034aa27d1e90951344224c96a5aff86b7"
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+          "preimage": {
+            "blob": "c3efd3424e1b849054c378a1c532ef9256291f02",
+            "bytes": 11450,
+            "sha256": "8ece32d6b1ecad3e83113f8d85086e036b90517daca878e71c684e2e4ac0c2f0"
+          },
+          "postimage": {
+            "blob": "0b609bfb7eb16e3a8a0056a4ce8f8cc3f8ae84a4",
+            "bytes": 11458,
+            "sha256": "c8ece815be5e6ee3b1cb0ed7ac36b2dfd1068b90300a674997865b87ff162858"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": true,
+          "new_unique_function_scopes": []
+        }
+      ]
+    },
+    {
+      "packet": "root_ufcs_split",
+      "rows": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+          "preimage": {
+            "blob": "2a77649e8cc24445f4e7936e596941927b4d5451",
+            "bytes": 11919,
+            "sha256": "41896a5f4e340c63d8bc4b395c00853dd18e5dd35854a80f581a95052e99cce0"
+          },
+          "postimage": {
+            "blob": "3aa6411dbf600d4ce36f57866a92cba85d84076f",
+            "bytes": 12002,
+            "sha256": "ba096d751297e0f15fe6b64f0af003bb5b1d7b45600271b97ee359e4bc5b8f63"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": null,
+          "new_unique_function_scopes": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+          "preimage": {
+            "blob": "ae14ca6e0d00b2c1ccc0f9cb88d2090e08f64727",
+            "bytes": 26253,
+            "sha256": "2366c11a8b2d5257d6daf6c530e9d309194c522f5f6297c2f8c457bc271aeb34"
+          },
+          "postimage": {
+            "blob": "8f9ec66ee0e5d45f2c69d60c267079104d171cf1",
+            "bytes": 26426,
+            "sha256": "bfe9850be8271a148a72f5dfbd8401b0824c9cd247c77b71e427a85c0b37da1e"
+          },
+          "ops": 2,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": null,
+          "new_unique_function_scopes": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+          "preimage": {
+            "blob": "bfdc850bd97953f0224ee7e02f72d6f94f6e19f7",
+            "bytes": 23724,
+            "sha256": "8dad5c8c3bca0838e47a96144e63e59ee81d3be17ca86816defa1efa8688b64f"
+          },
+          "postimage": {
+            "blob": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+            "bytes": 22080,
+            "sha256": "fe9d5c8b5538c5ce6ea9f2dbc5004344b279e7cc4f817d32d681e2bcef753dca"
+          },
+          "ops": 2,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": null,
+          "new_unique_function_scopes": []
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/same_actor_q24_required_purpose_retirement.rs",
+          "preimage": null,
+          "postimage": {
+            "blob": "a6f0a27e32047dbb015c3d3de034de2fb2796e79",
+            "bytes": 1835,
+            "sha256": "f8d5a0ef9331968646ece29b753c63b28921d89823a5f8b831697d83c937d26f"
+          },
+          "ops": 1,
+          "unique_forward_reverse": true,
+          "whole_reverse_identifier_equal": null,
+          "new_unique_function_scopes": []
+        }
+      ]
+    }
+  ],
+  "private_renames": {
+    "whole_file_reverse_identifier_equal": true,
+    "actual_reference_inventory": [
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+        "name": "require_original_directory_pin",
+        "line": 153,
+        "definition": true,
+        "code": "pub(super) fn require_original_directory_pin(&self) -> Result<(), AgentdError> {"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_files.rs",
+        "name": "require_original_directory_pin",
+        "line": 370,
+        "definition": false,
+        "code": "pin.require_original_directory_pin()?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "name": "require_original_directory_pin",
+        "line": 98,
+        "definition": false,
+        "code": "for directory in &directories { directory.require_original_directory_pin()?; }"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "name": "require_original_directory_pin",
+        "line": 112,
+        "definition": false,
+        "code": "for directory in &self.directories { directory.require_original_directory_pin()?; }"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "name": "open_original_selection_files",
+        "line": 101,
+        "definition": false,
+        "code": "let material = data.initial_selection.open_original_selection_files(files, &verifier)?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "name": "open_original_selection_files",
+        "line": 123,
+        "definition": false,
+        "code": "let validation = data.open_original_selection_files(files, &self.verifier)?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "name": "open_original_selection_files",
+        "line": 134,
+        "definition": false,
+        "code": "let selection = data.open_original_selection_files(files, &self.verifier)?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+        "name": "open_original_selection_files",
+        "line": 189,
+        "definition": true,
+        "code": "fn open_original_selection_files("
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "name": "open_original_task_files",
+        "line": 158,
+        "definition": true,
+        "code": "pub(super) fn open_original_task_files("
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "name": "open_original_task_files",
+        "line": 230,
+        "definition": false,
+        "code": "let task_files = self.files.open_original_task_files(files)?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+        "name": "open_original_circuit",
+        "line": 212,
+        "definition": true,
+        "code": "pub(super) fn open_original_circuit("
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+        "name": "open_original_circuit",
+        "line": 89,
+        "definition": false,
+        "code": "let task = data.task.open_original_circuit(&context, &mut files)?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+        "name": "open_original_circuit",
+        "line": 81,
+        "definition": false,
+        "code": "let actual = self.execution.open_original_circuit(context, files)?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_storage.rs",
+        "name": "open_original_holdout",
+        "line": 76,
+        "definition": true,
+        "code": "pub(super) fn open_original_holdout("
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+        "name": "open_original_holdout",
+        "line": 114,
+        "definition": false,
+        "code": "let holdout = self.holdout.open_original_holdout(files)?;"
+      }
+    ],
+    "assessment": "The only edits in all seven complete files are the five new method identifier spellings and their ten actual call sites. Reverse-normalizing those identifiers recovers each full original file exactly. Every renamed definition has one actual non-generic fn-name scope in its defining file. Arguments, receivers, borrows, visibility, guarded statements, literals, errors and ordering remain byte-identical. These are the proposed future private/super-visible owner methods, not modifications to original checker behavior.",
+    "limit": "This review independently inventories the seven changed files. It does not claim that the five new names have zero hits in all fixed-base or all-composite Rust sources, nor that their new caller metadata already passes the original checker."
+  },
+  "ufcs": {
+    "signature_pins": [
+      {
+        "blob": "7ba7c2e12e6d8ee510226ccbfc2b841a61633f67",
+        "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "facts": [
+          "PreparedHostAuthoritySession::seal_bootstrap(&self, &Path) -> io::Result<File>",
+          "PreparedHostAuthoritySession::serve_with_ready(self, impl FnOnce() -> io::Result<()>) -> io::Result<()>"
+        ]
+      },
+      {
+        "blob": "7b6f0a9a1f39a7ca8f50662540dbf0a91101f323",
+        "facts": [
+          "LearningIterationRuntimeBootstrapV1::with_original_q24_stage_owners(mut self, Arc<OriginalCellQ24LearningStageOwnersV1>) -> Result<Self,AgentdError>"
+        ]
+      }
+    ],
+    "assessment": [
+      "The ordinary Root seal call now supplies &prepared and the same &consumers. The original definition takes &self; there is no new clone or ownership transfer.",
+      "The ordinary (None,None) serve branch consumes the same prepared and ready values in the same branch. Its extra block does not create a new guard, retry or alternative service.",
+      "The Learning chain first evaluates and consumes the same with_original_circuit_learning_delivery(self.initial.request)? result, then moves that exact value and the same stages into the existing by-value method. The intermediate binding introduces no await, alternate allocation, guard change or reordered effect."
+    ]
+  },
+  "private_impl_split": {
+    "pre_parent": "bfdc850bd97953f0224ee7e02f72d6f94f6e19f7",
+    "post_parent": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+    "new_child": "a6f0a27e32047dbb015c3d3de034de2fb2796e79",
+    "exact_impl": {
+      "bytes": 1735,
+      "sha256": "ad36395b808b64ad96e0ad4fb39dc18cdc8597362dbc4658db23da93161b0cf8",
+      "equal": true
+    },
+    "assessment": "The full 1735-byte OriginalRequiredPurposeRetirement impl moves verbatim to the parent's actual #[path] private child. The struct and private fields stay in the original parent. Method pub(crate) visibility is unchanged; use super::* provides the same parent-private types/imports/functions to its child. The same Intent/Gate checks, retired compare_exchange, real registered socket shutdown(Both), postchecks and fault common-close remain verbatim. The additional file supplies a distinct function scope without replacing the original checker or weakening source behavior."
+  },
+  "limits": [
+    "Independent Git GET/create and pure V8 byte/static analysis only; zero h/PTY/native/Cargo/fmt/checker/ref actions.",
+    "New-file absence and final complete caller union are Root's separate fixed-tree/composite evidence, not inferred from missing local stores.",
+    "Exact future formatted source must still receive metadata projection and the unchanged original gates. The two packets themselves do not claim compilation or native success."
+  ]
+}

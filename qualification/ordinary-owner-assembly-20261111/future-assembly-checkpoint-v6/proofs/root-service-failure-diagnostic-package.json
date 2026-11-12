@@ -1,0 +1,369 @@
+{
+  "schema_version": 1,
+  "kind": "V46_original_Root_lane_failure_diagnostic_only",
+  "scope": "One actual agentd service source, two unique exact replacements. Proposed next-attempt diagnostic, not a failure repair and not a qualification result.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent": {
+    "commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "tree": "c3c131a738f99022bfb5e72bb53ef44c064ad350"
+  },
+  "composite_check": {
+    "manifest": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+    "source_count": 195,
+    "source_path_present": false,
+    "consequence": "Use actual cbf preimage 8f5e; this diagnostic does not overwrite any of the 195 future overlay entries."
+  },
+  "actual_failure": {
+    "stderr": {
+      "role": "root_native_stderr",
+      "sha": "5cdf146c78b850c4bd779e4697616e7b00b837e6",
+      "bytes": 62550,
+      "sha256": "10a596fdbb91c7aac8492ef0eadaeb7225dde083ba7f8d734c323367202c256f"
+    },
+    "summary": {
+      "role": "root_native_summary",
+      "sha": "54f1f7c8d7d15d9268d24570bcfd9f49920aef44",
+      "bytes": 20081,
+      "sha256": "91c9ee3439bbe84508c37e580d251c575634d89f93dd59b35a8f972a4ff6c990"
+    },
+    "lines": [
+      159,
+      160,
+      161,
+      162,
+      163,
+      164,
+      165,
+      166,
+      169,
+      172,
+      175,
+      176
+    ],
+    "observed_phase": "RetiredSession",
+    "observed_call": "initial.recover_feature(authorities, selected, target)",
+    "observed_child_refusal": "frontier.read-prefix: FinalUse Unavailable, original HostIssuerTransportError::Closed",
+    "observed_parent_result": "HostAuthorityService serving result ultimately reports PeerDenied; registration thread awaits RETIRE_READY and gets EAGAIN.",
+    "drop_helper_reached": false,
+    "cache_age_diagnostic_in_this_phase": false,
+    "no_reuse_of_prior_cause": "V45's retained-time age_ns=509605142 is not evidence for this V46 failure. The old 64-record timing diagnostics were exhausted before the RetiredSession failure."
+  },
+  "source_reasoning": [
+    {
+      "fact": "The client has already executed the original owner-before check, request-prefix write and request-body write before the reported read-prefix refusal.",
+      "sources": [
+        "db496111b3b81d65953e927cda0f6b96914a3d69"
+      ],
+      "limit": "The report does not establish a complete or zero-byte response prefix; read_until can observe EOF before all four bytes have arrived."
+    },
+    {
+      "fact": "OwnerChannel::read_until maps an actual read result of zero to Closed. Idle server reads use the original session end; the 500 ms request deadline begins after the first request byte.",
+      "sources": [
+        "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+        "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f"
+      ]
+    },
+    {
+      "fact": "The original peer exchange shuts down that stream on any original exchange error. Handler failure, post-handler owner/deadline failure, framing/read/write failure, and peer failure remain distinct possibilities without a server-side error record.",
+      "sources": [
+        "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f"
+      ]
+    },
+    {
+      "fact": "The parent joins the original lane threads in listener order: Observation, Issuer, Checkpoint, DeviceConsumerFrontier, NotesConsumerFrontier, and returns on the first joined Err.",
+      "sources": [
+        "d645c2dd76d8c3b6aab143d4bfa455434846b939"
+      ],
+      "limit": "Join order is not chronological failure order."
+    },
+    {
+      "fact": "At run time OwnerChannel::check/wait returns PeerDenied on an event from the retained original pidfd. PeerDenied also exists in constructor identity validation.",
+      "sources": [
+        "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+        "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f"
+      ],
+      "limit": "The final parent value alone does not identify which PeerDenied branch ran or prove it was the initial failure."
+    },
+    {
+      "inference": "A Device frontier failure could close its stream, make the child return and exit, then cause the earlier-joined Observation lane to report PeerDenied on the child's pidfd. This is a source-supported masking mechanism, not a claim that the log proves this exact timeline."
+    },
+    {
+      "fact": "The frontier writer callback preserves its original writer witness, proof, issuer-head, backend and lease checks but maps internal io errors to Unavailable. The new diagnostic does not pretend that an opaque handler Unavailable resolves that deeper leaf.",
+      "sources": [
+        "13bd0e2313911ca9385ac31eb4281801cf97b3ad",
+        "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2"
+      ]
+    }
+  ],
+  "source": {
+    "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+    "pre": {
+      "sha": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2",
+      "bytes": 23362,
+      "sha256": "9cf07c375803d5de9a8f5eccb6c37f10bfad4487b9523464e0b99fb433eb2670"
+    },
+    "post": {
+      "sha": "a8df9b4203334a7e53d1d42dc1e6202b4752677e",
+      "bytes": 24200,
+      "sha256": "68488ab6939d216d1e2f26f1c7aba90a042d3729d98d7f5e14bc09cf84075330"
+    },
+    "post_create_get_exact": true
+  },
+  "operations": [
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "old": "        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;\n        while channel.exchange(|bytes| self.handle(lane, bytes))? {}",
+      "new": "        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                record_original_lane_failure(lane, \"channel-open\", _error);\n            })?;\n        while channel\n            .exchange(|bytes| {\n                self.handle(lane, bytes).inspect_err(|_error| {\n                    #[cfg(test)]\n                    record_original_lane_failure(lane, \"handler-return\", _error);\n                })\n            })\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                record_original_lane_failure(lane, \"exchange-return\", _error);\n            })?\n        {}",
+      "old_occurrences_at_application": 1,
+      "new_occurrences_at_reverse": 1
+    },
+    {
+      "kind": "replace_exact",
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "old": "fn unavailable(_: impl std::fmt::Display) -> HostIssuerTransportError {\n    HostIssuerTransportError::Unavailable\n}\n",
+      "new": "fn unavailable(_: impl std::fmt::Display) -> HostIssuerTransportError {\n    HostIssuerTransportError::Unavailable\n}\n\n#[cfg(test)]\nfn record_original_lane_failure(\n    lane: HostAuthorityLane,\n    stage: &'static str,\n    error: &HostIssuerTransportError,\n) {\n    use std::io::Write as _;\n\n    let _ = writeln!(\n        std::io::stderr(),\n        \"ROOT_AUTHORITY_LANE_FAILURE lane={lane:?} stage={stage} error={error:?}\"\n    );\n}\n",
+      "old_occurrences_at_application": 1,
+      "new_occurrences_at_reverse": 1
+    }
+  ],
+  "diagnostic_points": [
+    {
+      "stage": "channel-open",
+      "original_call": "HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)",
+      "when": "Only when the exact original constructor returned Err; log then propagate that original Err through the same ?."
+    },
+    {
+      "stage": "handler-return",
+      "original_call": "self.handle(lane, bytes)",
+      "when": "Only after the exact original handler returned Err, after its owner-local scopes have ended. The original HostAuthorityPeerChannel still receives the same Err and performs its original stream shutdown."
+    },
+    {
+      "stage": "exchange-return",
+      "original_call": "channel.exchange(original handler)",
+      "when": "Only after the original exchange returned Err and performed its original error-path shutdown; log then propagate the same Err through the same ?."
+    }
+  ],
+  "logging_contract": {
+    "compiled_logging": "All three calls and the logging helper are gated by cfg(test), which is active in the actual agentd Root test binary. No logging is added to the contracts dependency.",
+    "payload": [
+      "fixed prefix ROOT_AUTHORITY_LANE_FAILURE",
+      "actual HostAuthorityLane Debug value",
+      "fixed stage label",
+      "original HostIssuerTransportError Debug value"
+    ],
+    "excludes": [
+      "request or response bytes",
+      "tokens",
+      "nonce values",
+      "identity/profile material",
+      "additional clock samples",
+      "duration recomputation",
+      "retries",
+      "renewal",
+      "new transport reads",
+      "new process identity reads"
+    ],
+    "stderr_failure": "std::io::Write / writeln! returns are ignored; no unwrap/expect or changed returned error.",
+    "output_bound": "The existing serve function stops on the original Err. One failing constructor emits one record; an exchange emits one record, plus one handler record only when the original handler itself failed. No new counter or retry loop.",
+    "limits": "This is test-only error-path I/O and can affect error-path wall time. It does not diagnose the internal substage of an opaque handler Unavailable or every contract framing substage. It does not instrument the pre-existing Checkpoint validate_peer call that precedes channel construction."
+  },
+  "preservation": {
+    "exact_original_handler_body": true,
+    "exact_original_remaining_service_functions": true,
+    "original_policy_peer_and_timeout_and_lifetime": true,
+    "original_checkpoint_precheck": true,
+    "original_frame_bounds": true,
+    "original_constructor_arguments_and_moves": true,
+    "original_handler_invocation_and_result": true,
+    "original_exchange_invocation_and_result": true,
+    "original_shutdown_location": true,
+    "original_while_boolean_and_question_propagation": true,
+    "original_500ms_and_64_timing_cap": true,
+    "no_new_attempts": true,
+    "no_test_or_assertion_changes": true,
+    "byte_proof": "Both exact replacements have unique forward and reverse anchors; reversing both reconstructs all original source bytes."
+  },
+  "metadata": {
+    "baseline_callers": "cd24b18a3ade8ae0a400bb2d52a27ad67f928074",
+    "baseline_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+    "changed_rows": 0,
+    "changed_fields": 0,
+    "protected_rows_for_source": 1,
+    "required": [
+      {
+        "value": "IssuerRequest::VerifyHumanText",
+        "pre_present": true,
+        "post_present": true
+      },
+      {
+        "value": "self.verify_original_human_text(&ingress)?",
+        "pre_present": true,
+        "post_present": true
+      },
+      {
+        "value": "ingress_sha256",
+        "pre_present": true,
+        "post_present": true
+      },
+      {
+        "value": "owner",
+        "pre_present": true,
+        "post_present": true
+      },
+      {
+        "value": "self.check_logind_lifetime().map_err(unavailable)?",
+        "pre_present": true,
+        "post_present": true
+      }
+    ],
+    "forbidden": [
+      {
+        "value": "AllowVerifier",
+        "pre_present": false,
+        "post_present": false
+      },
+      {
+        "value": "permit_all",
+        "pre_present": false,
+        "post_present": false
+      }
+    ],
+    "only_boundary_referencing_source": "root_host_original_human_text_verification",
+    "boundary_caller_markers": [
+      {
+        "value": "IssuerRequest::VerifyHumanText",
+        "pre_present": true,
+        "post_present": true
+      },
+      {
+        "value": "self.verify_original_human_text(&ingress)?",
+        "pre_present": true,
+        "post_present": true
+      },
+      {
+        "value": "ingress_sha256",
+        "pre_present": true,
+        "post_present": true
+      }
+    ],
+    "exact_delta_required": "None. The original required/forbidden fields and the existing human-text caller/definition relation retain their exact strings. No checker, typed helper, allowlist, caller inventory, or receiver is modified.",
+    "limits": "Local raw/masked projection only; the original checker was not run. The final source/metadata combination remains subject to the unchanged native entry."
+  },
+  "independent_review": {
+    "reviewer": "/root/runtime_access",
+    "sha": "6e34f314d9d3352f05ca70e2c0c9ac867b4c055c",
+    "bytes": 2377,
+    "sha256": "8211b778f58fe60b2706d35edba48297121680037a8e319a0e343fe6d6982c4b",
+    "status": "Static independent source review: no confirmed local blocker; no execution or diagnosis of initiating leaf.",
+    "scope": "Independent GET of both exact source images, unique two-operation replay and error/guard preservation. This author's full analysis packet is separate."
+  },
+  "source_evidence": [
+    {
+      "role": "root_native_stderr",
+      "sha": "5cdf146c78b850c4bd779e4697616e7b00b837e6",
+      "bytes": 62550,
+      "sha256": "10a596fdbb91c7aac8492ef0eadaeb7225dde083ba7f8d734c323367202c256f"
+    },
+    {
+      "role": "root_native_summary",
+      "sha": "54f1f7c8d7d15d9268d24570bcfd9f49920aef44",
+      "bytes": 20081,
+      "sha256": "91c9ee3439bbe84508c37e580d251c575634d89f93dd59b35a8f972a4ff6c990"
+    },
+    {
+      "role": "root_case",
+      "sha": "ec7f167f001c878fff0329a72691a6996fe591a0",
+      "bytes": 10037,
+      "sha256": "694967d4d378b8dd3c4bb0e92905a933d36ef240f6e6c3139a29bf3c2eab5106"
+    },
+    {
+      "role": "root_fixture",
+      "sha": "fd70cfc012684f66b6a14660d06a738c9904b5c9",
+      "bytes": 24933,
+      "sha256": "90dcc5f3e5c6284bec14f1e1f5f1229a4d1a5d10daf5aa4fc095327f70f123ca"
+    },
+    {
+      "role": "child_case",
+      "sha": "2115df57da689a3a2a6328fc432ad22b41d0d3e7",
+      "bytes": 14949,
+      "sha256": "3987957ea050e7373b46ce8a6d88c36b6209bbfb288a43e0dd7afd428e9f2aa9"
+    },
+    {
+      "role": "drop_helper",
+      "sha": "45035861a00ae2419c9eaeaccdfe609ec1bc69f5",
+      "bytes": 27145,
+      "sha256": "e6d17a58b6fde17a9cb78987cf569668572c832309c5fb4e5ace79634be97d9e"
+    },
+    {
+      "role": "root_session",
+      "sha": "43c9834f05390bca33a07d04361c0aecead8e662",
+      "bytes": 21205,
+      "sha256": "156edac21e763aac143c3918ec8e3fbf7e7e73a0261ba81cf1c2a92b331e3fd9"
+    },
+    {
+      "role": "root_initial_runtime",
+      "sha": "dcbb50ca867c078cf19582a3c5e09e8596ed876b",
+      "bytes": 11181,
+      "sha256": "8e20dd8159dc38faa70a3bb63f83654a0a17a3968fc2c6c079bf21e7ed92559d"
+    },
+    {
+      "role": "root_listeners",
+      "sha": "d645c2dd76d8c3b6aab143d4bfa455434846b939",
+      "bytes": 9933,
+      "sha256": "3ca6197808f9d49a461a4a34c357108040943e88296fd5c94e3175ef262c82f1"
+    },
+    {
+      "role": "root_service",
+      "sha": "8f5e0ef9ad73e1fb3a92965734df3e078cdb16a2",
+      "bytes": 23362,
+      "sha256": "9cf07c375803d5de9a8f5eccb6c37f10bfad4487b9523464e0b99fb433eb2670"
+    },
+    {
+      "role": "root_writer",
+      "sha": "13bd0e2313911ca9385ac31eb4281801cf97b3ad",
+      "bytes": 17103,
+      "sha256": "06b0ce405f0ae8f393713e9bcf69919983929194c8c6f1d1e12f22c4b1666aa6"
+    },
+    {
+      "role": "transport_parent",
+      "sha": "83acf4c92c2d6192454508d57f4998dbd1eac2f3",
+      "bytes": 8628,
+      "sha256": "20b0121aa8d1d4d0a7fa3d2d0f459000459d01b8db268820b0d9c74fd42138b4"
+    },
+    {
+      "role": "transport_peer",
+      "sha": "2d3f3d3be11c68bfab6ce73e4bddf52907fa915f",
+      "bytes": 8664,
+      "sha256": "2a0eca20235067945c47780b0df848c3284430eb1a95e7a952e57364d7d94845"
+    },
+    {
+      "role": "transport_owner_channel",
+      "sha": "16f592cd8bcb5a6822193bc46d38887227c3d30f",
+      "bytes": 7508,
+      "sha256": "b01371b59ab743db58935ea3590e692a69494ab92feb9abb4d352577400d4b37"
+    },
+    {
+      "role": "frontier_client",
+      "sha": "db496111b3b81d65953e927cda0f6b96914a3d69",
+      "bytes": 15758,
+      "sha256": "57aa7582b90a5adfde59fbf06ae43ec41c4eb1bdd6e977b3b710baa1c002e7ff"
+    }
+  ],
+  "not_performed": [
+    "native execution",
+    "Cargo",
+    "formatter",
+    "original checker or typed helper",
+    "h or PTY access",
+    "ref changes",
+    "test run",
+    "business qualification"
+  ],
+  "qualifications": {
+    "HQ1": 0,
+    "HQ2": 0,
+    "HQ3": 0
+  },
+  "historical_failure_preserved": true
+}

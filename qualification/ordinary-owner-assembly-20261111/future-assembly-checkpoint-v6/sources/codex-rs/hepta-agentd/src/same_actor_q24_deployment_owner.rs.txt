@@ -1,0 +1,116 @@
+//! Actual thread custody for the concrete ordinary deployment coordinator.
+//! The one original Result remains in the retained thread handle until a real
+//! join consumes it; a closed Gate never substitutes for that join.
+
+use std::sync::Arc;
+use std::thread::JoinHandle;
+
+use tokio::runtime::Handle;
+use tokio::runtime::RuntimeFlavor;
+
+use crate::AgentdError;
+use crate::root_production_inputs::same_actor_phase::OriginalSameActorRootContext;
+use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+
+use super::coordinator::OriginalCoordinatorAtCOutcome;
+use super::coordinator::OriginalDeploymentCoordinator;
+
+#[path = "same_actor_q24_deployment_retained.rs"]
+mod retained;
+use super::deployment_error;
+use super::deployment_refused;
+
+/// This handle is constructed and retained by the actual selected Startup,
+/// outside its later run future. No generic worker or supplied callback is
+/// accepted, and the coordinator cannot hold its own joining handle.
+pub(crate) struct OriginalDeploymentCoordinatorOwner {
+    context: Arc<OriginalSameActorRootContext>,
+    thread: Option<JoinHandle<Result<OriginalDeploymentRetained, AgentdError>>>,
+}
+
+/// Only the actual thread join below returns this retained owner. Its event
+/// marks a data handoff, not business completion; the original private caps
+/// are still required before any normal Root-retirement request.
+pub(crate) struct OriginalDeploymentRetained {
+    _thread_closing: CloseSameActorPhaseOnDrop,
+    context: Arc<OriginalSameActorRootContext>,
+    coordinator: OriginalCoordinatorAtCOutcome,
+}
+
+impl OriginalDeploymentCoordinatorOwner {
+    pub(super) fn start_original(
+        context: Arc<OriginalSameActorRootContext>,
+        coordinator: OriginalDeploymentCoordinator,
+    ) -> Result<Self, AgentdError> {
+        let mut closing = CloseSameActorPhaseOnDrop::new(context.gate());
+        OriginalSameActorRootContext::require_current(&context)?;
+        coordinator.require_original_context(&context)?;
+        let runtime = Handle::try_current()
+            .map_err(|_| deployment_refused("original coordinator requires the actual runtime"))?;
+        if runtime.runtime_flavor() != RuntimeFlavor::MultiThread {
+            return Err(deployment_refused(
+                "original coordinator requires its actual multi-thread runtime",
+            ));
+        }
+        // Created before spawning: a closure which is dropped before it runs
+        // still closes the same phase. The owner below retains another actual
+        // context reference, so this thread cannot be the last context holder.
+        let thread_closing = CloseSameActorPhaseOnDrop::new(context.gate());
+        let thread_context = Arc::clone(&context);
+        let thread = std::thread::Builder::new()
+            .name("hepta-phase-host".into())
+            .spawn(move || {
+                let result = runtime.block_on(coordinator.run_original());
+                // Transfer the pre-spawn guard and every actual owner into
+                // the same real thread result. Err/panic still drops the
+                // original guard; successful handoff does not close Gate.
+                result.map(|coordinator| OriginalDeploymentRetained {
+                    _thread_closing: thread_closing,
+                    context: thread_context,
+                    coordinator,
+                })
+            })
+            .map_err(deployment_error)?;
+        let owner = Self { context, thread: Some(thread) };
+        OriginalSameActorRootContext::require_current(&owner.context)?;
+        closing.disarm();
+        Ok(owner)
+    }
+
+    pub(crate) fn stop_and_join_original(&mut self) -> Result<(), AgentdError> {
+        self.context.gate().close();
+        let thread = self.thread.take()
+            .ok_or_else(|| deployment_refused("original coordinator result already consumed"))?;
+        join_original_thread(thread).map(drop)
+    }
+}
+
+impl Drop for OriginalDeploymentCoordinatorOwner {
+    fn drop(&mut self) {
+        // Close shuts every retained required socket and wakes all phase waits
+        // before joining. In a Tokio worker, block_in_place returns that worker
+        // to the runtime while this actual owner waits for its thread.
+        if let Some(thread) = self.thread.take() {
+            self.context.gate().close();
+            if let Err(error) = join_original_thread(thread) {
+                // Cancellation has no recipient for this original result.
+                // Keep its failure visible; never convert it into completion.
+                tracing::error!(error = %error, "original deployment coordinator stopped with failure");
+            }
+        }
+    }
+}
+
+fn join_original_thread(
+    thread: JoinHandle<Result<OriginalDeploymentRetained, AgentdError>>,
+) -> Result<OriginalDeploymentRetained, AgentdError> {
+    let joined = match Handle::try_current() {
+        Ok(runtime) if runtime.runtime_flavor() == RuntimeFlavor::MultiThread => {
+            tokio::task::block_in_place(|| thread.join())
+        }
+        // Outside that runtime, or inside a different current-thread runtime,
+        // this wait does not monopolize the original multi-thread driver.
+        _ => thread.join(),
+    };
+    joined.map_err(|_| deployment_refused("original deployment coordinator panicked"))?
+}
