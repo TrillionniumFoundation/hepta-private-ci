@@ -1,0 +1,62 @@
+{
+  "head": "a84ab9d35d4c6319e4b4f7a317dda7577d92d777",
+  "tree": "15ad7a3f33eca3124422562672bd2736c4553bfe",
+  "prerequisite": "d6843116131d094c918cf698cbb842938dc0e747",
+  "changes": "Only 3 actual caller enrollments, one existing negative fixture union, exact CALLERS digest; no Rust or verifier changes",
+  "native": "not run",
+  "prior_d684": {
+    "source_qa": {
+      "pass": 48,
+      "fail": 0
+    },
+    "protected": {
+      "pass": 786
+    },
+    "caller": {
+      "pass": 20,
+      "fail": 2
+    },
+    "source_unchanged": true,
+    "clean": true
+  },
+  "evidence_files": [
+    {
+      "path": "root-c-grant-d6843116/run_exact_validation.py",
+      "bytes": 4147,
+      "sha256": "f78f974be39c3bff7516f17690682df5778f7d9a21ad5b77552059029f00c83a"
+    },
+    {
+      "path": "root-c-grant-d6843116/source-qa.log",
+      "bytes": 10285,
+      "sha256": "9384b612db1c65bd605e261cc6abda07254e6f64908aca98c11355a409f5121b"
+    },
+    {
+      "path": "root-c-grant-d6843116/driver.log",
+      "bytes": 2731,
+      "sha256": "54233c77fd08c67ff29293645e484101fccb9c2060352fd6fa0b31f45a3e5169"
+    },
+    {
+      "path": "root-c-grant-d6843116/result.json",
+      "bytes": 13146,
+      "sha256": "d32b6fcc608ec98c9208706f8edb2aee0dec2e4d15977e0756c7a0816c157a11"
+    },
+    {
+      "path": "root-c-final-use-guards-first/new-source-qa.json",
+      "bytes": 409,
+      "sha256": "fd70ae9e72cab2c4e4d9f91b484d5c311218f0c9e1cb276c4cae600134149d11"
+    },
+    {
+      "path": "root-c-final-use-guards-first/new-source-qa.log",
+      "bytes": 5813,
+      "sha256": "7d8e4063f20a6dbca1c0e416a00ba35ab7b53a1a577416ca88ae6310f159cef8"
+    }
+  ],
+  "source.bundle": {
+    "bytes": 1040,
+    "sha256": "24e73defcba1e91f8a11cf9d2efd287396bbee8e4813854169e9aa36cfcd4e80"
+  },
+  "prior-validation.tar.gz": {
+    "bytes": 6403,
+    "sha256": "d4c0c78a075ea63ba4fa2e4057378c1f423df6ef17c22e1986cf83d05a37323d"
+  }
+}
