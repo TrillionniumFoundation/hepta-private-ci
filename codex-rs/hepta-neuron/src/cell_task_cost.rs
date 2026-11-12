@@ -285,8 +285,10 @@ impl CellTaskCostV2 {
         // Borrow the immutable history and input, so each accepted entry can be
         // appended immediately without retaining references into the output.
         let history = self.entries.clone();
-        let mut earlier: BTreeMap<_, _> =
-            history.iter().map(|entry| (entry.event_id, entry)).collect();
+        let mut earlier: BTreeMap<_, _> = history
+            .iter()
+            .map(|entry| (entry.event_id, entry))
+            .collect();
         for entry in entries {
             if let Some(existing) = earlier.get(&entry.event_id) {
                 if *existing != entry {

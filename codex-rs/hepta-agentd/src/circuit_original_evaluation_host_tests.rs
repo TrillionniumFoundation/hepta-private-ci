@@ -81,7 +81,8 @@ async fn original_evaluation_host_reads_actual_panel_and_cold_original_signature
     assert_eq!(finish(client, peer)?, 2);
     assert_eq!(fixture.original_files()?, completed);
     assert_eq!(fixture.upstream_files()?, upstream);
-    assert_eq!(fixture.finish().await?, [34, 30]);
+    // Setup2 + missing1 + unchanged Execute10/8 + two Readbacks3/2.
+    assert_eq!(fixture.finish().await?, [19, 15]);
     Ok(())
 }
 
@@ -166,7 +167,8 @@ async fn original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effec
     assert_eq!(finish(client, peer)?, 1);
     assert_eq!(pending.original_files()?, claimed);
     let counts = pending.finish().await?;
-    assert_eq!(counts, [10, 10]);
+    // Setup2 + two incomplete readonly panel calls1 per actual member.
+    assert_eq!(counts, [4, 4]);
 
     let fixture = HostFixture::new(/*pending_claim*/ false).await?;
     let empty = fixture.original_files()?;
@@ -283,3 +285,6 @@ impl crate::OriginalCellEvaluationHostV1 {
 
 #[path = "circuit_original_evaluation_model_material_tests.rs"]
 mod model_material;
+
+#[path = "circuit_original_evaluation_member_readback_tests.rs"]
+mod member_readback;

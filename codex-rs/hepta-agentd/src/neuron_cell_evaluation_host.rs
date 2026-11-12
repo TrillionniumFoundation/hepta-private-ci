@@ -152,10 +152,17 @@ impl Owners {
     ) -> Result<Receipt, Error> {
         let started_at = self.current_time()?;
         context.authenticate(started_at)?;
-        let call = OriginalPanelTrainingSourceV1::call(
-            &self.training_source,
-            self.panel.retention.len() + 1,
-        )?;
+        let call = match action {
+            wire::Action::Execute => OriginalPanelTrainingSourceV1::call(
+                &self.training_source,
+                self.panel.retention.len() + 1,
+            )?,
+            wire::Action::Readback => OriginalPanelTrainingSourceV1::readback_call(
+                &self.training_source,
+                &self.panel.primary,
+                &self.panel.retention,
+            )?,
+        };
         let mut training = OriginalPanelTrainingCallV1::begin(&call)?;
         let before = self.read_panel_with_training(&mut training).await?;
         if before.training() != &context.training
@@ -332,3 +339,7 @@ pub use model_material::OriginalCellEvaluationModelMaterialV1;
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_training_read_access_tests.rs"]
 mod training_read_tests;
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_member_read_access_tests.rs"]
+mod member_read_tests;

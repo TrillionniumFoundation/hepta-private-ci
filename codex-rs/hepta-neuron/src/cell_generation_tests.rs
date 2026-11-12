@@ -576,10 +576,7 @@ fn failed_cost_batch_keeps_live_owner_journal_and_witness_unchanged() {
     assert_eq!(owner.locked_bytes_for_test(), journal);
     assert_eq!(checked(owner.witness.current()), witness);
     drop(owner);
-    assert_eq!(
-        checked(fs::read(fixture.0.join("witness"))),
-        witness_bytes
-    );
+    assert_eq!(checked(fs::read(fixture.0.join("witness"))), witness_bytes);
     let mut reopened = fixture.open();
     assert_eq!(reopened.snapshot(), Ok(&snapshot));
     assert_eq!(reopened.task_cost(), Ok(&costs));

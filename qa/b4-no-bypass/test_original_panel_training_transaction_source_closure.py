@@ -61,7 +61,7 @@ class OriginalPanelTrainingTransactionClosureTests(unittest.TestCase):
 
     def test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls(self):
         expected = {
-            'source': (FACTORY,), 'call': (HOST,), 'begin': (HOST,),
+            'source': (FACTORY,), 'call': (HOST,), 'readback_call': (HOST,), 'begin': (HOST,),
             'slot': (SOURCE, READ), 'finish': (HOST,), 'actual': (TRANSACTION,),
             'prepare': (MEMBER,), 'qualification': (MEMBER,),
             'panel': (HOST,),
@@ -100,7 +100,7 @@ class OriginalPanelTrainingTransactionClosureTests(unittest.TestCase):
         for path, function, markers in (
             (SOURCE, 'fn prepare_with_training(', ['let before = self.read_original(config)?', 'OriginalPanelTrainingReadV1::read(training, self, config).await?', 'let after = self.read_original(config)?', 'binding::authenticate(config, &after, current)?']),
             (READ, 'fn finish_readback_with_training(', ['runner.qualify_and_persist(', 'drop(sink)', 'OriginalPanelTrainingReadV1::read(training, source, &self.config).await?', 'source.verify_current(&self.config, prepared)?', 'if self.completed_bytes()? != bytes', 'binding::authenticate(&self.config, prepared, current)?', 'revalidate_product_qualification_v1(']),
-            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'if slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),
+            (TRANSACTION, 'fn read(', ['std::mem::replace(&mut proof.cursor, Cursor::Refused)', 'original.require_source(source.trainer, config)?', 'slot == 0 || slot + 1 == proof.call.slots', 'OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?', 'original.authenticate(binding::now()?)?', 'Cursor::Complete', 'Cursor::Next(slot + 1)']),
         ):
             for marker in markers:
                 with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
@@ -109,7 +109,7 @@ class OriginalPanelTrainingTransactionClosureTests(unittest.TestCase):
         for function, markers in (
             ('fn call(', ['.checked_mul(8)', 'identity: Arc::new(())', 'admitted: AtomicBool::new(false)']),
             ('fn begin(', ['.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)', 'call: self', 'cursor: Cursor::Next(0)']),
-            ('fn finish(', ['!Arc::ptr_eq(&proof.call.identity, &expected.identity)', '!Arc::ptr_eq(original, expected_source)', '!matches!(proof.cursor, Cursor::Complete)', 'original.authenticate(current)']),
+            ('fn finish(', ['!Arc::ptr_eq(&proof.call.identity, &expected.identity)', 'Arc::ptr_eq(original, expected_source)', '!same_source', '!matches!(proof.cursor, Cursor::Complete)', 'original.authenticate(current)']),
             ('fn require_source(', ['!std::ptr::eq(self.trainer.as_ref(), trainer)', 'self.config.training != config.training', 'self.config.scope != config.scope', 'self.config.training_evidence != config.training_evidence', 'self.config.context.generator != config.context.generator', 'self.config.verifier.trust_digest() != config.verifier.trust_digest()', 'self.config.verifier.scope_digest() != config.verifier.scope_digest()', 'self.config.verifier.objective_digest() != config.verifier.objective_digest()']),
             ('fn authenticate(', ['self.config.verifier.verify(', 'LearningEvidenceRoleV1::Generator', 'learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?', 'original.principal() != &self.config.context.generator']),
         ):
@@ -127,6 +127,53 @@ class OriginalPanelTrainingTransactionClosureTests(unittest.TestCase):
         ):
             for marker in markers:
                 with self.subTest(path=path, marker=marker): self.rejects(path, function, marker)
+
+    def test_readonly_member_pins_are_local_ordered_and_execute_keeps_original_path(self):
+        for function, markers in (
+            ('fn readback_call(', [
+                'primary: &Member', 'retention: &[Member]',
+                'Self::Bound(_) => return Self::call(self, retention.len() + 1)',
+                'Self::Individual => {}',
+                'Self::ReadbackMembers(_) => return Err(Error::CommitUncertain)',
+                'if retention.is_empty()', '.checked_add(1)', '.checked_mul(8)',
+                'std::iter::once(primary)', '.chain(retention)',
+                'trainer: Arc::clone(&member.trainer)',
+                'config: member.qualification.config.clone()',
+                'source: Self::ReadbackMembers(Arc::new(members))',
+                'identity: Arc::new(())', 'admitted: AtomicBool::new(false)',
+            ]),
+            ('fn read(', [
+                'let width = members.len() * 2',
+                'let original = &members[(slot % width) / 2]',
+                'let member_slot = (slot / width) * 2 + slot % 2',
+                'original.require_member_source(source.trainer, config)?',
+                'member_slot == 0 || member_slot == 7', 'if physical',
+            ]),
+            ('fn require_member_source(', [
+                'self.require_source(trainer, config)?',
+                'self.config.plan != config.plan',
+                'self.config.execution_namespace != config.execution_namespace',
+                'self.config.qualification_namespace != config.qualification_namespace',
+                'self.config.context.evaluator != config.context.evaluator',
+                'self.config.context.retention_receipt_digests',
+                'self.config.context.unlearning_receipt_digest',
+                'self.config.product_evidence != config.product_evidence',
+                'self.config.execution_evidence != config.execution_evidence',
+            ]),
+            ('fn finish(', [
+                'OriginalPanelTrainingSourceV1::ReadbackMembers(expected_source)',
+                'for original in members.iter()', 'original.authenticate(current)?',
+            ]),
+        ):
+            for marker in markers:
+                with self.subTest(function=function, marker=marker):
+                    self.rejects(TRANSACTION, function, marker)
+        for marker in (
+            'wire::Action::Execute => OriginalPanelTrainingSourceV1::call(',
+            'wire::Action::Readback => OriginalPanelTrainingSourceV1::readback_call(',
+            '&self.panel.primary', '&self.panel.retention',
+        ):
+            self.rejects(HOST, 'fn read_original_completion(', marker)
 
     def test_original_effect_owner_and_transport_budgets_are_unchanged(self):
         self.assertEqual(hashlib.sha256((ROOT / RECEIPT).read_bytes()).hexdigest(), 'b69a53d8048deba5ef0f36bdb92f0d85362ff5e783ba9301ee74e6f35d5be4c7')
