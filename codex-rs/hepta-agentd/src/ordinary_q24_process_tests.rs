@@ -9,6 +9,8 @@ mod fixture;
 mod inputs;
 #[path = "ordinary_q24_process_launch_tests.rs"]
 mod launch;
+#[path = "ordinary_q24_process_observer_tests.rs"]
+mod observer;
 #[path = "ordinary_q24_process_root_tests.rs"]
 mod root;
 
