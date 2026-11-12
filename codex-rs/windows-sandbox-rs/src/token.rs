@@ -1,3 +1,4 @@
+use crate::elevated_admission::require_elevated_filesystem_isolation;
 use crate::legacy_admission::require_legacy_filesystem_isolation;
 use crate::winutil::to_wide;
 use anyhow::Result;
@@ -408,6 +409,7 @@ pub unsafe fn create_workspace_write_token_with_caps_and_user_from(
     psid_capabilities: &[*mut c_void],
     additional_restricting_sids: &[*mut c_void],
 ) -> Result<HANDLE> {
+    require_elevated_filesystem_isolation()?;
     create_token_with_caps_user_and_additional_restrictions_from(
         base_token,
         psid_capabilities,
@@ -445,6 +447,7 @@ pub unsafe fn create_readonly_token_with_caps_and_user_from(
     psid_capabilities: &[*mut c_void],
     additional_restricting_sids: &[*mut c_void],
 ) -> Result<HANDLE> {
+    require_elevated_filesystem_isolation()?;
     create_token_with_caps_user_and_additional_restrictions_from(
         base_token,
         psid_capabilities,

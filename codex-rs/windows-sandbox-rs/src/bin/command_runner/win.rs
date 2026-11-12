@@ -42,6 +42,7 @@ use codex_windows_sandbox::hide_current_user_profile_dir;
 use codex_windows_sandbox::log_note;
 use codex_windows_sandbox::read_frame;
 use codex_windows_sandbox::read_handle_loop;
+use codex_windows_sandbox::require_elevated_filesystem_isolation;
 use codex_windows_sandbox::spawn_process_with_pipes;
 use codex_windows_sandbox::to_wide;
 use codex_windows_sandbox::token_mode_for_permission_profile;
@@ -232,6 +233,7 @@ fn effective_cwd(req_cwd: &Path, log_dir: Option<&Path>) -> PathBuf {
 }
 
 fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
+    require_elevated_filesystem_isolation()?;
     let log_dir = req.codex_home.clone();
     hide_current_user_profile_dir(req.codex_home.as_path());
     let token_mode = token_mode_for_permission_profile(
@@ -731,3 +733,7 @@ pub fn main() -> Result<()> {
 
     std::process::exit(exit_code);
 }
+
+#[cfg(test)]
+#[path = "win/elevated_admission_tests.rs"]
+mod elevated_admission_tests;

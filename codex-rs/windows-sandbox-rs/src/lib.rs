@@ -113,6 +113,12 @@ mod conpty;
 mod elevated;
 
 #[cfg(target_os = "windows")]
+mod elevated_admission;
+#[cfg(all(target_os = "windows", test))]
+#[path = "elevated_admission_tests.rs"]
+mod elevated_admission_tests;
+
+#[cfg(target_os = "windows")]
 mod elevated_impl;
 
 #[cfg(target_os = "windows")]
@@ -200,6 +206,10 @@ pub use desktop::LaunchDesktop;
 pub use dpapi::protect as dpapi_protect;
 #[cfg(target_os = "windows")]
 pub use dpapi::unprotect as dpapi_unprotect;
+#[cfg(target_os = "windows")]
+pub use elevated_admission::ElevatedWindowsSandboxIsolationUnavailable;
+#[cfg(target_os = "windows")]
+pub use elevated_admission::require_elevated_filesystem_isolation;
 #[cfg(target_os = "windows")]
 pub use elevated_impl::ElevatedSandboxProfileCaptureRequest;
 #[cfg(target_os = "windows")]

@@ -10,6 +10,7 @@ use crate::cap::workspace_write_root_contains_path;
 use crate::cap::workspace_write_root_overlaps_path;
 use crate::cap::workspace_write_root_specificity;
 use crate::deny_read_state::sync_persistent_deny_read_acls;
+use crate::elevated_admission::require_elevated_filesystem_isolation;
 use crate::env::apply_no_network_to_env;
 use crate::env::ensure_non_interactive_pager;
 use crate::env::inherit_path_env;
@@ -379,6 +380,7 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
 ) -> Result<ElevatedSpawnContext> {
+    require_elevated_filesystem_isolation()?;
     normalize_null_device_env(env_map);
     ensure_non_interactive_pager(env_map);
     inherit_path_env(env_map);
