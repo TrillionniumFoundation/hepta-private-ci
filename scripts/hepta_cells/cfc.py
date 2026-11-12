@@ -8,9 +8,10 @@ avoids the reference sequence wrapper's squeeze/broadcast hazard. Zero elapsed
 time is not an identity transition in this equation; replay rejection is owned
 by the lifecycle wrapper. This is neither the optional mixed-memory CfC nor LTC.
 
-Initialization uses the PRED-1 normal scale, not the ncps initializer. Direct
-runtime parity with official torch/ncps is a separate, unverified qualification.
-This source was reconstructed after executor loss and requires fresh validation.
+Initialization uses the PRED-1 normal scale, not the ncps initializer. Runtime
+numerical parity is measured separately by cfc_reference_probe; it does not
+establish initialization or task-performance equivalence. Validation receipts
+identify the exact implementation bytes tested.
 """
 
 import numpy as np
