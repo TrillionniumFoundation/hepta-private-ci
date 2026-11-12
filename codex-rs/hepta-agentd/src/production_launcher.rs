@@ -63,6 +63,7 @@ struct RootStartup {
     q24_model: Option<crate::RootQ24ModelFactoryHandoffV1>,
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
     initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
+    historical: Option<crate::RootHistoricalTaskReadHandoffV1>,
     control: OwnedFd,
     app_server: OwnedFd,
     lifetime: Duration,
@@ -82,6 +83,8 @@ pub struct AgentdProductionLaunch {
     q24_model: Option<crate::AgentdRootQ24ModelFactoryV1>,
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
     initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
+    historical_read:
+        Option<Arc<crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1>>,
     original_source_capture: Option<source_capture::OriginalSourceCaptureRequestV1>,
     original_run_start_retention: Option<run_start_retention::OriginalInitialRunStartRetainerV1>,
     session_end: Instant,
@@ -111,6 +114,7 @@ impl AgentdProductionStartup {
                     q24_model_handoff,
                     publication_handoff,
                     initial_handoff,
+                    historical_handoff,
                     uid,
                     gid,
                     control,
@@ -162,6 +166,14 @@ impl AgentdProductionStartup {
                         )
                     })
                     .transpose()?;
+                let historical = historical_handoff
+                    .map(|handoff| {
+                        crate::receive_root_historical_task_read_handoff(
+                            handoff,
+                            remaining(bootstrap_deadline)?,
+                        )
+                    })
+                    .transpose()?;
                 let inputs = RuntimeInputs {
                     primary,
                     notes,
@@ -175,6 +187,7 @@ impl AgentdProductionStartup {
                     q24_model,
                     publication,
                     initial_publication,
+                    historical,
                     control,
                     app_server,
                     lifetime,
@@ -234,6 +247,7 @@ impl AgentdProductionStartup {
                     q24_model,
                     publication,
                     initial_publication,
+                    historical,
                     control,
                     app_server,
                     lifetime,
@@ -241,7 +255,7 @@ impl AgentdProductionStartup {
                     inputs,
                 } = *root;
                 let session_end = Instant::now() + lifetime;
-                let root = crate::receive_root_production_inputs(
+                let mut root = crate::receive_root_production_inputs(
                     bootstrap,
                     root_pidfd,
                     config.identity(),
@@ -252,6 +266,20 @@ impl AgentdProductionStartup {
                 let mut config = config
                     .finish(&root)?
                     .with_root_bound_sockets(control, app_server)?;
+                let historical_read = if let Some(historical) = historical {
+                    let connection = root.take_historical_task_read_connection()?;
+                    let client = historical
+                        .connect_original(
+                            connection,
+                            remaining(deadline)?.min(Duration::from_millis(500)),
+                            session_end,
+                        )
+                        .await?;
+                    client.require_same_original_session(&root.session)?;
+                    Some(client)
+                } else {
+                    None
+                };
                 let mut model_factory = None;
                 if let Some(learning) = learning {
                     let learning: crate::RootLearningHandoffV1 = learning;
@@ -300,6 +328,7 @@ impl AgentdProductionStartup {
                         q24_model: model_factory,
                         publication,
                         initial_publication,
+                        historical_read,
                         original_source_capture: None,
                         original_run_start_retention: None,
                         session_end,
@@ -311,6 +340,21 @@ impl AgentdProductionStartup {
 }
 
 impl AgentdProductionLaunch {
+    /// Consume the independently received historical purpose. The original
+    /// Initial/learned publication slot remains available for its own stage.
+    pub(crate) fn take_original_historical_read(
+        &mut self,
+    ) -> Result<
+        Arc<crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1>,
+        AgentdError,
+    > {
+        let client = self.historical_read.take().ok_or_else(|| {
+            AgentdError::GenerationFenced("original historical read absent or already taken".into())
+        })?;
+        client.require_same_original_session(&self.root.session)?;
+        Ok(client)
+    }
+
     /// Take the actual separately received purpose offer before `run` consumes
     /// this launch. Retain it beside the original connection capability until
     /// the actual B and independently signed selection are available. This

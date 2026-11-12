@@ -167,6 +167,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let run_start_deployment = options
             .remove(std::ffi::OsStr::new("--run-start-deployment"))
             .map(PathBuf::from);
+        let historical_deployment = options
+            .remove(std::ffi::OsStr::new("--historical-task-deployment"))
+            .map(PathBuf::from);
+        let historical_handoff = options.remove(std::ffi::OsStr::new(
+            "--root-historical-task-read-handoff-fd",
+        ));
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -198,6 +204,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "RunStart retention requires its original Initial deployment and session".into(),
             );
         }
+        if historical_deployment.is_some() != historical_handoff.is_some()
+            || historical_deployment.is_some() && root_fd.is_none()
+            || historical_deployment.is_some() && initial_deployment.is_some()
+        {
+            return Err("historical task reads require their fixed Root deployment, independent purpose handoff and original Root pidfd in the recipient session".into());
+        }
         if publication_deployment.is_some() != publication_handoff.is_some()
             || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())
         {
@@ -227,6 +239,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
         let initial_handoff = initial_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let historical_handoff = historical_handoff
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
@@ -297,7 +313,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             prepared
         } else {
             if handoff.is_some()
-                || root_fd.is_some() && learning_handoff.is_none() && initial_handoff.is_none()
+                || root_fd.is_some()
+                    && learning_handoff.is_none()
+                    && initial_handoff.is_none()
+                    && historical_handoff.is_none()
             {
                 return Err("open-only serving does not accept fresh handoff inputs".into());
             }
@@ -344,6 +363,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if let Some(path) = run_start_deployment {
             prepared.enable_initial_run_start_retention_from_deployment(&path)?;
         }
+        let historical_offer = match (historical_deployment, historical_handoff) {
+            (Some(path), Some(handoff)) => {
+                prepared.enable_original_historical_task_read_from_deployment(&path)?;
+                Some((handoff, prepared.seal_original_historical_task_read()?))
+            }
+            (None, None) => None,
+            _ => {
+                return Err("historical task deployment and inherited offer must be paired".into());
+            }
+        };
         let initial_ready = initial_deployment
             .as_ref()
             .map(|deployment| serde_json::to_string(deployment.session()))
@@ -394,6 +423,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             if let (Some((handoff, offer)), Some(root)) = (initial_offer, root_fd.as_ref()) {
                 codex_hepta_agentd::send_root_generation_initial_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    offer,
+                    root,
+                    std::time::Duration::from_secs(30),
+                )
+                .map_err(std::io::Error::other)?;
+            }
+            if let (Some((handoff, offer)), Some(root)) = (historical_offer, root_fd.as_ref()) {
+                codex_hepta_agentd::send_root_historical_task_read_handoff(
                     std::os::unix::net::UnixDatagram::from(handoff),
                     offer,
                     root,
