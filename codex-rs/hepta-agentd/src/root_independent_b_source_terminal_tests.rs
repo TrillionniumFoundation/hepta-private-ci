@@ -70,12 +70,24 @@ fn run_parent(phase: &str) -> anyhow::Result<()> {
     // child need not traverse the private build tree or change its permissions.
     let executable = File::open(std::env::current_exe()?)?;
     let executable_fd = executable.as_raw_fd();
-    let mut command = Command::new(format!("/proc/self/fd/{executable_fd}"));
+    // Enter the retained executable through the same credential transition
+    // used by the actual Root component parents. A pre-exec setuid leaves
+    // /proc/self/fd resolution subject to that intermediate process's access
+    // checks, before the new executable has established its own credentials.
+    let mut command = Command::new("/usr/bin/setpriv");
     command
+        .args([
+            "--reuid=60002",
+            "--regid=60002",
+            "--clear-groups",
+            "--no-new-privs",
+            "--inh-caps=-all",
+            "--ambient-caps=-all",
+            "--bounding-set=-all",
+        ])
+        .arg(format!("/proc/self/fd/{executable_fd}"))
         .current_dir("/run")
         .args(["--ignored", "--exact", name, "--nocapture"])
-        .uid(60_002)
-        .gid(60_002)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
