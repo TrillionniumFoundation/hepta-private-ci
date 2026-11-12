@@ -1,0 +1,67 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-c",
+    "import os,sys\nfd=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\nos.dup2(fd,1)\nos.close(fd)\nos.execvpe(sys.argv[2],sys.argv[2:],os.environ)\n",
+    "/data/root-provider-context-20261112-df05-concurrency-v1/private/inventory.json",
+    "/home/qian-qi/.cargo/bin/cargo",
+    "nextest",
+    "list",
+    "-p",
+    "codex-hepta-automation",
+    "-E",
+    "test(=provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe)",
+    "--message-format",
+    "json"
+  ],
+  "cwd": "/data/root-provider-context-20261112-df05-concurrency-v1/source/codex-rs",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 139907063295,
+  "log": "inventory-stderr.log",
+  "executed": true,
+  "process_exit_code": 0,
+  "expected_source": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+      "source_tree": "7bc2260ffabc88a3a7db0046cb5c8734257247fd",
+      "tracked_entries": 10940,
+      "tracked_bytes": 133597451,
+      "complete_map_sha256": "4a141bfe5b30d7695bf0498fc6eb183d8a4c360f05a98c32656a1740e8a6b502",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+      "source_tree": "7bc2260ffabc88a3a7db0046cb5c8734257247fd",
+      "tracked_entries": 10940,
+      "tracked_bytes": 133597451,
+      "complete_map_sha256": "4a141bfe5b30d7695bf0498fc6eb183d8a4c360f05a98c32656a1740e8a6b502",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "process_owner_boundary": "retained leader through last group signal; not a sandbox; escaped sessions and kernel cleanup latency outside contract",
+  "target_observation": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "lexists": true,
+    "is_directory": true,
+    "is_symlink": false,
+    "first_directory_observation_after_cargo": false,
+    "scope": "directory identity observation; not independent proof of every compiler environment"
+  },
+  "target_required_for_this_command": true,
+  "target_condition_met": true,
+  "log_bytes": 18984,
+  "log_sha256": "580e8c00e7ac3f443d5332361602f0917e0c89c3d84c143784e491420f3e9175"
+}

@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+  "source_tree": "7bc2260ffabc88a3a7db0046cb5c8734257247fd",
+  "source_parent": "dde6cc8247727eb30102f097bd9a798f607bbc38",
+  "prior_host_evidence": "a0ee4d04490a74d90aedad82d61dd91dd648d9fb",
+  "prior_full_gate_native_scope_pass": true,
+  "target_policy": "reuse_observed_prior_actual_target_after_closed_owner",
+  "target_admission": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "lexists": true,
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "cache_reuse_claimed": true
+  },
+  "final_target_observation": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "lexists": true,
+    "is_directory": true,
+    "is_symlink": false,
+    "first_directory_observation_after_cargo": false,
+    "scope": "directory identity observation; not independent proof of every compiler environment"
+  },
+  "scope": "bounded supplementary observation of one existing concurrent test; does not replace or relabel full v12 gates",
+  "product_source_changed": false,
+  "production_concurrency_fix_applied": false,
+  "historical_H_S346c_two_failures_remain_unexplained": true,
+  "stop_reason": "first_failure_flaky_diagnostic_or_unknown_observation",
+  "completed_invocations": 1,
+  "actual_attempts_upper_bound": 2,
+  "maximum_actual_attempts": 10,
+  "maximum_all_first_attempt_pass_invocations": 9,
+  "original_nextest_retries": 1,
+  "inherited_nextest_retries_override_present": false,
+  "observation_receipts": [
+    {
+      "ordinal": 1,
+      "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+      "receipt": {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "-p",
+          "codex-hepta-automation",
+          "-E",
+          "test(=provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe)",
+          "--status-level",
+          "all",
+          "--final-status-level",
+          "all"
+        ],
+        "cwd": "/data/root-provider-context-20261112-df05-concurrency-v1/source/codex-rs",
+        "exit_code": 100,
+        "timed_out": false,
+        "elapsed_ns": 7090123522,
+        "log": "observation-01.log",
+        "executed": true,
+        "process_exit_code": 100,
+        "expected_source": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+        "source_before_verified": true,
+        "source_after_verified": true,
+        "source_verified": true,
+        "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+        "source_observations": [
+          {
+            "verified": true,
+            "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+            "source_tree": "7bc2260ffabc88a3a7db0046cb5c8734257247fd",
+            "tracked_entries": 10940,
+            "tracked_bytes": 133597451,
+            "complete_map_sha256": "4a141bfe5b30d7695bf0498fc6eb183d8a4c360f05a98c32656a1740e8a6b502",
+            "tracked_worktree_verified": true
+          },
+          {
+            "verified": true,
+            "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+            "source_tree": "7bc2260ffabc88a3a7db0046cb5c8734257247fd",
+            "tracked_entries": 10940,
+            "tracked_bytes": 133597451,
+            "complete_map_sha256": "4a141bfe5b30d7695bf0498fc6eb183d8a4c360f05a98c32656a1740e8a6b502",
+            "tracked_worktree_verified": true
+          }
+        ],
+        "owned_cleanup_completed": true,
+        "process_owner_boundary": "retained leader through last group signal; not a sandbox; escaped sessions and kernel cleanup latency outside contract",
+        "target_observation": {
+          "path": "/data/root-provider-context-20261112-df05-v10-target",
+          "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+          "device": 2067,
+          "inode": 47972373,
+          "mode": "0o700",
+          "lexists": true,
+          "is_directory": true,
+          "is_symlink": false,
+          "first_directory_observation_after_cargo": false,
+          "scope": "directory identity observation; not independent proof of every compiler environment"
+        },
+        "target_required_for_this_command": true,
+        "target_condition_met": true,
+        "log_bytes": 67362,
+        "log_sha256": "8164aad0874bb9755068f9d8e724b5ebd1950970fb78762e06cd62a6586da51c"
+      },
+      "clean_single_attempt_pass_observed": false,
+      "failure_or_flaky_status_observed": true,
+      "retry_status_observed": true,
+      "bounded_diagnostic_observed": true,
+      "actual_attempts_upper_bound_for_this_invocation": 2
+    }
+  ],
+  "source_after_physical": {
+    "source_commit": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b",
+    "source_tree": "7bc2260ffabc88a3a7db0046cb5c8734257247fd",
+    "tracked_entries": 10940,
+    "tracked_bytes": 133597451,
+    "complete_map_sha256": "4a141bfe5b30d7695bf0498fc6eb183d8a4c360f05a98c32656a1740e8a6b502",
+    "tracked_worktree_verified": true
+  },
+  "elapsed_ns": 176780146928,
+  "independent_total_budget_seconds": 1800,
+  "no_failure_observed_is_not_a_concurrency_fix": true,
+  "publication_performed": false
+}

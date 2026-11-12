@@ -1,0 +1,165 @@
+{
+  "schema_version": 2,
+  "stage": "journal",
+  "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+  "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+  "base": "c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9",
+  "evidence_prefix": "evidence/root-provider-context-20261112-df05/native-journal-v6/",
+  "wrapper_sha256": "c65534e21bdd9b00fcb3985a90d0d33cb0fc226e969626726cb83e984c18e61b",
+  "test": {
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "test",
+      "-p",
+      "codex-hepta-automation",
+      "--status-level",
+      "all",
+      "--final-status-level",
+      "all"
+    ],
+    "cwd": "/home/qian-qi/work/root-provider-context-20261112-df05-v6-journal/codex-rs",
+    "exit_code": 101,
+    "timed_out": false,
+    "elapsed_ns": 438923685427,
+    "log": "test.log",
+    "executed": true,
+    "process_exit_code": 101,
+    "expected_source": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+    "source_before_verified": true,
+    "source_after_verified": true,
+    "source_verified": true,
+    "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+    "source_observations": [
+      {
+        "verified": true,
+        "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+        "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+        "tracked_entries": 10737,
+        "tracked_bytes": 131625561,
+        "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+        "tracked_worktree_verified": true
+      },
+      {
+        "verified": true,
+        "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+        "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+        "tracked_entries": 10737,
+        "tracked_bytes": 131625561,
+        "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+        "tracked_worktree_verified": true
+      }
+    ],
+    "owned_cleanup_completed": true,
+    "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract"
+  },
+  "fix": {
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fix",
+      "-p",
+      "codex-hepta-automation"
+    ],
+    "cwd": "/home/qian-qi/work/root-provider-context-20261112-df05-v6-journal/codex-rs",
+    "exit_code": 101,
+    "timed_out": false,
+    "elapsed_ns": 200445016109,
+    "log": "clippy-fix.log",
+    "executed": true,
+    "process_exit_code": 101,
+    "expected_source": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+    "source_before_verified": true,
+    "source_after_verified": true,
+    "source_verified": true,
+    "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+    "source_observations": [
+      {
+        "verified": true,
+        "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+        "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+        "tracked_entries": 10737,
+        "tracked_bytes": 131625561,
+        "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+        "tracked_worktree_verified": true
+      },
+      {
+        "verified": true,
+        "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+        "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+        "tracked_entries": 10737,
+        "tracked_bytes": 131625561,
+        "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+        "tracked_worktree_verified": true
+      }
+    ],
+    "owned_cleanup_completed": true,
+    "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract"
+  },
+  "fmt": {
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fmt",
+      "--base",
+      "c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9"
+    ],
+    "cwd": "/home/qian-qi/work/root-provider-context-20261112-df05-v6-journal/codex-rs",
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_ns": 3573917196,
+    "log": "fmt.log",
+    "executed": true,
+    "process_exit_code": 0,
+    "expected_source": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+    "source_before_verified": true,
+    "source_after_verified": true,
+    "source_verified": true,
+    "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+    "source_observations": [
+      {
+        "verified": true,
+        "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+        "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+        "tracked_entries": 10737,
+        "tracked_bytes": 131625561,
+        "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+        "tracked_worktree_verified": true
+      },
+      {
+        "verified": true,
+        "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+        "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+        "tracked_entries": 10737,
+        "tracked_bytes": 131625561,
+        "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+        "tracked_worktree_verified": true
+      }
+    ],
+    "owned_cleanup_completed": true,
+    "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract"
+  },
+  "expected_regressions_observed": {
+    "preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_context_profile": false,
+    "altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact": false,
+    "taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen": false
+  },
+  "source_after_equal": true,
+  "source_after_physical": {
+    "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+    "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+    "tracked_entries": 10737,
+    "tracked_bytes": 131625561,
+    "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+    "tracked_worktree_verified": true
+  },
+  "command_source_and_owner_integrity": true,
+  "tested_scope": "immutable source head only",
+  "prospective_merge_built_or_tested": false,
+  "pr_base_commit": "c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9",
+  "journal_evidence_absent_from_tested_host_tree": false,
+  "diff_check_exit": 0,
+  "native_scope_pass": false,
+  "production_activation": false,
+  "merge_authority": false,
+  "original_v1_job_state": "UNKNOWN",
+  "original_v1_job_id": "1a1ceb1ea74-2564-17cd",
+  "process_owner_boundary": "not a sandbox; escaped sessions and kernel cleanup latency not certified"
+}

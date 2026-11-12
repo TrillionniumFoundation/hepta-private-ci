@@ -215,71 +215,85 @@ async fn taskflow_provider_identity_async_uses_durable_owner_and_separate_fields
 
 #[tokio::test]
 async fn taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen() {
-    let fixture = Fixture::new();
-    let started = start(&fixture, ProviderEffectDispatch::Unknown).await;
-    let pool = database(&started.store).await;
-    let legacy_key = ProviderEffectKey::for_logical_effect(
-        &started.effect.destination_id,
-        &format!(
-            "taskflow:{}:{}",
-            started.effect.run_id, started.effect.step_id
-        ),
-    )
-    .expect("legacy key");
-    sqlx::query(
+    for change_context in [false, true] {
+        let fixture = Fixture::new();
+        let started = start(&fixture, ProviderEffectDispatch::Unknown).await;
+        let pool = database(&started.store).await;
+        let legacy_key = ProviderEffectKey::for_logical_effect(
+            &started.effect.destination_id,
+            &format!(
+                "taskflow:{}:{}",
+                started.effect.run_id, started.effect.step_id
+            ),
+        )
+        .expect("legacy key");
+        sqlx::query(
         "INSERT INTO taskflow_effect_dispatch_attempts
          (owner_agent_id, run_id, step_id, attempt, intent_digest, payload_digest, binding_digest,
           destination_id, authority_epoch, grant_id, grant_nonce_digest, record_command_id,
-          started_at_ms, provider_effect_key, wire_payload, append_profile_version)
+          started_at_ms, provider_effect_key, wire_payload, append_profile_version,
+          provider_context_profile, provider_context_sha256)
          SELECT owner_agent_id, run_id, step_id, 2, intent_digest, payload_digest, binding_digest,
                 destination_id, authority_epoch, 'imported-second-attempt', ?, 'imported-second-attempt',
-                started_at_ms, ?, wire_payload, 1 FROM taskflow_effect_dispatch_attempts WHERE attempt=1"
+                started_at_ms, ?, wire_payload, 1, 1, ? FROM taskflow_effect_dispatch_attempts WHERE attempt=1"
     ).bind(Sha256Digest::for_bytes(b"independent-imported-nonce").as_str())
-        .bind(legacy_key.as_str()).execute(&pool).await.expect("import contradictory historical row");
-    pool.close().await;
-    assert!(
-        started
-            .store
-            .authorized_taskflow_effect_attempt(
+        .bind(if change_context {
+            ProviderEffectKey::for_taskflow_v2(
+                &started.effect.destination_id,
+                started.store.owner_agent_id(),
                 &started.effect.run_id,
                 &started.effect.step_id,
-                /*attempt*/ 1
-            )
-            .await
-            .is_err()
-    );
-    assert!(
-        started
-            .store
-            .read_terminal_authorized_taskflow_effect(
-                &started.effect.run_id,
-                &started.effect.step_id,
-                /*attempt*/ 1
-            )
-            .await
-            .is_err()
-    );
-    assert!(
-        started
-            .store
-            .pending_authorized_taskflow_effects(8)
-            .await
-            .is_err()
-    );
-    assert!(
-        started
-            .driver
-            .adapter()
-            .lookups
-            .lock()
-            .expect("lookups")
-            .is_empty()
-    );
-    started.store.close().await;
-    assert!(matches!(
-        AutomationStore::open(&fixture.layout).await,
-        Err(codex_hepta_automation::AutomationError::Corrupt)
-    ));
+            ).expect("original key").as_str().to_owned()
+        } else {
+            legacy_key.as_str().to_owned()
+        })
+        .bind(change_context.then(|| Sha256Digest::for_bytes(b"different-provider-context").as_str().to_owned()))
+        .execute(&pool).await.expect("import contradictory historical row");
+        pool.close().await;
+        assert!(
+            started
+                .store
+                .authorized_taskflow_effect_attempt(
+                    &started.effect.run_id,
+                    &started.effect.step_id,
+                    /*attempt*/ 1
+                )
+                .await
+                .is_err()
+        );
+        assert!(
+            started
+                .store
+                .read_terminal_authorized_taskflow_effect(
+                    &started.effect.run_id,
+                    &started.effect.step_id,
+                    /*attempt*/ 1
+                )
+                .await
+                .is_err()
+        );
+        assert!(
+            started
+                .store
+                .pending_authorized_taskflow_effects(8)
+                .await
+                .is_err()
+        );
+        assert!(
+            started
+                .driver
+                .adapter()
+                .lookups
+                .lock()
+                .expect("lookups")
+                .is_empty()
+        );
+        started.store.close().await;
+        assert!(matches!(
+            AutomationStore::open(&fixture.layout).await,
+            Err(codex_hepta_automation::AutomationError::Corrupt)
+        ));
+    }
 }
 
 #[tokio::test]

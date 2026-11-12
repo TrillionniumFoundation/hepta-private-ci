@@ -364,8 +364,27 @@ async fn taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurr
         ProviderEffectAckSource::StatusLookup,
     );
     let (good, bad) = tokio::join!(recover(&started, correct), recover(&started, substituted));
-    assert!(good.is_ok());
-    assert!(bad.is_err());
+    if good.is_err() || bad.is_ok() {
+        eprintln!("concurrent provider recovery: good={good:?}; bad={bad:?}");
+        let step = started
+            .store
+            .read_taskflow_step(
+                &started.effect.run_id,
+                &started.effect.step_id,
+                started.effect.attempt,
+                &started.owner,
+            )
+            .await;
+        let pool = database(&started.store).await;
+        let reconciliations: Result<i64, sqlx::Error> =
+            sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_effect_dispatch_reconciliations")
+                .fetch_one(&pool)
+                .await;
+        eprintln!("concurrent recovery state: step={step:?}; reconciliations={reconciliations:?}");
+        pool.close().await;
+    }
+    assert!(good.is_ok(), "good={good:?}; bad={bad:?}");
+    assert!(bad.is_err(), "good={good:?}; bad={bad:?}");
     assert_eq!(
         started
             .driver
@@ -460,4 +479,89 @@ async fn taskflow_provider_receipt_reopen_rejects_canonical_substitution() {
         AutomationStore::open(&fixture.layout).await,
         Err(codex_hepta_automation::AutomationError::Corrupt)
     ));
+}
+
+#[tokio::test]
+async fn taskflow_step_reconcile_waits_for_writer_without_blocking_reads() {
+    let fixture = Fixture::new();
+    let started = start(&fixture, ProviderEffectDispatch::Unknown).await;
+    let before = started
+        .store
+        .read_taskflow_step(
+            &started.effect.run_id,
+            &started.effect.step_id,
+            started.effect.attempt,
+            &started.owner,
+        )
+        .await
+        .expect("original step");
+    let pool = database(&started.store).await;
+    let holder = pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("competing writer");
+    let readable = tokio::time::timeout(
+        std::time::Duration::from_secs(1),
+        started.store.read_taskflow_step(
+            &started.effect.run_id,
+            &started.effect.step_id,
+            started.effect.attempt,
+            &started.owner,
+        ),
+    )
+    .await
+    .expect("historical reads do not reserve the writer")
+    .expect("read under writer contention");
+    assert_eq!(readable, before);
+    let terminal_digest = Sha256Digest::for_bytes(b"controlled-step-reconciliation");
+    let intent_digest = started.effect.digest().expect("original effect digest");
+    // Exercise the step mutation itself: recover() would first wait at the
+    // separate provider ledger's already-IMMEDIATE transaction.
+    let mutation = started.store.reconcile_taskflow_step(
+        &started.effect.run_id,
+        &started.effect.step_id,
+        started.effect.attempt,
+        &started.owner,
+        &intent_digest,
+        &started.effect.payload_digest,
+        "controlled-step-reconciliation",
+        &terminal_digest,
+        TaskFlowReconcileOutcome::Succeeded,
+        40,
+    );
+    tokio::pin!(mutation);
+    let while_locked =
+        tokio::time::timeout(std::time::Duration::from_millis(250), mutation.as_mut()).await;
+    holder.rollback().await.expect("release competing writer");
+    assert!(
+        while_locked.is_err(),
+        "step write returned before writer admission: {while_locked:?}"
+    );
+    // Continue the same pinned future after the observation deadline; no retry.
+    let applied = tokio::time::timeout(std::time::Duration::from_secs(5), mutation)
+        .await
+        .expect("writer admission after release")
+        .expect("same step mutation succeeds after release");
+    assert_eq!(applied.receipt.state, TaskFlowStepState::Reconciled);
+    assert_eq!(
+        applied.receipt.final_outcome,
+        Some(TaskFlowReconcileOutcome::Succeeded)
+    );
+    assert_eq!(
+        applied.receipt.receipt_digest,
+        Some(terminal_digest.clone())
+    );
+    assert_eq!(
+        applied.receipt.event_seq,
+        before.expect("original step exists").event_seq + 1
+    );
+    assert_eq!(
+        started
+            .driver
+            .adapter()
+            .dispatch_calls
+            .load(Ordering::Relaxed),
+        1
+    );
+    pool.close().await;
 }

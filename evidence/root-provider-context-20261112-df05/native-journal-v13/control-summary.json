@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "scope": "one old-production control invocation with the new writer-admission regression; not a full package qualification",
+  "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+  "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+  "source_parent": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+  "fixture_sha256": "895b06c4989476040f9163e973f191c0feb70034a142cfe64737b0bb779eb182",
+  "production_preimage_blob": "f359763d2eba77d956448e62af1f184a29e61c08",
+  "production_concurrency_fix_applied": false,
+  "expected_failure_observed": true,
+  "native_candidate_format_check": {
+    "command": [
+      "/home/qian-qi/.cargo/bin/rustfmt",
+      "--check",
+      "--config-path",
+      "/data/root-provider-context-20261112-df05-step-control-v1/source/codex-rs/rustfmt.toml",
+      "--config",
+      "skip_children=true",
+      "/data/root-provider-context-20261112-df05-step-control-v1/private/reviewed-fixture.rs"
+    ],
+    "cwd": "/data/root-provider-context-20261112-df05-step-control-v1/source/codex-rs",
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_ns": 2663516602,
+    "log": "fixture-format-check.log",
+    "executed": true,
+    "process_exit_code": 0,
+    "expected_source": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+    "source_before_verified": true,
+    "source_after_verified": true,
+    "source_verified": true,
+    "source_commit": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+    "source_observations": [
+      {
+        "verified": true,
+        "source_commit": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+        "source_tree": "a02883288253f7148b27acaeb6f2972a2f4de129",
+        "tracked_entries": 10849,
+        "tracked_bytes": 132602154,
+        "complete_map_sha256": "e7cc2d3c1db636067e34206cd9aa5b04c9a95d2751ac2719f95506d9d13ffc40",
+        "tracked_worktree_verified": true
+      },
+      {
+        "verified": true,
+        "source_commit": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+        "source_tree": "a02883288253f7148b27acaeb6f2972a2f4de129",
+        "tracked_entries": 10849,
+        "tracked_bytes": 132602154,
+        "complete_map_sha256": "e7cc2d3c1db636067e34206cd9aa5b04c9a95d2751ac2719f95506d9d13ffc40",
+        "tracked_worktree_verified": true
+      }
+    ],
+    "owned_cleanup_completed": true,
+    "process_owner_boundary": "retained leader through last group signal; not a sandbox; escaped sessions and kernel cleanup latency outside contract",
+    "target_observation": {
+      "path": "/data/root-provider-context-20261112-df05-v10-target",
+      "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+      "device": 2067,
+      "inode": 47972373,
+      "mode": "0o700",
+      "lexists": true,
+      "is_directory": true,
+      "is_symlink": false,
+      "first_directory_observation_after_cargo": false,
+      "scope": "directory identity observation; not independent proof of every compiler environment"
+    },
+    "target_required_for_this_command": false,
+    "target_condition_met": true,
+    "log_bytes": 106,
+    "log_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+  },
+  "expected_error": "step write returned before writer admission: Ok(Err(Unavailable))",
+  "observed_try_numbers": [
+    1,
+    2
+  ],
+  "completed_invocations": 1,
+  "maximum_actual_attempts": 2,
+  "original_nextest_retries": 1,
+  "inherited_nextest_retries_override_present": false,
+  "receipt": {
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "test",
+      "-p",
+      "codex-hepta-automation",
+      "-E",
+      "test(=provider_receipt_tests::taskflow_step_reconcile_waits_for_writer_without_blocking_reads)",
+      "--status-level",
+      "all",
+      "--final-status-level",
+      "all"
+    ],
+    "cwd": "/data/root-provider-context-20261112-df05-step-control-v1/source/codex-rs",
+    "exit_code": 100,
+    "timed_out": false,
+    "elapsed_ns": 6041112568,
+    "log": "control-test.log",
+    "executed": true,
+    "process_exit_code": 100,
+    "expected_source": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+    "source_before_verified": true,
+    "source_after_verified": true,
+    "source_verified": true,
+    "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+    "source_observations": [
+      {
+        "verified": true,
+        "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+        "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+        "tracked_entries": 10849,
+        "tracked_bytes": 132605100,
+        "complete_map_sha256": "95a37565c6b11c7c22040e4de7a3feefc646f664c620098c20355dd538749385",
+        "tracked_worktree_verified": true
+      },
+      {
+        "verified": true,
+        "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+        "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+        "tracked_entries": 10849,
+        "tracked_bytes": 132605100,
+        "complete_map_sha256": "95a37565c6b11c7c22040e4de7a3feefc646f664c620098c20355dd538749385",
+        "tracked_worktree_verified": true
+      }
+    ],
+    "owned_cleanup_completed": true,
+    "process_owner_boundary": "retained leader through last group signal; not a sandbox; escaped sessions and kernel cleanup latency outside contract",
+    "target_observation": {
+      "path": "/data/root-provider-context-20261112-df05-v10-target",
+      "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+      "device": 2067,
+      "inode": 47972373,
+      "mode": "0o700",
+      "lexists": true,
+      "is_directory": true,
+      "is_symlink": false,
+      "first_directory_observation_after_cargo": false,
+      "scope": "directory identity observation; not independent proof of every compiler environment"
+    },
+    "target_required_for_this_command": true,
+    "target_condition_met": true,
+    "log_bytes": 65489,
+    "log_sha256": "53acded8dc1573d35345ffd3d202f747b04b5bf2b9c5756fa4a1032bd477b776"
+  },
+  "source_after_physical": {
+    "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+    "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+    "tracked_entries": 10849,
+    "tracked_bytes": 132605100,
+    "complete_map_sha256": "95a37565c6b11c7c22040e4de7a3feefc646f664c620098c20355dd538749385",
+    "tracked_worktree_verified": true
+  },
+  "target_admission": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "lexists": true,
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "cache_reuse_claimed": true
+  },
+  "final_target_observation": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "lexists": true,
+    "is_directory": true,
+    "is_symlink": false,
+    "first_directory_observation_after_cargo": false,
+    "scope": "directory identity observation; not independent proof of every compiler environment"
+  },
+  "elapsed_ns": 174109882116,
+  "independent_total_budget_seconds": 1800,
+  "publication_performed": false,
+  "result_limit": "The control observes typed Unavailable before writer release; it does not expose the old SQLite extended error code."
+}

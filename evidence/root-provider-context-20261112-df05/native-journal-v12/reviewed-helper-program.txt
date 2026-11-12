@@ -1,0 +1,638 @@
+from __future__ import annotations
+import sys,json,pathlib,subprocess,hashlib,os,shutil,time,signal,re,stat
+data=json.load(sys.stdin)
+base=data['base_sha']; expected_tree=data['expected_tree']
+repository='TrillionniumFoundation/hepta-private-ci'
+base_branch='fix/hepta-provider-operation-binding-20261030'
+branches={'journal':'fix/hepta-provider-context-journal-20261112-df05','host':'fix/hepta-provider-context-host-20261112-df05'}
+seed=pathlib.Path('/home/qian-qi/work/ctrl-security-baseline-20261110-gpt6')
+prior_host_dir=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v3')
+host_dir=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v6')
+journal_dir=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v6-journal')
+original_evidence=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v3-evidence')
+prior_v4_evidence=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v4-evidence')
+prior_v5_evidence=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v5-evidence')
+evidence=pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v6-evidence')
+env={**{k:v for k,v in os.environ.items() if not k.startswith('GIT_')},'GIT_NO_REPLACE_OBJECTS':'1','GIT_TERMINAL_PROMPT':'0','GH_HOST':'github.com','PATH':'/home/qian-qi/.cargo/bin:'+os.environ.get('PATH',''),'RUSTUP_TOOLCHAIN':'1.96.0','CARGO_BUILD_JOBS':'2','CARGO_PROFILE_DEV_DEBUG':'0','CARGO_PROFILE_TEST_DEBUG':'0','CARGO_INCREMENTAL':'0','NEXTEST_TEST_THREADS':'2','CARGO_TERM_COLOR':'never'}
+ROOT=host_dir
+Path=pathlib.Path
+SOURCE_OBSERVATIONS=[]
+CURRENT_SOURCE_ROOT=None
+
+def emit(value):print(json.dumps(value,ensure_ascii=False),flush=True)
+def gitcmd(path,*args):
+    if any(arg in ('add','reset','switch','commit','update-index','checkout-index','worktree','push','fetch') for arg in args):no_hold()
+    return ['/usr/bin/git','--no-replace-objects','-C',str(path),
+            '-c','core.sparseCheckout=false','-c','core.sparseCheckoutCone=false',
+            '-c','core.ignorestat=false','-c','gc.auto=0','-c','maintenance.auto=false',*args]
+def git(path,*args):return subprocess.check_output(gitcmd(path,*args),text=True,env=env).strip()
+def plain_git_bytes(path,*args):
+    return subprocess.check_output(['/usr/bin/git','--no-replace-objects','-C',str(path),*args],env=env)
+def plain_git(path,*args):return plain_git_bytes(path,*args).decode().strip()
+def write(path,value):
+    path.parent.mkdir(parents=True,exist_ok=True)
+    blob=value.encode() if isinstance(value,str) else value
+    with path.open('xb') as file:
+        file.write(blob);file.flush();os.fsync(file.fileno())
+    directory=path.parent
+    while True:
+        directory_fd=os.open(directory,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+        try:os.fsync(directory_fd)
+        finally:os.close(directory_fd)
+        if directory==directory.parent:break
+        directory=directory.parent
+def actor():
+    value=subprocess.check_output(['/usr/bin/gh','api','--hostname','github.com','user','--jq','.login'],text=True,env=env).strip()
+    if value!='ProfHepta':raise RuntimeError('publishing actor mismatch: '+value)
+    return value
+def origin(path):
+    headers=subprocess.run(gitcmd(path,'config','--get-regexp',r'^http\..*extraheader$'),env=env,capture_output=True)
+    if headers.returncode!=1 or headers.stdout:
+        raise RuntimeError('Git HTTP extraHeader state cannot be bound to the verified gh actor')
+    canonical='https://github.com/'+repository+'.git'
+    fetch_urls=git(path,'remote','get-url','--all','origin').splitlines()
+    push_urls=git(path,'remote','get-url','--push','--all','origin').splitlines()
+    if fetch_urls!=[canonical] or push_urls!=[canonical]:
+        raise RuntimeError('canonical fetch/push origin mismatch')
+    return canonical
+def tree_map(path,ref):
+    raw=subprocess.check_output(gitcmd(path,'ls-tree','-r','-z',ref),env=env)
+    result={}
+    for entry in raw.split(b'\0'):
+        if entry:
+            meta,name=entry.split(b'\t',1);mode,kind,oid=meta.decode().split()
+            result[name.decode()]=(mode,kind,oid)
+    return result
+def sized_tree_map(path,ref):
+    raw=subprocess.check_output(gitcmd(path,'ls-tree','-r','-l','-z','--full-tree',ref),env=env)
+    result={}
+    for entry in raw.split(b'\0'):
+        if entry:
+            meta,name=entry.split(b'\t',1);mode,kind,oid,size=meta.decode().split()
+            if kind!='blob' or not size.isdigit():raise RuntimeError('unsupported source entry')
+            result[name.decode()]=(mode,kind,oid,int(size))
+    return result
+def tree_digest(entries):return hashlib.sha256(json.dumps(entries,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+def oid_bytes(value):return hashlib.sha1(b'blob '+str(len(value)).encode()+b'\0'+value,usedforsecurity=False).hexdigest()
+def no_hold():
+    for root in (host_dir,journal_dir,prior_host_dir):
+        if os.path.lexists(root/'ROOT_PROVIDER_CONTEXT_VALIDATION_HOLD'):
+            raise RuntimeError('explicit source/publication HOLD exists')
+    for output in (evidence,prior_v4_evidence,prior_v5_evidence):
+        if os.path.lexists(output/'PUBLICATION_HOLD'):
+            raise RuntimeError('explicit publication HOLD exists')
+def repository_guard(path):
+    if path.is_symlink() or not path.is_dir():raise RuntimeError('source root is not a real directory')
+    if pathlib.Path(plain_git(path,'rev-parse','--show-toplevel')).resolve()!=path.resolve():
+        raise RuntimeError('Git worktree differs from explicit source root')
+    if plain_git(path,'for-each-ref','--format=%(refname)','refs/replace/'):
+        raise RuntimeError('replacement refs are not source identity')
+    grafts=pathlib.Path(plain_git(path,'rev-parse','--git-path','info/grafts'))
+    if not grafts.is_absolute():grafts=path/grafts
+    if os.path.lexists(grafts):raise RuntimeError('grafted source history refused')
+def flags_clear(path):
+    flags=plain_git_bytes(path,'ls-files','-v','-z')
+    if any(row and (row[:1]==b'S' or row[:1].islower()) for row in flags.split(b'\0')):
+        raise RuntimeError('index hides tracked source')
+    return flags
+def ancestor_guard(root,path):
+    if root.is_symlink() or not root.is_dir():raise RuntimeError('source root type')
+    parent=root
+    for part in path.relative_to(root).parts[:-1]:
+        parent=parent/part
+        if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
+            raise RuntimeError('source ancestor type: '+str(parent))
+
+def _fingerprint(info: os.stat_result) -> tuple:
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+            info.st_mtime_ns, info.st_ctime_ns)
+
+
+def _tracked_blob(root_fd: int, path: bytes, mode: bytes, size: int) -> str:
+    """Hash one raw blob through no-follow directory/file descriptors on CI Unix."""
+    parts = path.split(b'/')
+    if not parts or any(part in (b'', b'.', b'..') for part in parts):
+        raise ValueError('noncanonical tracked path')
+    parent = os.dup(root_fd)
+    try:
+        for part in parts[:-1]:
+            next_parent = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                  dir_fd=parent)
+            os.close(parent)
+            parent = next_parent
+        name = parts[-1]
+        before = os.stat(name, dir_fd=parent, follow_symlinks=False)
+        value = hashlib.sha1(b'blob ' + str(size).encode('ascii') + b'\0',
+                             usedforsecurity=False)
+        if mode == b'120000':
+            if not stat.S_ISLNK(before.st_mode):
+                raise ValueError('tracked symlink type changed')
+            target = os.readlink(name, dir_fd=parent)
+            if len(target) != size:
+                raise ValueError('tracked symlink size changed')
+            value.update(target)
+        elif mode in (b'100644', b'100755'):
+            if not stat.S_ISREG(before.st_mode) or before.st_size != size:
+                raise ValueError('tracked regular file type or size changed')
+            if bool(before.st_mode & 0o111) != (mode == b'100755'):
+                raise ValueError('tracked executable mode changed')
+            flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+            with os.fdopen(os.open(name, flags, dir_fd=parent), 'rb') as stream:
+                if _fingerprint(os.fstat(stream.fileno())) != _fingerprint(before):
+                    raise ValueError('tracked file changed before hashing')
+                remaining = size
+                while remaining:
+                    chunk = stream.read(min(1024 * 1024, remaining))
+                    if not chunk:
+                        raise ValueError('tracked file truncated during hashing')
+                    value.update(chunk)
+                    remaining -= len(chunk)
+                if stream.read(1) or _fingerprint(os.fstat(stream.fileno())) != _fingerprint(before):
+                    raise ValueError('tracked file changed during hashing')
+        else:
+            # Gitlinks require a separate recursive-source contract; never skip them.
+            raise ValueError('unsupported tracked entry mode')
+        if _fingerprint(os.stat(name, dir_fd=parent, follow_symlinks=False)) != _fingerprint(before):
+            raise ValueError('tracked path changed during hashing')
+        check_parent=os.dup(root_fd)
+        try:
+            for part in parts[:-1]:
+                next_parent=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=check_parent)
+                os.close(check_parent);check_parent=next_parent
+            if _fingerprint(os.stat(name,dir_fd=check_parent,follow_symlinks=False))!=_fingerprint(before):
+                raise ValueError('tracked source path rebound during hashing')
+        finally:
+            os.close(check_parent)
+        return value.hexdigest()
+    finally:
+        os.close(parent)
+
+
+
+def physical(path,ref_or_entries):
+    repository_guard(path);flags_clear(path)
+    entries=sized_tree_map(path,ref_or_entries) if isinstance(ref_or_entries,str) else ref_or_entries
+    root_before=path.lstat()
+    root_fd=os.open(path,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+    try:
+        if _fingerprint(os.fstat(root_fd))!=_fingerprint(root_before):
+            raise RuntimeError('source root changed before verification')
+        total=0
+        for relative,(mode,kind,expected,size) in entries.items():
+            if kind!='blob':raise RuntimeError('unsupported source object')
+            if _tracked_blob(root_fd,os.fsencode(relative),mode.encode(),size)!=expected:
+                raise RuntimeError('physical source blob mismatch: '+relative)
+            total+=size
+        if _fingerprint(os.fstat(root_fd))!=_fingerprint(root_before) or _fingerprint(path.lstat())!=_fingerprint(root_before):
+            raise RuntimeError('source root changed during verification')
+    finally:
+        os.close(root_fd)
+    flags_clear(path);repository_guard(path)
+    return {'tracked_entries':len(entries),'tracked_bytes':total,'complete_map_sha256':tree_digest(entries),'tracked_worktree_verified':True}
+def verify_source(path,sha):
+    if re.fullmatch(r'[0-9a-f]{40}',sha) is None:raise RuntimeError('noncanonical source commit')
+    no_hold();repository_guard(path)
+    if plain_git(path,'rev-parse','HEAD')!=sha:raise RuntimeError('source HEAD changed')
+    if plain_git(path,'status','--porcelain','--untracked-files=all','--ignore-submodules=none'):
+        raise RuntimeError('source checkout is not clean')
+    result=physical(path,sha)
+    if plain_git(path,'rev-parse','HEAD')!=sha or plain_git(path,'status','--porcelain','--untracked-files=all','--ignore-submodules=none'):
+        raise RuntimeError('source changed during physical verification')
+    flags_clear(path);no_hold()
+    return {'source_commit':sha,'source_tree':git(path,'rev-parse',sha+'^{tree}'),**result}
+def clean(path,sha):
+    verify_source(path,sha)
+    return True
+def _source_error(expected_commit):
+    try:
+        proof=verify_source(CURRENT_SOURCE_ROOT,expected_commit)
+    except (OSError,ValueError,RuntimeError,subprocess.CalledProcessError) as error:
+        SOURCE_OBSERVATIONS.append({'source_commit':expected_commit,'verified':False,'error':str(error)})
+        return str(error)
+    SOURCE_OBSERVATIONS.append({'verified':True,**proof})
+    return None
+
+def _wait_without_reaping(child, deadline):
+    """Observe exit under the original deadline without releasing the group ID."""
+    while True:
+        remaining=deadline-time.monotonic()
+        if remaining<=0:raise ValueError('NATIVE_EXECUTOR_TIMEOUT')
+        try:
+            status=os.waitid(os.P_PID,child.pid,os.WEXITED|os.WNOHANG|os.WNOWAIT)
+        except InterruptedError:
+            continue
+        if status is not None:
+            if status.si_code==os.CLD_EXITED:return status.si_status
+            if status.si_code in (os.CLD_KILLED,os.CLD_DUMPED):return -status.si_status
+            raise ValueError('NATIVE_EXECUTOR_WAIT_STATUS')
+        time.sleep(min(remaining,.005))
+
+
+def _darwin_only_exited_leader(child):
+    """Disambiguate Darwin's zombie-only EPERM without waiving live denial.
+
+    XNU killpg1 excludes zombies and can return EPERM for our unreaped leader.
+    Its proc_listpids(PROC_PGRP_ONLY=2) walks both live and zombie lists under
+    proc_list_lock. An eight-byte buffer returning exactly our single PID is
+    therefore a complete singleton census, not a truncated list or size hint.
+    Require WNOWAIT exit evidence first; zero/error/extra/foreign entries refuse.
+    This trusts the system libproc/kernel and exclusive reaping, as the owner
+    already trusts POSIX process isolation. It neither signals discovered PIDs
+    nor manages descendants which left this session.
+    """
+    if sys.platform!='darwin' or child.returncode is not None:return False
+    try:
+        status=os.waitid(os.P_PID,child.pid,os.WEXITED|os.WNOHANG|os.WNOWAIT)
+        if (status is None or status.si_pid!=child.pid or
+                status.si_code not in (os.CLD_EXITED,os.CLD_KILLED,os.CLD_DUMPED)):
+            return False
+        import ctypes
+        library=ctypes.CDLL('/usr/lib/libproc.dylib',use_errno=True)
+        census=library.proc_listpids
+        census.argtypes=[ctypes.c_uint32,ctypes.c_uint32,ctypes.c_void_p,ctypes.c_int]
+        census.restype=ctypes.c_int
+        pids=(ctypes.c_int*2)()
+        ctypes.set_errno(0)
+        size=census(2,child.pid,pids,ctypes.sizeof(pids))
+        return (size==ctypes.sizeof(ctypes.c_int) and pids[0]==child.pid
+                and ctypes.get_errno()==0)
+    except (OSError,AttributeError,ValueError):
+        return False
+
+
+def owned_run(command: list[str], log: Path, *, timeout: int = 900,
+        env: dict[str, str] | None = None, cwd: Path = ROOT,
+        expected_source: str | None = None) -> dict:
+    if not all(hasattr(os, name) for name in (
+            'waitid', 'P_PID', 'WEXITED', 'WNOHANG', 'WNOWAIT',
+            'CLD_EXITED', 'CLD_KILLED', 'CLD_DUMPED', 'killpg')):
+        raise ValueError('CI_PROCESS_PLATFORM')
+    started = time.monotonic_ns()
+    timed_out = False
+    executed = False
+    process_code = None
+    source_error = None
+    source_phase = None
+    code = 125
+    with log.open('xb') as stream:
+        if expected_source is not None:
+            source_error = _source_error(expected_source)
+            if source_error is not None:
+                source_phase = 'before'
+        if source_error is None:
+            process = subprocess.Popen(command, cwd=cwd, env=env, stdout=stream,
+                                       stderr=subprocess.STDOUT, start_new_session=True)
+            executed = True
+            try:
+                try:
+                    code = _wait_without_reaping(process, time.monotonic() + timeout)
+                except ValueError as error:
+                    if str(error) != 'NATIVE_EXECUTOR_TIMEOUT':
+                        raise
+                    timed_out = True
+                    try:
+                        os.killpg(process.pid, signal.SIGTERM)
+                    except ProcessLookupError:
+                        pass
+                    except PermissionError:
+                        if not _darwin_only_exited_leader(process):
+                            raise
+                    try:
+                        _wait_without_reaping(process, time.monotonic() + 10)
+                    except ValueError as error:
+                        if str(error) != 'NATIVE_EXECUTOR_TIMEOUT':
+                            raise
+                    code = 124
+            finally:
+                # Keep the leader unreaped through the LAST group signal. A
+                # successful or nonzero leader exit can still leave log writers.
+                # Only this created group is signalled, never discovered PIDs.
+                # The caller must remain the sole reaper; escaped sessions and
+                # kernel cleanup latency remain outside this owner contract.
+                try:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    except PermissionError:
+                        if not _darwin_only_exited_leader(process):
+                            raise
+                finally:
+                    process.wait()
+            process_code = process.returncode
+    if executed and expected_source is not None:
+        source_error = _source_error(expected_source)
+        if source_error is not None:
+            source_phase = 'after'
+            # Keep the original nonzero process/timeout outcome. Only an
+            # otherwise successful command needs a distinct source refusal.
+            if code == 0:
+                code = 125
+    result = {'command': command, 'cwd': str(cwd), 'exit_code': code,
+              'timed_out': timed_out, 'elapsed_ns': time.monotonic_ns() - started,
+              'log': log.name, 'executed': executed,
+              'process_exit_code': process_code}
+    if expected_source is not None:
+        result.update(expected_source=expected_source,
+                      source_before_verified=source_phase != 'before',
+                      source_after_verified=executed and source_error is None,
+                      source_verified=executed and source_error is None)
+        if source_error is not None:
+            result.update(source_error=source_error, source_failure_phase=source_phase)
+    return result
+
+
+
+def command(root,args,log,source):
+    global CURRENT_SOURCE_ROOT,SOURCE_OBSERVATIONS
+    CURRENT_SOURCE_ROOT=root;SOURCE_OBSERVATIONS=[]
+    no_hold()
+    result=owned_run(args,log,timeout=20000,env=env,cwd=root/'codex-rs',expected_source=source)
+    with log.open('rb') as stream:os.fsync(stream.fileno())
+    result.update(source_commit=source,source_observations=list(SOURCE_OBSERVATIONS),
+                  owned_cleanup_completed=result['executed'],
+                  owner_contract='reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract')
+    write(log.with_suffix(log.suffix+'.receipt.json'),json.dumps(result,indent=2))
+    emit({'phase':'command_finished','wrapper_revision':'reviewed-v6',**result})
+    if not result.get('source_verified') or not result.get('source_before_verified') or not result.get('source_after_verified') or not result['owned_cleanup_completed']:
+        write(log.with_suffix(log.suffix+'.source-after.patch'),subprocess.check_output(gitcmd(root,'diff','--no-ext-diff','--binary'),env=env))
+        raise RuntimeError('command owner/source integrity failed; no following command may borrow source')
+    return result
+def reconstruct(root,args,log,expected_input):
+    no_hold();proof=physical(root,expected_input)
+    result=owned_run(args,log,timeout=900,env=env,cwd=root/'codex-rs',expected_source=None)
+    with log.open('rb') as stream:os.fsync(stream.fileno())
+    result.update(source_state='dirty-candidate',candidate_base=base,
+                  input_physical_source=proof,input_map_sha256=tree_digest(expected_input),
+                  scope='precommit formatter only; no native test qualification',
+                  owned_cleanup_completed=result['executed'])
+    write(log.with_suffix(log.suffix+'.receipt.json'),json.dumps(result,indent=2))
+    emit({'phase':'reconstruction_finished',**result})
+    if result['exit_code'] or not result['owned_cleanup_completed']:raise RuntimeError('precommit formatter failed')
+    return result
+def materialize(path,expected,receipt_path):
+    repository_guard(path);no_hold()
+    before_flags=plain_git_bytes(path,'ls-files','-v','-z')
+    tracked=plain_git_bytes(path,'ls-files','-z')
+    before_index=git(path,'write-tree')
+    for option in ['--no-skip-worktree','--no-assume-unchanged']:
+        subprocess.run(gitcmd(path,'update-index',option,'-z','--stdin'),input=tracked,env=env,check=True)
+    missing=[]
+    for raw in tracked.split(b'\0'):
+        if raw:
+            full=path/os.fsdecode(raw);ancestor_guard(path,full)
+            if not os.path.lexists(full):missing.append(raw)
+    emit({'phase':'materialization_plan','source_directory':str(path),'tracked_entries':len(tracked.split(b'\0'))-1,'missing_paths':len(missing)})
+    if missing:
+        subprocess.run(gitcmd(path,'checkout-index','-z','--stdin'),input=b'\0'.join(missing)+b'\0',env=env,check=True)
+    for option in ['--no-skip-worktree','--no-assume-unchanged']:
+        subprocess.run(gitcmd(path,'update-index',option,'-z','--stdin'),input=tracked,env=env,check=True)
+    if git(path,'write-tree')!=before_index:raise RuntimeError('materialization changed index source tree')
+    proof=physical(path,expected)
+    after_flags=flags_clear(path)
+    receipt={'source_directory':str(path),'index_tree_before':before_index,'index_tree_after':before_index,
+             'tracked_entries':len(tracked.split(b'\0'))-1,'materialized_missing_paths':len(missing),
+             'existing_files_overwritten':False,'shared_config_modified':False,
+             'flags_before_sha256':hashlib.sha256(before_flags).hexdigest(),'flags_after_sha256':hashlib.sha256(after_flags).hexdigest(),
+             'physical_source':proof}
+    write(receipt_path,json.dumps(receipt,indent=2));emit({'phase':'materialized',**receipt})
+
+def remote_ref(path,branch):
+    result=subprocess.check_output(gitcmd(path,'-c','credential.helper=','-c','credential.helper=!/usr/bin/gh auth git-credential','ls-remote','--heads','origin','refs/heads/'+branch),env=env,text=True).strip()
+    rows=result.splitlines() if result else []
+    if len(rows)>1:raise RuntimeError('ambiguous remote ref')
+    return rows[0].split()[0] if rows else None
+def pr_listing(branch,base_name,state):
+    return json.loads(subprocess.check_output(['/usr/bin/gh','pr','list','--repo',repository,'--head',branch,'--base',base_name,'--state',state,'--json','number,url,state,headRefOid,baseRefName,isDraft,body'],env=env,text=True))
+def publish(path,branch,base_name,source_sha,evidence_sha,stage,summary):
+    no_hold();actor();origin(path)
+    if not clean(path,evidence_sha):raise RuntimeError('dirty evidence checkout')
+    expected_base=base if stage=='journal' else results['journal']['evidence_commit']
+    if remote_ref(path,base_name)!=expected_base:raise RuntimeError('remote base drift')
+    current=remote_ref(path,branch)
+    if current not in (None,evidence_sha):raise RuntimeError('remote candidate ref conflict')
+    if current is None:
+        no_hold();clean(path,evidence_sha)
+        pushed=subprocess.run(gitcmd(path,'-c','credential.helper=','-c','credential.helper=!/usr/bin/gh auth git-credential','push','--porcelain','origin',evidence_sha+':refs/heads/'+branch),env=env,capture_output=True,text=True)
+        write(evidence/(stage+'-push.log'),pushed.stdout+pushed.stderr)
+        if remote_ref(path,branch)!=evidence_sha:raise RuntimeError('push unconfirmed; do not replay')
+    existing=pr_listing(branch,base_name,'all')
+    if existing:
+        if len(existing)!=1 or existing[0]['state']!='OPEN' or not existing[0]['isDraft'] or existing[0]['headRefOid']!=evidence_sha:
+            raise RuntimeError('pre-existing PR needs reconciliation')
+        url=existing[0]['url']
+    else:
+        title='fix(automation): retain original provider context before dispatch' if stage=='journal' else 'fix(agentd): recover effects through their original provider context'
+        change=('Persist original provider context in the existing dispatch barrier and compare the complete logical history. Schema v23 gates all four append paths, including Accepted-only binding commits from preopened v22 writers. INSERT guards reject replacement through primary keys, the grant nonce unique key, and explicit rowid collisions. Historical missing context stays missing. This journal stage is a dependency of the Agentd stage.' if stage=='journal' else 'The registered HTTP and PoN host freezes transport kind, scope, destination, verified contract digest, and verifier key separately from the existing operation key. Recovery queries only matching original context. Missing or changed context preserves Unknown; already committed terminal facts remain readable. Real HTTP fixtures cover endpoint rotation, missing context, original-provider settlement, and terminal reads.')
+        body=('## Problem\n\nA stable operation key does not identify the physical endpoint, account, or PoN store used before a crash. Reconfiguring a signed provider under the same scope can otherwise attach a replacement provider result to an old Unknown operation.\n\n## Changes\n\n'+change+
+            '\n\n## Native validation — DRAFT HOLD\n\n'+
+            '- Source commit actually supplied to the commands: '+source_sha+'.\n'+
+            '- Evidence-only child: '+evidence_sha+'.\n'+
+            '- Complete mode/blob tree comparison proves the child preserves every source entry and adds only the exact evidence allowlist.\n'+
+            '- Test exit: '+str(summary['test']['exit_code'])+'; Clippy fix exit: '+str(summary['fix']['exit_code'])+'; formatter exit: '+str(summary['fmt']['exit_code'])+'.\n'+
+            '- Expected regression PASS records observed: '+str(summary['expected_regressions_observed'])+'.\n'+
+            '- Scoped native qualification: '+('PASS' if summary['native_scope_pass'] else 'FAIL_OR_UNCONFIRMED')+'.\n'+
+            '- Raw logs, source manifest, cleanup receipts, and checksums: '+summary['evidence_prefix']+'.\n'+
+            '- Qualification is the immutable source head S only; no prospective PR merge was built or tested.\n'+
+            ('- PR2 targets E1, whose added journal evidence is absent from the tested S2 full tree. S2 is a sole child of S1, and E2 adds only its own evidence to S2.\n' if stage=='host' else '')+'\n'+
+            'This remains Draft HOLD even when scoped tests pass. No production service, actual payment, message, merge, or deployment was activated. The operation key retains its original owner/run/step identity; recreating a business intent as a new run is not globally deduplicated. Migration gates new barriers and evidence appends; it does not retract an old process already past its durable barrier. Provider atomic deduplication/retention, independent Root state survival, and arbitrary database DDL tampering are outside this qualification.\n')
+        body_file=evidence/(stage+'-pr-body.md');write(body_file,body)
+        no_hold();clean(path,evidence_sha);actor();origin(path)
+        body_bytes=body.encode('utf-8')
+        body_sha256=hashlib.sha256(body_bytes).hexdigest()
+        write(evidence/(stage+'-pr-send-intent.json'),json.dumps({'state':'MayHaveBeenSent','operation_id':'github-pr-create:'+repository+':'+branch+':'+base_name,'repository':repository,'head_branch':branch,'base_branch':base_name,'evidence_commit':evidence_sha,'body_bytes':len(body_bytes),'body_sha256':body_sha256,'payload_transport':'immutable stdin bytes'},indent=2))
+        no_hold()
+        created=subprocess.run(['/usr/bin/gh','pr','create','--draft','--repo',repository,'--head',branch,'--base',base_name,'--title',title,'--body-file','-'],input=body_bytes,env=env,capture_output=True)
+        write(evidence/(stage+'-pr-create.log'),created.stdout+created.stderr)
+        found=pr_listing(branch,base_name,'open')
+        if len(found)!=1 or found[0]['headRefOid']!=evidence_sha or not found[0]['isDraft']:raise RuntimeError('PR creation unconfirmed; no new PR retry')
+        remote_body=(found[0].get('body') or '').encode('utf-8')
+        if remote_body not in (body_bytes,body_bytes.rstrip(b'\n')):raise RuntimeError('remote PR body differs beyond permitted trailing LF normalization')
+        write(evidence/(stage+'-pr-body-readback.json'),json.dumps({'body_bytes':len(body_bytes),'body_sha256':body_sha256,'remote_body_bytes':len(remote_body),'remote_body_sha256':hashlib.sha256(remote_body).hexdigest(),'body_comparison':'exact' if remote_body==body_bytes else 'trailing_LF_only','permitted_normalization':'GitHub may remove trailing LF bytes only'},indent=2))
+        url=found[0]['url']
+    emit({'phase':'draft_published','stage':stage,'source_commit':source_sha,'evidence_commit':evidence_sha,'url':url})
+    return url
+
+
+
+terminal=data['prior_resume_terminal']
+if terminal.get('job_id')!='1a1cedf2110-2564-18c3' or terminal.get('state')!='cancelled' or terminal.get('terminal_publication_confirmed') is not True or terminal.get('output_complete') is not True or terminal.get('output_durable') is not True or terminal.get('log_bytes',{}).get('stdout',{}).get('stored')!=0:
+    raise RuntimeError('previous cancelled owner is not closed')
+prior_verified=data['prior_verified_terminal']
+prior_visible=data['prior_visible_terminal']
+for prior,job_id,out_bytes,err_bytes in [(prior_verified,'1a1cf116f2c-2564-1979',533,261),(prior_visible,'1a1cf1dbafe-2564-1999',2077,137)]:
+    if prior.get('job_id')!=job_id or prior.get('state')!='failed' or prior.get('exit_code')!=1 or prior.get('terminal_publication_confirmed') is not True or prior.get('output_complete') is not True or prior.get('output_durable') is not True or prior.get('log_bytes',{}).get('stdout',{}).get('stored')!=out_bytes or prior.get('log_bytes',{}).get('stderr',{}).get('stored')!=err_bytes:
+        raise RuntimeError('previous failed source owner is not closed')
+if sys.platform!='linux' or not all(hasattr(os,name) for name in ('waitid','P_PID','WEXITED','WNOHANG','WNOWAIT','CLD_EXITED','CLD_KILLED','CLD_DUMPED','killpg')):
+    raise RuntimeError('reviewed Linux process owner unavailable')
+if evidence.exists() or journal_dir.exists() or host_dir.exists() or not prior_host_dir.is_dir():
+    raise RuntimeError('fresh candidate path already exists; reconcile instead of replay')
+original_input=json.loads((original_evidence/'input-v3.json').read_text())
+if original_input!={name:data[name] for name in ('base_sha','expected_tree','files')}:
+    raise RuntimeError('original source input changed')
+no_hold();origin(seed);actor();repository_guard(seed)
+if git(seed,'rev-parse',base+'^{tree}')!='9a509a1404618135baf6963ba33e390d58d5cd2a':
+    raise RuntimeError('base complete tree changed')
+for branch in branches.values():
+    if subprocess.run(gitcmd(seed,'show-ref','--verify','--quiet','refs/heads/'+branch),env=env).returncode==0:
+        raise RuntimeError('source branch already exists; reconcile')
+evidence.mkdir()
+write(evidence/'input-source-v3.json',json.dumps(original_input,ensure_ascii=False))
+write(evidence/'previous-owner-terminal.json',json.dumps(terminal,indent=2))
+write(evidence/'previous-verified-terminal.json',json.dumps(prior_verified,indent=2))
+write(evidence/'previous-visible-terminal.json',json.dumps(prior_visible,indent=2))
+history=evidence/'history';history.mkdir()
+for name,value in data['history_artifacts'].items():
+    if pathlib.PurePosixPath(name).name!=name or len(value.encode())>500000:
+        raise RuntimeError('unbounded or noncanonical historical artifact')
+    write(history/name,value)
+old_fmt=(original_evidence/'reconstruct-fmt.log').read_bytes()
+if hashlib.sha256(old_fmt).hexdigest()!='77abf22867c484dc4c844fc9e9afbf442bfce19722a515d30a22dff10e78c6e2':
+    raise RuntimeError('original formatter refusal changed')
+write(history/'original-formatter-refusal.log',old_fmt)
+for prior,label,expected_sha in [(prior_v4_evidence,'v4','c25dbccb67aaf1ffc928bd19ee5562826f5bfdc72f0a331aea7b172248cb2a6b'),(prior_v5_evidence,'v5','9736d9247df8a2a786927e94fe7ed8baf8e94729dcd0ad6071ff076a85b9e9e4')]:
+    prior_program=(prior/'qualified-wrapper-program.txt').read_bytes()
+    if hashlib.sha256(prior_program).hexdigest()!=expected_sha:
+        raise RuntimeError('previous verified program identity changed')
+    write(history/('previous-'+label+'-wrapper-program.txt'),prior_program)
+for relative in ['materialization-repair.json','materialization-host.json','history/materialization-original.bin','history/materialization-original-stat.json']:
+    source=prior_v5_evidence/relative
+    if not source.is_file() or source.is_symlink():raise RuntimeError('prior restoration evidence type changed')
+    original=source.read_bytes()
+    if relative.endswith('materialization-original.bin') and hashlib.sha256(original).hexdigest()!='e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855':
+        raise RuntimeError('prior quarantined bytes changed')
+    write(history/('previous-v5-'+source.name),original)
+marker=prior_v4_evidence/'history'/'prior-HOLD-original.txt'
+if not marker.is_file() or marker.is_symlink():raise RuntimeError('archived prior HOLD is not regular')
+marker_before=marker.lstat();marker_bytes=marker.read_bytes()
+if hashlib.sha256(marker_bytes).hexdigest()!='383bd5c2cd56053d298270d8fed17b14174bca47160b91ff969faa349a5fb169' or _fingerprint(marker.lstat())!=_fingerprint(marker_before):
+    raise RuntimeError('archived prior HOLD identity changed')
+write(history/'prior-HOLD-original.txt',marker_bytes);no_hold()
+own_argv=pathlib.Path('/proc/self/cmdline').read_bytes().split(b'\0')
+if len(own_argv)<3 or own_argv[1]!=b'-c' or hashlib.sha256(own_argv[2]).hexdigest()!=data['wrapper_sha256']:
+    raise RuntimeError('actual native wrapper does not match submitted source')
+write(evidence/'qualified-wrapper-program.txt',own_argv[2])
+subprocess.run(gitcmd(seed,'worktree','add','--detach',str(host_dir),base),env=env,check=True)
+materialize(host_dir,sized_tree_map(host_dir,base),evidence/'fresh-base-materialization.json')
+fresh_base=verify_source(host_dir,base)
+write(evidence/'fresh-base-source.json',json.dumps({'source_directory':str(host_dir),'base_source':fresh_base,'prior_worktree_modified':False,'copied_old_worktree_helper_files':False},indent=2))
+emit({'phase':'fresh_base_verified','source_directory':str(host_dir),'base_source':fresh_base})
+expected_input=sized_tree_map(host_dir,base)
+for relative,content in data['files'].items():
+    components=pathlib.PurePosixPath(relative)
+    if components.is_absolute() or '..' in components.parts or relative not in original_input['files']:
+        raise RuntimeError('noncanonical candidate input path')
+    p=host_dir/relative;p.parent.mkdir(parents=True,exist_ok=True);ancestor_guard(host_dir,p)
+    if os.path.lexists(p) and (p.is_symlink() or not p.is_file()):
+        raise RuntimeError('candidate target is not an owned regular source entry')
+    candidate_bytes=content.encode()
+    fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_TRUNC|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'wb') as stream:
+        stream.write(candidate_bytes);stream.flush();os.fsync(stream.fileno())
+    if p.read_bytes()!=candidate_bytes:raise RuntimeError('candidate source input write mismatch')
+    mode=expected_input.get(relative,('100644','blob','',0))[0]
+    expected_input[relative]=(mode,'blob',oid_bytes(candidate_bytes),len(candidate_bytes))
+target=pathlib.Path('/data/root-provider-context-20261112-df05-v6-target')
+if target.exists():raise RuntimeError('unexpected native target before first Rust command')
+if not os.access(target.parent,os.W_OK) or shutil.disk_usage(target.parent).free<10*1024**3:
+    raise RuntimeError('isolated build capacity gate failed')
+env['CARGO_TARGET_DIR']=str(target)
+emit({'phase':'reviewed_v6_preflight','actor':actor(),'base':base,'target':str(target),'expected_full_tree':expected_tree,'wrapper_sha256':data['wrapper_sha256'],'previous_owner_terminal_confirmed':True})
+materialize(host_dir,expected_input,evidence/'materialization-host.json')
+visible=set(plain_git(host_dir,'diff','--name-only').splitlines())|set(plain_git(host_dir,'ls-files','--others','--exclude-standard').splitlines())
+if visible-set(data['files']):raise RuntimeError('unexpected candidate changes before formatting')
+reconstruction=reconstruct(host_dir,['/home/qian-qi/.cargo/bin/just','fmt','--base',base],evidence/'reconstruct-fmt-reviewed-v6.log',expected_input)
+git(host_dir,'add','--',*data['files'])
+frozen=git(host_dir,'write-tree')
+if frozen!=expected_tree or plain_git(host_dir,'diff','--name-only'):
+    raise RuntimeError('formatted source differs from reviewed complete tree')
+formatted_proof=physical(host_dir,frozen)
+write(evidence/'reconstruction-source-freeze.json',json.dumps({'source_state':'reviewed-formatted-candidate','candidate_base':base,'candidate_tree':frozen,'physical_source':formatted_proof,'reconstruction_receipt_sha256':hashlib.sha256((evidence/'reconstruct-fmt-reviewed-v6.log.receipt.json').read_bytes()).hexdigest()},indent=2))
+git(host_dir,'reset','--mixed','HEAD','--',*data['files'])
+git(host_dir,'switch','-c',branches['journal'])
+automation=[p for p in data['files'] if p.startswith('codex-rs/hepta-automation/')]
+host_files=[p for p in data['files'] if p.startswith('codex-rs/hepta-agentd/')]
+if set(automation+host_files)!=set(data['files']):raise RuntimeError('unassigned product file')
+git(host_dir,'add','--',*automation)
+git(host_dir,'commit','-m','fix(automation): retain provider context and fence obsolete receipt writers')
+s1=git(host_dir,'rev-parse','HEAD')
+expected_journal=tree_map(host_dir,base)
+reviewed_full=tree_map(host_dir,frozen)
+for relative in automation:expected_journal[relative]=reviewed_full[relative]
+if tree_map(host_dir,s1)!=expected_journal or git(host_dir,'show','-s','--format=%P',s1)!=base:
+    raise RuntimeError('journal source is not the reviewed automation-only child of base')
+git(host_dir,'switch','-c',branches['host'])
+git(host_dir,'add','--',*host_files)
+git(host_dir,'commit','-m','fix(agentd): reconcile effects only through their original provider context')
+s2=git(host_dir,'rev-parse','HEAD')
+if git(host_dir,'rev-parse','HEAD^{tree}')!=expected_tree or git(host_dir,'show','-s','--format=%P',s2)!=s1:raise RuntimeError('host source is not the reviewed full-tree sole child of journal')
+clean(host_dir,s2)
+subprocess.run(gitcmd(seed,'worktree','add',str(journal_dir),branches['journal']),env=env,check=True)
+materialize(journal_dir,sized_tree_map(journal_dir,s1),evidence/'materialization-journal.json')
+clean(journal_dir,s1);clean(host_dir,s2)
+source_metadata={'base':base,'source_journal':s1,'source_host':s2,'expected_full_tree':expected_tree,'journal_tree':git(journal_dir,'rev-parse','HEAD^{tree}'),'host_tree':git(host_dir,'rev-parse','HEAD^{tree}'),'target':str(target),'wrapper_sha256':data['wrapper_sha256']}
+write(evidence/'source-metadata.json',json.dumps(source_metadata,indent=2));emit({'phase':'native_sources_frozen',**source_metadata})
+results={}
+stages=[
+ ('journal',journal_dir,s1,'codex-hepta-automation',base,['preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_context_profile','altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact','taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen']),
+ ('host',host_dir,s2,'codex-hepta-agentd',s1,['host_recovery_keeps_original_target_across_signed_provider_reconfiguration','host_recovery_missing_original_context_never_queries_current_provider'])]
+for stage,path,source,pkg,fmt_base,names in stages:
+    source_proof=verify_source(path,source)
+    stage_dir=evidence/stage;stage_dir.mkdir()
+    before=tree_map(path,source)
+    manifest={'source_commit':source,'source_tree':git(path,'rev-parse',source+'^{tree}'),'complete_entry_count':len(before),'complete_mode_blob_map_sha256':tree_digest(before),'physical_source':source_proof,'candidate_entries':{p:before[p] for p in data['files'] if p in before}}
+    write(stage_dir/'source-manifest.json',json.dumps(manifest,indent=2,sort_keys=True))
+    for source_name in ['qualified-wrapper-program.txt','materialization-host.json','materialization-journal.json','reconstruct-fmt-reviewed-v6.log','reconstruct-fmt-reviewed-v6.log.receipt.json','reconstruction-source-freeze.json','previous-owner-terminal.json','previous-verified-terminal.json','previous-visible-terminal.json','fresh-base-source.json','fresh-base-materialization.json']:
+        write(stage_dir/source_name,(evidence/source_name).read_bytes())
+    for historical in sorted(history.iterdir()):
+        if not historical.is_file() or historical.is_symlink():raise RuntimeError('historical artifact type changed')
+        write(stage_dir/('history-'+historical.name),historical.read_bytes())
+    preflight={'actor':actor(),'origin':origin(path),'source_commit':source,'target':str(target),'base':fmt_base,'wrapper_sha256':data['wrapper_sha256'],'tool_versions':{n:subprocess.check_output([n,'--version'],cwd=path/'codex-rs',env=env,text=True).strip() for n in ['cargo','rustc','rustfmt','just']},'flags':{k:env[k] for k in ['RUSTUP_TOOLCHAIN','CARGO_BUILD_JOBS','CARGO_PROFILE_DEV_DEBUG','CARGO_PROFILE_TEST_DEBUG','CARGO_INCREMENTAL','NEXTEST_TEST_THREADS','CARGO_TERM_COLOR']}}
+    write(stage_dir/'preflight.json',json.dumps(preflight,indent=2))
+    test=command(path,['/home/qian-qi/.cargo/bin/just','test','-p',pkg,'--status-level','all','--final-status-level','all'],stage_dir/'test.log',source)
+    fix=command(path,['/home/qian-qi/.cargo/bin/just','fix','-p',pkg],stage_dir/'clippy-fix.log',source)
+    fmt=command(path,['/home/qian-qi/.cargo/bin/just','fmt','--base',fmt_base],stage_dir/'fmt.log',source)
+    check=subprocess.run(gitcmd(path,'diff','--check'),env=env,capture_output=True,text=True)
+    write(stage_dir/'source-after.patch',subprocess.check_output(gitcmd(path,'diff','--no-ext-diff','--binary'),env=env))
+    final_source=verify_source(path,source)
+    source_equal=final_source['source_commit']==source and tree_map(path,source)==before
+    logtext=re.sub(r'\x1b\[[0-9;]*m','',(stage_dir/'test.log').read_text(errors='replace'))
+    observed={name:bool(re.search(r'^\s*PASS\b[^\n]*\b'+re.escape(name)+r'\s*$',logtext,re.MULTILINE)) for name in names}
+    prefix='evidence/root-provider-context-20261112-df05/native-'+stage+'-v6/'
+    command_integrity=all(x.get('source_verified') is True and x.get('source_before_verified') is True and x.get('source_after_verified') is True and x.get('owned_cleanup_completed') is True for x in [test,fix,fmt])
+    scope_pass=source_equal and check.returncode==0 and command_integrity and all(x['exit_code']==0 for x in [test,fix,fmt]) and all(observed.values())
+    summary={'schema_version':2,'stage':stage,'source_commit':source,'source_tree':git(path,'rev-parse',source+'^{tree}'),'base':fmt_base,'evidence_prefix':prefix,'wrapper_sha256':data['wrapper_sha256'],'test':test,'fix':fix,'fmt':fmt,'expected_regressions_observed':observed,'source_after_equal':source_equal,'source_after_physical':final_source,'command_source_and_owner_integrity':command_integrity,'tested_scope':'immutable source head only','prospective_merge_built_or_tested':False,'pr_base_commit':base if stage=='journal' else results['journal']['evidence_commit'],'journal_evidence_absent_from_tested_host_tree':stage=='host','diff_check_exit':check.returncode,'native_scope_pass':scope_pass,'production_activation':False,'merge_authority':False,'original_v1_job_state':'UNKNOWN','original_v1_job_id':'1a1ceb1ea74-2564-17cd','process_owner_boundary':'not a sandbox; escaped sessions and kernel cleanup latency not certified'}
+    write(stage_dir/'summary.json',json.dumps(summary,indent=2))
+    write(stage_dir/'commands.json',json.dumps([test,fix,fmt],indent=2))
+    if not source_equal or check.returncode or not command_integrity:
+        raise RuntimeError('source/owner integrity failed; no publication')
+    actor();origin(path);no_hold();clean(path,source)
+    files=[p for p in sorted(stage_dir.iterdir()) if p.is_file()]
+    hashes={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in files}
+    write(stage_dir/'sha256-manifest.json',json.dumps(hashes,indent=2));files.append(stage_dir/'sha256-manifest.json')
+    allowed={}
+    for file in files:
+        relative=prefix+file.name;destination=path/relative
+        if destination.exists():raise RuntimeError('evidence destination collision')
+        write(destination,file.read_bytes())
+        allowed[relative]=('100644','blob',git(path,'hash-object',str(destination)))
+    git(path,'add','-f','--',*allowed)
+    if set(git(path,'diff','--cached','--name-only').splitlines())!=set(allowed):raise RuntimeError('evidence allowlist mismatch')
+    git(path,'commit','-m','evidence: seal '+stage+' native provider context validation')
+    e=git(path,'rev-parse','HEAD');after=tree_map(path,e)
+    if git(path,'show','-s','--format=%P',e)!=source:raise RuntimeError('evidence commit is not a sole child of the tested source')
+    if any(after.get(p)!=value for p,value in allowed.items()):raise RuntimeError('evidence mode/blob mismatch')
+    retained={p:value for p,value in after.items() if p not in allowed}
+    if retained!=before or set(after)-set(before)!=set(allowed):raise RuntimeError('complete evidence-child source mismatch')
+    clean(path,e)
+    summary['evidence_commit']=e;results[stage]=summary
+    write(evidence/(stage+'-sealed-receipt.json'),json.dumps({'source_commit':source,'evidence_commit':e,'source_preserved_complete_tree':True,'complete_source_mode_blob_map_sha256':tree_digest(retained),'allowed_evidence':allowed},indent=2))
+    results[stage]['url']=publish(path,branches[stage],base_branch if stage=='journal' else branches['journal'],source,e,stage,summary)
+    write(evidence/(stage+'-published-receipts.json'),json.dumps(results,indent=2))
+emit({'phase':'complete','source_metadata':source_metadata,'results':results,'evidence_directory':str(evidence)})
+
+
+
+
+
+

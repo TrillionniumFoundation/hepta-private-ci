@@ -190,8 +190,9 @@ pub(crate) async fn bind_provider_receipt(
         sqlx::query(
             "INSERT INTO taskflow_effect_provider_bindings (
                 owner_agent_id, run_id, step_id, attempt,
-                receipt_json, receipt_digest, observed_at_ms, append_profile_version
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
+                receipt_json, receipt_digest, observed_at_ms, append_profile_version,
+                provider_context_profile
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1)",
         )
         .bind(owner)
         .bind(&attempt.run_id)
@@ -340,16 +341,19 @@ pub(crate) async fn verify_provider_receipts(
             "TaskFlow provider operation bindings are immutable",
         ),
     ] {
-        let profile = sqlx::query_as::<_, (String, i64, Option<String>, i64, i64)>(
-            r#"SELECT type,"notnull",dflt_value,pk,hidden
-               FROM pragma_table_xinfo(?, 'main') WHERE name='append_profile_version'"#,
-        )
-        .bind(table)
-        .fetch_optional(&mut *transaction)
-        .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
-        if profile != Some(("INTEGER".to_string(), 1, Some("0".to_string()), 0, 0)) {
-            return Err(corrupt());
+        for column in ["append_profile_version", "provider_context_profile"] {
+            let profile = sqlx::query_as::<_, (String, i64, Option<String>, i64, i64)>(
+                r#"SELECT type,"notnull",dflt_value,pk,hidden
+                   FROM pragma_table_xinfo(?, 'main') WHERE name=?"#,
+            )
+            .bind(table)
+            .bind(column)
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+            if profile != Some(("INTEGER".to_string(), 1, Some("0".to_string()), 0, 0)) {
+                return Err(corrupt());
+            }
         }
         for action in ["UPDATE", "DELETE"] {
             let suffix = action.to_ascii_lowercase();
@@ -375,9 +379,12 @@ pub(crate) async fn verify_provider_receipts(
     }
     // Verify the exact published writer guards, including the closed legacy
     // profile. Bazel already includes every migration as compile_data.
-    for definition in include_str!("../migrations/0022_effect_append_profile.sql")
-        .split("CREATE TRIGGER ")
-        .skip(1)
+    for definition in [
+        include_str!("../migrations/0022_effect_append_profile.sql"),
+        include_str!("../migrations/0023_effect_provider_context.sql"),
+    ]
+    .into_iter()
+    .flat_map(|migration| migration.split("CREATE TRIGGER ").skip(1))
     {
         let (body, _) = definition.split_once("\nEND;").ok_or_else(corrupt)?;
         let name = body.split_whitespace().next().ok_or_else(corrupt)?;

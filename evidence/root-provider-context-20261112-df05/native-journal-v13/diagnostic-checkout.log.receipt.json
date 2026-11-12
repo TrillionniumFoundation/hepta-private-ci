@@ -1,0 +1,73 @@
+{
+  "command": [
+    "/usr/bin/git",
+    "--no-replace-objects",
+    "-C",
+    "/data/root-provider-context-20261112-df05-v10-sourceprep/host",
+    "-c",
+    "core.sparseCheckout=false",
+    "-c",
+    "core.sparseCheckoutCone=false",
+    "-c",
+    "core.ignorestat=false",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "worktree",
+    "add",
+    "--detach",
+    "/data/root-provider-context-20261112-df05-concurrency-v1/source",
+    "a568e32ddc9dac056ea4e01befea4ae3fbfc941b"
+  ],
+  "cwd": "/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 3840992444,
+  "log": "checkout.log",
+  "executed": true,
+  "process_exit_code": 0,
+  "expected_source": "a0ee4d04490a74d90aedad82d61dd91dd648d9fb",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "a0ee4d04490a74d90aedad82d61dd91dd648d9fb",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "a0ee4d04490a74d90aedad82d61dd91dd648d9fb",
+      "source_tree": "83a31cd04cd29486a8695f50beddac21c4a9316c",
+      "tracked_entries": 10983,
+      "tracked_bytes": 134069468,
+      "complete_map_sha256": "f5a84da5e8beaa13bfd56be80898cae6011298706098e728b10be97b43d0688b",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "a0ee4d04490a74d90aedad82d61dd91dd648d9fb",
+      "source_tree": "83a31cd04cd29486a8695f50beddac21c4a9316c",
+      "tracked_entries": 10983,
+      "tracked_bytes": 134069468,
+      "complete_map_sha256": "f5a84da5e8beaa13bfd56be80898cae6011298706098e728b10be97b43d0688b",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "process_owner_boundary": "retained leader through last group signal; not a sandbox; escaped sessions and kernel cleanup latency outside contract",
+  "target_observation": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "lexists": true,
+    "is_directory": true,
+    "is_symlink": false,
+    "first_directory_observation_after_cargo": false,
+    "scope": "directory identity observation; not independent proof of every compiler environment"
+  },
+  "target_required_for_this_command": false,
+  "target_condition_met": true,
+  "log_bytes": 626,
+  "log_sha256": "6c7a5ad5e00f603508c5c1bc55c69b3488e465608e4b4913e3e79abb2d816796"
+}

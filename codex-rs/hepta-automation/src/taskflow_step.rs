@@ -796,7 +796,7 @@ impl AutomationStore {
             validate_digest(receipt_digest, "step receipt digest")?;
         }
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.begin_step_write_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -907,6 +907,18 @@ impl AutomationStore {
                 &all_events,
             )?,
         })
+    }
+
+    async fn begin_step_write_tx(
+        &self,
+    ) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>, TaskFlowError> {
+        // Claim, record, and reconcile read history before appending. Reserve
+        // the writer before those reads so a competing receipt writer cannot
+        // force a DEFERRED read transaction to fail while upgrading to write.
+        self.taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)
     }
 
     async fn begin_step_tx(&self) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>, TaskFlowError> {

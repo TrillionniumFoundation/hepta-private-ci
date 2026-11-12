@@ -1,0 +1,67 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-c",
+    "import os,sys\nfd=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\nos.dup2(fd,1)\nos.close(fd)\nos.execvpe(sys.argv[2],sys.argv[2:],os.environ)\n",
+    "/data/root-provider-context-20261112-df05-step-control-v1/private/inventory.json",
+    "/home/qian-qi/.cargo/bin/cargo",
+    "nextest",
+    "list",
+    "-p",
+    "codex-hepta-automation",
+    "-E",
+    "test(=provider_receipt_tests::taskflow_step_reconcile_waits_for_writer_without_blocking_reads)",
+    "--message-format",
+    "json"
+  ],
+  "cwd": "/data/root-provider-context-20261112-df05-step-control-v1/source/codex-rs",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 117391728740,
+  "log": "inventory-stderr.log",
+  "executed": true,
+  "process_exit_code": 0,
+  "expected_source": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+      "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+      "tracked_entries": 10849,
+      "tracked_bytes": 132605100,
+      "complete_map_sha256": "95a37565c6b11c7c22040e4de7a3feefc646f664c620098c20355dd538749385",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+      "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+      "tracked_entries": 10849,
+      "tracked_bytes": 132605100,
+      "complete_map_sha256": "95a37565c6b11c7c22040e4de7a3feefc646f664c620098c20355dd538749385",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "process_owner_boundary": "retained leader through last group signal; not a sandbox; escaped sessions and kernel cleanup latency outside contract",
+  "target_observation": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "lexists": true,
+    "is_directory": true,
+    "is_symlink": false,
+    "first_directory_observation_after_cargo": false,
+    "scope": "directory identity observation; not independent proof of every compiler environment"
+  },
+  "target_required_for_this_command": true,
+  "target_condition_met": true,
+  "log_bytes": 16100,
+  "log_sha256": "b62d6c76faaf34075d2bd5beb6ca648ec36433ed6db5935a4beda9fb5f0aef76"
+}

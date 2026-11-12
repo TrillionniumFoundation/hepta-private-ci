@@ -262,8 +262,8 @@ async fn taskflow_provider_receipt_reopen_rejects_terminal_binding_without_obser
         let pool = database(&started.store).await;
         sqlx::query(
             "INSERT INTO taskflow_effect_provider_bindings
-             (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms, append_profile_version)
-             SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40, 1
+             (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms, append_profile_version, provider_context_profile)
+             SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40, 1, 1
              FROM taskflow_effect_dispatch_attempts"
         ).bind(json).bind(digest.as_str()).execute(&pool).await
             .expect("import canonical terminal binding without its observation");
@@ -299,8 +299,8 @@ async fn taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncerta
     .expect("restore original guard");
     sqlx::query(
         "INSERT INTO taskflow_effect_dispatch_reconciliations
-         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms, append_profile_version)
-         SELECT owner_agent_id, run_id, step_id, attempt, 'failed', evidence_digest, 40, 1
+         (owner_agent_id, run_id, step_id, attempt, observation, evidence_digest, observed_at_ms, append_profile_version, provider_context_profile)
+         SELECT owner_agent_id, run_id, step_id, attempt, 'failed', evidence_digest, 40, 1, 1
          FROM taskflow_effect_dispatch_observations",
     )
     .execute(&pool)
@@ -328,6 +328,14 @@ async fn taskflow_provider_receipt_migration_preserves_legacy_recovery_material(
         let pool = database(&started.store).await;
         let mut transaction = pool.begin().await.expect("legacy fixture transaction");
         for statement in [
+            "DROP TRIGGER taskflow_effect_dispatch_attempts_require_context_profile",
+            "DROP TRIGGER taskflow_effect_provider_bindings_require_context_profile",
+            "DROP TRIGGER taskflow_effect_dispatch_observations_require_context_profile",
+            "DROP TRIGGER taskflow_effect_dispatch_reconciliations_require_context_profile",
+            "ALTER TABLE taskflow_effect_dispatch_attempts DROP COLUMN provider_context_profile",
+            "ALTER TABLE taskflow_effect_dispatch_observations DROP COLUMN provider_context_profile",
+            "ALTER TABLE taskflow_effect_dispatch_reconciliations DROP COLUMN provider_context_profile",
+            "ALTER TABLE taskflow_effect_dispatch_attempts DROP COLUMN provider_context_sha256",
             "DROP TRIGGER taskflow_effect_dispatch_attempts_require_append_profile",
             "DROP TRIGGER taskflow_effect_provider_bindings_require_append_profile",
             "DROP TRIGGER taskflow_effect_dispatch_observations_require_append_profile",
@@ -381,6 +389,7 @@ async fn taskflow_provider_receipt_migration_preserves_legacy_recovery_material(
             expected[0].wire_payload = None;
         }
         assert_eq!(after, expected);
+        assert_eq!(after[0].provider_context_digest, None);
         let accepted = provider_ack(
             &started.effect,
             b"original-operation",
@@ -422,15 +431,22 @@ async fn taskflow_provider_receipt_storage_rejects_oversized_binding_without_par
     let oversized = "x".repeat(1025);
     let result = sqlx::query(
         "INSERT INTO taskflow_effect_provider_bindings
-         (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms, append_profile_version)
-         SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40, 1
+         (owner_agent_id, run_id, step_id, attempt, receipt_json, receipt_digest, observed_at_ms, append_profile_version, provider_context_profile)
+         SELECT owner_agent_id, run_id, step_id, attempt, ?, ?, 40, 1, 1
          FROM taskflow_effect_dispatch_attempts",
     )
     .bind(oversized)
     .bind(Sha256Digest::for_bytes(b"oversized").as_str())
     .execute(&pool)
     .await;
-    assert!(result.is_err());
+    let error = result.expect_err("receipt size constraint rejects the current writer");
+    let database_error = error.as_database_error().expect("SQLite constraint error");
+    assert_eq!(database_error.code().as_deref(), Some("275"));
+    assert!(
+        database_error
+            .message()
+            .contains("length(CAST(receipt_json AS BLOB)) BETWEEN 1 AND 1024")
+    );
     let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_effect_provider_bindings")
         .fetch_one(&pool)
         .await
