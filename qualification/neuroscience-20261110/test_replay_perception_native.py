@@ -46,6 +46,17 @@ class PhaseContractTests(unittest.TestCase):
         groups = runner.validate_partitions(self.phases, self.collection, self.model)
         self.assertEqual(groups, {"train": ["train"], "calibration": ["calibration"], "B": ["B"], "C": ["C"]})
 
+    def test_original_collection_cannot_smuggle_development_b_or_c(self):
+        # Before this guard an upstream collection row relabeled as B or C
+        # passed this boundary if its digest matched the future roster.
+        for split in ("B", "C", "future", "holdout"):
+            with self.subTest(split=split):
+                collection = deepcopy(self.collection)
+                source = self.phases["B" if split == "B" else "C"][0]["case"]
+                collection["pairs"].append({"split": split, "case": deepcopy(source)})
+                with self.assertRaisesRegex(ValueError, "train/calibration only"):
+                    runner.validate_partitions(self.phases, collection, self.model)
+
     def test_cross_phase_same_source_or_physical_alias_rejected(self):
         for value in (case("B", "3"), case("different-name", "3"), case("train", "1")):
             with self.subTest(value=value):
