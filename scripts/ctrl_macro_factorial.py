@@ -273,6 +273,7 @@ def thaw(args):
 
 
 def reconcile(args):
+    """Reconcile development evidence without issuing an owner decision."""
     root, frozen, loaded, modules = thaw(args)
     combined, rows, frontiers, actions = None, [], {}, {}
     starts = []
@@ -409,6 +410,12 @@ def reconcile(args):
                     "read_attribution": realization["read_attribution"],
                 }
             )
+    # This driver does not invoke an owner; cohort results are research evidence.
+    research_state = {
+        "decision": "HOLD",
+        "owner_evaluation": "not_evaluated",
+        "owner_decision": None,
+    }
     result = {
         "schema": "ctrl.content-control-factorial-report.v1",
         "factorial_sha256": args.factorial_sha256,
@@ -419,9 +426,12 @@ def reconcile(args):
                 frozen["execution_order"], starts
             ),
         },
-        "cohort": modules["macro_execution"].macro_cohort.evaluate(
-            combined, rows, expected_plan_sha256=modules["digest"](combined)
-        ),
+        "cohort": {
+            **modules["macro_execution"].macro_cohort.evaluate(
+                combined, rows, expected_plan_sha256=modules["digest"](combined)
+            ),
+            **research_state,
+        },
         "plan": combined,
         "rows": rows,
         "observed_actions": actions,
@@ -430,7 +440,7 @@ def reconcile(args):
         "recursive_ndu_qualified": False,
         "new_source_confirmation": False,
         "production_admission": False,
-        "decision": "NoUpdate",
+        **research_state,
     }
     study.write(root / "REPORT.json", result)
     print(

@@ -61,6 +61,7 @@ class MacroCollectionAnalysisTests(unittest.TestCase):
     def test_complete_originals_report_choice_and_terminal_effect_without_replay(self):
         with tempfile.TemporaryDirectory() as temporary:
             output, context, report = evidence(Path(temporary))
+            original = deepcopy(report)
             before = {str(p): p.read_bytes() for p in output.rglob("*") if p.is_file()}
             result = self.run_analysis(output, context, report)
             self.assertEqual(result["planned_pairs"], 1)
@@ -78,6 +79,15 @@ class MacroCollectionAnalysisTests(unittest.TestCase):
                 metrics["read_minus_stop_observed_latency_net"]["source_equal_mean"],
                 0.99,
             )
+            self.assertEqual(
+                (
+                    result["decision"],
+                    result["owner_evaluation"],
+                    result["owner_decision"],
+                ),
+                ("HOLD", "not_evaluated", None),
+            )
+            self.assertEqual(report, original)
             self.assertFalse(result["full_physical_cost_observed"])
             self.assertFalse(result["new_source_qualification"])
             self.assertEqual(
@@ -115,6 +125,14 @@ class MacroCollectionAnalysisTests(unittest.TestCase):
                 result["analysis_status"], "BLOCKED_INCOMPLETE_PLANNED_COLLECTION"
             )
             self.assertEqual(result["planned_pairs"], 2)
+            self.assertEqual(
+                (
+                    result["decision"],
+                    result["owner_evaluation"],
+                    result["owner_decision"],
+                ),
+                ("HOLD", "not_evaluated", None),
+            )
             self.assertEqual(result["original_dispositions"], report["planned"])
             self.assertIsNone(result["metrics"])
             self.assertEqual(result["paired_rows"], [])
