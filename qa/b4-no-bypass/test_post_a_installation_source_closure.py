@@ -237,7 +237,7 @@ class PostAInstallationSourceTests(unittest.TestCase):
             "crate::send_root_learning_handoff(", "crate::send_root_q24_model_factory_handoff(",
             "compare_exchange(SUBMITTED, INSTALLED, Ordering::AcqRel, Ordering::Acquire)",
             "submission.acknowledgement.try_send(())", "super::super::learning::serve_optional_until("))
-        for occurrence in (0, 1, 2, 3, 4):
+        for occurrence in (0, 1, 2, 3, 4, 5):
             self.reject(WORKER, "run_installation", "gate.require_original(end)?", occurrence)
         for occurrence in (0, 1):
             self.reject(WORKER, "run_installation", "verify_pinned_process(", occurrence)

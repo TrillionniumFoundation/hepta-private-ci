@@ -132,6 +132,16 @@ impl HostAuthorityPeerChannel {
         &mut self,
         handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
+        self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))
+    }
+
+    /// Expose this frame's already established deadline to a durable handler.
+    /// It is the same deadline used for the request, response and final peer
+    /// check. The handler cannot renew it or replace the original pinned owner.
+    pub fn exchange_with_original_deadline(
+        &mut self,
+        handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
+    ) -> Result<bool, HostIssuerTransportError> {
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
         let result = self.exchange_inner(&mut stream, handle);
         match result {
@@ -150,7 +160,7 @@ impl HostAuthorityPeerChannel {
     fn exchange_inner(
         &self,
         stream: &mut UnixStream,
-        handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,
+        handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
         let mut length = [0; 4];
         if self
@@ -169,7 +179,7 @@ impl HostAuthorityPeerChannel {
         let mut bytes = vec![0; length];
         self.owner.read_until(stream, &mut bytes, deadline)?;
         self.owner.check(deadline)?;
-        let response = handle(&bytes)?;
+        let response = handle(&bytes, deadline)?;
         self.owner.check(deadline)?;
         if response.is_empty() || response.len() > self.policy.response_bound {
             return Err(HostIssuerTransportError::Unavailable);
@@ -185,3 +195,7 @@ impl HostAuthorityPeerChannel {
 #[cfg(test)]
 #[path = "authority_host_peer_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "authority_host_peer_deadline_tests.rs"]
+mod deadline_tests;
