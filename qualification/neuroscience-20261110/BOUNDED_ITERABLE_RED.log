@@ -1,0 +1,69 @@
+test_forensic_actions_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_actions_bound_before_materialization) ... FAIL
+test_forensic_feedback_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_feedback_bound_before_materialization) ... FAIL
+test_forensic_memory_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_memory_bound_before_materialization) ... FAIL
+test_paired_trial_raw_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_paired_trial_raw_bound_before_materialization) ... FAIL
+
+======================================================================
+FAIL: test_forensic_actions_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_actions_bound_before_materialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 16, in test_forensic_actions_bound_before_materialization
+    time_aligned_credit(bounded_then_raise(action, 65536), [],
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        arm="routed", cutoff_sequence=2, decay=1.0, max_lag=1)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/study.py", line 134, in time_aligned_credit
+    action_list, feedback_list = list(actions), list(feedback)
+                                 ~~~~^^^^^^^^^
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 10, in bounded_then_raise
+    raise AssertionError("forensic input over-read past declared raw cap")
+AssertionError: forensic input over-read past declared raw cap
+
+======================================================================
+FAIL: test_forensic_feedback_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_feedback_bound_before_materialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 23, in test_forensic_feedback_bound_before_materialization
+    time_aligned_credit([action], bounded_then_raise(feedback, 65536),
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        arm="routed", cutoff_sequence=2, decay=1.0, max_lag=1)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/study.py", line 134, in time_aligned_credit
+    action_list, feedback_list = list(actions), list(feedback)
+                                                ~~~~^^^^^^^^^^
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 10, in bounded_then_raise
+    raise AssertionError("forensic input over-read past declared raw cap")
+AssertionError: forensic input over-read past declared raw cap
+
+======================================================================
+FAIL: test_forensic_memory_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_forensic_memory_bound_before_materialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 29, in test_forensic_memory_bound_before_materialization
+    select_replay(bounded_then_raise(item, 65536), policy="exact",
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  query_key="key", now_sequence=2, max_items=1, seed="s")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/study.py", line 377, in select_replay
+    entries = list(records)
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 10, in bounded_then_raise
+    raise AssertionError("forensic input over-read past declared raw cap")
+AssertionError: forensic input over-read past declared raw cap
+
+======================================================================
+FAIL: test_paired_trial_raw_bound_before_materialization (test_bounded_iterable_admission.BoundedIteratorAdmissionTests.test_paired_trial_raw_bound_before_materialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 36, in test_paired_trial_raw_bound_before_materialization
+    paired_evidence(bounded_then_raise(row, 400000))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/study.py", line 493, in paired_evidence
+    data = list(rows)
+  File "/home/qq/neuro4-bounded-input-20261112/red_exact/test_bounded_iterable_admission.py", line 10, in bounded_then_raise
+    raise AssertionError("forensic input over-read past declared raw cap")
+AssertionError: forensic input over-read past declared raw cap
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.028s
+
+FAILED (failures=4)
