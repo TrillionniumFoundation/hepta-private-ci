@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.fixed-full-caller-exact-stamp.v1",
+  "source_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "template": {
+    "sha": "2e6ae028ee0f0402ced542c3d76c89578e45e0b0",
+    "bytes": 18912,
+    "sha256": "f061f442a07a30449b6874bb677fa88b2ef87c41b8471eed8c5b78eb5d623f6b"
+  },
+  "stamped": {
+    "sha": "51a2a836d2b7fdddb25183674669e1426ae7222c",
+    "bytes": 18927,
+    "sha256": "a96496fe0a3a82eedb81a13863dbeaefadd2c561a4bade36cd8a2f4ddee4dfd3"
+  },
+  "exact_edits": [
+    {
+      "before": "SOURCE_SHA = \"__ROOT_FINAL_SOURCE_SHA_40_HEX__\"",
+      "after": "SOURCE_SHA = \"a6717d7228045e6cb60532966f06e6e02c4a6abe\""
+    },
+    {
+      "before": "SOURCE_TREE = \"__ROOT_FINAL_SOURCE_TREE_40_HEX__\"",
+      "after": "SOURCE_TREE = \"647b9e78151299c1e7de455eae9c530ca93b28c9\""
+    }
+  ],
+  "unique_markers": true,
+  "reverse_recovers_whole_template": true,
+  "all_bytes_outside_two_literals_unchanged": true,
+  "wrapper_embedded_script_decodes_to_full_stamped_bytes": true,
+  "wrapper_sha": "516f54f6455a1c906cc98ac2c8640566069bec5b",
+  "request_sha": "1955deff94a7bf2e1d2a5461295c7e0b650e3aa8",
+  "request_wrapper_exact_last_argument": true,
+  "fixed_six_pins": {
+    "CALLERS.toml": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+    "scripts/verify_hepta_callers.py": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "scripts/hepta_typed_callers.py": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "scripts/hepta_ci_exec.py": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    ".github/workflows/hepta-daemon-learning-native.yml": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+  },
+  "a757_to_a671_rust_diff": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs",
+      "sha": "c940b7ecd633bf502005bf6b8f6c2db4baf1ac1e",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "sha": "b974191f9a27368db425da2efc9e903d905cf088",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "sha": "8f2b039c6c96ce90029ef22e29d2ccf5d1ed6039",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "sha": "467b3172deb5d9df4ea895a1eb6354aaa9468f84",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "sha": "b1b0193a7be2d9e8317d12ea66c0b75bc21d8721",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "sha": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+      "status": "modified"
+    }
+  ],
+  "Rust_source_membership_unchanged": true,
+  "source_scoped_Rust_files": 6655,
+  "outer_tracked_Rust_files": 6777,
+  "boundary_records": 736,
+  "protected_records": 506,
+  "wrapper_static_checks": {
+    "exact_stamped_runner_only_two_edits": true,
+    "one_recorder_Popen_site": true,
+    "one_git_run_site": true,
+    "no_subprocess_timeout_argument": true,
+    "no_signals_or_termination": true,
+    "no_signal_import": true,
+    "one_exclusive_launch_mkdir": true,
+    "no_source_or_target_command_mutation": true,
+    "no_retry_or_reconnect_route": true,
+    "one_environment_assignment": true,
+    "no_record_directory_creation_in_wrapper": true,
+    "stamp_written_with_exclusive_nofollow": true,
+    "exact_script_full_readback_before_launch": true,
+    "only_same_child_handle_waited": true,
+    "actual_exit_always_separate_from_launcher_exit": true,
+    "atomic_terminal_result": true,
+    "evidence_only_paths_outside_source": true,
+    "no_H_dispatch": true
+  },
+  "no_H": true,
+  "no_Python_execution": true,
+  "no_verifier_execution": true,
+  "ordinary_acceptance": 0
+}
