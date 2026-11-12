@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "scope": "Completed full source QA only; the complete authoritative caller CLI is a separate still-running stage and receives no result here",
+  "source": {
+    "head": "561d95bdf192b2631f6a762d2915d27a120d87bb",
+    "tree": "387feebbb3bc51f6d0a187137128e100ba63dea1",
+    "status": "",
+    "tracked_files": 15494,
+    "tracked_bytes": 234381882,
+    "tracked_sha256": "17acd96e6d244ed8e93da5cbd6785cfef083a958d2160bc5d1e08b7242f8d1b4",
+    "callers_sha256": "ae01152e87c0e8905631f6440988535acbc3744d82645c3979e09d23aa7d477e"
+  },
+  "unittest_methods": 925,
+  "unittest_seconds": 205.675,
+  "stage_seconds": 209.05243407100352,
+  "files": [
+    {
+      "path": "fullsource.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "fullsource.stderr.log",
+      "bytes": 192019,
+      "sha256": "5b8b288d30ac464ab7f9f37e744385fc7bd3658b4f4a8356f21e6c7381839632",
+      "git_blob": "3fb224853f3529b69c57d345220490658551d4f0"
+    },
+    {
+      "path": "fullsource.json",
+      "bytes": 1569,
+      "sha256": "9d19e2c11c28339f9f91b6201c771d7f4f0a3692b3672627710c66bede11559a",
+      "git_blob": "8190b764dc0e25f489665f73c9f500778ec982ea"
+    },
+    {
+      "path": "source-before.json",
+      "bytes": 359,
+      "sha256": "68c5b6448d523acdb84b89c590fcefce3aebc8a674d5058b6d58df0ecd7c24a4",
+      "git_blob": "aa052790de5a25e8e339fd2a48b26858814d2a64"
+    },
+    {
+      "path": "checkout.json",
+      "bytes": 1421,
+      "sha256": "5e4cdf17630186524e6f23f92663d047dccd6e622df7cf7170afbcada797a059",
+      "git_blob": "9f2a3808d356d68c5a2bb79628bfb1b8afab02df"
+    },
+    {
+      "path": "checkout.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "checkout.stderr",
+      "bytes": 179,
+      "sha256": "ebe9517793ac4c8db088b2526c0154a2d518de4188537ce20989c4e83323cd2f",
+      "git_blob": "97204b8bd8e42eb6e019a3616728fe0d7c2d924c"
+    },
+    {
+      "path": "launch-tool-result.json",
+      "bytes": 130,
+      "sha256": "03e95d589f3c82c656ebb630204e43ad1f2cad405855c6ef9303b17a636e8849",
+      "git_blob": "0413c5d2e96479e7723d0cde72a31b9b76ca57e8"
+    },
+    {
+      "path": "run_root_561d95bd_full_source_caller_ci_evidence_v1.py",
+      "bytes": 5970,
+      "sha256": "9d35b3b2b7e717d0cc6ca5e56284177ffde1b105528cb97da30949b362210407",
+      "git_blob": "b013b0ca9c20b70522a8e6f360399856f0fc5f23"
+    }
+  ],
+  "file_count": 9,
+  "input_bytes": 201647
+}
