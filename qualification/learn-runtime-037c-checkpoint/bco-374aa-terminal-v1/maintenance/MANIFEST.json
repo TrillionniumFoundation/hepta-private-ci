@@ -1,0 +1,51 @@
+{
+  "changed": [
+    "explicit new repo/evidence identity",
+    "admit the exact retained source failure only for compiler preflight",
+    "require latest d397 compiler natural terminal and check its source/target roots for active tools",
+    "verify complete current bytes/index/tree against the retained source-gate input before any fmt/fix"
+  ],
+  "driver": {
+    "blob": "c8f854169839802b35ff07133fa7db350667685e",
+    "bytes": 20744,
+    "sha256": "1e3bebbe1e9e6d17912bf6fcb29f40b4382aff5587db71a4d85a25cd6ef21dfa"
+  },
+  "native_admission_eligible": false,
+  "native_run": false,
+  "original_driver": {
+    "blob": "7f4bcd165888601d3e716869822102a324b92774",
+    "bytes": 16958,
+    "sha256": "fa4e9da3e34283fc799cc6544325359de38e8c29fcb13bfeff08781858c80fb6"
+  },
+  "patch": {
+    "blob": "4598d8b3a7f307884b2e80081e3f7dd2d43e2eff",
+    "bytes": 7832,
+    "sha256": "0a056db47480c68c66d2e572f45639938e0db9ee04092efcc96d543460f97b12"
+  },
+  "qualification": 0,
+  "repo": "/home/qian-qi/hepta-learn-source-20261112-037c-374aa919",
+  "request": {
+    "blob": "24e56633e470870f65a6f37d99f250bdf8be5e1f",
+    "bytes": 28704,
+    "sha256": "63c6d58b3cfd8d027e036e12ddc867393868cb64e28bda9e0c3e9c9702198de8"
+  },
+  "request_key": "learn-037c-maintenance-374aa919931e-preflight-v1",
+  "source": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "source_gate": {
+    "blob": "145d20adcb57b81581443a52d3d7aa63f9cd9946",
+    "bytes": 1156,
+    "sha256": "962923db28388b4e22b72f4cd455f28d5f8c27f5df7300793f9e9d293398e5f6"
+  },
+  "source_gate_exit_code": 1,
+  "source_gate_status": "failed",
+  "status": "FROZEN_LOCAL_ONLY_NOT_SUBMITTED_MAINTENANCE_DIAGNOSTIC_NATIVE_BLOCKED",
+  "tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "unchanged": [
+    "actual just fmt then just fix -p codex-hepta-agentd --locked --offline",
+    "Rust 1.96 / nextest 0.9.103 / original V8 pair SHA",
+    "same task target, jobs2/debug0",
+    "no maintenance controller timeout or PID kill",
+    "old sources are only read",
+    "full original logs and postimages retained"
+  ]
+}

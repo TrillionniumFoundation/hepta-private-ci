@@ -1,0 +1,109 @@
+{
+  "source": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "base": {
+        "bytes": 12997,
+        "sha256": "5a3a115cd814464248a0b00229d79c5bf65b85f8812fae3689a5134863ffd071",
+        "blob": "4da0873c757803beb46256d84e27e63b12991347"
+      },
+      "after": {
+        "bytes": 13482,
+        "sha256": "973c2287d6c8a447c65f4b87a4e0921defb9338a9d62680daa693407e6f46266",
+        "blob": "0b645be03768d2c8dcd15e9b94bf75e64fa6c5ea"
+      },
+      "original_cases": [
+        "test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms",
+        "test_both_physical_cells_and_actual_completed_qualification_are_read",
+        "test_each_member_consumes_exact_original_cohort_custody",
+        "test_each_member_retains_full_original_training_roles_and_config",
+        "test_exact_original_panel_edges_remain_closed",
+        "test_original_cohort_current_brackets_all_members_before_final_clock",
+        "test_primary_signature_must_name_the_complete_actual_nonempty_panel",
+        "test_registration_rejects_empty_duplicate_and_rebound_original_tasks"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+      "base": {
+        "bytes": 12634,
+        "sha256": "e61cb68bafc1b9e2d80f60e8c1800dd4e4dec5d10e5b9ee367da98ad31b45cf4",
+        "blob": "a65614c5bb04d3d22b007213a94c20f318bf73b4"
+      },
+      "after": {
+        "bytes": 12700,
+        "sha256": "4afd8ee94af50d88f0e1e0d02cee80e3aa430bf1b5309602016aa545a167b8d1",
+        "blob": "efbf08c9dc423254d933669e414301689ab8e352"
+      },
+      "original_cases": [
+        "test_actual_fixture_uses_original_owner_and_native_inventory_preserves_limits",
+        "test_complete_original_signatures_context_and_decision_remain_bound",
+        "test_each_original_custody_effect_and_fresh_clock_guard_is_effective",
+        "test_only_concrete_original_sources_and_internal_time_can_satisfy_readback",
+        "test_public_owner_routes_are_closed_and_actual_original_edges_are_exact",
+        "test_recovery_and_readback_cannot_acquire_or_repeat_effects"
+      ]
+    }
+  ],
+  "patch": {
+    "bytes": 3454,
+    "sha256": "e63ef55f7ed6ef4478975f5219da056067f2f354a925501dc57a2f78c929fb9a",
+    "blob": "a270f05c04d67a0522fe9441abaf168a3b88a73b"
+  },
+  "replay": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/source-qa-repair-374aa-v1/B_TWO_FINAL.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/source-qa-repair-374aa-v1/B_TWO_FINAL.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "actual_scoped_source": {
+    "source": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "kind": "physical scoped overlay, not published source or native execution",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-m",
+      "unittest",
+      "-v",
+      "test_original_evaluation_panel_source_closure",
+      "test_original_qualification_owner_source_closure"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 5.808335301000625,
+    "input_count": 325,
+    "unchanged": true,
+    "raw_log_bytes": 3309,
+    "raw_log_sha256": "d8ef0854250c84c0c148148cab7d85e348c074caf19c09183f7adac2ea8d15b8"
+  },
+  "actual_cases": 14,
+  "actual_failures": 0,
+  "actual_errors": 0,
+  "all_original_14_test_names_preserved": true,
+  "all_original_markers_preserved_or_migrated_to_exact_actual_helpers": true,
+  "additional_wrapper_attack": true,
+  "all_new_function_guard_sequences_and_readonly_effect_attacks_included": true,
+  "product_registry_and_verifier_unchanged": true,
+  "first_scoped_attempt": "14 cases, 44 errors from missing isolated overlay files; complete original log retained, no product/test edits before second attempt",
+  "native": "not run",
+  "qualification": 0
+}

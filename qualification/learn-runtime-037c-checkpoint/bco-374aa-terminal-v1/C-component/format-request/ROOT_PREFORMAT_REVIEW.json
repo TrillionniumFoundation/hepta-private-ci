@@ -1,0 +1,121 @@
+{
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "current_main": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "reviewed": "Private synchronous borrowed same Cell+Task pointers; first/last original full CURRENT; unchanged nonCURRENT I/O; consuming finish; refused on wrong object/mode/count/reuse; no authority construction or budget change",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "original_git_blob_verified": "0b79409538da4f7ed92c9123ab0efd97615aa085",
+      "before": {
+        "bytes": 16672,
+        "sha256": "e8037f3b3e1e23482fd1d5e072213ef1cdbf107a74b52dbdf78ac7b92d5e9a17",
+        "blob": "b2a6569fc5d02e5b676f676c938e88369c953608"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "original_git_blob_verified": "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6",
+      "before": {
+        "bytes": 7641,
+        "sha256": "ecf5a8024d9bf69932371f3c341253142b23b43a0284d23219def53d72a704c0",
+        "blob": "e2b760c7277223d716c9232f8d08e96a22e3ae97"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "original_git_blob_verified": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "before": {
+        "bytes": 8552,
+        "sha256": "3888d85bce799bd770a8c878c4f09cc2958aa2d51f2d90a85accbfe5f4b541f4",
+        "blob": "939caca44864e1306cf4e25245ccf37b9de73a6d"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+      "original_git_blob_verified": "exact complete tree absence",
+      "before": {
+        "bytes": 5109,
+        "sha256": "4a845284efc325eab7aa574fc5bddc3e11a94f24836018728241a0b78c0681cf",
+        "blob": "318a6dedeb8a7754c05699f7aebce6f6992a1816"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read_support_tests.rs",
+      "original_git_blob_verified": "exact complete tree absence",
+      "before": {
+        "bytes": 4684,
+        "sha256": "5a42f726eb5a19a350c8c4058fd442830fa5cb6b7fa4ec5016a336c3dc2eca76",
+        "blob": "10e42345b793bb3d53f41988503ea22e5ca5f8f6"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read_tests.rs",
+      "original_git_blob_verified": "exact complete tree absence",
+      "before": {
+        "bytes": 2221,
+        "sha256": "a85554e297b443923aba7a139a741041787175b1c2c5da38eb03707e94b96808",
+        "blob": "83194f16f6f14ce81c357749a4b40d7b86f335d4"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "original_git_blob_verified": "63295654af4ba14e56b564dee3f09db5d18d8253",
+      "before": {
+        "bytes": 16199,
+        "sha256": "ca0e7f76cac80aa6409d03bcd310b5d1c86b59a91c77e76f743a06f94d3d4cf6",
+        "blob": "1e8022df625af5004456ce60924dda1a7279de5b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "original_git_blob_verified": "2820145d2546e42b7d697a2f64eca855b1132584",
+      "before": {
+        "bytes": 11512,
+        "sha256": "812054cd25259e9cc994cde59394ec34778ca4bd2c4c2abaf50391be0e22a399",
+        "blob": "4b3778d51e26f6c420a791ef2c2c55bc7081f84a"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "original_git_blob_verified": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+      "before": {
+        "bytes": 11202,
+        "sha256": "8dcd858d7bb1183ebc85d7f43154c2e2d39253be7e3fdd0b0af00974e05382e4",
+        "blob": "0c05c74915c38595cf98a22b6552e1a66c9253eb"
+      }
+    }
+  ],
+  "strict_replay": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/COMPONENT_PREFMT_V2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/COMPONENT_PREFMT_V2.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_postimages_exact": true,
+  "formatter_request": {
+    "bytes": 38677,
+    "sha256": "c593957895184d516e097d6c4a0f289d2cef7fde380067eb32e7ace768b6f5b9",
+    "blob": "b84843836525b7b0621c461e5f0a4c07ddf0d335"
+  },
+  "format_scope": "isolated create-only 9 files; no checkout, Cargo, target or native access",
+  "native_run": false
+}

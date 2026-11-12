@@ -1,0 +1,134 @@
+{
+  "status": "QA_ONLY_READY_FOR_REVIEW",
+  "source_commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "source_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "before": {
+        "bytes": 12582,
+        "sha256": "1b9f8b9c9bfdc004521f7007efaf228a7fcb8819059679dd040ac060786af578",
+        "blob": "ba65f8cebf39277681b28812ea0a34c42c37ea8e"
+      },
+      "after": {
+        "bytes": 13541,
+        "sha256": "0ed97611cefb69835f6fb6e573a751a169f810fa9c2c9873cf7cabb7d21df96e",
+        "blob": "927b7de74c4a84faf3037d40a86c383cf0ac223e"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "before": {
+        "bytes": 10167,
+        "sha256": "d06d8d50b02fdb1ae5f5913348e6d9337c0e02515f7ad1e64dbdb1bed03e8039",
+        "blob": "6fc51eed804792d4f009697f76f2d3c20a5c9827"
+      },
+      "after": {
+        "bytes": 11022,
+        "sha256": "f09e819bbd565dd83dbcaa725df6e5dc9017d3d60ffb7fca19ae57de907ce218",
+        "blob": "4203887e7a6b43f6cf8fbbfbe27f46e689e15c46"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 4462,
+    "sha256": "53aac44bb32faa9b93c6171e5f3352fbd689d1e1565ed17ce1c300f9fe75e8b8",
+    "blob": "cd49aec4e5d23790a23ffd58e42af4dab56fe8f8"
+  },
+  "strict_replay": [
+    {
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-source-374-c-qa-repair-v1/QA_REPAIR.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-source-374-c-qa-repair-v1/QA_REPAIR.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "replay_postimages_byte_equal": true,
+  "case_count_before_after": [
+    21,
+    21
+  ],
+  "original_test_names_preserved": true,
+  "only_two_test_body_asts_changed": true,
+  "all_other_test_and_helper_asts_identical": true,
+  "migrated_original_attacks": 12,
+  "additional_public_wrapper_and_physical_individual_attacks": 8,
+  "original_subtests": 346,
+  "after_subtests": 354,
+  "before": {
+    "result": {
+      "bytes": 223911,
+      "sha256": "37824c09793006e9fd33acae391ddfb2dad01ef008cfe2793f6b32e2eae65bd2",
+      "blob": "4cbbb1ecfc78f3c86b9a75dd1ace0b6372376da4"
+    },
+    "log": {
+      "bytes": 21628,
+      "sha256": "6baf87b35cb789d7a384af7a59e155a9b4caf794e276e67817b2209e33ca5695",
+      "blob": "dfdb54cfb8f29ccdf4339d92795d61e245d0c6b2"
+    },
+    "errors": 12,
+    "failures": 0,
+    "inputs_unchanged": true
+  },
+  "after": {
+    "result": {
+      "bytes": 216036,
+      "sha256": "fac7b5c4fae7c57a4638df354e7a79992cfbba1b7671103f70105d1706deba59",
+      "blob": "d72d64485d5d9c4888e1fd9610ba31ecdc52ce9b"
+    },
+    "log": {
+      "bytes": 4680,
+      "sha256": "c0d27f0bf2a518fbc1836339c3d6c5c3b872c836a3b8b9fb203f94d492baad08",
+      "blob": "ff46b651e93fd0008b416f221bd6e6b1d0413cc0"
+    },
+    "errors": 0,
+    "failures": 0,
+    "inputs_unchanged": true,
+    "elapsed_seconds": 5.110259759996552
+  },
+  "input_count": 40,
+  "inputs_provenance": {
+    "bytes": 25890,
+    "sha256": "9782f8e5f63e244ebd55de6feb5f68c4d14e379edc989205a1a155c81d5962fc",
+    "blob": "c6b7a8abe49aa7039c1b8806b0d5a29ef70dfab8"
+  },
+  "original_full_gate_log": {
+    "path": "/tmp/hepta-learn-037c-20261112/source-bco-374aa919-v1/source-test.FULL.raw.log",
+    "bytes": 132992,
+    "sha256": "3682d185fb491d5f1963c2380075ed1a4a1c9ff267f6f63908877124b01ca037",
+    "blob": "c45193f93541735b50c01abfedf3e904b2b28717"
+  },
+  "original_500ms_case_unchanged": true,
+  "product_rust_changed": [],
+  "registry_changed": false,
+  "verifier_changed": false,
+  "native_run": false,
+  "ordinary_qualification": 0
+}

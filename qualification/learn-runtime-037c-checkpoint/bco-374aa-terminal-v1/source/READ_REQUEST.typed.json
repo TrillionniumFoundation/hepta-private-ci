@@ -1,0 +1,10 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-c",
+    "from pathlib import Path\nimport hashlib,json,gzip,base64\nroot=Path('/home/qian-qi/hepta-learn-037c-evidence/source-374aa919931e-v1')\nrecord=root/'result.json';b=record.read_bytes();assert len(b)==1156 and hashlib.sha256(b).hexdigest()=='962923db28388b4e22b72f4cd455f28d5f8c27f5df7300793f9e9d293398e5f6'\nexecution_path=root/'source-closure.json';execution=json.loads(execution_path.read_text());assert execution['source_sha']=='374aa919931e8ee5446b4ccdc49e651b7848cc5d' and execution['observed_passed_tests']==489 and execution['observed_failed_tests']==15 and execution['exit_code']==1 and not execution['timed_out']\nlog=root/execution['log_file'];assert log.parent==root and log.name=='source-closure.json.92561eb1ea5a41a693971312e7aaed78.log';raw=log.read_bytes();assert len(raw)==132992 and hashlib.sha256(raw).hexdigest()=='3682d185fb491d5f1963c2380075ed1a4a1c9ff267f6f63908877124b01ca037'\npaths=[('source-result.json',record),('source-execution.json',execution_path),('source-test.FULL.raw.log',log),('source-preparation-result.json',Path('/home/qian-qi/hepta-learn-037c-evidence/source-preparation-374aa919931e-v1/result.json'))]\nfor name,path in paths:\n assert path.is_file() and not path.is_symlink()\n b=path.read_bytes();z=gzip.compress(b,mtime=0)\n print(json.dumps({'name':name,'path':str(path),'original_bytes':len(b),'original_sha256':hashlib.sha256(b).hexdigest(),'gzip_bytes':len(z),'gzip_sha256':hashlib.sha256(z).hexdigest(),'data_base64':base64.b64encode(z).decode(),'original_unchanged':path.read_bytes()==b}),flush=True)\n"
+  ],
+  "cwd": "/home/qian-qi",
+  "idempotency_key": "learn-037c-read-source-374aa-terminal-v1"
+}

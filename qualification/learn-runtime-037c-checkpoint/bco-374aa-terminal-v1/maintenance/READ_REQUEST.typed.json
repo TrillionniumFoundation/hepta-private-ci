@@ -1,0 +1,10 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-c",
+    "from pathlib import Path\nimport hashlib,json,gzip,base64\nroot=Path('/home/qian-qi/hepta-learn-037c-evidence/maintenance-374aa919931e-preflight-v1')\nresult=json.loads((root/'result.json').read_text())\nassert result['source_sha']=='374aa919931e8ee5446b4ccdc49e651b7848cc5d' and result['source_tree']=='981c4675a6579dfd9748046d3d01a2268f11c36f' and result['exit_code']==101 and not result['native_admission_eligible']\nassert result['execution']['actual_process_exit_observed'] and result['execution']['returncode']==101 and not result['execution']['controller_kill']\npaths=[('result.json',root/'result.json'),('postimages.json',root/'postimages.json'),('just-fmt.json',root/'just-fmt.json'),('just-fix.json',root/'just-fix.json'),('source-gate-byte-admission.json',root/'source-gate-byte-admission.json'),('just-fix.FULL.raw.log',root/'just-fix.raw.log'),('maintenance.patch',root/'maintenance.patch')]\nraw=(root/'just-fix.raw.log').read_bytes();assert len(raw)==result['execution']['log_bytes'] and hashlib.sha256(raw).hexdigest()==result['execution']['log_sha256']\npatch=(root/'maintenance.patch').read_bytes();assert len(patch)==result['postimages']['patch_bytes'] and hashlib.sha256(patch).hexdigest()==result['postimages']['patch_sha256']\nimages=json.loads((root/'postimages.json').read_text())\nfor row in images['files']:\n path=root/'postimages'/row['path'];data=path.read_bytes();assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256'];paths.append(('postimages/'+row['path'],path))\nfor name,path in paths:\n assert path.is_file() and not path.is_symlink()\n b=path.read_bytes();z=gzip.compress(b,mtime=0)\n print(json.dumps({'name':name,'path':str(path),'original_bytes':len(b),'original_sha256':hashlib.sha256(b).hexdigest(),'gzip_bytes':len(z),'gzip_sha256':hashlib.sha256(z).hexdigest(),'data_base64':base64.b64encode(z).decode(),'original_unchanged':path.read_bytes()==b}),flush=True)\n"
+  ],
+  "cwd": "/home/qian-qi",
+  "idempotency_key": "learn-037c-read-maintenance-374aa-preflight-terminal-v1"
+}

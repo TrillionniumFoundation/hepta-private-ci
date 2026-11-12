@@ -1,0 +1,282 @@
+{
+  "source_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "source_tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "formatter_manifest": {
+    "bytes": 14428,
+    "sha256": "4494224433a52b18a7b90f51d68fc9eddbca9b4cd77e6242152e296a845c7e20",
+    "blob": "1e5bf25bfa1ffee6a1f4c48451801fef4b8c8e8c"
+  },
+  "collector_stdout": {
+    "bytes": 61040,
+    "sha256": "b3c3f56d98a33c5cbd2fa332b12e637cf3bd81102a6fb0927865008f4ff3148f",
+    "blob": "f5cc3dd481204900c65e4dfdd3b435fe5dcac07e"
+  },
+  "collector_all_three_same_fd_stable_and_second_read_equal": true,
+  "formatter_returncode": 0,
+  "format_changed": [
+    "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_read_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_feature_current_read_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+  ],
+  "raw_log_bytes": 0,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "origin": "exact57b original",
+      "base_exists": true,
+      "base": {
+        "bytes": 16610,
+        "sha256": "84c6801aab88c00274b4b171737d8a943cb2ee6d992c1b59fe855db743c4b5d3",
+        "blob": "0b79409538da4f7ed92c9123ab0efd97615aa085"
+      },
+      "before": {
+        "bytes": 16672,
+        "sha256": "e8037f3b3e1e23482fd1d5e072213ef1cdbf107a74b52dbdf78ac7b92d5e9a17",
+        "blob": "b2a6569fc5d02e5b676f676c938e88369c953608"
+      },
+      "after": {
+        "bytes": 16672,
+        "sha256": "974c8e86a0b5bbc20d8503ca63cc4f5feccc7b3c981ea7ade29c4a075600b21c",
+        "blob": "2893fd32c15b3e3043e8bc420801f69b8baa0ed7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "origin": "exact57b original",
+      "base_exists": true,
+      "base": {
+        "bytes": 6502,
+        "sha256": "f189f9e3a6ecc5e6cd68aae34c75cd7987528a2ad641ae45cfbd3171625c40c5",
+        "blob": "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6"
+      },
+      "before": {
+        "bytes": 7641,
+        "sha256": "ecf5a8024d9bf69932371f3c341253142b23b43a0284d23219def53d72a704c0",
+        "blob": "e2b760c7277223d716c9232f8d08e96a22e3ae97"
+      },
+      "after": {
+        "bytes": 7641,
+        "sha256": "43b89221219623ca6f1e4635f7331a4f0397c268f6d9b180b2de8a8deaa46141",
+        "blob": "5cf5c1a153ae56cceacaccb7519bc8d1e9efc8fb"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "origin": "exact57b original",
+      "base_exists": true,
+      "base": {
+        "bytes": 8089,
+        "sha256": "361f177e3acefea380d63fc627dd3ab0d92ba14284a8ad41fcae01a63c6111d9",
+        "blob": "92224a910d3c8050dde8bb079da36e02d73d3373"
+      },
+      "before": {
+        "bytes": 8552,
+        "sha256": "3888d85bce799bd770a8c878c4f09cc2958aa2d51f2d90a85accbfe5f4b541f4",
+        "blob": "939caca44864e1306cf4e25245ccf37b9de73a6d"
+      },
+      "after": {
+        "bytes": 8552,
+        "sha256": "3f4a25e92d3022dbd242818653a411fd65f72e02953741bf3eaf20134c15aa7b",
+        "blob": "cb3c74f89ee9fa692d16c7d7adf8970d6959411b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+      "origin": "new private same-call CURRENT source or cfg(test) mechanism",
+      "base_exists": false,
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "before": {
+        "bytes": 5109,
+        "sha256": "4a845284efc325eab7aa574fc5bddc3e11a94f24836018728241a0b78c0681cf",
+        "blob": "318a6dedeb8a7754c05699f7aebce6f6992a1816"
+      },
+      "after": {
+        "bytes": 5122,
+        "sha256": "25656973647a9e843eaefb2acaa8055c567f52a3b5cfd66e764bede56097f0d7",
+        "blob": "db7271f51c7b4ba5b16f9d109ea9a91e63123d1f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read_support_tests.rs",
+      "origin": "new private same-call CURRENT source or cfg(test) mechanism",
+      "base_exists": false,
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "before": {
+        "bytes": 4684,
+        "sha256": "5a42f726eb5a19a350c8c4058fd442830fa5cb6b7fa4ec5016a336c3dc2eca76",
+        "blob": "10e42345b793bb3d53f41988503ea22e5ca5f8f6"
+      },
+      "after": {
+        "bytes": 4802,
+        "sha256": "67feb47490e8cca580569d70b014b7e9c70388ad7618442c8fbe3c6791a232d0",
+        "blob": "af56c313e7648fb2fe0fb2c09ae83e564b70ea41"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read_tests.rs",
+      "origin": "new private same-call CURRENT source or cfg(test) mechanism",
+      "base_exists": false,
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "before": {
+        "bytes": 2221,
+        "sha256": "a85554e297b443923aba7a139a741041787175b1c2c5da38eb03707e94b96808",
+        "blob": "83194f16f6f14ce81c357749a4b40d7b86f335d4"
+      },
+      "after": {
+        "bytes": 2266,
+        "sha256": "cdc29edf817767422624cf7ff64def0b70c8fe2200555541d9b0f1656b355d31",
+        "blob": "b96054e994054193369cd8c4ca012c95503b24e7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs",
+      "origin": "exact57b original",
+      "base_exists": true,
+      "base": {
+        "bytes": 16129,
+        "sha256": "7a04acd4563a993228a2d4041d1def47194c0139e93cda48e2172e11b305197d",
+        "blob": "63295654af4ba14e56b564dee3f09db5d18d8253"
+      },
+      "before": {
+        "bytes": 16199,
+        "sha256": "ca0e7f76cac80aa6409d03bcd310b5d1c86b59a91c77e76f743a06f94d3d4cf6",
+        "blob": "1e8022df625af5004456ce60924dda1a7279de5b"
+      },
+      "after": {
+        "bytes": 16199,
+        "sha256": "ca0e7f76cac80aa6409d03bcd310b5d1c86b59a91c77e76f743a06f94d3d4cf6",
+        "blob": "1e8022df625af5004456ce60924dda1a7279de5b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "origin": "exact57b original",
+      "base_exists": true,
+      "base": {
+        "bytes": 10383,
+        "sha256": "7046da678a31f489ef8e8b2ebc1e843027d0d9d6a319395fbfa23b808246a2f4",
+        "blob": "2820145d2546e42b7d697a2f64eca855b1132584"
+      },
+      "before": {
+        "bytes": 11512,
+        "sha256": "812054cd25259e9cc994cde59394ec34778ca4bd2c4c2abaf50391be0e22a399",
+        "blob": "4b3778d51e26f6c420a791ef2c2c55bc7081f84a"
+      },
+      "after": {
+        "bytes": 11559,
+        "sha256": "0eea794b0bf78d86fed3fb51fa06f521d1bb5ce527c7d68d55b8082e59cb8c35",
+        "blob": "520e7ad8904edc1c5da06dfca1c6feea556da231"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "origin": "exact57b original",
+      "base_exists": true,
+      "base": {
+        "bytes": 11113,
+        "sha256": "26f09f954a8ccdda618c35ec789eeb7dd59c85fbb23c4fa86315dee50230f3d7",
+        "blob": "96c2e18be1761e4c81da04bf5081a1bd57313305"
+      },
+      "before": {
+        "bytes": 11202,
+        "sha256": "8dcd858d7bb1183ebc85d7f43154c2e2d39253be7e3fdd0b0af00974e05382e4",
+        "blob": "0c05c74915c38595cf98a22b6552e1a66c9253eb"
+      },
+      "after": {
+        "bytes": 11202,
+        "sha256": "8dcd858d7bb1183ebc85d7f43154c2e2d39253be7e3fdd0b0af00974e05382e4",
+        "blob": "0c05c74915c38595cf98a22b6552e1a66c9253eb"
+      }
+    }
+  ],
+  "patches": [
+    {
+      "path": "published-current-prefmt.patch",
+      "bytes": 25577,
+      "sha256": "ca53a1c00403062cb1e05e292de78525fc83f20d6d411eb8a8f3459b048c2703",
+      "blob": "28e98bec77f9d82928c9aad5ac1b8d60c0f9813f"
+    },
+    {
+      "path": "format-only.patch",
+      "bytes": 8136,
+      "sha256": "be883beb63d0936c3ff9bec364424533b73e24a9df21ad8f10589ed7c6bab76b",
+      "blob": "b731e0065bb86bce02031ee22f6ac1b24eb032e1"
+    },
+    {
+      "path": "combined-published-current.patch",
+      "bytes": 25802,
+      "sha256": "b8ac36626a13bbb4acc2b508be9c9e5e0d50844c55eee0d0618392310874d64b",
+      "blob": "a37b7085fabe5aea0121a5f1e0abbd506dfbd8a8"
+    }
+  ],
+  "both_strict_routes": [
+    {
+      "route": "combined",
+      "patch": "combined-published-current.patch",
+      "check": true,
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "route": "combined",
+      "patch": "combined-published-current.patch",
+      "check": false,
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "route": "two-step",
+      "patch": "published-current-prefmt.patch",
+      "check": true,
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "route": "two-step",
+      "patch": "published-current-prefmt.patch",
+      "check": false,
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "route": "two-step",
+      "patch": "format-only.patch",
+      "check": true,
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "route": "two-step",
+      "patch": "format-only.patch",
+      "check": false,
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_nine_after_match_manifest": true,
+  "native": false,
+  "timing_500ms": "UNMEASURED",
+  "ordinary_qualification": 0
+}

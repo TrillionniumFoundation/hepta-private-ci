@@ -1,0 +1,13 @@
+{
+  "local_verifier_error": "first verifier expected a per-file sha absent from normalized compare schema",
+  "observed_file_fields": [
+    "filename",
+    "status",
+    "additions",
+    "deletions",
+    "changes",
+    "previous_filename"
+  ],
+  "no_ref_updated": true,
+  "resolution": "verify exact path and status through normalized compare; independently reconstruct full tree and require create-tree returned exact tree SHA with all 44 individually verified blob SHAs"
+}

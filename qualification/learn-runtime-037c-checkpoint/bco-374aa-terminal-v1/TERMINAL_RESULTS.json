@@ -1,0 +1,48 @@
+{
+  "product_source": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+  "product_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "qa_only_child": "e403c45570ad313851ca71392625e5572882405f",
+  "qa_only_tree": "70e0953a49cb203acbed270a853fce2e72164a18",
+  "complete_source": {
+    "cases": 504,
+    "unittest_failures": 1,
+    "unittest_errors": 14,
+    "collector_passed": 489,
+    "collector_failed": 15,
+    "test_seconds": 307.344,
+    "actual_exit": 1,
+    "timeout": false,
+    "all_15230_inputs_unchanged": true,
+    "mutation_attacks_rejected": 681,
+    "full_log_bytes": 132992,
+    "full_log_sha256": "3682d185fb491d5f1963c2380075ed1a4a1c9ff267f6f63908877124b01ca037"
+  },
+  "maintenance": {
+    "actual_fmt_exit": 0,
+    "fmt_changed_files": 0,
+    "actual_fix_exit": 101,
+    "compiler_diagnostics": 1,
+    "diagnostic": "E0308: new resident-origin test supplied ReadbackConnection where original Candidate fixture requires CommandConnection",
+    "all_15230_inputs_and_cargo_lock_unchanged": true,
+    "postimages": 0,
+    "full_log_bytes": 88704,
+    "full_log_sha256": "5dbc12212a6aa03037f5588662084a1e5d0de7b54497ae64b7c4a88ad7f716b8"
+  },
+  "qa_repair": {
+    "paths": 4,
+    "B_actual_cases_passed": 14,
+    "C_actual_cases_passed": 21,
+    "original_case_names_preserved": true,
+    "product_registry_and_verifier_unchanged": true,
+    "full_source_gate_on_e403": "not run"
+  },
+  "native_tests_on_374_or_e403": "not run",
+  "qualification": {
+    "ordinary_evaluated_no_update": 0,
+    "ordinary_adopt": 0,
+    "whole_daemon_root_cold_recovery": 0,
+    "multigeneration": 0
+  },
+  "next": "Repair the test with the actual original typed Command factories; format the real postimages, publish a new exact source, then complete source/maintenance/native/caller gates.",
+  "retention": "All earlier failures and incomplete attempts remain unchanged. This checkpoint reports natural failed executions, not qualification."
+}

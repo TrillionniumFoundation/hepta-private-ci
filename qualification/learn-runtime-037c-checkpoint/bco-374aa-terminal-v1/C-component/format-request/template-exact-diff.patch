@@ -1,0 +1,69 @@
+--- executed-template
++++ published-current-template
+@@ -10,22 +10,20 @@
+ import traceback
+ 
+ 
+-RECORDS = pathlib.Path("/home/qian-qi/hepta-learn-037c-evidence/format-evaluated-c-command-v1")
+-EXPECTED_SOURCE = "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+-EXPECTED_TREE = "f96bebefbc1e7d8187efadb62f88d524cdd18451"
++RECORDS = pathlib.Path("/home/qian-qi/hepta-learn-037c-evidence/format-published-current-v1")
++EXPECTED_SOURCE = "57b27c81d0d5321b873ee751fd0e58e1d905b988"
++EXPECTED_TREE = "3db894ee96d358c583bbf4ea15163a0d2bd96258"
+ EXPECTED_RUSTFMT_SHA256 = "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c"
+ EXPECTED_PATHS = {
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_context.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_evidence.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_support_tests.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_tests.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs',
+-    'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_tests.rs',
+-    'codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs',
+-    'codex-rs/hepta-agentd/src/lib.rs',
++    'codex-rs/hepta-agentd/src/circuit_feature_current.rs',
++    'codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs',
++    'codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs',
++    'codex-rs/hepta-agentd/src/circuit_feature_current_read.rs',
++    'codex-rs/hepta-agentd/src/circuit_feature_current_read_support_tests.rs',
++    'codex-rs/hepta-agentd/src/circuit_feature_current_read_tests.rs',
++    'codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs',
++    'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs',
++    'codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs',
+ }
+ 
+ 
+@@ -70,7 +68,7 @@
+ payload = json.loads(payload_bytes)
+ assert payload["source_commit"] == EXPECTED_SOURCE
+ assert payload["source_tree"] == EXPECTED_TREE
+-assert len(payload["files"]) == 11
++assert len(payload["files"]) == 9
+ assert {row["path"] for row in payload["files"]} == EXPECTED_PATHS
+ 
+ # Create only: an unknown acknowledgement must be reconciled by the same h key.
+@@ -166,8 +164,8 @@
+         add_patch(before_patch, path, item["base"], item["before"], item["base_exists"])
+     assert {str(path.relative_to(RECORDS / "postimages"))
+             for path in (RECORDS / "postimages").rglob("*.rs")} == EXPECTED_PATHS
+-    write_bytes("evaluated-c-command-prefmt.patch", "".join(before_patch).encode())
+-    write_bytes("combined-evaluated-c-command.patch", "".join(combined).encode())
++    write_bytes("published-current-prefmt.patch", "".join(before_patch).encode())
++    write_bytes("combined-published-current.patch", "".join(combined).encode())
+     write_bytes("format-only.patch", "".join(formatted).encode())
+     postimage_payload = (json.dumps(complete_postimages, separators=(",", ":")) + "\n").encode()
+     write_bytes("complete-postimages.json.gz", gzip.compress(postimage_payload, mtime=0))
+@@ -184,9 +182,9 @@
+         "input_files_preserved": True,
+         "checkout_access": False, "target_access": False,
+         "native_tests_run": False, "ordinary_route_complete": False,
+-        "qualification": "isolated evaluated C command formatting only; no native or ordinary qualification",
++        "qualification": "isolated Published CURRENT formatting only; no native or ordinary qualification",
+         "artifacts": [{"path": name, **meta((RECORDS / name).read_bytes())} for name in
+-                      ["evaluated-c-command-prefmt.patch", "combined-evaluated-c-command.patch",
++                      ["published-current-prefmt.patch", "combined-published-current.patch",
+                        "format-only.patch", "complete-postimages.json.gz"]],
+     }
+     write_json("manifest.json", manifest)

@@ -1,0 +1,97 @@
+[
+  {
+    "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+    "source_commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "changed_test": "test_retirement_and_next_use_recheck_source_and_actual_cell",
+    "original_test_names": [
+      "test_original_sealed_request_cannot_be_replaced_by_caller_bytes",
+      "test_claim_and_witness_must_precede_signing_and_saved_readback",
+      "test_recovered_evidence_must_match_original_key_actor_and_identity",
+      "test_constructor_checks_registered_signer_without_probe_signature",
+      "test_registered_controller_revocation_and_role_are_required",
+      "test_feature_dispatch_must_receive_original_durable_cell_admission",
+      "test_native_control_fences_unknown_execution_and_persists_before_return",
+      "test_source_pending_and_readback_cannot_become_new_work",
+      "test_observer_views_cannot_gain_original_writer_capabilities",
+      "test_published_task_keeps_original_profile_and_distinct_successor",
+      "test_retirement_and_next_use_recheck_source_and_actual_cell",
+      "test_historical_read_never_reactivates_or_repairs_previous_owner",
+      "test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+      "test_live_original_owner_current_brackets_physical_read_with_witness",
+      "test_live_execution_current_replays_original_locked_bytes"
+    ],
+    "all_other_method_bodies_ast_identical": true,
+    "original_function": "fn read_learning_next_use<",
+    "actual_function": "fn read_learning_next_use_with_current<",
+    "original_attacks": [
+      {
+        "before": "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)",
+        "after": "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)"
+      },
+      {
+        "before": "prefix.head_digest = selection.predecessor",
+        "after": "prefix.head_digest = selection.predecessor"
+      },
+      {
+        "before": "self.read_learning_selection(&prefix)?",
+        "after": "self.read_learning_selection_with_current(&prefix, current)?"
+      },
+      {
+        "before": "actual_selection != selection.observation",
+        "after": "actual_selection != selection.observation"
+      },
+      {
+        "before": "source\n            .read_run_publication(",
+        "after": "source\n            .read_run_publication("
+      },
+      {
+        "before": "self.committed(&before)?",
+        "after": "PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?"
+      },
+      {
+        "before": "receipt.bundle_digest != candidate_bundle",
+        "after": "receipt.bundle_digest != candidate_bundle"
+      },
+      {
+        "before": "self.task.require_current()?",
+        "after": "OriginalPublishedReadCurrent::require(current, self)?"
+      }
+    ],
+    "new_public_wrapper_and_individual_attacks": 4
+  },
+  {
+    "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+    "source_commit": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "changed_test": "test_selection_binds_original_completed_task_before_version_readback",
+    "original_test_names": [
+      "test_each_original_owner_and_fresh_signature_guard_is_effective",
+      "test_selection_binds_original_completed_task_before_version_readback",
+      "test_actual_model_execution_and_publication_edges_are_exact",
+      "test_new_selector_owner_and_root_route_remain_closed",
+      "test_sources_cannot_replace_source_bound_model_or_original_execution_witness",
+      "test_selector_cannot_execute_model_holdout_publication_or_provision_custody"
+    ],
+    "all_other_method_bodies_ast_identical": true,
+    "original_function": "fn read_learning_selection(",
+    "actual_function": "fn read_learning_selection_with_current(",
+    "original_attacks": [
+      {
+        "before": "self.task.require_current()?",
+        "after": "OriginalPublishedReadCurrent::require(current, self)?"
+      },
+      {
+        "before": "if previous.source.history_digest().as_str()",
+        "after": "if previous.source.history_digest().as_str()"
+      },
+      {
+        "before": "!= coordinator\n                .snapshot()\n                .request\n                .completed_task_receipt\n                .to_string()",
+        "after": "!= coordinator\n                .snapshot()\n                .request\n                .completed_task_receipt\n                .to_string()"
+      },
+      {
+        "before": "return Err(invalid(\n                \"learning selection differs from original completed source\",",
+        "after": "return Err(invalid(\n                \"learning selection differs from original completed source\","
+      }
+    ],
+    "new_public_wrapper_and_individual_attacks": 4
+  }
+]

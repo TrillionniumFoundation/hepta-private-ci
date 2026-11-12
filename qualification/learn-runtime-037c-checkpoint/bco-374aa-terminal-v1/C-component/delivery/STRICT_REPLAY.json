@@ -1,0 +1,55 @@
+{
+  "all_15_postimages_equal": true,
+  "steps": [
+    {
+      "variant": "after-repair",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/delivery-v1/COMPONENT_after-repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "variant": "after-repair",
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/delivery-v1/COMPONENT_after-repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "variant": "exact57b",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/delivery-v1/COMPONENT_exact57b.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "variant": "exact57b",
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/delivery-v1/COMPONENT_exact57b.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

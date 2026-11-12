@@ -1,0 +1,7 @@
+{
+  "reason": "actual Rustfmt line-wrap in cfg(test) helper only; all ten test methods and attacks retained",
+  "old": "\"wrong.require(other)\"",
+  "new": "\"wrong\\n        .require(other)\"",
+  "before_sha256": "14f04751734332e6055ee235348474a06bce9df7b6acb0e3e228729874bc9526",
+  "after_sha256": "23ef435f300167c875b3a09b34b9a8e74ef6bbe2d3d762cb2cd534f3fb4daf66"
+}

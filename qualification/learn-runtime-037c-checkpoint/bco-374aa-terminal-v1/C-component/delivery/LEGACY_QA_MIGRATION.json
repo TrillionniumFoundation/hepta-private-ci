@@ -1,0 +1,215 @@
+{
+  "source_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "new_guard_boundary": "Original public NextUse drops only service, now exact private NextUse helper caller; old public originals remain",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "exact57b_base": {
+        "bytes": 14407,
+        "sha256": "5d8245de28f94a51ba66788c638dc31ed701b2961d6d8d65fac4573563ee1951",
+        "git_blob": "6cc790be198095cf1c9891d6fc4a4ce063b56b7c"
+      },
+      "after": {
+        "bytes": 14834,
+        "sha256": "71c59a7a8f33cac66fab3ed69967f19d1cab24eb4615b807865d7c75cd8cc5cd",
+        "git_blob": "f83fbef5d43fdc3eab099087274cdb6bfcb6bc61"
+      },
+      "repaired_base": {
+        "bytes": 14540,
+        "sha256": "2eff8dfaf97e2d3474dcfa6b3bcaeddfa41123b0f880316976595fe759f0660b",
+        "git_blob": "c4a736598c743e7a565e5962801a956621e1fb6b"
+      },
+      "combined_after": {
+        "bytes": 14967,
+        "sha256": "f1da1009a8c41838a8e7f0ad9d7f598cf598ad5cc76e65ba3b5778073c899750",
+        "git_blob": "d46e9b9d729d2655aa38cd549bd74e3c03d892ea"
+      },
+      "replacements": [
+        {
+          "before": "self.rejects(SERVICE, \"fn require_task_input_current(\", marker)",
+          "after": "self.rejects(SERVICE, \"fn require_task_input_current_with_current(\", marker)",
+          "occurrences": 1
+        },
+        {
+          "before": "\"cell.read_learning_selection(&coordinator)?\"",
+          "after": "\"cell.read_learning_selection_with_current(&coordinator, &mut current)?\"",
+          "occurrences": 1
+        },
+        {
+          "before": "\"cell.read_learning_next_use(\"",
+          "after": "\"cell.read_learning_next_use_with_current(\"",
+          "occurrences": 1
+        },
+        {
+          "before": "\"cell.read_learning_selection(&coordinator)? != selection\"",
+          "after": "\"cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection\"",
+          "occurrences": 1
+        },
+        {
+          "before": "        for marker in (\n            \"self.context\\n            .require_request(&request, self.binding, request_id)?\",",
+          "after": "        self.rejects(SERVICE, \"fn require_task_input_current(\", \"OriginalPublishedReadCurrent::individual(&self.cell)\")\n        self.rejects(SERVICE, \"fn require_task_input_current(\", \"self.require_task_input_current_with_current(&mut current)\")\n        self.rejects(SERVICE, \"fn read_original(\", \"OriginalPublishedReadCurrent::finish(current)?\")\n        for marker in (\n            \"self.context\\n            .require_request(&request, self.binding, request_id)?\",",
+          "occurrences": 1
+        }
+      ],
+      "all_test_names_preserved": true,
+      "test_count": 7,
+      "unchanged_test_bodies": 6,
+      "changed_test_names": [
+        "test_actual_task_source_selection_and_c_completion_precede_wire_response"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "exact57b_base": {
+        "bytes": 27633,
+        "sha256": "cec7de9e79e39a2c2265f9f6dfe4021c6a3be348cf0da77679def489fb2166af",
+        "git_blob": "29802bd0262d3d49493889d462b5fac821e0951c"
+      },
+      "after": {
+        "bytes": 28256,
+        "sha256": "937c37f5004b8e74ddd1c886693a1ace5571054e57592b1bd738ea505910c08e",
+        "git_blob": "b27c7938f11981152031c0968c183744854f11b0"
+      },
+      "repaired_base": {
+        "bytes": 27633,
+        "sha256": "cec7de9e79e39a2c2265f9f6dfe4021c6a3be348cf0da77679def489fb2166af",
+        "git_blob": "29802bd0262d3d49493889d462b5fac821e0951c"
+      },
+      "combined_after": {
+        "bytes": 28256,
+        "sha256": "937c37f5004b8e74ddd1c886693a1ace5571054e57592b1bd738ea505910c08e",
+        "git_blob": "b27c7938f11981152031c0968c183744854f11b0"
+      },
+      "replacements": [
+        {
+          "before": "(\"require_task_input_current\", (\"self.cell.task.require_current()?\",",
+          "after": "(\"require_task_input_current_with_current\", (\"OriginalPublishedReadCurrent::require(current, &self.cell)?\",",
+          "occurrences": 1
+        },
+        {
+          "before": "            (\"read_original\", (\"self.require_task_input_current()?\", \"cell.read_learning_selection(&coordinator)?\", \"circuit_feature_task_digest_v1(\", \"wire::Mode::Selection => (selection.clone(), None)\", \"cell.read_learning_next_use(\", \"before.publication_digest()\", \"cell.read_learning_selection(&coordinator)? != selection\")),",
+          "after": "            (\"read_original\", (\"self.require_task_input_current_with_current(&mut current)?\", \"cell.read_learning_selection_with_current(&coordinator, &mut current)?\", \"circuit_feature_task_digest_v1(\", \"wire::Mode::Selection => (selection.clone(), None)\", \"cell.read_learning_next_use_with_current(\", \"before.publication_digest()\", \"cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection\")),",
+          "occurrences": 1
+        },
+        {
+          "before": "        self.rejects_unused_body(SERVICE, \"read_original\")",
+          "after": "        self.rejects(SERVICE, \"require_task_input_current\", \"OriginalPublishedReadCurrent::individual(&self.cell)\")\n        self.rejects(SERVICE, \"require_task_input_current\", \"self.require_task_input_current_with_current(&mut current)\")\n        self.rejects(SERVICE, \"read_original\", \"OriginalPublishedReadCurrent::finish(current)?\")\n        self.rejects_unused_body(SERVICE, \"require_task_input_current\")\n        self.rejects_unused_body(SERVICE, \"require_task_input_current_with_current\")\n        self.rejects_unused_body(SERVICE, \"read_original\")",
+          "occurrences": 1
+        }
+      ],
+      "all_test_names_preserved": true,
+      "test_count": 16,
+      "unchanged_test_bodies": 15,
+      "changed_test_names": [
+        "test_actual_source_and_cell_surround_each_read_and_five_cut_c_result"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_version_source_closure.py",
+      "exact57b_base": {
+        "bytes": 68796,
+        "sha256": "dc595ab3c9c235ff7297d20d5b022aa10a2a6a95980c5d756816645fb7eb789c",
+        "git_blob": "652aa8633bfc78f56be712cec70adb6bc5422f2a"
+      },
+      "after": {
+        "bytes": 68906,
+        "sha256": "f15f182ad0a491c27691216b51c2d4b8d656dc23268f331a59b286577cd7b996",
+        "git_blob": "d039b11ac63abad8f7f7d5b0c3f70ddc9e371fe2"
+      },
+      "repaired_base": {
+        "bytes": 68918,
+        "sha256": "da8bb794aa0875e35d9d92c0d9dd96fc18b838cb730ac1fc5e3d268859631e17",
+        "git_blob": "aad4206cab6a83dbc98e562106dc8be1fac6ebae"
+      },
+      "combined_after": {
+        "bytes": 69028,
+        "sha256": "52b3f80ae36581d9a09674389d1409f1c0ecd74cc23486348b0937fa670dfb38",
+        "git_blob": "962ceff145414e84fec9f2b7eebdf1298aba7f52"
+      },
+      "replacements": [
+        {
+          "before": "                                                                'require_task_input_current': 1,",
+          "after": "                                                                'require_task_input_current': 1,\n                                                                'require_task_input_current_with_current': 1,",
+          "occurrences": 1
+        }
+      ],
+      "all_test_names_preserved": true,
+      "test_count": 21,
+      "unchanged_test_bodies": 21,
+      "changed_test_names": []
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "exact57b_base": {
+        "bytes": 37566,
+        "sha256": "db710ca506d268ed46dba8d0605c3f0df7ce84f6b96606fdd39f4f5ae3c9f0ea",
+        "git_blob": "12cd06b62484817187858fe80b0ae37252303d76"
+      },
+      "after": {
+        "bytes": 37522,
+        "sha256": "e2716e1a172eb5d70f7131070afe3271c423b8ddfc3923c6eb1966f3d98e06ac",
+        "git_blob": "4a0a1b550ca3314c9d2ffd42c00e2c7c9759fb29"
+      },
+      "repaired_base": {
+        "bytes": 37566,
+        "sha256": "db710ca506d268ed46dba8d0605c3f0df7ce84f6b96606fdd39f4f5ae3c9f0ea",
+        "git_blob": "12cd06b62484817187858fe80b0ae37252303d76"
+      },
+      "combined_after": {
+        "bytes": 37522,
+        "sha256": "e2716e1a172eb5d70f7131070afe3271c423b8ddfc3923c6eb1966f3d98e06ac",
+        "git_blob": "4a0a1b550ca3314c9d2ffd42c00e2c7c9759fb29"
+      },
+      "replacements": [
+        {
+          "before": "            OWNER, AGENT + \"circuit_learning_read_service.rs\", EVALUATED,",
+          "after": "            OWNER, EVALUATED,",
+          "occurrences": 1
+        }
+      ],
+      "all_test_names_preserved": true,
+      "test_count": 24,
+      "unchanged_test_bodies": 23,
+      "changed_test_names": [
+        "test_actual_readonly_calls_are_closed_and_no_effect_caller_is_claimed"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "exact57b_base": {
+        "bytes": 11042,
+        "sha256": "f13fcdae3c52de92b5dbb6404c1782ed0fc8f93c611d297d3e6edc98028304a8",
+        "git_blob": "8ed82c4dc2debf7dac0884d5a6703d05bf7b4c6f"
+      },
+      "after": {
+        "bytes": 10998,
+        "sha256": "d732ef201a85f900809627921f177debb63d6482dfe5b9402680ff730ad6500f",
+        "git_blob": "52495e550746c6086a3dfe9f35ad7dd4209b75e6"
+      },
+      "repaired_base": {
+        "bytes": 11042,
+        "sha256": "f13fcdae3c52de92b5dbb6404c1782ed0fc8f93c611d297d3e6edc98028304a8",
+        "git_blob": "8ed82c4dc2debf7dac0884d5a6703d05bf7b4c6f"
+      },
+      "combined_after": {
+        "bytes": 10998,
+        "sha256": "d732ef201a85f900809627921f177debb63d6482dfe5b9402680ff730ad6500f",
+        "git_blob": "52495e550746c6086a3dfe9f35ad7dd4209b75e6"
+      },
+      "replacements": [
+        {
+          "before": "                OWNER, AGENT + \"circuit_learning_read_service.rs\",",
+          "after": "                OWNER,",
+          "occurrences": 1
+        }
+      ],
+      "all_test_names_preserved": true,
+      "test_count": 6,
+      "unchanged_test_bodies": 5,
+      "changed_test_names": [
+        "test_real_read_edges_are_registered_and_owner_constructors_remain_closed"
+      ]
+    }
+  ],
+  "qualification": "no test removed; native and 500ms unrun"
+}

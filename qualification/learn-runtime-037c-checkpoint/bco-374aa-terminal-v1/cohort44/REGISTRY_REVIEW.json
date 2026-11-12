@@ -1,0 +1,163 @@
+{
+  "base": {
+    "bytes": 1835944,
+    "sha256": "a7db9c047ed16b33a889fd95934e64b2268ff1c1b8d4225dc4b558968fddf757",
+    "blob": "7b5af7a67e9f960ca260d9ef4f5a59579e13034e"
+  },
+  "after": {
+    "bytes": 1882184,
+    "sha256": "cb874ec8c9cda9fbb00190eb4be47e4f2cbff2c68afb846d592b0dc9c645eb4a",
+    "blob": "b56a7967f0ab444595704bb5995ae16007730c70"
+  },
+  "old_boundaries": 607,
+  "new_boundary_count": 627,
+  "old_protected": 425,
+  "new_protected_count": 428,
+  "replacements": [
+    {
+      "kind": "boundary",
+      "index": 427,
+      "component": "B",
+      "id_or_path": "learning_original_evaluation_panel_current"
+    },
+    {
+      "kind": "boundary",
+      "index": 428,
+      "component": "B",
+      "id_or_path": "learning_original_evaluation_panel_member_current"
+    },
+    {
+      "kind": "protected_file",
+      "index": 261,
+      "component": "B",
+      "id_or_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 263,
+      "component": "B",
+      "id_or_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 336,
+      "component": "B",
+      "id_or_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 337,
+      "component": "B",
+      "id_or_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 345,
+      "component": "B",
+      "id_or_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+    },
+    {
+      "kind": "boundary",
+      "index": 244,
+      "component": "C",
+      "id_or_path": "circuit_feature_original_selection_observation"
+    },
+    {
+      "kind": "boundary",
+      "index": 239,
+      "component": "C",
+      "id_or_path": "circuit_feature_original_next_use_observation"
+    },
+    {
+      "kind": "protected_file",
+      "index": 203,
+      "component": "C",
+      "id_or_path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 207,
+      "component": "C",
+      "id_or_path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 204,
+      "component": "C",
+      "id_or_path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 351,
+      "component": "C",
+      "id_or_path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 296,
+      "component": "Origin",
+      "id_or_path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 310,
+      "component": "Origin",
+      "id_or_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 324,
+      "component": "Origin",
+      "id_or_path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs"
+    },
+    {
+      "kind": "protected_file",
+      "index": 339,
+      "component": "Origin",
+      "id_or_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+    }
+  ],
+  "new_boundary_ids": [
+    "learning_original_panel_training_source",
+    "learning_original_panel_training_call",
+    "learning_original_panel_training_begin",
+    "learning_original_panel_training_slot",
+    "learning_original_panel_training_finish",
+    "learning_original_panel_training_actual",
+    "learning_original_panel_training_prepare",
+    "learning_original_panel_training_qualification",
+    "learning_original_panel_training_panel",
+    "circuit_feature_read_current_individual",
+    "circuit_feature_read_current_begin",
+    "circuit_feature_read_current_purpose",
+    "circuit_feature_read_current_require",
+    "circuit_feature_read_current_finish",
+    "circuit_feature_read_current_selection",
+    "circuit_feature_read_current_next_use",
+    "circuit_feature_read_current_committed",
+    "root_resident_no_update_private_origin",
+    "root_resident_candidate_private_origin",
+    "root_resident_stage_private_origin"
+  ],
+  "all_unchanged_rows_byte_identical": true,
+  "all_old_forbidden_values_in_original_order_and_multiplicity": true,
+  "all_global_authority_rules_roots_ignored_paths_unchanged": true,
+  "d397_three_callers": [
+    {
+      "id": "learning_original_owner_command_channel",
+      "index": 295,
+      "complete_original_row_preserved": true
+    },
+    {
+      "id": "learning_original_evaluation_host_profile",
+      "index": 459,
+      "complete_original_row_preserved": true
+    },
+    {
+      "id": "learning_original_evaluation_host_constructor",
+      "index": 461,
+      "complete_original_row_preserved": true
+    }
+  ],
+  "allowlist_old_prefix_preserved": true
+}

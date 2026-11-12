@@ -1,0 +1,43 @@
+{
+  "phase": "before-01",
+  "tests_run": 88,
+  "failures": [
+    {
+      "case": "test_actual_source_and_cell_surround_each_read_and_five_cut_c_result (current_compat_test_evaluated_published_read_source_closure.EvaluatedPublishedReadClosureTests.test_actual_source_and_cell_surround_each_read_and_five_cut_c_result)",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py\", line 288, in test_actual_source_and_cell_surround_each_read_and_five_cut_c_result\n    self.rejects(SERVICE, function, marker)\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py\", line 111, in rejects\n    self.assertIsNotNone(found, (path, function, marker))\nAssertionError: unexpectedly None : ('codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'require_task_input_current', 'self.cell.task.require_current()?')\n"
+    },
+    {
+      "case": "test_actual_readonly_calls_are_closed_and_no_effect_caller_is_claimed (current_compat_test_evaluated_next_use_source_closure.EvaluatedNextUseClosureTests.test_actual_readonly_calls_are_closed_and_no_effect_caller_is_claimed)",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py\", line 180, in test_actual_readonly_calls_are_closed_and_no_effect_caller_is_claimed\n    self.assertEqual(row.product_callers, (\nAssertionError: Tuples differ: ('cod[89 chars]cuit_evaluated_next_use_receipt.rs') != ('cod[89 chars]cuit_learning_read_service.rs', 'codex-rs/hept[47 chars].rs')\n\nFirst differing element 1:\n'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs'\n'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs'\n\nSecond tuple contains 1 additional elements.\nFirst extra element 2:\n'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs'\n\n  ('codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs',\n+  'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs',\n   'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs')\n"
+    },
+    {
+      "case": "test_real_read_edges_are_registered_and_owner_constructors_remain_closed (current_compat_test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed) (boundary='circuit_feature_original_next_use_observation')",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py\", line 123, in test_real_read_edges_are_registered_and_owner_constructors_remain_closed\n    self.assertEqual(row.product_callers, callers)\nAssertionError: Tuples differ: ('cod[89 chars]cuit_evaluated_next_use_receipt.rs') != ('cod[89 chars]cuit_learning_read_service.rs', 'codex-rs/hept[47 chars].rs')\n\nFirst differing element 1:\n'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs'\n'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs'\n\nSecond tuple contains 1 additional elements.\nFirst extra element 2:\n'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs'\n\n  ('codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs',\n+  'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs',\n   'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs')\n"
+    }
+  ],
+  "errors": [
+    {
+      "case": "test_actual_task_source_selection_and_c_completion_precede_wire_response (current_compat_test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_actual_task_source_selection_and_c_completion_precede_wire_response)",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_original_published_read_source_closure.py\", line 185, in test_actual_task_source_selection_and_c_completion_precede_wire_response\n    self.rejects(SERVICE, \"fn require_task_input_current(\", marker)\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_original_published_read_source_closure.py\", line 61, in rejects\n    offset = source.index(marker, start, end + 1)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: substring not found\n"
+    },
+    {
+      "case": "test_every_new_actual_function_and_private_shape_is_protected (current_compat_test_evaluated_version_source_closure.EvaluatedVersionClosureTests.test_every_new_actual_function_and_private_shape_is_protected)",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_evaluated_version_source_closure.py\", line 479, in test_every_new_actual_function_and_private_shape_is_protected\n    for path in OWN_PATHS:self.verifies(path,(ROOT/path).read_text())\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-learn-037c-20261112/candidate-published-current-57b-v1/legacy-qa/overlay/qa/b4-no-bypass/test_evaluated_version_source_closure.py\", line 422, in verifies\n    if dict(actual)!=FUNCTIONS[path]:raise PROOF.VerificationFailure(\"exact private function inventory\")\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nevaluated_version_source_proof.VerificationFailure: exact private function inventory\n"
+    }
+  ],
+  "skipped": [],
+  "exit_code": 1,
+  "elapsed_seconds": 31.474086672998965,
+  "inputs_unchanged": true,
+  "inputs": 300,
+  "log": {
+    "bytes": 27296,
+    "sha256": "d5d78aa8d8245e92d129022ab1aba0cd06a7efa26b684e3fcb679147cb58bad4"
+  },
+  "source_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "source_layers": [
+    "three-caller-repair a7db9c",
+    "private Published CURRENT prefmt-v2"
+  ],
+  "native_or_timing": false
+}

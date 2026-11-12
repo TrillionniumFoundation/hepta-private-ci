@@ -1,0 +1,120 @@
+diff --git a/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py b/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py
+index 4da0873c757803beb46256d84e27e63b12991347..0b645be03768d2c8dcd15e9b94bf75e64fa6c5ea 100644
+--- a/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py
++++ b/qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py
+@@ -145,8 +145,13 @@
+         for marker in (
+             "let before = self.read_cells()?",
+             "self.qualification.completed_bytes()?",
+-            "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?",
+-            ".finish_readback(",
++            "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(\n"
++            "            &mut sources,\n"
++            "            &self.qualification.config,\n"
++            "            started_at,\n"
++            "            training,\n"
++            "        )\n        .await?",
++            "OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(",
+             "drop(sources)",
+             "let after = self.read_cells()?",
+             "if before != after",
+@@ -159,11 +164,16 @@
+ 
+     def test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms(self):
+         self.rejects(CORE, "fn read_current(", "self.read_current_with_clock(original::now).await")
+-        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel(&mut clock).await"):
+-            self.rejects(CORE, "fn read_current_with_clock(", marker)
+-        for marker in (
+-            "let before = self.read_members(clock).await?",
+-            "let after = self.read_members(clock).await?",
++        self.rejects(
++            CORE,
++            "fn read_current_with_clock(",
++            "self.read_current_with_training(&mut clock, &mut OriginalPanelTrainingReadV1::Individual)",
++        )
++        for marker in ("self.fenced = true", "if result.is_ok()", "self.read_original_panel(&mut clock, training).await"):
++            self.rejects(CORE, "fn read_current_with_training(", marker)
++        for marker in (
++            "let before = self.read_members(clock, training).await?",
++            "let after = self.read_members(clock, training).await?",
+             "if before != after",
+             "self.require_observed_panel(&after)?",
+             "let current = clock()?",
+diff --git a/qa/b4-no-bypass/test_original_learning_owner_source_closure.py b/qa/b4-no-bypass/test_original_learning_owner_source_closure.py
+index ba65f8cebf39277681b28812ea0a34c42c37ea8e..927b7de74c4a84faf3037d40a86c383cf0ac223e 100644
+--- a/qa/b4-no-bypass/test_original_learning_owner_source_closure.py
++++ b/qa/b4-no-bypass/test_original_learning_owner_source_closure.py
+@@ -113,8 +113,21 @@
+         for marker in ("Arc::ptr_eq(&self.0, &cell.task.0)", "cell.committed(&before)?", "original.require_current()?", "original.drain()?", "original.is_drained()?", "self.require_current()?"):
+             with self.subTest(marker=marker): self.rejects(path, "fn drain_completed_task<", marker)
+         path = AGENT + "circuit_feature_current_learning.rs"
+-        for marker in ("coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix.head_digest = selection.predecessor", "self.read_learning_selection(&prefix)?", "actual_selection != selection.observation", "source\n            .read_run_publication(", "self.committed(&before)?", "receipt.bundle_digest != candidate_bundle", "self.task.require_current()?"):
+-            with self.subTest(marker=marker): self.rejects(path, "fn read_learning_next_use<", marker)
++        for marker in ("coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix.head_digest = selection.predecessor", "self.read_learning_selection_with_current(&prefix, current)?", "actual_selection != selection.observation", "source\n            .read_run_publication(", "PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?", "receipt.bundle_digest != candidate_bundle", "OriginalPublishedReadCurrent::require(current, self)?"):
++            with self.subTest(marker=marker): self.rejects(path, "fn read_learning_next_use_with_current<", marker)
++        # The public entry still performs each CURRENT read individually and
++        # delegates to the same physical Source, Cell and version checks.
++        for marker in ("OriginalPublishedReadCurrent::individual(self)",
++                       "self.read_learning_next_use_with_current(coordinator, source, identity, &mut current)"):
++            with self.subTest(public_next_use=marker):
++                self.rejects(path, "fn read_learning_next_use<", marker)
++        current = AGENT + "circuit_feature_current_read.rs"
++        for function, marker in (
++            ("fn individual(", "state: State::Individual"),
++            ("fn require(", "State::Individual => {\n                cell.task.require_current()?;"),
++        ):
++            with self.subTest(individual_next_use=marker):
++                self.rejects(current, function, marker)
+ 
+     def test_historical_read_never_reactivates_or_repairs_previous_owner(self):
+         path = AGENT + "circuit_feature_current_recovery.rs"
+diff --git a/qa/b4-no-bypass/test_original_model_selection_source_closure.py b/qa/b4-no-bypass/test_original_model_selection_source_closure.py
+index 6fc51eed804792d4f009697f76f2d3c20a5c9827..4203887e7a6b43f6cf8fbbfbe27f46e689e15c46 100644
+--- a/qa/b4-no-bypass/test_original_model_selection_source_closure.py
++++ b/qa/b4-no-bypass/test_original_model_selection_source_closure.py
+@@ -74,13 +74,26 @@
+     def test_selection_binds_original_completed_task_before_version_readback(self):
+         path = AGENT + "circuit_feature_current_learning.rs"
+         for marker in (
+-            "self.task.require_current()?",
++            "OriginalPublishedReadCurrent::require(current, self)?",
+             "if previous.source.history_digest().as_str()",
+             "!= coordinator\n                .snapshot()\n                .request\n                .completed_task_receipt\n                .to_string()",
+             "return Err(invalid(\n                \"learning selection differs from original completed source\",",
+         ):
+             with self.subTest(marker=marker):
++                self.rejects(path, "fn read_learning_selection_with_current(", marker)
++        # Preserve the old public entry's Individual CURRENT path and actual
++        # helper delegation as separate mutation targets.
++        for marker in ("OriginalPublishedReadCurrent::individual(self)",
++                       "self.read_learning_selection_with_current(coordinator, &mut current)"):
++            with self.subTest(public_selection=marker):
+                 self.rejects(path, "fn read_learning_selection(", marker)
++        current = AGENT + "circuit_feature_current_read.rs"
++        for function, marker in (
++            ("fn individual(", "state: State::Individual"),
++            ("fn require(", "State::Individual => {\n                cell.task.require_current()?;"),
++        ):
++            with self.subTest(individual_selection=marker):
++                self.rejects(current, function, marker)
+ 
+     def test_actual_model_execution_and_publication_edges_are_exact(self):
+         expected = {
+diff --git a/qa/b4-no-bypass/test_original_qualification_owner_source_closure.py b/qa/b4-no-bypass/test_original_qualification_owner_source_closure.py
+index a65614c5bb04d3d22b007213a94c20f318bf73b4..efbf08c9dc423254d933669e414301689ab8e352 100644
+--- a/qa/b4-no-bypass/test_original_qualification_owner_source_closure.py
++++ b/qa/b4-no-bypass/test_original_qualification_owner_source_closure.py
+@@ -33,11 +33,11 @@
+         "fn decision_bytes(", "fn clock_time(", "fn new_work_time(", "fn now(",
+     },
+     SOURCES: {
+-        "fn read_original(", "fn read_trainer(", "fn prepare(", "fn verify_current(",
++        "fn read_original(", "fn read_trainer(", "fn prepare(", "fn prepare_with_training(", "fn verify_current(",
+     },
+     PERSIST: {"fn persist_original(", "fn persist("},
+     READBACK: {
+-        "fn readback(", "fn read_completed(", "fn finish_readback(",
++        "fn readback(", "fn read_completed(", "fn finish_readback(", "fn finish_readback_with_training(",
+         "fn read_original(", "fn persist(",
+     },
+ }

@@ -1,0 +1,228 @@
+{
+  "source_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "source_tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "five_original_bodies": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "original_function": "fn read_learning_selection(",
+      "actual_function": "fn read_learning_selection_with_current(",
+      "body_bytes": 919,
+      "body_sha256": "108918fbe0b9f4f2aaf72c8e47c57f6fa325b2882b9f27a4c909a381b6b6096a",
+      "normalized_body_byte_equal": true,
+      "exact_reversals": [
+        {
+          "new": "OriginalPublishedReadCurrent::require(current, self)?",
+          "original": "self.task.require_current()?"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "original_function": "fn read_learning_next_use<",
+      "actual_function": "fn read_learning_next_use_with_current<",
+      "body_bytes": 4548,
+      "body_sha256": "445aa2d3b17b9c13b29233acafd4349b04115a1d3224f9084a97d6f70c3e3265",
+      "normalized_body_byte_equal": true,
+      "exact_reversals": [
+        {
+          "new": "OriginalPublishedReadCurrent::require(current, self)?",
+          "original": "self.task.require_current()?"
+        },
+        {
+          "new": "self.read_learning_selection_with_current(&prefix, current)?",
+          "original": "self.read_learning_selection(&prefix)?"
+        },
+        {
+          "new": "PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?",
+          "original": "self.committed(&before)?"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "original_function": "fn committed(",
+      "actual_function": "fn committed_with_current(",
+      "body_bytes": 1699,
+      "body_sha256": "f365dd5f2421035fdc949fd586bc735252765bb5adde6fdd4b09a7ae045dcf3f",
+      "normalized_body_byte_equal": true,
+      "exact_reversals": [
+        {
+          "new": "OriginalPublishedReadCurrent::require(current, self)?",
+          "original": "self.task.require_current()?"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "original_function": "fn require_task_input_current(",
+      "actual_function": "fn require_task_input_current_with_current(",
+      "body_bytes": 768,
+      "body_sha256": "1059dbabf85ef74ba6055081efb7aaded263c57c8252088683a7a2cf721bb83f",
+      "normalized_body_byte_equal": true,
+      "exact_reversals": [
+        {
+          "new": "OriginalPublishedReadCurrent::require(current, &self.cell)?",
+          "original": "self.cell.task.require_current()?"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "original_function": "fn read_original(",
+      "actual_function": "fn read_original(",
+      "body_bytes": 2015,
+      "body_sha256": "7811177ed23ec1a5129c16a9681659a860da32a98a5d32d953cb7c77a578cd8b",
+      "normalized_body_byte_equal": true,
+      "exact_reversals": [
+        {
+          "new": "        let mut current = OriginalPublishedReadCurrent::for_original_read(&self.cell);\n",
+          "original": ""
+        },
+        {
+          "new": "self.require_task_input_current_with_current(&mut current)?",
+          "original": "self.require_task_input_current()?"
+        },
+        {
+          "new": "cell.read_learning_selection_with_current(&coordinator, &mut current)?",
+          "original": "cell.read_learning_selection(&coordinator)?"
+        },
+        {
+          "new": "        let mode = self.context.mode()?;\n        OriginalPublishedReadCurrent::select_purpose(&mut current, match mode {\n            wire::Mode::Selection => OriginalPublishedReadPurpose::Selection,\n            wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse,\n        })?;\n        let (observation, source_publication) = match mode {",
+          "original": "        let (observation, source_publication) = match self.context.mode()? {"
+        },
+        {
+          "new": "                let observed = cell.read_learning_next_use_with_current(\n                    &prefix,\n                    &self.source,\n                    &self.identity,\n                    &mut current,\n                )?;",
+          "original": "                let observed =\n                    cell.read_learning_next_use(&prefix, &self.source, &self.identity)?;"
+        },
+        {
+          "new": "        OriginalPublishedReadCurrent::finish(current)?;\n",
+          "original": ""
+        }
+      ]
+    }
+  ],
+  "unchanged_functions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "clone",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "new",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "writer",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "snapshot",
+      "occurrences": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "pending_inference",
+      "occurrences": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "lookup",
+      "occurrences": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "scope",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "admit_inference",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "record_host_queue_age",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "commit",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "function": "reconcile",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "from_original_owners",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "from_original_profile",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "serve_readback",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "serve_original_retained_channel",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "serve_original_evaluated_retained_channel",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "serve_channel",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "response",
+      "occurrences": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "function": "require_original_selection",
+      "occurrences": 1
+    }
+  ],
+  "task_parent_only_adds_private_mount": true,
+  "explicit_current_slots": {
+    "Selection": {
+      "original": 10,
+      "same_call_actual": 2,
+      "first_slot": 1,
+      "last_slot": 10
+    },
+    "NextUse": {
+      "original": 15,
+      "same_call_actual": 2,
+      "first_slot": 1,
+      "last_slot": 15
+    }
+  },
+  "six_frame_C_read": {
+    "Selection_frames": 4,
+    "NextUse_frames": 2,
+    "original_explicit_task_current": 70,
+    "same_call_explicit_task_current": 12,
+    "actual_Version_selection": 14,
+    "actual_Source_input": 18,
+    "actual_Source_publication": 8,
+    "actual_Cell_committed": 2,
+    "T_fixture_reads": 6
+  },
+  "qualification": "static call-count and exact body equivalence only; no native timing or ordinary qualification"
+}
