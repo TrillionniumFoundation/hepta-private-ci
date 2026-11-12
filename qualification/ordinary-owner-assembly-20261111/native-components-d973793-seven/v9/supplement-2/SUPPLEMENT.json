@@ -1,0 +1,495 @@
+{
+  "schema": "hepta.original-v34-full-stdout-supplement.v1",
+  "classification": "EVIDENCE_SUPPLEMENT_NOT_NEW_QUALIFICATION",
+  "source": {
+    "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "original_session": "dpty-1222ac4070757c4e43621722572e2a145cccf6eccddb21224d925e3791ae6268",
+  "original_result": {
+    "evidence_commit": "83560e33b7ea3d287cf5b445f65a3b2d7444ec08",
+    "result_blob": "2e88e616fd7a5f3be0c476018e4cff9cc50a4c0e",
+    "status": "FAILED",
+    "ordinary_passed": 1950,
+    "ordinary_failed": 0,
+    "root_passed": 16,
+    "root_failed": 1,
+    "root_executed": 17,
+    "qa_passed": 236,
+    "cleanup_passed": 9,
+    "cleanup_total": 9
+  },
+  "supersedes_only": "Previous independent-fetch limitation for V34 ordinary and full-caller stdout. Historical missing-prefix statements and timed-out read receipts remain unchanged in their original evidence commits. The full original archive remains unfetched.",
+  "original_full_logs": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/caller-full-verify.original.launch.log",
+      "git_blob": "c04b5d142d92fb6d431e2d24be5914c8931fadfd",
+      "bytes": 234475,
+      "sha256": "352e4f5b8d311699bb5342f185f3355227f0177844e6315fd9d041e1a2cc34de",
+      "read_proof": {
+        "size": 234475,
+        "sha256": "352e4f5b8d311699bb5342f185f3355227f0177844e6315fd9d041e1a2cc34de",
+        "version": "66306:75545753:234475:1794477088088863690:1794478112828000612",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 65536,
+            "chunk_sha256": "51b14c96d54870c0114556fe1e2c2a5b2b47e278a11c9fa9e2fe44a0f77323ad",
+            "eof": false
+          },
+          {
+            "offset": 65536,
+            "next_offset": 131072,
+            "chunk_sha256": "e572c6025e336cc06b34d367e5cb6a61b4711e2f6984c4d5ec5bbab824651b1a",
+            "eof": false
+          },
+          {
+            "offset": 131072,
+            "next_offset": 196608,
+            "chunk_sha256": "a115883a3108e20da3075ee286134190e929fb24fb36954143f77970adbe06b9",
+            "eof": false
+          },
+          {
+            "offset": 196608,
+            "next_offset": 234475,
+            "chunk_sha256": "f0ca1d5684a8136fb0e9bd87ab9da0e41ae53aeb30512a1b9f16a85f1b4a3569",
+            "eof": true
+          }
+        ]
+      },
+      "execution_record": {
+        "after": {
+          "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+          "dirty": false,
+          "parents": [
+            "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+          ],
+          "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+          "dirty": false,
+          "parents": [
+            "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+          ],
+          "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+        },
+        "command": [
+          "python3",
+          "scripts/verify_hepta_callers.py",
+          "verify"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 1721.969204398105,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T09:51:28.088533+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 233155,
+        "log_file": "caller-full-verify.execution.json.e55299d2f5ad4da1a14c1dbe234434b4.log",
+        "log_sha256": "db6f85048ba0543a1c3f28e6f75820c45ace22f805c1f40fbf160f2f2a54cef9",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+        "started_at": "2026-11-12T09:22:46.118480+00:00",
+        "status": "passed",
+        "tested_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source"
+      },
+      "receipt_status_seen": true
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/ordinary.original.launch.log",
+      "git_blob": "75f8778a33493296bd0abb900212ac54d5f76e0c",
+      "bytes": 1285511,
+      "sha256": "819d683d08a39fa397ca7948745790889b0a0be8c78948f31e34f622620c9756",
+      "read_proof": {
+        "size": 1285511,
+        "sha256": "819d683d08a39fa397ca7948745790889b0a0be8c78948f31e34f622620c9756",
+        "version": "66306:75545762:1285511:1794477886875797391:1794478112828000612",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 65536,
+            "chunk_sha256": "cbaf54427955c506d8bfc346d22a8a8ab87952461352abf570f3efae7a828b79",
+            "eof": false
+          },
+          {
+            "offset": 65536,
+            "next_offset": 131072,
+            "chunk_sha256": "363d64d405829fbb7caac3ff7af7921408caefa5db116520810c455808b3e9b1",
+            "eof": false
+          },
+          {
+            "offset": 131072,
+            "next_offset": 196608,
+            "chunk_sha256": "3b452aeeefc8ef20c47756d72efcaa291e07ef7732763f98df778d56a711bea6",
+            "eof": false
+          },
+          {
+            "offset": 196608,
+            "next_offset": 262144,
+            "chunk_sha256": "b995d95a32bb59680f015c0678edfccd9c4ec0c231073a7ec4fda91e80bfcd7f",
+            "eof": false
+          },
+          {
+            "offset": 262144,
+            "next_offset": 327680,
+            "chunk_sha256": "d8e9b3adcfe07339419b7d81949c8f482fb9b8575ba96075cdb66b4c3b306ff5",
+            "eof": false
+          },
+          {
+            "offset": 327680,
+            "next_offset": 393216,
+            "chunk_sha256": "7226bac9fb4d33b5153d54a0933df5dfe973426ebfb3cba1797a3550d5e31143",
+            "eof": false
+          },
+          {
+            "offset": 393216,
+            "next_offset": 458752,
+            "chunk_sha256": "a5b17d637c7adc68e286b9da93cde455d6b8bae87da757addf9d1c2d9e81fb84",
+            "eof": false
+          },
+          {
+            "offset": 458752,
+            "next_offset": 524288,
+            "chunk_sha256": "7b51190db0cfd988d8cd42d3fce6e233ba11d1d8665f9da3582eaf6fe5c18d87",
+            "eof": false
+          },
+          {
+            "offset": 524288,
+            "next_offset": 589824,
+            "chunk_sha256": "438d566126a9044843c6dfd6aad9b633237f3609cad079a5a0d5e553b97ff612",
+            "eof": false
+          },
+          {
+            "offset": 589824,
+            "next_offset": 655360,
+            "chunk_sha256": "561ae56238629bb30e18314d921215beaa596e4f583e0f3a113ba3a7e1831e22",
+            "eof": false
+          },
+          {
+            "offset": 655360,
+            "next_offset": 720896,
+            "chunk_sha256": "fa0f76a6d8a38c5ccab0660401a97e1b9c5a25a55795676c0492b57a6f639ed2",
+            "eof": false
+          },
+          {
+            "offset": 720896,
+            "next_offset": 786432,
+            "chunk_sha256": "d2fff78be8aced5f4ec8beb68c80f1dbbc526414d6aa6e99a985b3ffba21ef7a",
+            "eof": false
+          },
+          {
+            "offset": 786432,
+            "next_offset": 851968,
+            "chunk_sha256": "b4992143145e3a7be1ae17a58626f9d290b948b5f619f1de9299e4366f4009b8",
+            "eof": false
+          },
+          {
+            "offset": 851968,
+            "next_offset": 917504,
+            "chunk_sha256": "0077464e7c17113fae9d486ce2cd4d361b7b77acba37716b98221b8e075d0728",
+            "eof": false
+          },
+          {
+            "offset": 917504,
+            "next_offset": 983040,
+            "chunk_sha256": "bfeda6baa857bb3468049fdcba25c8639ee5c006674676d4d76323276c7efbf0",
+            "eof": false
+          },
+          {
+            "offset": 983040,
+            "next_offset": 1048576,
+            "chunk_sha256": "047f72a6f10c76341be514f0c6c035155bc0185551551755c1cd6e5788e03f72",
+            "eof": false
+          },
+          {
+            "offset": 1048576,
+            "next_offset": 1114112,
+            "chunk_sha256": "27f041db3e053170c14cfa45cfab6e03c781004de91eea1b3ef62b54807c7c08",
+            "eof": false
+          },
+          {
+            "offset": 1114112,
+            "next_offset": 1179648,
+            "chunk_sha256": "c7e69a67b1330e497ae4a071268a8a0eac6e8c58ea676662a8bc59886540557f",
+            "eof": false
+          },
+          {
+            "offset": 1179648,
+            "next_offset": 1245184,
+            "chunk_sha256": "72171129f53cb4d9f6237700e481f0019df4e27e2b009c54b65acda6d55fbe03",
+            "eof": false
+          },
+          {
+            "offset": 1245184,
+            "next_offset": 1285511,
+            "chunk_sha256": "090e8b28a0872a1e10d343f7c85db67412ac2f72783614ca12a59ababd954f31",
+            "eof": true
+          }
+        ]
+      },
+      "execution_record": {
+        "after": {
+          "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+          "dirty": false,
+          "parents": [
+            "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+          ],
+          "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+          "dirty": false,
+          "parents": [
+            "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+          ],
+          "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+        },
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "-p",
+          "codex-hepta-contracts",
+          "-p",
+          "codex-hepta-neuron",
+          "-p",
+          "codex-hepta-learning-ledger",
+          "-p",
+          "codex-hepta-fleet",
+          "--lib",
+          "--test-threads",
+          "2",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 525.137681378983,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T10:04:46.874799+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 1283869,
+        "log_file": "ordinary.execution.json.b5f3edf3307346c0925b5be85edd4c41.log",
+        "log_sha256": "a8c630a7a0479f31cd1f89cd85014a3eb74053daef8a2025ab9b11ac8259447e",
+        "minimum_tests": 1,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 1950,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+        "started_at": "2026-11-12T09:56:01.735890+00:00",
+        "status": "passed",
+        "tested_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source"
+      }
+    }
+  ],
+  "method": [
+    "Reused the already verified original first 65,536-byte chunk for each log. Their raw first-read receipts remain in supplement-1.",
+    "Read the remaining three full-caller and nineteen ordinary chunks at their original pinned file versions; independently checked each chunk SHA256 and contiguous byte interval, then the complete original size and SHA256 against original progress metadata.",
+    "Decoded the complete original UTF-8 log and read each final execution record. The exact d973 source/tree was clean before and after both original commands. The full caller's original closed-set PASS receipt is present; the ordinary record reports 1,950 passed and zero failed.",
+    "These are read-only acquisitions of already completed original output. No native, checker or QA entrance was rerun. No previous result is attributed to a new source."
+  ],
+  "limits": [
+    "The original V34 Initial first-Publish retained-FinalUse failure remains unresolved; overall FAILED is unchanged.",
+    "Complete original Root launch/JUnit and all four QA launch logs are in the first supplement. The complete archive remains unfetched and is not described as parsed.",
+    "V35 f48f3dc failed its own original source fetch before all maintenance/native gates; no V34 PASS applies to it.",
+    "Pending phase source remains unassembled/uncompiled and receives no acceptance from these logs."
+  ],
+  "allowlist": {
+    "path": ".github/blob-size-allowlist.txt",
+    "pre": {
+      "git_blob": "417d30783e3d244646286a79dc224ba5a2f27888",
+      "bytes": 13296,
+      "sha256": "3cdefab18b17b5fd888ce56443bfe32d54a728f6ec70c75da551bd99d1461a99"
+    },
+    "post": {
+      "git_blob": "88b89bb3746ebc47db2d8588dfa80de64f95ab27",
+      "bytes": 13659,
+      "sha256": "563b1198b30c19fe8acc6e69ac905a06f0fa11d5ab28935f15004f17950118c6"
+    },
+    "operation": "append only",
+    "append": "\n# Original V34 ordinary stdout, fetched without rerunning the failed qualification.\n# This exact evidence body alone is allowed; changed bytes regain the size limit.\nsha256:819d683d08a39fa397ca7948745790889b0a0be8c78948f31e34f622620c9756 qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/ordinary.original.launch.log\n",
+    "scope": "One exact original evidence log SHA256/path; no wildcard or production/test gate exemption"
+  },
+  "business": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false
+  },
+  "artifacts": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/caller-full-verify.original.launch.log",
+      "git_blob": "c04b5d142d92fb6d431e2d24be5914c8931fadfd",
+      "bytes": 234475,
+      "sha256": "352e4f5b8d311699bb5342f185f3355227f0177844e6315fd9d041e1a2cc34de"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/ordinary.original.launch.log",
+      "git_blob": "75f8778a33493296bd0abb900212ac54d5f76e0c",
+      "bytes": 1285511,
+      "sha256": "819d683d08a39fa397ca7948745790889b0a0be8c78948f31e34f622620c9756"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/caller-read-01.json",
+      "git_blob": "aba8c80566a89b901e4d6ac393bae283711896f8",
+      "bytes": 88231,
+      "sha256": "9758073e60452c51226212c218b4712ae16ad91b173c7dc4e7566539b72ee4c8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/caller-read-02.json",
+      "git_blob": "33f6ddfec95091fdec0fd6cfc2522bb449de575a",
+      "bytes": 88233,
+      "sha256": "7f1a19408ce9170acee0bf85df88178a01baac3a73db57b916a71dd3f9ce58d9"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/caller-read-03.json",
+      "git_blob": "8f2c030b01e1e227fe2f1e40a40120ee86f63df9",
+      "bytes": 51340,
+      "sha256": "7f2ee99c74d5a034ddfe2c87cd5254f21f945f0e1e491f4e907b20f0cf30fe28"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-01.json",
+      "git_blob": "255c1091dc85e592c2052cffa7b3f7ba882b8894",
+      "bytes": 88214,
+      "sha256": "e4711807d344955eedaf08c8213e1a40744f323e1e20eb0de19c992062734cab"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-02.json",
+      "git_blob": "e74bc3e7b5405ba4285f800ba166405c8f359f13",
+      "bytes": 88216,
+      "sha256": "b69f5669d4d75183a91ae585dea6d9051cbb5cadb42a48d1ce113f98330fc934"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-03.json",
+      "git_blob": "f1feb49692e7f99bcb017aaac99d32fc0e5a3dd1",
+      "bytes": 88216,
+      "sha256": "00daed7f1b072d6b9041bedcda14e9abaa4f9f42f6a4e05fdea59e7fc15e38bf"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-04.json",
+      "git_blob": "22c624e58cc3059f90d8cb89a9e648a1c7efca27",
+      "bytes": 88216,
+      "sha256": "aaa42eb99c9d3a54ce9349cb6458ed322647a866661506e7e0d8a7dfff09acc6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-05.json",
+      "git_blob": "2186c5bf252ae025577a7a4278567ac54ca3753f",
+      "bytes": 88216,
+      "sha256": "8dab7cebab2ceb311c04996b07157a994ddd634beaacebe7a87b051eea59a10c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-06.json",
+      "git_blob": "100e6fe2041e05d6341e293bf98dc9d43dcbbfd8",
+      "bytes": 88216,
+      "sha256": "a4cafdf386ca9557ff130c687a79ec3e5e00c03da944c08cc2a9d8bc9f527863"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-07.json",
+      "git_blob": "9ece5abdbca848b7c1263865327f49fce7c022cd",
+      "bytes": 88216,
+      "sha256": "dd6fd18fb174dcc048769560e7b97c2b116e548b46945a19cbe485062f8f992c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-08.json",
+      "git_blob": "0913dd9663b318558f7ea093b35481d3428bf08d",
+      "bytes": 88216,
+      "sha256": "6e82c82d11be00acf784ca0ab0bd4132ae1eba9481666fe484f1cbd1cc4af12a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-09.json",
+      "git_blob": "04f2bdf46908306569dcad34e52a782f9dc3e76d",
+      "bytes": 88216,
+      "sha256": "065bcbc624a79e3747261fab8ca13ddf4f6f7c2b833029228660e888ec1d0aa3"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-10.json",
+      "git_blob": "cbad18365e1b18faa03c3cea84e14284588237f5",
+      "bytes": 88216,
+      "sha256": "f22443e16bdb0069365c7b765fab282f1908ee5132772e42f42a14ad082b612d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-11.json",
+      "git_blob": "2058ac6709355d9d573dcab2a22cfd2efcc36c48",
+      "bytes": 88216,
+      "sha256": "1bcf381f4c1cba13392156ccab4dba3db487fdb58e41a9477ec65b5400bdaa00"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-12.json",
+      "git_blob": "ea4fcfb13b417f20aa24d874ecb371ad65137d01",
+      "bytes": 88216,
+      "sha256": "e76234db3f23a0f653ac1162b93d8aec8a7c5e58c09679b61d6d604885a7c953"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-13.json",
+      "git_blob": "ca8c89e659d448baf18ea936d60ad51494c90a77",
+      "bytes": 88216,
+      "sha256": "1ca6fce37dfabc48a938adbaa679f4614e848430a0603fa5f65c7dc42f573ce4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-14.json",
+      "git_blob": "b50469dbb27c7b878409c804bda0c25505386b3e",
+      "bytes": 88216,
+      "sha256": "d0f143b8662afa15f673fa599c31b8cefb223a875132fc5fab892f999bc9cf77"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-15.json",
+      "git_blob": "245d324510b50508ace8a3643319204697fa0858",
+      "bytes": 88217,
+      "sha256": "5bb5c673dfa8cfcf93221f06b3da74bc6570ac58fab585685896f6a7bd52c0eb"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-16.json",
+      "git_blob": "2fbfe438874bb04815a6099bcd4e746f4f45a104",
+      "bytes": 88219,
+      "sha256": "3e43752dc50d02932f0b9a8cfc529fea9849a97d92d32cc6de330a6eddf05fcc"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-17.json",
+      "git_blob": "9f3055ea5c379719ff492885200688289ef4b74f",
+      "bytes": 88219,
+      "sha256": "8fc29e4556812ee9ed837cb90dac475fb1bf931eafd9a8cbbd2714ccb636efe3"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-18.json",
+      "git_blob": "135ad3e1547c00c66d6736b1596ac79d2b7ef670",
+      "bytes": 88219,
+      "sha256": "82cdb1c51cd230cd8efa33ffe89c3c1e11a42e0e0a7f9e6d4bdbe36e79837810"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-d973793-seven/v9/supplement-2/raw/ordinary-read-19.json",
+      "git_blob": "256cd14c804abe77ed509f9b89d681f4eab17bcc",
+      "bytes": 54606,
+      "sha256": "14bb9646993e6b753fabbc26ae6f1079063073206dd4fa2d50341561ababff06"
+    }
+  ]
+}
