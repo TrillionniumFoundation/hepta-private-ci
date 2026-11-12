@@ -45,6 +45,9 @@ use super::attach_production_operation_host;
 #[path = "production_episodic_provider_authority.rs"]
 mod authority;
 
+#[path = "production_episodic_provider_diagnostic.rs"]
+mod diagnostic;
+
 const PROMPT: &str = "Return only the 32 hexadecimal characters of the fixture nonce in the attached memory. Do not call tools.";
 const QUERY: &str = "fixture nonce";
 const PROVIDER: &str = "mem_context_fixture";
@@ -115,6 +118,16 @@ fn write_receipt(root: &Path, name: &str, value: &impl Serialize) -> Result<(), 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "requires an explicitly retained run directory, exact source identity, and the already verified loopback provider route; sends one logical real model request"]
 async fn episodic_real_provider_fresh_context_smoke() -> Result<(), Box<dyn Error>> {
+    run_fixture(diagnostic::Mode::OriginalSmoke).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "independent MEM13 fixture diagnostic; requires a frozen intervention and loopback capture/generation adapter; may send one logical model request"]
+async fn episodic_real_provider_native_intervention() -> Result<(), Box<dyn Error>> {
+    run_fixture(diagnostic::Mode::from_environment()?).await
+}
+
+async fn run_fixture(mode: diagnostic::Mode) -> Result<(), Box<dyn Error>> {
     let base_url = std::env::var("HEPTA_LOCAL_PROVIDER_BASE_URL")?;
     let model = std::env::var("HEPTA_LOCAL_PROVIDER_MODEL")?;
     let source_sha = std::env::var("HEPTA_MEM_NATIVE_SOURCE_SHA")?;
@@ -167,7 +180,9 @@ async fn episodic_real_provider_fresh_context_smoke() -> Result<(), Box<dyn Erro
             "schema": "hepta.mem8.real-context-fixture-intent.v1", "request_id": request_id,
             "outer_source_sha": source_sha, "owner_root": retained,
             "provider_alias": PROVIDER, "provider_base_url": base_url, "requested_model": model,
-            "prompt": PROMPT, "query": QUERY, "model_timeout_seconds": 20,
+            "prompt": PROMPT, "query": QUERY, "model_timeout_seconds": mode.timeout_seconds(),
+            "diagnostic_mode": mode, "A_is_deterministic_import_not_model_learning": true,
+            "A_import_harness_process_exits_before_C": false,
             "fixture_only": true, "original_deployment_recovered": false,
             "unseen_source_benefit_evaluated": false, "physical_provider_request_count": null,
             "request_max_retries": 0, "stream_max_retries": 0, "unbounded_connection_retries": false,
@@ -347,25 +362,63 @@ stream_max_retries = 0
         identity.agent_id.clone(),
         /*spawn_generation*/ 1,
     )?;
+    if mode != diagnostic::Mode::OriginalSmoke {
+        write_receipt(
+            &output,
+            "A_IMPORT.json",
+            &serde_json::json!({
+                "snapshot_json": snapshot, "fixture_authorized": true,
+                "production_authenticated": false,
+            }),
+        )?;
+    }
     let imported = client.import_episodic_snapshot(snapshot).await?;
     assert_eq!(imported.active_records, 1);
+    let withdrawal = if mode == diagnostic::Mode::Tombstone {
+        let context = client.cognitive_context(QUERY.into(), /*limit*/ 4).await?;
+        let target = context
+            .items
+            .iter()
+            .find(|item| item.content == fact)
+            .ok_or("native tombstone target absent from the original owner")?;
+        Some(diagnostic::Withdrawal {
+            host: host.clone(),
+            agent_id: identity.agent_id.clone(),
+            memory_id: target.memory_id.clone(),
+            revision: target.revision,
+        })
+    } else {
+        None
+    };
     let cut = host.writer().recovery_anchor().await?;
     let reads_before_run = reads.load(Ordering::SeqCst);
-    let (authorizer, issuer) = authority::start(
-        &retained.join("model-final-use"),
-        identity.agent_id.to_string(),
-        reads.clone(),
-        reads_before_run,
-    )
-    .await
-    .map_err(|error| error.to_string())?;
+    let authority_root = retained.join("model-final-use");
+    let authority_started = if mode == diagnostic::Mode::OriginalSmoke {
+        authority::start(
+            &authority_root,
+            identity.agent_id.to_string(),
+            reads.clone(),
+            reads_before_run,
+        )
+        .await
+    } else {
+        authority::start_with_withdrawal(
+            &authority_root,
+            identity.agent_id.to_string(),
+            reads.clone(),
+            reads_before_run,
+            withdrawal,
+        )
+        .await
+    };
+    let (authorizer, issuer) = authority_started.map_err(|error| error.to_string())?;
     tasks.handles.push(issuer.abort_handle());
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: identity.control_socket.clone(),
         agent_id: identity.agent_id.clone(),
         generation: 1,
         model: model.clone(),
-        timeout: Duration::from_secs(20),
+        timeout: Duration::from_secs(mode.timeout_seconds()),
     })
     .map_err(|error| error.to_string())?
     .with_turn_start_authorizer(Arc::new(authorizer));
@@ -383,14 +436,15 @@ stream_max_retries = 0
         }),
     )?;
     let outcome = driver
-        .run(
+        .run_with_context_delivery(
             &mut control,
             NativeAdmission {
                 request_id: request_id.clone(),
                 maximum_in_flight: 1,
             },
             PROMPT.into(),
-            Some(QUERY.into()),
+            QUERY.into(),
+            mode.delivery(),
             &CancellationToken::new(),
         )
         .await;
@@ -434,6 +488,63 @@ stream_max_retries = 0
     app.abort();
     let _ = app.await;
     authority_result?;
+    if mode != diagnostic::Mode::OriginalSmoke {
+        let terminal = outcome
+            .as_ref()
+            .ok()
+            .is_some_and(|returned| returned.succeeded() && returned.terminal_observed);
+        let matched = outcome
+            .as_ref()
+            .ok()
+            .is_some_and(|returned| returned.output.trim() == nonce);
+        let revoked = outcome.as_ref().err().is_some_and(|error| {
+            error
+                .to_string()
+                .contains("canonical episodic head changed outside the bridge")
+        });
+        write_receipt(
+            &output,
+            "RESULT.json",
+            &serde_json::json!({
+                "schema": "hepta.mem13.native-fixture-result.v1", "diagnostic_mode": mode,
+                "request_id": request_id, "terminal_observed": terminal,
+                "private_memory_fact_matched": matched, "native_revocation_rejected": revoked,
+                "source_reads_before": reads_before_run, "source_reads_after": source_reads_after,
+                "physical_provider_request_count": null, "requires_adapter_evidence": true,
+                "fixture_only": true, "production_authenticated": false,
+                "A_is_deterministic_import_not_model_learning": true,
+                "A_import_harness_process_exits_before_C": false,
+                "scientific_acceptance": "HOLD", "unseen_source_benefit_evaluated": false,
+            }),
+        )?;
+        assert_eq!(probes.target.effects.load(Ordering::SeqCst), 0);
+        assert_no_issuer_request(peer)?;
+        match mode {
+            diagnostic::Mode::Tombstone => {
+                assert!(revoked && !terminal);
+                assert_ne!(owner_cut_after?, cut);
+                assert_eq!(source_reads_after, reads_before_run + 3);
+            }
+            diagnostic::Mode::CaptureAttach | diagnostic::Mode::CaptureWithhold => {
+                assert!(
+                    !terminal,
+                    "capture-only endpoint returned a successful generation"
+                );
+                assert_eq!(owner_cut_after?, cut);
+                assert_eq!(source_reads_after, reads_before_run + 4);
+            }
+            diagnostic::Mode::Attach | diagnostic::Mode::Withhold => {
+                assert!(
+                    terminal,
+                    "native generation is incomplete; retained evidence needs readback, not retry"
+                );
+                assert_eq!(owner_cut_after?, cut);
+                assert_eq!(source_reads_after, reads_before_run + 4);
+            }
+            diagnostic::Mode::OriginalSmoke => unreachable!(),
+        }
+        return Ok(());
+    }
     let returned = outcome.map_err(|error| error.to_string())?;
     assert!(returned.succeeded() && returned.terminal_observed);
     assert_eq!(returned.model, model);
