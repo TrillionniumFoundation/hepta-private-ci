@@ -110,7 +110,7 @@ async fn evaluated_retention_preserved_owner_connections_reject_withdrawal_after
                 f.host.retention_b.withdraw_target()?;
                 assert!(matches!(
                     evaluator.readback().await,
-                    Err(crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain)
+                    Err(crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable)
                 ));
             }
             _ => unreachable!(),
@@ -341,3 +341,6 @@ async fn evaluated_retention_lost_ack_recovers_exact_original_publication_and_ba
     drop(c);
     f.finish().await
 }
+
+#[path = "circuit_evaluated_current_positive_tests.rs"]
+mod current_read_positive;

@@ -21,11 +21,11 @@ type Owner = OriginalCellEvaluationExecutionStoreV1<FileAnchorWitnessStore>;
 fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
-fn key() -> ProductEvaluationExecutionKeyV1 {
-    ProductEvaluationExecutionKeyV1 {
-        plan_id: StableId::new("original-execution-plan").expect("test plan id"),
+fn key() -> anyhow::Result<ProductEvaluationExecutionKeyV1> {
+    Ok(ProductEvaluationExecutionKeyV1 {
+        plan_id: StableId::new("original-execution-plan")?,
         binding_digest: d("original-execution-key"),
-    }
+    })
 }
 
 struct Fixture {
@@ -72,13 +72,12 @@ impl Fixture {
             d("original-raw-binding"),
         )?)
     }
-    fn recover(&self) -> Result<Owner, Error> {
-        Owner::recover(
-            self.existing_file("raw").expect("existing raw"),
-            self.witness(self.existing_file("witness").expect("existing witness"))
-                .expect("valid original witness file"),
+    fn recover(&self) -> anyhow::Result<Result<Owner, Error>> {
+        Ok(Owner::recover(
+            self.existing_file("raw")?,
+            self.witness(self.existing_file("witness")?)?,
             d("original-raw-binding"),
-        )
+        ))
     }
     fn bytes(&self) -> anyhow::Result<[Vec<u8>; 2]> {
         Ok([
@@ -129,7 +128,7 @@ fn original_execution_owner_preserves_missing_pending_and_completed_after_recove
 -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     let mut owner = fixture.create()?;
-    let key = key();
+    let key = key()?;
     let initial = fixture.bytes()?;
     assert_eq!(owner.require_current()?.sequence, 1);
     assert_eq!(owner.readback(&key), Err(StoreError::Missing));
@@ -139,7 +138,7 @@ fn original_execution_owner_preserves_missing_pending_and_completed_after_recove
     assert_eq!(owner.claim(&invalid), Err(StoreError::Rejected));
     assert_eq!(fixture.bytes()?, initial);
     drop(owner);
-    let mut owner = fixture.recover()?;
+    let mut owner = fixture.recover()??;
     assert_eq!(owner.readback(&key), Err(StoreError::Missing));
     assert_eq!(fixture.bytes()?, initial);
     assert_eq!(
@@ -164,7 +163,7 @@ fn original_execution_owner_preserves_missing_pending_and_completed_after_recove
     assert_eq!(owner.complete(&key, b""), Err(StoreError::Rejected));
     assert_eq!(fixture.bytes()?, pending);
     drop(owner);
-    let mut owner = fixture.recover()?;
+    let mut owner = fixture.recover()??;
     assert_eq!(owner.readback(&key)?, State::Pending);
     assert_eq!(fixture.bytes()?, pending);
     owner.complete(&key, b"original-completed-execution")?;
@@ -183,7 +182,7 @@ fn original_execution_owner_preserves_missing_pending_and_completed_after_recove
     );
     assert_eq!(fixture.bytes()?, completed);
     drop(owner);
-    let mut owner = fixture.recover()?;
+    let mut owner = fixture.recover()??;
     assert_eq!(owner.readback(&key)?, complete);
     assert_eq!(fixture.bytes()?, completed);
     Ok(())
@@ -212,13 +211,13 @@ fn original_execution_owner_creation_and_recovery_never_repair_partial_anchors()
         match fault {
             LostAck::BeforeWrite => {
                 assert!(matches!(
-                    fixture.recover(),
+                    fixture.recover()?,
                     Err(Error::Binding("original execution witness missing"))
                 ));
             }
             LostAck::AfterWrite => {
-                let mut recovered = fixture.recover()?;
-                assert_eq!(recovered.readback(&key()), Err(StoreError::Missing));
+                let mut recovered = fixture.recover()??;
+                assert_eq!(recovered.readback(&key()?), Err(StoreError::Missing));
             }
         }
         assert_eq!(fixture.bytes()?, partial);
@@ -278,28 +277,28 @@ fn original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty() ->
             d("original-raw-binding"),
         )?;
         let before = fixture.bytes()?;
-        assert_eq!(owner.claim(&key()), Err(StoreError::Indeterminate));
+        assert_eq!(owner.claim(&key()?), Err(StoreError::Indeterminate));
         let uncertain = fixture.bytes()?;
         assert_ne!(uncertain[0], before[0]);
-        assert_eq!(owner.claim(&key()), Err(StoreError::Indeterminate));
+        assert_eq!(owner.claim(&key()?), Err(StoreError::Indeterminate));
         assert_eq!(
-            owner.complete(&key(), b"must-not-complete"),
+            owner.complete(&key()?, b"must-not-complete"),
             Err(StoreError::Indeterminate)
         );
-        assert_eq!(owner.readback(&key()), Err(StoreError::Indeterminate));
+        assert_eq!(owner.readback(&key()?), Err(StoreError::Indeterminate));
         assert_eq!(fixture.bytes()?, uncertain);
         drop(owner);
         match fault {
             LostAck::BeforeWrite => {
                 assert_eq!(uncertain[1], before[1]);
-                assert!(matches!(fixture.recover(), Err(Error::CommitUncertain)));
+                assert!(matches!(fixture.recover()?, Err(Error::CommitUncertain)));
             }
             LostAck::AfterWrite => {
                 assert_ne!(uncertain[1], before[1]);
-                let mut recovered = fixture.recover()?;
-                assert_eq!(recovered.readback(&key())?, State::Pending);
+                let mut recovered = fixture.recover()??;
+                assert_eq!(recovered.readback(&key()?)?, State::Pending);
                 assert_eq!(
-                    recovered.claim(&key())?,
+                    recovered.claim(&key()?)?,
                     ProductEvaluationExecutionClaimV1::Existing(State::Pending)
                 );
             }
@@ -324,36 +323,36 @@ fn original_execution_owner_lost_completion_ack_preserves_completed_or_uncertain
             d("original-raw-binding"),
         )?;
         assert_eq!(
-            owner.claim(&key())?,
+            owner.claim(&key()?)?,
             ProductEvaluationExecutionClaimV1::Claimed
         );
         let before = fixture.bytes()?;
         assert_eq!(
-            owner.complete(&key(), b"original-completed"),
+            owner.complete(&key()?, b"original-completed"),
             Err(StoreError::Indeterminate)
         );
         let uncertain = fixture.bytes()?;
         assert_ne!(uncertain[0], before[0]);
         assert_eq!(
-            owner.complete(&key(), b"original-completed"),
+            owner.complete(&key()?, b"original-completed"),
             Err(StoreError::Indeterminate)
         );
-        assert_eq!(owner.readback(&key()), Err(StoreError::Indeterminate));
+        assert_eq!(owner.readback(&key()?), Err(StoreError::Indeterminate));
         assert_eq!(fixture.bytes()?, uncertain);
         drop(owner);
         match fault {
             LostAck::BeforeWrite => {
                 assert_eq!(uncertain[1], before[1]);
-                assert!(matches!(fixture.recover(), Err(Error::CommitUncertain)));
+                assert!(matches!(fixture.recover()?, Err(Error::CommitUncertain)));
             }
             LostAck::AfterWrite => {
                 assert_ne!(uncertain[1], before[1]);
-                let mut recovered = fixture.recover()?;
+                let mut recovered = fixture.recover()??;
                 assert_eq!(
-                    recovered.readback(&key())?,
+                    recovered.readback(&key()?)?,
                     State::Completed(b"original-completed".to_vec())
                 );
-                recovered.complete(&key(), b"original-completed")?;
+                recovered.complete(&key()?, b"original-completed")?;
             }
         }
         assert_eq!(fixture.bytes()?, uncertain);
@@ -366,24 +365,24 @@ fn original_execution_owner_physical_corruption_fences_even_after_restore() -> a
     for name in ["raw", "witness"] {
         let fixture = Fixture::new()?;
         let mut owner = fixture.create()?;
-        owner.claim(&key())?;
-        owner.complete(&key(), b"actual-retained-execution")?;
+        owner.claim(&key()?)?;
+        owner.complete(&key()?, b"actual-retained-execution")?;
         let original = fixture.bytes()?;
         let index = if name == "raw" { 0 } else { 1 };
         let mut corrupt = original[index].clone();
         corrupt[0] ^= 1;
         fixture.overwrite(name, &corrupt)?;
         assert_eq!(
-            owner.readback(&key()),
+            owner.readback(&key()?),
             Err(StoreError::Indeterminate),
             "physical {name} corruption must fence the original owner"
         );
         fixture.overwrite(name, &original[index])?;
         assert_eq!(fixture.bytes()?, original);
-        assert_eq!(owner.readback(&key()), Err(StoreError::Indeterminate));
-        assert_eq!(owner.claim(&key()), Err(StoreError::Indeterminate));
+        assert_eq!(owner.readback(&key()?), Err(StoreError::Indeterminate));
+        assert_eq!(owner.claim(&key()?), Err(StoreError::Indeterminate));
         assert_eq!(
-            owner.complete(&key(), b"actual-retained-execution"),
+            owner.complete(&key()?, b"actual-retained-execution"),
             Err(StoreError::Indeterminate)
         );
         assert_eq!(fixture.bytes()?, original);
@@ -397,7 +396,7 @@ fn original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_c
     for name in ["raw", "witness"] {
         let fixture = Fixture::new()?;
         let mut owner = fixture.create()?;
-        let key = key();
+        let key = key()?;
         owner.claim(&key)?;
         owner.complete(&key, b"actual-retained-execution")?;
         let original = fixture.bytes()?;
@@ -442,7 +441,7 @@ fn original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_c
         // A fresh owner may accept the exact trusted originals. It must retain
         // Completed, so claiming cannot create a fresh Pending execution.
         fixture.overwrite(name, &original[index])?;
-        let mut recovered = fixture.recover()?;
+        let mut recovered = fixture.recover()??;
         let completed = State::Completed(b"actual-retained-execution".to_vec());
         assert_eq!(recovered.readback(&key)?, completed);
         assert_eq!(
@@ -460,7 +459,7 @@ fn original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_ta
 -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     let mut owner = fixture.create()?;
-    let key = key();
+    let key = key()?;
     let mut other = key.clone();
     other.binding_digest = d("substituted-fixed-key");
     let empty = fixture.bytes()?;
@@ -498,7 +497,7 @@ fn original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_ta
     // Raw recover can see this prefix, but the owner must reject its suffix.
     fixture.overwrite("witness", &pending[1])?;
     let unwitnessed = fixture.bytes()?;
-    assert!(matches!(fixture.recover(), Err(Error::CommitUncertain)));
+    assert!(matches!(fixture.recover()?, Err(Error::CommitUncertain)));
     assert_eq!(fixture.bytes()?, unwitnessed);
     Ok(())
 }

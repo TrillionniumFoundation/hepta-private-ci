@@ -3264,7 +3264,7 @@ mod tests {
 
         assert_eq!(
             startup_error.database_path(),
-            logs_db_path.canonicalize()?.as_path()
+            AbsolutePathBuf::try_from(logs_db_path.canonicalize()?)?.as_path()
         );
         assert!(
             codex_state::sqlite_error_detail_is_corruption(startup_error.detail()),

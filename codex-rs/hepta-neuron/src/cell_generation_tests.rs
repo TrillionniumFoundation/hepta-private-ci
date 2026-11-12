@@ -18,6 +18,9 @@ use crate::cell_test_support::checked;
 mod observation;
 #[path = "cell_generation_physical_current_tests.rs"]
 mod physical_current;
+#[cfg(feature = "qualification-file-observation")]
+#[path = "cell_generation_qualification_tests.rs"]
+mod qualification;
 #[path = "cell_generation_test_support.rs"]
 mod support;
 use support::*;
@@ -536,6 +539,62 @@ fn actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement() {
     );
     assert_eq!(reopened.locked_bytes_for_test(), before);
     assert_eq!(reopened.admit(next, /*now_micros*/ 92), Ok(None));
+}
+
+#[test]
+fn failed_cost_batch_keeps_live_owner_journal_and_witness_unchanged() {
+    let fixture = Fixture::new();
+    let mut owner = fixture.open();
+    let original = charge("already-recorded", CellCostStageV2::Training);
+    checked(owner.record_cost(original.clone()));
+    let req = request(&owner, "conflicting-batch");
+    checked(owner.admit(req.clone(), /*now_micros*/ 11));
+    let snapshot = checked(owner.snapshot()).clone();
+    let costs = checked(owner.task_cost()).clone();
+    let journal = owner.locked_bytes_for_test();
+    let witness = checked(owner.witness.current());
+    drop(owner);
+    let witness_bytes = checked(fs::read(fixture.0.join("witness")));
+    let mut owner = fixture.open();
+    let prefix = charge("valid-prefix", CellCostStageV2::Training);
+    let mut conflict = original.clone();
+    conflict.metrics.cpu_micros = Some(99);
+    let mut incoming = cost();
+    checked(incoming.record(prefix.clone()));
+    checked(incoming.record(conflict));
+    let mut result = proposal(&req);
+    result.cost = incoming;
+    assert_eq!(
+        owner.commit(result, /*now_micros*/ 20),
+        Err(CellGenerationErrorV2::InvalidBinding)
+    );
+    assert_eq!(owner.snapshot(), Ok(&snapshot));
+    assert_eq!(owner.task_cost(), Ok(&costs));
+    assert_eq!(owner.pending_request(), Ok(Some(&req)));
+    assert_eq!(owner.pending_output(), Ok(None));
+    assert_eq!(owner.lookup(&req), Ok(None));
+    assert_eq!(owner.locked_bytes_for_test(), journal);
+    assert_eq!(checked(owner.witness.current()), witness);
+    drop(owner);
+    assert_eq!(checked(fs::read(fixture.0.join("witness"))), witness_bytes);
+    let mut reopened = fixture.open();
+    assert_eq!(reopened.snapshot(), Ok(&snapshot));
+    assert_eq!(reopened.task_cost(), Ok(&costs));
+    assert_eq!(reopened.pending_request(), Ok(Some(&req)));
+    assert_eq!(reopened.locked_bytes_for_test(), journal);
+    assert_eq!(checked(reopened.witness.current()), witness);
+    let mut corrected = cost();
+    checked(corrected.record(prefix));
+    checked(corrected.record(original));
+    let mut result = proposal(&req);
+    result.cost = corrected;
+    checked(reopened.commit(result, /*now_micros*/ 20));
+    assert_eq!(checked(reopened.task_cost()).entries().len(), 2);
+    assert_eq!(reopened.pending_request(), Ok(None));
+    let committed = reopened.locked_bytes_for_test();
+    assert!(committed.starts_with(&journal));
+    assert!(committed.len() > journal.len());
+    assert!(checked(reopened.witness.current()) != witness);
 }
 
 #[test]

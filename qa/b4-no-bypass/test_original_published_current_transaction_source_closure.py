@@ -45,7 +45,8 @@ EXPECTED = {
     "circuit_feature_read_current_require": (LEARNING, OWNER, SERVICE),
     "circuit_feature_read_current_finish": (SERVICE,),
     "circuit_feature_read_current_selection": (SERVICE,),
-    "circuit_feature_read_current_next_use": (SERVICE,),
+    "circuit_feature_read_current_next_use": (),
+    "circuit_feature_original_next_use_read_set": (SERVICE,),
     "circuit_feature_read_current_committed": (LEARNING,),
 }
 
@@ -113,9 +114,9 @@ class OriginalPublishedCurrentTransactionClosureTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker, occurrence=occurrence):
                 self.mutate(CURRENT, "fn require(", marker, occurrence=occurrence)
-        for old, new in (("Self::Selection => 10", "Self::Selection => 9"),
-                         ("Self::NextUse => 15", "Self::NextUse => 14"),
-                         ("Self::NextUse => 15", "Self::NextUse => 16")):
+        for old, new in (("Self::Selection => 6", "Self::Selection => 5"),
+                         ("Self::NextUse => 9", "Self::NextUse => 8"),
+                         ("Self::NextUse => 9", "Self::NextUse => 10")):
             with self.subTest(slot=old, change=new):
                 self.mutate(CURRENT, "fn slots(", old, new)
 
@@ -147,11 +148,11 @@ class OriginalPublishedCurrentTransactionClosureTests(unittest.TestCase):
     def test_partial_wrong_purpose_and_extra_slots_poison_the_call(self):
         for function, marker in (
             ("fn select_purpose(", "mem::replace(&mut self.state, State::Refused)"),
-            ("fn select_purpose(", "State::BeforePurpose { slots: 4 }"),
-            ("fn select_purpose(", "self.state = State::Reading { purpose, slots: 4 }"),
+            ("fn select_purpose(", "State::BeforePurpose { slots: 1 }"),
+            ("fn select_purpose(", "self.state = State::Reading { purpose, slots: 1 }"),
             ("fn require(", "mem::replace(&mut self.state, State::Refused)"),
-            ("fn require(", "if slots >= 4"),
-            ("fn require(", "if !(4..purpose.slots()).contains(&slots)"),
+            ("fn require(", "if slots >= 1"),
+            ("fn require(", "if !(1..purpose.slots()).contains(&slots)"),
             ("fn require(", "State::Complete | State::Refused"),
             ("fn finish(", "if !matches!(self.state, State::Complete)"),
         ):
@@ -161,28 +162,33 @@ class OriginalPublishedCurrentTransactionClosureTests(unittest.TestCase):
     def test_actual_mode_fixes_one_call_and_final_source_precedes_completion(self):
         for marker in (
             "OriginalPublishedReadCurrent::for_original_read(&self.cell)",
-            "self.require_task_input_current_with_current(&mut current)?",
-            "cell.read_learning_selection_with_current(&coordinator, &mut current)?",
             "self.require_original_selection(&selection)?",
             "let mode = self.context.mode()?;",
             "wire::Mode::Selection => OriginalPublishedReadPurpose::Selection",
             "wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse",
+            "PublishedCircuitCellOwnerV1::read_learning_next_use_set(",
             "OriginalPublishedReadCurrent::finish(current)?",
         ):
             with self.subTest(marker=marker):
                 self.mutate(SERVICE, "fn read_original(", marker)
-        # Each before/after input read remains in its original position.
-        for occurrence in (1, 2):
-            self.mutate(SERVICE, "fn read_original(",
-                        "self.require_task_input_current_with_current(&mut current)?",
-                        occurrence=occurrence)
+        # Each original input and CURRENT endpoint remains at its real position.
+        for marker in (
+            "self.require_original_task_input()?",
+            "OriginalPublishedReadCurrent::require(&mut current, &self.cell)?",
+            "cell.read_learning_selection_with_current(&coordinator, &mut current)?",
+        ):
+            for occurrence in (0, 1):
+                self.mutate(SERVICE, "fn read_original(", marker, occurrence=occurrence)
         for marker in ("source.require_original_input(&self.identity, input)?",
                        "input.scope.run_id == request.source_run_id"):
-            self.mutate(SERVICE, "fn require_task_input_current_with_current(", marker)
+            self.mutate(SERVICE, "fn require_original_task_input(", marker)
+        self.mutate(SERVICE, "fn require_task_input_current_with_current(",
+                    "self.require_original_task_input()?")
         for occurrence in (0, 1):
             self.mutate(SERVICE, "fn require_task_input_current_with_current(",
                         "OriginalPublishedReadCurrent::require(current, &self.cell)?",
                         occurrence=occurrence)
+
 
     def test_all_version_source_cell_and_checkpoint_reads_remain_real(self):
         for path, function, marker in (
@@ -190,13 +196,13 @@ class OriginalPublishedCurrentTransactionClosureTests(unittest.TestCase):
              "LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())"),
             (LEARNING, "fn read_learning_selection_with_current(",
              "self.task.0.original.lock().map_err(invalid)?.selection("),
-            (LEARNING, "fn read_learning_next_use_with_current<",
+            (LEARNING, "fn read_learning_next_use_set(",
              "self.read_learning_selection_with_current(&prefix, current)?"),
-            (LEARNING, "fn read_learning_next_use_with_current<",
+            (LEARNING, "fn read_learning_next_use_set(",
              "PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?"),
-            (LEARNING, "fn read_learning_next_use_with_current<",
+            (LEARNING, "fn read_learning_next_use_set(",
              "if actual_selection != selection.observation"),
-            (LEARNING, "fn read_learning_next_use_with_current<",
+            (LEARNING, "fn read_learning_next_use_set(",
              "receipt.bundle_digest != candidate_bundle"),
             (OWNER, "fn committed_with_current(", "self.original.lock().map_err(invalid)?"),
             (OWNER, "fn committed_with_current(", ".pending_inference(&input.scope)"),
@@ -208,12 +214,23 @@ class OriginalPublishedCurrentTransactionClosureTests(unittest.TestCase):
             with self.subTest(function=function, marker=marker):
                 self.mutate(path, function, marker)
         for occurrence in (0, 1):
-            self.mutate(LEARNING, "fn read_learning_next_use_with_current<",
+            self.mutate(LEARNING, "fn read_learning_next_use_set(",
                         ".read_run_publication(identity, &self.task.source().scope.run_id)",
                         occurrence=occurrence)
-            self.mutate(SERVICE, "fn read_original(",
-                        ".read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?",
-                        occurrence=occurrence)
+        # Consume the native pair's owned results within this call. The service
+        # keeps its separate real Source-input endpoints; it never imports a
+        # cached publication from a caller or reconnects a replacement owner.
+        for marker in ("selection: selection_observation", "observation: result",
+                       "source_publication: before.publication_digest()"):
+            self.mutate(LEARNING, "fn read_learning_next_use_set(", marker)
+        for marker in ("self.selection", "self.observation", "self.source_publication"):
+            self.mutate(LEARNING, "fn into_parts(", marker)
+        for marker in (
+            ".read_learning_next_use_set(coordinator, source, identity, current)?",
+            ".into_parts()",
+            "Ok(observation)",
+        ):
+            self.mutate(LEARNING, "fn read_learning_next_use_with_current<", marker)
 
     def test_public_individual_reads_and_writer_guards_keep_physical_current(self):
         for path, function, marker in (
@@ -237,7 +254,7 @@ class OriginalPublishedCurrentTransactionClosureTests(unittest.TestCase):
              "let prior = mem::replace(&mut self.state, State::Refused);"),
             (CURRENT, "fn finish(", "if !matches!(self.state, State::Complete)"),
             (SERVICE, "fn read_original(", "OriginalPublishedReadCurrent::finish(current)?;"),
-            (SERVICE, "fn require_task_input_current_with_current(",
+            (SERVICE, "fn require_original_task_input(",
              "source.require_original_input(&self.identity, input)?;"),
         ):
             with self.subTest(function=function, marker=marker):
@@ -302,7 +319,8 @@ class OriginalPublishedCurrentTransactionClosureTests(unittest.TestCase):
         for marker in ("self.current.require(self.cell)?", "self.current.finish()",
                        "wrong\n        .require(other)", "wrong.finish().is_err()",
                        "unfinished.current.finish().is_err()", "let same = cell.clone()",
-                       "complete.current.require(cell).is_err()", "complete.current.finish().is_err()"):
+                       "complete.current.require(cell).is_err()", "complete.current.finish().is_err()",
+                       "missing_purpose.require(cell).is_err()", "missing_purpose.finish().is_err()"):
             self.assertIn(marker, helper)
 
 

@@ -145,7 +145,8 @@ async fn evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
             &evaluator,
             &selector,
         ))
-        .await?;
+        .await
+        .map_err(|error| anyhow::anyhow!("first original completed C attestation: {error:?}"))?;
     assert_eq!(completed.snapshot().receipts.len(), 6);
     assert_eq!(
         &completed.snapshot().receipts[..5],
@@ -283,105 +284,132 @@ async fn evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
 #[path = "circuit_evaluated_next_use_remote_tests.rs"]
 mod remote_tests;
 
+// Each fault retains its own fresh original owners and the original test timeout.
+// The pre-existing test name covers Trainer; the two siblings complete the roster.
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_c_refuses_each_actual_original_predecessor_without_claim() -> anyhow::Result<()>
 {
-    for predecessor in ["trainer", "evaluator", "selector"] {
-        let mut f = Box::pin(PublicationFixture::ready()).await?;
-        let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
-        let trainer = Arc::new(trainer);
-        let evaluator = Arc::new(evaluator);
-        let selection_files = SelectorFiles::new()?;
-        let mut original_s = selection_files.owner(&f, OpenReceipt::Fresh)?;
-        let selected = original_s
-            .attest_original_evaluated_selection(sources(
-                f.evaluation.snapshot(),
-                &c,
-                &trainer,
-                &evaluator,
-            ))
-            .await?;
-        let (host, selector, selector_thread) =
-            selector_peer(original_s, &selected, &c, &trainer, &evaluator, None)?;
-        execute(&c, 1).await?;
-        let files = SelectorFiles::new()?;
-        let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
-        let before = files.bytes()?;
-        let published_before = f.publication_bytes()?;
-        match predecessor {
-            "trainer" => f.host.original.withdraw_original_dataset()?,
-            "evaluator" => f.host.retention_b.withdraw_target()?,
-            "selector" => {
-                OpenOptions::new()
-                    .write(true)
-                    .open(selection_files.0.path().join("journal"))?
-                    .set_len(0)?;
-            }
-            _ => unreachable!(),
+    Box::pin(refuses_original_predecessor(
+        OriginalPredecessorFault::Trainer,
+    ))
+    .await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn evaluated_c_refuses_original_evaluator_without_claim() -> anyhow::Result<()> {
+    Box::pin(refuses_original_predecessor(
+        OriginalPredecessorFault::Evaluator,
+    ))
+    .await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn evaluated_c_refuses_original_selector_without_claim() -> anyhow::Result<()> {
+    Box::pin(refuses_original_predecessor(
+        OriginalPredecessorFault::Selector,
+    ))
+    .await
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum OriginalPredecessorFault {
+    Trainer,
+    Evaluator,
+    Selector,
+}
+
+async fn refuses_original_predecessor(predecessor: OriginalPredecessorFault) -> anyhow::Result<()> {
+    let mut f = Box::pin(PublicationFixture::ready()).await?;
+    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
+    let trainer = Arc::new(trainer);
+    let evaluator = Arc::new(evaluator);
+    let selection_files = SelectorFiles::new()?;
+    let mut original_s = selection_files.owner(&f, OpenReceipt::Fresh)?;
+    let selected = original_s
+        .attest_original_evaluated_selection(sources(
+            f.evaluation.snapshot(),
+            &c,
+            &trainer,
+            &evaluator,
+        ))
+        .await?;
+    let (host, selector, selector_thread) =
+        selector_peer(original_s, &selected, &c, &trainer, &evaluator, None)?;
+    execute(&c, 1).await?;
+    let files = SelectorFiles::new()?;
+    let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
+    let before = files.bytes()?;
+    let published_before = f.publication_bytes()?;
+    match predecessor {
+        OriginalPredecessorFault::Trainer => f.host.original.withdraw_original_dataset()?,
+        OriginalPredecessorFault::Evaluator => f.host.retention_b.withdraw_target()?,
+        OriginalPredecessorFault::Selector => {
+            OpenOptions::new()
+                .write(true)
+                .open(selection_files.0.path().join("journal"))?
+                .set_len(0)?;
         }
-        let result = owner
-            .attest_original_evaluated_completion(next_sources(
-                selected.snapshot(),
-                &c,
-                &trainer,
-                &evaluator,
-                &selector,
-            ))
-            .await;
-        match predecessor {
-            "trainer" => assert!(matches!(
-                result,
-                Err(NextUseError::Evaluated(PublicationError::Training(
-                    crate::OriginalCellQ24TrainingCommandErrorV1::CommitUncertain
-                )))
-            )),
-            "evaluator" => assert!(matches!(
-                result,
-                Err(NextUseError::Evaluated(PublicationError::Evaluation(
-                    crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
-                )))
-            )),
-            "selector" => assert!(matches!(
-                result,
-                Err(NextUseError::Connection(
-                    crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(_)
-                ))
-            )),
-            _ => unreachable!(),
-        }
-        assert_eq!(files.bytes()?, before);
-        assert_eq!(f.publication_bytes()?, published_before);
-        drop(owner);
-        drop(selector);
-        let served = selector_thread
-            .join()
-            .expect("same original S evidence service");
-        if predecessor == "selector" {
-            assert!(matches!(
-                served,
-                Err(OriginalCircuitEvaluatedSelectionReadbackErrorV1::Transport(
-                    codex_hepta_contracts::HostIssuerTransportError::InvalidRequest
-                ))
-            ));
-        } else {
-            assert_eq!(served?, 0);
-        }
-        drop(host);
-        drop(trainer);
-        drop(evaluator);
-        assert_eq!(
-            peers.finish()?,
-            match predecessor {
-                "trainer" => [7, 6],
-                "evaluator" => [7, 7],
-                "selector" => [8, 8],
-                _ => unreachable!(),
-            }
-        );
-        c.stop().await?;
-        drop(c);
-        f.finish().await?;
     }
+    let result = owner
+        .attest_original_evaluated_completion(next_sources(
+            selected.snapshot(),
+            &c,
+            &trainer,
+            &evaluator,
+            &selector,
+        ))
+        .await;
+    match predecessor {
+        OriginalPredecessorFault::Trainer => assert!(matches!(
+            result,
+            Err(NextUseError::Evaluated(PublicationError::Training(
+                crate::OriginalCellQ24TrainingCommandErrorV1::CommitUncertain
+            )))
+        )),
+        OriginalPredecessorFault::Evaluator => assert!(matches!(
+            result,
+            Err(NextUseError::Evaluated(PublicationError::Evaluation(
+                crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
+            )))
+        )),
+        OriginalPredecessorFault::Selector => assert!(matches!(
+            result,
+            Err(NextUseError::Connection(
+                crate::LearningIterationRuntimeErrorV1::OwnerUnavailable(_)
+            ))
+        )),
+    }
+    assert_eq!(files.bytes()?, before);
+    assert_eq!(f.publication_bytes()?, published_before);
+    drop(owner);
+    drop(selector);
+    let served = selector_thread
+        .join()
+        .expect("same original S evidence service");
+    if predecessor == OriginalPredecessorFault::Selector {
+        assert!(matches!(
+            served,
+            Err(OriginalCircuitEvaluatedSelectionReadbackErrorV1::Transport(
+                codex_hepta_contracts::HostIssuerTransportError::InvalidRequest
+            ))
+        ));
+    } else {
+        assert_eq!(served?, 0);
+    }
+    drop(host);
+    drop(trainer);
+    drop(evaluator);
+    assert_eq!(
+        peers.finish()?,
+        match predecessor {
+            OriginalPredecessorFault::Trainer => [7, 6],
+            OriginalPredecessorFault::Evaluator => [7, 7],
+            OriginalPredecessorFault::Selector => [8, 8],
+        }
+    );
+    c.stop().await?;
+    drop(c);
+    f.finish().await?;
     Ok(())
 }
 
@@ -416,18 +444,20 @@ async fn evaluated_c_rereads_actual_source_after_the_final_s_response() -> anyho
     let files = SelectorFiles::new()?;
     let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
     let before = files.bytes()?;
-    assert!(matches!(
-        owner
-            .attest_original_evaluated_completion(next_sources(
-                selected.snapshot(),
-                &c,
-                &trainer,
-                &evaluator,
-                &selector,
-            ))
-            .await,
-        Err(NextUseError::Observation(_))
-    ));
+    let result = owner
+        .attest_original_evaluated_completion(next_sources(
+            selected.snapshot(),
+            &c,
+            &trainer,
+            &evaluator,
+            &selector,
+        ))
+        .await;
+    assert!(
+        matches!(&result, Err(NextUseError::Observation(_))),
+        "after the final actual S response: {:?}",
+        result.as_ref().err()
+    );
     // The actual C claim/signature exists, but no successful response may use
     // the pre-await source observation after the original source changed.
     assert_ne!(files.bytes()?, before);
@@ -490,20 +520,25 @@ async fn evaluated_c_recovery_of_missing_receipt_never_claims_or_signs() -> anyh
     // Deliberately supply Fresh S pins: recover must attenuate them and must
     // not reinterpret Missing as permission to make a new Observer claim.
     let mut recovered = observer(&files, &f, &selected, OpenReceipt::Readback)?;
-    assert!(matches!(
-        recovered
-            .attest_original_evaluated_completion(next_sources(
-                selected.snapshot(),
-                &c,
-                &trainer,
-                &evaluator,
-                &selector,
-            ))
-            .await,
-        Err(NextUseError::Owner(OwnerError::Store(
-            ProductEvaluationExecutionStoreErrorV1::Missing
-        )))
-    ));
+    let result = recovered
+        .attest_original_evaluated_completion(next_sources(
+            selected.snapshot(),
+            &c,
+            &trainer,
+            &evaluator,
+            &selector,
+        ))
+        .await;
+    assert!(
+        matches!(
+            &result,
+            Err(NextUseError::Owner(OwnerError::Store(
+                ProductEvaluationExecutionStoreErrorV1::Missing
+            )))
+        ),
+        "original recovered missing C: {:?}",
+        result.as_ref().err()
+    );
     assert_eq!(files.bytes()?, untouched);
     assert!(matches!(
         recovered

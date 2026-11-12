@@ -139,6 +139,14 @@ where
                 });
                 respond(state, response, result)
             }
+            #[cfg(test)]
+            GenerationCommand::QualificationFileBytes(response) => {
+                let result = self
+                    .owner
+                    .journal_mut()
+                    .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024);
+                respond(state, response, result)
+            }
             GenerationCommand::Snapshot(response) => {
                 respond(state, response, self.owner.journal().snapshot().cloned())
             }

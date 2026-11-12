@@ -121,6 +121,7 @@ codex-utils-path = { workspace = true }
 libc = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-file-observation"] }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["qualification-file-observation"] }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }

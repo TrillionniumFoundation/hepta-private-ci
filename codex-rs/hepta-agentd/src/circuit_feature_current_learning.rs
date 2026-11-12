@@ -8,6 +8,27 @@ use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use super::current_read::OriginalPublishedReadCurrent;
 use super::*;
 
+/// Owned results of this one original read. No Clone, decoder or constructor
+/// accepts an observation from a caller. The CURRENT service consumes this
+/// value before its final physical Source/version checks; it is not a lease.
+pub(super) struct OriginalCircuitNextUseReadSet {
+    selection: LearningIterationObservationV1,
+    observation: LearningIterationObservationV1,
+    source_publication: Digest32,
+}
+
+impl OriginalCircuitNextUseReadSet {
+    pub(super) fn into_parts(
+        self,
+    ) -> (
+        LearningIterationObservationV1,
+        LearningIterationObservationV1,
+        Digest32,
+    ) {
+        (self.selection, self.observation, self.source_publication)
+    }
+}
+
 impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
     pub fn read_learning_selection(
         &self,
@@ -67,6 +88,21 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         identity: &AgentdIdentity,
         current: &mut OriginalPublishedReadCurrent<'_, W>,
     ) -> Result<LearningIterationObservationV1, AgentdError> {
+        let (_, observation, _) = self
+            .read_learning_next_use_set(coordinator, source, identity, current)?
+            .into_parts();
+        Ok(observation)
+    }
+
+    /// The same physical read as read_learning_next_use, retaining its original
+    /// Selection and Source results for the one enclosing CURRENT response.
+    pub(super) fn read_learning_next_use_set(
+        &self,
+        coordinator: &LearningIterationCoordinatorV1,
+        source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,
+        identity: &AgentdIdentity,
+        current: &mut OriginalPublishedReadCurrent<'_, W>,
+    ) -> Result<OriginalCircuitNextUseReadSet, AgentdError> {
         LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
             .map_err(invalid)?;
         if coordinator.next_stage() != Some(LearningIterationStageV1::NextUse) {
@@ -87,6 +123,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
                 "Feature selection differs from original version owner",
             ));
         }
+        let selection_observation = actual_selection.clone();
         let LearningIterationObservationV1::Selection {
             candidate_bundle,
             selection_digest,
@@ -170,6 +207,10 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
             ));
         }
         OriginalPublishedReadCurrent::require(current, self)?;
-        Ok(result)
+        Ok(OriginalCircuitNextUseReadSet {
+            selection: selection_observation,
+            observation: result,
+            source_publication: before.publication_digest(),
+        })
     }
 }

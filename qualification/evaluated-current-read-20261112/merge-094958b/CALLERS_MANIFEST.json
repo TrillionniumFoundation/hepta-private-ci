@@ -1,0 +1,114 @@
+{
+  "schema": "owner-callers-three-way-merge-evidence-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": {
+    "paths": [
+      "CALLERS.toml",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "operation": "immutable blobs and a two-path overlay tree only",
+    "commit_created": false,
+    "ref_updated": false
+  },
+  "source": {
+    "common_ancestor": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+    "ours": "f770564dcd140e279b4df55b88e5268b79aeba6b",
+    "locked_base": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+    "locked_base_tree": "038d242af7c2a2e6d9a9376babdcde570d5bb3a3",
+    "base_ref": "codex/learn-common-profile-20261112-037c",
+    "base_policy": "Direct branch ref read, then root explicitly locked 094958b; no later ref chased; stale PR base SHA not used",
+    "base_callers_blob": "eece979225f9f93bf2757f08164938ba149ac3bf",
+    "base_allowlist_blob": "cd2d8a140af1a81e8722080085c2bdd78406d4f9",
+    "ours_callers_blob": "7ca2289a78cef948728b5d9544e6e2743ff5d2cf",
+    "ours_allowlist_blob": "8a4636f3a6478a8cf8a41a8ba91018ede99db26d"
+  },
+  "result": {
+    "overlay_tree": "71ed8987cd06ca88619711e1bb68a1f1263d4e70",
+    "entries": [
+      {
+        "path": "CALLERS.toml",
+        "blob": "cee2bc53c636e366d8b7873349e937181787cddc",
+        "bytes": 1070146,
+        "sha256": "a7cbcaafb773ee73f6c826e2b561c06978d93ddc45a4cfe2acba705755e64185",
+        "readback_exact": true
+      },
+      {
+        "path": ".github/blob-size-allowlist.txt",
+        "blob": "447d6c1e418501c8efa6a4ed2eb0d95b6afc3fd3",
+        "bytes": 11866,
+        "sha256": "19dcee2e59a6d5460e0933c85dacf0896270019e27dc7e7a81c75a71e0c951de",
+        "readback_exact": true
+      }
+    ],
+    "diff": {
+      "blob": "78bc416f407685b4c3f7837055f246bd0dabd35a",
+      "bytes": 77479,
+      "sha256": "1df7b6b3b8c7f7820fb16e2dc085e98c7859fc73e1d0fe4188854e18c520830f",
+      "stat": [
+        {
+          "path": "CALLERS.toml",
+          "hunks": 7,
+          "added": 42,
+          "removed": 4
+        },
+        {
+          "path": ".github/blob-size-allowlist.txt",
+          "hunks": 1,
+          "added": 2,
+          "removed": 0
+        }
+      ]
+    }
+  },
+  "merge": {
+    "strategy": "Start with complete immutable locked-base CALLERS and allowlist bytes; apply only exact ancestor-to-ours hunks, adapting one TOML array representation",
+    "inventory": "Prepend the three ours-only IDs to the complete locked-base inventory; both parent inventory sequences retained as subsequences; 530 distinct IDs match 530 boundary blocks",
+    "unchanged_base_protected_blocks": [
+      "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "codex-rs/hepta-agentd/src/circuit_experience_intake.rs"
+    ],
+    "ours_protected_blocks_copied_exact_after_base_equals_ancestor_check": [
+      "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    ],
+    "context_resolution": "Retain every byte of the 0949 context guard and its 13 inline function entries, inserting only one original_read_proof inline entry immediately before the array close. Its function/sequence/top_level values are unchanged from ours. Do not append an array-of-tables declaration to the already declared inline array.",
+    "context_added_entry": "  { function = \"fn original_read_proof(\", sequence = [\"self.authenticate(at, PublicationAccess::Readback)?\", \"scope: &self.scope\", \"verifier: &self.verifier\", \"training: self.training.attestation()\", \"evaluation: self.evaluation.attestation()\", \"origin: match self.origin\", \"Origin::Fresh =>\", \"Origin::Readback =>\"], top_level = [\"self.authenticate(at, PublicationAccess::Readback)?\"] },",
+    "added_boundaries": "Three ours blocks appended verbatim. Existing boundary product_callers unchanged; new client and owner boundaries retain empty callers; proof retains only the original read_capability/read_wire callers.",
+    "allowlist": "Retain every locked-base line and every ours entry. Immediately after the stable ancestor 6a8e... CALLERS hash in the existing LEARN caller-closure section, insert ours exact 387f... hash and one a7cb... merged hash. No wildcard, no path-wide allowance, no existing comment or hash changed, no EOF append."
+  },
+  "validation": {
+    "base_restores_exactly_after_reversing_our_delta": true,
+    "base_0949_bytes": 1065552,
+    "base_0949_sha256": "f2188af3c5ba2a69bb1f8f91f0fd0218f1e66aa0cebc61e3b1d8b94debf6c46a",
+    "all_four_nonoverlapping_protected_blocks_equal_ours": true,
+    "context_base_rows_preserved": 13,
+    "context_proof_values_exact_to_ours": true,
+    "context_merged_rows": 14,
+    "inventory_count": 530,
+    "base_all_527_ids_preserved": true,
+    "ours_all_524_ids_preserved": true,
+    "new_ids": [
+      "learning_evaluated_current_read_client",
+      "learning_evaluated_current_read_owner",
+      "learning_evaluated_retention_read_proof"
+    ],
+    "allowlist_base_all_lines_preserved": true,
+    "allowlist_ours_exact_hash_retained": "sha256:387f9ad3342b181e9edce05c7f5dd4d7047a4f996e3fc70b91d27374cdde2d9a CALLERS.toml",
+    "allowlist_new_exact_entry": "sha256:a7cbcaafb773ee73f6c826e2b561c06978d93ddc45a4cfe2acba705755e64185 CALLERS.toml",
+    "base_inventory_order_preserved": true,
+    "ours_inventory_order_preserved": true,
+    "entire_base_round_trip_reconstruction": "PASS in functions JavaScript",
+    "github_blob_readback": "PASS exact full UTF-8 bytes and SHA256 for both output blobs",
+    "unified_diff_reconstruction": "PASS both old and new inputs reconstructed before saving diff",
+    "toml_parser": "NOT_RUN (exec/h unavailable; no substituted execution)",
+    "repository_source_closure_qa": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "rust_tests": "NOT_RUN",
+    "named_base_guard_substrings_preserved_exactly": true
+  },
+  "next_owner_action": "Overlay these two blobs onto repository_research_audit's locked-0949 Rust/QA tree f034b8fe1c1fd32fa4eac571e4382b48cf3a5f1d; root owns review, dual-parent commit, ref update, and native/CI execution."
+}

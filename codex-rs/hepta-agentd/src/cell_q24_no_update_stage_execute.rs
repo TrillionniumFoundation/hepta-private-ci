@@ -46,7 +46,8 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
             RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)
                 .await;
         before_readback?;
-        let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut state_lease = self.continuation.try_take()?;
+        let state = state_lease.state_mut()?;
         if !snapshot.receipts.is_empty() {
             state.read_prefix(self, snapshot).await?;
         }
@@ -65,13 +66,13 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
             }
         }
         if stage == Stage::Selection {
-            self.prepare_retained_version(snapshot, &mut state).await?;
+            self.prepare_retained_version(snapshot, state).await?;
             // Only an actual original published C task permits Selector's
             // late binding; a prepared intent is not an adopted version.
             state.ensure_selector(self).await?;
         }
         let ready = if stage == Stage::NextUse {
-            Some(self.await_completed_c(snapshot, &mut state).await?)
+            Some(self.await_completed_c(snapshot, state).await?)
         } else {
             None
         };
@@ -83,7 +84,7 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
         before_dispatch?;
         let fresh = auth::require_material(&self.material, self.initial_binding)?;
         auth::require_clock(started_at, fresh)?;
-        auth::verify_prefix(&self.material, snapshot, &state, fresh)?;
+        auth::verify_prefix(&self.material, snapshot, state, fresh)?;
         let result = match stage {
             Stage::Experience => {
                 let original = OriginalCellQ24MaterialCommandClientV1::execute(&state.experience)
@@ -156,7 +157,7 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
         }
         let fresh = auth::require_material(&self.material, self.initial_binding)?;
         auth::require_clock(started_at, fresh)?;
-        auth::verify_prefix(&self.material, snapshot, &state, fresh)?;
+        auth::verify_prefix(&self.material, snapshot, state, fresh)?;
         let receipt = result?;
         auth::require_receipt_position(snapshot, &receipt)?;
         let index = auth::stage_index(stage)?;

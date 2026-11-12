@@ -35,6 +35,10 @@ pub use context::CellGenerationExpectedContextV1;
 #[path = "cell_generation_physical_current.rs"]
 mod physical_current;
 
+#[cfg(feature = "qualification-file-observation")]
+#[path = "cell_generation_qualification.rs"]
+mod qualification;
+
 const MAGIC: &[u8; 8] = b"HPTACG02";
 const HEADER_BYTES: usize = 40;
 const MAX_FRAME: usize = 2 * 1024 * 1024;

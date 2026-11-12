@@ -240,3 +240,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         Self::from_original_profile(cell, source, identity, ReadProfile::Evaluated(context))
     }
 }
+
+#[cfg(test)]
+#[path = "circuit_evaluated_current_read_tests.rs"]
+pub(crate) mod fixture;

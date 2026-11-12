@@ -28,15 +28,13 @@ fn before_last<W: AnchorWitnessStore>(
     purpose: OriginalPublishedReadPurpose,
 ) -> Result<PendingFinalCurrent<'_, W>, AgentdError> {
     let mut current = OriginalPublishedReadCurrent::for_original_read(cell);
-    for _ in 0..4 {
-        current.require(cell)?;
-    }
+    current.require(cell)?;
     let slots = match &purpose {
-        OriginalPublishedReadPurpose::Selection => 10,
-        OriginalPublishedReadPurpose::NextUse => 15,
+        OriginalPublishedReadPurpose::Selection => 6,
+        OriginalPublishedReadPurpose::NextUse => 9,
     };
     current.select_purpose(purpose)?;
-    for _ in 4..slots - 1 {
+    for _ in 1..slots - 1 {
         current.require(cell)?;
     }
     Ok(PendingFinalCurrent { cell, current })
@@ -72,15 +70,22 @@ pub(crate) fn reject_wrong_original_and_reuse<W: AnchorWitnessStore>(
     anyhow::ensure!(wrong.finish().is_err(), "wrong original cannot finish");
 
     let mut early = OriginalPublishedReadCurrent::for_original_read(cell);
-    early.require(cell)?;
     anyhow::ensure!(
         early
             .select_purpose(OriginalPublishedReadPurpose::Selection)
             .is_err(),
-        "purpose cannot precede the original first four slots"
+        "purpose cannot precede the original first slot"
     );
     anyhow::ensure!(early.require(cell).is_err());
     anyhow::ensure!(early.finish().is_err());
+
+    let mut missing_purpose = OriginalPublishedReadCurrent::for_original_read(cell);
+    missing_purpose.require(cell)?;
+    anyhow::ensure!(
+        missing_purpose.require(cell).is_err(),
+        "the native read cannot begin before its exact purpose"
+    );
+    anyhow::ensure!(missing_purpose.finish().is_err());
 
     let unfinished = before_last(cell, OriginalPublishedReadPurpose::Selection)?;
     anyhow::ensure!(
@@ -89,9 +94,7 @@ pub(crate) fn reject_wrong_original_and_reuse<W: AnchorWitnessStore>(
     );
 
     let mut repeated = OriginalPublishedReadCurrent::for_original_read(cell);
-    for _ in 0..4 {
-        repeated.require(cell)?;
-    }
+    repeated.require(cell)?;
     repeated.select_purpose(OriginalPublishedReadPurpose::Selection)?;
     anyhow::ensure!(
         repeated

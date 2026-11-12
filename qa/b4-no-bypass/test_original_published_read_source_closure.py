@@ -23,6 +23,7 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 MAIN = AGENT + "circuit_learning_read_capability.rs"
 SERVICE = AGENT + "circuit_learning_read_service.rs"
+CURRENT = AGENT + "circuit_feature_current_learning.rs"
 WIRE = AGENT + "circuit_learning_read_wire.rs"
 SOURCE = AGENT + "circuit_task_source_readback.rs"
 JOURNAL = AGENT + "circuit_task_source_journal.rs"
@@ -36,7 +37,7 @@ EXPECTED = {
     "learning_original_published_read_owner_serve": (),
     "learning_original_source_input_current": ('codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'),
     "learning_original_circuit_selection_remote_attest": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",),
-    "learning_original_circuit_selection_remote_readback": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"),
+    "learning_original_circuit_selection_remote_readback": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",),
     "learning_original_circuit_next_use_remote_attest": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",),
     "learning_original_circuit_next_use_remote_readback": ("codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs"),
     "learning_original_owner_physical_current": ("codex-rs/hepta-agentd/src/learning_owner_journal.rs", "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs", "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",),
@@ -114,6 +115,57 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         )
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
+    def test_evaluated_current_read_keeps_opaque_receipts_and_read_only_attenuation(self):
+        context = AGENT + "circuit_evaluated_retention_context.rs"
+        cut = AGENT + "circuit_evaluated_learning_read.rs"
+        for path, function, markers in (
+            (context, "fn original_receipt_predecessors(", (
+                "self.authenticate(at, PublicationAccess::Readback)?",
+                "self.verify_original_predecessors(at)",
+            )),
+            (context, "fn clone_for_original_receipt(", (
+                "scope: self.scope.clone()",
+                "verifier: self.verifier.clone()",
+                "training: self.training.clone()",
+                "evaluation: self.evaluation.clone()",
+                "origin: self.origin",
+            )),
+            (context, "fn into_original_receipt_readback(", (
+                "self.origin = Origin::Readback",
+            )),
+            (cut, "fn for_original_selection(", (
+                "context.into_original_receipt_readback()",
+                "OriginalCut::Selection(context)",
+                "profile.binding(now()?)?",
+            )),
+            (cut, "fn for_original_next_use(", (
+                "selection.into_original_receipt_readback()",
+                "OriginalCut::NextUse(selection)",
+                "profile.binding(now()?)?",
+            )),
+            (MAIN, "fn require_original_context(", ("self.context.legacy()?",)),
+            (cut, "fn binding(", (
+                ".original_receipt_predecessors(at)",
+                "LearningIterationStageV1::Selection",
+                "context.receipt_context_binding()",
+                "prefix.receipts.len() != length",
+                "coordinator.next_stage() != Some(stage)",
+                "prefix.training_no_update_v2().is_some()",
+                "self.scope.validate_snapshot(prefix)?",
+                "&encode_original_owner_snapshot_v1(prefix)?",
+                "self.scope.binding().as_array()",
+            )),
+            (context, "fn receipt_context_binding(", (
+                "&self.training.attestation().signing_bytes()",
+                "&self.training.attestation().signature",
+                "&self.evaluation.attestation().signing_bytes()",
+                "&self.evaluation.attestation().signature",
+            )),
+        ):
+            for marker in markers:
+                with self.subTest(path=path, marker=marker):
+                    self.rejects(path, function, marker)
+
     def test_source_current_keeps_original_handle_two_witnesses_and_permanent_fence(self):
         for marker in (
             "if self.fenced",
@@ -182,19 +234,30 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "input.scope.principal_digest.to_string() != request.principal_id.as_str()",
             "source.require_original_input(&self.identity, input)?",
         ):
-            self.rejects(SERVICE, "fn require_task_input_current_with_current(", marker)
+            self.rejects(SERVICE, "fn require_original_task_input(", marker)
         for marker in (
+            "OriginalPublishedReadCurrent::require(&mut current, &self.cell)?",
+            "self.require_original_task_input()?",
             "cell.read_learning_selection_with_current(&coordinator, &mut current)?",
             "self.require_original_selection(&selection)?",
-            "wire::Mode::Selection => (selection.clone(), None)",
+            "(selection.clone(), selection, None)",
             "wire::Mode::NextUse",
-            "cell.read_learning_next_use_with_current(",
-            "before.publication_digest()",
+            "PublishedCircuitCellOwnerV1::read_learning_next_use_set(",
+            "(selection, observation, Some(publication))",
             "cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection",
+            "self.require_original_task_input()?;\n        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;\n        OriginalPublishedReadCurrent::finish(current)?;\n        Ok(Readback",
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
-        self.rejects(SERVICE, "fn require_task_input_current(", "OriginalPublishedReadCurrent::individual(&self.cell)")
-        self.rejects(SERVICE, "fn require_task_input_current(", "self.require_task_input_current_with_current(&mut current)")
+        for marker in (
+            "OriginalPublishedReadCurrent::individual(&self.cell)",
+            "self.require_task_input_current_with_current(&mut current)",
+        ):
+            self.rejects(SERVICE, "fn require_task_input_current(", marker)
+        for marker in (
+            "OriginalPublishedReadCurrent::require(current, &self.cell)?",
+            "self.require_original_task_input()?",
+        ):
+            self.rejects(SERVICE, "fn require_task_input_current_with_current(", marker)
         self.rejects(SERVICE, "fn read_original(", "OriginalPublishedReadCurrent::finish(current)?")
         for marker in (
             "self.context\n            .require_request(&request, self.binding, request_id)?",
@@ -205,20 +268,52 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         ):
             self.rejects(SERVICE, "fn response(", marker)
 
+    def test_same_call_set_keeps_native_source_and_cell_guards_before_consumption(self):
+        self.rejects(
+            CURRENT, "fn read_learning_next_use<",
+            "self.read_learning_next_use_with_current(coordinator, source, identity, &mut current)",
+        )
+        self.rejects(
+            CURRENT, "fn read_learning_next_use_with_current<",
+            ".read_learning_next_use_set(coordinator, source, identity, current)?",
+        )
+        for marker in (
+            "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)",
+            "self.read_learning_selection_with_current(&prefix, current)?",
+            "actual_selection != selection.observation",
+            "source\n            .read_run_publication(",
+            "PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?",
+            "receipt.bundle_digest != candidate_bundle",
+            "previous.source.input().scope.run_id != coordinator.snapshot().request.source_run_id",
+            "if source\n            .read_run_publication(",
+            "!= before",
+            "OriginalPublishedReadCurrent::require(current, self)?",
+            "source_publication: before.publication_digest()",
+        ):
+            self.rejects(CURRENT, "fn read_learning_next_use_set(", marker)
+        for marker in ("self.selection", "self.observation", "self.source_publication"):
+            self.rejects(CURRENT, "fn into_parts(", marker)
+
     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
         for path, function, predecessor, verifier in (
             (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
             (OBSERVER, "fn read_remote_next_use(", "predecessors", "evaluated::authenticate_predecessors"),
         ):
+            profile = "&self.profile, "
+            remote_condition = (
+                "if matches!(\n            source.location(),\n"
+                "            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n"
+                "        )"
+            )
             for marker in (
                 "live.require_original_context(",
                 "live.read_current().await?",
             ):
                 self.rejects(path, function, marker)
             for marker in (
-                "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+                remote_condition,
                 f"self.{predecessor}(&source).await?",
-                f"{verifier}(&self.config, &self.profile, &before, now()?)?",
+                f"{verifier}(&self.config, {profile}&before, now()?)?",
                 "let bytes = self.journal.read(&self.saved)?;",
             ):
                 self.rejects(path, "fn readback_source(", marker)
@@ -235,7 +330,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
                 "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
             ):
                 self.rejects(path, "fn finish_original_readback(", marker)
-            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, &self.profile, evidence, current)?")
+            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, {profile}evidence, current)?")
             for marker in (
                 "self.config.scope.validate_snapshot(source.snapshot())?",
                 "source.observe(&self.config).await?",

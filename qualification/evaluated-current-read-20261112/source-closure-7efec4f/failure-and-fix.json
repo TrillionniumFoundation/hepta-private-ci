@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "base_commit": "7efec4fff19ce49b3dceb9d704ac9559a8d92c54",
+  "base_tree": "8e698459293e4d074ccdbe19ccb0997378f1ffe8",
+  "qa_path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+  "base_blob": "c93314182a274f08a16820936ad5e4bc65182b26",
+  "post_bytes": 20976,
+  "post_sha256": "44cf8bd7ab00c2bc4fa2870276ec12fef02a5610e09d371ffcee99cdc458ac0e",
+  "upstream_0949_qa_blob": "c93314182a274f08a16820936ad5e4bc65182b26",
+  "qa_equal_to_upstream": true,
+  "expected_row_equal_to_upstream": true,
+  "change": "Append the sole actual evaluated Selection caller already registered by upstream 0949. No assertion, rejection logic, production file, or CALLERS change.",
+  "changed_line": 35,
+  "before": "    \"circuit_feature_original_selection_observation\": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'),",
+  "after": "    \"circuit_feature_original_selection_observation\": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs'),",
+  "actual_caller": {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+    "blob": "ef835edd127cf13b8d0ee02f466f15fabe227c8d",
+    "impl": "SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1",
+    "function": "observe",
+    "call": "self.cell.read_learning_selection(&coordinator)?"
+  },
+  "observed_source_test": {
+    "job_id": "1a1cf2c103b-2564-19b9",
+    "source_sha": "7efec4fff19ce49b3dceb9d704ac9559a8d92c54",
+    "passed": 375,
+    "failed": 1,
+    "total": 376,
+    "exit_code": 1,
+    "log_bytes": 87063,
+    "log_sha256": "0a4b8c76e6f317e65df8071a96823959635c56f886526ad436c2756022e1e0f4",
+    "full_source_inventory": {
+      "files": 14751,
+      "head": "7efec4fff19ce49b3dceb9d704ac9559a8d92c54",
+      "inventory_compressed_bytes": 762630,
+      "inventory_compressed_sha256": "1403c33e14c2b706649759d6ca77ee8481fe9c7c6581e8f0a588bf26d412dc0e",
+      "inventory_sha256": "9e435555adfc11133d9f6d5c22698df9872fd07378525fce20d1fd97cba815b3",
+      "status": "",
+      "tree": "8e698459293e4d074ccdbe19ccb0997378f1ffe8"
+    },
+    "failed_method": "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered",
+    "failed_subtest": "circuit_feature_original_selection_observation"
+  },
+  "validation_boundary": "The original failing full suite was run. This one-line postimage has not yet been executed; the newly published source requires the full suite, not a single-case substitute."
+}

@@ -104,58 +104,117 @@ async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_
     assert_eq!(fixture.original_files()?, original_files);
     assert_eq!(fixture.upstream_files()?, upstream);
     assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
-    // Each real Trainer peer retains its original 128-frame budget. Independent
-    // negative mechanisms use independent original fixtures, never reconnect
-    // or splice an unfinished material transfer to extend that budget.
-    for (fault, cold_fault) in [
-        ("after-missing", "cold-missing"),
-        ("after-pending", "cold-pending"),
-    ] {
-        let fixture = HostFixture::new(/*pending_claim*/ false).await?;
-        let evaluation = complete(&fixture).await?;
-        let original_files = fixture.original_files()?;
-        let upstream = fixture.upstream_files()?;
-        let (client, peer) = fixture
-            .host
-            .as_ref()
-            .unwrap()
-            .fixture_model_material_commands(/*expected*/ None, fault, /*pause*/ None)?;
-        let material = client.fixture_read_current_at(fixture.at).await?;
-        assert_eq!(material.original_evaluation(), &evaluation);
-        assert!(matches!(
-            client.fixture_read_current_at(fixture.at).await,
-            Err(CommandError::CommitUncertain)
-        ));
-        assert!(matches!(
-            client.read_current().await,
-            Err(CommandError::Unavailable)
-        ));
-        assert_eq!(
-            close(client, peer)?,
-            material.fixture_original_material_pages() as u64 + 2
-        );
-        let (client, peer) = fixture
-            .host
-            .as_ref()
-            .unwrap()
-            .fixture_model_material_commands(
-                Some(evaluation.clone()),
-                cold_fault,
-                /*pause*/ None,
-            )?;
-        assert!(matches!(
-            client.fixture_read_current_at(fixture.at).await,
-            Err(CommandError::CommitUncertain)
-        ));
-        assert!(matches!(
-            client.read_current().await,
-            Err(CommandError::Unavailable)
-        ));
-        assert_eq!(close(client, peer)?, 1);
-        assert_eq!(fixture.original_files()?, original_files);
-        assert_eq!(fixture.upstream_files()?, upstream);
-        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
-    }
+    Ok(())
+}
+
+// Each real Trainer peer retains its original 128-frame budget. Independent
+// negative mechanisms use independent original fixtures, never reconnect
+// or splice an unfinished material transfer to extend that budget.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_completed_missing_and_cold_regression()
+-> anyhow::Result<()> {
+    let (fault, cold_fault) = ("after-missing", "cold-missing");
+    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    let evaluation = complete(&fixture).await?;
+    let original_files = fixture.original_files()?;
+    let upstream = fixture.upstream_files()?;
+    let (client, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(/*expected*/ None, fault, /*pause*/ None)?;
+    let material = client.fixture_read_current_at(fixture.at).await?;
+    assert_eq!(material.original_evaluation(), &evaluation);
+    assert!(matches!(
+        client.fixture_read_current_at(fixture.at).await,
+        Err(CommandError::CommitUncertain)
+    ));
+    assert!(matches!(
+        client.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    assert_eq!(
+        close(client, peer)?,
+        material.fixture_original_material_pages() as u64 + 2
+    );
+    let (client, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(
+            Some(evaluation.clone()),
+            cold_fault,
+            /*pause*/ None,
+        )?;
+    assert!(matches!(
+        client.fixture_read_current_at(fixture.at).await,
+        Err(CommandError::CommitUncertain)
+    ));
+    assert!(matches!(
+        client.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    assert_eq!(close(client, peer)?, 1);
+    assert_eq!(fixture.original_files()?, original_files);
+    assert_eq!(fixture.upstream_files()?, upstream);
+    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_completed_pending_and_cold_regression()
+-> anyhow::Result<()> {
+    let (fault, cold_fault) = ("after-pending", "cold-pending");
+    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    let evaluation = complete(&fixture).await?;
+    let original_files = fixture.original_files()?;
+    let upstream = fixture.upstream_files()?;
+    let (client, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(/*expected*/ None, fault, /*pause*/ None)?;
+    let material = client.fixture_read_current_at(fixture.at).await?;
+    assert_eq!(material.original_evaluation(), &evaluation);
+    assert!(matches!(
+        client.fixture_read_current_at(fixture.at).await,
+        Err(CommandError::CommitUncertain)
+    ));
+    assert!(matches!(
+        client.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    assert_eq!(
+        close(client, peer)?,
+        material.fixture_original_material_pages() as u64 + 2
+    );
+    let (client, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(
+            Some(evaluation.clone()),
+            cold_fault,
+            /*pause*/ None,
+        )?;
+    assert!(matches!(
+        client.fixture_read_current_at(fixture.at).await,
+        Err(CommandError::CommitUncertain)
+    ));
+    assert!(matches!(
+        client.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    assert_eq!(close(client, peer)?, 1);
+    assert_eq!(fixture.original_files()?, original_files);
+    assert_eq!(fixture.upstream_files()?, upstream);
+    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_renewed_evidence_and_expired_window()
+-> anyhow::Result<()> {
     let fixture = HostFixture::new(/*pending_claim*/ false).await?;
     let evaluation = complete(&fixture).await?;
     let original_files = fixture.original_files()?;

@@ -109,10 +109,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
     def test_real_read_edges_are_registered_and_owner_constructors_remain_closed(self):
         expected = {
             "learning_evidence_original_owner_readback": READERS,
-            "circuit_feature_original_next_use_observation": (
-                OWNER,
-                AGENT + "circuit_evaluated_next_use_receipt.rs",
-            ),
+            "circuit_feature_original_next_use_observation": ("codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",),
             **{"learning_original_circuit_next_use_receipt_" + suffix: ()
                for suffix in ("create", "recover", "attest", "readback")},
         }

@@ -21,6 +21,7 @@ impl OriginalCellEvaluationHostV1 {
         let mut begins = 0;
         for request_id in 1..=128_u64 {
             let mut lost = false;
+            let mut first_page = false;
             let exchanged = channel.exchange(|bytes| {
                 let request: wire::Request = serde_json::from_slice(bytes)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
@@ -67,6 +68,14 @@ impl OriginalCellEvaluationHostV1 {
                     }
                     _ => (),
                 }
+                first_page = matches!(
+                    &response.outcome,
+                    wire::Outcome::Page {
+                        index: 0,
+                        offset: 0,
+                        ..
+                    }
+                );
                 let encoded = serde_json::to_vec(&response)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 if encoded.len() > 16_384 {
@@ -87,6 +96,10 @@ impl OriginalCellEvaluationHostV1 {
             if request_id == 1
                 && let Some((ready, release)) = pause.take()
             {
+                anyhow::ensure!(
+                    first_page,
+                    "withdrawal requires the actual first original material page"
+                );
                 ready.send(())?;
                 release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
             }

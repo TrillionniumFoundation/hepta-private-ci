@@ -320,7 +320,7 @@ async fn original_predecessor_withdrawal(which: WithdrawOriginal) -> anyhow::Res
                 result,
                 Err(SelectionError::Evaluated(
                     crate::OriginalCircuitRetainedPublicationErrorV1::Evaluation(
-                        crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
+                        crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
                     )
                 ))
             ));

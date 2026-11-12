@@ -1,0 +1,91 @@
+{
+  "schema": "owner-callers-b298-three-way-merge.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "ancestor": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+  "ours": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+  "theirs": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "theirs_tree": "906546af39b07474f0b9d046a6e780b6d3342743",
+  "overlay_tree": "6c84d01a93323c647dd65a09ca6a128e38005a2a",
+  "paths": [
+    {
+      "path": "CALLERS.toml",
+      "blob": "e18bb29202e2a32e821e1bc7527f1942e63caabd",
+      "bytes": 1106752,
+      "sha256": "88e3ec637ae673219cd67784c82cfb19248477f76b57716545e5633a6509b79e"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "blob": "19365c22dff40823920b290d1c9487d6d3b5c567",
+      "bytes": 12130,
+      "sha256": "37f10f8415eb5ece01f8cb5b75f138faeca87573612ed131441da7116f5f979e"
+    }
+  ],
+  "all_output_blob_readbacks_exact": true,
+  "checks": {
+    "base_roundtrip_exact": true,
+    "unchanged_base_blocks_replaced_by_exact_ours": [
+      "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+    ],
+    "inventory": 537,
+    "base_inventory534_preserved": true,
+    "ours_inventory530_preserved": true,
+    "owner_channel_only_caller_added": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+    "owner_channel_before": 24,
+    "owner_channel_after": 25,
+    "Selection_boundary_unchanged_from_base": true,
+    "all_base_allowlist_lines_preserved": true,
+    "missing_parent_entries_preserved": [
+      "sha256:387f9ad3342b181e9edce05c7f5dd4d7047a4f996e3fc70b91d27374cdde2d9a CALLERS.toml",
+      "sha256:a7cbcaafb773ee73f6c826e2b561c06978d93ddc45a4cfe2acba705755e64185 CALLERS.toml"
+    ],
+    "new_exact_entry": "sha256:88e3ec637ae673219cd67784c82cfb19248477f76b57716545e5633a6509b79e CALLERS.toml",
+    "readback_owner_source_sha256": "f08441a13b03acee186667402ef389ae776dec783f2cd00f370a8dc300986dc0"
+  },
+  "extra_source_closure_correction": {
+    "boundary": "learning_original_owner_command_channel",
+    "before": 24,
+    "after": 25,
+    "one_exact_added_caller": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+    "source_commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+    "source_sha256": "f08441a13b03acee186667402ef389ae776dec783f2cd00f370a8dc300986dc0",
+    "method": "OriginalCircuitEvaluatedSelectionReadbackOwnerV1::serve_readback",
+    "observed_call": "original_owner_command_channel_v1(stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime)",
+    "unchanged": "All original 24 callers and definition/caller markers; Selection original read boundary remains the exact six-caller base block; no production source changed by this overlay."
+  },
+  "patch": {
+    "blob": "f4d9f4265473564e98471c01b8e0b4efaef4a403",
+    "bytes": 83081,
+    "sha256": "4a96cc70e6dc55e73791a78b3d748a2dbe02fac64c7740885a5ae3b7e1df66fa",
+    "stat": [
+      {
+        "path": "CALLERS.toml",
+        "added": 43,
+        "removed": 5,
+        "hunks": 8
+      },
+      {
+        "path": ".github/blob-size-allowlist.txt",
+        "added": 3,
+        "removed": 0,
+        "hunks": 1
+      }
+    ]
+  },
+  "validation": {
+    "source_bytes_and_scope": "PASS static",
+    "parent_preservation_and_roundtrip": "PASS",
+    "inventory_unique_and_parent_order": "PASS",
+    "GitHub_output_full_readback": "PASS",
+    "TOML_parser": "NOT_RUN",
+    "source_closure_QA": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "native_tests": "NOT_RUN"
+  },
+  "commit_created": false,
+  "ref_updated": false,
+  "next": "replay_perception_research overlays these two blobs onto its Rust/QA candidate; root and repository_research_audit own actual merged-source gates."
+}

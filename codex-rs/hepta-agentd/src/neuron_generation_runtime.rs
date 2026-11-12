@@ -84,6 +84,8 @@ pub(crate) enum GenerationCommand {
         response: Response<()>,
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
+    #[cfg(test)]
+    QualificationFileBytes(Response<[Vec<u8>; 2]>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
     #[cfg(unix)]
     LearningRead {
@@ -123,6 +125,11 @@ pub struct NeuronGenerationRuntimeHandleV2 {
 }
 
 impl NeuronGenerationRuntimeHandleV2 {
+    #[cfg(test)]
+    pub(crate) fn qualification_file_sender(&self) -> mpsc::WeakSender<GenerationCommand> {
+        self.sender.downgrade()
+    }
+
     pub async fn step(
         &self,
         request: CellGenerationRequestV2,

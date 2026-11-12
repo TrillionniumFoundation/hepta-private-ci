@@ -272,3 +272,6 @@ pub(crate) mod fixture;
 
 #[cfg(test)]
 pub(crate) use readiness::fixture as readiness_fixture;
+
+#[cfg(test)]
+pub(crate) use evaluated::fixture::check_evaluated_profiles;

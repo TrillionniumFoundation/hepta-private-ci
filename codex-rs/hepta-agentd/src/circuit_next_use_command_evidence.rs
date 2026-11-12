@@ -21,6 +21,8 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
+            #[cfg(test)]
+            let _diagnostics = super::command_test_support::EvidenceDiagnosticsFlush;
             if !channel.exchange(|bytes| {
                 self.evidence_response(bytes, request_id)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)
@@ -106,5 +108,18 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
             request_id,
         );
         Ok(serde_json::to_vec(&response)?)
+    }
+}
+
+#[cfg(test)]
+impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W> {
+    /// Expose only this unchanged original callback to the same-process fixture.
+    /// No alternate response, transport policy, owner or signature is supplied.
+    pub(super) fn fixture_original_evidence_response(
+        &self,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
+        self.evidence_response(bytes, request_id)
     }
 }

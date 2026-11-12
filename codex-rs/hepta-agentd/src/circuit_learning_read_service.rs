@@ -41,6 +41,8 @@ pub struct OriginalCircuitLearningReadOwnerV1<C: AnchorWitnessStore, S: AnchorWi
     context: ReadProfile,
     binding: Digest32,
     connections: Semaphore,
+    #[cfg(test)]
+    tail_source_withdrawal: std::sync::Mutex<Option<std::fs::File>>,
 }
 
 impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S> {
@@ -73,6 +75,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             context,
             binding,
             connections: Semaphore::new(4),
+            #[cfg(test)]
+            tail_source_withdrawal: std::sync::Mutex::new(None),
         };
         owner.require_task_input_current()?;
         let coordinator = owner.context.decision()?;
@@ -201,6 +205,14 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         current: &mut OriginalPublishedReadCurrent<'_, C>,
     ) -> Result<(), Error> {
         OriginalPublishedReadCurrent::require(current, &self.cell)?;
+        self.require_original_task_input()?;
+        OriginalPublishedReadCurrent::require(current, &self.cell)?;
+        Ok(())
+    }
+
+    /// Identity and actual Source input checks inside the caller's one physical
+    /// CURRENT window. No caller observation or cached availability is accepted.
+    fn require_original_task_input(&self) -> Result<(), Error> {
         let input = self.cell.task.source();
         let request = &self.context.prefix().request;
         if self.identity.agent_id.as_str() != request.agent_id.as_str()
@@ -213,7 +225,6 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         }
         let source: &CircuitTaskSourceReadbackV1<_> = &self.source;
         source.require_original_input(&self.identity, input)?;
-        OriginalPublishedReadCurrent::require(current, &self.cell)?;
         Ok(())
     }
 
@@ -229,18 +240,13 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn read_original(&self) -> Result<Readback, Error> {
+        // One no-effect window. The same original CURRENT and Source input
+        // bracket all native reads below; each later request starts anew.
         let mut current = OriginalPublishedReadCurrent::for_original_read(&self.cell);
-        self.require_task_input_current_with_current(&mut current)?;
+        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;
+        self.require_original_task_input()?;
         let coordinator = self.context.decision()?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
-        let selection = cell.read_learning_selection_with_current(&coordinator, &mut current)?;
-        self.require_original_selection(&selection)?;
-        let Publication::Update { original, .. } = &self.cell.task.0.publication else {
-            return Err(Error::Binding("original successor publication"));
-        };
-        let publication = original.publication_digest()?;
-        let source_input =
-            circuit_feature_task_digest_v1(self.cell.task.definition(), self.cell.task.source())?;
         let mode = self.context.mode()?;
         OriginalPublishedReadCurrent::select_purpose(
             &mut current,
@@ -249,35 +255,44 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
                 wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse,
             },
         )?;
-        let (observation, source_publication) = match mode {
-            wire::Mode::Selection => (selection.clone(), None),
+        let (selection, observation, source_publication) = match mode {
+            wire::Mode::Selection => {
+                let selection =
+                    cell.read_learning_selection_with_current(&coordinator, &mut current)?;
+                (selection.clone(), selection, None)
+            }
             wire::Mode::NextUse => {
-                let before = self
-                    .source
-                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?;
                 let prefix =
                     LearningIterationCoordinatorV1::from_snapshot(self.context.prefix().clone())?;
-                let observed = cell.read_learning_next_use_with_current(
-                    &prefix,
-                    &self.source,
-                    &self.identity,
-                    &mut current,
-                )?;
-                if self
-                    .source
-                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?
-                    != before
-                {
-                    return Err(Error::Binding("original C source changed during read"));
-                }
-                (observed, Some(before.publication_digest()))
+                let (selection, observation, publication) =
+                    PublishedCircuitCellOwnerV1::read_learning_next_use_set(
+                        cell,
+                        &prefix,
+                        &self.source,
+                        &self.identity,
+                        &mut current,
+                    )?
+                    .into_parts();
+                (selection, observation, Some(publication))
             }
         };
-        self.require_task_input_current_with_current(&mut current)?;
+        self.require_original_selection(&selection)?;
+        let Publication::Update { original, .. } = &self.cell.task.0.publication else {
+            return Err(Error::Binding("original successor publication"));
+        };
+        let publication = original.publication_digest()?;
+        let source_input =
+            circuit_feature_task_digest_v1(self.cell.task.definition(), self.cell.task.source())?;
+        // The private native NextUse read already checked the actual Source
+        // publication before/after Cell lookup. Reuse those owned results only
+        // here, then independently check the original Selection and Source again.
+        #[cfg(test)]
+        self.fixture_read_tail()?;
         if cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection {
             return Err(Error::Binding("original selection changed during read"));
         }
-        self.require_task_input_current_with_current(&mut current)?;
+        self.require_original_task_input()?;
+        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;
         OriginalPublishedReadCurrent::finish(current)?;
         Ok(Readback {
             observation,
@@ -285,5 +300,38 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             source_input,
             source_publication,
         })
+    }
+}
+
+#[cfg(test)]
+impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S> {
+    /// A native negative test withdraws the same original Source only after
+    /// the actual native observation was read. Production has no such input.
+    pub(crate) fn fixture_withdraw_source_before_read_tail(
+        &self,
+        file: std::fs::File,
+    ) -> Result<(), Error> {
+        let mut pending = self
+            .tail_source_withdrawal
+            .lock()
+            .map_err(|_| Error::Unavailable)?;
+        if pending.is_some() {
+            return Err(Error::Binding("one original Source fixture withdrawal"));
+        }
+        *pending = Some(file);
+        Ok(())
+    }
+
+    fn fixture_read_tail(&self) -> Result<(), Error> {
+        let file = self
+            .tail_source_withdrawal
+            .lock()
+            .map_err(|_| Error::Unavailable)?
+            .take();
+        if let Some(file) = file {
+            file.set_len(0)
+                .map_err(|_| Error::Binding("original Source fixture file"))?;
+        }
+        Ok(())
     }
 }

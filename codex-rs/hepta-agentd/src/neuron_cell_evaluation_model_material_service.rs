@@ -99,6 +99,8 @@ impl OriginalCellEvaluationHostV1 {
                         use crate::OriginalCellEvaluationReceiptErrorV1 as Receipt;
                         use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as Journal;
                         use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1 as Store;
+                        #[cfg(test)]
+                        eprintln!("original Model material Begin refused: {error:?}");
                         let outcome = match error {
                             Error::Receipt(Receipt::Owner(Journal::Pending)) => {
                                 wire::Outcome::Pending

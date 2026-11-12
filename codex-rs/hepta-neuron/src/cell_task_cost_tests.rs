@@ -352,3 +352,154 @@ fn capacity_keeps_replay_available_without_permitting_new_work() {
     );
     assert_eq!(costs, before);
 }
+
+#[test]
+fn batch_merge_matches_ordered_record_for_replays_and_envelopes() {
+    let mut costs = checked(CellTaskCostV2::new(identity()));
+    let original = entry(
+        /*id*/ 3,
+        CellCostStageV2::Inference,
+        CellCostOutcomeV2::Failed,
+    );
+    checked(costs.record(original.clone()));
+    let mut unknown = entry(
+        /*id*/ 4,
+        CellCostStageV2::Recovery,
+        CellCostOutcomeV2::Unknown,
+    );
+    unknown.metrics.energy_microjoules = None;
+    let incoming = [
+        original,
+        unknown.clone(),
+        unknown,
+        envelope(/*id*/ 5, vec![[3; 32], [4; 32]], /*value*/ 2),
+    ];
+    let mut expected = costs.clone();
+    for entry in &incoming {
+        checked(expected.record(entry.clone()));
+    }
+    checked(costs.record_all(&incoming));
+    assert_eq!(costs, expected);
+    assert_eq!(
+        checked(serde_json::to_vec(&costs)),
+        checked(serde_json::to_vec(&expected))
+    );
+    assert_eq!(costs.summary(), expected.summary());
+    assert_eq!(
+        checked(costs.summary()).energy_microjoules,
+        CellCostTotalV2 {
+            known_sum: 1,
+            unknown_entries: 1,
+        }
+    );
+}
+
+#[test]
+fn batch_merge_preserves_first_error_and_the_successful_prefix() {
+    let mut costs = checked(CellTaskCostV2::new(identity()));
+    let original = entry(
+        /*id*/ 3,
+        CellCostStageV2::Training,
+        CellCostOutcomeV2::Succeeded,
+    );
+    checked(costs.record(original.clone()));
+    let next = entry(
+        /*id*/ 4,
+        CellCostStageV2::Training,
+        CellCostOutcomeV2::Succeeded,
+    );
+    let mut conflict = original;
+    conflict.metrics = measured(/*value*/ 2);
+    let mut wrong_source = entry(
+        /*id*/ 5,
+        CellCostStageV2::Training,
+        CellCostOutcomeV2::Rejected,
+    );
+    wrong_source.identity.source_digest = [99; 32];
+    let mut overflow = costs.clone();
+    overflow.entries[0].metrics.cpu_micros = Some(u64::MAX - 1);
+    let mut capacity = checked(CellTaskCostV2::new(identity()));
+    for id in 1..MAX_ENTRIES {
+        let mut work = entry(
+            /*id*/ 1,
+            CellCostStageV2::Queue,
+            CellCostOutcomeV2::Cancelled,
+        );
+        work.event_id[..8].copy_from_slice(&checked(u64::try_from(id)).to_be_bytes());
+        capacity.entries.push(work);
+    }
+    let replay_at_capacity = capacity.entries[0].clone();
+    let mut conflict_at_capacity = replay_at_capacity.clone();
+    conflict_at_capacity.metrics = measured(/*value*/ 2);
+    let mut invalid_at_capacity = wrong_source.clone();
+    invalid_at_capacity.event_id = [0; 32];
+    for (mut actual, incoming, error) in [
+        (
+            costs.clone(),
+            vec![next.clone(), conflict],
+            CellTaskCostErrorV2::EventConflict,
+        ),
+        (
+            costs.clone(),
+            vec![next.clone(), wrong_source],
+            CellTaskCostErrorV2::SourceMismatch,
+        ),
+        (
+            costs,
+            vec![
+                next.clone(),
+                envelope(/*id*/ 6, vec![[99; 32]], /*value*/ 1),
+            ],
+            CellTaskCostErrorV2::InvalidEnvelope,
+        ),
+        (
+            overflow,
+            vec![
+                next.clone(),
+                entry(
+                    /*id*/ 5,
+                    CellCostStageV2::Training,
+                    CellCostOutcomeV2::Rejected,
+                ),
+            ],
+            CellTaskCostErrorV2::ArithmeticOverflow,
+        ),
+        (
+            capacity.clone(),
+            vec![next.clone(), replay_at_capacity, conflict_at_capacity],
+            CellTaskCostErrorV2::EventConflict,
+        ),
+        (
+            capacity,
+            vec![next, invalid_at_capacity],
+            CellTaskCostErrorV2::CapacityExceeded,
+        ),
+    ] {
+        let mut expected = actual.clone();
+        let expected_result = incoming
+            .iter()
+            .try_for_each(|entry| expected.record(entry.clone()).map(|_| ()));
+        let actual_result = actual.record_all(&incoming);
+        assert_eq!(actual_result, Err(error));
+        assert_eq!(actual_result, expected_result);
+        assert_eq!(actual, expected);
+    }
+}
+
+#[test]
+fn empty_batch_preserves_legacy_nonvalidation() {
+    let mut costs = checked(CellTaskCostV2::new(identity()));
+    costs.schema_version = 1;
+    let before = costs.clone();
+    assert_eq!(costs.record_all(&[]), Ok(()));
+    assert_eq!(costs, before);
+    assert_eq!(
+        costs.record_all(&[entry(
+            /*id*/ 3,
+            CellCostStageV2::Training,
+            CellCostOutcomeV2::Succeeded,
+        )]),
+        Err(CellTaskCostErrorV2::InvalidVersion)
+    );
+    assert_eq!(costs, before);
+}

@@ -30,7 +30,7 @@ async fn original_panel_training_proof_rejects_new_source_reentry_and_incomplete
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn original_panel_same_call_training_keeps_four_execute_and_three_readback_frames()
+async fn original_panel_same_call_training_keeps_four_execute_and_two_readback_frames()
 -> anyhow::Result<()> {
     let fixture = Box::pin(TrainingFixture::new(Control::Original)).await?;
     let upstream = fixture.host.upstream_files()?;
@@ -49,14 +49,14 @@ async fn original_panel_same_call_training_keeps_four_execute_and_three_readback
     let completed = fixture.host.original_files()?;
     assert_ne!(completed, missing);
     assert_eq!(client.readback().await?, original);
-    assert_eq!(fixture.requests(), 8);
+    assert_eq!(fixture.requests(), 7);
     assert_eq!(client.readback().await?, original);
-    assert_eq!(fixture.requests(), 11);
-    assert_eq!(fixture.current_responses(), 11);
+    assert_eq!(fixture.requests(), 9);
+    assert_eq!(fixture.current_responses(), 9);
     assert_eq!(finish(client, peer)?, 4);
     assert_eq!(fixture.host.original_files()?, completed);
     assert_eq!(fixture.host.upstream_files()?, upstream);
-    assert_eq!(fixture.finish().await?.0, 11);
+    assert_eq!(fixture.finish().await?.0, 9);
     Ok(())
 }
 
@@ -181,9 +181,9 @@ async fn original_panel_cancel_keeps_the_held_lane_and_consumed_channel() -> any
         original.training_attestation(),
         &fixture.host.original.config.training_evidence
     );
-    assert_eq!(fixture.requests(), 7);
+    assert_eq!(fixture.requests(), 6);
     assert_eq!(fixture.host.original_files()?, durable);
     assert_eq!(finish(client, peer)?, 2);
-    assert_eq!(fixture.finish().await?.0, 7);
+    assert_eq!(fixture.finish().await?.0, 6);
     Ok(())
 }

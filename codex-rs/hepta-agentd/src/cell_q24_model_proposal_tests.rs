@@ -260,10 +260,28 @@ fn q24_model_proposal_evaluation_no_update_never_creates_a_proposal() -> anyhow:
         fixture.clock_owner(&mut owner);
         let saved = fs::read(directory.path().join("proposal"))?;
         let now = fixture.now;
-        assert!(matches!(
-            fixture.commit(&mut owner, now),
-            Err(ProposalError::Binding("NoUpdate has no model proposal"))
-        ));
+        let result = fixture.commit(&mut owner, now);
+        match disposition {
+            IndependentEvaluationDispositionV1::Ineligible => assert!(
+                matches!(
+                    &result,
+                    Err(ProposalError::Binding("NoUpdate has no model proposal"))
+                ),
+                "complete Ineligible evaluation must refuse the proposal: {result:?}"
+            ),
+            IndependentEvaluationDispositionV1::InsufficientEvidence => assert!(
+                matches!(
+                    &result,
+                    Err(ProposalError::Evaluation(
+                        crate::CellLearningEvaluationErrorV1::InsufficientEvidence
+                    ))
+                ),
+                "missing evidence must not become a NoUpdate receipt: {result:?}"
+            ),
+            IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
+                anyhow::bail!("this rejection fixture must not request eligible selection");
+            }
+        }
         assert_eq!(fs::read(directory.path().join("proposal"))?, saved);
     }
     Ok(())

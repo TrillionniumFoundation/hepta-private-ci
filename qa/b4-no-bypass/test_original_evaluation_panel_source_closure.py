@@ -145,6 +145,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         for marker in (
             "let before = self.read_cells()?",
             "self.qualification.completed_bytes()?",
+            "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(",
             "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(\n"
             "            &mut sources,\n"
             "            &self.qualification.config,\n"

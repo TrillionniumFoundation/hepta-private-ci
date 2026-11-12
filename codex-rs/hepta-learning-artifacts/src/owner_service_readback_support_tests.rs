@@ -5,6 +5,8 @@ use std::path::Path;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 pub(super) struct OriginalPublicationReadbackFixture {
@@ -143,9 +145,21 @@ impl OriginalPublicationReadbackFixture {
                 if path.is_dir() {
                     visit(root, &path, out);
                 } else {
+                    // The writer fence is a verified empty sentinel. Windows
+                    // rejects data reads through a second handle while its
+                    // original exclusive lock is held, including at EOF.
+                    let bytes = if path == root.join("writer").join("owner.lock") {
+                        let metadata =
+                            fs::metadata(&path).fixture("original writer fence metadata");
+                        assert!(metadata.is_file());
+                        assert_eq!(metadata.len(), 0);
+                        Vec::new()
+                    } else {
+                        fs::read(&path).fixture("original bytes")
+                    };
                     out.insert(
                         path.strip_prefix(root).fixture("owned path").to_owned(),
-                        fs::read(&path).fixture("original bytes"),
+                        bytes,
                     );
                 }
             }

@@ -13,6 +13,7 @@ use codex_hepta_types::Digest32;
 use tokio::runtime::Handle;
 use tokio::sync::Semaphore;
 
+use super::super::training_read_proof::OriginalPanelReceiptReadV1;
 use super::super::training_read_proof::OriginalPanelTrainingCallV1;
 use super::super::training_read_proof::OriginalPanelTrainingReadV1;
 use super::super::training_read_proof::OriginalPanelTrainingSourceV1;
@@ -152,10 +153,17 @@ impl Owners {
     ) -> Result<Receipt, Error> {
         let started_at = self.current_time()?;
         context.authenticate(started_at)?;
-        let call = OriginalPanelTrainingSourceV1::call(
-            &self.training_source,
-            self.panel.retention.len() + 1,
-        )?;
+        let call = match action {
+            wire::Action::Execute => OriginalPanelTrainingSourceV1::call(
+                &self.training_source,
+                self.panel.retention.len() + 1,
+            )?,
+            wire::Action::Readback => OriginalPanelTrainingSourceV1::readback_call(
+                &self.training_source,
+                &self.panel.primary,
+                &self.panel.retention,
+            )?,
+        };
         let mut training = OriginalPanelTrainingCallV1::begin(&call)?;
         let before = self.read_panel_with_training(&mut training).await?;
         if before.training() != &context.training
@@ -201,8 +209,27 @@ impl Owners {
                     .await?
                 }
                 wire::Action::Readback => {
-                    OriginalCellEvaluationReceiptOwnerV1::readback(&mut self.evaluator, sources)
-                        .await?
+                    match OriginalPanelTrainingReadV1::receipt_read(
+                        &mut training,
+                        primary.trainer.as_ref(),
+                        config,
+                    )? {
+                        OriginalPanelReceiptReadV1::Physical => {
+                            OriginalCellEvaluationReceiptOwnerV1::readback(
+                                &mut self.evaluator,
+                                sources,
+                            )
+                            .await?
+                        }
+                        OriginalPanelReceiptReadV1::Bound(proof) => {
+                            OriginalCellEvaluationReceiptOwnerV1::readback_with_original_panel_training(
+                                &mut self.evaluator,
+                                sources,
+                                proof,
+                            )
+                            .await?
+                        }
+                    }
                 }
             }
         };
@@ -332,3 +359,11 @@ pub use model_material::OriginalCellEvaluationModelMaterialV1;
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_training_read_access_tests.rs"]
 mod training_read_tests;
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_member_read_access_tests.rs"]
+mod member_read_tests;
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_bound_receipt_access_tests.rs"]
+mod bound_receipt_tests;

@@ -336,6 +336,18 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel()
 -> anyhow::Result<()> {
+    let started = std::time::Instant::now();
+    let phase = |name: &str| {
+        eprintln!(
+            "HEPTA_CANDIDATE_FAULTS phase={name} elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+    };
+    phase("wire-bootstrap");
+    // These faults change only a reply after the original owner has read it.
+    // Keep that completed owner, but consume a separate transport for each fault.
+    let run = completed_candidate().await?;
+    let mut wire_pages = 0_u64;
     for fault in [
         Fault::WrongPage,
         Fault::WrongCompletion,
@@ -344,7 +356,8 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Fault::CorruptHeads,
         Fault::CloseAfterFirst,
     ] {
-        let run = completed_candidate().await?;
+        phase("wire-case");
+        eprintln!("HEPTA_CANDIDATE_FAULTS fault={fault:?}");
         let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
         let (connection, peer) = page_peer(
             Arc::clone(&run.owner),
@@ -398,6 +411,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             Err(CandidateError::Unavailable)
         ));
         drop(client);
+        let page_count = peer.frames.load(Ordering::Acquire);
         assert_eq!(
             peer.finish()?,
             if matches!(fault, Fault::CorruptHeads) {
@@ -410,10 +424,15 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             (run.fixture.training_bytes()?, run.fixture.bytes()?),
             original
         );
-        run.close()?;
+        wire_pages += page_count;
     }
+    let counts = run.close()?;
+    eprintln!("HEPTA_CANDIDATE_FAULTS pages={wire_pages} material_counts={counts:?}");
+    assert!(counts.iter().all(|count| *count < 128));
 
+    phase("renewal-bootstrap");
     let run = completed_candidate().await?;
+    phase("renewal-ready");
     let context = support::context(&run.fixture, &run.dataset);
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let mut renewed = run.training.attestation().clone();
@@ -430,12 +449,26 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         command_now()?,
     )?;
     assert_ne!(renewed.attestation(), run.training.attestation());
+    let original_end = run.training.attestation().expires_at;
+    let after_original_end = original_end
+        .checked_add(1)
+        .ok_or_else(|| anyhow::anyhow!("fixture evidence expiry overflow"))?;
+    // Signed evidence includes its final second; the next second is expired.
     assert!(
         wire::authenticate_receipt(
             &context,
             run.training.receipt().clone(),
             run.training.attestation().clone(),
-            run.training.attestation().expires_at,
+            original_end,
+        )
+        .is_ok()
+    );
+    assert!(
+        wire::authenticate_receipt(
+            &context,
+            run.training.receipt().clone(),
+            run.training.attestation().clone(),
+            after_original_end,
         )
         .is_err()
     );
@@ -444,7 +477,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             &context,
             renewed.receipt().clone(),
             renewed.attestation().clone(),
-            run.training.attestation().expires_at,
+            after_original_end,
         )
         .is_ok()
     );
@@ -524,7 +557,9 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     );
     run.close()?;
 
+    phase("withdrawal-bootstrap");
     let mut run = completed_candidate().await?;
+    phase("withdrawal-ready");
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
@@ -551,6 +586,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         async move { client.readback().await }
     });
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    phase("withdrawal-response-held");
     run.fixture.withdraw()?;
     release.send(())?;
     assert!(matches!(
@@ -580,7 +616,9 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         "a real original source/evidence read must reject withdrawal"
     );
 
+    phase("cancel-bootstrap");
     let run = completed_candidate().await?;
+    phase("cancel-ready");
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
@@ -607,6 +645,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         async move { client.readback().await }
     });
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    phase("cancel-response-held");
     pending.abort();
     match pending.await {
         Err(error) => assert!(error.is_cancelled()),
@@ -626,6 +665,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         original
     );
     run.close()?;
+    phase("complete");
     Ok(())
 }
 

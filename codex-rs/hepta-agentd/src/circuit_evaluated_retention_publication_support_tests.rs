@@ -50,7 +50,7 @@ impl Peers {
 }
 
 pub(super) struct PublicationFixture {
-    pub(super) host: HostFixture,
+    pub(super) host: Box<HostFixture>,
     trainer: Arc<Trainer>,
     trainer_context: OriginalCellQ24TrainingCommandContextV1,
     pub(super) training: OriginalCellQ24TrainingCommandReceiptV1,

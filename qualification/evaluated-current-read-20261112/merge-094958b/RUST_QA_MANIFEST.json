@@ -1,0 +1,353 @@
+{
+  "schema": "hepta.evaluated-current-read.merge-source-manifest.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "ancestor_commit": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+  "ours_commit": "f770564dcd140e279b4df55b88e5268b79aeba6b",
+  "upstream_commit": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+  "upstream_tree": "038d242af7c2a2e6d9a9376babdcde570d5bb3a3",
+  "prepared_tree": "f034b8fe1c1fd32fa4eac571e4382b48cf3a5f1d",
+  "source_overlay_count": 15,
+  "paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_binding_tests.rs",
+      "base_blob_sha": "1cac6bab796d4fd648f90d5c7ba219f4a64dd63a",
+      "ours_blob_sha": "e8833bb13ef4ed90ec74899335257925495708a1",
+      "post_blob_sha": "1cac6bab796d4fd648f90d5c7ba219f4a64dd63a",
+      "utf8_bytes": 13246,
+      "sha256": "c5d64ef0bb28d64abd46adddc01461bea561b466b5ba4bbf033d7a6b2b3c87f9",
+      "resolution": "retain_complete_upstream",
+      "changed_from_base": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "base_blob_sha": "3dbd154ed4558c310625f57138c41aedaa182cc7",
+      "ours_blob_sha": "9b1febb259a50cb02d144af610da65ebf2a700bc",
+      "post_blob_sha": "9b1febb259a50cb02d144af610da65ebf2a700bc",
+      "utf8_bytes": 4679,
+      "sha256": "050bf6f10b2a928b4d7d9f66dd86eeb278f974325d70723f29dd777dc6b3168a",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+      "base_blob_sha": null,
+      "ours_blob_sha": "b7908d06d12419e029d5d048406e24f915918c19",
+      "post_blob_sha": "b500835023c268bf7253049bc2264e93d5117b75",
+      "utf8_bytes": 4901,
+      "sha256": "6da4803b22293e9f4db16e44b376040deafcbc19d6889d1457efda06a4720af7",
+      "resolution": "adapt_test_to_same_original_trainer_evaluator_continuation",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+      "base_blob_sha": null,
+      "ours_blob_sha": "2c9d23e02cb8bc0069c1411e846960e416a9dce3",
+      "post_blob_sha": "2c9d23e02cb8bc0069c1411e846960e416a9dce3",
+      "utf8_bytes": 2546,
+      "sha256": "657e5b65333223fe694ad190c0ef91290c2ac995d40669c7634a13ab16a2d033",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "base_blob_sha": "ffd7af2ce29ea5fe489c45a61a21b13ab45a61ac",
+      "ours_blob_sha": "0fe1a11dadac9423b89f9840af75671bde89d589",
+      "post_blob_sha": "ba5bb57fb48ec0983050436b48e1b69874c50deb",
+      "utf8_bytes": 12154,
+      "sha256": "41120b94806e7b502aec1ffdfdc1c1980e60d9753683e25f9f2b0d6772144f6a",
+      "resolution": "retain_complete_a9_context_and_insert_original_borrowed_read_proof",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "base_blob_sha": "31839e7d688471e97945493bf77f08c0b1fc3ce8",
+      "ours_blob_sha": "f8235bff86212e46d82a354e01fb9efaadbd04c5",
+      "post_blob_sha": "f8235bff86212e46d82a354e01fb9efaadbd04c5",
+      "utf8_bytes": 5224,
+      "sha256": "7e4d0fa04bfc2e7e39f2ba948501d80477048581a533f7ddba034ca01ef85fd8",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "base_blob_sha": "a4e4dd63ad5af3641d0afbbfc15e65d6f78cca19",
+      "ours_blob_sha": "1e51215fbf5fdbf0998f1cab524c84e94de5355d",
+      "post_blob_sha": "3a0e5d4697c869ba9f9ddf5ce39b35f7f9cc3e51",
+      "utf8_bytes": 13637,
+      "sha256": "149c87a60c5e6fb7406e12ae210053f6dae67f7baf11aa823b5dc6b8c0b0bf4d",
+      "resolution": "retain_complete_upstream_and_append_current_read_positive_module",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "base_blob_sha": "c858c9fbc172355f3dab28a68367b183d69c34c5",
+      "ours_blob_sha": "b207f9bf99365f63f65326c80be43b7219d119a1",
+      "post_blob_sha": "b207f9bf99365f63f65326c80be43b7219d119a1",
+      "utf8_bytes": 16200,
+      "sha256": "e14abcdcd4887104cd6a3d2e33861be20f2bd895c8eb1644cca1459adbd79704",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "base_blob_sha": "5f13b084585c882cf016dc1d7e8e3afaa4b89d89",
+      "ours_blob_sha": "4f54135d674c79a95bb9ce420ce6cdb6bcf66ea8",
+      "post_blob_sha": "4f54135d674c79a95bb9ce420ce6cdb6bcf66ea8",
+      "utf8_bytes": 7182,
+      "sha256": "57674fb384c31b8ee918a7ceb900f4fec679b0625737703ef4df8c2e16e9bb1e",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "base_blob_sha": "b10334c2e89bb2862ea753708a11cee863ab300b",
+      "ours_blob_sha": "8e011f1d7e4c9b0f58e797bf4520acaf7987af3f",
+      "post_blob_sha": "8e011f1d7e4c9b0f58e797bf4520acaf7987af3f",
+      "utf8_bytes": 12195,
+      "sha256": "f23bfa9949ec2255983e188fbbd4866f6dd0798544e89a05713b0020e1c91ca5",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "base_blob_sha": "9b7aabe73fdeb343bb17347c553ba544174b523b",
+      "ours_blob_sha": "a038c6f253ea25a0e6adc8fdb0242f9cea2c6421",
+      "post_blob_sha": "a038c6f253ea25a0e6adc8fdb0242f9cea2c6421",
+      "utf8_bytes": 10146,
+      "sha256": "9f2cfe2e60c83faf45ff799947b6efd16717e6c89ebf492fd09cc10daddc587e",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "base_blob_sha": "6947e5e0bf9c73b2e8f0de0232b72256dd1ed9e3",
+      "ours_blob_sha": "e12e83e3e98fb798da5182367a0f13fcb993077e",
+      "post_blob_sha": "e12e83e3e98fb798da5182367a0f13fcb993077e",
+      "utf8_bytes": 7124,
+      "sha256": "06ed2c5ec18b8f424024ce3d706973258ebf7bab914fb8874092f0d2d6566752",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "base_blob_sha": "b7a6392ceaf4929714525c6c6e109ec306275957",
+      "ours_blob_sha": "b5a3ab5372bc80a9d75d756b0d7cf802e0c2324c",
+      "post_blob_sha": "b5a3ab5372bc80a9d75d756b0d7cf802e0c2324c",
+      "utf8_bytes": 15056,
+      "sha256": "861f564f183ec857c01d0501954829c6efdbc2e18b9abb1fa727f55b25aa51e1",
+      "resolution": "retain_exact_ours",
+      "changed_from_base": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "base_blob_sha": "54f37ffc8a7a562a379f04298eca608b00dfbcea",
+      "ours_blob_sha": "8ce38deba29a978cbd03a5500c27b2ff11386cee",
+      "post_blob_sha": "3f9bb21b78878f85fb43650765320c16d74e0e3e",
+      "utf8_bytes": 16226,
+      "sha256": "641d394d3c65464f0b9945c85c635b26ca37545d3cfecf830fa9a2bde1e08d9b",
+      "resolution": "retain_ours_evaluated_guards_and_match_upstream_selector_profile_markers",
+      "changed_from_base": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "base_blob_sha": "3d4784411e7c65e54643fe1a11d80bbc339c9650",
+      "ours_blob_sha": "4a2a8c59a536a77bda06f90e087ca1e9c100e349",
+      "post_blob_sha": "3d4784411e7c65e54643fe1a11d80bbc339c9650",
+      "utf8_bytes": 9833,
+      "sha256": "303d9d1f083cdd069d16f5ae19b6fd1e7c961452b0e8f8d50dda26793caeb5f2",
+      "resolution": "retain_complete_upstream",
+      "changed_from_base": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "base_blob_sha": "9a234c73dc6382cb586aea01722bc071c010e0a5",
+      "ours_blob_sha": "0cbecba3be2293586637938a5bd3ddd825023c68",
+      "post_blob_sha": "9a234c73dc6382cb586aea01722bc071c010e0a5",
+      "utf8_bytes": 5533,
+      "sha256": "2b17d2ff155974e152d2fcb3bfd13bfcad5dc2df8ad3d7ab1502b59046919926",
+      "resolution": "retain_complete_upstream",
+      "changed_from_base": false
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.json",
+      "base_blob_sha": null,
+      "ours_blob_sha": "e6a5fe8ae695a79a8ec1a0d465bae14bdf2eab8d",
+      "post_blob_sha": "e6a5fe8ae695a79a8ec1a0d465bae14bdf2eab8d",
+      "utf8_bytes": 12792,
+      "sha256": "32b7e2dd1ddc70a7e1c1b5a2075158625240e76b1633b13f6e4fd4d6a6fa9520",
+      "resolution": "preserved_failure_metadata",
+      "changed_from_base": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.log",
+      "base_blob_sha": null,
+      "ours_blob_sha": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c",
+      "post_blob_sha": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c",
+      "utf8_bytes": 329389,
+      "sha256": "a3e0a7e0b460d6ee76a2998e1dddfa4b0c667bcba6257dab35e683e7e623611a",
+      "resolution": "preserved_original_decoded_log",
+      "changed_from_base": true
+    }
+  ],
+  "excluded_parallel_paths": [
+    "CALLERS.toml",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "static_checks": {
+    "all_modified_source_postimages_read_in_full": true,
+    "new_postimage_blob_readbacks_equal": true,
+    "previous_raw_log_blob_unchanged": true,
+    "previous_failure_metadata_blob_unchanged": true,
+    "upstream_qa_negative_cases_retained": true,
+    "upstream_publication_retention_and_withdrawal_cases_retained": true,
+    "positive_test_uses_owned_original_continuation": true,
+    "expected_training_evaluation_peer_request_counts": [
+      5,
+      5
+    ],
+    "expected_current_peer_request_counts": [
+      2,
+      2
+    ],
+    "a9_context_restored_exactly_after_removing_two_read_proof_insertions": true,
+    "original_read_proof_implementation_byte_identical_to_ours": true,
+    "new_production_api_introduced_by_merge_resolution": false,
+    "published_read_selector_qa": {
+      "source_checked": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "refusal_call_sites_before": 7,
+      "refusal_call_sites_after": 7,
+      "report": [
+        {
+          "kind": "selector_remote",
+          "old_marker_present": false,
+          "new_marker_present": true
+        },
+        {
+          "kind": "selector_before",
+          "old_marker_present": false,
+          "new_marker_present": true
+        },
+        {
+          "kind": "selector_completed",
+          "old_marker_present": false,
+          "new_marker_present": true
+        },
+        {
+          "kind": "observer_remote",
+          "old_marker_present": true,
+          "new_marker_present": true
+        },
+        {
+          "kind": "observer_before",
+          "old_marker_present": true,
+          "new_marker_present": true
+        },
+        {
+          "kind": "observer_completed",
+          "old_marker_present": true,
+          "new_marker_present": true
+        }
+      ],
+      "qualification": "Static string presence only; Python source guard tests not executed."
+    }
+  },
+  "validation_limits": {
+    "native_compilation": "not_executed",
+    "native_tests": "not_executed",
+    "formatting": "not_executed_for_merge_postimages",
+    "source_guards": "not_executed_for_merge_postimages; only exact old/new marker presence inspected",
+    "complete_guard_inventory": "requires parallel CALLERS and exact blob-size allowlist overlay before CI",
+    "transport_scope": "Existing same-process test transports; no cross-UID deployment or Root/daemon restart claim.",
+    "original_connections": "The test retains the original T/E connections and re-reads their opaque receipts at the end. CURRENT read_current does not itself make T/E peer queries.",
+    "qualification": "Actual CI on the final merged commit remains required.",
+    "fixed_merge_input": "The parent selected 094958b83a8fd19e3bc6d01a092793c0f420bb75 for this merge; later ref movement is not incorporated."
+  },
+  "supersedes_unpublished_prepared_tree": "04bf64df42e545f0ee0e739551635438944b12ed",
+  "preserved_upstream_changes_since_a43": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "upstream_blob_sha": "ffd7af2ce29ea5fe489c45a61a21b13ab45a61ac",
+      "resolution": "read_proof_added_without_changing_upstream_bytes"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "upstream_blob_sha": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "upstream_blob_sha": "ac972f2d9bf75a495cae04b2dfb5160281d0f336",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "upstream_blob_sha": "ef835edd127cf13b8d0ee02f466f15fabe227c8d",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "upstream_blob_sha": "15eae97b54a3abf933d26b4256311a3d1001c70c",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "upstream_blob_sha": "18ce8c21ef17d1f93306bbbf313456811cb90f77",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "upstream_blob_sha": "442c720a690d273f4be92d2135dcc7eec5ab3aec",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "upstream_blob_sha": "c0cc0d9615bbe475febe2a5c70ede612ba0a58ac",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "upstream_blob_sha": "621d1e6b696792830b5eafc3a9d9a34663e9a7a1",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+      "upstream_blob_sha": "0a4e6b6414c35aac7fdf8230c5494bf2d9552ea2",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+      "upstream_blob_sha": "72d1dc1ce3395b420507aaa6d80fe0401356faf3",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+      "upstream_blob_sha": "5fc1f547f0ea29d8e60857cf4a7497e1885f7e19",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "upstream_blob_sha": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+      "upstream_blob_sha": "139ddbe6fa935425ebab1f65482dad494c958d94",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "upstream_blob_sha": "e64619d52662cb1a2b7f66fa08f371e07d64cb92",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+      "upstream_blob_sha": "ccaaa271ed795e4051f347e0302bac8fdb1f8043",
+      "resolution": "inherited_exact_from_upstream_tree"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_experience_v2_source_closure.py",
+      "upstream_blob_sha": "430088028179f0c28a5dccdb15d05ad748754da1",
+      "resolution": "inherited_exact_from_upstream_tree"
+    }
+  ]
+}

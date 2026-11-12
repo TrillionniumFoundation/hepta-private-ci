@@ -1,0 +1,1010 @@
+{
+  "schema": "evaluated-current-b298-merge-review.v1",
+  "status": "CANDIDATE_NOT_EXECUTED",
+  "ancestor": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+  "ours": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+  "ours_tree": "e338a817d39a7269ea815bf4b1a594d9985779d9",
+  "upstream": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "upstream_tree": "906546af39b07474f0b9d046a6e780b6d3342743",
+  "upstream_commits": 7,
+  "our_commits": 4,
+  "upstream_paths": 129,
+  "our_paths": 24,
+  "direct_path_overlaps": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml"
+  ],
+  "semantic_fixes": [
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "ours_blob_sha": "865411d2a6a90e79eb267874d3ba6464921a05fa",
+      "post_blob_sha": "4109be86d05e265d2b84bc1290467ca0d6ba15e9",
+      "bytes": 21051,
+      "reason": "Exact new upstream original readback transport caller: 24→25; Selection's verified six-caller tuple unchanged."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "ours_blob_sha": "3f9bb21b78878f85fb43650765320c16d74e0e3e",
+      "post_blob_sha": "1ac0f9ff8e682ee26484690f20e2743ba1dd2820",
+      "bytes": 16085,
+      "reason": "Upstream Observer now requires evaluated profile and RemoteOwner|EvaluatedOwner in both-side predecessor reads; preserve all existing mutation rejection assertions."
+    }
+  ],
+  "inherited_upstream_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+      "blob_sha": "8b20df0711fa3bbaef70685b7a5381c6486a936e",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+      "blob_sha": "22bb410849e9f5f93b433bfff4c44547822f4655",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "blob_sha": "e16820f8bab3027ab74490f942a34c7ee5470739",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs",
+      "blob_sha": "377d40bbd92baab5c8502bc51e0f942ec996495f",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "blob_sha": "d32eb1681ce8e51b823ed483955d69257a25d981",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+      "blob_sha": "d1d9deddfd7bd34a6a096cb1dbe67f046fd088c7",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs",
+      "blob_sha": "36f1822242a88da3fd704519aa68df37674ca58c",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "blob_sha": "2bda6cb47bd4777636373e36a7faf9124b433d49",
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "blob_sha": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "blob_sha": "2e301a7097eaf063f9f241d736a47340b82d4218",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+      "blob_sha": "c1e11662921a5b869d060dad3a9a2d53a53668fb",
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "blob_sha": "27fbc11be9afac9a008fdfe08f2c29ed2b3f53df",
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "blob_sha": "a83916a9e2150f4c0edc819b128b433590701a6d",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "blob_sha": "704673bda41352c26a5f464fc0b0ab75654eef22",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "blob_sha": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "blob_sha": "191a74d44cfda509b24919a89144a93ec90b4f70",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "blob_sha": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs",
+      "blob_sha": "87f266fa176beb1937e09e1a8ec800be73fda47d",
+      "status": "added"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "blob_sha": "821125b04b65cb63d79ac7d5d1285fbaf3155204",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "blob_sha": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs",
+      "blob_sha": "383991aab1a6e0b6aa1469d098d816c10375dfe6",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "blob_sha": "0e7f3c909fcc97742e228eb4ad189bd074727604",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "blob_sha": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+      "blob_sha": "c446a6870044b77f51ae4049df2a4a42482920c0",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "blob_sha": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blob_sha": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "blob_sha": "002394b4a405abfdb51c6f80f19a203a68a62e18",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "blob_sha": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "blob_sha": "ea8b12aebdfb2441c09efa56830ff9e6417be6ae",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs",
+      "blob_sha": "246bb07544446aca95ee67c356e184befd9a5f7a",
+      "status": "modified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "blob_sha": "b7f4bf79795381a21f77680498cb4431895e673b",
+      "status": "modified"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "blob_sha": "e038407ef642191d77b1185f1e826f16540e5270",
+      "status": "added"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+      "blob_sha": "776e861fe82c208f6f61af73208a2bff263239ef",
+      "status": "modified"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+      "blob_sha": "e4795876083d972b5a655a743edcefc42f9bd1f1",
+      "status": "modified"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ARTIFACTS.json",
+      "blob_sha": "f32ea739235a22944198b50f703d977f6d6ab4a7",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/INGESTION.json",
+      "blob_sha": "a0c97f506cc7373acdd3d9a61462a441b027d2c0",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/INTEGRITY.json",
+      "blob_sha": "692e486698b4fd3e757ad38923a8debb175a66f3",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/PROGRESS.json",
+      "blob_sha": "7ef68e4014f26edd6671eb3013ec20277f064690",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/README.md",
+      "blob_sha": "cc8369b765fd77ffaa56ed43c12c1baa6b769eaf",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/caller-ufcs.patch",
+      "blob_sha": "70b2afc32b65a4a1e887eb1fdd66f871fdf6368c",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/launch-receipt.json",
+      "blob_sha": "d5bbe03c17dbefcb3f3ccfb2e60a10aaff736d77",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/manifest.json",
+      "blob_sha": "28eab139528f03c8226b66258192bf678b6017f5",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/original-result-readback.json",
+      "blob_sha": "633688c77d5bc3fc609bc9d6ad1bb0d299b655c1",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/result.from-pty.json",
+      "blob_sha": "858f8fb8baf76fee37210c716ca101560f361438",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/result.json",
+      "blob_sha": "858f8fb8baf76fee37210c716ca101560f361438",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/rustfmt.raw.log",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/source-after.json",
+      "blob_sha": "be8bbd0959037e1546fbffc56a7cfd9e438898e3",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/source-before.json",
+      "blob_sha": "be8bbd0959037e1546fbffc56a7cfd9e438898e3",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/caller-ufcs-fix-v1/terminal-receipt.json",
+      "blob_sha": "a62d47022eea73992dbda4d426622ccba3df455d",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/COMPLETE_SOURCE_POSTIMAGES.json",
+      "blob_sha": "8090798baeafc07b32b0cc32ddcc2b11f0396d42",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/C_POSTIMAGES_NO_LIB.json",
+      "blob_sha": "1103c6057d61b3cf0f299b1fbed7387844c770ea",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/LOCAL_MATERIALIZED_POSTIMAGES.json",
+      "blob_sha": "d8043662f194bdf6f1315d17cb0f6de34a058acd",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/MAINTENANCE_FOLLOWUP_POSTIMAGES.json",
+      "blob_sha": "ddc1343e8a563be25ea41b01188aa1ffa4a95118",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/MATERIALIZED_QA_INPUTS.json",
+      "blob_sha": "e329d615c4de78f28cc40fd419fc90c7726c89ea",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v2.json",
+      "blob_sha": "80f9519db5d51a67677a04efe427f5b0e5e8c2f7",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v2.log",
+      "blob_sha": "27c08bbfe3d55c91588acbb54d59405a1a21c4c6",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v3.json",
+      "blob_sha": "ca0836cbeaab5ac6c4f78c02d026606726b53e1f",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/complete-integration-source-preflight/complete-integration-source-qa-v3.log",
+      "blob_sha": "a9f3b19718e13254d5546473d8e13b9621155aef",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/LOCAL_RECOVERY.json",
+      "blob_sha": "fb1a53f2454d9b69ff39b8e83461d21c4d6f3e74",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/before-format-manifest.json",
+      "blob_sha": "5bf21cc0b87677d3d23e30541bb55f9df41baeb8",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/circuit_model_selection_material_support_tests.rs.merge.stderr",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/circuit_model_selection_owner_support_tests.rs.merge.stderr",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/five-reviewed-lints.patch",
+      "blob_sha": "4a64ed90cbca477f8345534dc490e46a57f5eb3d",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/format-only.patch",
+      "blob_sha": "07c3b8f8c71639175921136ccd99c40dab57c620",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/format-terminal.json",
+      "blob_sha": "3b8a223137eb7baedbbcc0f217941eca4341c75f",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/input-manifest.json",
+      "blob_sha": "57414cf5d92d09b20d2e628be1c9b251d53ab0bd",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/integration.patch",
+      "blob_sha": "d89d40268f8d5faae2860b843fb53446155b08ec",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/manifest.json",
+      "blob_sha": "4d16342dc5144b7952160f168b5c24bf974f5c9b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/rustfmt.raw.log",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-a43-followup-v1/three-way-merges.json",
+      "blob_sha": "3486097ddb6de87230c29e69a3082caacbdb4fb8",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-final-lib-v1/result.from-pty.json",
+      "blob_sha": "5e9f3140bf0444b7c6b6d0cdb7c26702ec057422",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-final-lib-v1/root-terminal-receipt.json",
+      "blob_sha": "f3acbdd31901ae07e0e3baa09f79a3815a295a3d",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/format-final-lib-v1/rustfmt-terminal.raw.log",
+      "blob_sha": "e794b356bc75769a0acfeb7359d6c61264ab51e8",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/self-test.json",
+      "blob_sha": "a62abaa62a09c1e20231cfcc6c850de106bd8b55",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/self-test.log",
+      "blob_sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/verify.json",
+      "blob_sha": "2412e04d811a83e5ccc1567f80b32daa98b55c9c",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/daemon-learning-caller-proof/verify.log",
+      "blob_sha": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/result.json",
+      "blob_sha": "31211898c224a8efca34120c781830987bbd33ea",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/source-after.json",
+      "blob_sha": "1271d5c59177312b9dc24f85cd6bdc2b09286a8b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/fullcaller-726af8f4/source-before.json",
+      "blob_sha": "1271d5c59177312b9dc24f85cd6bdc2b09286a8b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/history/ARTIFACTS.initial.json",
+      "blob_sha": "9c9fb647a1a64024a14dd649b0da420752f00c4c",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/intake-source-preflight/INTAKE_POSTIMAGES.json",
+      "blob_sha": "337f0863ab091629e811ae19f3e950d4dd1bde72",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/intake-source-preflight/intake-integration-source-qa-v2.json",
+      "blob_sha": "b60bc7f015de869128cb17b30aaab8ee8a91e52f",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/intake-source-preflight/intake-integration-source-qa-v2.log",
+      "blob_sha": "68b65198879ca375a7b6a4650fac37d7930fcb2e",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/RECOVERY.json",
+      "blob_sha": "53880c4eb32100499cb03a4df838df790af6a9be",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/just-fix.raw.log",
+      "blob_sha": "f63f334efd7ff3a92ba427b8d645a125daed4b0d",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/maintenance.patch",
+      "blob_sha": "7ef40fe0d1f933ab1c129cea8b829ccd8e4cebee",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/postimages.json",
+      "blob_sha": "5f4351fc957c4db30580df6f10740ff1fc098d3e",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-726af8f4/result.json",
+      "blob_sha": "d69a12ad4550f5168de392cc4dce1696f6f7a117",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/just-fix.json",
+      "blob_sha": "15a68f424ad2acef5ef8ac9330e69b9383511e92",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/just-fix.raw.log",
+      "blob_sha": "f10babed9aa8d1eeaf096065962dba530d324bc2",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/native-environment.json",
+      "blob_sha": "b42ff37ea76374ebde766093499cd25019adf1ac",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/postimages.json",
+      "blob_sha": "806aac9572712ba19891eb750855ae31ce286b2c",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/result.json",
+      "blob_sha": "454f9f02b3e18a7ac50c68a783ef47519e682264",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/source-after.json",
+      "blob_sha": "ddb291c1e386f17e11750eace89e1178c0c7fdf3",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-8b4d162c/source-before.json",
+      "blob_sha": "ddb291c1e386f17e11750eace89e1178c0c7fdf3",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/followup-lints.json",
+      "blob_sha": "a3d80ed530e639106fdf7220335a23021b59ba12",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/just-fix.raw.log",
+      "blob_sha": "bc76e601d4ea5aad919d50297e9fd1370d9f20f6",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/maintenance.patch",
+      "blob_sha": "22757caf586e93c41088eeabc8587e720fe4a6cb",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/native-environment.json",
+      "blob_sha": "7bb7d2a4ad54fa231179eb37abf9969bf405f99c",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/postimages.json",
+      "blob_sha": "c66fb0309e2ed1e6deb0486cae7ec7261709293b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/result.json",
+      "blob_sha": "b368760a83c4305e19738913e8a9e314a0dc1b72",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/source-after.json",
+      "blob_sha": "25b194b7ba6df6a25c23249d0c9e8cfa4d97271b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/maintenance-a43bcfff/source-before.json",
+      "blob_sha": "679e3a1fa4ca2026159ab1f1a46c0bbae5921287",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-8faf-attempt-v1/observations.from-pty.json",
+      "blob_sha": "ca2d8693ad2029ed167f94b67925b979a00061e6",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-8faf-attempt-v1/terminal-receipt.json",
+      "blob_sha": "17b8b76b62af489e8745fcc8c991d5b7922c4907",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-8faf-attempt-v1/terminal.raw.log",
+      "blob_sha": "e456a17c92d6fc8e2f0ff8ca85f057aa0108028b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/REPORT.json",
+      "blob_sha": "879e138b4abc54a95f51cddfdca2c28ba97e3c0b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/optional-nine-case-command.txt",
+      "blob_sha": "eb396a1a30376824c8c069d30aba55390e354f2b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/ordinary-nine-cases.txt",
+      "blob_sha": "16a437a8d4b8dc0d550e8d22fea534da6120408a",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/native-filter-audit/root-four-cases.txt",
+      "blob_sha": "c4a2b4c4ae177e162dc01d6ded0e8f09c5d79275",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/MANIFEST.json",
+      "blob_sha": "9d5adbc0a87e41dac1291e057acad8cc95a80c03",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/PACKAGING_NOTE.md",
+      "blob_sha": "7c77210a021f6a0af899ea72f98c3b5d49ffb83f",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/REPORT.md",
+      "blob_sha": "1a79787910eec590092301d183051e382390993c",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/SOURCE_MANIFEST.json",
+      "blob_sha": "78a156cc20857ac9e6476b6df93c91aabee48cc1",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/VERIFICATION.json",
+      "blob_sha": "129da6c4739e2b313334c198ec703029cf1c823b",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/ordinary-producer-audit-094/verify_sources.py",
+      "blob_sha": "0aa7d20cdef255a237cee26a4519aee238b0074f",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/selection-source-preflight/SELECTION_POSTIMAGES.json",
+      "blob_sha": "211633c731b3d1a125df9b4dea01bffe30545de5",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/selection-source-preflight/selection-integration-source-qa-v2.json",
+      "blob_sha": "caa9bebf7e5c321c89ed3c70ec5425ded68a3111",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/selection-source-preflight/selection-integration-source-qa-v2.log",
+      "blob_sha": "616b6497d18cc79d8610008e570cf710cd19735a",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/driver.raw.log",
+      "blob_sha": "f52a0a76c6957dc094673016ad1a0675cd310ca8",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/invocation.json",
+      "blob_sha": "5873abc601c5a6aa3f9baf1b73af640b929d2f54",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/result.json",
+      "blob_sha": "00083234c3485c2a3aabee41fb226d02521ba661",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-after.json",
+      "blob_sha": "d5dfc30383dac77f86ea2603714ef485df4da6d2",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-before.json",
+      "blob_sha": "d5dfc30383dac77f86ea2603714ef485df4da6d2",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-closure.json",
+      "blob_sha": "6be15bec44b6afce5b9d3855789efdfca4b729ea",
+      "status": "added"
+    },
+    {
+      "path": "qualification/learn-evaluated-retention-037c/source-726af8f4/source-closure.json.2f66f61f9dd84303a2bc8904c1641737.log",
+      "blob_sha": "9dd60e5e6816f338a1a3a7e9b418ca08df02b826",
+      "status": "added"
+    }
+  ],
+  "untouched_current_native": {
+    "source_commit": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+    "dispatches_from_this_agent": 0,
+    "restarts_from_this_agent": 0
+  },
+  "planned_validation": {
+    "status": "NOT_RUN",
+    "source_suite": "python -B -m unittest discover -s qa/b4-no-bypass -p '*source_closure.py' -v",
+    "observer_suite": "python -B -m unittest discover -s scripts -p test_hepta_c_observer_coverage.py -v",
+    "caller_proof": "python -B scripts/verify_hepta_callers.py verify",
+    "wrapper": "same exact source scripts/hepta_ci_exec.py --timeout-seconds 600 --minimum-tests 1 --output <independent evidence>/source-closure.json -- <Python> -B -m unittest discover -s qa/b4-no-bypass -p '*source_closure.py' -v",
+    "new_next_use_source_file_methods": 22,
+    "full_test_count": null,
+    "native_compile": "NOT_RUN"
+  },
+  "owner_decision": null,
+  "ordinary_owner_qualified": false,
+  "actual_direct_compare": {
+    "status": "diverged",
+    "ahead_by": 7,
+    "behind_by": 4,
+    "merge_base": "094958b83a8fd19e3bc6d01a092793c0f420bb75"
+  },
+  "source_audit": {
+    "selection_callers": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "blob_sha": "c0cc0d9615bbe475febe2a5c70ede612ba0a58ac",
+        "call_lines": [
+          {
+            "line": 174,
+            "text": "Ok(cell.read_learning_selection(&coordinator)?)"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs",
+        "blob_sha": "a05fc187c027c4ef8ef9e6264a9b08ac0ab841d1",
+        "call_lines": [
+          {
+            "line": 122,
+            "text": "let observation = cell.read_learning_selection(&coordinator)?;"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+        "blob_sha": "a038c6f253ea25a0e6adc8fdb0242f9cea2c6421",
+        "call_lines": [
+          {
+            "line": 83,
+            "text": "let observed = cell.read_learning_selection(&coordinator)?;"
+          },
+          {
+            "line": 212,
+            "text": "let selection = cell.read_learning_selection(&coordinator)?;"
+          },
+          {
+            "line": 241,
+            "text": "if cell.read_learning_selection(&coordinator)? != selection {"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+        "blob_sha": "b4f4d299a93d397510d0d128fd2444ecd01a8067",
+        "call_lines": [
+          {
+            "line": 111,
+            "text": "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;"
+          },
+          {
+            "line": 136,
+            "text": "if PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+        "blob_sha": "629d650530d64c042687032e4f84d6720ec8ef8e",
+        "call_lines": [
+          {
+            "line": 154,
+            "text": "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;"
+          },
+          {
+            "line": 199,
+            "text": "let after = PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+        "blob_sha": "a83916a9e2150f4c0edc819b128b433590701a6d",
+        "call_lines": [
+          {
+            "line": 176,
+            "text": "Ok(self.cell.read_learning_selection(&coordinator)?)"
+          }
+        ]
+      }
+    ],
+    "selection_path_count": 6,
+    "added_selection_caller_paths_in_upstream_diff": [],
+    "alternate_read_learning_selection_evaluated_in_changed_files": false,
+    "new_owner_channel_caller": {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+      "blob_sha": "c1e11662921a5b869d060dad3a9a2d53a53668fb",
+      "function": "serve_readback",
+      "call": "original_owner_command_channel_v1",
+      "old_registered_paths": 24,
+      "new_registered_paths": 25
+    },
+    "original_current_positive_blob": "b500835023c268bf7253049bc2264e93d5117b75",
+    "publication_fixture_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+    "new_api_adaptation_to_positive": "none required from source inspection; not a compile result",
+    "published_read_qa_reject_calls_before": 22,
+    "published_read_qa_reject_calls_after": 22,
+    "checked_blob_count": 48,
+    "ancestor_blob_count": 12
+  },
+  "candidate_code_tree": "f1e27187d8747db95a74ded11e256b56995f03c6",
+  "resolved_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "ours_blob_sha": "9b1febb259a50cb02d144af610da65ebf2a700bc",
+      "merged_blob_sha": "9b1febb259a50cb02d144af610da65ebf2a700bc",
+      "bytes": 4679,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+      "ours_blob_sha": "b500835023c268bf7253049bc2264e93d5117b75",
+      "merged_blob_sha": "b500835023c268bf7253049bc2264e93d5117b75",
+      "bytes": 4901,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+      "ours_blob_sha": "2c9d23e02cb8bc0069c1411e846960e416a9dce3",
+      "merged_blob_sha": "2c9d23e02cb8bc0069c1411e846960e416a9dce3",
+      "bytes": 2546,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "ours_blob_sha": "ba5bb57fb48ec0983050436b48e1b69874c50deb",
+      "merged_blob_sha": "ba5bb57fb48ec0983050436b48e1b69874c50deb",
+      "bytes": 12154,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "ours_blob_sha": "f8235bff86212e46d82a354e01fb9efaadbd04c5",
+      "merged_blob_sha": "f8235bff86212e46d82a354e01fb9efaadbd04c5",
+      "bytes": 5224,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "ours_blob_sha": "3a0e5d4697c869ba9f9ddf5ce39b35f7f9cc3e51",
+      "merged_blob_sha": "3a0e5d4697c869ba9f9ddf5ce39b35f7f9cc3e51",
+      "bytes": 13637,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "ours_blob_sha": "b207f9bf99365f63f65326c80be43b7219d119a1",
+      "merged_blob_sha": "b207f9bf99365f63f65326c80be43b7219d119a1",
+      "bytes": 16200,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "ours_blob_sha": "4f54135d674c79a95bb9ce420ce6cdb6bcf66ea8",
+      "merged_blob_sha": "4f54135d674c79a95bb9ce420ce6cdb6bcf66ea8",
+      "bytes": 7182,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "ours_blob_sha": "8e011f1d7e4c9b0f58e797bf4520acaf7987af3f",
+      "merged_blob_sha": "8e011f1d7e4c9b0f58e797bf4520acaf7987af3f",
+      "bytes": 12195,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "ours_blob_sha": "a038c6f253ea25a0e6adc8fdb0242f9cea2c6421",
+      "merged_blob_sha": "a038c6f253ea25a0e6adc8fdb0242f9cea2c6421",
+      "bytes": 10146,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "ours_blob_sha": "e12e83e3e98fb798da5182367a0f13fcb993077e",
+      "merged_blob_sha": "e12e83e3e98fb798da5182367a0f13fcb993077e",
+      "bytes": 7124,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "ours_blob_sha": "b5a3ab5372bc80a9d75d756b0d7cf802e0c2324c",
+      "merged_blob_sha": "b5a3ab5372bc80a9d75d756b0d7cf802e0c2324c",
+      "bytes": 15056,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "ours_blob_sha": "865411d2a6a90e79eb267874d3ba6464921a05fa",
+      "merged_blob_sha": "4109be86d05e265d2b84bc1290467ca0d6ba15e9",
+      "bytes": 21051,
+      "treatment": "required cross-file QA adaptation"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "ours_blob_sha": "3f9bb21b78878f85fb43650765320c16d74e0e3e",
+      "merged_blob_sha": "1ac0f9ff8e682ee26484690f20e2743ba1dd2820",
+      "bytes": 16085,
+      "treatment": "required cross-file QA adaptation"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_094958b.patch",
+      "ours_blob_sha": "78bc416f407685b4c3f7837055f246bd0dabd35a",
+      "merged_blob_sha": "78bc416f407685b4c3f7837055f246bd0dabd35a",
+      "bytes": 77479,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_MANIFEST.json",
+      "ours_blob_sha": "ee97a90a3d578cb35fdfa002d97b43d93750adf7",
+      "merged_blob_sha": "ee97a90a3d578cb35fdfa002d97b43d93750adf7",
+      "bytes": 6385,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/REVIEW.json",
+      "ours_blob_sha": "513faf278cd46bee7ffbaa36598ea9c3cf021a15",
+      "merged_blob_sha": "513faf278cd46bee7ffbaa36598ea9c3cf021a15",
+      "bytes": 3680,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/RUST_QA_MANIFEST.json",
+      "ours_blob_sha": "3e331137fe79ee69bd6fa8c9275127dad1c48343",
+      "merged_blob_sha": "3e331137fe79ee69bd6fa8c9275127dad1c48343",
+      "bytes": 16089,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/failure-and-fix.json",
+      "ours_blob_sha": "8d2257609d5db03e27e103d6b4a15ea06e2faf01",
+      "merged_blob_sha": "8d2257609d5db03e27e103d6b4a15ea06e2faf01",
+      "bytes": 3167,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/source-closure.log",
+      "ours_blob_sha": "1af98380c333490ff1f619844fbd74c0ae523893",
+      "merged_blob_sha": "1af98380c333490ff1f619844fbd74c0ae523893",
+      "bytes": 87063,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.json",
+      "ours_blob_sha": "e6a5fe8ae695a79a8ec1a0d465bae14bdf2eab8d",
+      "merged_blob_sha": "e6a5fe8ae695a79a8ec1a0d465bae14bdf2eab8d",
+      "bytes": 12792,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.log",
+      "ours_blob_sha": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c",
+      "merged_blob_sha": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c",
+      "bytes": 329389,
+      "treatment": "exact ours blob inherited"
+    },
+    {
+      "path": "CALLERS.toml",
+      "ours_blob_sha": "cee2bc53c636e366d8b7873349e937181787cddc",
+      "merged_blob_sha": "e18bb29202e2a32e821e1bc7527f1942e63caabd",
+      "bytes": 1106752,
+      "treatment": "explicit three-way merge"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "ours_blob_sha": "447d6c1e418501c8efa6a4ed2eb0d95b6afc3fd3",
+      "merged_blob_sha": "19365c22dff40823920b290d1c9487d6d3b5c567",
+      "bytes": 12130,
+      "treatment": "explicit three-way merge"
+    }
+  ],
+  "callers_independent_review": {
+    "base_boundary_changes": [
+      "learning_original_owner_command_channel"
+    ],
+    "new_boundaries": [
+      "learning_evaluated_current_read_client",
+      "learning_evaluated_current_read_owner",
+      "learning_evaluated_retention_read_proof"
+    ],
+    "inventory": 537,
+    "base_inventory": 534,
+    "ours_inventory": 530,
+    "base_protected_blocks": 386,
+    "five_changed_protected_blocks_exact_ours": true,
+    "other_protected_blocks_byte_preserved": true,
+    "separator_only": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs",
+        "appended_separator": "one newline before appended boundary tables"
+      }
+    ],
+    "parent_inventory_order_preserved": true,
+    "allowlist_exact_entries_preserved": true,
+    "parser_or_tests_run": false
+  },
+  "callers_merge_manifest_blob": "59beb037035ec65306d9d4cebc0aba195b867226",
+  "callers_patch_blob": "f4d9f4265473564e98471c01b8e0b4efaef4a403",
+  "upstream_evidence_directory": {
+    "path": "qualification/learn-evaluated-retention-037c",
+    "tree_sha": "05e732070e1420665a49045c898d389156a11130",
+    "unchanged": true,
+    "changed_file_count": 93
+  },
+  "integrity": {
+    "merged_leaf_references_checked": 58,
+    "upstream_code_blobs_preserved": 34,
+    "upstream_evidence_changed_paths_preserved_by_same_subtree": 93,
+    "new_qa_blobs_read_back_exact": true,
+    "merged_callers_and_allowlist_git_sha_and_sha256_verified": true,
+    "contents_tests_not_run": true
+  },
+  "actions": {
+    "commits_created": 0,
+    "refs_updated": 0,
+    "native_runs_restarted": 0,
+    "h_calls": 0,
+    "actor_calls": 0
+  }
+}

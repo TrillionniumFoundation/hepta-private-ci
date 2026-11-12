@@ -21,8 +21,8 @@ pub(super) enum OriginalPublishedReadPurpose {
 impl OriginalPublishedReadPurpose {
     fn slots(&self) -> u8 {
         match self {
-            Self::Selection => 10,
-            Self::NextUse => 15,
+            Self::Selection => 6,
+            Self::NextUse => 9,
         }
     }
 }
@@ -69,7 +69,8 @@ impl<'a, W: AnchorWitnessStore> OriginalPublishedReadCurrent<'a, W> {
         }
     }
 
-    /// The original mode becomes known after the first input/Selection reads.
+    /// The original authenticated mode fixes the path after the first actual
+    /// CURRENT and Source input reads, before its native Selection/NextUse read.
     /// It fixes the remaining exact path; it cannot reset or extend a call.
     pub(super) fn select_purpose(
         &mut self,
@@ -77,8 +78,8 @@ impl<'a, W: AnchorWitnessStore> OriginalPublishedReadCurrent<'a, W> {
     ) -> Result<(), AgentdError> {
         let prior = mem::replace(&mut self.state, State::Refused);
         match prior {
-            State::BeforePurpose { slots: 4 } => {
-                self.state = State::Reading { purpose, slots: 4 };
+            State::BeforePurpose { slots: 1 } => {
+                self.state = State::Reading { purpose, slots: 1 };
                 Ok(())
             }
             State::Individual
@@ -90,7 +91,7 @@ impl<'a, W: AnchorWitnessStore> OriginalPublishedReadCurrent<'a, W> {
     }
 
     /// Retain the precise old slot at every nested call site. In the single
-    /// read, slot 1 and slot 10/15 perform the original full CURRENT I/O; the
+    /// read, slot 1 and slot 6/9 perform the original full CURRENT I/O; the
     /// intervening slots require the same still-borrowed original allocations.
     pub(super) fn require(
         &mut self,
@@ -108,7 +109,7 @@ impl<'a, W: AnchorWitnessStore> OriginalPublishedReadCurrent<'a, W> {
                 self.state = State::Individual;
             }
             State::BeforePurpose { slots } => {
-                if slots >= 4 {
+                if slots >= 1 {
                     return Err(invalid("original published read purpose is required"));
                 }
                 if slots == 0 {
@@ -117,7 +118,7 @@ impl<'a, W: AnchorWitnessStore> OriginalPublishedReadCurrent<'a, W> {
                 self.state = State::BeforePurpose { slots: slots + 1 };
             }
             State::Reading { purpose, slots } => {
-                if !(4..purpose.slots()).contains(&slots) {
+                if !(1..purpose.slots()).contains(&slots) {
                     return Err(invalid("original published read slot bound"));
                 }
                 let slots = slots + 1;

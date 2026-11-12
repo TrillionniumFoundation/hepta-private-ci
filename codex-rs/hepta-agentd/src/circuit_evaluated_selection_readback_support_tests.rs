@@ -115,10 +115,29 @@ impl<W: AnchorWitnessStore + Send + 'static, C: AnchorWitnessStore + Send + 'sta
         let host = Arc::clone(self);
         let peer = std::thread::spawn(move || {
             for request_id in 1..=128_u64 {
-                if !channel.exchange(|bytes| {
-                    let response = host
-                        .evidence_response(bytes, request_id)
-                        .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                // Observe this original exchange; do not extend its 500-ms
+                // deadline, issue a probe, or replace any original owner.
+                let exchange_started = std::time::Instant::now();
+                let mut callback_entered = false;
+                let mut callback_wait = None;
+                let mut callback_elapsed = None;
+                let mut callback_result = None;
+                let exchange = channel.exchange(|bytes| {
+                    callback_entered = true;
+                    callback_wait = Some(exchange_started.elapsed());
+                    let callback_started = std::time::Instant::now();
+                    let original = host.evidence_response(bytes, request_id);
+                    callback_elapsed = Some(callback_started.elapsed());
+                    let response = match original {
+                        Ok(response) => {
+                            callback_result = Some(Ok(response.len()));
+                            response
+                        }
+                        Err(error) => {
+                            callback_result = Some(Err(error));
+                            return Err(HostIssuerTransportError::InvalidRequest);
+                        }
+                    };
                     if let Some((after, file)) = &invalidate_source_after_read
                         && request_id == *after
                     {
@@ -129,7 +148,14 @@ impl<W: AnchorWitnessStore + Send + 'static, C: AnchorWitnessStore + Send + 'sta
                             .map_err(|_| HostIssuerTransportError::Unavailable)?;
                     }
                     Ok(response)
-                })? {
+                });
+                // stderr runs only after the original timed exchange ends.
+                // The first-byte wait uses the original session lifetime.
+                eprintln!(
+                    "ORIGINAL_EVALUATED_S_EXCHANGE_END request_id={request_id} callback_entered={callback_entered} wait={callback_wait:?} callback_elapsed={callback_elapsed:?} callback_result={callback_result:?} elapsed={:?} result={exchange:?}",
+                    exchange_started.elapsed()
+                );
+                if !exchange? {
                     return Ok(request_id - 1);
                 }
             }
