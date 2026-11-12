@@ -493,6 +493,59 @@
         "daemon_root_cold_restart": 0
       },
       "known_equivalent_toml_repair": "77bfe71c6021e8da78ff917db3347f7e7a503d65"
+    },
+    {
+      "sha": "f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7",
+      "tree": "51361a51fe1ed38f36ebe3bdd9267a8f6b0773b6",
+      "parents": [
+        "bf210cfcde3c9278eb3687a051e1757da93cbb4f",
+        "5329441a9f97ca63225fc03de2732f474b98d11a"
+      ],
+      "merge_base": "7def806cbf94dead7560ea598c435795cfd7e4d6",
+      "prior_merge": {
+        "sha": "bf210cfcde3c9278eb3687a051e1757da93cbb4f",
+        "tree": "d792e2c2c506db1ef6ea1abee1dfacb0a9d1334b",
+        "parents": [
+          "990ccdc24942dfaaa69dc13d696b258b53eb71da",
+          "77bfe71c6021e8da78ff917db3347f7e7a503d65"
+        ],
+        "merge_base": "f8ea08942b68c84ccc105d17371f95ddd372d355"
+      },
+      "actual_local_git_graph_verified": true,
+      "api_tree_equals_actual_local_index_tree": true,
+      "all_merged_postimages_exact_api_readback": true,
+      "static_inventory": {
+        "boundaries": 446,
+        "full_protected_rows": 348,
+        "source_methods": 292,
+        "source_modules": 42,
+        "native_cases": 137,
+        "native_groups": 29,
+        "explicit_root_fixture_cases_separate": 15,
+        "physical_witness_cases_separate": 3
+      },
+      "qualification": {
+        "source_suite_request_issued_by_root": false,
+        "source_tests_executed_by_root": 0,
+        "parser_suite_executed_on_this_sha": false,
+        "full_caller_proof_executed": false,
+        "native_tests_executed": 0,
+        "formatted": false,
+        "final_scoped_fix_performed": false,
+        "cloud_execution_environment": "reported unavailable by environment context",
+        "local_checkout_relocation_result": "unobserved after execution environment became unavailable"
+      },
+      "not_yet_assembled_at_this_sha": [
+        "Candidate Evaluation still refuses missing original B/Evaluator host; later independent source branches must be merged and tested.",
+        "Retained publication factories are not yet the ordinary Version host/C factory dispatch; subsequent Version work is separate.",
+        "Positive Model/adoption producer is not supplied by Parameter/Topology proposal payloads or DENY_ALL Candidate material."
+      ],
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      },
+      "source_status_record": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/f254-fixed-source-status.json"
     }
   ],
   "full_chain_acceptance": {
@@ -857,6 +910,14 @@
     {
       "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-terminal-observation.json",
       "note": "Authoritative original SDK process_status decoded from the hash-verified immutable result; normalized JSON serialization, not a raw host file."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/restore-attempt-observation.json",
+      "note": "Normalized connector transport error, not proof that the remote restoration did or did not run."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/f254-fixed-source-status.json",
+      "note": "Source graph and static inventory audit. No same-source test or ordinary acceptance pass is inferred."
     }
   ],
   "retained_typed_requests": [
@@ -877,6 +938,12 @@
       "bytes": 18025,
       "sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf",
       "note": "Exact frozen request bytes reconstructed from typed arguments and verified against the previously recorded immutable SHA-256; no completion claim."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/restore-exact-v8-pair.json",
+      "bytes": 5214,
+      "sha256": "ed1be5e9a1f8d752e9156459383ae7ddefa6dc4492c3dae37252fa2734252a66",
+      "note": "Exact create-only restoration request. Transport closed without a job id or request digest; execution/effect remains unknown. Reconcile only this same frozen key and arguments."
     }
   ]
 }
