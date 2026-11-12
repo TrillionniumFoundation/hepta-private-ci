@@ -33,6 +33,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "root_original_ledger_historical_context": [],
             "root_original_ledger_historical_observation": [],
             "root_original_ledger_historical_cut": [],
+            "root_original_ledger_read_data": [],
         }
         for identifier, callers in expected.items():
             with self.subTest(boundary=identifier):

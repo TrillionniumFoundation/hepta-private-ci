@@ -15,6 +15,10 @@ use super::*;
 use crate::HistoricalCircuitTaskSourceObservationV1;
 use crate::authority_host_runtime::RegisteredInitialLearningTrustV1;
 use crate::authority_host_runtime::RootHistoricalLedgerDeploymentV1;
+use crate::root_historical_ledger_data::LEDGER_READ_DATA_PURPOSE;
+use crate::root_historical_ledger_data::RootHistoricalLedgerFilePinV1;
+use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
+use crate::root_historical_ledger_data::RootHistoricalLedgerSourceDataV1;
 
 enum HistoryState {
     Unobserved,
@@ -30,6 +34,7 @@ enum HistoryState {
 /// four actual file locks remain owned by the pending action until then.
 pub(crate) struct RootOriginalHistoricalLedgerObservationV1 {
     record: LedgerRecord,
+    source: SourcePin,
 }
 
 pub(crate) struct PendingOriginalLedgerHistoryV1<'a> {
@@ -274,6 +279,7 @@ impl PendingOriginalLedgerHistoryV1<'_> {
         };
         Ok(RootOriginalHistoricalLedgerObservationV1 {
             record: record.clone(),
+            source: original.pin.clone(),
         })
     }
 }
@@ -283,14 +289,62 @@ impl RootOriginalHistoricalLedgerObservationV1 {
     /// refusal namespace. Ready/attempt is proved by the enclosing action,
     /// never by this digest or a peer-supplied serialized observation.
     pub(crate) fn data_cut_digest(&self) -> io::Result<Digest32> {
-        Ok(Digest32::of_parts(&[
-            b"hepta.root.original-historical-ledger-data-cut.v1\0",
-            &serde_json::to_vec(&(
-                RootDataKind::HistoricalLedger,
-                &self.record.target,
-                &self.record,
-            ))
-            .map_err(io::Error::other)?,
-        ]))
+        self.ledger_read_data()?.data_cut_digest()
+    }
+
+    pub(crate) fn ledger_read_data(&self) -> io::Result<RootHistoricalLedgerReadDataV1> {
+        let record = &self.record;
+        let source = &self.source;
+        let LedgerPhase::Captured { cut } = &record.phase else {
+            return Err(io::Error::other("original captured Ledger data missing"));
+        };
+        let data = RootHistoricalLedgerReadDataV1 {
+            schema: 1,
+            purpose: LEDGER_READ_DATA_PURPOSE.into(),
+            initial_profile: record.initial_profile.clone(),
+            identity: record.identity.clone(),
+            registered_identity: record.registered_identity.clone(),
+            writer: record.writer.clone(),
+            publisher_epoch: record.publisher_epoch,
+            publisher: record.publisher.clone(),
+            peer_gid: record.peer_gid,
+            target: record.target.clone(),
+            files: record
+                .files
+                .clone()
+                .map(|pin| RootHistoricalLedgerFilePinV1 {
+                    device: pin.device,
+                    inode: pin.inode,
+                    uid: pin.uid,
+                    gid: pin.gid,
+                    mode: pin.mode,
+                }),
+            metadata: record.metadata.clone(),
+            registered_at: record.registered_at,
+            trust: record.trust.clone(),
+            source: RootHistoricalLedgerSourceDataV1 {
+                files: source
+                    .source_files
+                    .clone()
+                    .map(|pin| RootHistoricalLedgerFilePinV1 {
+                        device: pin.device,
+                        inode: pin.inode,
+                        uid: pin.uid,
+                        gid: pin.gid,
+                        mode: pin.mode,
+                    }),
+                target_files: source.target_files.clone(),
+                configuration: source.source_configuration.clone(),
+                witness_context: source.witness_context.clone(),
+                sequence: source.source_sequence,
+                checkpoint: source.source_checkpoint.clone(),
+                publication: source.publication.clone(),
+                completed_task: source.completed_task.clone(),
+                fence: source.fence_digest.clone(),
+            },
+            cut: (**cut).clone(),
+        };
+        data.validate_data()?;
+        Ok(data)
     }
 }
