@@ -38,8 +38,8 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
             "ledger: OriginalDatasetLedgerV1::Historical(ledger)", "preparation.signing_payload()?"))
 
     def test_snapshot_and_whole_current_initial_are_rechecked_each_time(self):
-        self.check_markers(HISTORY, "fn with_historical_cut<T>(", (
-            "HistoricalDatasetLedgerV1::with_current(", "require_historical_configuration(&self.config, ledger)",
+        self.check_markers(HISTORY, "fn with_historical_cut_in_operation<T>(", (
+            "OriginalDatasetOperationV1::read_historical(", "require_historical_configuration(&self.config, ledger)",
             "RootHistoricalLedgerReadDataV1::read_snapshot(data)?", "data.ledger_cut()?",
             "current != self.snapshot || cut.frontier != self.frontier",
             "action(&current, cut.binding, verifier, evaluator, observed_at)"))
@@ -58,8 +58,8 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
             "self.with_historical_cut(", "dataset_freeze_signing_payload_v2(snapshot, &self.plan()?)?"))
 
     def test_current_fixed_evaluator_and_canonical_projection_validate_freeze(self):
-        self.check_markers(HISTORY, "fn validate_authorization_historical(", (
-            "self.with_historical_cut(", "dataset_freeze_signing_payload_v2(snapshot, &plan)?",
+        self.check_markers(HISTORY, "fn validate_authorization_historical_in_operation(", (
+            "self.with_historical_cut_in_operation(", "dataset_freeze_signing_payload_v2(snapshot, &plan)?",
             "verifier.verify(", "LearningEvidenceRoleV1::Evaluator", "authorization,", "&payload",
             "verified.principal() != &evaluator.principal", "verified.controller_id() != &evaluator.controller_id",
             "freeze_dataset_from_ledger(", "LedgerSnapshot::read_dataset_records(",
