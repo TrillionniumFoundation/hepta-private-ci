@@ -6,6 +6,7 @@
 
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicU8;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -57,6 +58,10 @@ pub enum OriginalCellQ24TrainingSourceErrorV1 {
 }
 
 type Error = OriginalCellQ24TrainingSourceErrorV1;
+
+#[path = "cell_q24_training_source_operation.rs"]
+mod operation;
+pub(crate) use operation::OriginalCellQ24TrainingSourceOperationV1;
 
 /// These are exact retained bytes, not permission to issue replacement
 /// attestations. The live original owners must return both same signatures.
@@ -178,10 +183,11 @@ struct LiveOwners {
 /// Keeping this value does not freeze other owners or guarantee future reads.
 pub struct OriginalCellQ24TrainingSourceV1 {
     live: LiveOwners,
-    config: OriginalCellQ24TrainingSourceConfigV1,
+    config: Arc<OriginalCellQ24TrainingSourceConfigV1>,
     material: OriginalCellQ24DatasetV1,
     binding: Digest32,
     runtime: Handle,
+    operation_state: AtomicU8,
 }
 
 /// Read actual data and original completed Material owners in a blocking lane.
@@ -245,10 +251,11 @@ async fn capture_live_original_source(
         let binding = capture_binding(&config, &material);
         Ok(OriginalCellQ24TrainingSourceV1 {
             live,
-            config,
+            config: Arc::new(config),
             material,
             binding,
             runtime,
+            operation_state: AtomicU8::new(0),
         })
     })
     .await
@@ -283,6 +290,9 @@ impl OriginalCellQ24TrainingSourceV1 {
     /// Never call it on an executor thread. No original writer is unlocked,
     /// reopened, cloned or held across an evidence-client await.
     pub(crate) fn require_current_in_lane(&self) -> Result<(), Error> {
+        if OriginalCellQ24TrainingSourceV1::source_operation_fenced(self) {
+            return Err(Error::CaptureUncertain);
+        }
         let material = self
             .runtime
             .block_on(self.live.current_material(&self.config))?;

@@ -71,10 +71,6 @@ async fn original_evaluation_model_material_reads_actual_panel_and_identical_loc
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_regression()
 -> anyhow::Result<()> {
-    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
-    let evaluation = complete(&fixture).await?;
-    let original_files = fixture.original_files()?;
-    let upstream = fixture.upstream_files()?;
     for fault in [
         "wrong-order",
         "wrong-total",
@@ -82,6 +78,10 @@ async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_
         "wrong-last",
         "lose-finish",
     ] {
+        let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+        let evaluation = complete(&fixture).await?;
+        let original_files = fixture.original_files()?;
+        let upstream = fixture.upstream_files()?;
         let (client, peer) = fixture
             .host
             .as_ref()
@@ -100,10 +100,10 @@ async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_
             Err(CommandError::Unavailable)
         ));
         assert!(close(client, peer)? > 0);
+        assert_eq!(fixture.original_files()?, original_files);
+        assert_eq!(fixture.upstream_files()?, upstream);
+        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
     }
-    assert_eq!(fixture.original_files()?, original_files);
-    assert_eq!(fixture.upstream_files()?, upstream);
-    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
     // Each real Trainer peer retains its original 128-frame budget. Independent
     // negative mechanisms use independent original fixtures, never reconnect
     // or splice an unfinished material transfer to extend that budget.
@@ -111,7 +111,7 @@ async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_
         ("after-missing", "cold-missing"),
         ("after-pending", "cold-pending"),
     ] {
-        let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+        let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
         let evaluation = complete(&fixture).await?;
         let original_files = fixture.original_files()?;
         let upstream = fixture.upstream_files()?;
@@ -134,6 +134,9 @@ async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_
             close(client, peer)?,
             material.fixture_original_material_pages() as u64 + 2
         );
+        // A cold read consumes newly recovered original read-only owners;
+        // it never clears the failed live host's fence or retries its transfer.
+        fixture.recover()?;
         let (client, peer) = fixture
             .host
             .as_ref()

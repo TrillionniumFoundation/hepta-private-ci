@@ -1,5 +1,5 @@
-//! Separate read-only purpose for pages of one original Candidate completion.
-//! No action, model bytes, arbitrary range, or signing body is accepted.
+//! Separate read-only purpose for one original Candidate Begin/Pages/Finish.
+//! Only fixed sequential reads enter; no Training effect or signing body does.
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
@@ -20,6 +20,14 @@ pub(super) const PAGE_BYTES: usize = 2_048;
 pub(super) const MAX_PAGES: usize = 17;
 const FRAME_BYTES: usize = 16_384;
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum Phase {
+    Begin,
+    Page,
+    Finish,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Request {
@@ -33,6 +41,8 @@ pub(super) struct Request {
     pub actor_id: String,
     pub completion: String,
     pub page: u8,
+    pub transfer: u64,
+    pub phase: Phase,
 }
 
 impl Request {
@@ -57,7 +67,23 @@ impl Request {
             actor_id: context.dataset.owners.trainer.to_string(),
             completion: completion.to_string(),
             page: page as u8,
+            transfer: request_id.checked_sub(page as u64)
+                .filter(|first| *first > 0).ok_or(Error::Binding("original Candidate transfer"))?,
+            phase: if page == 0 { Phase::Begin } else { Phase::Page },
         })
+    }
+
+    pub(super) fn finish(
+        context: &OriginalCellQ24TrainingCommandContextV1,
+        binding: Digest32,
+        completion: Digest32,
+        request_id: u64,
+        transfer: u64,
+    ) -> Result<Self, Error> {
+        let mut request = Self::new(context, binding, completion, request_id, 0)?;
+        request.transfer = transfer;
+        request.phase = Phase::Finish;
+        Ok(request)
     }
 
     pub(super) fn require_context(
@@ -97,6 +123,8 @@ impl Request {
         if self.schema != 1
             || self.operation != OPERATION
             || self.request_id != request_id
+            || !(1..=128).contains(&request_id)
+            || self.transfer == 0 || self.transfer > request_id
             || usize::from(self.page) >= MAX_PAGES
         {
             return Err(Error::Binding("original Candidate purpose and sequence"));
@@ -132,6 +160,11 @@ pub(super) enum MaterialResult {
         offset: u32,
         total: u32,
         heads: String,
+        heads_digest: String,
+    },
+    Finished {
+        total: u32,
+        heads_digest: String,
     },
     NoCandidate,
     Missing,
@@ -148,75 +181,9 @@ pub(super) enum SessionDisposition {
     CloseReadback,
 }
 
-pub(super) struct Session {
-    next_page: u8,
-    completion: Option<String>,
-}
-
-impl Session {
-    pub(super) fn new() -> Self {
-        Self {
-            next_page: 0,
-            completion: None,
-        }
-    }
-
-    pub(super) fn require_request(&self, request: &Request) -> Result<(), Error> {
-        if request.page != self.next_page
-            || self
-                .completion
-                .as_ref()
-                .is_some_and(|pin| pin != &request.completion)
-        {
-            return Err(Error::Binding("same Candidate session and next page"));
-        }
-        Ok(())
-    }
-
-    pub(super) fn encode_response(
-        &mut self,
-        request: Request,
-        result: MaterialResult,
-    ) -> Result<(Vec<u8>, SessionDisposition), Error> {
-        self.require_request(&request)?;
-        let disposition = if let MaterialResult::Page {
-            offset,
-            total,
-            heads,
-        } = &result
-        {
-            let bytes = STANDARD_NO_PAD
-                .decode(heads)
-                .map_err(|_| Error::Binding("original Candidate page encoding"))?;
-            let end = (*offset as usize)
-                .checked_add(bytes.len())
-                .ok_or(Error::Binding("original Candidate page end"))?;
-            if !(12..=32_780).contains(&(*total as usize))
-                || *offset as usize != usize::from(request.page) * PAGE_BYTES
-                || *offset as usize >= *total as usize
-                || bytes.len() != PAGE_BYTES.min(*total as usize - *offset as usize)
-                || STANDARD_NO_PAD.encode(&bytes) != *heads
-                || end > *total as usize
-            {
-                return Err(Error::Binding("original Candidate page total"));
-            }
-            self.next_page = if end == *total as usize {
-                0
-            } else {
-                request.page + 1
-            };
-            self.completion = Some(request.completion.clone());
-            SessionDisposition::ContinueReadback
-        } else {
-            SessionDisposition::CloseReadback
-        };
-        let bytes = serde_json::to_vec(&Response { request, result })?;
-        if bytes.len() > FRAME_BYTES {
-            return Err(Error::Binding("existing Candidate frame bound"));
-        }
-        Ok((bytes, disposition))
-    }
-}
+#[path = "cell_q24_training_candidate_transfer.rs"]
+mod transfer;
+pub(super) use transfer::Session;
 
 pub(super) fn completion_digest(
     receipt: &LearningIterationReceiptV1,
@@ -241,6 +208,9 @@ pub(super) fn original_page(
             "unchanged full original Training receipt and signature",
         ));
     }
+    if !matches!(request.phase, Phase::Begin | Phase::Page) {
+        return Err(Error::Binding("Candidate data page phase"));
+    }
     let bytes = material.heads();
     let offset = usize::from(request.page) * PAGE_BYTES;
     if offset >= bytes.len() {
@@ -251,5 +221,6 @@ pub(super) fn original_page(
         offset: offset as u32,
         total: bytes.len() as u32,
         heads: STANDARD_NO_PAD.encode(&bytes[offset..end]),
+        heads_digest: Digest32::of_bytes(bytes).to_string(),
     })
 }

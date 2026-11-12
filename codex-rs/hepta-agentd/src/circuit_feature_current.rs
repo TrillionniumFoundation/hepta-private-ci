@@ -37,6 +37,15 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 mod control;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
+#[path = "circuit_candidate_learning_read_capability.rs"]
+mod candidate_learning_read;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadClientV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadContextV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadErrorV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadOwnerV1;
+pub use candidate_learning_read::OriginalCircuitCandidateLearningReadbackV1;
+pub(crate) use candidate_learning_read::OriginalCircuitCandidateCompletionReadinessClientV1;
+
 #[path = "circuit_learning_read_capability.rs"]
 mod learning_read;
 #[path = "circuit_feature_current_owner.rs"]
@@ -48,6 +57,27 @@ mod retirement;
 
 #[path = "circuit_learning_retained_publication.rs"]
 mod retained_publication;
+
+#[path = "circuit_learning_model_publication.rs"]
+mod model_publication;
+pub use model_publication::OriginalCircuitModelPublicationContextV1;
+pub use model_publication::OriginalCircuitModelPublicationErrorV1;
+pub use model_publication::OriginalCircuitModelPublicationInputsV1;
+pub use model_publication::OriginalCircuitModelPublicationPredecessorsV1;
+pub use model_publication::OriginalCircuitModelPublicationRecoveryV1;
+pub use model_publication::OriginalCircuitModelPublicationSelectionV1;
+pub use model_publication::OriginalCircuitModelPublicationV1;
+pub use model_publication::PreparedOriginalCircuitModelPublicationV1;
+pub use model_publication::prepare_original_circuit_model_publication_v1;
+pub use model_publication::recover_original_circuit_model_publication_v1;
+pub use model_publication::version::OriginalCircuitModelArtifactCheckpointV1;
+pub use model_publication::version::OriginalCircuitModelTaskInputsV1;
+pub use model_publication::version::OriginalCircuitModelVersionClientV1;
+pub use model_publication::version::OriginalCircuitModelVersionErrorV1;
+pub use model_publication::version::OriginalCircuitModelVersionHostV1;
+pub use model_publication::version::OriginalCircuitModelVersionPublicationV1;
+pub use model_publication::version::OriginalCircuitModelVersionReadbackV1;
+pub use model_publication::version::OriginalCircuitModelVersionRecoveryV1;
 pub use control::PublishedCircuitFeatureControlV1;
 pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;

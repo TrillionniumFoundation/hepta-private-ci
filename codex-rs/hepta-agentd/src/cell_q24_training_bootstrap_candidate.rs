@@ -4,6 +4,8 @@
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_contracts::HostAuthorityPeerChannel;
@@ -35,21 +37,21 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let permit = Arc::clone(&self.connections)
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
-        tokio::task::spawn_blocking(move || {
+        let mut channel = original_owner_command_channel_v1(
+            stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+        ).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+        let queued = CandidateServiceCancelled(Arc::new(AtomicBool::new(false)));
+        let cancelled = Arc::clone(&queued.0);
+        let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            let mut channel = original_owner_command_channel_v1(
-                stream,
-                consumer,
-                consumer_uid,
-                original_consumer_pidfd,
-                timeout,
-                lifetime,
-            )
-            .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+            channel.check_peer_lifetime().map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+            if cancelled.load(Ordering::Acquire) { return Err(Error::Uncertain); }
             self.serve_candidate_material_channel(&mut channel)
         })
         .await
-        .map_err(|_| Error::Uncertain)?
+        .map_err(|_| Error::Uncertain)?;
+        drop(queued);
+        result
     }
 
     pub(in super::super) fn serve_candidate_material_channel(
@@ -69,6 +71,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 })
                 .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
             if !exchanged {
+                if session.unfinished() { return Err(Error::Uncertain); }
                 return Ok(request_id - 1);
             }
             if disposition == candidate_wire::SessionDisposition::CloseReadback {
@@ -102,4 +105,9 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         // This does not pretend to have read a Missing native journal.
         Ok(session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)?)
     }
+}
+
+struct CandidateServiceCancelled(Arc<AtomicBool>);
+impl Drop for CandidateServiceCancelled {
+    fn drop(&mut self) { self.0.store(true, Ordering::Release); }
 }

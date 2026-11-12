@@ -5,7 +5,6 @@ use super::super::super::candidate_wire;
 use super::super::super::connection;
 use super::super::super::now as command_now;
 use super::*;
-use crate::OriginalCellQ24CandidateMaterialErrorV1 as MaterialCandidateError;
 use crate::OriginalCellQ24CandidateReadbackErrorV1 as CandidateError;
 use crate::OriginalCellQ24TrainingCommandConnectionErrorV1 as ConnectionError;
 use codex_hepta_types::AuthorityPosture;
@@ -77,11 +76,19 @@ async fn original_candidate_material_reconstructs_actual_pages_and_cold_original
     assert_eq!(material.receipt(), training.receipt());
     assert_eq!(material.attestation(), training.attestation());
     assert_eq!(material.authority(), AuthorityPosture::DENY_ALL);
-    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 3);
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 4);
     let original_heads = material.heads().to_vec();
     drop(material);
+    // A new independent read starts another actual Begin and Finish on the
+    // original nonce/lifetime. The previous Candidate is only a comparison pin.
+    let repeated = client.readback().await?;
+    assert_eq!(repeated.heads(), original_heads.as_slice());
+    assert_eq!(repeated.receipt(), training.receipt());
+    assert_eq!(repeated.attestation(), training.attestation());
+    assert_eq!(candidate_peer.frames.load(Ordering::Acquire), 8);
+    drop(repeated);
     drop(client);
-    assert_eq!(candidate_peer.finish()?, 3);
+    assert_eq!(candidate_peer.finish()?, 8);
     assert_eq!(finish(trainer, training_server)?, 1);
     assert_eq!((fixture.training_bytes()?, fixture.bytes()?), originals);
     drop(owner);
@@ -118,7 +125,7 @@ async fn original_candidate_material_reconstructs_actual_pages_and_cold_original
     assert_eq!(material.authority(), AuthorityPosture::DENY_ALL);
     drop(material);
     drop(client);
-    assert_eq!(candidate_peer.finish()?, 3);
+    assert_eq!(candidate_peer.finish()?, 4);
     assert_eq!((fixture.training_bytes()?, fixture.bytes()?), originals);
     drop(recovered);
     finish_material(peers)?;
@@ -186,6 +193,8 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
         actor_id: unresolved.actor_id,
         completion: Digest32::of_bytes(b"no future T has been asserted").to_string(),
         page: 0,
+        transfer: 1,
+        phase: candidate_wire::Phase::Begin,
     };
     let (reply, disposition) = raw_page(Arc::clone(&owner), unbound).await?;
     assert!(matches!(
@@ -343,6 +352,8 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Fault::WrongTotal,
         Fault::CorruptHeads,
         Fault::CloseAfterFirst,
+        Fault::WrongFinishDigest,
+        Fault::DropFinishAck,
     ] {
         let run = completed_candidate().await?;
         let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
@@ -376,13 +387,14 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             )),
             Fault::CorruptHeads => assert!(matches!(
                 error,
-                CandidateError::Material(MaterialCandidateError::Binding(
-                    "complete signed Candidate bundle and original heads"
-                ))
+                CandidateError::Binding("complete signed original Candidate body")
             )),
-            Fault::CloseAfterFirst => assert!(matches!(
+            Fault::CloseAfterFirst | Fault::DropFinishAck => assert!(matches!(
                 error,
                 CandidateError::Command(CommandError::Transport(_))
+            )),
+            Fault::WrongFinishDigest => assert!(matches!(
+                error, CandidateError::Command(CommandError::CommitUncertain)
             )),
             Fault::Original => unreachable!(),
         }
@@ -391,14 +403,19 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             Err(CandidateError::Unavailable)
         ));
         drop(client);
-        assert_eq!(
-            peer.finish()?,
-            if matches!(fault, Fault::CorruptHeads) {
-                3
-            } else {
-                1
-            }
-        );
+        if matches!(fault, Fault::DropFinishAck) {
+            assert_eq!(peer.frames.load(Ordering::Acquire), 4);
+            assert!(peer.finish().is_err(), "actual Finish was read before its ACK was lost");
+        } else {
+            assert_eq!(
+                peer.finish()?,
+                match fault {
+                    Fault::CorruptHeads => 3,
+                    Fault::WrongFinishDigest => 4,
+                    _ => 1,
+                }
+            );
+        }
         assert_eq!(
             (run.fixture.training_bytes()?, run.fixture.bytes()?),
             original
@@ -555,7 +572,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Err(CandidateError::Unavailable)
     ));
     drop(client);
-    assert_eq!(peer.finish()?, 2);
+    assert_eq!(peer.finish()?, 4);
     assert_eq!(
         (run.fixture.training_bytes()?, run.fixture.bytes()?),
         original
@@ -611,9 +628,9 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     ));
     release.send(())?;
     drop(client);
-    // Already running read-only work may finish, but its result/channel is
-    // discarded; no successful prefix is available to a later connection.
-    assert_eq!(peer.finish()?, 3);
+    // The already-running Begin may return, but cancellation prevents every
+    // later Page/Finish and the partial original channel is never restored.
+    assert_eq!(peer.finish()?, 1);
     assert_eq!(
         (run.fixture.training_bytes()?, run.fixture.bytes()?),
         original

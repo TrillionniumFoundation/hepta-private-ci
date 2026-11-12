@@ -1,5 +1,6 @@
-//! Model requests contain only fixed correlations and action. The response is
-//! the original 80-byte proposal record; no signed or unsigned work DTO enters.
+//! Model requests contain only fixed correlations and a bounded action. Legacy
+//! responses keep the original 80-byte record. A private read continuation also
+//! transfers the canonical full E body; it cannot import any writable owner.
 use super::Error;
 use super::OriginalCellQ24ModelCommandReceiptV1;
 use super::context::Context;
@@ -14,11 +15,17 @@ use serde::Deserialize;
 use serde::Serialize;
 
 pub(in super::super) const PURPOSE: &str = "runtime.learning.original-q24-model.command.v1";
+pub(in super::super) const MATERIAL_MAX_BYTES: usize = 131_072;
+pub(in super::super) const MATERIAL_PAGE_BYTES: usize = 8192;
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case", deny_unknown_fields)]
 pub(in super::super) enum Action {
     Execute,
     Readback,
+    BeginOriginalRead,
+    BeginOriginalExecute,
+    ReadOriginalPage { transfer: u64, index: u32 },
+    FinishOriginalRead { transfer: u64 },
 }
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -97,6 +104,9 @@ pub(in super::super) struct Response {
 #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub(in super::super) enum Outcome {
     Completed { record: String },
+    OriginalReadStarted { transfer: u64, record: String, total: usize, digest: String },
+    OriginalReadPage { transfer: u64, index: u32, offset: usize, total: usize, digest: String, bytes: String },
+    OriginalReadFinished { transfer: u64, record: String, total: usize, digest: String },
     Missing,
     Pending,
     Ineligible,

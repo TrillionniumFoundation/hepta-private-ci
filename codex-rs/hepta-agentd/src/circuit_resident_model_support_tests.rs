@@ -45,6 +45,15 @@ impl OriginalRootModelProjectionInputsV1 {
             self.material,
             self.original.clone(),
         )
+        .await?;
+        OriginalCellQ24ModelCommandReceiptV1::fixture_staged_read_rejects_unsealed_material(
+            self.config.clone(),
+            self.registration.clone(),
+            self.completed.clone(),
+            self.signatures.clone(),
+            self.actual.clone(),
+            self.material,
+        )
         .await
     }
 }

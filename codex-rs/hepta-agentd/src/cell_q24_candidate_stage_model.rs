@@ -1,6 +1,9 @@
 //! Proposal uses its initially delivered original Model purpose. Evaluation
-//! I/O occurs outside the Model lane. The final Model read follows complete
-//! D/T/E readback; saved results are exact comparison pins, never CURRENT.
+//! I/O occurs outside the native Training lane. One original Model operation
+//! spans the Candidate prefix closure, then performs actual E Finish and the
+//! last native Model read. Saved results are only exact comparison pins.
+
+use std::sync::Arc;
 
 use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -23,7 +26,7 @@ use crate::RootResidentLearningEffectGateV3;
 
 pub(super) struct ModelLane {
     initial: Option<OriginalCellQ24ModelCommandConnectionV1>,
-    client: Option<OriginalCellQ24ModelCommandClientV1>,
+    client: Option<Arc<OriginalCellQ24ModelCommandClientV1>>,
     retained: Option<OriginalCellQ24ModelCommandReceiptV1>,
     failed: bool,
 }
@@ -134,52 +137,52 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             )
             .await?;
         }
-        let actual = {
+        let client = {
             let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
             if lane.client.is_none() {
                 let connection = lane.initial.take().ok_or(Error::CommitUncertain)?;
-                lane.client = Some(
+                lane.client = Some(Arc::new(
                     OriginalCellQ24ModelCommandConnectionV1::bind_original_evaluation(
                         connection,
                         operation.dataset.clone(),
                         operation.training.clone(),
                         before.clone(),
-                    )
-                    .map_err(model_failure)?,
-                );
+                    ).map_err(model_failure)?,
+                ));
             }
-            let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
-            match action {
-                Action::Execute => {
-                    let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
-                    OriginalCellQ24ModelCommandClientV1::commit_model(
-                        client,
-                        RootResidentLearningEffectGateV3::training_cancellation(gate),
-                    )
-                    .await
-                }
-                Action::Readback => OriginalCellQ24ModelCommandClientV1::readback(client).await,
-            }
-            .map_err(model_failure)?
+            Arc::clone(lane.client.as_ref().ok_or(Error::CommitUncertain)?)
         };
-        // This is an actual independent Evaluator read outside the Model
-        // lane. Its own host checks T and the full B/retention panel; no
-        // Candidate page or generic StageOwner recursively reopens that work.
-        let after = OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(
-            self, &operation, super::evaluation::Action::Readback,
-        ).await?;
-        if before != after {
+        // The Candidate Model mutex is released here. The Model host also
+        // releases every native Training permit before its E network reads.
+        let original = match action {
+            Action::Execute => {
+                let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
+                OriginalCellQ24ModelCommandClientV1::begin_original_model_commit(
+                    client.as_ref(),
+                    RootResidentLearningEffectGateV3::training_cancellation(gate),
+                ).await
+            }
+            Action::Readback => OriginalCellQ24ModelCommandClientV1::begin_original_model_read(
+                client.as_ref(),
+            ).await,
+        }.map_err(|_| Error::CommitUncertain)?;
+        if original.material().original_evaluation() != &before {
             return Err(Error::CommitUncertain);
         }
-        let closed = CandidateOriginalOperation::close(operation).await?;
-        let current = {
-            let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
-            let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
-            OriginalCellQ24ModelCommandClientV1::readback(client)
-                .await
-                .map_err(model_failure)?
-        };
-        if current != actual
+        let actual = original.model().clone();
+        // This actual independent D/T prefix read occurs while the original
+        // Model/E transfer remains open, with no native T lane held.
+        let closed = CandidateOriginalOperation::close(operation)
+            .await.map_err(|_| Error::CommitUncertain)?;
+        // Finish reads the original E/retention and then the final native
+        // Model/T. There is no second whole Model or outer E transfer.
+        let completed = original.finish().await.map_err(|_| Error::CommitUncertain)?;
+        let after = completed.material().original_evaluation();
+        let current = completed.model();
+        if &before != after {
+            return Err(Error::CommitUncertain);
+        }
+        if current != &actual
             || current.authority() != AuthorityPosture::DENY_ALL
             || current.snapshot().receipts.len() != 5
             || !current
@@ -212,13 +215,14 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         if lane
             .retained
             .as_ref()
-            .is_some_and(|saved| saved != &current)
+            .is_some_and(|saved| saved != current)
         {
             return Err(Error::CommitUncertain);
         }
         lane.retained = Some(current.clone());
+        let evidence = closed.model(completed)?;
         lane.failed = false;
-        closed.model(after, current)
+        Ok(evidence)
     }
 
 }

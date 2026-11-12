@@ -14,10 +14,10 @@ impl OriginalCellEvaluationHostV1 {
         mut pause: Option<Pause>,
     ) -> anyhow::Result<u64> {
         if fault == "original" && pause.is_none() {
-            return Ok(self.serve_model_material_channel(&mut channel)?);
+            return Ok(self.serve_model_material_channel(&mut channel, &AtomicBool::new(false))?);
         }
-        let mut transfer = None;
-        let mut retained = None;
+        let mut session = Session::new(self.as_ref());
+        let cancelled = AtomicBool::new(false);
         let mut begins = 0;
         for request_id in 1..=128_u64 {
             let mut lost = false;
@@ -28,7 +28,7 @@ impl OriginalCellEvaluationHostV1 {
                     begins += 1;
                 }
                 let bytes = self
-                    .model_material_response(bytes, request_id, &mut transfer, &mut retained)
+                    .model_material_response(bytes, request_id, &mut session, &cancelled)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 let mut response: wire::Response = serde_json::from_slice(&bytes)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
@@ -84,6 +84,8 @@ impl OriginalCellEvaluationHostV1 {
             if !exchanged? {
                 return Ok(request_id - 1);
             }
+            channel.check_peer_lifetime()?;
+            self.finish_model_material_response(&mut session)?;
             if request_id == 1 {
                 if let Some((ready, release)) = pause.take() {
                     ready.send(())?;

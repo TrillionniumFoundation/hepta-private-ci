@@ -2,6 +2,7 @@
 //! All connections retain the one original host state and bounded framing.
 use super::super::super::model_command::wire;
 use super::*;
+use super::read_operation::OriginalModelReadHostOperation;
 use crate::AgentdRootAuthorityPeer;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
@@ -56,23 +57,60 @@ impl OriginalCellQ24ModelCommandHostV1 {
         result
     }
     fn serve_original_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
+        let mut operation = None;
         for nonce in 1..=128 {
             if !channel.exchange(|bytes| {
-                self.command_response(bytes, nonce)
+                self.command_response(bytes, nonce, &mut operation)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)
             })? {
+                if operation.is_some() { return Err(Error::CommitUncertain); }
                 return Ok(nonce - 1);
             }
         }
         Err(Error::Unavailable)
     }
-    fn command_response(&self, bytes: &[u8], nonce: u64) -> Result<Vec<u8>, Error> {
+    fn command_response<'a>(
+        &'a self,
+        bytes: &[u8],
+        nonce: u64,
+        operation: &mut Option<OriginalModelReadHostOperation<'a>>,
+    ) -> Result<Vec<u8>, Error> {
         if bytes.len() > 16_384 {
             return Err(Error::Binding("bounded original Model command"));
         }
         let request: wire::Request = serde_json::from_slice(bytes)?;
         request.require_initial(&self.bootstrap.config.material, nonce)?;
-        let outcome = match self.original_response(&request) {
+        let result = (|| {
+            match request.action {
+                wire::Action::BeginOriginalRead | wire::Action::BeginOriginalExecute => {
+                    if operation.is_some() {
+                        return Err(Error::Binding("one original Model operation per channel"));
+                    }
+                    let original = self.begin_original_read(&request)?;
+                    let outcome = original.started()?;
+                    *operation = Some(original);
+                    Ok(outcome)
+                }
+                wire::Action::ReadOriginalPage { .. } => {
+                    operation.as_mut().ok_or(Error::ReadbackRequired)?.page(&request)
+                }
+                wire::Action::FinishOriginalRead { .. } => {
+                    operation.take().ok_or(Error::ReadbackRequired)?.finish(&request)
+                }
+                wire::Action::Execute | wire::Action::Readback => {
+                    if operation.is_some() {
+                        return Err(Error::Binding("complete the same original Model operation"));
+                    }
+                    self.original_response(&request)
+                }
+            }
+        })();
+        if result.is_err() {
+            // Failed, cancelled or malformed transfers never restore a partial
+            // proof. Dropping the same guard also consumes its original E lane.
+            drop(operation.take());
+        }
+        let outcome = match result {
             Ok(outcome) => outcome,
             Err(Error::Busy) => wire::Outcome::Busy,
             Err(Error::ReadbackRequired) => wire::Outcome::ReadbackRequired,

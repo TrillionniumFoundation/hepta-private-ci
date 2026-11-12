@@ -2,7 +2,10 @@
 //! These factories consume the sealed live capture; neither accepts a batch,
 //! provenance digest, callback or an existing legacy owner to relabel.
 
+use std::sync::Arc;
+
 use crate::OriginalCellQ24TrainingSourceV1;
+use crate::cell_q24_training_source::OriginalCellQ24TrainingSourceOperationV1;
 
 use super::*;
 
@@ -34,7 +37,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             batch,
             rule,
             key,
-            source: Some(source),
+            source: Some(Arc::new(source)),
             fenced: false,
         })
     }
@@ -78,7 +81,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             batch,
             rule,
             key,
-            source: Some(source),
+            source: Some(Arc::new(source)),
             fenced: false,
         })
     }
@@ -98,6 +101,48 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             ))
             .and_then(|source| {
                 OriginalCellQ24TrainingSourceV1::require_current_in_lane(source)
+                    .map_err(Error::from)
+            });
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
+    }
+
+    /// Only the occupied original Stage lane may borrow the same sealed Source.
+    /// This Arc retains its existing clients; it cannot construct new custody.
+    pub(crate) fn original_source_for_operation(
+        &self,
+    ) -> Result<Option<Arc<OriginalCellQ24TrainingSourceV1>>, Error> {
+        if self.fenced {
+            return Err(Error::CommitUncertain);
+        }
+        if let Some(source) = &self.source {
+            if OriginalCellQ24TrainingSourceV1::source_operation_fenced(source) {
+                return Err(Error::CommitUncertain);
+            }
+            return Ok(Some(Arc::clone(source)));
+        }
+        Ok(None)
+    }
+
+    /// A private, same-invocation before-read proof is required. A captured
+    /// digest, boolean, or earlier operation cannot replace this borrowed value.
+    pub(crate) fn require_original_source_operation(
+        &mut self,
+        operation: &OriginalCellQ24TrainingSourceOperationV1<'_>,
+    ) -> Result<(), Error> {
+        if self.fenced {
+            return Err(Error::CommitUncertain);
+        }
+        let result = self
+            .source
+            .as_ref()
+            .ok_or(Error::Binding(
+                "ordinary Training requires original source capture",
+            ))
+            .and_then(|source| {
+                OriginalCellQ24TrainingSourceOperationV1::require_original_source(operation, source)
                     .map_err(Error::from)
             });
         if result.is_err() {

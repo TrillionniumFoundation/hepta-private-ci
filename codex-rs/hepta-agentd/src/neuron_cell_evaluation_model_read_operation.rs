@@ -6,7 +6,7 @@ use super::*;
 /// The fields and constructor stay private to the original material client.
 /// This cannot be cloned, serialized, stored by the client, or sent on the wire.
 pub(crate) struct OriginalCellEvaluationModelReadV1<'a> {
-    client: &'a OriginalCellEvaluationModelMaterialClientV1,
+    client: OriginalMaterialReadClient<'a>,
     channel: Channel,
     material: OriginalCellEvaluationModelMaterialV1,
     transfer: u64,
@@ -14,7 +14,44 @@ pub(crate) struct OriginalCellEvaluationModelReadV1<'a> {
     cancellation: Cancelled,
 }
 
+enum OriginalMaterialReadClient<'a> {
+    Borrowed(&'a OriginalCellEvaluationModelMaterialClientV1),
+    Owned(Arc<OriginalCellEvaluationModelMaterialClientV1>),
+}
+impl OriginalMaterialReadClient<'_> {
+    fn original(&self) -> &OriginalCellEvaluationModelMaterialClientV1 {
+        match self {
+            Self::Borrowed(original) => original,
+            Self::Owned(original) => original.as_ref(),
+        }
+    }
+}
+
 impl OriginalCellEvaluationModelMaterialClientV1 {
+    /// The same retained client and sole transfer, with ownership only to
+    /// avoid a self-reference in one bounded native Model response.
+    pub(crate) async fn begin_owned_model_read(
+        self: Arc<Self>,
+    ) -> Result<OriginalCellEvaluationModelReadV1<'static>, Error> {
+        let operation = self.begin_model_read().await?;
+        let OriginalCellEvaluationModelReadV1 {
+            client: _,
+            channel,
+            material,
+            transfer,
+            started_at,
+            cancellation,
+        } = operation;
+        Ok(OriginalCellEvaluationModelReadV1 {
+            client: OriginalMaterialReadClient::Owned(self),
+            channel,
+            material,
+            transfer,
+            started_at,
+            cancellation,
+        })
+    }
+
     pub(crate) async fn begin_model_read(
         &self,
     ) -> Result<OriginalCellEvaluationModelReadV1<'_>, Error> {
@@ -73,7 +110,7 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
             return Err(Error::CommitUncertain);
         }
         Ok(OriginalCellEvaluationModelReadV1 {
-            client: self,
+            client: OriginalMaterialReadClient::Borrowed(self),
             channel,
             material,
             transfer,
@@ -84,6 +121,20 @@ impl OriginalCellEvaluationModelMaterialClientV1 {
 }
 
 impl OriginalCellEvaluationModelReadV1<'_> {
+    /// Preserve the original peer/pidfd and absolute connection lifetime
+    /// across the same native operation. This is not a completed Finish.
+    pub(crate) fn require_original_operation_current(&self, lower: u64) -> Result<u64, Error> {
+        self.channel.peer.check_peer_lifetime()?;
+        let current = now()?;
+        require_clock(self.started_at.max(lower), current)?;
+        let client = self.client.original();
+        if wire::context_binding(&client.context, current)? != client.binding {
+            return Err(Error::CommitUncertain);
+        }
+        self.material.authenticate_current(current)?;
+        Ok(current)
+    }
+
     /// Borrow only inside this original Model response. This does not release
     /// the material or restore the connection before its actual Finish.
     pub(crate) fn material(&self) -> &OriginalCellEvaluationModelMaterialV1 {
@@ -106,6 +157,7 @@ impl OriginalCellEvaluationModelReadV1<'_> {
             started_at,
             cancellation,
         } = self;
+        let client = client.original();
         let cancelled = Arc::clone(&cancellation.0);
         let binding = client.binding;
         let result = tokio::task::spawn_blocking(move || {

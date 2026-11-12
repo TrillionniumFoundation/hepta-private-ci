@@ -39,7 +39,10 @@ struct Harness {
 
 impl Harness {
     async fn new() -> anyhow::Result<Self> {
-        let mut fixture = Fixture::new(false).await?;
+        Self::from_fixture(Fixture::new(false).await?)
+    }
+
+    fn from_fixture(mut fixture: Fixture) -> anyhow::Result<Self> {
         let initial = fixture.config.initial.clone();
         let mut owners = fixture.create()?;
         let experience = owners.attest_experience(fixture.sources(&initial))?;
@@ -533,3 +536,6 @@ async fn source_bound_training_cold_identity_rejects_valid_material_signature_re
 
 #[path = "cell_q24_training_command_tests.rs"]
 mod command;
+
+#[path = "cell_q24_training_source_operation_tests.rs"]
+mod operation;

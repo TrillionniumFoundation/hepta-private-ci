@@ -35,6 +35,8 @@ type Model = CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>;
 mod effect;
 #[path = "cell_q24_model_command_service.rs"]
 mod service;
+#[path = "cell_q24_model_read_host_operation.rs"]
+mod read_operation;
 
 enum Origin {
     Fresh,

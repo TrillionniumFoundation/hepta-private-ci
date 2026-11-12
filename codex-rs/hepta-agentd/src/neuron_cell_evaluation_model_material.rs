@@ -67,6 +67,54 @@ impl OriginalCellEvaluationModelInputV1 {
 }
 
 impl OriginalCellEvaluationModelMaterialV1 {
+    /// Canonical signed data only, borrowed inside the same native response.
+    /// No Cell, Runner, Qualification or evidence owner is reconstructed.
+    pub(crate) fn original_model_transfer_body(&self) -> &[u8] {
+        &self.bytes
+    }
+
+    /// Only the private original Model response decoder calls this after its
+    /// admitted peer exchange. Provisional material stays inside that transfer
+    /// until actual native Model/Training and E Finish are acknowledged.
+    pub(crate) fn from_original_model_response(
+        material: &crate::OriginalCellQ24MaterialReceiptConfigV1,
+        registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
+        dataset: &crate::OriginalCellQ24MaterialCommandReceiptV1,
+        training: &crate::OriginalCellQ24TrainingCommandReceiptV1,
+        evaluation: &Receipt,
+        bytes: Vec<u8>,
+        lower: u64,
+    ) -> Result<Self, Error> {
+        crate::OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            dataset, material,
+        ).map_err(|_| Error::Binding("original Model transfer Dataset context"))?;
+        let context = Context::from_original_training(
+            dataset.snapshot().clone(),
+            material.scope.clone(),
+            registration.clone(),
+            material.verifier.clone(),
+            training,
+        )?;
+        if context.initial()? != material.initial {
+            return Err(Error::Binding("original Model transfer initial context"));
+        }
+        let body = codec::Body::decode(&bytes)?;
+        if body.encode()? != bytes {
+            return Err(Error::Binding("canonical complete original Model transfer"));
+        }
+        let current = super::now()?;
+        super::require_clock(lower, current)?;
+        verify::material(&context, evaluation, &bytes, current)?;
+        let binding = Digest32::of_bytes(&bytes);
+        Ok(Self {
+            context,
+            evaluation: evaluation.clone(),
+            bytes,
+            binding,
+            observed_at: current,
+        })
+    }
+
     pub fn binding(&self) -> Digest32 {
         self.binding
     }
@@ -85,6 +133,68 @@ impl OriginalCellEvaluationModelMaterialV1 {
         }
         verify::material(&self.context, &self.evaluation, &self.bytes, current)?;
         Ok(())
+    }
+
+    /// Match the original Selector's already enrolled primary evidence to
+    /// this complete actually read panel. No qualification seal is decoded.
+    pub(crate) fn require_original_selector_material(
+        &self,
+        config: &crate::OriginalCircuitModelSelectionReceiptConfigV1,
+        current: u64,
+    ) -> Result<(), Error> {
+        self.authenticate_current(current)?;
+        let body = codec::Body::decode(&self.bytes)?;
+        let primary = body.members.first().ok_or(Error::Binding("original primary panel"))?;
+        let (_, generator) = crate::learning_owner_evidence::decode(&primary.generator)?;
+        let (_, evaluator) = crate::learning_owner_evidence::decode(&primary.evaluator)?;
+        let (execution_payload, execution) = crate::learning_owner_evidence::decode(&primary.execution)?;
+        if config.scope != self.context.scope
+            || config.verifier.trust_digest() != self.context.verifier.trust_digest()
+            || config.verifier.scope_digest() != self.context.verifier.scope_digest()
+            || config.verifier.objective_digest() != self.context.verifier.objective_digest()
+            || config.training_evidence != self.context.training_evidence
+            || &config.evaluation_evidence != self.evaluation.attestation()
+            || config.decision.request != self.evaluation.snapshot().request
+            || config.decision.owners != self.evaluation.snapshot().owners
+            || config.decision.receipts.len() != 5
+            || config.decision.receipts[..4] != self.evaluation.snapshot().receipts
+            || primary.record != serde_json::to_vec(config.qualification.comparison())?
+            || config.qualification.comparison() != config.evaluation.plan().record()
+            || Digest32::of_bytes(&primary.qualification) != config.qualification.product().evidence_digest
+            || generator != config.product_evidence.generator_plan
+            || evaluator != config.product_evidence.evaluator_bundle
+            || &execution != config.execution_evidence.attestation()
+            || execution_payload != codex_hepta_intelligence_eval::OriginalProductEvaluationExecutionEvidenceV1::signing_payload(&config.execution_evidence)
+            || primary.execution_record != codex_hepta_intelligence_eval::OriginalProductEvaluationExecutionEvidenceV1::original_record(&config.execution_evidence)
+        {
+            return Err(Error::Binding("original Selector primary and full panel material"));
+        }
+        Ok(())
+    }
+
+    /// Pure transitive window for a new original Selector signature. It is
+    /// derived only after full material verification and never renews evidence.
+    pub(crate) fn original_publication_expiry(&self, current: u64) -> Result<u64, Error> {
+        self.authenticate_current(current)?;
+        let body = codec::Body::decode(&self.bytes)?;
+        let mut expiry = self.context.training_evidence.expires_at
+            .min(self.evaluation.attestation().expires_at);
+        for member in &body.members {
+            for (encoded, role) in [
+                (&member.generator, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Generator),
+                (&member.evaluator, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator),
+                (&member.execution, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator),
+                (&member.freeze, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator),
+            ] {
+                let (payload, signed) = crate::learning_owner_evidence::decode(encoded)?;
+                let verified = self.context.verifier.verify(role, &signed, &payload, current)?;
+                expiry = expiry.min(signed.expires_at).min(verified.principal().expires_at);
+            }
+        }
+        if expiry <= current {
+            return Err(Error::Binding("original complete panel signature window"));
+        }
+        Ok(expiry)
     }
 
     pub(crate) fn require_original_model_input(

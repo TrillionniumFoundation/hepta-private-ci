@@ -71,7 +71,7 @@ pub struct CellQ24TrainingOwnerV1<W: AnchorWitnessStore> {
     rule: CellQ24SgdRuleV1,
     key: ProductEvaluationExecutionKeyV1,
     #[cfg(target_os = "linux")]
-    source: Option<crate::OriginalCellQ24TrainingSourceV1>,
+    source: Option<std::sync::Arc<crate::OriginalCellQ24TrainingSourceV1>>,
     fenced: bool,
 }
 
@@ -215,6 +215,16 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     }
 
     fn require_current(&mut self) -> Result<(), Error> {
+        #[cfg(target_os = "linux")]
+        if self
+            .source
+            .as_ref()
+            .is_some_and(|source| {
+                crate::OriginalCellQ24TrainingSourceV1::source_operation_fenced(source)
+            })
+        {
+            self.fenced = true;
+        }
         if self.fenced {
             return Err(Error::CommitUncertain);
         }

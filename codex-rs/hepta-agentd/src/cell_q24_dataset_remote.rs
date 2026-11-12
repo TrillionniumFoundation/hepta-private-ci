@@ -243,6 +243,44 @@ impl OriginalCellQ24DatasetV1 {
         verify_dataset_snapshot_receipt_v3(material.receipt(), fresh_now)?;
         Ok(material)
     }
+
+    /// Reverify the same already materialized freeze after the native lane's
+    /// final physical owner I/O. This reconstructs the existing signed payload;
+    /// it grants no new Dataset, new window, or source CURRENT observation.
+    pub(crate) fn require_original_freeze_current(
+        &self,
+        config: &OriginalCellQ24TrainingSourceConfigV1,
+        at: u64,
+    ) -> Result<(), Error> {
+        let receipt = self.receipt();
+        let snapshot = &receipt.snapshot;
+        if snapshot.snapshot_id != config.freeze_plan.snapshot_id
+            || snapshot.objective_digest != config.freeze_plan.objective_digest
+            || receipt.inclusion_policy_digest != config.freeze_plan.inclusion_policy_digest
+        {
+            return Err(Error::Binding("same original source freeze plan"));
+        }
+        let payload = freeze_payload(
+            config,
+            snapshot.ledger_head_digest,
+            snapshot.eligible_frontier,
+            snapshot.outcome_watermark,
+            receipt.correction_cut_digest,
+            receipt.revocation_cut_digest,
+            &snapshot.source_record_digests,
+        );
+        let verified = config.verifier.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &config.freeze_evidence,
+            &payload,
+            at,
+        )?;
+        if verified.principal() != &receipt.producer {
+            return Err(Error::Binding("same original source freeze producer"));
+        }
+        verify_dataset_snapshot_receipt_v3(receipt, at)?;
+        Ok(())
+    }
 }
 
 fn require_original_material_signatures(
