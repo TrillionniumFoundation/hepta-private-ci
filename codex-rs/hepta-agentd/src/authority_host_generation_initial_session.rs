@@ -30,6 +30,10 @@ mod source_capture;
 pub use source_capture::RootHistoricalSourceCaptureCapabilityV1;
 pub use source_capture::RootHistoricalSourceCaptureReceiptV1;
 
+#[path = "authority_host_run_start_deployment.rs"]
+mod run_start_deployment;
+pub(crate) use run_start_deployment::RootInitialRunStartFilesV1;
+
 const PREPARED: u8 = 0;
 const ACTIVE: u8 = 1;
 const CONSUMED: u8 = 2;
@@ -47,6 +51,7 @@ pub(super) struct InitialRuntime {
     deployment: crate::HostGenerationInitialDeploymentV1,
     source_capture: Option<source_capture::HistoricalSourceRuntime>,
     peer_source_capture: Mutex<Option<RootHistoricalSourceCaptureCapabilityV1>>,
+    run_start: Option<Arc<RootInitialRunStartFilesV1>>,
 }
 
 /// A consumed original Root registration acknowledgement. The digest is a
@@ -194,6 +199,7 @@ impl PreparedHostAuthoritySession {
             deployment: bundle.deployment,
             source_capture: None,
             peer_source_capture: Mutex::new(None),
+            run_start: None,
         });
         Ok((
             RootGenerationInitialEnrollmentCapabilityV1 {

@@ -6,6 +6,11 @@ use super::*;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use std::os::unix::net::UnixStream;
+use std::time::Instant;
+
+use super::run_start_retention::OriginalRunStartPublicationDataV1;
+use super::run_start_retention::OriginalRunStartRetentionExchange;
+use super::run_start_retention::RegisteredInitialRunStartRetentionV1;
 
 #[path = "authority_host_historical_source_transport.rs"]
 mod source_capture;
@@ -33,6 +38,9 @@ pub(crate) enum Command {
     ReadLearningTrust {},
     CaptureSource {},
     CaptureAck {},
+    RetainRunStart {
+        publication: OriginalRunStartPublicationDataV1,
+    },
     Observe,
     Prepare {
         expected: String,
@@ -67,7 +75,8 @@ impl HostAuthorityService {
         policy: HostAuthorityPeerPolicy,
         owner: OwnedFd,
         source_capability: Option<&Mutex<Option<crate::RootHistoricalSourceCaptureCapabilityV1>>>,
-        session_end: std::time::Instant,
+        session_end: Instant,
+        retained_run_start: Option<&RegisteredInitialRunStartRetentionV1>,
     ) -> io::Result<()> {
         let mut sequence = 1_u64;
         let pin = owner.try_clone()?;
@@ -83,6 +92,15 @@ impl HostAuthorityService {
         );
         let learning_trust =
             OriginalLearningTrustExchange::new(self, slot, config, registration, &pin, session_end);
+        let mut run_start = OriginalRunStartRetentionExchange::new(
+            self,
+            slot,
+            config,
+            registration,
+            &pin,
+            retained_run_start,
+            session_end,
+        );
         let result = (|| {
             while channel
                 .exchange(|bytes| {
@@ -95,6 +113,10 @@ impl HostAuthorityService {
                     }
                     if matches!(&request.command, Command::ReadLearningTrust {}) {
                         return learning_trust.exchange(&request, &mut sequence)
+                            .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable);
+                    }
+                    if run_start.handles(&request) {
+                        return run_start.exchange(&request, &mut sequence)
                             .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable);
                     }
                     let mut encoded_response = None;
@@ -141,6 +163,11 @@ impl HostAuthorityService {
                             Command::ReadLearningTrust {} | Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
+                                ));
+                            }
+                            Command::RetainRunStart { .. } => {
+                                return Err(io::Error::other(
+                                    "RunStart retention requires its dedicated live purpose",
                                 ));
                             }
                             Command::Observe => {
@@ -207,6 +234,11 @@ impl HostAuthorityService {
                             Command::ReadLearningTrust {} | Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
+                                ));
+                            }
+                            Command::RetainRunStart { .. } => {
+                                return Err(io::Error::other(
+                                    "RunStart retention requires its dedicated live purpose",
                                 ));
                             }
                             Command::Observe => {}
@@ -283,6 +315,11 @@ impl HostAuthorityService {
                             Command::ReadLearningTrust {} | Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
+                                ));
+                            }
+                            Command::RetainRunStart { .. } => {
+                                return Err(io::Error::other(
+                                    "RunStart retention requires its dedicated live purpose",
                                 ));
                             }
                             Command::Observe => {

@@ -52,6 +52,7 @@ pub use session::RootGenerationPublicationEnrollmentCapabilityV1;
 pub use session::RootGenerationPublicationRegistrationV1;
 pub use session::RootHistoricalSourceCaptureCapabilityV1;
 pub use session::RootHistoricalSourceCaptureReceiptV1;
+pub(crate) use session::RootInitialRunStartFilesV1;
 pub use session::RootNotesPolicyPredecessor;
 
 #[path = "authority_host_writer_rotate.rs"]
