@@ -184,9 +184,16 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
             "retained.is_some()", "*retained = Some(capability)", "source.close()",
         ))
         self.rejects_removal(DATA, "into_inputs", (
-            "self.definition.into_definition()?", "program.program_id == self.circuit.entry_program",
-            "node_id: program.entry_node.clone()", "CircuitCellRegistryV1::new(self.circuit, vec![binding])",
-            "TaskFlowFence::new(", "identity.agent_id.clone()", "agent_id: StableId::new(identity.agent_id.as_str())",
+            "self.into_configuration(identity)?", "original.registry().map_err(io::Error::other)?",
+            "journal,", "witness,",
+        ))
+        self.rejects_removal(DATA, "into_configuration", (
+            "self.definition.into_definition()?", "TaskFlowFence::new(",
+            "identity.agent_id.clone()", "agent_id: StableId::new(identity.agent_id.as_str())",
+        ))
+        self.rejects_removal(AGENT + "circuit_q24_source_configuration.rs", "registry", (
+            "program.program_id == self.circuit.entry_program", "node_id: program.entry_node.clone()",
+            "CircuitCellRegistryV1::new(self.circuit.clone(), vec![binding])",
         ))
         self.rejects_removal(CELL, "into_definition", (
             "Generation::new(self.native.generation)", "Generation::new(runtime.generation)",
