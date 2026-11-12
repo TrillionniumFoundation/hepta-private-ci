@@ -7,3 +7,5 @@ mod deployment;
 mod inputs;
 #[path = "ordinary_q24_process_root_tests.rs"]
 mod root;
+#[path = "ordinary_q24_process_fixture_tests.rs"]
+mod fixture;
