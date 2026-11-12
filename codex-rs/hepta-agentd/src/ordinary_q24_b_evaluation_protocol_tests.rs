@@ -32,6 +32,7 @@ pub(super) fn prepare(
     input: &[u8],
     training: &[TrainingRow],
     cohort: &[CohortRow],
+    candidate_declaration: ArmData,
     control: FixedControlData,
     directory: &Path,
     end: Instant,
@@ -156,7 +157,7 @@ pub(super) fn prepare(
         candidate_temporal: temporal.clone(),
         baseline_temporal: temporal,
         comparison: ComparisonData {
-            candidate: control.arm.clone(),
+            candidate: candidate_declaration,
             fixed_expert: control.arm,
             fixed_training_receipt: control.receipt,
             metering_contract: meter,

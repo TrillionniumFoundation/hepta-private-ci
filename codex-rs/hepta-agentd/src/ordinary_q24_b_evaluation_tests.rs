@@ -91,6 +91,10 @@ impl OriginalIndependentBEvaluationInputs {
             &serde_json::to_vec(&case)?,
         ])
         .into_array();
+        let candidate_declaration = fixed::declare_candidate(
+            &model_directory,
+            observer.generation.manifest.evolution.structure,
+        )?;
         let control = fixed::execute(
             &model_directory,
             &directory,
@@ -104,6 +108,7 @@ impl OriginalIndependentBEvaluationInputs {
             &source.source.observation,
             &training,
             &cohort,
+            candidate_declaration,
             control,
             &directory,
             resources.end,
