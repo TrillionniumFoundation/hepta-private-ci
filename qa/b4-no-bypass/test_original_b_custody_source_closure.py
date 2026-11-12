@@ -115,6 +115,9 @@ CASES = (
         "crate::authority_host_bootstrap_seal::seal_bytes(", "files.require_original_files()?",
     )),
     ("root_independent_b_source_client", "fn submit_original_root_b_source(", (
+        "submit_original_root_b_source_with_candidate(handoff, |_| read_original()).await",
+    )),
+    ("root_independent_b_source_client", "fn submit_original_root_b_source_with_candidate(", (
         "validate_sealed(&handoff.bootstrap, length)?;\n    handoff.bootstrap.rewind()?",
         ".read_to_end(&mut bytes)?", "validate_sealed(&handoff.bootstrap, length)?",
         "let bootstrap: SourceBootstrap = serde_json::from_slice(&bytes)?",
@@ -124,7 +127,7 @@ CASES = (
         "SourceMode::Retained => return Ok(OriginalBSourceIngressStatusV1::AlreadyRetained)",
         "SourceMode::NoUpdate => return Ok(OriginalBSourceIngressStatusV1::NoUpdate)",
         "bootstrap.source_peer.uid == bootstrap.learner.uid", "require_process(&bootstrap.source_peer)?",
-        "let original = read_original()?", "request.len() > FRAME_BOUND",
+        "let original = read_original(&candidate)?", "request.len() > FRAME_BOUND",
         "data::write_original_source(file, &bootstrap, &original.source, end)?",
         "OriginalPublicationStream::from_stream_until(", "let bytes = stream.exchange(&request)?",
         "serde_json::to_vec(&response)? != bytes", "response.source_digest != source_digest.to_string()",
@@ -132,13 +135,13 @@ CASES = (
         "Instant::now() >= end", "require_process(&bootstrap.root)?",
     )),
     ("root_independent_b_source_data", "fn write_original_source(", (
-        "require_file(&file, bootstrap)?", "bytes.len() > SOURCE_BOUND || Instant::now() >= end",
+        "require_original_source_file(&file, bootstrap)?", "bytes.len() > SOURCE_BOUND || Instant::now() >= end",
         "file.try_lock()", "file.metadata()?.len() != 0", "file.write_all_at(bytes,",
         "file.sync_all()?", "for _ in 0..2", "file.read_exact_at(&mut observed,",
         "if observed != bytes", "stamp(&before) != stamp(&after)", "Instant::now() >= end",
         "let unlocked = file.unlock()", "drop(file)", "written?",
     )),
-    ("root_independent_b_source_data", "fn require_file(", (
+    ("root_independent_b_source_data", "fn require_original_source_file(", (
         "libc::fcntl(file.as_raw_fd(), libc::F_GETFL)", "if flags < 0",
         "flags & libc::O_ACCMODE != libc::O_RDWR", "flags & (libc::O_PATH | libc::O_APPEND) != 0",
         "metadata.uid() != 0", "metadata.mode() & 0o7777 != 0o600", "metadata.nlink() != 1",
