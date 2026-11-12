@@ -1,0 +1,46 @@
+{
+  "U_F_readout_checks": [
+    {
+      "F": 0.14019075551362578,
+      "M": 0.14638998994134866,
+      "case": "F_not_M",
+      "discount_gradient": 0.0,
+      "phase_supported": false
+    },
+    {
+      "case": "joint_U_F_gradcheck",
+      "fixed_initial_active_law": true,
+      "passed": true
+    },
+    {
+      "case": "U_dynamic_identity_with_phase",
+      "law_gradient": 1.1632417251661309e-11,
+      "physical_gradient": 4.35504236839801e-12,
+      "primal": 1.2585488207150775e-12
+    }
+  ],
+  "training_observations": 121,
+  "actual_optimizer_updates": 120,
+  "fit_initial": {
+    "gradients": [
+      -0.07667078457647707,
+      -0.5799390429765987
+    ],
+    "mark": 0.5,
+    "relative_mse": 0.4790290513124848,
+    "reset": 0.42000000000000004,
+    "step": 0
+  },
+  "fit_final": {
+    "gradients": [
+      -0.00017302442384773404,
+      -0.0016323321982009878
+    ],
+    "mark": 1.9958537364456628,
+    "relative_mse": 3.5602012631380052e-06,
+    "reset": 0.6494962836801368,
+    "step": 120
+  },
+  "fit_wall_seconds": 49.92718019,
+  "readout_scope": "same generator and moving nodal law; no phase F, continuum pass or task generalization claim"
+}
