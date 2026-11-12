@@ -127,7 +127,8 @@ def read_memory(
     """Return delivered records/context and an audit-only, hash-bound read receipt.
 
     off never opens a view; retrieval_off reads the store but skips retrieval;
-    delivery_off performs retrieval/association but emits no actor content;
+    delivery_off performs retrieval/association and the same final authority
+    revalidation and bounded assembly as on, but emits no actor content;
     association_off skips only the supplied association callback. A missing
     callback is explicitly unavailable, and is not a neural-head ablation.
 
@@ -243,40 +244,38 @@ def read_memory(
                 selected = [by_id[record_id] for record_id in order]
                 receipt.update(association_status="applied", association_called=True)
             receipt["selected_ids"] = [r["record_id"] for r in selected]
-            if mode != "delivery_off":
-                if selected:
-                    if store.namespace != namespace or store.path != authority_path:
-                        raise ValueError(
-                            "memory authority changed before context delivery"
-                        )
-                    current = store.view()
-                    authorized, _ = authorized_source_closure(
-                        current["records"], source_ids
-                    )
-                    by_id = {r["record_id"]: r for r in authorized}
-                    if (
-                        store.namespace != namespace
-                        or store.path != authority_path
-                        or any(
-                            current["receipt"][field] != view["receipt"][field]
-                            for field in (
-                                "authority_id",
-                                "authority_generation",
-                                "frontier_sha256",
-                            )
-                        )
-                        or any(
-                            r["namespace"] != namespace
-                            or by_id.get(r["record_id"]) != r
-                            for r in selected
-                        )
-                    ):
-                        raise ValueError(
-                            "memory authority changed before context delivery"
-                        )
-                context, delivered, dropped = assemble_context(
-                    selected, max_context_bytes
+            # Delivery is the only intervention here. Withholding must not skip
+            # the live authority work or turn a revoked read into a valid control.
+            if selected:
+                if store.namespace != namespace or store.path != authority_path:
+                    raise ValueError("memory authority changed before context delivery")
+                current = store.view()
+                authorized, _ = authorized_source_closure(
+                    current["records"], source_ids
                 )
+                by_id = {r["record_id"]: r for r in authorized}
+                if (
+                    store.namespace != namespace
+                    or store.path != authority_path
+                    or any(
+                        current["receipt"][field] != view["receipt"][field]
+                        for field in (
+                            "authority_id",
+                            "authority_generation",
+                            "frontier_sha256",
+                        )
+                    )
+                    or any(
+                        r["namespace"] != namespace or by_id.get(r["record_id"]) != r
+                        for r in selected
+                    )
+                ):
+                    raise ValueError("memory authority changed before context delivery")
+            bounded_context, bounded_records, dropped = assemble_context(
+                selected, max_context_bytes
+            )
+            if mode != "delivery_off":
+                context, delivered = bounded_context, bounded_records
                 receipt.update(
                     delivered_ids=[r["record_id"] for r in delivered],
                     byte_dropped_ids=dropped,

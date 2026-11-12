@@ -1,0 +1,37 @@
+{
+  "source_sha": "97333b05e5c774feb3ba63b5652582a5c5842a50",
+  "tree": "4fb266711b920f39e096ca8e33d828113e108322",
+  "started_at": "2026-11-12T00:27:51.847652+00:00",
+  "worktree_before": "",
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "scripts.ndu_real_runtime.test_episodic_retrieval",
+    "scripts.ndu_real_runtime.test_episodic_qualification",
+    "scripts.ndu_real_runtime.test_episodic_memory",
+    "scripts.ndu_real_runtime.test_revocation_qualification"
+  ],
+  "exit_code": 0,
+  "finished_at": "2026-11-12T00:27:58.319043+00:00",
+  "worktree_after": "",
+  "log_sha256": "06eeb80da82c9a838f1e9e2592a8e1872481e166499d24088818306b21656fdc",
+  "test_cases_passed": 36,
+  "test_cases_failed": 0,
+  "format_command": [
+    "just",
+    "fmt",
+    "--base",
+    "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80"
+  ],
+  "format_exit_code": 0,
+  "format_ast_unchanged": true,
+  "formatted_source_git_blob": "be954951942893e939b234859a911b1e32397b7d",
+  "tests_repeated_after_format": false,
+  "model_calls": 0,
+  "scored_memory_benefit_episodes": 0,
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false
+}
