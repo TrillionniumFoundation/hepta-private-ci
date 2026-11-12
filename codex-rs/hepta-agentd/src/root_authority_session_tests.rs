@@ -420,3 +420,138 @@ pub(crate) fn original_config(
 
 #[path = "root_authority_file_custody_tests.rs"]
 mod file_custody;
+
+
+// A prior failed/cancelled refresh must not be misclassified as an intentional
+// component shutdown merely because its worker has not returned yet.
+pub(super) struct RefreshCompletion<'a> {
+    failed: &'a AtomicBool,
+    complete: bool,
+}
+impl<'a> RefreshCompletion<'a> {
+    pub(super) fn new(failed: &'a AtomicBool) -> Self {
+        Self {
+            failed,
+            complete: false,
+        }
+    }
+
+    pub(super) fn complete(&mut self) {
+        self.complete = true;
+    }
+}
+impl Drop for RefreshCompletion<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.failed.store(true, Ordering::Release);
+        }
+    }
+}
+
+/// End the original observation feed only when its whole original read and
+/// consumer barrier have finished. Actual inputs/session Drop performs the
+/// fencing and abort; this helper never refreshes or pre-aborts the worker.
+pub(crate) async fn drop_original_production_after_idle(
+    inputs: crate::AgentdRootProductionInputs,
+    timeout: Duration,
+    before_drop: impl FnOnce() -> std::io::Result<()>,
+) -> std::io::Result<()> {
+    let live = Arc::clone(&inputs.session.live);
+    let worker = inputs.session.worker.abort_handle();
+    tokio::time::timeout(timeout, async move {
+        let _serial = live
+            .serial
+            .acquire()
+            .await
+            .map_err(std::io::Error::other)?;
+        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
+            return Err(std::io::Error::other(
+                "original Root observation worker failed or finished before deliberate Drop",
+            ));
+        }
+        live.current().map_err(std::io::Error::other)?;
+        before_drop()?;
+        // The permit prevents any new refresh from starting during this check
+        // and the actual Drop. A retained task can now test that original Drop.
+        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
+            return Err(std::io::Error::other(
+                "original Root observation worker failed or finished before deliberate Drop",
+            ));
+        }
+        drop(inputs);
+        while !worker.is_finished() {
+            tokio::task::yield_now().await;
+        }
+        Ok(())
+    })
+    .await
+    .map_err(|_| {
+        std::io::Error::new(
+            std::io::ErrorKind::TimedOut,
+            "original Root observation worker did not finish within deliberate Drop budget",
+        )
+    })?
+}
+
+
+#[cfg(test)]
+impl AgentdRootAuthoritySession {
+    /// Wait only for the original feed and consumer barrier to observe one
+    /// same-epoch revocation. This never refreshes, updates or grants authority.
+    pub(crate) async fn component_wait_for_original_revocations(
+        &self,
+        consumers: [&FinalUseAuthority; 2],
+        expected: &FinalUseRevocations,
+        timeout: Duration,
+    ) -> std::io::Result<()> {
+        tokio::time::timeout(timeout, async {
+            loop {
+                let serial = self
+                    .live
+                    .serial
+                    .acquire()
+                    .await
+                    .map_err(std::io::Error::other)?;
+                if self.live.refresh_failed.load(Ordering::Acquire) || self.worker.is_finished() {
+                    return Err(std::io::Error::other(
+                        "original Root observation worker failed or finished",
+                    ));
+                }
+                let device = consumers[0]
+                    .revocation_head()
+                    .map_err(std::io::Error::other)?;
+                let notes = consumers[1]
+                    .revocation_head()
+                    .map_err(std::io::Error::other)?;
+                let actual = self.revocations().map_err(std::io::Error::other)?;
+                if device != actual || notes != actual {
+                    return Err(std::io::Error::other(
+                        "original Root consumer barrier did not complete one exact head",
+                    ));
+                }
+                if &actual == expected {
+                    return Ok(());
+                }
+                if actual.authority_epoch != expected.authority_epoch
+                    || actual.revision >= expected.revision
+                    || !expected
+                        .revoked_grant_ids
+                        .is_superset(&actual.revoked_grant_ids)
+                {
+                    return Err(std::io::Error::other(
+                        "original Root revocation head cannot advance to the expected head",
+                    ));
+                }
+                drop(serial);
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .map_err(|_| {
+            std::io::Error::new(
+                std::io::ErrorKind::TimedOut,
+                "original Root revocation feed did not reach the expected head",
+            )
+        })?
+    }
+}
