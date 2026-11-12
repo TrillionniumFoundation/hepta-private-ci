@@ -33,6 +33,7 @@ mod inputs;
 
 #[path = "production_initial_q24.rs"]
 mod initial_q24;
+pub(crate) use initial_q24::ledger_data::LedgerDeploymentData;
 
 #[path = "production_launcher_late_writer.rs"]
 mod late_writer;

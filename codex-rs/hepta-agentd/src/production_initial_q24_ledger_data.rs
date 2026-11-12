@@ -13,16 +13,16 @@ use crate::OriginalCellQ24TaskLedgerConfigV1;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct LedgerDeploymentData {
+pub(crate) struct LedgerDeploymentData {
     schema: String,
     mode: InitialLedgerMode,
-    pub(super) ledger: PathBuf,
-    pub(super) ledger_witness: PathBuf,
-    pub(super) binding: [u8; 32],
-    pub(super) maximum_records: usize,
-    pub(super) generator_key: PathBuf,
-    pub(super) signature_journal: PathBuf,
-    pub(super) signature_witness: SignatureWitnessData,
+    pub(crate) ledger: PathBuf,
+    pub(crate) ledger_witness: PathBuf,
+    pub(crate) binding: [u8; 32],
+    pub(crate) maximum_records: usize,
+    pub(crate) generator_key: PathBuf,
+    pub(crate) signature_journal: PathBuf,
+    pub(crate) signature_witness: SignatureWitnessData,
     contract: OutcomeContractData,
 }
 
@@ -34,11 +34,11 @@ enum InitialLedgerMode {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct SignatureWitnessData {
-    pub(super) path: PathBuf,
-    pub(super) scope: [u8; 32],
-    pub(super) generation: u64,
-    pub(super) maximum_records: usize,
+pub(crate) struct SignatureWitnessData {
+    pub(crate) path: PathBuf,
+    pub(crate) scope: [u8; 32],
+    pub(crate) generation: u64,
+    pub(crate) maximum_records: usize,
 }
 
 #[derive(Deserialize)]
@@ -59,7 +59,7 @@ struct OutcomeContractData {
 }
 
 impl LedgerDeploymentData {
-    pub(super) fn configuration(
+    pub(crate) fn configuration(
         &self,
         generator: TrustedLearningSignerV1,
         observer: TrustedLearningSignerV1,

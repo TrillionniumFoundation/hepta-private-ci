@@ -16,7 +16,7 @@ mod deployment;
 #[path = "production_initial_q24_files.rs"]
 mod files;
 #[path = "production_initial_q24_ledger_data.rs"]
-mod ledger_data;
+pub(super) mod ledger_data;
 #[path = "production_initial_q24_ledger_files.rs"]
 mod ledger_files;
 #[path = "production_initial_q24_load.rs"]

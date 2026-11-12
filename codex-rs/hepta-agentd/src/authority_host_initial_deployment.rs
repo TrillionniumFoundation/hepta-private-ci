@@ -276,3 +276,7 @@ use std::sync::Arc;
 mod learning_trust;
 pub(crate) use learning_trust::RegisteredInitialLearningTrustV1;
 pub use learning_trust::RootInitialLearningTrustFilesV1;
+
+#[path = "authority_host_initial_ledger_files.rs"]
+mod historical_ledger;
+pub(crate) use historical_ledger::RootHistoricalLedgerDeploymentV1;
