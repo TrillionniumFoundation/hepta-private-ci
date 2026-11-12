@@ -1,0 +1,337 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking starlark v0.14.2 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/third_party/starlark-0.14.2)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Checking codex-execpolicy v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/execpolicy)
+    Checking codex-protocol v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/protocol)
+    Checking codex-file-system v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/file-system)
+    Checking codex-api v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/codex-api)
+    Checking codex-git-utils v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/git-utils)
+    Checking codex-shell-command v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/shell-command)
+    Checking codex-exec-server-protocol v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/exec-server-protocol)
+    Checking codex-otel v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/otel)
+    Checking codex-model-provider-info v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/model-provider-info)
+    Checking codex-secrets v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/secrets)
+    Checking codex-history v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/history)
+    Checking codex-features v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/features)
+    Checking codex-windows-sandbox v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/windows-sandbox-rs)
+    Checking codex-sandboxing v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/sandboxing)
+    Checking codex-state v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/state)
+    Checking codex-config v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/config)
+    Checking codex-agent-identity v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/agent-identity)
+    Checking codex-utils-output-truncation v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/utils/output-truncation)
+    Checking codex-response-debug-context v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/response-debug-context)
+    Checking codex-code-mode-protocol v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/code-mode-protocol)
+    Checking codex-code-mode v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/code-mode)
+    Checking codex-exec-server v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/exec-server)
+    Checking codex-login v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/login)
+    Checking codex-models-manager v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/feedback)
+    Checking codex-model-provider v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/model-provider)
+    Checking codex-context-fragments v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/context-fragments)
+    Checking codex-rollout v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/rollout)
+    Checking codex-utils-plugins v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/utils/plugins)
+    Checking codex-plugin v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/plugin)
+    Checking codex-connectors v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/connectors)
+    Checking codex-exec-server-test-support v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/exec-server/tests/support)
+    Checking codex-rmcp-client v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/rmcp-client)
+    Checking codex-tools v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/tools)
+    Checking codex-app-server-protocol v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/app-server-protocol)
+    Checking codex-mcp v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/codex-mcp)
+    Checking codex-extension-api v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/extension-api)
+    Checking codex-skills v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/skills)
+    Checking codex-hooks v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hooks)
+    Checking codex-apply-patch v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/shell-escalation)
+    Checking codex-prompts v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/memories/read)
+    Checking codex-utils-audio v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/utils/audio)
+    Checking codex-hepta-operations v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-operations)
+    Checking codex-backend-client v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/backend-client)
+    Checking codex-hepta-memory v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-memory)
+    Checking codex-analytics v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/analytics)
+    Checking codex-core-plugins v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/core-plugins)
+    Checking codex-skills-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/skills)
+    Checking codex-thread-store v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/thread-store)
+    Checking codex-linux-sandbox v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/linux-sandbox)
+    Checking codex-arg0 v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/arg0)
+    Checking codex-home v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/codex-home)
+    Checking codex-hepta-authbus v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-authbus)
+    Checking codex-hepta-evidence v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-evidence)
+    Checking codex-core v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/core)
+    Checking codex-connectors-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/connectors)
+    Checking codex-utils-cli v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/utils/cli)
+    Checking codex-hepta-governance v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/hepta-governance)
+    Checking codex-hepta-memory-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/hepta-memory)
+    Checking codex-git-attribution v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/git-attribution)
+    Checking codex-hepta-prompt-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/hepta-prompt)
+    Checking codex-hepta-automation v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-automation)
+    Checking codex-hepta-agent-protocol v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-agent-protocol)
+    Checking codex-hepta-cognitive-store v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-cognitive-store)
+    Checking codex-hepta-supervisor v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-supervisor)
+    Checking codex-memories-write v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/memories/write)
+    Checking codex-memories-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/memories)
+    Checking codex-chatgpt v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/chatgpt)
+    Checking codex-goal-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/goal)
+    Checking codex-external-agent-migration v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/external-agent-migration)
+    Checking codex-cloud-config v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/cloud-config)
+    Checking codex-guardian-v2 v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/guardian-v2)
+    Checking codex-app-server-transport v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/app-server-transport)
+    Checking codex-mcp-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/mcp)
+    Checking codex-agent-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/agent)
+    Checking codex-history-notes-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/history-notes)
+    Checking codex-image-generation-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/image-generation)
+    Checking codex-queue-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/queue)
+    Checking codex-web-search-extension v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/ext/web-search)
+    Checking core_test_support v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/core/tests/common)
+    Checking codex-app-server v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/app-server)
+    Checking app_test_support v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/app-server/tests/common)
+    Checking codex-app-server-client v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/app-server-client)
+    Checking codex-hepta-codex-adapter v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-codex-adapter)
+    Checking codex-hepta-agentd v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-agentd)
+    Checking codex-hepta-infer-worker-host v0.0.0 (/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs/hepta-infer-worker-host)
+    Finished `dev` profile [unoptimized] target(s) in 3m 28s

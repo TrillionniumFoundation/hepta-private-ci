@@ -101,7 +101,8 @@ pub struct HttpProviderEffectConfig {
     /// Exactly one `{key}` placeholder is required.
     pub lookup_url_template: String,
     /// Authentication/provider headers supplied by the external authority.
-    /// Binding headers generated from the intent override duplicates.
+    /// Each normalized name must have exactly one value. Binding headers
+    /// generated from the intent replace matching configured names.
     pub headers: HeaderMap,
     pub timeout: Duration,
     pub contract_id: String,
@@ -138,6 +139,17 @@ impl HttpProviderEffectConfig {
             || dispatch_endpoint.port_or_known_default() != lookup_endpoint.port_or_known_default()
         {
             return Err("dispatch and lookup endpoints must share one origin".to_string());
+        }
+
+        // Sorting a multivalue header loses its wire order, which a provider
+        // may use to select an account. Reject that ambiguity before either
+        // dispatch or lookup can construct a qualified adapter.
+        if self
+            .headers
+            .keys()
+            .any(|name| self.headers.get_all(name).iter().count() > 1)
+        {
+            return Err("provider contract headers must have one value per name".to_string());
         }
 
         let mut bytes = b"hepta.provider-effect.http-contract.v1\0".to_vec();
@@ -803,6 +815,96 @@ mod tests {
                 &[8_u8; 32],
             )
             .is_err()
+        );
+    }
+
+    fn signed_header_contract_config(
+        headers: HeaderMap,
+        digest: Sha256Digest,
+    ) -> HttpProviderEffectConfig {
+        let contract_id = "header-order-collision-v1";
+        let signing_key = SigningKey::from_bytes(&[43_u8; 32]);
+        let statement = HttpProviderEffectContractAttestation::statement_for(
+            contract_id,
+            &digest,
+            /*authority_epoch*/ 1,
+        );
+        let signature = signing_key.sign(&statement);
+        let attestation = HttpProviderEffectContractAttestation::verify_signed(
+            contract_id,
+            digest,
+            /*authority_epoch*/ 1,
+            &signature.to_bytes(),
+            &signing_key.verifying_key().to_bytes(),
+        )
+        .expect("valid legacy contract signature");
+        HttpProviderEffectConfig {
+            dispatch_url: "http://127.0.0.1:9/dispatch".to_string(),
+            lookup_url_template: "http://127.0.0.1:9/status/{key}".to_string(),
+            headers,
+            timeout: Duration::from_secs(5),
+            contract_id: contract_id.to_string(),
+            attestation: Some(attestation),
+        }
+    }
+
+    #[test]
+    fn http_contract_rejects_legacy_duplicate_header_attestations() {
+        // c809's v1 encoding sorted both HeaderMap orders into the same
+        // 325-byte preimage. Keep its signed digest as a regression fixture;
+        // the signing domain and unique-header encoding remain unchanged.
+        let legacy_digest = Sha256Digest::parse(
+            "8a519b7f5cbeef3c4270559d46284be9da0acc4aabdb26ee02897ef1cf1b82d3".to_string(),
+        )
+        .expect("legacy collision digest");
+        for values in [["alice", "bob"], ["bob", "alice"]] {
+            let mut headers = HeaderMap::new();
+            headers.append(
+                HeaderName::from_bytes(b"X-Tenant").expect("case variant"),
+                HeaderValue::from_static(values[0]),
+            );
+            headers.append(
+                HeaderName::from_static("x-tenant"),
+                HeaderValue::from_static(values[1]),
+            );
+            pretty_assertions::assert_eq!(
+                headers
+                    .get_all("x-tenant")
+                    .iter()
+                    .map(|value| value.to_str().expect("fixture header"))
+                    .collect::<Vec<_>>(),
+                values.to_vec(),
+            );
+            let config = signed_header_contract_config(headers, legacy_digest.clone());
+            pretty_assertions::assert_eq!(
+                config.contract_sha256(),
+                Err("provider contract headers must have one value per name".to_string()),
+            );
+            pretty_assertions::assert_eq!(
+                HttpProviderEffectAdapter::new(config).unwrap_err(),
+                "provider contract headers must have one value per name",
+            );
+        }
+    }
+
+    #[test]
+    fn http_contract_unique_header_digest_retains_v1_encoding() {
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            HeaderName::from_bytes(b"X-Tenant").expect("case variant"),
+            HeaderValue::from_static("alice"),
+        );
+        let digest = Sha256Digest::parse(
+            "b9044a78a84378f9610393d621b5541187907e7218f400affe90349cf7b8fb7d".to_string(),
+        )
+        .expect("existing unique-header digest");
+        let config = signed_header_contract_config(headers, digest.clone());
+        pretty_assertions::assert_eq!(config.contract_sha256(), Ok(digest));
+        pretty_assertions::assert_eq!(
+            HttpProviderEffectAdapter::new(config)
+                .expect("unique-header legacy signature remains valid")
+                .capability(),
+            ProviderEffectIdempotencyCapability::KeyAndStatusLookup,
         );
     }
 

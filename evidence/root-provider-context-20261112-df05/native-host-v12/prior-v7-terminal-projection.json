@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "state": "failed",
+  "exit_code": 1,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "stdout_bytes": 0,
+  "stderr_bytes": 145,
+  "original": {
+    "bytes": 42370,
+    "sha256": "864f9f762bb3d62b511d04b9995dc538090174e8169b1589108be949137076fb",
+    "reference": "private native v12 control/prior-v7-launch-native-original.json"
+  },
+  "phase": "initial admission before source, Rust, commit or publication",
+  "failure": "The planned v6 target directory did not exist; E1/E2 remained unchanged.",
+  "historical_target_routing": "Not determined; the v6 wrapper target value was a declaration, not an observed runtime path."
+}

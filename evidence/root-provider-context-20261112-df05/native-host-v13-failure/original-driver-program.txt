@@ -1,0 +1,822 @@
+from __future__ import annotations
+import ast
+import hashlib
+import json
+import os
+import pathlib
+import re
+import shutil
+import signal
+import stat
+import subprocess
+import sys
+import time
+
+input_bytes = sys.stdin.buffer.read()
+data = json.loads(input_bytes)
+repository = 'TrillionniumFoundation/hepta-private-ci'
+base = 'c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9'
+base_branch = 'fix/hepta-provider-operation-binding-20261030'
+branches = {
+    'journal': 'fix/hepta-provider-context-journal-20261112-df05',
+    'host': 'fix/hepta-provider-context-host-20261112-df05',
+}
+old_sources = {
+    'journal': '202be923c9693b85c23b34c94f3aaf9960762bd4',
+    'host': 'a568e32ddc9dac056ea4e01befea4ae3fbfc941b',
+}
+old_trees = {
+    'journal': '180e24fa2612e812e2d78a4ddac5b962cc4c82c1',
+    'host': '7bc2260ffabc88a3a7db0046cb5c8734257247fd',
+}
+old_evidence = {
+    'journal': 'cdc7eaa3ef7f6457270be06bbce5203d196205fb',
+    'host': 'a0ee4d04490a74d90aedad82d61dd91dd648d9fb',
+}
+pr_numbers = {'journal': 6242, 'host': 6244}
+sourceprep = pathlib.Path('/data/root-provider-context-20261112-df05-v10-sourceprep')
+seed = sourceprep / 'host'
+host_dir = sourceprep / 'host'
+journal_dir = sourceprep / 'journal'
+prior_v6_host_dir = pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v6')
+prior_v6_journal_dir = pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v6-journal')
+prior_host_dir = pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v3')
+prior_v4_evidence = pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v4-evidence')
+prior_v5_evidence = pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v5-evidence')
+prior_evidence = pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v6-evidence')
+prior_v7_planned_evidence = pathlib.Path('/home/qian-qi/work/root-provider-context-20261112-df05-v7-evidence')
+prior_v7_evidence = pathlib.Path('/data/root-provider-context-20261112-df05-v7-evidence')
+prior_v8_evidence = pathlib.Path('/data/root-provider-context-20261112-df05-v8-evidence')
+prior_v9_evidence = pathlib.Path('/data/root-provider-context-20261112-df05-v9-evidence')
+prior_v10_evidence = pathlib.Path('/data/root-provider-context-20261112-df05-v10-evidence')
+prior_v11_evidence = pathlib.Path('/data/root-provider-context-20261112-df05-v11-evidence')
+prior_v12_evidence = pathlib.Path('/data/root-provider-context-20261112-df05-v12-evidence')
+evidence = pathlib.Path('/data/root-provider-context-20261112-df05-v13-evidence')
+control_root = pathlib.Path('/data/root-provider-context-20261112-df05-step-control-v1')
+diagnostic_root = pathlib.Path('/data/root-provider-context-20261112-df05-concurrency-v1')
+target = pathlib.Path('/data/root-provider-context-20261112-df05-v10-target')
+if 'NEXTEST_RETRIES' in os.environ:
+    raise RuntimeError('unreviewed NEXTEST_RETRIES override')
+env = {
+    **{k: v for k, v in os.environ.items() if not k.startswith('GIT_')},
+    'GIT_NO_REPLACE_OBJECTS': '1', 'GIT_OPTIONAL_LOCKS': '0', 'GIT_TERMINAL_PROMPT': '0', 'GH_HOST': 'github.com',
+    'PATH': '/home/qian-qi/.cargo/bin:' + os.environ.get('PATH', ''),
+    'RUSTUP_TOOLCHAIN': '1.96.0', 'CARGO_BUILD_JOBS': '2',
+    'CARGO_PROFILE_DEV_DEBUG': '0', 'CARGO_PROFILE_TEST_DEBUG': '0',
+    'CARGO_INCREMENTAL': '0', 'NEXTEST_TEST_THREADS': '2',
+    'CARGO_TERM_COLOR': 'never', 'CARGO_TARGET_DIR': str(target),
+}
+ROOT = host_dir
+Path = pathlib.Path
+SOURCE_OBSERVATIONS = []
+CURRENT_SOURCE_ROOT = None
+PUBLIC_HISTORY_NAMES = ('resume-final-stdout.log', 'resume-final-stderr.log', 'v7-admission-stdout.log', 'v7-admission-stderr.log', 'v8-admission-stdout.log', 'v8-admission-stderr.log', 'v9-failure-stderr.log')
+
+# Import only exact previously reviewed helper definitions, never the old main,
+# old publisher, or its precommit formatter. The old wrapper file is immutable
+# input authenticated by its full SHA256 before any of its definitions execute.
+reused_program = (prior_evidence / 'qualified-wrapper-program.txt').read_bytes()
+reused_sha256 = 'c65534e21bdd9b00fcb3985a90d0d33cb0fc226e969626726cb83e984c18e61b'
+if hashlib.sha256(reused_program).hexdigest() != reused_sha256:
+    raise RuntimeError('reviewed native helper program changed')
+parsed = ast.parse(reused_program.decode('utf-8'))
+helper_names = {
+    'emit', 'gitcmd', 'git', 'plain_git_bytes', 'plain_git', 'write', 'actor',
+    'origin', 'tree_map', 'sized_tree_map', 'tree_digest', 'oid_bytes',
+    'no_hold', 'repository_guard', 'flags_clear', 'ancestor_guard',
+    '_fingerprint', '_tracked_blob', 'physical', 'verify_source', 'clean',
+    '_source_error', '_wait_without_reaping', '_darwin_only_exited_leader',
+    'owned_run', 'materialize', 'remote_ref', 'pr_listing',
+}
+definitions = [node for node in parsed.body
+               if isinstance(node, ast.FunctionDef) and node.name in helper_names]
+if {node.name for node in definitions} != helper_names or len(definitions) != len(helper_names):
+    raise RuntimeError('reviewed helper set mismatch')
+exec(compile(ast.Module(body=definitions, type_ignores=[]), '<exact-reviewed-v6-helpers>', 'exec'))
+
+def no_hold():
+    if os.path.lexists(sourceprep / 'PREPARATION_HOLD'):
+        raise RuntimeError('explicit preparation HOLD exists')
+    for root in (host_dir, journal_dir, prior_host_dir, prior_v6_host_dir, prior_v6_journal_dir, control_root / 'source', diagnostic_root / 'source'):
+        if os.path.lexists(root / 'ROOT_PROVIDER_CONTEXT_VALIDATION_HOLD'):
+            raise RuntimeError('explicit source/publication HOLD exists')
+    for output in (evidence, prior_v4_evidence, prior_v5_evidence, prior_evidence, prior_v7_planned_evidence, prior_v7_evidence, prior_v8_evidence, prior_v9_evidence, prior_v10_evidence, prior_v11_evidence, prior_v12_evidence, control_root, control_root / 'private', diagnostic_root, diagnostic_root / 'private'):
+        if os.path.lexists(output / 'PUBLICATION_HOLD'):
+            raise RuntimeError('explicit publication HOLD exists')
+
+
+def command(root, args, log, source):
+    global CURRENT_SOURCE_ROOT, SOURCE_OBSERVATIONS
+    CURRENT_SOURCE_ROOT = root
+    SOURCE_OBSERVATIONS = []
+    no_hold()
+    verify_target()
+    result = owned_run(args, log, timeout=20000, env=env, cwd=root / 'codex-rs', expected_source=source)
+    with log.open('rb') as stream:
+        os.fsync(stream.fileno())
+    result.update(
+        source_commit=source, source_observations=list(SOURCE_OBSERVATIONS),
+        owned_cleanup_completed=result['executed'],
+        owner_contract='reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract',
+    )
+    rust_execution = len(args) > 1 and args[0] == '/home/qian-qi/.cargo/bin/just' and args[1] in ('test', 'fix')
+    if rust_execution:
+        snapshot = {'path': str(target), 'lexists': os.path.lexists(target), 'is_directory': target.is_dir(), 'is_symlink': target.is_symlink()}
+        if snapshot['lexists']:
+            info = target.lstat()
+            snapshot.update(device=info.st_dev, inode=info.st_ino, mode=oct(stat.S_IMODE(info.st_mode)))
+        result['build_target_observation'] = snapshot
+        result['build_target_verified'] = (snapshot['is_directory'] and not snapshot['is_symlink'] and
+            (snapshot.get('device'), snapshot.get('inode'), snapshot.get('mode')) == target_identity)
+    write(log.with_suffix(log.suffix + '.receipt.json'), json.dumps(result, indent=2))
+    emit({'phase': 'command_finished', 'wrapper_revision': 'reviewed-v13', **result})
+    if not result.get('source_verified') or not result.get('source_before_verified') or not result.get('source_after_verified') or not result['owned_cleanup_completed']:
+        write(log.with_suffix(log.suffix + '.source-after.patch'),
+              subprocess.check_output(gitcmd(root, 'diff', '--no-ext-diff', '--binary'), env=env))
+        raise RuntimeError('command owner/source integrity failed; no following command may borrow source')
+    if rust_execution and not result['build_target_verified']:
+        raise RuntimeError('private Cargo target was not observed after the requested Rust command')
+    return result
+
+
+def parent_list(path, commit):
+    return git(path, 'show', '-s', '--format=%P', commit).split()
+
+
+def apply_candidate(path, parent, selected, message):
+    clean(path, parent)
+    expected = sized_tree_map(path, parent)
+    for relative in selected:
+        if relative not in files or relative not in expected:
+            raise RuntimeError('candidate overlay is not an existing reviewed source entry')
+        p = path / relative
+        ancestor_guard(path, p)
+        before = p.lstat()
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+            raise RuntimeError('candidate source entry type changed')
+        payload = files[relative].encode('utf-8')
+        fd = os.open(p, os.O_WRONLY | os.O_TRUNC | os.O_NOFOLLOW)
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        expected[relative] = (expected[relative][0], 'blob', oid_bytes(payload), len(payload))
+    physical(path, expected)
+    visible = set(plain_git(path, 'diff', '--name-only').splitlines()) | set(plain_git(path, 'ls-files', '--others', '--exclude-standard').splitlines())
+    if visible != set(selected):
+        raise RuntimeError('candidate overlay changed unexpected source')
+    git(path, 'add', '--', *selected)
+    if set(git(path, 'diff', '--cached', '--name-only').splitlines()) != set(selected):
+        raise RuntimeError('source commit staged allowlist mismatch')
+    frozen = git(path, 'write-tree')
+    if sized_tree_map(path, frozen) != expected:
+        raise RuntimeError('candidate index differs from complete expected source')
+    git(path, 'commit', '-m', message)
+    source = git(path, 'rev-parse', 'HEAD')
+    if parent_list(path, source) != [parent] or sized_tree_map(path, source) != expected:
+        raise RuntimeError('source commit parent or complete tree differs')
+    clean(path, source)
+    return source
+
+
+def merge_journal(journal_evidence):
+    path = host_dir
+    left = old_evidence['host']
+    clean(path, left)
+    if git(path, 'merge-base', left, journal_evidence) != old_evidence['journal']:
+        raise RuntimeError('unexpected merge base')
+    original = tree_map(path, old_evidence['journal'])
+    left_map = tree_map(path, left)
+    right_map = tree_map(path, journal_evidence)
+    expected = {}
+    for relative in sorted(set(original) | set(left_map) | set(right_map)):
+        common, a, b = original.get(relative), left_map.get(relative), right_map.get(relative)
+        if a == b:
+            value = a
+        elif a == common:
+            value = b
+        elif b == common:
+            value = a
+        else:
+            raise RuntimeError('reviewed file-level merge is not conflict free: ' + relative)
+        if value is not None:
+            expected[relative] = value
+    no_hold()
+    result = subprocess.run(gitcmd(path, 'merge', '--no-ff', '--no-commit', journal_evidence), env=env, capture_output=True)
+    write(evidence / 'host-merge.log', result.stdout + result.stderr)
+    if result.returncode:
+        raise RuntimeError('merge conflict or error; no automatic resolution')
+    if git(path, 'rev-parse', 'MERGE_HEAD') != journal_evidence:
+        raise RuntimeError('merge target changed')
+    if tree_map(path, git(path, 'write-tree')) != expected or plain_git(path, 'diff', '--name-only'):
+        raise RuntimeError('merge index differs from complete expected union')
+    physical(path, git(path, 'write-tree'))
+    git(path, 'commit', '-m', 'merge: include validated provider context journal and evidence')
+    merged = git(path, 'rev-parse', 'HEAD')
+    if parent_list(path, merged) != [left, journal_evidence] or tree_map(path, merged) != expected:
+        raise RuntimeError('actual merge parent order or complete tree changed')
+    clean(path, merged)
+    proof = {
+        'merge_commit': merged, 'parents': [left, journal_evidence],
+        'merge_base': old_evidence['journal'], 'complete_expected_map_sha256': tree_digest(expected),
+        'complete_mode_blob_union_verified': True, 'physical_source': verify_source(path, merged),
+    }
+    write(evidence / 'host-merge-source.json', json.dumps(proof, indent=2))
+    emit({'phase': 'actual_merge_frozen', **proof})
+    return merged
+
+
+def source_line_count(path, from_commit, to_commit):
+    raw = git(path, 'diff', '--numstat', from_commit, to_commit, '--', 'codex-rs')
+    count = 0
+    for line in raw.splitlines():
+        added, deleted, name = line.split('\t', 2)
+        if not added.isdigit() or not deleted.isdigit():
+            raise RuntimeError('binary source diff is outside scope')
+        count += int(added) + int(deleted)
+    if count > 800:
+        raise RuntimeError('nonmechanical source stage exceeds the reviewed size limit')
+    return count
+
+
+def current_pr(stage, expected_head):
+    base_name = base_branch if stage == 'journal' else branches['journal']
+    matches = pr_listing(branches[stage], base_name, 'all')
+    if len(matches) != 1:
+        raise RuntimeError('existing Draft identity is ambiguous')
+    observed = matches[0]
+    if observed['number'] != pr_numbers[stage] or observed['state'] != 'OPEN' or not observed['isDraft'] or observed['headRefOid'] != expected_head:
+        raise RuntimeError('existing Draft identity or head drifted')
+    expected_url = 'https://github.com/' + repository + '/pull/' + str(pr_numbers[stage])
+    if observed['url'] != expected_url:
+        raise RuntimeError('existing Draft URL mismatch')
+    return observed
+
+
+def snapshot_hooks(path):
+    if not os.path.lexists(path):
+        return {'path': str(path), 'exists': False, 'entries': {}}
+    if path.is_symlink() or not path.is_dir():
+        raise RuntimeError('original hook directory has unsupported type')
+    entries = {}
+    for item in sorted(path.iterdir()):
+        info = item.lstat()
+        value = {'mode': oct(stat.S_IMODE(info.st_mode)), 'uid': info.st_uid, 'gid': info.st_gid}
+        if stat.S_ISREG(info.st_mode):
+            value.update(kind='file', bytes=info.st_size, sha256=hashlib.sha256(item.read_bytes()).hexdigest())
+        elif stat.S_ISLNK(info.st_mode):
+            value.update(kind='symlink', target=os.readlink(item))
+        elif stat.S_ISDIR(info.st_mode):
+            value.update(kind='directory')
+        else:
+            raise RuntimeError('original hooks contain unsupported object')
+        entries[item.name] = value
+    return {'path': str(path), 'exists': True, 'entries': entries}
+
+
+def identity_map(raw):
+    result = {}
+    for entry in raw.split(b'\0'):
+        if entry:
+            key, value = entry.split(b'\n', 1)
+            result[key.decode('utf-8')] = value.decode('utf-8')
+    return result
+
+
+def effective_identity(path):
+    result = subprocess.run(gitcmd(path, 'config', '--null', '--get-regexp', identity_pattern), env=env, capture_output=True)
+    if result.returncode not in (0, 1):
+        raise RuntimeError('effective native identity could not be read')
+    return identity_map(result.stdout)
+
+
+def read_stable(path, expected=None):
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+        raise RuntimeError('evidence is not a single regular file')
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        opened = os.fstat(fd)
+        with os.fdopen(os.dup(fd), 'rb') as stream:
+            payload = stream.read()
+        if _fingerprint(before) != _fingerprint(opened) or _fingerprint(opened) != _fingerprint(os.fstat(fd)) or _fingerprint(opened) != _fingerprint(path.lstat()):
+            raise RuntimeError('evidence changed during read')
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+    if expected is not None and (len(payload) != expected['bytes'] or hashlib.sha256(payload).hexdigest() != expected['sha256']):
+        raise RuntimeError('evidence byte identity changed')
+    return payload
+
+
+def publish_update(stage, path, source, sealed, summary):
+    no_hold()
+    clean(path, sealed)
+    actor()
+    origin(path)
+    branch = branches[stage]
+    base_name = base_branch if stage == 'journal' else branches['journal']
+    expected_base = base if stage == 'journal' else results['journal']['evidence_commit']
+    previous = old_evidence[stage]
+    if remote_ref(path, base_name) != expected_base or remote_ref(path, branch) != previous:
+        raise RuntimeError('remote candidate/base changed before FF update')
+    existing = current_pr(stage, previous)
+    original_body = (existing.get('body') or '').encode('utf-8')
+    accepted_original = data['prior_pr_bodies'][stage].encode('utf-8')
+    if original_body not in (accepted_original, accepted_original.rstrip(b'\n')):
+        raise RuntimeError('Draft body changed since reviewed readback')
+    write(evidence / (stage + '-previous-pr.json'), json.dumps(existing, indent=2))
+    if subprocess.run(gitcmd(path, 'merge-base', '--is-ancestor', previous, sealed), env=env).returncode:
+        raise RuntimeError('candidate publication is not fast forward')
+    write(evidence / (stage + '-push-intent.json'), json.dumps({
+        'state': 'MayHaveBeenSent',
+        'operation_id': 'github-ref-fast-forward:' + repository + ':' + branch + ':' + previous + ':' + sealed,
+        'repository': repository, 'host': 'github.com', 'branch': branch,
+        'previous_commit': previous, 'source_commit': source, 'payload_commit': sealed,
+        'refspec': sealed + ':refs/heads/' + branch,
+    }, indent=2))
+    actor()
+    origin(path)
+    clean(path, sealed)
+    no_hold()
+    pushed = subprocess.run(gitcmd(path, '-c', 'credential.helper=', '-c', 'credential.helper=!/usr/bin/gh auth git-credential',
+                                  'push', '--porcelain', 'origin', sealed + ':refs/heads/' + branch),
+                            env=env, capture_output=True)
+    write(evidence / (stage + '-push.log'), pushed.stdout + pushed.stderr)
+    if remote_ref(path, branch) != sealed:
+        raise RuntimeError('FF push unconfirmed; reconcile original intent instead of replay')
+    after_push = current_pr(stage, sealed)
+    if (after_push.get('body') or '').encode('utf-8') != original_body:
+        raise RuntimeError('Draft body drifted during push')
+    rows = []
+    for package, receipt in summary['package_commands'].items():
+        rows.append('| ' + package + ' | ' + str(receipt['test']['exit_code']) + ' | ' + str(receipt['fix']['exit_code']) + ' |')
+    body = (
+        '## Problem\n\nA stable owner/run/step operation key must remain bound to the original provider context. '
+        'A concurrent recovery also exposed a later local settlement failure: provider reconciliation was durable while the step remained Recorded/Indeterminate.\n\n'
+        '## Changes\n\n' +
+        ('The durable barrier retains provider context separately from the operation key. Schema v23 gates all four append paths and rejects primary-key, nonce and explicit-rowid replacement. '
+         'The new step mutation transaction reserves the SQLite writer before reading history for claim, record and reconcile. Ordinary historical reads retain their prior transaction mode. '
+         'A controlled regression holds a separate writer, proves reads remain available, then continues the same pinned mutation after releasing that writer; it does not retry the operation.\n\n'
+         if stage == 'journal' else
+         'Registered HTTP and PoN hosts retain original recovery context. The common HTTP validator rejects ambiguous normalized duplicate headers without changing unique-header contract bytes. '
+         'This source is the actual merge containing the journal writer-admission correction, all existing host fixes, and the journal evidence.\n\n') +
+        '## Current native validation — DRAFT HOLD\n\n'
+        '- Actual source commit: ' + source + '.\n'
+        '- Evidence-only child: ' + sealed + '.\n'
+        '- Scoped qualification: ' + ('PASS' if summary['native_scope_pass'] else 'FAIL_OR_UNCONFIRMED') + '.\n'
+        '- Formatter exit: ' + str(summary['fmt']['exit_code']) + '.\n'
+        '- Exact physical source checks ran before and after every command, with retained-leader cleanup receipts.\n'
+        '- Required named regressions: ' + json.dumps(summary['expected_regressions_observed'], sort_keys=True) + '.\n'
+        '- Critical-case first-attempt checks (PASS and no TRY/failure/leak status): ' + json.dumps(summary['concurrency_first_attempt_clean'], sort_keys=True) + '.\n'
+        '- Raw logs and exact source/parent/tree manifests: ' + summary['evidence_prefix'] + '.\n\n'
+        '| Package | Test exit | Clippy fix exit |\n| --- | ---: | ---: |\n' + '\n'.join(rows) + '\n\n' +
+        ('The host source is actual merge ' + summary['actual_merge_commit'] + ' with parents ' + ', '.join(summary['source_parents']) + '. '
+         'All three package runs consumed that complete tree, including journal evidence ' + summary['journal_evidence_in_source'] + '. '
+         'A future GitHub prospective merge is not being labeled as tested.\n\n' if stage == 'host' else
+         'The current journal source is a sole child of controlled-test source ' + control_summary['source_commit'] +
+         ', which itself is a sole child of prior journal evidence ' + old_evidence['journal'] + '. The production correction is isolated in this new source commit.\n\n') +
+        '## Preserved control and historical observations\n\n'
+        'Source ' + old_sources['host'] + ' passed the complete v12 gates, then failed both attempts of the first bounded supplementary concurrent observation. '
+        'Its original 67,362-byte log has SHA256 8164aad0874bb9755068f9d8e724b5ebd1950970fb78762e06cd62a6586da51c. '
+        'The typed result was Unavailable for the correct recovery, Conflict for the substituted operation, one committed provider reconciliation, and a still-indeterminate Recorded step. '
+        'This identifies the failed settlement boundary; the old error mapping did not retain the SQLite extended error code.\n\n'
+        'Control source ' + control_summary['source_commit'] + ' retained the old production blob f359763d2eba77d956448e62af1f184a29e61c08 and added only the exact new fixture. '
+        'One invocation with the original local profile and retry policy produced both expected early Unavailable failures while the competing writer was held. '
+        'The corrected source uses the identical fixture bytes, SHA256 895b06c4989476040f9163e973f191c0feb70034a142cfe64737b0bb779eb182. '
+        'The control is not counted as a passing qualification, and its actual source is reachable in the journal history. '
+        'The correction removes the identified read-to-write upgrade window; it does not promise success under every future lock, storage or process failure.\n\n'
+        'All v6-v12 failures, successful observations, original source IDs and receipts remain in history. The current v13 result is derived only from its own command receipts.\n\n'
+        '## Scope and limits\n\n'
+        'This remains Draft HOLD. No production service, actual payment, message, deployment or production branch merge was activated. '
+        'The source stage contains ' + str(summary['nonmechanical_source_changed_lines']) + ' changed source lines; raw mechanical evidence is additional. '
+        'The key is scoped to owner/run/step and does not deduplicate newly created runs as one global business intent. '
+        'Missing or ambiguous historical provider context remains fail closed. Migration cannot retract an old process already beyond its durable dispatch barrier. '
+        'Provider atomic deduplication and retention, independent Root state survival, arbitrary database DDL and escaped process sessions remain outside this qualification.\n'
+    )
+    body_bytes = body.encode('utf-8')
+    payload = json.dumps({'body': body}, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+    write(evidence / (stage + '-pr-body.md'), body_bytes)
+    write(evidence / (stage + '-pr-update-payload.json'), payload)
+    write(evidence / (stage + '-pr-update-intent.json'), json.dumps({
+        'state': 'MayHaveBeenSent',
+        'operation_id': 'github-pr-body-update:' + repository + ':' + str(pr_numbers[stage]) + ':' + sealed,
+        'repository': repository, 'host': 'github.com', 'pr_number': pr_numbers[stage],
+        'source_commit': source, 'evidence_commit': sealed,
+        'previous_body_sha256': hashlib.sha256(original_body).hexdigest(),
+        'body_bytes': len(body_bytes), 'body_sha256': hashlib.sha256(body_bytes).hexdigest(),
+        'payload_bytes': len(payload), 'payload_sha256': hashlib.sha256(payload).hexdigest(),
+        'payload_transport': 'immutable stdin JSON bytes',
+        'final_hold_check_is_not_cross_service_CAS': True,
+    }, indent=2))
+    actor()
+    origin(path)
+    clean(path, sealed)
+    if remote_ref(path, branch) != sealed or remote_ref(path, base_name) != expected_base:
+        raise RuntimeError('remote head/base drift before body update')
+    if (current_pr(stage, sealed).get('body') or '').encode('utf-8') != original_body:
+        raise RuntimeError('Draft body drift before body update')
+    no_hold()
+    edited = subprocess.run(['/usr/bin/gh', 'api', '--hostname', 'github.com', '--method', 'PATCH',
+                             'repos/' + repository + '/pulls/' + str(pr_numbers[stage]), '--input', '-'],
+                            input=payload, env=env, capture_output=True)
+    write(evidence / (stage + '-pr-update.log'), edited.stdout + edited.stderr)
+    observed = current_pr(stage, sealed)
+    remote_body = (observed.get('body') or '').encode('utf-8')
+    if remote_body not in (body_bytes, body_bytes.rstrip(b'\n')):
+        raise RuntimeError('PR update unconfirmed; reconcile original operation instead of replay')
+    receipt = {
+        'url': observed['url'], 'number': pr_numbers[stage], 'source_commit': source,
+        'evidence_commit': sealed, 'remote_head_verified': sealed,
+        'body_comparison': 'exact' if remote_body == body_bytes else 'trailing_LF_only',
+        'body_sha256': hashlib.sha256(body_bytes).hexdigest(),
+        'remote_body_sha256': hashlib.sha256(remote_body).hexdigest(),
+        'push_exit': pushed.returncode, 'body_update_exit': edited.returncode,
+        'state': 'Confirmed', 'draft': True,
+    }
+    write(evidence / (stage + '-publication-receipt.json'), json.dumps(receipt, indent=2))
+    emit({'phase': 'draft_updated', 'stage': stage, **receipt})
+    return receipt
+
+
+def validate_and_seal(stage, path, source, fmt_base, source_diff_base, packages, merge_commit=None):
+    stage_dir = evidence / stage
+    stage_dir.mkdir()
+    before = tree_map(path, source)
+    proof = verify_source(path, source)
+    line_count = source_line_count(path, source_diff_base, source)
+    manifest = {
+        'source_commit': source, 'source_parents': parent_list(path, source),
+        'source_tree': git(path, 'rev-parse', source + '^{tree}'),
+        'complete_entry_count': len(before), 'complete_mode_blob_map_sha256': tree_digest(before),
+        'physical_source': proof, 'candidate_entries': {p: before[p] for p in files if p in before},
+        'source_diff_base': source_diff_base, 'nonmechanical_source_changed_lines': line_count,
+        'actual_merge_commit': merge_commit,
+    }
+    write(stage_dir / 'source-manifest.json', json.dumps(manifest, indent=2, sort_keys=True))
+    public_inputs = dict(common_public_payloads)
+    public_inputs['prior-v12-summary.json'] = prior_stage_summary_bytes[stage]
+    public_inputs['prior-v12-commands.json'] = prior_stage_command_bytes[stage]
+    public_inputs['production-format-check.log'] = production_format_log
+    public_inputs['production-format-check.log.receipt.json'] = production_format_receipt_bytes
+    if stage == 'host':
+        for name in ['host-merge.log', 'host-merge-source.json']:
+            public_inputs[name] = read_stable(evidence / name)
+    else:
+        public_inputs['journal-control-fast-forward.log'] = journal_ff_log
+    for name, payload in public_inputs.items():
+        if pathlib.PurePosixPath(name).name != name:
+            raise RuntimeError('public input allowlist contains a non-flat path')
+        write(stage_dir / name, payload)
+    package_commands = {}
+    observed = {}
+    concurrency_clean = {}
+    receipts = []
+    for package, names in packages:
+        log = stage_dir / (package + '-test.log')
+        result = command(path, ['/home/qian-qi/.cargo/bin/just', 'test', '-p', package,
+                                '--status-level', 'all', '--final-status-level', 'all'], log, source)
+        receipts.append(result)
+        package_commands[package] = {'test': result}
+        text = re.sub(r'\x1b\[[0-9;]*m', '', log.read_text(errors='replace'))
+        observed[package] = {name: bool(re.search(r'^\s*PASS\b[^\n]*\b' + re.escape(name) + r'\s*$', text, re.MULTILINE)) for name in names}
+        if package == 'codex-hepta-automation':
+            for name in critical_cases:
+                nonclean = re.search(r'^\s*(?:TRY\s+\d+(?:/\d+)?|FAIL|FLAKY|TIMEOUT|LEAK|ABORT|EXECFAIL)\b[^\n]*\b' + re.escape(name) + r'\s*$', text, re.MULTILINE)
+                concurrency_clean[name] = observed[package].get(name) is True and nonclean is None
+    # Project policy orders tests before fix/fmt; these do not trigger test reruns.
+    for package, names in packages:
+        result = command(path, ['/home/qian-qi/.cargo/bin/just', 'fix', '-p', package],
+                         stage_dir / (package + '-clippy-fix.log'), source)
+        package_commands[package]['fix'] = result
+        receipts.append(result)
+    fmt = command(path, ['/home/qian-qi/.cargo/bin/just', 'fmt', '--base', fmt_base], stage_dir / 'fmt.log', source)
+    receipts.append(fmt)
+    check = subprocess.run(gitcmd(path, 'diff', '--check'), env=env, capture_output=True)
+    write(stage_dir / 'diff-check.log', check.stdout + check.stderr)
+    write(stage_dir / 'source-after.patch', subprocess.check_output(gitcmd(path, 'diff', '--no-ext-diff', '--binary'), env=env))
+    final_source = verify_source(path, source)
+    equal = tree_map(path, source) == before and final_source['source_commit'] == source
+    integrity = all(r.get('source_verified') is True and r.get('source_before_verified') is True and
+                    r.get('source_after_verified') is True and r.get('owned_cleanup_completed') is True and
+                    r.get('build_target_verified', True) is True for r in receipts)
+    passed = equal and check.returncode == 0 and integrity and all(r['exit_code'] == 0 for r in receipts) and all(all(v.values()) for v in observed.values()) and len(concurrency_clean) == len(critical_cases) and all(concurrency_clean.values())
+    prefix = 'evidence/root-provider-context-20261112-df05/native-' + stage + '-v13/'
+    summary = {
+        'schema_version': 3, 'stage': stage, 'source_commit': source,
+        'source_tree': git(path, 'rev-parse', source + '^{tree}'),
+        'source_parents': parent_list(path, source), 'wrapper_sha256': data['wrapper_sha256'],
+        'reused_helper_program_sha256': reused_sha256, 'package_commands': package_commands,
+        'fmt': fmt, 'expected_regressions_observed': observed, 'source_after_equal': equal,
+        'source_after_physical': final_source, 'command_source_and_owner_integrity': integrity,
+        'diff_check_exit': check.returncode, 'native_scope_pass': passed, 'evidence_prefix': prefix,
+        'tested_scope': 'exact immutable source with actual journal merge' if stage == 'host' else 'exact immutable journal source',
+        'actual_merge_commit': merge_commit,
+        'journal_evidence_in_source': results['journal']['evidence_commit'] if stage == 'host' else None,
+        'prospective_github_merge_built_or_tested': False,
+        'prior_concurrent_receipt_failure_boundary': 'provider reconciliation committed but step remained Recorded/Indeterminate; SQLite extended code was not retained',
+        'production_concurrency_fix_applied': True,
+        'concurrency_first_attempt_clean': concurrency_clean,
+        'old_production_control_source': control_summary['source_commit'],
+        'old_production_control_expected_failure_observed': control_summary['expected_failure_observed'],
+        'controlled_fixture_sha256': control_summary['fixture_sha256'],
+        'source_diff_base': source_diff_base, 'nonmechanical_source_changed_lines': line_count,
+        'prior_source_commit': old_sources[stage], 'prior_evidence_commit': old_evidence[stage],
+        'prior_native_scope_pass': prior_stage_summaries[stage]['native_scope_pass'], 'production_activation': False, 'production_merge_authority': False,
+        'original_v1_job_state': 'UNKNOWN', 'original_v1_job_reference': 'private prior operation record',
+        'process_owner_boundary': 'not a sandbox; escaped sessions and kernel cleanup latency not certified',
+    }
+    write(stage_dir / 'summary.json', json.dumps(summary, indent=2))
+    write(stage_dir / 'commands.json', json.dumps(receipts, indent=2))
+    if not equal or check.returncode or not integrity:
+        raise RuntimeError('source/owner integrity failed; no publication')
+    actor()
+    origin(path)
+    no_hold()
+    clean(path, source)
+    expected_artifacts = set(public_inputs) | {'source-manifest.json', 'fmt.log', 'fmt.log.receipt.json', 'diff-check.log', 'source-after.patch', 'summary.json', 'commands.json'}
+    for package, _ in packages:
+        expected_artifacts.update({package + '-test.log', package + '-test.log.receipt.json', package + '-clippy-fix.log', package + '-clippy-fix.log.receipt.json'})
+    artifacts = list(sorted(stage_dir.iterdir()))
+    if {p.name for p in artifacts} != expected_artifacts:
+        raise RuntimeError('stage differs from the explicit public artifact allowlist')
+    if any(not p.is_file() or p.is_symlink() for p in artifacts):
+        raise RuntimeError('stage artifact type changed')
+    artifact_bytes = {p.name: read_stable(p) for p in artifacts}
+    hashes = {name: {'bytes': len(payload), 'sha256': hashlib.sha256(payload).hexdigest()} for name, payload in artifact_bytes.items()}
+    manifest_bytes = json.dumps(hashes, indent=2).encode('utf-8')
+    write(stage_dir / 'sha256-manifest.json', manifest_bytes)
+    artifact_bytes['sha256-manifest.json'] = manifest_bytes
+    allowed = {}
+    for name, payload in artifact_bytes.items():
+        relative = prefix + name
+        destination = path / relative
+        if destination.exists():
+            raise RuntimeError('evidence path already exists')
+        write(destination, payload)
+        allowed[relative] = ('100644', 'blob', oid_bytes(payload))
+    git(path, 'add', '-f', '--', *allowed)
+    if set(git(path, 'diff', '--cached', '--name-only').splitlines()) != set(allowed):
+        raise RuntimeError('evidence staged allowlist mismatch')
+    git(path, 'commit', '-m', 'evidence: seal ' + stage + ' provider context follow-up validation')
+    sealed = git(path, 'rev-parse', 'HEAD')
+    after = tree_map(path, sealed)
+    retained = {p: value for p, value in after.items() if p not in allowed}
+    if parent_list(path, sealed) != [source] or retained != before or set(after) - set(before) != set(allowed) or any(after.get(p) != value for p, value in allowed.items()):
+        raise RuntimeError('evidence child changed the complete source or allowlist')
+    clean(path, sealed)
+    write(evidence / (stage + '-sealed-receipt.json'), json.dumps({
+        'source_commit': source, 'evidence_commit': sealed, 'source_preserved_complete_tree': True,
+        'complete_source_mode_blob_map_sha256': tree_digest(retained), 'allowed_evidence': allowed,
+    }, indent=2))
+    summary['evidence_commit'] = sealed
+    results[stage] = summary
+    publication = publish_update(stage, path, source, sealed, summary)
+    summary['publication'] = publication
+    write(evidence / (stage + '-finished.json'), json.dumps(summary, indent=2))
+    return sealed
+
+
+identity_pattern = r'^(user\..*|commit\..*|gpg\..*|core\.hookspath|i18n\..*)$'
+critical_cases = [
+    'taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe',
+    'taskflow_step_reconcile_waits_for_writer_without_blocking_reads',
+]
+
+def verify_target():
+    info = target.lstat()
+    observed = (info.st_dev, info.st_ino, oct(stat.S_IMODE(info.st_mode)))
+    if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode) or info.st_uid != os.geteuid() or observed != target_identity:
+        raise RuntimeError('closed control target identity changed; no assumed cache reuse')
+    return {'path': str(target), 'device': info.st_dev, 'inode': info.st_ino, 'mode': observed[2]}
+
+def checked_terminal(name, raw, expected_sha, expected_job):
+    payload = raw.encode('utf-8')
+    if hashlib.sha256(payload).hexdigest() != expected_sha:
+        raise RuntimeError(name + ' original terminal byte identity changed')
+    value = json.loads(payload)
+    if value.get('job_id') != expected_job or value.get('state') != 'succeeded' or value.get('exit_code') != 0 or not all(value.get(k) is True for k in ('output_complete', 'output_durable', 'terminal_publication_confirmed')):
+        raise RuntimeError(name + ' owner is not authoritatively closed')
+    return payload, value
+
+def public_terminal(name, payload, terminal):
+    return json.dumps({
+        'schema_version': 1,
+        **{k: terminal[k] for k in ('state', 'exit_code', 'cancelled', 'timed_out', 'output_complete', 'output_durable', 'terminal_publication_confirmed')},
+        'stdout_bytes': terminal['log_bytes']['stdout']['stored'],
+        'stderr_bytes': terminal['log_bytes']['stderr']['stored'],
+        'original': {'bytes': len(payload), 'sha256': hashlib.sha256(payload).hexdigest(), 'reference': 'private native v13 control/' + name},
+        'wrapper_completion_does_not_mean_tests_passed': True,
+    }, indent=2).encode('utf-8')
+
+def take_safe_artifacts(root, manifest_spec, names, label):
+    manifest_bytes = read_stable(root / 'sha256-manifest.json', manifest_spec)
+    manifest = json.loads(manifest_bytes)
+    result = {}
+    for name in names:
+        if pathlib.PurePosixPath(name).name != name or name not in manifest:
+            raise RuntimeError('explicit safe artifact is missing or malformed')
+        result[label + '-' + name] = read_stable(root / name, manifest[name])
+    return result
+
+no_hold()
+own_argv = pathlib.Path('/proc/self/cmdline').read_bytes().split(b'\0')
+if len(own_argv) < 3 or own_argv[1] != b'-c' or hashlib.sha256(own_argv[2]).hexdigest() != data['wrapper_sha256']:
+    raise RuntimeError('actual v13 program differs from fixed request')
+if sys.platform != 'linux' or not all(hasattr(os, n) for n in ('waitid', 'P_PID', 'WEXITED', 'WNOHANG', 'WNOWAIT', 'CLD_EXITED', 'CLD_KILLED', 'CLD_DUMPED', 'killpg')):
+    raise RuntimeError('reviewed retained-leader owner unavailable')
+v12_terminal_bytes, v12_terminal = checked_terminal('v12', data['prior_v12_terminal_raw'], '8d57fcee0419bfe6694723bb1e5d123d466d9826310efcdd547dc371c4adfd68', '1a1cfc6f0ef-2564-1ab0')
+diagnostic_terminal_bytes, diagnostic_terminal = checked_terminal('diagnostic', data['diagnostic_terminal_raw'], 'cf866e3acf0ea34583d40ce17f09a977587c9a978d8530614e040217edf31ecf', '1a1cfed2efc-2564-1ae9')
+control_terminal_bytes, control_terminal = checked_terminal('control', data['control_terminal_raw'], data['control_terminal_sha256'], '1a1cffdcecc-2564-1b00')
+files = data['files']
+production_path = 'codex-rs/hepta-automation/src/taskflow_step.rs'
+fixture_path = 'codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs'
+expected_files = {
+    production_path: '0adf7017779c5427927eb4690830a53c5603f6461065cdb92aed087f8445fd85',
+    fixture_path: '895b06c4989476040f9163e973f191c0feb70034a142cfe64737b0bb779eb182',
+}
+if set(files) != set(expected_files) or any(hashlib.sha256(files[p].encode('utf-8')).hexdigest() != sha for p, sha in expected_files.items()):
+    raise RuntimeError('reviewed production or identical control fixture bytes changed')
+if set(data['prior_pr_bodies']) != {'journal', 'host'} or any(not isinstance(x, str) for x in data['prior_pr_bodies'].values()):
+    raise RuntimeError('both original published Draft bodies are required')
+if os.path.lexists(evidence):
+    raise RuntimeError('v13 output exists; reconcile original operation instead of replay')
+actor()
+origin(seed)
+repository_guard(seed)
+if remote_ref(seed, base_branch) != base or git(seed, 'rev-parse', base + '^{tree}') != '9a509a1404618135baf6963ba33e390d58d5cd2a':
+    raise RuntimeError('original base drift')
+preparation_bytes = read_stable(sourceprep / 'PREPARED.json', {'bytes': 2703, 'sha256': '689ddd47c9792769b1fffcf34c987557bb0046b715e935cc9550804ef48bd79b'})
+preparation = json.loads(preparation_bytes)
+metadata = sourceprep / 'repo.git'
+if metadata.is_symlink() or not metadata.is_dir() or metadata.stat().st_uid != os.geteuid():
+    raise RuntimeError('owned source metadata changed')
+normal_identity = identity_map(read_stable(pathlib.Path('/data/root-provider-context-20261112-df05-v9-failure-inspection/host-identity-signing-config-original.bin'), {'bytes': 54, 'sha256': '699f091aef10ffc9aa6b33f3d5f8aabb625b0c31fac5ac791ffec05982928734'}))
+normal_hooks = pathlib.Path(preparation['normal_hook_path'])
+if preparation['program_sha256'] != 'd8326fe3b3e9f8ba3ff13c0d26a7ea4dfd433fa7c03c6c3687cfc5a36784f32a' or hashlib.sha256(json.dumps(snapshot_hooks(normal_hooks), sort_keys=True).encode()).hexdigest() != preparation['normal_hook_snapshot_sha256']:
+    raise RuntimeError('original native hooks or source preparation changed')
+prior_stage_summaries = {}
+prior_stage_summary_bytes = {}
+prior_stage_command_bytes = {}
+for stage, path in [('journal', journal_dir), ('host', host_dir)]:
+    clean(path, old_evidence[stage])
+    if pathlib.Path(git(path, 'rev-parse', '--path-format=absolute', '--git-common-dir')) != metadata or plain_git(path, 'symbolic-ref', '--short', 'HEAD') != branches[stage]:
+        raise RuntimeError('original owned branch or metadata changed')
+    if effective_identity(path) != {**normal_identity, 'core.hookspath': str(normal_hooks)}:
+        raise RuntimeError('normal native identity/signing configuration changed')
+    if git(path, 'rev-parse', old_sources[stage] + '^{tree}') != old_trees[stage] or parent_list(path, old_evidence[stage]) != [old_sources[stage]]:
+        raise RuntimeError('old v12 source/evidence identity changed')
+    source_before, source_after = tree_map(path, old_sources[stage]), tree_map(path, old_evidence[stage])
+    prefix = 'evidence/root-provider-context-20261112-df05/native-' + stage + '-v12/'
+    added = set(source_after) - set(source_before)
+    if not added or any(not name.startswith(prefix) for name in added) or {p: v for p, v in source_after.items() if p not in added} != source_before:
+        raise RuntimeError('old v12 evidence child changed complete source')
+    manifest_bytes = subprocess.check_output(gitcmd(path, 'show', old_evidence[stage] + ':' + prefix + 'sha256-manifest.json'), env=env)
+    if read_stable(prior_v12_evidence / stage / 'sha256-manifest.json') != manifest_bytes:
+        raise RuntimeError('old v12 local manifest differs from exact published evidence')
+    snapshots = {}
+    for name, spec in json.loads(manifest_bytes).items():
+        if pathlib.PurePosixPath(name).name != name:
+            raise RuntimeError('old v12 manifest path is not a flat artifact')
+        payload = read_stable(prior_v12_evidence / stage / name, spec)
+        if payload != subprocess.check_output(gitcmd(path, 'show', old_evidence[stage] + ':' + prefix + name), env=env):
+            raise RuntimeError('old v12 artifact differs from exact published bytes')
+        if name in ('summary.json', 'commands.json'):
+            snapshots[name] = payload
+    if set(snapshots) != {'summary.json', 'commands.json'}:
+        raise RuntimeError('old v12 command or summary receipts absent')
+    prior_stage_summary_bytes[stage], prior_stage_command_bytes[stage] = snapshots['summary.json'], snapshots['commands.json']
+    summary, receipts = json.loads(snapshots['summary.json']), json.loads(snapshots['commands.json'])
+    if summary['source_commit'] != old_sources[stage] or summary['source_tree'] != old_trees[stage] or summary['native_scope_pass'] is not True or summary['production_concurrency_fix_applied'] is not False or summary['command_source_and_owner_integrity'] is not True:
+        raise RuntimeError('original v12 observed qualification changed')
+    packages = ['codex-hepta-automation'] if stage == 'journal' else ['codex-hepta-automation', 'codex-model-provider', 'codex-hepta-agentd']
+    commands = [['/home/qian-qi/.cargo/bin/just', 'test', '-p', p, '--status-level', 'all', '--final-status-level', 'all'] for p in packages]
+    commands += [['/home/qian-qi/.cargo/bin/just', 'fix', '-p', p] for p in packages]
+    commands.append(['/home/qian-qi/.cargo/bin/just', 'fmt', '--base', 'ddc74f82a4f0f0021a13398005787300df0b52db' if stage == 'journal' else 'dde6cc8247727eb30102f097bd9a798f607bbc38'])
+    if [x['command'] for x in receipts] != commands or any(x['exit_code'] != 0 or x['timed_out'] or x['source_commit'] != old_sources[stage] or not all(x.get(k) is True for k in ('executed', 'source_before_verified', 'source_after_verified', 'source_verified', 'owned_cleanup_completed')) for x in receipts):
+        raise RuntimeError('original v12 command sequence, outcomes or source owner changed')
+    for receipt in receipts:
+        if receipt['command'][1] in ('test', 'fix') and (receipt.get('build_target_verified') is not True or receipt.get('build_target_observation') != {'path': '/data/root-provider-context-20261112-df05-v10-target', 'lexists': True, 'is_directory': True, 'is_symlink': False, 'device': 2067, 'inode': 47972373, 'mode': '0o700'}):
+            raise RuntimeError('original v12 actual target identity changed')
+    prior_stage_summaries[stage] = summary
+    if remote_ref(path, branches[stage]) != old_evidence[stage]:
+        raise RuntimeError('actual previous remote head changed')
+    published = current_pr(stage, old_evidence[stage])
+    expected_body = data['prior_pr_bodies'][stage].encode('utf-8')
+    if (published.get('body') or '').encode('utf-8') not in (expected_body, expected_body.rstrip(b'\n')):
+        raise RuntimeError('actual previous body changed')
+    publication = json.loads(read_stable(prior_v12_evidence / (stage + '-publication-receipt.json')))
+    if publication['source_commit'] != old_sources[stage] or publication['evidence_commit'] != old_evidence[stage] or publication['state'] != 'Confirmed' or publication['body_sha256'] != data['prior_body_sha256'][stage] or hashlib.sha256(expected_body).hexdigest() != data['prior_body_sha256'][stage]:
+        raise RuntimeError('previous body does not match completed v12 publication')
+if parent_list(seed, old_sources['journal']) != ['ddc74f82a4f0f0021a13398005787300df0b52db'] or parent_list(seed, old_sources['host']) != ['dde6cc8247727eb30102f097bd9a798f607bbc38'] or parent_list(seed, 'dde6cc8247727eb30102f097bd9a798f607bbc38') != ['b852e985605f9521ca52509d2e69ebf2b0188ed5', old_evidence['journal']]:
+    raise RuntimeError('exact original v12 parent chain changed')
+
+diagnostic_names = ('checkout.log', 'checkout.log.receipt.json', 'inventory-exec-adapter.py', 'inventory-stderr.log', 'inventory-stderr.log.receipt.json', 'inventory.json', 'materialization.json', 'observation-01.json', 'observation-01.log', 'observation-01.log.receipt.json', 'qualified-program.py', 'selection.json', 'source-manifest.json', 'summary.json', 'target-admission.json')
+diagnostic_payloads = take_safe_artifacts(diagnostic_root / 'private', {'bytes': 2551, 'sha256': '12e5ded842f4f422d6c8e85db7d95a3e45293cdee1e1f8b56b2fece821ed13e7'}, diagnostic_names, 'diagnostic')
+diagnostic_summary = json.loads(diagnostic_payloads['diagnostic-summary.json'])
+diagnostic_receipt = json.loads(diagnostic_payloads['diagnostic-observation-01.log.receipt.json'])
+if diagnostic_summary['source_commit'] != old_sources['host'] or diagnostic_summary['completed_invocations'] != 1 or diagnostic_summary['actual_attempts_upper_bound'] != 2 or diagnostic_receipt['exit_code'] != 100 or diagnostic_receipt['log_sha256'] != '8164aad0874bb9755068f9d8e724b5ebd1950970fb78762e06cd62a6586da51c' or not all(diagnostic_receipt.get(k) is True for k in ('source_before_verified', 'source_after_verified', 'source_verified', 'owned_cleanup_completed', 'target_condition_met')):
+    raise RuntimeError('prior bounded diagnostic failure or owner changed')
+control_names = ('checkout.log', 'checkout.log.receipt.json', 'fixture-format-check.log', 'fixture-format-check.log.receipt.json', 'inventory-exec-adapter.py', 'inventory-stderr.log', 'inventory-stderr.log.receipt.json', 'inventory.json', 'materialization.json', 'control-test.log', 'control-test.log.receipt.json', 'qualified-program.py', 'reviewed-fixture.rs', 'selection.json', 'source-commit.txt', 'source-change.patch', 'source-manifest.json', 'summary.json', 'target-admission.json')
+control_payloads = take_safe_artifacts(control_root / 'private', data['control_manifest'], control_names, 'control')
+control_summary = json.loads(control_payloads['control-summary.json'])
+control_receipt = json.loads(control_payloads['control-control-test.log.receipt.json'])
+control_commit = data['control_source_commit']
+if re.fullmatch(r'[0-9a-f]{40}', control_commit) is None or control_summary['source_commit'] != control_commit or control_summary['source_parent'] != old_evidence['journal'] or control_summary['expected_failure_observed'] is not True or control_summary['fixture_sha256'] != expected_files[fixture_path] or control_summary['production_preimage_blob'] != 'f359763d2eba77d956448e62af1f184a29e61c08':
+    raise RuntimeError('controlled old source or expected failure identity changed')
+if control_summary['completed_invocations'] != 1 or control_summary['maximum_actual_attempts'] != 2 or control_summary['observed_try_numbers'] != [1, 2] or control_summary['production_concurrency_fix_applied'] is not False or control_summary['native_candidate_format_check']['exit_code'] != 0:
+    raise RuntimeError('old control policy or native candidate format changed')
+if control_receipt['exit_code'] != 100 or control_receipt['timed_out'] or control_receipt['source_commit'] != control_commit or not all(control_receipt.get(k) is True for k in ('executed', 'source_before_verified', 'source_after_verified', 'source_verified', 'owned_cleanup_completed', 'target_condition_met')):
+    raise RuntimeError('old control owner has not closed')
+if control_payloads['control-control-test.log'].count(b'step write returned before writer admission: Ok(Err(Unavailable))') != 2 or control_payloads['control-reviewed-fixture.rs'] != files[fixture_path].encode('utf-8'):
+    raise RuntimeError('old expected failure or fixture bytes changed')
+if hashlib.sha256(control_payloads['control-qualified-program.py']).hexdigest() != '4d15f828df5f9094e2a1343babb95432dcd14b279004e6264b789fa3793293e3':
+    raise RuntimeError('old control program differs from reviewed request')
+control_source = control_root / 'source'
+clean(control_source, control_commit)
+if pathlib.Path(git(control_source, 'rev-parse', '--path-format=absolute', '--git-common-dir')) != metadata:
+    raise RuntimeError('control source metadata changed')
+if parent_list(control_source, control_commit) != [old_evidence['journal']] or git(control_source, 'rev-parse', control_commit + '^{tree}') != control_summary['source_tree']:
+    raise RuntimeError('old control source parent/tree changed')
+expected_control = tree_map(seed, old_evidence['journal'])
+if expected_control[production_path] != ('100644', 'blob', 'f359763d2eba77d956448e62af1f184a29e61c08') or expected_control[fixture_path] != ('100644', 'blob', 'ccd5f8b09d6caed77d7f575d70eee43bfb39f5a3'):
+    raise RuntimeError('old control original preimages changed')
+expected_control[fixture_path] = ('100644', 'blob', oid_bytes(files[fixture_path].encode('utf-8')))
+if tree_map(control_source, control_commit) != expected_control or subprocess.check_output(gitcmd(control_source, 'cat-file', 'commit', control_commit), env=env) != control_payloads['control-source-commit.txt']:
+    raise RuntimeError('old control complete tree or raw commit differs')
+target_record = control_summary['final_target_observation']
+target = pathlib.Path(target_record['path'])
+if target not in (pathlib.Path('/data/root-provider-context-20261112-df05-v10-target'), control_root / 'target'):
+    raise RuntimeError('closed control target is outside admitted ownership')
+target_identity = (target_record['device'], target_record['inode'], target_record['mode'])
+env['CARGO_TARGET_DIR'] = str(target)
+target_proof = verify_target()
+free_space = {'home': shutil.disk_usage(prior_v6_host_dir).free, 'data': shutil.disk_usage(target.parent).free}
+if free_space['home'] < 1024**3 or free_space['data'] < 10 * 1024**3:
+    raise RuntimeError('original isolated build capacity reserve failed')
+
+evidence.mkdir(mode=0o700)
+write(evidence / 'input-original.json', input_bytes)
+write(evidence / 'qualified-wrapper-program.txt', own_argv[2])
+private_originals = {}
+common_public_payloads = {'qualified-wrapper-program.txt': own_argv[2], 'reviewed-helper-program.txt': reused_program}
+for name, payload, terminal in [('prior-v12-terminal-original.json', v12_terminal_bytes, v12_terminal), ('diagnostic-terminal-original.json', diagnostic_terminal_bytes, diagnostic_terminal), ('control-terminal-original.json', control_terminal_bytes, control_terminal)]:
+    write(evidence / name, payload)
+    private_originals[name] = {'bytes': len(payload), 'sha256': hashlib.sha256(payload).hexdigest(), 'reference': 'private native v13 control/' + name}
+    common_public_payloads[name.replace('-original', '-projection')] = public_terminal(name, payload, terminal)
+private_originals['input-original.json'] = {'bytes': len(input_bytes), 'sha256': hashlib.sha256(input_bytes).hexdigest(), 'reference': 'private native v13 control/input-original.json'}
+common_public_payloads['private-originals-manifest.json'] = json.dumps(private_originals, indent=2).encode()
+common_public_payloads.update(diagnostic_payloads)
+common_public_payloads.update(control_payloads)
+preflight = {'schema_version': 1, 'actor': actor(), 'origin': origin(seed), 'original_sources': old_sources, 'original_evidence': old_evidence, 'control_source': control_commit, 'control_tree': control_summary['source_tree'], 'target_reused_after_authoritative_owner_closure': target_proof, 'resources': {'cargo_jobs': 2, 'nextest_threads': 2, 'profile': 'local', 'original_retries': 1}, 'free_space_bytes': free_space, 'required_reserves_bytes': {'home': 1024**3, 'data': 10*1024**3}, 'wrapper_sha256': data['wrapper_sha256'], 'product_input_sha256': expected_files, 'inherited_nextest_retries_override_present': False, 'test_flags_changed': False, 'opaque_input_or_sdk_published': False}
+common_public_payloads['preflight-public.json'] = json.dumps(preflight, indent=2).encode()
+write(evidence / 'preflight-public.json', common_public_payloads['preflight-public.json'])
+emit({'phase': 'reviewed_v13_preflight', **preflight})
+if expected_control.get('codex-rs/rustfmt.toml') != ('100644', 'blob', 'f9686f9732d3d48311c41c4fd06b40781928b8ec'):
+    raise RuntimeError('original formatter configuration changed')
+write(evidence / 'reviewed-production.rs', files[production_path])
+format_receipt = command(control_source, ['/home/qian-qi/.cargo/bin/rustfmt', '--check', '--config-path', str(control_source / 'codex-rs/rustfmt.toml'), '--config', 'skip_children=true', str(evidence / 'reviewed-production.rs')], evidence / 'production-format-check.log', control_commit)
+production_format_log = read_stable(evidence / 'production-format-check.log')
+production_format_receipt_bytes = read_stable(evidence / 'production-format-check.log.receipt.json')
+if format_receipt['exit_code'] != 0 or read_stable(evidence / 'reviewed-production.rs') != files[production_path].encode('utf-8'):
+    raise RuntimeError('native original-config production format check failed')
+clean(journal_dir, old_evidence['journal'])
+no_hold()
+ff = subprocess.run(gitcmd(journal_dir, 'merge', '--ff-only', control_commit), env=env, capture_output=True)
+journal_ff_log = ff.stdout + ff.stderr
+write(evidence / 'journal-control-fast-forward.log', journal_ff_log)
+if ff.returncode or git(journal_dir, 'rev-parse', 'HEAD') != control_commit or tree_map(journal_dir, control_commit) != expected_control:
+    raise RuntimeError('journal failed exact fast forward to reachable control source')
+clean(journal_dir, control_commit)
+results = {}
+journal_source = apply_candidate(journal_dir, control_commit, [production_path], 'fix(automation): reserve step writer before reading append history')
+if tree_map(journal_dir, journal_source)[fixture_path] != expected_control[fixture_path]:
+    raise RuntimeError('corrected source changed the exact controlled fixture')
+write(evidence / 'journal-source-freeze.json', json.dumps({'source_commit': journal_source, 'source_tree': git(journal_dir, 'rev-parse', journal_source + '^{tree}'), 'parent': control_commit, 'control_parent': old_evidence['journal'], 'fixture_sha256': expected_files[fixture_path]}, indent=2))
+emit({'phase': 'journal_source_frozen', 'source_commit': journal_source, 'parent': control_commit})
+journal_packages = [('codex-hepta-automation', [
+    'preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_context_profile',
+    'altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact',
+    'taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen',
+    'taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation',
+    'taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty',
+    'taskflow_provider_receipt_migration_preserves_legacy_recovery_material',
+    'taskflow_provider_receipt_storage_rejects_oversized_binding_without_partial_write',
+    *critical_cases,
+])]
+journal_evidence = validate_and_seal('journal', journal_dir, journal_source, old_evidence['journal'], base, journal_packages)
+merged = merge_journal(journal_evidence)
+host_source = merged
+write(evidence / 'host-source-freeze.json', json.dumps({'source_commit': host_source, 'source_tree': git(host_dir, 'rev-parse', host_source + '^{tree}'), 'parents': [old_evidence['host'], journal_evidence], 'source_is_actual_merge': True}, indent=2))
+host_packages = [*journal_packages,
+    ('codex-model-provider', ['http_contract_rejects_legacy_duplicate_header_attestations', 'http_contract_unique_header_digest_retains_v1_encoding', 'attested_http_adapter_binds_dispatch_and_lookup_on_fixture']),
+    ('codex-hepta-agentd', ['host_recovery_keeps_original_target_across_signed_provider_reconfiguration', 'host_recovery_missing_original_context_never_queries_current_provider', 'host_duplicate_headers_leave_original_unknown_unqueried']),
+]
+host_evidence = validate_and_seal('host', host_dir, host_source, old_evidence['host'], journal_evidence, host_packages, merged)
+write(evidence / 'finished.json', json.dumps({'results': results, 'control_source': control_commit, 'journal_source': journal_source, 'journal_evidence': journal_evidence, 'actual_merge': merged, 'host_source': host_source, 'host_evidence': host_evidence}, indent=2))
+emit({'phase': 'complete', 'control_source': control_commit, 'journal_source': journal_source, 'journal_evidence': journal_evidence, 'actual_merge': merged, 'host_source': host_source, 'host_evidence': host_evidence, 'journal_scope_pass': results['journal']['native_scope_pass'], 'host_scope_pass': results['host']['native_scope_pass'], 'evidence_directory': str(evidence)})

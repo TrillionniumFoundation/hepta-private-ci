@@ -1,0 +1,121 @@
+diff --git a/evidence/root-provider-context-20261112-df05/native-journal-v13/control-reviewed-fixture.rs b/evidence/root-provider-context-20261112-df05/native-journal-v13/control-reviewed-fixture.rs
+index 6f08c6f60..1cd5093cb 100644
+--- a/evidence/root-provider-context-20261112-df05/native-journal-v13/control-reviewed-fixture.rs
++++ b/evidence/root-provider-context-20261112-df05/native-journal-v13/control-reviewed-fixture.rs
+@@ -150,46 +150,40 @@ async fn taskflow_provider_receipt_pins_accepted_identity_and_blocks_opaque_bypa
+         );
+         assert!(recover(&started, receipt).await.is_err());
+         bad.payload_sha256 = Sha256Digest::for_bytes(b"substituted payload");
+-        assert!(
+-            recover(
+-                &started,
+-                AuthorizedEffectProviderReceipt::from_provider_ack(
+-                    bad,
+-                    ProviderEffectAckSource::StatusLookup
+-                )
++        assert!(recover(
++            &started,
++            AuthorizedEffectProviderReceipt::from_provider_ack(
++                bad,
++                ProviderEffectAckSource::StatusLookup
+             )
+-            .await
+-            .is_err()
+-        );
++        )
++        .await
++        .is_err());
+     }
+-    assert!(
+-        recover(
+-            &started,
+-            AuthorizedEffectProviderReceipt {
+-                outcome: AuthorizedEffectOutcome::Succeeded,
+-                receipt_digest: Sha256Digest::for_bytes(b"opaque bypass"),
+-                provider_ack: None,
+-            }
++    assert!(recover(
++        &started,
++        AuthorizedEffectProviderReceipt {
++            outcome: AuthorizedEffectOutcome::Succeeded,
++            receipt_digest: Sha256Digest::for_bytes(b"opaque bypass"),
++            provider_ack: None,
++        }
++    )
++    .await
++    .is_err());
++    assert!(started
++        .store
++        .recover_authorized_taskflow_effect(
++            &started.effect.run_id,
++            &started.effect.step_id,
++            started.effect.attempt,
++            &started.owner,
++            AuthorizedEffectRecovery::ProvenAbsent {
++                proof_digest: Sha256Digest::for_bytes(b"absence after acceptance")
++            },
++            40,
+         )
+         .await
+-        .is_err()
+-    );
+-    assert!(
+-        started
+-            .store
+-            .recover_authorized_taskflow_effect(
+-                &started.effect.run_id,
+-                &started.effect.step_id,
+-                started.effect.attempt,
+-                &started.owner,
+-                AuthorizedEffectRecovery::ProvenAbsent {
+-                    proof_digest: Sha256Digest::for_bytes(b"absence after acceptance")
+-                },
+-                40,
+-            )
+-            .await
+-            .is_err()
+-    );
++        .is_err());
+     let after = started
+         .store
+         .pending_authorized_taskflow_effects(8)
+@@ -272,13 +266,11 @@ async fn taskflow_provider_receipt_pins_accepted_identity_and_blocks_opaque_bypa
+     let reopened = AutomationStore::open(&fixture.layout)
+         .await
+         .expect("reopen complete history");
+-    assert!(
+-        reopened
+-            .pending_authorized_taskflow_effects(8)
+-            .await
+-            .expect("no pending")
+-            .is_empty()
+-    );
++    assert!(reopened
++        .pending_authorized_taskflow_effects(8)
++        .await
++        .expect("no pending")
++        .is_empty());
+ }
+ 
+ #[tokio::test]
+@@ -448,13 +440,13 @@ async fn taskflow_provider_receipt_reopen_rejects_canonical_substitution() {
+         ProviderEffectAckSource::StatusLookup,
+     )
+     .receipt_digest;
+-    assert!(
+-        sqlx::query("UPDATE taskflow_effect_dispatch_reconciliations SET provider_receipt_json=?")
+-            .bind(&modified)
+-            .execute(&mut *transaction)
+-            .await
+-            .is_err()
+-    );
++    assert!(sqlx::query(
++        "UPDATE taskflow_effect_dispatch_reconciliations SET provider_receipt_json=?"
++    )
++    .bind(&modified)
++    .execute(&mut *transaction)
++    .await
++    .is_err());
+     sqlx::query("DROP TRIGGER taskflow_effect_dispatch_reconciliations_no_update")
+         .execute(&mut *transaction)
+         .await

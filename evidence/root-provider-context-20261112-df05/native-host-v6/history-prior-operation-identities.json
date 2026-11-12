@@ -1,0 +1,20 @@
+{
+  "bootstrap": {
+    "job_id": "1a1ced379bb-2564-1876",
+    "request_digest": "9909013f70eccbdc03fb5e8825b0928dd00dfa5116bc13bd6dc84ccb8e182ff0",
+    "program_sha256": "5279f07d1494c8169c96c3700033222f20532a5d2fffb7f83791dc217d0112f4",
+    "stdin_source": "same base_sha/expected_tree/files in input-source-v3.json; exact original input bytes retained separately in cancelled-resume-request-identity.json/original-bootstrap-request-identity.json cloud checkpoint"
+  },
+  "cancelled_resume": {
+    "job_id": "1a1cedf2110-2564-18c3",
+    "request_digest": "ce713a9975422949c77ba13be5c65348507f8dec061ff8fe6e936e8f178607fb",
+    "program_sha256": "032f345caa281b53d27a01ed57356395b64159e75ccf95179d9a29ba5be93efc",
+    "stdin_sha256": "a20e37053f2f0f39069b8b9a44c1ab7ad78e86f70744c5e1b23f1338629f4422"
+  },
+  "historical_SQL_probe": {
+    "raw_originals_available": false,
+    "record": "Observed SQLite 3.53.1 v2 rowid counterexamples all four tables and v3 rejection plus normal inserts; independently reviewed. Historical hashes only; this is not reconstructed raw output.",
+    "v2_sha256": "10dfd5b7404ab9e43fd1d81dcd99a7cf5c2c9cb3b29ca02f57c38be16cdd2dc3",
+    "v3_sha256": "6d9965db2c3bdc77a746148ad76a223b0fc9ce7f0d6d584fcd0198534859cbc4"
+  }
+}

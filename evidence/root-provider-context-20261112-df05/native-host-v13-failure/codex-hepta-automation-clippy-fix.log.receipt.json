@@ -1,0 +1,52 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "fix",
+    "-p",
+    "codex-hepta-automation"
+  ],
+  "cwd": "/data/root-provider-context-20261112-df05-v10-sourceprep/host/codex-rs",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 63764513947,
+  "log": "codex-hepta-automation-clippy-fix.log",
+  "executed": true,
+  "process_exit_code": 0,
+  "expected_source": "52ff33898e12c56ce3e11d16398b1e662a57730e",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "52ff33898e12c56ce3e11d16398b1e662a57730e",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "52ff33898e12c56ce3e11d16398b1e662a57730e",
+      "source_tree": "42a9caa5687258dc80acbad2ad71ba4e993a4a23",
+      "tracked_entries": 11041,
+      "tracked_bytes": 134661287,
+      "complete_map_sha256": "583180fc4267ef9953b77992be60d84d2ea2c502e2ac419c5a7767f04f3404bc",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "52ff33898e12c56ce3e11d16398b1e662a57730e",
+      "source_tree": "42a9caa5687258dc80acbad2ad71ba4e993a4a23",
+      "tracked_entries": 11041,
+      "tracked_bytes": 134661287,
+      "complete_map_sha256": "583180fc4267ef9953b77992be60d84d2ea2c502e2ac419c5a7767f04f3404bc",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract",
+  "build_target_observation": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "lexists": true,
+    "is_directory": true,
+    "is_symlink": false,
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700"
+  },
+  "build_target_verified": true
+}
