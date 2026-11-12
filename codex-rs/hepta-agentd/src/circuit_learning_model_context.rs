@@ -91,7 +91,7 @@ impl OriginalCircuitModelPublicationContextV1 {
             model,
             training_cut: cut.snapshot().clone(),
         };
-        context.authenticate(now()?, false)?;
+        context.authenticate(now()?, /*new_work*/ false)?;
         Ok(context)
     }
 
@@ -140,9 +140,12 @@ impl OriginalCircuitModelPublicationContextV1 {
         }
         let decision = self.decision();
         self.scope().validate_snapshot(decision)?;
-        self.scope()
-            .require_verifier(self.verifier())
-            .map_err(|_| Error::Binding("same original frozen Model verifier"))?;
+        if self.verifier().trust_digest() != decision.owners.evidence_trust_digest
+            || self.verifier().objective_digest() != decision.request.envelope.objective_digest
+            || self.verifier().scope_digest() != self.material.freeze_evidence.scope_digest
+        {
+            return Err(Error::Binding("same original frozen Model verifier"));
+        }
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(decision.clone())?;
         let candidate = coordinator.candidate().ok_or(Error::Binding("original Model candidate"))?;
         let stages = [
@@ -209,7 +212,7 @@ impl OriginalCircuitModelPublicationContextV1 {
         &self,
         lower: u64,
     ) -> Result<(codex_hepta_types::Digest32, codex_hepta_types::Digest32), Error> {
-        let (_, current) = self.authenticate_at_current(lower, false)?;
+        let (_, current) = self.authenticate_at_current(lower, /*new_work*/ false)?;
         let (initial, fresh) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)
                 .map_err(|_| Error::Binding("same original Version initial Material"))?;
