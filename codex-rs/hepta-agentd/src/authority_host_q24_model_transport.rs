@@ -10,6 +10,9 @@ use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::*;
 
+#[path = "authority_host_q24_model_b_transport.rs"]
+mod original_b;
+
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct FactoryLease {
@@ -119,7 +122,26 @@ impl HostAuthorityService {
                 .map_err(io::Error::other)?;
         }
         while channel
-            .exchange(|bytes| {
+            .exchange_with_original_deadline(|bytes, frame_end| {
+                // This untrusted field selects a strict decoder only. Each
+                // branch still checks the complete original purpose and scope.
+                let purpose: serde_json::Value = serde_json::from_slice(bytes)
+                    .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                if purpose.get("operation").and_then(serde_json::Value::as_str)
+                    == Some(crate::root_q24_model_b_protocol::PURPOSE)
+                {
+                    return original_b::serve_original_b_model_request(
+                        self,
+                        factory,
+                        config,
+                        registration,
+                        &pin,
+                        bytes,
+                        &mut next_request_id,
+                        frame_end,
+                    )
+                    .map_err(|_| HostIssuerTransportError::Unavailable);
+                }
                 self.with_learning_profile(
                     config,
                     registration,
@@ -146,17 +168,14 @@ impl HostAuthorityService {
                             .checked_add(1)
                             .ok_or_else(|| io::Error::other("factory sequence exhausted"))?;
                         let before = factory.current(config)?;
-                        let revocations = Digest32::of_parts(&[
-                            b"hepta.root.q24-factory-revocations.v1\0",
-                            &serde_json::to_vec(&self.issuer.revocations()?)
-                                .map_err(io::Error::other)?,
-                        ])
-                        .to_string();
-                        let lease = FactoryLease {
-                            epoch: before.epoch,
-                            material: before.material.clone(),
-                            revocations,
-                        };
+                        let lease = original_factory_lease(self, &before)?;
+                        if factory.original_b.is_some()
+                            && matches!(&request.command, Command::Bind { .. })
+                        {
+                            return Err(io::Error::other(
+                                "original B Model admission requires its native Root operation",
+                            ));
+                        }
                         let now = self
                             .clock
                             .refresh_projection()
@@ -202,6 +221,22 @@ impl HostAuthorityService {
         {}
         Ok(())
     }
+}
+
+fn original_factory_lease(
+    service: &HostAuthorityService,
+    before: &FactoryRecord,
+) -> io::Result<FactoryLease> {
+    let revocations = Digest32::of_parts(&[
+        b"hepta.root.q24-factory-revocations.v1\0",
+        &serde_json::to_vec(&service.issuer.revocations()?).map_err(io::Error::other)?,
+    ])
+    .to_string();
+    Ok(FactoryLease {
+        epoch: before.epoch,
+        material: before.material.clone(),
+        revocations,
+    })
 }
 
 fn transition(
