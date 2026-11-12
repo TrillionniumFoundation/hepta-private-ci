@@ -11,6 +11,8 @@ mod inputs;
 mod launch;
 #[path = "ordinary_q24_process_observer_tests.rs"]
 mod observer;
+#[path = "ordinary_q24_post_a_trust_tests.rs"]
+mod post_a_trust;
 #[path = "ordinary_q24_process_recovery_tests.rs"]
 mod recovery;
 #[path = "ordinary_q24_process_root_tests.rs"]
