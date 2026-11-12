@@ -23,6 +23,15 @@ impl CellQ24PreparedLearningV1 {
             config.projection.clone(),
             tasks,
         )?;
+        Self::finish_original(config, frozen, batch, publication)
+    }
+
+    fn finish_original(
+        config: CellQ24LearningPreparationConfigV1,
+        frozen: CellQ24FrozenDatasetV1,
+        batch: CellQ24TrainingBatchV1,
+        publication: CircuitTaskSourcePublicationV1,
+    ) -> Result<Self, Error> {
         batch.require_original_dataset_provenance()?;
         if batch.rows() > config.request.budget.maximum_dataset_rows
             || batch.encoded().len() as u64 > config.request.budget.maximum_dataset_bytes

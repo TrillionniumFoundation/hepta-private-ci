@@ -3757,9 +3757,7 @@ required_function_order = [
 path = "codex-rs/hepta-agentd/src/cell_q24_learning_preparation.rs"
 required = ["batch: CellQ24TrainingBatchV1", "facts: CellQ24PreparedLearningFactsV1", "pub struct CellQ24FrozenDatasetV1"]
 forbidden = ["SigningKey", "File::open", "pub batch: Option", "pub facts:"]
-required_function_order = [
-  { function = "fn require_configuration(", sequence = ["LearningIterationCoordinatorV1::new(", "config.baseline.components()", "task.read_current()?", "input.scope.principal_digest.to_string()", "publication.bundle_digest() != bundle", "input.scope.run_id == config.request.source_run_id", "publication.history_digest().as_str()", "source.ok_or("] },
-]
+required_function_order = [{ function = "fn require_configuration(", sequence = ["require_configuration_profile(config, tasks.len())?", "task.read_current().cloned()", "require_configuration_data(config, &publications)"] }, { function = "fn require_configuration_profile(", sequence = ["LearningIterationCoordinatorV1::new(", "!(1..=256).contains(&count)", "config.baseline.components() != &config.request.selected_bundle.components", "config.projection.baseline_bundle != bundle", "usize::from(config.projection.input_width) != config.baseline.input_width()", "usize::from(index) >= config.baseline.output_width()", "Ok(bundle)"] }, { function = "fn require_configuration_data(", sequence = ["require_configuration_profile(config, publications.len())?", "for publication in publications", "input.scope.agent_id != config.request.agent_id", "input.scope.cell_id != config.request.cell_id", "input.scope.principal_digest.to_string() != config.request.principal_id.as_str()", "input.objective_digest != config.request.envelope.objective_digest", "publication.original_record().snapshot.run_id != input.scope.run_id", "publication.original_record().snapshot.objective_digest != input.objective_digest", "publication.bundle_digest() != bundle", "input.scope.run_id == config.request.source_run_id", "source.is_some()", "publication.history_digest().as_str()", "config.request.completed_task_receipt.to_string()", "source.ok_or("] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
@@ -3771,22 +3769,7 @@ required_function_order = [{ function = "fn authorize_and_materialize(", sequenc
 path = "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
 required = ["hepta.agentd.original-q24-experience-facts.v1", "hepta.agentd.original-q24-dataset-facts.v1", "frozen.authorization.signature", "withdrawal_frontier: frozen.receipt.revocation_cut_digest"]
 forbidden = ["SigningKey", ".sign(", "File::open", "HostAuthorityLearningProfileV1::new("]
-
-[[protected_file.required_function_order]]
-function = "fn from_original("
-sequence = ["require_configuration(", "CellQ24TrainingBatchV1::from_original_dataset(", "batch.require_original_dataset_provenance()?", "config.rule.digest(&batch)?", "FrozenLearningScopeV2::freeze(", "LearningIterationCoordinatorV1::new(", "publication\n            .history_digest()", "publication.publication_digest()", "prepared.revalidate_source()?"]
-
-[[protected_file.required_function_order]]
-function = "fn require_initial("
-sequence = ["self.revalidate_source()?", "initial != &self.initial || scope != &self.scope", "return Err(Error::Binding("]
-
-[[protected_file.required_function_order]]
-function = "fn require_profile("
-sequence = ["profile.require_binding(", "profile\n            .frozen_scope(", ".ok_or(", "self.require_initial("]
-
-[[protected_file.required_function_order]]
-function = "fn training_material("
-sequence = ["self.read_validated_facts()?", "scope != self.scope", "dataset.receipts.len() != 2", "facts.experience_evidence", "facts.dataset_evidence", "CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(", "self.revalidate_source()?", "self.batch.clone()"]
+required_function_order = [{ function = "fn from_original(", sequence = ["require_configuration(", "frozen.receipt.snapshot.snapshot_id != config.snapshot_id", "frozen.receipt.snapshot.objective_digest != config.request.envelope.objective_digest", "CellQ24TrainingBatchV1::from_original_dataset(", "Self::finish_original(config, frozen, batch, publication)"] }, { function = "fn finish_original(", sequence = ["batch.require_original_dataset_provenance()?", "batch.rows() > config.request.budget.maximum_dataset_rows", "batch.encoded().len() as u64 > config.request.budget.maximum_dataset_bytes", "config.request.budget.maximum_training_steps", "config.rule.digest(&batch)?", "FrozenLearningScopeV2::freeze(", "LearningIterationCoordinatorV1::new(", "publication\n            .history_digest()", "publication.publication_digest()", "prepared.revalidate_source()?"] }, { function = "fn require_initial(", sequence = ["self.revalidate_source()?", "initial != &self.initial || scope != &self.scope", "return Err(Error::Binding("] }, { function = "fn require_profile(", sequence = ["profile.require_binding(", "profile\n            .frozen_scope(", ".ok_or(", "self.require_initial("] }, { function = "fn training_material(", sequence = ["self.read_validated_facts()?", "scope != self.scope", "dataset.receipts.len() != 2", "facts.experience_evidence", "facts.dataset_evidence", "CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(", "self.revalidate_source()?", "self.batch.clone()"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"

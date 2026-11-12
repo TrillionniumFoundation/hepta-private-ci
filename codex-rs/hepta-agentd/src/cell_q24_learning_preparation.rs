@@ -151,6 +151,18 @@ fn require_configuration(
     config: &CellQ24LearningPreparationConfigV1,
     tasks: &[CellQ24DatasetTaskV1],
 ) -> Result<CircuitTaskSourcePublicationV1, Error> {
+    require_configuration_profile(config, tasks.len())?;
+    let publications = tasks
+        .iter()
+        .map(|task| task.read_current().cloned())
+        .collect::<Result<Vec<_>, _>>()?;
+    require_configuration_data(config, &publications)
+}
+
+fn require_configuration_profile(
+    config: &CellQ24LearningPreparationConfigV1,
+    count: usize,
+) -> Result<Digest32, Error> {
     LearningIterationCoordinatorV1::new(config.request.clone(), config.owners.clone())?;
     let bundle = config
         .request
@@ -160,7 +172,7 @@ fn require_configuration(
     let index = match config.head {
         CellQ24PrivateHeadV1::Drive { index } | CellQ24PrivateHeadV1::Prediction { index } => index,
     };
-    if !(1..=256).contains(&tasks.len())
+    if !(1..=256).contains(&count)
         || config.baseline.components() != &config.request.selected_bundle.components
         || config.projection.baseline_bundle != bundle
         || usize::from(config.projection.input_width) != config.baseline.input_width()
@@ -168,9 +180,16 @@ fn require_configuration(
     {
         return Err(Error::Binding("original baseline, projection and head"));
     }
+    Ok(bundle)
+}
+
+fn require_configuration_data(
+    config: &CellQ24LearningPreparationConfigV1,
+    publications: &[CircuitTaskSourcePublicationV1],
+) -> Result<CircuitTaskSourcePublicationV1, Error> {
+    let bundle = require_configuration_profile(config, publications.len())?;
     let mut source = None;
-    for task in tasks {
-        let publication = task.read_current()?;
+    for publication in publications {
         let input = publication.input();
         if input.scope.agent_id != config.request.agent_id
             || input.scope.cell_id != config.request.cell_id
