@@ -2,6 +2,7 @@
 //! proves process facts only; successful exit is never a learning receipt.
 
 use std::fs::File;
+use std::fs::OpenOptions;
 use std::io;
 use std::io::Read;
 use std::io::Seek;
@@ -10,7 +11,9 @@ use std::os::fd::AsRawFd;
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
 use std::os::fd::RawFd;
+use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::process::CommandExt;
+use std::path::Path;
 use std::process::Child;
 use std::process::Command;
 use std::process::ExitStatus;
@@ -48,6 +51,8 @@ pub(crate) struct ExitedOriginalProcess {
     lifetime: OriginalProcessLifetime,
     pidfd: OwnedFd,
     status: ExitStatus,
+    stdout: File,
+    stderr: File,
 }
 
 impl OriginalChild {
@@ -147,6 +152,7 @@ impl OriginalChild {
         end: Instant,
     ) -> anyhow::Result<ExitedOriginalProcess> {
         loop {
+            anyhow::ensure!(Instant::now() < end, "original child exit deadline");
             let child = self
                 .child
                 .as_mut()
@@ -163,10 +169,13 @@ impl OriginalChild {
                     self.lifetime,
                     self.output()?
                 );
+                anyhow::ensure!(Instant::now() < end, "original child exit observed late");
                 return Ok(ExitedOriginalProcess {
                     lifetime: self.lifetime.clone(),
                     pidfd,
                     status,
+                    stdout: self.stdout.try_clone()?,
+                    stderr: self.stderr.try_clone()?,
                 });
             }
             anyhow::ensure!(Instant::now() < end, "original child exit deadline");
@@ -211,6 +220,31 @@ impl ExitedOriginalProcess {
 
     pub(crate) fn lifetime(&self) -> &OriginalProcessLifetime {
         &self.lifetime
+    }
+
+    /// Archive both complete original files or refuse their explicit bound.
+    /// The short diagnostic printed on errors is not substituted for raw logs.
+    pub(crate) fn archive_original_logs(&self, directory: &Path) -> anyhow::Result<()> {
+        self.require_dead()?;
+        for (name, source) in [("stdout.log", &self.stdout), ("stderr.log", &self.stderr)] {
+            let length = source.metadata()?.len();
+            anyhow::ensure!(length <= 16 * 1024 * 1024, "original child log bound");
+            let mut source = source.try_clone()?;
+            source.rewind()?;
+            let mut target = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+                .open(directory.join(name))?;
+            anyhow::ensure!(
+                io::copy(&mut Read::by_ref(&mut source).take(length + 1), &mut target)? == length
+                    && source.metadata()?.len() == length,
+                "original child log changed while archiving"
+            );
+            target.sync_all()?;
+        }
+        Ok(())
     }
 }
 
@@ -302,6 +336,10 @@ fn ordinary_q24_process_proof_requires_reaped_success_and_distinct_live_lifetime
     let exited = first.wait_success_until(Instant::now() + Duration::from_secs(5))?;
     exited.require_dead()?;
     pretty_assertions::assert_eq!(exited.lifetime(), &old);
+    let logs = tempfile::tempdir()?;
+    exited.archive_original_logs(logs.path())?;
+    pretty_assertions::assert_eq!(std::fs::read(logs.path().join("stdout.log"))?, b"");
+    pretty_assertions::assert_eq!(std::fs::read(logs.path().join("stderr.log"))?, b"");
     let mut second = spawn()?;
     exited.require_distinct_live(&second)?;
     second.child.as_mut().and_then(|child| child.stdin.take());
@@ -329,5 +367,23 @@ fn ordinary_q24_process_failure_cannot_make_successful_exit_proof() -> anyhow::R
             .wait_success_until(Instant::now() + Duration::from_secs(5))
             .is_err()
     );
+    Ok(())
+}
+
+#[test]
+fn ordinary_q24_process_exit_observed_after_original_deadline_cannot_make_proof()
+-> anyhow::Result<()> {
+    let mut child = OriginalChild::spawn(
+        Command::new("/bin/cat").stdin(Stdio::piped()),
+        OriginalChildDescriptors::default(),
+    )?;
+    let expired = Instant::now();
+    let actual = child
+        .child
+        .as_mut()
+        .ok_or_else(|| anyhow::anyhow!("actual child absent"))?;
+    actual.stdin.take();
+    anyhow::ensure!(actual.wait()?.success(), "actual child must have exited");
+    assert!(child.wait_success_until(expired).is_err());
     Ok(())
 }
