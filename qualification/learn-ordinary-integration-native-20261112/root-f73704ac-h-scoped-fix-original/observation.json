@@ -1,0 +1,66 @@
+{
+  "source": "f73704acb1bf996bf56f482567327123a069cd1c",
+  "tree": "6808bee2a9f3d7b956b322bc2552b3516d92f229",
+  "command": [
+    "/home/qq/hepta-learn-ff41-tools/bin/just",
+    "fix",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "elapsed_seconds": 359.7706557910424,
+  "exit_code": 101,
+  "source_unchanged": true,
+  "ordinary_tests": 0,
+  "root_tests": 0,
+  "junit": 0,
+  "profile_overrides": [],
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 25771,
+    "sha256": "0a7cdcc085aec4b3698c860c5cbfeefef5877056da0358e265b44835c1996e54",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "fix.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "result.json",
+      "bytes": 1474,
+      "sha256": "833efdbf97a2266494fa64bf7fc033966bb609f430f2317bfb6f1577f5500d54"
+    },
+    {
+      "path": "stderr.log",
+      "bytes": 70222,
+      "sha256": "8e688ec8a24e7523b4acf93a4218e7f85b5133e269f0dee820c4e4ee6da698c6"
+    },
+    {
+      "path": "stderr.part0",
+      "bytes": 50000,
+      "sha256": "9c53f22e44a3d750b7d0260ffb053c33827c593bde158093be7ed0fc05812453"
+    },
+    {
+      "path": "stderr.part1",
+      "bytes": 20222,
+      "sha256": "817c3ad7f9292bcd7f869a71b64f843e9e24c42fc27cfd48ed66aef33972d702"
+    },
+    {
+      "path": "stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
