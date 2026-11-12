@@ -40,6 +40,12 @@ use serde::Serialize;
 mod contract;
 pub use contract::*;
 
+#[cfg(target_os = "linux")]
+#[path = "neuron_cell_evaluation_original_observers.rs"]
+mod original_observers;
+#[cfg(target_os = "linux")]
+pub(crate) use original_observers::OriginalCellEvaluationObserversV1;
+
 pub struct CellEvaluationJournalsV1<'a, C: AnchorWitnessStore, F: AnchorWitnessStore> {
     pub candidate: &'a CellGenerationJournalV2<C>,
     pub fixed_expert: &'a CellGenerationJournalV2<F>,

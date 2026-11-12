@@ -231,7 +231,7 @@ impl CellEvaluationArmRecordV1 {
     }
 }
 
-fn validate_required_metrics(
+pub(super) fn validate_required_metrics(
     summary: &CellTaskCostSummaryV2,
     coverage: &CellCostCoverageV1,
 ) -> Result<(), CellEvaluationErrorV1> {
