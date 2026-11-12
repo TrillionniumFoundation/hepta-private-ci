@@ -17,6 +17,9 @@ use codex_hepta_types::Generation;
 use super::*;
 use crate::authority_host_config::read_root_json;
 
+#[path = "authority_host_q24_model_registration_v2.rs"]
+mod v2;
+
 /// Root administration only: reserve one exact operation under its original
 /// live writer and daemon pidfd. Existing or partial state is never repaired.
 pub fn register_host_q24_model_factory(

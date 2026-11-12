@@ -3,9 +3,13 @@
 
 use codex_hepta_types::Generation;
 
+use super::v2::DIRECTORY_V2;
 use super::v2::DurableQ24ModelFactoryProfileV2;
 use super::v2::LiveQ24ModelFactoryProfileV2;
+use super::v2::OWNER_V2;
 use super::v2::PURPOSE_V2;
+use super::v2::SOCKET_FILENAME_V2;
+use super::v2::WITNESS_FILENAME_V2;
 use super::*;
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -127,28 +131,28 @@ impl LiveFactoryProfile {
     pub(crate) fn directory(&self) -> &'static str {
         match self {
             Self::LegacyV1(_) => DIRECTORY,
-            Self::SessionV2(_) => "q24-model-proposal-factory-v2",
+            Self::SessionV2(_) => DIRECTORY_V2,
         }
     }
 
     pub(crate) fn store_owner(&self) -> &'static str {
         match self {
             Self::LegacyV1(_) => OWNER,
-            Self::SessionV2(_) => "root-q24-model-proposal-factory-v2",
+            Self::SessionV2(_) => OWNER_V2,
         }
     }
 
     pub(crate) fn witness_filename(&self) -> &'static str {
         match self {
             Self::LegacyV1(_) => "q24-model-proposal-factory-v1.witness",
-            Self::SessionV2(_) => "q24-model-proposal-factory-v2.witness",
+            Self::SessionV2(_) => WITNESS_FILENAME_V2,
         }
     }
 
     pub(crate) fn socket_filename(&self) -> &'static str {
         match self {
             Self::LegacyV1(_) => "q24-model-proposal-factory-v1.sock",
-            Self::SessionV2(_) => "q24-model-proposal-factory-v2.sock",
+            Self::SessionV2(_) => SOCKET_FILENAME_V2,
         }
     }
 }

@@ -6,6 +6,10 @@ use codex_hepta_types::Generation;
 use super::*;
 
 pub(crate) const PURPOSE_V2: &str = "runtime.learning.q24-model-proposal.factory.v2";
+pub(crate) const OWNER_V2: &str = "root-q24-model-proposal-factory-v2";
+pub(crate) const DIRECTORY_V2: &str = "q24-model-proposal-factory-v2";
+pub(crate) const WITNESS_FILENAME_V2: &str = "q24-model-proposal-factory-v2.witness";
+pub(crate) const SOCKET_FILENAME_V2: &str = "q24-model-proposal-factory-v2.sock";
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
