@@ -217,6 +217,25 @@ impl OriginalCircuitFeatureIngressV1 {
         &self,
         request: AuthBusObjectiveIngress,
     ) -> Result<OriginalCircuitFeatureLearningSourcesV1, AgentdError> {
+        self.submit_with_original_end(request, None).await
+    }
+
+    /// The post-A controller retains its actual Root session end across
+    /// Decision, publication, the single request write and original readback.
+    pub(crate) async fn submit_until(
+        &self,
+        request: AuthBusObjectiveIngress,
+        original_end: std::time::Instant,
+    ) -> Result<OriginalCircuitFeatureLearningSourcesV1, AgentdError> {
+        self.submit_with_original_end(request, Some(original_end.into()))
+            .await
+    }
+
+    async fn submit_with_original_end(
+        &self,
+        request: AuthBusObjectiveIngress,
+        original_end: Option<Instant>,
+    ) -> Result<OriginalCircuitFeatureLearningSourcesV1, AgentdError> {
         self.cell.task.require_current()?;
         let definition = self.cell.task.definition();
         if request.body.run_id != self.cell.task.source().scope.run_id.as_str()
@@ -250,8 +269,21 @@ impl OriginalCircuitFeatureIngressV1 {
         let budget = Duration::from_micros(window)
             .min(Duration::from_millis(source.lease_duration_ms))
             .min(Duration::from_secs(60));
-        let deadline = Instant::now() + budget;
-        let outcome = match self.client.objective_start_once(request).await? {
+        let deadline = original_end.map_or(Instant::now() + budget, |end| {
+            (Instant::now() + budget).min(end)
+        });
+        if Instant::now() >= deadline {
+            return Err(invalid("original Feature ingress deadline elapsed"));
+        }
+        let reply = match original_end {
+            Some(_) => {
+                self.client
+                    .objective_start_once_until(request, deadline)
+                    .await?
+            }
+            None => self.client.objective_start_once(request).await?,
+        };
+        let outcome = match reply {
             ObjectiveStartReplyV1::Completed(outcome) => outcome,
             ObjectiveStartReplyV1::AcknowledgementLost(error) => {
                 return self
@@ -265,6 +297,9 @@ impl OriginalCircuitFeatureIngressV1 {
             {
                 let completed = self.readback()?;
                 completed.require_original_admission(&expected)?;
+                if original_end.is_some_and(|end| Instant::now() >= end) {
+                    return Err(invalid("original Feature completion exceeded session end"));
+                }
                 Ok(completed)
             }
             ObjectiveStartOutcome::Admitted { .. } => Err(invalid(
