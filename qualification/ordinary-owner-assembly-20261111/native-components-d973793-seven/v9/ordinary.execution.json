@@ -1,0 +1,71 @@
+{
+  "after": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "dirty": false,
+    "parents": [
+      "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+    ],
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "dirty": false,
+    "parents": [
+      "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+    ],
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-fleet",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 525.137681378983,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T10:04:46.874799+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 1283869,
+  "log_file": "ordinary.execution.json.b5f3edf3307346c0925b5be85edd4c41.log",
+  "log_sha256": "a8c630a7a0479f31cd1f89cd85014a3eb74053daef8a2025ab9b11ac8259447e",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 1950,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "started_at": "2026-11-12T09:56:01.735890+00:00",
+  "status": "passed",
+  "tested_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "timed_out": false,
+  "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source"
+}

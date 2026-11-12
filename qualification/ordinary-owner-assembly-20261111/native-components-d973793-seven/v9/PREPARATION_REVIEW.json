@@ -1,0 +1,120 @@
+{
+  "schema": "hepta-v34-original-native-preparation-and-root-review-v1",
+  "status": "frozen for original full qualification; not yet dispatched",
+  "source": {
+    "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "sole_parent": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+  "assembly": "85c7729dbf74f75b338efb4ef0fc21ce3acaf9f0",
+  "source_review": {
+    "Root": "9d73cd75df529fc0264512f44069f1ac3da2468d",
+    "independent": "25a0b0eb64eaaca5312758e413398bec5da14de8",
+    "actual_tree_diff": 39,
+    "source_changes": 6,
+    "evidence_additions": 33,
+    "Root_actual_tree_and_nonforce_ref_GET_verified": true
+  },
+  "request": {
+    "git_blob": "89a4360e2c074f5c234b283b2f089692bfe2c93a",
+    "bytes": 56726,
+    "sha256": "89c9e1bb9442bee12b876a85d8ab2d5b042a816b6cba56879cf37e2c9a3ccb34"
+  },
+  "configuration": {
+    "git_blob": "0e56666a45f47b3604c400f276678ca10d104a35",
+    "bytes": 3305,
+    "sha256": "121208105a4fe1815bd491889f635a605ced24dca56975b4ac75088f179989f3"
+  },
+  "exact_ops": {
+    "git_blob": "4f3b20f98edc1b6abc1894774347bd55006f3b2b",
+    "bytes": 8700,
+    "sha256": "aae82d4b09f319ad6f4be333742a117360dd8a8e1b36bdea31841c528240b197"
+  },
+  "fixed_harness": {
+    "git_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "bytes": 50167,
+    "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+  },
+  "change_set": {
+    "semantic_fields": 5,
+    "CONFIG_fields": [
+      "head",
+      "tree",
+      "work_name",
+      "attempt"
+    ],
+    "request_fields": [
+      "args[3]",
+      "idempotency_key"
+    ],
+    "unique_forward_reverse_operations": 6,
+    "remaining15CONFIG_fields_unchanged": true,
+    "full_harness_and_flags_unchanged": true,
+    "host_cwd_rows_cols_unchanged": true
+  },
+  "gate": {
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "Root_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-contracts"
+    ],
+    "exact_Root_parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+      "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+      "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+      "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+      "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+      "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+      "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    ],
+    "retries": 0,
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "CALLERS": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "overall_timeout_seconds": 27000,
+    "caller_timeout_seconds": 3600,
+    "all_original_internal_budgets_and_helpers_unchanged": true
+  },
+  "prior_attempt": {
+    "request": "f1a07c5d380b91f98986ebd0341e4e6fd1c0d075",
+    "result": "beb29d30e9445c5a1f1092267894539e48986215",
+    "actual_terminal": "exit1 complete3289bytes; formatter command0 but dirty source/executor1; no tests",
+    "original_records_retained": true,
+    "old_dirty_checkout_retained": true,
+    "no_result_inherited": true
+  },
+  "paths": {
+    "parent_cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "fresh_work": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9",
+    "Root_fixture": "/run/hepta-af52-final-d9737937eacc-ordinary-d973793-seven-final-v9"
+  },
+  "root_decision": "Authorize one exact fresh original run. The original global Rust idle preflight must pass; no privilege/network/credential repair, killing, directory reuse, source resetting, checker weakening, new filters or test retries. Unknown admission is reconciled only using this exact same key/request. Any maintenance drift remains a failed exact-source attempt.",
+  "idempotency_key": "af52-ordinary-d973793-seven-final-v9-20261112",
+  "qualification_scope": "Original fmt/fix-seven/fmt/bins, all QA and full caller, same-source helpers, all ordinary seven packages and exact17 Root parents, original custody/source/tool/cleanup. Components do not establish ordinary business acceptance.",
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": false,
+    "physical_restart": false
+  },
+  "future_phase_included": false
+}

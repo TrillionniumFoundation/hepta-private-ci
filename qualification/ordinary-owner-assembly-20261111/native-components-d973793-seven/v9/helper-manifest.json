@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "source_sha_after": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+  "source_status_before": "",
+  "source_status_after": "",
+  "workspace": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 0,
+      "cargo_finished": true,
+      "complete": true
+    }
+  ],
+  "artifacts": {
+    "hepta-joint-propose": {
+      "package": "codex-hepta-infer-worker-host",
+      "package_id": "path+file:///home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "compiler_executable": "/home/qq/af52-learning-20261111/target/debug/hepta-joint-propose",
+      "executable": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/helpers/bin/hepta-joint-propose",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 0,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "8121269817acfc2fece91f89cd9f4d1ed29a8c424d32b17efa5916e5b0331ffa",
+      "bytes": 1437512
+    }
+  },
+  "complete": true,
+  "exit_code": 0
+}

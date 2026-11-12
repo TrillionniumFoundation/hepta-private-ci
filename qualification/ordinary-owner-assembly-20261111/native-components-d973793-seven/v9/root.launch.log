@@ -1,0 +1,826 @@
+Root test uid=0
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+   --> hepta-agentd/src/root_authority_session_tests.rs:693:34
+    |
+693 |     let root = Arc::new(AsyncFd::new(pidfd).unwrap());
+    |                                  ^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: associated function `from_research_store` is never used
+   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+    |
+133 | impl LearningIterationCheckpointOwnerV1 {
+    | --------------------------------------- associated function in this implementation
+...
+141 |     pub(crate) fn from_research_store(
+    |                   ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-agentd` (lib test) generated 2 warnings
+    Finished `test` profile [unoptimized] target(s) in 0.49s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.31.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.39.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#inotify-sys@0.1.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 56d55da4-3579-4865-9111-68a51582a678 with nextest profile: local
+    Starting 17 tests across 2 binaries (1373 tests skipped)
+        PASS [   0.151s] codex-hepta-agentd authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history
+        PASS [   0.315s] codex-hepta-agentd authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody
+        PASS [   0.007s] codex-hepta-agentd authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness
+        PASS [   0.008s] codex-hepta-agentd authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files
+        PASS [   0.007s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history
+        PASS [   0.013s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen
+        PASS [   0.010s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint
+        PASS [   0.009s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client
+        PASS [   0.026s] codex-hepta-agentd learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd
+        FAIL [  16.005s] codex-hepta-agentd neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery
+        PASS [   3.887s] codex-hepta-agentd neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current
+        PASS [   0.029s] codex-hepta-agentd root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights
+        PASS [   0.010s] codex-hepta-agentd root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin
+        PASS [   0.004s] codex-hepta-agentd root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec
+        PASS [   0.004s] codex-hepta-agentd root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights
+        PASS [   0.102s] codex-hepta-contracts final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files
+        PASS [   0.062s] codex-hepta-contracts final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming
+────────────
+     Summary [  20.657s] 17 tests run: 16 passed, 1 failed, 1373 skipped
+        PASS [   0.151s] codex-hepta-agentd authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+    test authority_host_learning_service_root_tests::root_learning_registered_service_dedicated_uid_child ... ROOT_LEARNING_REGISTERED_SERVICE actual_consumer_uid=60001 actual_consumer_pid=271787 original_root_pid=271785 schema=2 scope=cell frozen_scope_binding=96c84dc58fbc3ca871d70f6a52028f10489a6697573b0062fa05c9deebd976a6 registered_writer=true dedicated_listener=true restored_receipts=1 exact_retry=true
+    ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.12s
+
+
+    test authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.15s
+
+  stderr ───
+    ROOT_COMPONENT_TIMING pid=271785 label=writer.with_live phase="original-dispatch" sequence=1 begin_ns=Some(1503853083060436) end_ns=Some(1503853089198812) elapsed_ns=Some(6138376) reported_outcome=None marks=[("read-lease-start", Some(1503853083061076)), ("read-lease-done", Some(1503853083064535)), ("use-verified", Some(1503853083086335)), ("callback-entry", Some(1503853083122313)), ("callback-exit", Some(1503853089196532)), ("dispatch-returned", Some(1503853089198262))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271785 label=writer.with_live phase="original-dispatch" sequence=5 begin_ns=Some(1503853114192661) end_ns=Some(1503853120268950) elapsed_ns=Some(6076289) reported_outcome=None marks=[("read-lease-start", Some(1503853114193211)), ("read-lease-done", Some(1503853114195801)), ("use-verified", Some(1503853114213740)), ("callback-entry", Some(1503853114245519)), ("callback-exit", Some(1503853120267550)), ("dispatch-returned", Some(1503853120268740))] record_cap=64
+
+        PASS [   0.315s] codex-hepta-agentd authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+    test authority_host_q24_model_service_root_tests::root_q24_model_factory_service_dedicated_uid_child ... ROOT_Q24_FACTORY_SERVICE actual_consumer_uid=60001 actual_consumer_pid=271795 original_root_pid=271793 registered_writer=true registry_epoch=2 model_owner_created=false ordinary_chain=false
+    ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.29s
+
+
+    test authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.31s
+
+  stderr ───
+    ROOT_COMPONENT_TIMING pid=271793 label=writer.with_live phase="original-dispatch" sequence=4 begin_ns=Some(1503853266055887) end_ns=Some(1503853272366107) elapsed_ns=Some(6310220) reported_outcome=None marks=[("read-lease-start", Some(1503853266056387)), ("read-lease-done", Some(1503853266059517)), ("use-verified", Some(1503853266079996)), ("callback-entry", Some(1503853266112625)), ("callback-exit", Some(1503853272364157)), ("dispatch-returned", Some(1503853272365887))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271793 label=writer.with_live phase="original-dispatch" sequence=10 begin_ns=Some(1503853322407812) end_ns=Some(1503853328661704) elapsed_ns=Some(6253892) reported_outcome=None marks=[("read-lease-start", Some(1503853322408342)), ("read-lease-done", Some(1503853322411292)), ("use-verified", Some(1503853322429761)), ("callback-entry", Some(1503853322461730)), ("callback-exit", Some(1503853328659974)), ("dispatch-returned", Some(1503853328661314))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271793 label=writer.with_live phase="original-dispatch" sequence=26 begin_ns=Some(1503853508033909) end_ns=Some(1503853514318080) elapsed_ns=Some(6284171) reported_outcome=None marks=[("read-lease-start", Some(1503853508034449)), ("read-lease-done", Some(1503853508037399)), ("use-verified", Some(1503853508058258)), ("callback-entry", Some(1503853508090767)), ("callback-exit", Some(1503853514316550)), ("dispatch-returned", Some(1503853514317890))] record_cap=64
+
+        PASS [   0.007s] codex-hepta-agentd authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness
+  stdout ───
+
+    running 1 test
+    test authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-agentd authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files
+  stdout ───
+
+    running 1 test
+    test authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history
+  stdout ───
+
+    running 1 test
+    test authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+        PASS [   0.013s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen
+  stdout ───
+
+    running 1 test
+    test authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.01s
+
+
+        PASS [   0.010s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint
+  stdout ───
+
+    running 1 test
+    test authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+        PASS [   0.009s] codex-hepta-agentd authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client
+  stdout ───
+
+    running 1 test
+    test authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+        PASS [   0.026s] codex-hepta-agentd learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd
+  stdout ───
+
+    running 1 test
+    LEARNING_EVIDENCE_OWNER actual_uid=60001 signed_fixture=true
+
+    test learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.02s
+
+
+        PASS [   3.887s] codex-hepta-agentd neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+    test neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child ... ROOT_PUBLICATION_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid=271943 original_root_pid=271939 vacant_learning_before_late_enrollment=true actual_current_cas=true actual_claims=1 original_connection_taken_once=true original_session_drop_fences_current=true explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0
+    ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 3.70s
+
+
+    test neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 3.88s
+
+  stderr ───
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.wait-learning-ready phase=Publish sequence=9 begin_ns=Some(1503869902592955) end_ns=Some(1503870013607105) elapsed_ns=Some(111014150) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=23 begin_ns=Some(1503870151329977) end_ns=Some(1503870274050894) elapsed_ns=Some(122720917) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870151331047)), ("read-lease-done", Some(1503870151336077)), ("use-verified", Some(1503870151384925)), ("callback-entry", Some(1503870151461522)), ("callback-exit", Some(1503870274046194)), ("dispatch-returned", Some(1503870274050324)), ("complete", Some(1503870274050424))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.deployment-register phase=Publish sequence=22 begin_ns=Some(1503870013629394) end_ns=Some(1503870274626511) elapsed_ns=Some(260997117) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=24 begin_ns=Some(1503870279377763) end_ns=Some(1503870349318117) elapsed_ns=Some(69940354) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870279378593)), ("read-lease-done", Some(1503870279382173)), ("use-verified", Some(1503870279412302)), ("callback-entry", Some(1503870279447400)), ("callback-exit", Some(1503870349316627)), ("dispatch-returned", Some(1503870349317887)), ("complete", Some(1503870349317977))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=25 begin_ns=Some(1503870350454372) end_ns=Some(1503870420522410) elapsed_ns=Some(70068038) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870350455862)), ("read-lease-done", Some(1503870350461601)), ("use-verified", Some(1503870350511099)), ("callback-entry", Some(1503870350567267)), ("callback-exit", Some(1503870420520841)), ("dispatch-returned", Some(1503870420522160)), ("complete", Some(1503870420522260))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=26 begin_ns=Some(1503870421416925) end_ns=Some(1503870491472614) elapsed_ns=Some(70055689) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870421418295)), ("read-lease-done", Some(1503870421424245)), ("use-verified", Some(1503870421474173)), ("callback-entry", Some(1503870421533320)), ("callback-exit", Some(1503870491471214)), ("dispatch-returned", Some(1503870491472374)), ("complete", Some(1503870491472474))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=27 begin_ns=Some(1503870491981194) end_ns=Some(1503870561847821) elapsed_ns=Some(69866627) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870491981774)), ("read-lease-done", Some(1503870491984854)), ("use-verified", Some(1503870492007223)), ("callback-entry", Some(1503870492045742)), ("callback-exit", Some(1503870561846281)), ("dispatch-returned", Some(1503870561847571)), ("complete", Some(1503870561847681))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=28 begin_ns=Some(1503870562694207) end_ns=Some(1503870633631052) elapsed_ns=Some(70936845) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870562694907)), ("read-lease-done", Some(1503870562698257)), ("use-verified", Some(1503870562722456)), ("callback-entry", Some(1503870562755805)), ("callback-exit", Some(1503870633629542)), ("dispatch-returned", Some(1503870633630812)), ("complete", Some(1503870633630912))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=29 begin_ns=Some(1503870634248637) end_ns=Some(1503870704228510) elapsed_ns=Some(69979873) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870634249227)), ("read-lease-done", Some(1503870634252397)), ("use-verified", Some(1503870634274226)), ("callback-entry", Some(1503870634306855)), ("callback-exit", Some(1503870704226970)), ("dispatch-returned", Some(1503870704228270)), ("complete", Some(1503870704228370))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=32 begin_ns=Some(1503870727007259) end_ns=Some(1503870810150141) elapsed_ns=Some(83142882) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870727007879)), ("read-lease-done", Some(1503870727015749)), ("use-verified", Some(1503870727036918)), ("callback-entry", Some(1503870727068997)), ("callback-exit", Some(1503870810148551)), ("dispatch-returned", Some(1503870810149851)), ("complete", Some(1503870810149971))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=33 begin_ns=Some(1503870811048606) end_ns=Some(1503870893050783) elapsed_ns=Some(82002177) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870811049256)), ("read-lease-done", Some(1503870811052406)), ("use-verified", Some(1503870811074575)), ("callback-entry", Some(1503870811106933)), ("callback-exit", Some(1503870893049223)), ("dispatch-returned", Some(1503870893050553)), ("complete", Some(1503870893050653))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=34 begin_ns=Some(1503870899792926) end_ns=Some(1503870981712237) elapsed_ns=Some(81919311) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870899793756)), ("read-lease-done", Some(1503870899797166)), ("use-verified", Some(1503870899819505)), ("callback-entry", Some(1503870899849164)), ("callback-exit", Some(1503870981710707)), ("dispatch-returned", Some(1503870981711997)), ("complete", Some(1503870981712097))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=35 begin_ns=Some(1503870983570103) end_ns=Some(1503871066238404) elapsed_ns=Some(82668301) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503870983571283)), ("read-lease-done", Some(1503870983576893)), ("use-verified", Some(1503870983618092)), ("callback-entry", Some(1503870983675319)), ("callback-exit", Some(1503871066236754)), ("dispatch-returned", Some(1503871066238144)), ("complete", Some(1503871066238264))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=36 begin_ns=Some(1503871067709116) end_ns=Some(1503871149675585) elapsed_ns=Some(81966469) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871067709776)), ("read-lease-done", Some(1503871067713106)), ("use-verified", Some(1503871067735685)), ("callback-entry", Some(1503871067768624)), ("callback-exit", Some(1503871149674005)), ("dispatch-returned", Some(1503871149675325)), ("complete", Some(1503871149675445))] record_cap=64
+    ROOT_PUBLICATION_COMPONENT phase=Publish service=Ok(())
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.wait-learning-ready phase=Recover sequence=42 begin_ns=Some(1503871223067053) end_ns=Some(1503871289782774) elapsed_ns=Some(66715721) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=50 begin_ns=Some(1503871426331845) end_ns=Some(1503871548859359) elapsed_ns=Some(122527514) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871426333525)), ("read-lease-done", Some(1503871426341694)), ("use-verified", Some(1503871426378883)), ("callback-entry", Some(1503871426424471)), ("callback-exit", Some(1503871548855469)), ("dispatch-returned", Some(1503871548858589)), ("complete", Some(1503871548858689))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.deployment-register phase=Recover sequence=49 begin_ns=Some(1503871289820373) end_ns=Some(1503871549278543) elapsed_ns=Some(259458170) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=51 begin_ns=Some(1503871554170689) end_ns=Some(1503871636155267) elapsed_ns=Some(81984578) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871554171319)), ("read-lease-done", Some(1503871554174719)), ("use-verified", Some(1503871554200538)), ("callback-entry", Some(1503871554233577)), ("callback-exit", Some(1503871636153087)), ("dispatch-returned", Some(1503871636154857)), ("complete", Some(1503871636155127))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=52 begin_ns=Some(1503871637457606) end_ns=Some(1503871719911436) elapsed_ns=Some(82453830) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871637458766)), ("read-lease-done", Some(1503871637464515)), ("use-verified", Some(1503871637506534)), ("callback-entry", Some(1503871637563981)), ("callback-exit", Some(1503871719909836)), ("dispatch-returned", Some(1503871719911176)), ("complete", Some(1503871719911296))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=53 begin_ns=Some(1503871721091509) end_ns=Some(1503871803092137) elapsed_ns=Some(82000628) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871721092079)), ("read-lease-done", Some(1503871721095269)), ("use-verified", Some(1503871721117478)), ("callback-entry", Some(1503871721150247)), ("callback-exit", Some(1503871803090617)), ("dispatch-returned", Some(1503871803091887)), ("complete", Some(1503871803092007))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=54 begin_ns=Some(1503871804162254) end_ns=Some(1503871886471540) elapsed_ns=Some(82309286) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871804163404)), ("read-lease-done", Some(1503871804169284)), ("use-verified", Some(1503871804210903)), ("callback-entry", Some(1503871804268850)), ("callback-exit", Some(1503871886469940)), ("dispatch-returned", Some(1503871886471270)), ("complete", Some(1503871886471360))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=55 begin_ns=Some(1503871887719341) end_ns=Some(1503871969724518) elapsed_ns=Some(82005177) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871887720001)), ("read-lease-done", Some(1503871887723301)), ("use-verified", Some(1503871887745520)), ("callback-entry", Some(1503871887778348)), ("callback-exit", Some(1503871969722959)), ("dispatch-returned", Some(1503871969724278)), ("complete", Some(1503871969724378))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=56 begin_ns=Some(1503871971319755) end_ns=Some(1503872053259556) elapsed_ns=Some(81939801) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503871971320405)), ("read-lease-done", Some(1503871971323735)), ("use-verified", Some(1503871971345784)), ("callback-entry", Some(1503871971378283)), ("callback-exit", Some(1503872053257996)), ("dispatch-returned", Some(1503872053259296)), ("complete", Some(1503872053259416))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=57 begin_ns=Some(1503872054948879) end_ns=Some(1503872090430886) elapsed_ns=Some(35482007) reported_outcome=None marks=[("read-lease-start", Some(1503872054949459)), ("read-lease-done", Some(1503872054952619)), ("use-verified", Some(1503872054976558)), ("callback-entry", Some(1503872055014146)), ("callback-exit", Some(1503872090429296)), ("dispatch-returned", Some(1503872090430656))] record_cap=64
+    ROOT_PUBLICATION_COMPONENT phase=Recover service=Err(Custom { kind: Other, error: Unavailable })
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.wait-learning-ready phase=RetiredSession sequence=63 begin_ns=Some(1503872163216038) end_ns=Some(1503872231225589) elapsed_ns=Some(68009551) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=71 begin_ns=Some(1503872369271131) end_ns=Some(1503872492341925) elapsed_ns=Some(123070794) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503872369272761)), ("read-lease-done", Some(1503872369279481)), ("use-verified", Some(1503872369340858)), ("callback-entry", Some(1503872369416085)), ("callback-exit", Some(1503872492336125)), ("dispatch-returned", Some(1503872492341015)), ("complete", Some(1503872492341125))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.deployment-register phase=RetiredSession sequence=70 begin_ns=Some(1503872231247238) end_ns=Some(1503872492903893) elapsed_ns=Some(261656655) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=72 begin_ns=Some(1503872497660315) end_ns=Some(1503872579651453) elapsed_ns=Some(81991138) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503872497661155)), ("read-lease-done", Some(1503872497664655)), ("use-verified", Some(1503872497694934)), ("callback-entry", Some(1503872497729632)), ("callback-exit", Some(1503872579649763)), ("dispatch-returned", Some(1503872579651043)), ("complete", Some(1503872579651313))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=73 begin_ns=Some(1503872580932772) end_ns=Some(1503872663737249) elapsed_ns=Some(82804477) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503872580934082)), ("read-lease-done", Some(1503872580939672)), ("use-verified", Some(1503872580990290)), ("callback-entry", Some(1503872581053108)), ("callback-exit", Some(1503872663735499)), ("dispatch-returned", Some(1503872663736819)), ("complete", Some(1503872663737069))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=74 begin_ns=Some(1503872664690661) end_ns=Some(1503872746656121) elapsed_ns=Some(81965460) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503872664691481)), ("read-lease-done", Some(1503872664695011)), ("use-verified", Some(1503872664726010)), ("callback-entry", Some(1503872664760698)), ("callback-exit", Some(1503872746654591)), ("dispatch-returned", Some(1503872746655881)), ("complete", Some(1503872746656001))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=75 begin_ns=Some(1503872747373372) end_ns=Some(1503872829273865) elapsed_ns=Some(81900493) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503872747374192)), ("read-lease-done", Some(1503872747377642)), ("use-verified", Some(1503872747410491)), ("callback-entry", Some(1503872747444699)), ("callback-exit", Some(1503872829272295)), ("dispatch-returned", Some(1503872829273605)), ("complete", Some(1503872829273725))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=76 begin_ns=Some(1503872830119911) end_ns=Some(1503872912102120) elapsed_ns=Some(81982209) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503872830120701)), ("read-lease-done", Some(1503872830124251)), ("use-verified", Some(1503872830154650)), ("callback-entry", Some(1503872830188809)), ("callback-exit", Some(1503872912099250)), ("dispatch-returned", Some(1503872912101720)), ("complete", Some(1503872912101990))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=77 begin_ns=Some(1503872913285654) end_ns=Some(1503872995526612) elapsed_ns=Some(82240958) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503872913286454)), ("read-lease-done", Some(1503872913290423)), ("use-verified", Some(1503872913321162)), ("callback-entry", Some(1503872913355331)), ("callback-exit", Some(1503872995525042)), ("dispatch-returned", Some(1503872995526372)), ("complete", Some(1503872995526482))] record_cap=64
+    ROOT_PUBLICATION_COMPONENT phase=RetiredSession service=Ok(())
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.wait-learning-ready phase=Revoked sequence=83 begin_ns=Some(1503873069259518) end_ns=Some(1503873137208881) elapsed_ns=Some(67949363) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=91 begin_ns=Some(1503873275273044) end_ns=Some(1503873398214154) elapsed_ns=Some(122941110) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503873275274713)), ("read-lease-done", Some(1503873275281623)), ("use-verified", Some(1503873275345001)), ("callback-entry", Some(1503873275422508)), ("callback-exit", Some(1503873398208824)), ("dispatch-returned", Some(1503873398213334)), ("complete", Some(1503873398213424))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=publication.root.deployment-register phase=Revoked sequence=90 begin_ns=Some(1503873137219161) end_ns=Some(1503873398789521) elapsed_ns=Some(261570360) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271939 label=writer.with_live phase="original-dispatch" sequence=95 begin_ns=Some(1503873444283472) end_ns=Some(1503873486137068) elapsed_ns=Some(41853596) reported_outcome=None marks=[("read-lease-start", Some(1503873444284942)), ("read-lease-done", Some(1503873444291042)), ("use-verified", Some(1503873444340950)), ("callback-entry", Some(1503873444400398)), ("callback-exit", Some(1503873486135388)), ("dispatch-returned", Some(1503873486136848))] record_cap=64
+    ROOT_PUBLICATION_COMPONENT phase=Revoked service=Err(Custom { kind: Other, error: Unavailable })
+
+        PASS [   0.029s] codex-hepta-agentd root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+    test root_production_handoff::generation_publication::tests::publication_handoff_dedicated_uid_child ... ROOT_PUBLICATION_HANDOFF actual_consumer_uid=60001 mode=valid original_root_pid=271987
+    ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+
+    running 1 test
+    test root_production_handoff::generation_publication::tests::publication_handoff_dedicated_uid_child ... ROOT_PUBLICATION_HANDOFF actual_consumer_uid=60001 mode=wrong-purpose original_root_pid=271987
+    ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+
+    running 1 test
+    test root_production_handoff::generation_publication::tests::publication_handoff_dedicated_uid_child ... ROOT_PUBLICATION_HANDOFF actual_consumer_uid=60001 mode=wrong-order original_root_pid=271987
+    ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+    test root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.02s
+
+
+        PASS [   0.010s] codex-hepta-agentd root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+    test root_production_handoff::learning::tests::root_learning_handoff_dedicated_uid_child ... ROOT_LEARNING_HANDOFF actual_consumer_uid=60001 actual_consumer_pid=271997 original_root_pid=271995 sealed=true cloexec=true
+    ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+    test root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.01s
+
+
+        PASS [   0.004s] codex-hepta-agentd root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec
+  stdout ───
+
+    running 1 test
+    test root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agentd root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights
+  stdout ───
+
+    running 1 test
+    test root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 0.00s
+
+
+        PASS [   0.102s] codex-hepta-contracts final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files
+  stdout ───
+
+    running 1 test
+    test final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 287 filtered out; finished in 0.10s
+
+
+        PASS [   0.062s] codex-hepta-contracts final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming
+  stdout ───
+
+    running 1 test
+    test final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 287 filtered out; finished in 0.06s
+
+
+        FAIL [  16.005s] codex-hepta-agentd neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery
+  stdout ───
+
+    running 1 test
+    test neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery ... FAILED
+
+    failures:
+
+    failures:
+        neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 16.00s
+
+  stderr ───
+    ROOT_COMPONENT_TIMING pid=271822 label=initial.root.wait-original-inputs phase=Publish sequence=5 begin_ns=Some(1503853844697227) end_ns=Some(1503853960425507) elapsed_ns=Some(115728280) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=13 begin_ns=Some(1503854108327542) end_ns=Some(1503854231916141) elapsed_ns=Some(123588599) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854108328962)), ("read-lease-done", Some(1503854108335352)), ("use-verified", Some(1503854108397619)), ("callback-entry", Some(1503854108464966)), ("callback-exit", Some(1503854231914111)), ("dispatch-returned", Some(1503854231915611)), ("complete", Some(1503854231916001))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=initial.root.deployment-register phase=Publish sequence=12 begin_ns=Some(1503853960499934) end_ns=Some(1503854232371303) elapsed_ns=Some(271871369) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=14 begin_ns=Some(1503854237239699) end_ns=Some(1503854307005803) elapsed_ns=Some(69766104) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854237240419)), ("read-lease-done", Some(1503854237243919)), ("use-verified", Some(1503854237268348)), ("callback-entry", Some(1503854237302597)), ("callback-exit", Some(1503854307004063)), ("dispatch-returned", Some(1503854307005503)), ("complete", Some(1503854307005623))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=15 begin_ns=Some(1503854327932813) end_ns=Some(1503854427348040) elapsed_ns=Some(99415227) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854327933853)), ("read-lease-done", Some(1503854327939673)), ("use-verified", Some(1503854327982151)), ("callback-entry", Some(1503854328050908)), ("callback-exit", Some(1503854427346570)), ("dispatch-returned", Some(1503854427347770)), ("complete", Some(1503854427347870))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=16 begin_ns=Some(1503854428181877) end_ns=Some(1503854498107354) elapsed_ns=Some(69925477) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854428182547)), ("read-lease-done", Some(1503854428185927)), ("use-verified", Some(1503854428210046)), ("callback-entry", Some(1503854428243715)), ("callback-exit", Some(1503854498105884)), ("dispatch-returned", Some(1503854498107094)), ("complete", Some(1503854498107194))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=17 begin_ns=Some(1503854498929012) end_ns=Some(1503854568788391) elapsed_ns=Some(69859379) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854498929611)), ("read-lease-done", Some(1503854498932721)), ("use-verified", Some(1503854498953691)), ("callback-entry", Some(1503854498986459)), ("callback-exit", Some(1503854568786911)), ("dispatch-returned", Some(1503854568788131)), ("complete", Some(1503854568788231))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=18 begin_ns=Some(1503854570318690) end_ns=Some(1503854640324424) elapsed_ns=Some(70005734) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854570320050)), ("read-lease-done", Some(1503854570325780)), ("use-verified", Some(1503854570367408)), ("callback-entry", Some(1503854570425416)), ("callback-exit", Some(1503854640322944)), ("dispatch-returned", Some(1503854640324174)), ("complete", Some(1503854640324274))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=19 begin_ns=Some(1503854641551115) end_ns=Some(1503854711649546) elapsed_ns=Some(70098431) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854641551735)), ("read-lease-done", Some(1503854641554905)), ("use-verified", Some(1503854641578054)), ("callback-entry", Some(1503854641612213)), ("callback-exit", Some(1503854711648066)), ("dispatch-returned", Some(1503854711649276)), ("complete", Some(1503854711649386))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=20 begin_ns=Some(1503854712710054) end_ns=Some(1503854783579884) elapsed_ns=Some(70869830) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854712710654)), ("read-lease-done", Some(1503854712713884)), ("use-verified", Some(1503854712735643)), ("callback-entry", Some(1503854712768151)), ("callback-exit", Some(1503854783577814)), ("dispatch-returned", Some(1503854783579624)), ("complete", Some(1503854783579734))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=21 begin_ns=Some(1503854784503457) end_ns=Some(1503854854674795) elapsed_ns=Some(70171338) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854784504117)), ("read-lease-done", Some(1503854784507977)), ("use-verified", Some(1503854784529986)), ("callback-entry", Some(1503854784562625)), ("callback-exit", Some(1503854854673355)), ("dispatch-returned", Some(1503854854674555)), ("complete", Some(1503854854674655))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=23 begin_ns=Some(1503854882076408) end_ns=Some(1503854952434748) elapsed_ns=Some(70358340) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854882077448)), ("read-lease-done", Some(1503854882083198)), ("use-verified", Some(1503854882126376)), ("callback-entry", Some(1503854882184494)), ("callback-exit", Some(1503854952433288)), ("dispatch-returned", Some(1503854952434488)), ("complete", Some(1503854952434598))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=24 begin_ns=Some(1503854953320663) end_ns=Some(1503855023448903) elapsed_ns=Some(70128240) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503854953321333)), ("read-lease-done", Some(1503854953324583)), ("use-verified", Some(1503854953346552)), ("callback-entry", Some(1503854953379131)), ("callback-exit", Some(1503855023447423)), ("dispatch-returned", Some(1503855023448643)), ("complete", Some(1503855023448733))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=25 begin_ns=Some(1503855024272190) end_ns=Some(1503855094330412) elapsed_ns=Some(70058222) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855024272810)), ("read-lease-done", Some(1503855024275910)), ("use-verified", Some(1503855024297479)), ("callback-entry", Some(1503855024329938)), ("callback-exit", Some(1503855094328932)), ("dispatch-returned", Some(1503855094330172)), ("complete", Some(1503855094330272))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=28 begin_ns=Some(1503855131790947) end_ns=Some(1503855202418816) elapsed_ns=Some(70627869) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855131792267)), ("read-lease-done", Some(1503855131797787)), ("use-verified", Some(1503855131840805)), ("callback-entry", Some(1503855131898503)), ("callback-exit", Some(1503855202417376)), ("dispatch-returned", Some(1503855202418566)), ("complete", Some(1503855202418666))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=29 begin_ns=Some(1503855203324950) end_ns=Some(1503855273477669) elapsed_ns=Some(70152719) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855203325580)), ("read-lease-done", Some(1503855203328850)), ("use-verified", Some(1503855203350469)), ("callback-entry", Some(1503855203383238)), ("callback-exit", Some(1503855273476199)), ("dispatch-returned", Some(1503855273477409)), ("complete", Some(1503855273477509))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=30 begin_ns=Some(1503855275111104) end_ns=Some(1503855358420681) elapsed_ns=Some(83309577) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855275111784)), ("read-lease-done", Some(1503855275115014)), ("use-verified", Some(1503855275137113)), ("callback-entry", Some(1503855275169682)), ("callback-exit", Some(1503855358419191)), ("dispatch-returned", Some(1503855358420411)), ("complete", Some(1503855358420511))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=31 begin_ns=Some(1503855360073765) end_ns=Some(1503855443242617) elapsed_ns=Some(83168852) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855360074955)), ("read-lease-done", Some(1503855360080675)), ("use-verified", Some(1503855360122393)), ("callback-entry", Some(1503855360180081)), ("callback-exit", Some(1503855443241067)), ("dispatch-returned", Some(1503855443242357)), ("complete", Some(1503855443242467))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=32 begin_ns=Some(1503855445327435) end_ns=Some(1503855528117602) elapsed_ns=Some(82790167) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855445328135)), ("read-lease-done", Some(1503855445331395)), ("use-verified", Some(1503855445353514)), ("callback-entry", Some(1503855445386162)), ("callback-exit", Some(1503855528116122)), ("dispatch-returned", Some(1503855528117352)), ("complete", Some(1503855528117462))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=34 begin_ns=Some(1503855558462769) end_ns=Some(1503855641471837) elapsed_ns=Some(83009068) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855558463829)), ("read-lease-done", Some(1503855558469388)), ("use-verified", Some(1503855558512037)), ("callback-entry", Some(1503855558569755)), ("callback-exit", Some(1503855641470327)), ("dispatch-returned", Some(1503855641471577)), ("complete", Some(1503855641471677))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=35 begin_ns=Some(1503855643165230) end_ns=Some(1503855726650770) elapsed_ns=Some(83485540) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855643166670)), ("read-lease-done", Some(1503855643172740)), ("use-verified", Some(1503855643226208)), ("callback-entry", Some(1503855643285065)), ("callback-exit", Some(1503855726649250)), ("dispatch-returned", Some(1503855726650520)), ("complete", Some(1503855726650620))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=36 begin_ns=Some(1503855728364182) end_ns=Some(1503855811141201) elapsed_ns=Some(82777019) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855728364812)), ("read-lease-done", Some(1503855728368082)), ("use-verified", Some(1503855728390651)), ("callback-entry", Some(1503855728423400)), ("callback-exit", Some(1503855811139681)), ("dispatch-returned", Some(1503855811140961)), ("complete", Some(1503855811141061))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=38 begin_ns=Some(1503855841723318) end_ns=Some(1503855925496357) elapsed_ns=Some(83773039) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855841724728)), ("read-lease-done", Some(1503855841730468)), ("use-verified", Some(1503855841784906)), ("callback-entry", Some(1503855841846394)), ("callback-exit", Some(1503855925494737)), ("dispatch-returned", Some(1503855925496067)), ("complete", Some(1503855925496177))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=39 begin_ns=Some(1503855927298806) end_ns=Some(1503856010094394) elapsed_ns=Some(82795588) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503855927299546)), ("read-lease-done", Some(1503855927302876)), ("use-verified", Some(1503855927325355)), ("callback-entry", Some(1503855927358024)), ("callback-exit", Some(1503856010092834)), ("dispatch-returned", Some(1503856010094124)), ("complete", Some(1503856010094234))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=41 begin_ns=Some(1503856040505228) end_ns=Some(1503856123391022) elapsed_ns=Some(82885794) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503856040505938)), ("read-lease-done", Some(1503856040509108)), ("use-verified", Some(1503856040533997)), ("callback-entry", Some(1503856040566155)), ("callback-exit", Some(1503856123389542)), ("dispatch-returned", Some(1503856123390792)), ("complete", Some(1503856123390882))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=42 begin_ns=Some(1503856125161692) end_ns=Some(1503856208207899) elapsed_ns=Some(83046207) reported_outcome=Some("Ok") marks=[("read-lease-start", Some(1503856125162362)), ("read-lease-done", Some(1503856125165692)), ("use-verified", Some(1503856125188161)), ("callback-entry", Some(1503856125221029)), ("callback-exit", Some(1503856208206369)), ("dispatch-returned", Some(1503856208207619)), ("complete", Some(1503856208207719))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271822 label=writer.with_live phase="original-dispatch" sequence=43 begin_ns=Some(1503856232054064) end_ns=Some(1503856238298726) elapsed_ns=Some(6244662) reported_outcome=None marks=[("read-lease-start", Some(1503856232056204)), ("read-lease-done", Some(1503856232062944)), ("use-verified", Some(1503856232136721)), ("callback-entry", Some(1503856232202098)), ("callback-exit", Some(1503856238296867)), ("dispatch-returned", Some(1503856238298306))] record_cap=64
+    ROOT_COMPONENT_CHILD_CLEANUP pid=271827 status=Ok(ExitStatus(unix_wait_status(25856)))
+    ROOT_COMPONENT_CHILD_STDOUT bytes=343
+
+    running 1 test
+    test neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child ... FAILED
+
+    failures:
+
+    failures:
+        neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1101 filtered out; finished in 2.46s
+
+
+    ROOT_COMPONENT_CHILD_STDERR bytes=13590
+    ROOT_INITIAL_CHILD phase=Publish stage=awaiting_original_handoffs
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=1 begin_ns=Some(1503853865124737) end_ns=Some(1503853871752044) elapsed_ns=Some(6627307) reported_outcome=Some("Ok") marks=[("request-started", Some(1503853865129137)), ("response-ended", Some(1503853871729865)), ("accept-changed-head", Some(1503853871733625)), ("cache-accepted", Some(1503853871740034)), ("consumer-barrier-finished", Some(1503853871745394)), ("complete", Some(1503853871751704))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.five-lane-open phase=Publish sequence=0 begin_ns=Some(1503853845486406) end_ns=Some(1503853907237987) elapsed_ns=Some(61751581) reported_outcome=None marks=[] record_cap=64
+    ROOT_INITIAL_CHILD phase=Publish stage=original_five_lane_inputs_open
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.artifact-reopen phase=Publish sequence=2 begin_ns=Some(1503853907300584) end_ns=Some(1503853953428765) elapsed_ns=Some(46128181) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.model-load phase=Publish sequence=3 begin_ns=Some(1503853953438614) end_ns=Some(1503853953681275) elapsed_ns=Some(242661) reported_outcome=None marks=[] record_cap=64
+    ROOT_INITIAL_CHILD phase=Publish stage=original_inputs_ready_sent
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=5 begin_ns=Some(1503853973019708) end_ns=Some(1503853979758781) elapsed_ns=Some(6739073) reported_outcome=Some("Ok") marks=[("request-started", Some(1503853973047217)), ("response-ended", Some(1503853979730682)), ("accept-same-head", Some(1503853979736851)), ("cache-accepted", Some(1503853979752771)), ("consumer-barrier-finished", Some(1503853979752871)), ("complete", Some(1503853979757941))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=6 begin_ns=Some(1503854080981556) end_ns=Some(1503854087358433) elapsed_ns=Some(6376877) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854080984646)), ("response-ended", Some(1503854087348534)), ("accept-same-head", Some(1503854087351154)), ("cache-accepted", Some(1503854087355254)), ("consumer-barrier-finished", Some(1503854087355314)), ("complete", Some(1503854087357953))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=7 begin_ns=Some(1503854188590269) end_ns=Some(1503854195267634) elapsed_ns=Some(6677365) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854188594639)), ("response-ended", Some(1503854195250205)), ("accept-same-head", Some(1503854195254914)), ("cache-accepted", Some(1503854195262234)), ("consumer-barrier-finished", Some(1503854195262334)), ("complete", Some(1503854195266894))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.root-enrollment-wait phase=Publish sequence=4 begin_ns=Some(1503853960421457) end_ns=Some(1503854232419151) elapsed_ns=Some(271997694) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=9 begin_ns=Some(1503854296055017) end_ns=Some(1503854302477442) elapsed_ns=Some(6422425) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854296059277)), ("response-ended", Some(1503854302459883)), ("accept-same-head", Some(1503854302464663)), ("cache-accepted", Some(1503854302472062)), ("consumer-barrier-finished", Some(1503854302472162)), ("complete", Some(1503854302476702))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.initial-connect phase=Publish sequence=8 begin_ns=Some(1503854232438960) end_ns=Some(1503854308908397) elapsed_ns=Some(76469437) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=11 begin_ns=Some(1503854402670559) end_ns=Some(1503854409200110) elapsed_ns=Some(6529551) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854402673179)), ("response-ended", Some(1503854409191350)), ("accept-same-head", Some(1503854409193420)), ("cache-accepted", Some(1503854409197130)), ("consumer-barrier-finished", Some(1503854409197200)), ("complete", Some(1503854409199650))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=12 begin_ns=Some(1503854510418096) end_ns=Some(1503854517080982) elapsed_ns=Some(6662886) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854510420806)), ("response-ended", Some(1503854517069742)), ("accept-same-head", Some(1503854517072872)), ("cache-accepted", Some(1503854517077272)), ("consumer-barrier-finished", Some(1503854517077322)), ("complete", Some(1503854517080532))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=13 begin_ns=Some(1503854618302167) end_ns=Some(1503854625070279) elapsed_ns=Some(6768112) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854618305657)), ("response-ended", Some(1503854625054280)), ("accept-same-head", Some(1503854625058629)), ("cache-accepted", Some(1503854625065339)), ("consumer-barrier-finished", Some(1503854625065439)), ("complete", Some(1503854625069609))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=14 begin_ns=Some(1503854726241897) end_ns=Some(1503854733069616) elapsed_ns=Some(6827719) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854726245327)), ("response-ended", Some(1503854733058787)), ("accept-same-head", Some(1503854733061927)), ("cache-accepted", Some(1503854733066147)), ("consumer-barrier-finished", Some(1503854733066197)), ("complete", Some(1503854733069216))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=15 begin_ns=Some(1503854834306772) end_ns=Some(1503854841072644) elapsed_ns=Some(6765872) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854834311632)), ("response-ended", Some(1503854841061154)), ("accept-same-head", Some(1503854841064454)), ("cache-accepted", Some(1503854841069694)), ("consumer-barrier-finished", Some(1503854841069754)), ("complete", Some(1503854841072254))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.prepare-feature phase=Publish sequence=10 begin_ns=Some(1503854308939116) end_ns=Some(1503854855633517) elapsed_ns=Some(546694401) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.request-grant phase=Publish sequence=16 begin_ns=Some(1503854855651766) end_ns=Some(1503854857186015) elapsed_ns=Some(1534249) reported_outcome=None marks=[] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=18 begin_ns=Some(1503854942323729) end_ns=Some(1503854949088721) elapsed_ns=Some(6764992) reported_outcome=Some("Ok") marks=[("request-started", Some(1503854942327559)), ("response-ended", Some(1503854949078611)), ("accept-same-head", Some(1503854949081581)), ("cache-accepted", Some(1503854949085811)), ("consumer-barrier-finished", Some(1503854949085871)), ("complete", Some(1503854949088331))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=19 begin_ns=Some(1503855050278019) end_ns=Some(1503855057100138) elapsed_ns=Some(6822119) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855050281269)), ("response-ended", Some(1503855057082809)), ("accept-same-head", Some(1503855057087719)), ("cache-accepted", Some(1503855057094869)), ("consumer-barrier-finished", Some(1503855057094969)), ("complete", Some(1503855057099408))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=20 begin_ns=Some(1503855158340134) end_ns=Some(1503855165072227) elapsed_ns=Some(6732093) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855158344124)), ("response-ended", Some(1503855165061477)), ("accept-same-head", Some(1503855165064497)), ("cache-accepted", Some(1503855165068817)), ("consumer-barrier-finished", Some(1503855165068867)), ("complete", Some(1503855165071807))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=21 begin_ns=Some(1503855266298193) end_ns=Some(1503855273102874) elapsed_ns=Some(6804681) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855266301553)), ("response-ended", Some(1503855273085914)), ("accept-same-head", Some(1503855273090724)), ("cache-accepted", Some(1503855273097804)), ("consumer-barrier-finished", Some(1503855273097854)), ("complete", Some(1503855273102464))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=22 begin_ns=Some(1503855374287471) end_ns=Some(1503855380997476) elapsed_ns=Some(6710005) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855374290701)), ("response-ended", Some(1503855380987686)), ("accept-same-head", Some(1503855380989536)), ("cache-accepted", Some(1503855380993406)), ("consumer-barrier-finished", Some(1503855380993436)), ("complete", Some(1503855380996816))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=23 begin_ns=Some(1503855482231511) end_ns=Some(1503855488970364) elapsed_ns=Some(6738853) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855482234541)), ("response-ended", Some(1503855488960345)), ("accept-same-head", Some(1503855488962825)), ("cache-accepted", Some(1503855488966884)), ("consumer-barrier-finished", Some(1503855488966904)), ("complete", Some(1503855488969924))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=24 begin_ns=Some(1503855590243659) end_ns=Some(1503855597048829) elapsed_ns=Some(6805170) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855590247948)), ("response-ended", Some(1503855597030850)), ("accept-same-head", Some(1503855597036149)), ("cache-accepted", Some(1503855597043719)), ("consumer-barrier-finished", Some(1503855597043809)), ("complete", Some(1503855597048069))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=25 begin_ns=Some(1503855698283795) end_ns=Some(1503855704974350) elapsed_ns=Some(6690555) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855698287705)), ("response-ended", Some(1503855704959680)), ("accept-same-head", Some(1503855704963560)), ("cache-accepted", Some(1503855704969700)), ("consumer-barrier-finished", Some(1503855704969800)), ("complete", Some(1503855704973710))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=26 begin_ns=Some(1503855806190117) end_ns=Some(1503855812958779) elapsed_ns=Some(6768662) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855806193137)), ("response-ended", Some(1503855812950549)), ("accept-same-head", Some(1503855812952409)), ("cache-accepted", Some(1503855812955999)), ("consumer-barrier-finished", Some(1503855812956019)), ("complete", Some(1503855812958399))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=27 begin_ns=Some(1503855914191416) end_ns=Some(1503855921090862) elapsed_ns=Some(6899446) reported_outcome=Some("Ok") marks=[("request-started", Some(1503855914194815)), ("response-ended", Some(1503855921078832)), ("accept-same-head", Some(1503855921082032)), ("cache-accepted", Some(1503855921087252)), ("consumer-barrier-finished", Some(1503855921087292)), ("complete", Some(1503855921090372))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=28 begin_ns=Some(1503856022267061) end_ns=Some(1503856028952316) elapsed_ns=Some(6685255) reported_outcome=Some("Ok") marks=[("request-started", Some(1503856022269801)), ("response-ended", Some(1503856028944666)), ("accept-same-head", Some(1503856028946256)), ("cache-accepted", Some(1503856028949656)), ("consumer-barrier-finished", Some(1503856028949706)), ("complete", Some(1503856028951926))] record_cap=64
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=29 begin_ns=Some(1503856130148814) end_ns=Some(1503856136780941) elapsed_ns=Some(6632127) reported_outcome=Some("Ok") marks=[("request-started", Some(1503856130151504)), ("response-ended", Some(1503856136773441)), ("accept-same-head", Some(1503856136775251)), ("cache-accepted", Some(1503856136778441)), ("consumer-barrier-finished", Some(1503856136778481)), ("complete", Some(1503856136780691))] record_cap=64
+    ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-retained-final-use error=Unavailable
+    ROOT_INITIAL_FAILURE stage=actual-feature-construction error=Invalid("Unavailable")
+    ROOT_COMPONENT_TIMING pid=271827 label=initial.child.publish-feature phase=Publish sequence=17 begin_ns=Some(1503854857196645) end_ns=Some(1503856238456940) elapsed_ns=Some(1381260295) reported_outcome=None marks=[] record_cap=64
+    ROOT_SESSION_DIAGNOSTIC phase=session-drop
+    ROOT_COMPONENT_TIMING pid=271827 label=session.refresh phase="original-feed" sequence=30 begin_ns=Some(1503856238004138) end_ns=Some(1503856238549357) elapsed_ns=Some(545219) reported_outcome=None marks=[("request-started", Some(1503856238008218))] record_cap=64
+    ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+    Error: initial child Publish: publishing original Feature CURRENT
+
+    Caused by:
+        invalid agentd configuration: Unavailable
+
+    ROOT_COMPONENT_CHILD_OUTPUT_END
+    Error: initial parent Publish, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: PeerDenied })
+
+    Caused by:
+        0: initial parent Publish: awaiting STABLE
+        1: Resource temporarily unavailable (os error 11)
+
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100
+{"after": {"commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "dirty": false, "parents": ["3c5c0d8e8323dc90709a0efb2f3bcafaac256439"], "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"}, "base_sha": "", "before": {"commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "dirty": false, "parents": ["3c5c0d8e8323dc90709a0efb2f3bcafaac256439"], "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"}, "command": ["just", "test", "--locked", "--offline", "-p", "codex-hepta-agentd", "-p", "codex-hepta-contracts", "--lib", "--run-ignored", "only", "-E", "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files) | test(=authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness) | test(=root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec) | test(=root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights) | test(=authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights) | test(=final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming) | test(=final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files) | test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current) | test(=neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery)", "--test-threads", "1", "--retries", "0", "--success-output", "final", "--failure-output", "final"], "command_exit_code": 100, "elapsed_seconds": 21.408112082863227, "error": "required tests were not observed passing", "exit_code": 100, "finished_at": "2026-11-12T10:08:32.100457+00:00", "job": null, "lane": "source-head", "log_bytes": 94087, "log_file": "root.execution.json.053f6d5f8ec5497181b11f8a9473ba59.log", "log_sha256": "1c3c47c1eee8140a746fea2e85434ed5945ee4cf108ffc5b09f55f4735f0d04e", "minimum_tests": 17, "observed_failed_tests": 1, "observed_passed_tests": 16, "output_limit_exceeded": false, "returncode": 100, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "started_at": "2026-11-12T10:08:10.691466+00:00", "status": "failed", "tested_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "timed_out": false, "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source"}

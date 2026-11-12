@@ -1,0 +1,858 @@
+{
+  "schema_version": 1,
+  "title": "Original seven-package / exact Root17 V34 native result",
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "status": "failed-native-components",
+  "source": {
+    "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "parent": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "before_tests": {
+      "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "status": "",
+      "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+    },
+    "after_maintenance": {
+      "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "status": "",
+      "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+    },
+    "after_tests": {
+      "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+      "status": "",
+      "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+    },
+    "maintenance_patch": {
+      "bytes": 0,
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/maintenance.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "original_entry": {
+    "request_blob": "89a4360e2c074f5c234b283b2f089692bfe2c93a",
+    "config_blob": "0e56666a45f47b3604c400f276678ca10d104a35",
+    "admission_blob": "ec15bc8e290fbd0106c569343e02597fb9e78cfc",
+    "preparation_review_blob": "121f52333da5b6702b44cdd4e0443b2462b2aca4",
+    "harness_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "harness_bytes": 50167,
+    "harness_sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "expected_root_parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+      "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+      "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+      "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+      "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+      "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+      "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    ],
+    "overall_timeout_seconds": 27000,
+    "full_caller_timeout_seconds": 3600,
+    "retries": 0
+  },
+  "terminal": {
+    "session_id": "dpty-1222ac4070757c4e43621722572e2a145cccf6eccddb21224d925e3791ae6268",
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 17881,
+      "bytes_stored": 17881,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794474997529,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 77311,
+      "pid": 77312,
+      "state": "exited"
+    },
+    "complete_raw_bytes": 17881,
+    "complete_raw_sha256": "0f410b1113463a79060aa7f27880403ca1e9e0bde69624cdd4fcfe247cd0411f",
+    "reads": [
+      {
+        "attempt": 1,
+        "offset": 0,
+        "next_offset": 3139,
+        "bytes": 3139,
+        "chunk_sha256": "2da4019d22b0499cfca64f4d2fff2cca2554d3297079dd99c88a25c6b07c7870",
+        "output_complete": false
+      },
+      {
+        "attempt": 2,
+        "offset": 3139,
+        "next_offset": 6421,
+        "bytes": 3282,
+        "chunk_sha256": "0ce8b57900fd6b198aa7a454a9c6cf32d60d702992aa3f2a4772ae18defb2619",
+        "output_complete": false
+      },
+      {
+        "attempt": 3,
+        "offset": 6421,
+        "next_offset": 6421,
+        "bytes": 0,
+        "chunk_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output_complete": false
+      },
+      {
+        "attempt": 4,
+        "result": "tool-error-retained",
+        "cursor_advanced": false
+      },
+      {
+        "attempt": 5,
+        "offset": 6421,
+        "next_offset": 6421,
+        "bytes": 0,
+        "chunk_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output_complete": false
+      },
+      {
+        "attempt": 6,
+        "offset": 6421,
+        "next_offset": 6421,
+        "bytes": 0,
+        "chunk_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output_complete": false
+      },
+      {
+        "attempt": 7,
+        "offset": 6421,
+        "next_offset": 6421,
+        "bytes": 0,
+        "chunk_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output_complete": false
+      },
+      {
+        "attempt": 8,
+        "offset": 6421,
+        "next_offset": 6845,
+        "bytes": 424,
+        "chunk_sha256": "3d09712c1a0bc47ac3fdf135546560dd6ce60db5b50a563205943c6fc88ddfa5",
+        "output_complete": false
+      },
+      {
+        "attempt": 9,
+        "offset": 6845,
+        "next_offset": 17881,
+        "bytes": 11036,
+        "chunk_sha256": "ffb1738694ae1832870d803208cd1b181d96b04db7a28df4068f82a084016a84",
+        "output_complete": true
+      }
+    ]
+  },
+  "original_counts": {
+    "ordinary": {
+      "errors": 0,
+      "executed": 1950,
+      "failed": 0,
+      "passed": 1950,
+      "skipped": 0,
+      "total": 1950
+    },
+    "root": {
+      "errors": 0,
+      "executed": 17,
+      "failed": 1,
+      "passed": 16,
+      "skipped": 0,
+      "total": 17
+    }
+  },
+  "exact_root_parents_from_original_log": [
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.151",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.315",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.007",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.008",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.007",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.013",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.010",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.009",
+      "package": "codex-hepta-agentd",
+      "parent": "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.026",
+      "package": "codex-hepta-agentd",
+      "parent": "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd"
+    },
+    {
+      "status": "FAIL",
+      "elapsed_seconds_text": "16.005",
+      "package": "codex-hepta-agentd",
+      "parent": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "3.887",
+      "package": "codex-hepta-agentd",
+      "parent": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.029",
+      "package": "codex-hepta-agentd",
+      "parent": "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.010",
+      "package": "codex-hepta-agentd",
+      "parent": "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.004",
+      "package": "codex-hepta-agentd",
+      "parent": "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.004",
+      "package": "codex-hepta-agentd",
+      "parent": "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.102",
+      "package": "codex-hepta-contracts",
+      "parent": "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files"
+    },
+    {
+      "status": "PASS",
+      "elapsed_seconds_text": "0.062",
+      "package": "codex-hepta-contracts",
+      "parent": "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming"
+    }
+  ],
+  "errors": [
+    "root original JUnit collection failed",
+    "root original test execution failed"
+  ],
+  "original_harness_gates": [
+    {
+      "name": "fmt-before",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 2.868367316899821,
+      "log": {
+        "bytes": 1320,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/fmt-before.launch.log",
+        "sha256": "f2648837529f1b9ef67dfa50db3448e931b10ab852578cfad71b06eef1772f6f"
+      }
+    },
+    {
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 243.811158870114,
+      "log": {
+        "bytes": 89836,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/fix-seven-crates.launch.log",
+        "sha256": "b9b2a2ead6741c5f6c9ad8d4426e60e14cbc1793a73e79e7197af5ca180cc432"
+      }
+    },
+    {
+      "name": "fmt-after",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 2.8682424889411777,
+      "log": {
+        "bytes": 1320,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/fmt-after.launch.log",
+        "sha256": "0aa6084edfe132fe6955f1f33b9d97a3cd5f5608b1b2969a7f20ed7aca3c616b"
+      }
+    },
+    {
+      "name": "bins-check",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 74.48698524199426,
+      "log": {
+        "bytes": 40899,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/bins-check.launch.log",
+        "sha256": "9968c0c122b58ccd5cbd40c3f47c2dc308e0031d3e655b5b88bdbc3e764df7e8"
+      }
+    },
+    {
+      "name": "qa-b4-no-bypass",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 16.769348584813997,
+      "log": {
+        "bytes": 45149,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/qa-b4-no-bypass.launch.log",
+        "sha256": "218ce0ec632e0ee5fd63dbd6af137c32a9632178b61bacd756dc33920b4c02d0"
+      }
+    },
+    {
+      "name": "qa-fault-matrix",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11489069485105574,
+      "log": {
+        "bytes": 2165,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/qa-fault-matrix.launch.log",
+        "sha256": "2d7993f77d6c43d9f7a022939cdc62c63ef5ddf1ecf0182a4d3081676c29a4ea"
+      }
+    },
+    {
+      "name": "qa-performance",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11438635201193392,
+      "log": {
+        "bytes": 2153,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/qa-performance.launch.log",
+        "sha256": "cf3449999f5ffeb35f219ede6161148f0cbf7b4e3299e409a44b1f5c6ab2e9c4"
+      }
+    },
+    {
+      "name": "qa-vertical-slice",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11432353500276804,
+      "log": {
+        "bytes": 2167,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/qa-vertical-slice.launch.log",
+        "sha256": "55b9b1867d0de06277916e2d5e2f1d315e4c7cfb040ac1469c46d4147312f145"
+      }
+    },
+    {
+      "name": "caller-self-test",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11451801820658147,
+      "log": {
+        "bytes": 1367,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/caller-self-test.launch.log",
+        "sha256": "0afd571207a04e2b23564acae640d98fa285ca0e5bf2c3474acc49cb176406ea"
+      }
+    },
+    {
+      "name": "caller-full-verify",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 1722.0266073630191,
+      "log": {
+        "bytes": 234475,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/caller-full-verify.launch.log",
+        "sha256": "352e4f5b8d311699bb5342f185f3355227f0177844e6315fd9d041e1a2cc34de"
+      }
+    },
+    {
+      "name": "same-source-helper-build",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 273.2908831620589,
+      "log": {
+        "bytes": 1688,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/same-source-helper-build.launch.log",
+        "sha256": "c9090dfeef36e040c9d3717ef0c719ac45742c25c0d69d5301bc1ce30ad58488"
+      }
+    },
+    {
+      "name": "same-source-helper-preverify",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.16456459020264447,
+      "log": {
+        "bytes": 2680,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/same-source-helper-preverify.launch.log",
+        "sha256": "0139f58cfffb9f33cc4e942f2c7acdde57a327b4b99b748a0ea75728300a9d65"
+      }
+    },
+    {
+      "name": "ordinary",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 525.1999273821712,
+      "log": {
+        "bytes": 1285511,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/ordinary.launch.log",
+        "sha256": "819d683d08a39fa397ca7948745790889b0a0be8c78948f31e34f622620c9756"
+      }
+    },
+    {
+      "name": "root",
+      "state": "completed",
+      "exit_code": 100,
+      "timed_out": false,
+      "elapsed_seconds": 21.497854731045663,
+      "log": {
+        "bytes": 97856,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/root.launch.log",
+        "sha256": "9328f71dcb084c8fcc94ff08ad266813929d4a537f1a60441539104a4a3715c0"
+      }
+    },
+    {
+      "name": "same-source-helper-postverify",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.16491659195162356,
+      "log": {
+        "bytes": 2681,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/same-source-helper-postverify.launch.log",
+        "sha256": "b5fdda42ffb1d69c2987739a143d621bf083733d9b729abbfe400063f9819d7c"
+      }
+    }
+  ],
+  "raw_evidence": {
+    "progress": {
+      "bytes": 88300,
+      "sha256": "e488acf21a3973599abeb5f625637f65fa22887b4a4d1a4a0b24af279469aed0",
+      "version": "66306:75545830:88300:1794478114118948734:1794478114119948694",
+      "blob": "70ecd7aa1f6a72492eaea5181c52d21f1fd68a74",
+      "independently_read_and_hash_verified": true
+    },
+    "root_launch": {
+      "bytes": 97856,
+      "sha256": "9328f71dcb084c8fcc94ff08ad266813929d4a537f1a60441539104a4a3715c0",
+      "version": "66306:75545803:97856:1794478112101029830:1794478112828000612",
+      "blob": "d9770b93f5fbf76c7bfde755fdd3d8898622f9da",
+      "independently_read_and_hash_verified": true
+    },
+    "ordinary_execution": {
+      "sha": "c3f4d0b8889c3d939503725762641b1ff2798ec8",
+      "bytes": 1868,
+      "sha256": "42b0d48b05aba441a788f131b9445d5a348b6b53b3e64c5dc4e9c5986e25bb04"
+    },
+    "root_execution": {
+      "sha": "a8976f01642116ca071b5d18b8212367c9acb9df",
+      "bytes": 3963,
+      "sha256": "859ac506c9445327fd2ed8e39ab0a54a0bfcbaf6e5d4e66d32badf237ae10be6"
+    },
+    "root_uid": {
+      "sha": "979ee4286ddaef2955caa87538e6887ab6280ad9",
+      "bytes": 46,
+      "sha256": "5de8883f2ca652d44c812ea8db1c4fba02ffb7d75b16f610d6fc2140ef3750fe"
+    },
+    "root_original_ownership": {
+      "sha": "5cc1c0e53497c59ac0d3188046ea6dd3b2fc192f",
+      "bytes": 4120,
+      "sha256": "a4ebc152520d73448cf3d42fb5749f5196165fc4aa694aba296d646589db7bf0"
+    },
+    "helper_manifest": {
+      "sha": "f906d5f4a6943ace9c9c657fe4a3f192b23c1e0f",
+      "bytes": 1994,
+      "sha256": "624cf228d30d27f8efc5a044945a469ebfc4c8debe2d45432e852dd9705b909e"
+    },
+    "root_junit_collector": {
+      "sha": "63a784a0c1e520ddbdbcc113b4f7a4c77bdbefa2",
+      "bytes": 3198,
+      "sha256": "29ad31fe35dd07ec3d49634c2ffc51d9d698e9b042afbb19f0ea45d7fb2fdab4"
+    }
+  },
+  "root_junit_original_collector_record": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-contracts",
+      "--lib",
+      "--run-ignored",
+      "only",
+      "-E",
+      "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files) | test(=authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness) | test(=root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec) | test(=root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights) | test(=authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights) | test(=final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming) | test(=final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files) | test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current) | test(=neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery)",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "errors": 0,
+    "execution_file": "root.execution.json",
+    "execution_sha256": "859ac506c9445327fd2ed8e39ab0a54a0bfcbaf6e5d4e66d32badf237ae10be6",
+    "failures": 1,
+    "job": null,
+    "junit_bytes": 37975,
+    "junit_mtime_ns": "1794478112053031759",
+    "junit_sha256": "61da62b0b860628791822956900361b7b62b2dc5e98f1d82910f88ce553fba6b",
+    "kind": "native-junit-collection",
+    "native_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source/codex-rs/target/nextest/local/junit.xml",
+    "run_attempt": null,
+    "run_id": null,
+    "schema_version": 1,
+    "skipped_in_xml": 0,
+    "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "source_tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59",
+    "status": "retained-failed",
+    "total_testcases": 17
+  },
+  "root_junit_unsafe_integer_lexemes": [
+    {
+      "raw_offset": 2666,
+      "exact_decimal": "1794478112053031759"
+    }
+  ],
+  "root_uid_proof": {
+    "uid": 0,
+    "euid": 0,
+    "gid": 0,
+    "pid": 271631
+  },
+  "original_root_record_ownership": {
+    "value": {
+      "actual_euid": 0,
+      "actual_uid": 0,
+      "bytes": 3963,
+      "file_identity": [
+        66306,
+        75545807,
+        33152,
+        0,
+        0,
+        1,
+        3963,
+        "1794478112100814534",
+        "1794478112101029830"
+      ],
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/records/root.execution.json",
+      "record": {
+        "after": {
+          "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+          "dirty": false,
+          "parents": [
+            "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+          ],
+          "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+          "dirty": false,
+          "parents": [
+            "3c5c0d8e8323dc90709a0efb2f3bcafaac256439"
+          ],
+          "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+        },
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-contracts",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "-E",
+          "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files) | test(=authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness) | test(=root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec) | test(=root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights) | test(=authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights) | test(=final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming) | test(=final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files) | test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current) | test(=neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery)",
+          "--test-threads",
+          "1",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final"
+        ],
+        "command_exit_code": 100,
+        "elapsed_seconds": 21.408112082863227,
+        "error": "required tests were not observed passing",
+        "exit_code": 100,
+        "finished_at": "2026-11-12T10:08:32.100457+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 94087,
+        "log_file": "root.execution.json.053f6d5f8ec5497181b11f8a9473ba59.log",
+        "log_sha256": "1c3c47c1eee8140a746fea2e85434ed5945ee4cf108ffc5b09f55f4735f0d04e",
+        "minimum_tests": 17,
+        "observed_failed_tests": 1,
+        "observed_passed_tests": 16,
+        "output_limit_exceeded": false,
+        "returncode": 100,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+        "started_at": "2026-11-12T10:08:10.691466+00:00",
+        "status": "failed",
+        "tested_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source"
+      },
+      "sha256": "859ac506c9445327fd2ed8e39ab0a54a0bfcbaf6e5d4e66d32badf237ae10be6"
+    },
+    "exact_integer_tokens": [
+      {
+        "raw_offset": 108,
+        "exact_decimal": "1794478112100814534"
+      },
+      {
+        "raw_offset": 129,
+        "exact_decimal": "1794478112101029830"
+      }
+    ]
+  },
+  "failure": {
+    "parent": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+    "actual_phase": "Publish, before STABLE; this run did not reach the Recover phase",
+    "original_diagnostics": [
+      "    ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-retained-final-use error=Unavailable",
+      "    ROOT_INITIAL_FAILURE stage=actual-feature-construction error=Invalid(\"Unavailable\")",
+      "    Error: initial child Publish: publishing original Feature CURRENT",
+      "    Error: initial parent Publish, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: PeerDenied })"
+    ],
+    "observed_leaf": "LiveGenerationCurrent::check_live -> FinalUseAuthority::verify_retained_use returned FinalUseError::Unavailable",
+    "internal_cause": "Not established. Current-source static review leaves poisoned/failed owner state, retained store owner revalidation, or external frontier load as possible branches. No direct grant-time-window/current-clock check occurs inside verify_retained_use.",
+    "no_repair_claim": true,
+    "no_effect_replay": true
+  },
+  "cleanup": [
+    {
+      "name": "unmount-witness-bind",
+      "status": "passed"
+    },
+    {
+      "name": "unmount-bind",
+      "status": "passed"
+    },
+    {
+      "name": "remove-owned-fixture",
+      "status": "passed"
+    },
+    {
+      "name": "record-ownership",
+      "status": "passed"
+    },
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "reference_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "external_tools_before": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "external_tools_after": {
+    "/home/qq/.cargo/bin/cargo": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/cargo",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/.cargo/bin/rustc": {
+      "bytes": 21347088,
+      "path": "/home/qq/.cargo/bin/rustc",
+      "sha256": "b1c8cb14e30889e7e2999e6b69e62d9e9b9ffc0f4df8180564d306d9680e6c55"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest": {
+      "bytes": 24038232,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just": {
+      "bytes": 5452040,
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "/usr/bin/chown": {
+      "bytes": 11807104,
+      "path": "/usr/bin/chown",
+      "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02"
+    },
+    "/usr/bin/mount": {
+      "bytes": 51664,
+      "path": "/usr/bin/mount",
+      "sha256": "66a7104ffb87e469ee3aeb00baa8c73093d765a66242b1d2eb8d3e5c37dcc627"
+    },
+    "/usr/bin/mountpoint": {
+      "bytes": 18896,
+      "path": "/usr/bin/mountpoint",
+      "sha256": "2e2642cd37a024226aa05c49787b126b4270bab50e0adc1fe912542d3009af0e"
+    },
+    "/usr/bin/python3": {
+      "bytes": 7477160,
+      "path": "/usr/bin/python3",
+      "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+    },
+    "/usr/bin/sudo": {
+      "bytes": 1090848,
+      "path": "/usr/bin/sudo",
+      "sha256": "2eb5d31f91a12d75a2a05b54b7f79775e5565898af0b3263414fcabaad922afb"
+    },
+    "/usr/bin/umount": {
+      "bytes": 39376,
+      "path": "/usr/bin/umount",
+      "sha256": "8d160edce6166bcc29f5b7cb8b9cc7b66feb176d6149f597340885fff8db85e3"
+    }
+  },
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "NoUpdate_inferred_from_failure": false
+  },
+  "read_scope_and_limits": {
+    "actual_sources": "Original native files read on ai395; independent Git upload identity and immutable GET were checked for progress and full Root launch.",
+    "full_raw_archive_saved": false,
+    "ordinary_full_stdout_independently_read": false,
+    "full_caller_stdout_independently_read": false,
+    "raw_root_junit_independently_read": false,
+    "original_root_junit_metadata_is_preserved": true,
+    "additional_read_failures": [
+      "smallRead1: MCP request timed out",
+      "smallRead2: MCP request timed out",
+      "rootJunitRead0: MCP request timed out"
+    ],
+    "timeouts_do_not_change_native_result": true,
+    "original_source_and_records_retained": true,
+    "no_predecessor_pass_inheritance": true,
+    "phase_drafts_are_not_in_this_source": true
+  }
+}
