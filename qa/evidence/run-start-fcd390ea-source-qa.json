@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.run-start.reconstructed-source-qa.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "start_unix": 1794473227.5229986,
+  "end_unix": 1794473278.9134185,
+  "exit_code": 0,
+  "before": {
+    "head": "fcd390eaca86a15210add128d76101bf9421bdcc",
+    "tree": "0b4e7d3d380a00327843591985f78286ef5adee3",
+    "status": "",
+    "source_files": 7431,
+    "sha256": "3cd8d979e4e1a36a57af0a599e537e5e7132bed8209d6ac28914a7f45787cb2a"
+  },
+  "after": {
+    "head": "fcd390eaca86a15210add128d76101bf9421bdcc",
+    "tree": "0b4e7d3d380a00327843591985f78286ef5adee3",
+    "status": "",
+    "source_files": 7431,
+    "sha256": "3cd8d979e4e1a36a57af0a599e537e5e7132bed8209d6ac28914a7f45787cb2a"
+  },
+  "source_unchanged": true,
+  "tests": 245,
+  "reconstructed_from": "1b279f1cda6cf4816d56751fa29ccf91de7ed0e2",
+  "does_not_inherit_68e3_qualification": true,
+  "log_bytes": 52283,
+  "log_sha256": "4701a7499ce5d3574b85b24aca914d02dd639dc77e1a9c4ac94e6db6b96b0a08",
+  "native_executed": false
+}
