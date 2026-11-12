@@ -1,3 +1,15 @@
+# 原始终态证据与最新增量
+
+截至 2026-11-12 16:08:41 UTC，最新 CURRENT 已发布源码为 `9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca`，它自己的 CI 仍待观察。完整当前状态见 [blocker 清单](../../BLOCKER_CLOSURE_NEXT.md) 与 [机器索引](../../TERMINAL_EVIDENCE.json)。
+
+本次独立取回 1631 的完整 1,733 方法 JUnit、clean before/final、同源 helper 原件及 2,142,662 B 完整 caller；核对 1,697 PASS、36 FAILED，31 次 SIGABRT，0 跳过／重试。其完整 native、caller 与后续两个源码失败、Clippy／release 共六份日志已从 Git 重组核原 SHA。0869 的 Linux Clippy/release 成功，320533 的原 Rustfmt 成功；各自保留 exact source，不能转给当前 head。全部 12 个完整科学／权限门仍 OPEN，owner_decision=null，HOLD。
+
+[本次逐字与完整 XML 核验](GIT_READBACK_1609.json)。未将未另行归档的整个 1631 ZIP／inventory 计作已归档，也未用原 artifact 的实际读取来改写启动 registry ACK UNKNOWN。
+
+## 07a 检查点的原说明
+
+以下保留 07a 已发布说明作为历史观察；其中“当前”、未完成和进行中状态以以上最新索引为准。原始独立副本位于 [07a README](../history-20261112/TERMINAL_README-07a.md)。
+
 # Original terminal evidence, 2026-11-12
 
 This archive reconciles the original run-v2 identity. It dispatches no replacement campaign and preserves the final launcher FAILED record. All 12 campaign stages succeeded, and the 576 planned factorial executions completed.
