@@ -1,0 +1,378 @@
+{
+  "before": {
+    "head": "e4c863c06b0bd3478e52dafb217878b55feaed71",
+    "tree": "20c40aa7ac96c5db3bee9bfac7f90b3ee2e91288",
+    "status": ""
+  },
+  "scope": "changed and new boundaries over full actual product source index",
+  "native": "unrun",
+  "rows": [
+    {
+      "id": "root_learning_original_purpose_receive",
+      "result": {
+        "id": "root_learning_original_purpose_receive",
+        "symbol": "receive_root_learning_handoff",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_learning_original_config_hold",
+      "result": {
+        "id": "root_learning_original_config_hold",
+        "symbol": "AgentdConfig::with_root_learning_inputs",
+        "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)with_root_learning_inputs\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_q24_factory_purpose_receive",
+      "result": {
+        "id": "root_q24_factory_purpose_receive",
+        "symbol": "receive_root_q24_model_factory_handoff",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs"
+        ]
+      }
+    },
+    {
+      "id": "learning_original_q24_stage_prepared",
+      "result": {
+        "id": "learning_original_q24_stage_prepared",
+        "symbol": "OriginalCellQ24LearningStageOwnersV1::prepared",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_retained_source.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_original_q24_require_prepared_q24",
+      "result": {
+        "id": "root_original_q24_require_prepared_q24",
+        "symbol": "AgentdRootLearningInputsV1::require_prepared_q24",
+        "callPattern": null,
+        "receiverType": "AgentdRootLearningInputsV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/config_root_learning.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs"
+        ]
+      }
+    },
+    {
+      "id": "production_original_q24_assemble",
+      "result": {
+        "id": "production_original_q24_assemble",
+        "symbol": "AgentdProductionLaunch::assemble_q24_learning",
+        "callPattern": null,
+        "receiverType": "AgentdProductionLaunch",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs",
+          "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_successor_launch_prepare",
+      "result": {
+        "id": "q24_successor_launch_prepare",
+        "symbol": "AgentdProductionLaunch::prepare_original_q24_successor",
+        "callPattern": "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)prepare_original_q24_successor\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "ordinary_initial_q24_configuration",
+      "result": {
+        "id": "ordinary_initial_q24_configuration",
+        "symbol": "AgentdConfig::require_original_initial_q24_configuration",
+        "callPattern": null,
+        "receiverType": "AgentdConfig",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_initial_q24.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_historical_current_trust_capsule",
+      "result": {
+        "id": "root_historical_current_trust_capsule",
+        "symbol": "OriginalHistoricalTaskReadReceiptV1::activate_current_learning_trust",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_original_historical_preparation",
+      "result": {
+        "id": "q24_original_historical_preparation",
+        "symbol": "CellQ24DatasetFreezePreparationV1::capture_historical",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_post_a_learning_install_original",
+      "result": {
+        "id": "root_post_a_learning_install_original",
+        "symbol": "OriginalHistoricalTaskReadReceiptV1::install_original_post_a_learning",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_post_a_learning_scope_ack",
+      "result": {
+        "id": "root_post_a_learning_scope_ack",
+        "symbol": "OriginalPostAFrozenLearningAckV1::require_prepared_scope",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs"
+        ]
+      }
+    },
+    {
+      "id": "post_a_original_stage_authorities",
+      "result": {
+        "id": "post_a_original_stage_authorities",
+        "symbol": "OriginalHistoricalLearningTrustV1::original_stage_authorities",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "post_a_original_freeze_files",
+      "result": {
+        "id": "post_a_original_freeze_files",
+        "symbol": "SigningFilesData::freeze_original",
+        "callPattern": null,
+        "receiverType": "SigningFilesData",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "post_a_original_stage_files",
+      "result": {
+        "id": "post_a_original_stage_files",
+        "symbol": "StageFilesData::into_original_inputs",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_learning_original_handoff_until",
+      "result": {
+        "id": "root_learning_original_handoff_until",
+        "symbol": "RootLearningHandoffV1::connect_until",
+        "callPattern": null,
+        "receiverType": "RootLearningHandoffV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs"
+        ]
+      }
+    },
+    {
+      "id": "root_q24_factory_original_handoff_until",
+      "result": {
+        "id": "root_q24_factory_original_handoff_until",
+        "symbol": "RootQ24ModelFactoryHandoffV1::connect_until",
+        "callPattern": null,
+        "receiverType": "RootQ24ModelFactoryHandoffV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_capture",
+      "result": {
+        "id": "q24_historical_delivery_capture",
+        "symbol": "RegisteredHistoricalLearningSourceV1::capture_original_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_current",
+      "result": {
+        "id": "q24_historical_delivery_current",
+        "symbol": "RegisteredHistoricalLearningSourceV1::require_current_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_same_prepared",
+      "result": {
+        "id": "q24_historical_delivery_same_prepared",
+        "symbol": "RegisteredHistoricalLearningSourceV1::require_prepared_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_install",
+      "result": {
+        "id": "q24_historical_delivery_install",
+        "symbol": "LearningIterationRuntimeBootstrapV1::with_original_historical_source",
+        "callPattern": null,
+        "receiverType": "LearningIterationRuntimeBootstrapV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_dataset_receipt",
+      "result": {
+        "id": "q24_historical_delivery_dataset_receipt",
+        "symbol": "CellQ24TrainingBatchV1::require_original_historical_dataset_receipt",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingBatchV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_prepared",
+      "result": {
+        "id": "q24_historical_delivery_prepared",
+        "symbol": "CellQ24PreparedLearningV1::require_original_historical_source",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_async_claim",
+      "result": {
+        "id": "q24_historical_delivery_async_claim",
+        "symbol": "LearningOwnerJournalV1::commit_original_historical_delivery",
+        "callPattern": null,
+        "receiverType": "LearningOwnerJournalV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      }
+    },
+    {
+      "id": "ordinary_post_a_q24_assembly",
+      "failure": "ordinary_post_a_q24_assembly: caller set mismatch; missing=['codex-rs/hepta-agentd/src/main.rs'], unexpected=[]"
+    },
+    {
+      "id": "ordinary_post_a_deferred_handoffs",
+      "result": {
+        "id": "ordinary_post_a_deferred_handoffs",
+        "symbol": "PendingHandoffs::defer_for_original_profile",
+        "callPattern": null,
+        "receiverType": "PendingHandoffs",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+        ]
+      }
+    },
+    {
+      "id": "ordinary_post_a_frozen_handoff_receive",
+      "result": {
+        "id": "ordinary_post_a_frozen_handoff_receive",
+        "symbol": "PendingHandoffs::receive_original_after_ack",
+        "callPattern": null,
+        "receiverType": "PendingHandoffs",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      }
+    }
+  ],
+  "files": 6624,
+  "after": {
+    "head": "e4c863c06b0bd3478e52dafb217878b55feaed71",
+    "tree": "20c40aa7ac96c5db3bee9bfac7f90b3ee2e91288",
+    "status": ""
+  },
+  "seconds": 139.7519765500001,
+  "passed": false
+}
