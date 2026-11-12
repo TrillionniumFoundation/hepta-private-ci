@@ -1,4 +1,4 @@
-//! Hold the three original anonymous datagrams through historical preparation.
+//! Hold the four original anonymous datagrams through historical preparation.
 //! Only the actual Root late-install acknowledgement permits their consumption.
 
 use super::*;
@@ -6,6 +6,7 @@ use super::*;
 pub(in crate::production_launcher) struct PendingHandoffs {
     pub(super) learning: UnixDatagram,
     pub(super) model: UnixDatagram,
+    pub(super) independent_b: UnixDatagram,
     pub(super) publication: UnixDatagram,
 }
 
@@ -14,6 +15,7 @@ impl PendingHandoffs {
         primary: &PrimaryInputs,
         learning: &mut Option<UnixDatagram>,
         model: &mut Option<UnixDatagram>,
+        independent_b: &mut Option<UnixDatagram>,
         publication: &mut Option<UnixDatagram>,
     ) -> Result<Option<Self>, AgentdError> {
         if !matches!(primary, PrimaryInputs::PostAQ24 { .. }) {
@@ -25,12 +27,16 @@ impl PendingHandoffs {
         let model = model
             .take()
             .ok_or_else(|| refused("post-A model handoff absent"))?;
+        let independent_b = independent_b
+            .take()
+            .ok_or_else(|| refused("post-A independent B handoff absent"))?;
         let publication = publication
             .take()
             .ok_or_else(|| refused("post-A publication handoff absent"))?;
         Ok(Some(Self {
             learning,
             model,
+            independent_b,
             publication,
         }))
     }
@@ -47,6 +53,7 @@ impl PendingHandoffs {
             crate::AgentdRootLearningInputsV1,
             crate::AgentdRootQ24ModelFactoryV1,
             crate::RootGenerationPublicationHandoffV1,
+            crate::RootIndependentBEvaluationHandoffV1,
         ),
         AgentdError,
     > {
@@ -91,6 +98,12 @@ impl PendingHandoffs {
         )?;
         OriginalPostAFrozenLearningAckV1::require_prepared_scope(ack, prepared.scope())?;
         post_a_remaining(end)?;
-        Ok((learning, model, publication))
+        let independent_b = crate::receive_root_independent_b_evaluation_handoff(
+            self.independent_b,
+            post_a_remaining(end)?.min(Duration::from_millis(500)),
+        )?;
+        OriginalPostAFrozenLearningAckV1::require_prepared_scope(ack, prepared.scope())?;
+        post_a_remaining(end)?;
+        Ok((learning, model, publication, independent_b))
     }
 }

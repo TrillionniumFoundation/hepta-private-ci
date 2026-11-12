@@ -20,13 +20,14 @@ mod initial_q24;
 #[path = "production_post_a_q24_cli.rs"]
 mod post_a_q24;
 
-const FLAGS: [&str; 25] = [
+const FLAGS: [&str; 26] = [
     "--root-production-profile",
     "--q24-initial-deployment-fd",
     "--q24-post-a-deployment-fd",
     "--root-production-handoff-fd",
     "--root-learning-handoff-fd",
     "--root-q24-model-handoff-fd",
+    "--root-independent-b-evaluation-handoff-fd",
     "--root-generation-publication-handoff-fd",
     "--root-generation-initial-handoff-fd",
     "--root-historical-task-read-handoff-fd",
@@ -61,6 +62,7 @@ pub(super) struct LaunchInputs {
     pub(super) handoff: UnixDatagram,
     pub(super) learning_handoff: Option<UnixDatagram>,
     pub(super) q24_model_handoff: Option<UnixDatagram>,
+    pub(super) independent_b_handoff: Option<UnixDatagram>,
     pub(super) publication_handoff: Option<UnixDatagram>,
     pub(super) initial_handoff: Option<UnixDatagram>,
     pub(super) historical_handoff: Option<UnixDatagram>,
@@ -182,6 +184,15 @@ pub(super) fn parse(
             "original Q24 Model factory requires its learning handoff",
         ));
     }
+    let independent_b_handoff = selected
+        .remove("--root-independent-b-evaluation-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if independent_b_handoff.is_some() && profile != Profile::PostAQ24 {
+        return Err(invalid(
+            "independent B requires the explicit original post-A profile",
+        ));
+    }
     let publication_handoff = selected
         .remove("--root-generation-publication-handoff-fd")
         .map(descriptor_number)
@@ -283,6 +294,7 @@ pub(super) fn parse(
             learning_handoff,
             q24_model_handoff,
             publication_handoff,
+            independent_b_handoff,
             notes,
             notes_deployment,
             notes_listener,
@@ -301,6 +313,7 @@ pub(super) fn parse(
             learning_handoff,
             q24_model_handoff,
             publication_handoff,
+            independent_b_handoff,
         ],
         &[
             initial_deployment,
@@ -333,6 +346,7 @@ pub(super) fn parse(
         learning_handoff,
         q24_model_handoff,
         publication_handoff,
+        independent_b_handoff,
         initial_handoff,
         historical_handoff,
         initial_deployment,
@@ -375,6 +389,10 @@ pub(super) fn parse(
         .transpose()?
         .map(UnixDatagram::from);
     let q24_model_handoff = q24_model_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let independent_b_handoff = independent_b_handoff
         .map(take_descriptor)
         .transpose()?
         .map(UnixDatagram::from);
@@ -447,6 +465,7 @@ pub(super) fn parse(
             learning_handoff,
             q24_model_handoff,
             publication_handoff,
+            independent_b_handoff,
             initial_handoff,
             historical_handoff,
             uid,

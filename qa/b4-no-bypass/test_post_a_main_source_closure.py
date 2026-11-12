@@ -32,16 +32,16 @@ class PostAMainSourceTests(unittest.TestCase):
     def test_profile_requires_original_handoffs_and_authbus_before_fd_ownership(self):
         self.check_markers(AGENT + "production_post_a_q24_cli.rs", "fn validate(", (
             "profile != Profile::PostAQ24", "deployment.is_some()", "deployment.is_none()",
-            "historical_learning_model_publication\n            .iter()\n            .any(Option::is_none)",
+            "historical_learning_model_publication_b\n            .iter()\n            .any(Option::is_none)",
             "incompatible.iter().any(Option::is_some)",
             "found.next().is_none_or(|pair| pair[1].is_empty()) || found.next().is_some()"))
         self.check_markers(AGENT + "production_launcher_inputs.rs", "fn parse(", (
             "initial_q24::validate(", "post_a_q24::validate(",
-            "&[\n            historical_handoff,\n            learning_handoff,\n            q24_model_handoff,\n            publication_handoff,\n        ]",
+            "&[\n            historical_handoff,\n            learning_handoff,\n            q24_model_handoff,\n            publication_handoff,\n            independent_b_handoff,\n        ]",
             "numbers.iter().copied().collect::<BTreeSet<_>>().len() != numbers.len()",
             "let handoff = UnixDatagram::from(take_descriptor(handoff)?)"))
 
-    def test_three_original_datagrams_are_deferred_in_both_actual_startups(self):
+    def test_four_original_datagrams_are_deferred_in_both_actual_startups(self):
         self.check_markers(HANDOFF, "fn defer_for_original_profile(", (
             "!matches!(primary, PrimaryInputs::PostAQ24 { .. })", "return Ok(None)",
             "let learning = learning\n            .take()", "let model = model\n            .take()"))
@@ -69,14 +69,14 @@ class PostAMainSourceTests(unittest.TestCase):
                                 "self.require_original_post_a_context(&identity)?", occurrence)
 
     def test_late_handoffs_keep_exact_scope_and_absolute_end_on_both_sides(self):
-        for occurrence in (0, 1, 2):
+        for occurrence in (0, 1, 2, 3):
             self.reject_removal(HANDOFF, "fn receive_original_after_ack(",
                                 "OriginalPostAFrozenLearningAckV1::require_prepared_scope(ack, prepared.scope())?", occurrence)
         self.check_markers(HANDOFF, "fn receive_original_after_ack(", (
             "crate::receive_root_learning_handoff(", "crate::RootLearningHandoffV1::connect_until(",
             "learning.require_prepared_q24(prepared)?", "crate::receive_root_q24_model_factory_handoff(",
             "crate::RootQ24ModelFactoryHandoffV1::connect_until("))
-        for occurrence in range(5):
+        for occurrence in range(6):
             self.reject_removal(HANDOFF, "fn receive_original_after_ack(",
                                 "post_a_remaining(end)?.min(Duration::from_millis(500))", occurrence)
 
@@ -101,12 +101,12 @@ class PostAMainSourceTests(unittest.TestCase):
     def test_current_offer_is_retained_without_connecting_before_real_b(self):
         self.check_markers(HANDOFF, "fn receive_original_after_ack(", (
             "crate::receive_root_generation_publication_handoff(", "self.publication,",
-            "Ok((learning, model, publication))"))
+            "Ok((learning, model, publication, independent_b))"))
         self.check_markers(MAIN, "fn assemble_original_post_a_q24(", (
             "self.publication = Some(publication)",
             "crate::RootGenerationPublicationHandoffV1::retain_original_preparation(",
             "self.take_generation_publication_handoff()?",
-            "self.take_generation_publication_connection()?,\n            &prepared,\n            self.session_end,"))
+            "publication_connection,\n            &prepared,\n            self.session_end,"))
         self.check_markers(AGENT + "root_generation_publication_inputs.rs", "fn connect_until(", (
             "timeout.min(publication_remaining(end)?)",
             "OriginalPublicationStream::from_stream_until(", "timeout,\n            end,"))
