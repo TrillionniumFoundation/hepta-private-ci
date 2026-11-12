@@ -1,0 +1,235 @@
+{
+  "schema": "learn.original-archive-only.restoration-contract.v1",
+  "status": "prepared-only; no H dispatch, filesystem creation, download, Python execution, native test or ordinary acceptance is claimed",
+  "fixed_source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "worktree": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "preserved_worktree": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "preserved_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "preserved_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "must_be_clean_before_and_after": true
+  },
+  "artifacts": {
+    "script": {
+      "sha": "1c5cc24a2009a760be528e3f7d2e840e6a9beddc",
+      "bytes": 14959,
+      "sha256": "d70e488d4458a1008829e754615c7af8186e33823f4d8ec2254c82acfb45e740"
+    },
+    "request": {
+      "sha": "3d192cd51f409dc3d4e86133ea16e7e2644e8078",
+      "bytes": 15920,
+      "sha256": "d6d37158f1340b45e57f2931f0c94092ef9fe5fe71265ad864f4082031a0ca91"
+    },
+    "exact_edits": {
+      "sha": "62cbac6be6221b79d4919dc763ef124faa3a9c3d",
+      "bytes": 27190,
+      "sha256": "2dc521b69959c30fe201daa4fff4bf20d3778cff0c5defaa882fbe70f2c583a4"
+    },
+    "patch": {
+      "sha": "aa95bf3aec216e8c44cdf74d9970e539d90323c7",
+      "bytes": 20795,
+      "sha256": "c78aea352aae389054c348fb8c0912e184f0848381645dab30985e16cf15e830"
+    }
+  },
+  "original_protocol": {
+    "script": {
+      "sha": "29961b07486dcf1cfd2a4875a7b17733ed06547a",
+      "bytes": 6956,
+      "sha256": "5df3243e4c4909eead3e574f893e29098e2e09a1c8e8b79a3dc4f64a4a0e4aeb"
+    },
+    "original_frozen_request": "d88ed866b5fc65525d28d97ec083fba966e9f972",
+    "original_official_metadata": "c38bd7566f8944b011dc90b1472961b562a6f980",
+    "source_folder": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/dependency-recovery-441-request",
+    "source_tree": "e0b4bb567db616910a805ff5230ac90045fd17f8",
+    "not_replayed": "The original 441 job requires an absent whole v1 root and creates both target and binding. This job requires the v1 root/private-pins to exist and writes only a new archive; it does not replay or amend the 441 job."
+  },
+  "actual_failure": {
+    "native_preflight_log": {
+      "blob": "a02cbaf22fe79ef3af3fd7978b96e0b72f200fdd",
+      "bytes": 677,
+      "sha256": "79c38dfbe3da9022f5529dd3e45eeb829261f35bbe73c5ca0eb2933181f3cbd8",
+      "meaning": "453 isolated source suite passed; native exited before helper or just test because v2 target was absent"
+    },
+    "v3_creation": {
+      "job": "1a1d0ae00c6-2564-1bb3",
+      "exit_code": 1,
+      "stdout": {
+        "blob": "436d38ed0df15ac406ce0929dc1f245f7b03f5c7",
+        "bytes": 655,
+        "sha256": "38002ba8b3d6704d1e656bf4519675c11796d6f0b7b78bdfcda5733708acb3f5"
+      },
+      "stderr": {
+        "blob": "1397638ca2916f5866f033a9e215cbaf0010de89",
+        "bytes": 624,
+        "sha256": "cdd37fa97dc99c9233512355f8b746c2442494889e919c5ffe0a71b5520cad38"
+      },
+      "meaning": "First archive lstat failed before the first mkdir. This job did not create v3; the binding was not reached in that failed job.",
+      "evidence_commit": "185f56cd80326052496dfc25824d66977cd739cb"
+    }
+  },
+  "actual_probes": [
+    {
+      "key": "homeArchiveProbe",
+      "sha": "a791fbc7559c4b89685a201d0514b4e00d7360fb",
+      "sha256": "1996000f0e920b7a94c73ae34281a85dc53c73eb43a8981f6837a43174968a2c",
+      "bytes": 264,
+      "raw_document_preserved": true,
+      "nanosecond_version_strings_not_reserialized": true
+    },
+    {
+      "key": "homeBindingProbe",
+      "sha": "c98f307f37a9521c68bcf630bc7018370bea105b",
+      "sha256": "60cf45d1987fbeba657a16dc96f25ac9bf1c51e6e04f6fdccce07ceb8efc34ea",
+      "bytes": 645,
+      "raw_document_preserved": true,
+      "nanosecond_version_strings_not_reserialized": true
+    },
+    {
+      "key": "fallbackBindingProbe",
+      "sha": "aafc90907c6294ebf03ce17d7b622227229c73b7",
+      "sha256": "8362fda557fca5bfec4a41fe06bb9138c216cb21158a70b53b81655b2db4ec79",
+      "bytes": 673,
+      "raw_document_preserved": true,
+      "nanosecond_version_strings_not_reserialized": true
+    },
+    {
+      "key": "dataBindingProbe",
+      "sha": "2995ec567d1c1b54e8c8623f9dfb7afdc6c4e959",
+      "sha256": "6339f7cc037798fce1bba6707dadba5fdf4a5be9cbec7d5b1f931a167654d98a",
+      "bytes": 627,
+      "raw_document_preserved": true,
+      "nanosecond_version_strings_not_reserialized": true
+    }
+  ],
+  "download": {
+    "version": "rusty-v8-v150.4.0",
+    "asset_id": 493388485,
+    "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "bytes": 29366352,
+    "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "existing_socks": "127.0.0.1:11080",
+    "connect_timeout_seconds": 20,
+    "max_time_seconds": 300,
+    "max_redirects": 5,
+    "max_filesize": 29366352,
+    "curl_command_assignment_exact_equal_to_original_299": true,
+    "only_effective_output_path_changed_to_new_exclusive_evidence": true,
+    "no_new_domain_proxy_or_tunnel_configuration": true
+  },
+  "hard_preserved_binding": {
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+    "validation": "Complete original file descriptor hash plus lstat/fstat identity before/after. Exact recorded device/inode/UID/GID/nlink/regular-mode/size and decimal mtime/ctime must match. Probe is historical evidence; all conditions are checked again in the actual job.",
+    "writes": false,
+    "copies": false,
+    "chmods": false,
+    "fallbacks": false,
+    "observed_sdk_projection": {
+      "device": 2067,
+      "inode": 40370261,
+      "size": 39884,
+      "mtime_ns": "1794482968901013685",
+      "ctime_ns": "1794482968909814746",
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "mode": "0o100400",
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "raw_version": "2067:40370261:39884:1794482968901013685:1794482968909814746"
+    },
+    "script_exact_stat_facts": {
+      "device": 2067,
+      "inode": 40370261,
+      "mode": "0o100400",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 39884,
+      "mtime_ns": "1794482968901013685",
+      "ctime_ns": "1794482968909814746"
+    }
+  },
+  "preconditions_before_first_mkdir": [
+    "Normal uid/euid 1000; no inherited Git location overrides",
+    "Both fixed worktrees exist canonically, have the expected HEAD/tree and complete clean status",
+    "New evidence output and both current-private and home archives are absent by actual lstat; an error other than FileNotFoundError is not absence",
+    "v1 and v2 target paths are absent by actual lstat; any reappearance is preserved and causes rejection",
+    "/data is the original canonical owned directory device 2067 inode 2 with at least the unchanged 64 GiB free-space requirement",
+    "The v1 root and private-pins directories already exist, canonically owned and mode0700; no creation branch exists",
+    "Current binding has its exact historical identity and full bytes; home/fallback bindings are not consumed",
+    "Original manifest complete hash, source Cargo.lock/resolver hashes and both original artifact records match",
+    "Original 441 and e5c receipts retain their exact complete hashes; they are history, not a claim of a present v3 target",
+    "Existing SOCKS unit has the original single reviewed forwarding address; its complete content is neither exported nor changed"
+  ],
+  "mutation_scope": {
+    "new_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1",
+    "new_output_creation": "exclusive mkdir0700, no parents",
+    "partial": "Inside that new exclusive output; same original curl transfer, full expected length and SHA256 before install",
+    "destination": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "install": "Open the already verified private directory fd with NOFOLLOW; create relative destination with O_CREAT|O_EXCL|O_NOFOLLOW, mode0600; copy from the verified new partial, check full source/destination bytes, fsync, chmod only that newly created fd to0400, then complete path/fd readback. An existing destination is never replaced.",
+    "existing_directory_identity": "device/inode/UID/GID/mode and canonical path are preserved. Directory timestamps may change because this job creates the one authorized archive.",
+    "binding_identity": "Full metadata including mtime/ctime remains equal; binding is only opened read-only.",
+    "forbidden": [
+      "Creating v1/private-pins/target or any v2/v3 root/target",
+      "Writing, replacing, copying or chmodding binding",
+      "Overwriting an existing archive or any preexisting file",
+      "Changing old manifest or 441/e5c/v3-failure receipts",
+      "Deleting failed partials, removing directories, cleanup, reset, clean, force, signals, retries or replays",
+      "Changing production source, dependency version, Cargo.lock, resource budgets, grants, role keys, policies or services"
+    ]
+  },
+  "completion": {
+    "successful_state": "original-archive-restored-binding-preserved-and-full-hash-verified",
+    "requires": [
+      "Original binding and directory identities checked again after copy",
+      "Both fixed clean sources checked again",
+      "Full installed archive hash/size and actual new descriptor/path identity",
+      "Original history and manifest full hashes checked again",
+      "v1/v2 target remain absent"
+    ],
+    "failure": "Keep the new evidence, download partial and any actually-created archive, record failed where the output exists, and rethrow. No removal or overwrite. A partial destination must be reconciled as a failed attempt, not silently reused.",
+    "does_not_establish": [
+      "V3 creation or identity",
+      "A usable native target",
+      "A main201 or Root29 pass",
+      "Any ordinary A/B/C adoption or cold restart"
+    ]
+  },
+  "request_envelope": {
+    "base": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
+    "keys": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "unchanged": [
+      "host",
+      "executable",
+      "cwd",
+      "env",
+      "args prefix -B -c"
+    ],
+    "changes": [
+      "embedded script",
+      "idempotency key"
+    ],
+    "idempotency_key": "learn-ce434-453-original-archive-only-recovery-v1",
+    "new_timeout_or_resource_fields": false
+  },
+  "verification": {
+    "original_to_new_hunks": 10,
+    "removed_lines": 59,
+    "added_lines": 176,
+    "forward_and_inverse_complete_byte_replay": true,
+    "source_artifacts_and_probes_full_api_readback_and_git_hash": true,
+    "python_parse_or_execution": false,
+    "H_execution": false,
+    "Rust_or_native_execution": false
+  },
+  "followup": "Only after a genuine successful archive-only receipt may Root prepare a new separately keyed v3 creation attempt/output preserving the original failed attempt. Native-only remains unbound until an actual successful v3 receipt is fully read and hashed. No CARGO_BUILD_JOBS or other build budget changes are proposed."
+}
