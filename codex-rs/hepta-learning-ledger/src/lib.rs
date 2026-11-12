@@ -124,6 +124,8 @@ pub use retrieval_assignment::retrieval_assignment_event;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
 pub use run_start::DurableRunStartJournal;
+#[cfg(unix)]
+pub use run_start::ReadOnlyRunStartViewV1;
 pub use run_start::RunStartAdmissionBindingV1;
 pub use run_start::RunStartAnchor;
 pub use run_start::RunStartAppendDisposition;
@@ -133,6 +135,10 @@ pub use run_start::RunStartConflictRecordV1;
 pub use run_start::RunStartJournal;
 pub use run_start::RunStartObjectiveDispositionV1;
 pub use run_start::RunStartPublication;
+#[cfg(unix)]
+pub use run_start::RunStartReadOnlyFrameV1;
+#[cfg(unix)]
+pub use run_start::RunStartReadOnlyPublicationV1;
 pub use run_start::RunStartRecordV1;
 pub use run_start::RunStartRecovery;
 pub use run_start::RunStartSnapshotV1;
