@@ -76,6 +76,21 @@ def bind_public_intervention(host, budget, condition, seed):
     return lambda: packet_digest
 
 
+def retain_finalizer_input(host, directory, macro):
+    """Keep exact post-intervention bytes before WRITE for later acquisition audit."""
+    original = host.public_step
+    finalizer_index = SEQUENCES[macro].index("WRITE_TEXT")
+
+    def public_step():
+        raw = original()
+        if raw is not None and len(host.steps) == finalizer_index:
+            with (Path(directory) / "public-input.json").open("xb") as stream:
+                stream.write(raw)
+        return raw
+
+    host.public_step = public_step
+
+
 def collect(plan, output, *, host_class=None):
     validate_plan(plan)
     for pin in plan["source_pins"]:
@@ -176,6 +191,7 @@ def collect(plan, output, *, host_class=None):
                     pair["read_condition"],
                     pair["seed"],
                 )
+                retain_finalizer_input(host, directory, macro)
                 result = host.run()
                 if (
                     result["original_operation_id"] != profile["original_operation_id"]

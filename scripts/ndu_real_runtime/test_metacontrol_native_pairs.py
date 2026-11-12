@@ -5,12 +5,34 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
-from .metacontrol_native_pairs import bind_public_intervention, collect
+from .metacontrol_native_pairs import (
+    bind_public_intervention,
+    collect,
+    retain_finalizer_input,
+)
 from .metacontrol_macro_contract import sha
 from .test_macro_pair_fixtures import FixtureHost, plan
 
 
 class NativePairTests(unittest.TestCase):
+    def test_finalizer_input_keeps_exact_post_intervention_bytes_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp) / "out"
+            host = FixtureHost({}, {}, {}, directory, training=True, exploration=[])
+            bind_public_intervention(host, 10.0, "repeat", 7)
+            retain_finalizer_input(host, directory, "READ")
+            self.assertEqual(json.loads(host.public_step())["remaining_seconds"], 10.0)
+            self.assertFalse((directory / "public-input.json").exists())
+            host.steps = [
+                {"action": {"action": "PREPARE_ROI"}},
+                {"action": {"action": "READ_ROI"}},
+            ]
+            raw = host.public_step()
+            self.assertEqual((directory / "public-input.json").read_bytes(), raw)
+            self.assertLess(json.loads(raw)["remaining_seconds"], 10.0)
+            with self.assertRaises(FileExistsError):
+                host.public_step()
+
     def test_effective_control_plan_uses_actual_default_and_rejects_nonreset(self):
         for fields, allowed in (
             ({}, True),
