@@ -96,7 +96,7 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
         for marker in (
             "expected_intent_digest: Digest32",
             "expected_intent_digest.is_zero()",
-            "let before = self.recover_publication(operation_id)?",
+            "let before = self\n            .recover_publication(operation_id)?",
             "before.checkpoint.operation_id != *operation_id",
             "before.checkpoint.intent_digest != expected_intent_digest",
             "before.checkpoint.authority.grants_any()",
@@ -107,11 +107,11 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
 
     def test_original_checkpoint_and_current_are_physically_read_twice(self):
         for marker in (
-            "let head_before = self.discover_current_head(started)?",
+            "let head_before = self\n            .discover_current_head(started)?",
             "let current_before = self.current_registry_view_bounded(started)?",
             "let current_after = self.current_registry_view_bounded(started)?",
-            "let head_after = self.discover_current_head(started)?",
-            "let after = self.recover_publication(operation_id)?",
+            "let head_after = self\n            .discover_current_head(started)?",
+            "let after = self\n            .recover_publication(operation_id)?",
             "if before != after",
             "head_before != head_after",
             "current_before.receipt() != current_after.receipt()",
@@ -145,7 +145,7 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.rejects(HOST, "fn read_original_publication_current(", marker)
-        self.rejects(HOST, "fn now_unix_millis(", "SystemTime::now().duration_since(UNIX_EPOCH)")
+        self.rejects(HOST, "fn now_unix_millis(", "SystemTime::now()\n        .duration_since(UNIX_EPOCH)")
         self.rejects(HOST, "fn now_unix_millis(", "u64::try_from(elapsed.as_millis())")
         source = (ROOT / HOST).read_text()
         before = "let current_after = self.current_registry_view_bounded(started)?;"
@@ -197,7 +197,7 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
             "return Err(ArtifactOwnerHostError::Capacity)",
             "fs::symlink_metadata(entry.path())?",
             "metadata.file_type().is_symlink() || !metadata.is_file()",
-            "let checkpoint = decode_checkpoint(",
+            "let checkpoint =\n                decode_checkpoint(",
             "&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?",
             "registry_receipt.head_digest != current.signed.witness.head_digest",
             "registry_receipt.binding != current.signed.binding",
@@ -209,12 +209,12 @@ class ArtifactPublicationReadbackClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.rejects(HOST, "fn current_registry_receipt_bounded(", marker)
         for marker in (
-            "let current = self.discover_current_head(at)?",
+            "let current = self\n            .discover_current_head(at)?",
             "let receipt = self.current_registry_receipt_bounded(&current)?",
-            "let registry = read_registry_snapshot(",
+            "let registry =\n            read_registry_snapshot(",
             "File::open(self.registry_snapshot_path(receipt))?",
             "if registry.snapshot().head_digest != current.signed.witness.head_digest",
-            "receipt, registry, current.witness_digest, current.trust_digest",
+            "receipt,\n            registry,\n            current.witness_digest,\n            current.trust_digest",
         ):
             with self.subTest(marker=marker):
                 self.rejects(HOST, "fn current_registry_view_bounded(", marker)
