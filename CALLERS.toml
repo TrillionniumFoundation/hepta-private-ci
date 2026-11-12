@@ -8514,208 +8514,144 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs"
-required = [
-  "pub struct OriginalCellQ24NoUpdateStageOwnersV1",
-  "origin: Origin",
-  "end: Instant",
-  "continuation: Mutex<Continuation>",
-  "root: Option<Arc<RootResidentLearningEffectGateV3>>",
-  "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1",
-]
-forbidden = [
-  "SigningKey",
-  "UnixStream::connect",
-  "File::open",
-  "File::create",
-  "LearningEvidenceVerifierV1::new",
-  "with_root_learning_stage_owners(",
-  "permit_all",
-  "if false",
-  "unwrap_or",
-  "impl Clone for OriginalCellQ24NoUpdateStageOwnersV1",
-  "pub root:",
-  "pub continuation:",
-  "pub material:",
-  "pub fn install_fresh_resident_gate(",
-  "Arc<dyn LearningIterationStageOwnerPortsV1",
-  "FnOnce",
-]
-required_function_order = [
-  { function = "fn from_original_streams(", sequence = ["fn from_original_streams(", "inputs::bind(material, streams, Origin::Fresh)"], top_level = [] },
-  { function = "fn recover_original_streams(", sequence = ["fn recover_original_streams(", "inputs::bind(material, streams, Origin::Recovered)"], top_level = [] },
-  { function = "fn require_initial(", sequence = ["fn require_initial(", "initial != &self.material.initial", "scope != &self.material.scope", "verifier.trust_digest() != self.material.verifier.trust_digest()", "verifier.scope_digest() != self.material.verifier.scope_digest()", "verifier.objective_digest() != self.material.verifier.objective_digest()", "return Err(Error::WrongScope)", "auth::require_material(&self.material, self.initial_binding)?", "Ok(())"], top_level = [] },
-  { function = "fn install_fresh_resident_gate(", sequence = ["fn install_fresh_resident_gate(", "self.origin != Origin::Fresh || self.root.is_some()", "return Err(Error::WrongScope)", "self.root = Some(gate)", "Ok(())"], top_level = ["if self.origin != Origin::Fresh || self.root.is_some()", "self.root = Some(gate)"] },
-]
-required_order = [
-  ["fn validate_recovery<'a>", "Box::pin(async move", "tokio::time::timeout_at(self.end.into()", "let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", ".continuation.try_lock()", "state.read_prefix(self, snapshot).await?", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.material, snapshot, &state, fresh)", "fn execute_stage<'a>"],
-  ["fn execute_stage<'a>", "Box::pin(async move", "tokio::time::timeout_at(self.end.into()", "OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage).await", "fn prepare_proposal<'a>"],
-  ["fn prepare_proposal<'a>", "Box::pin(async { Err(Error::OwnerUnavailable(", "fn receipt_attestation<'a>"],
-  ["fn receipt_attestation<'a>", "Box::pin(async move", "tokio::time::timeout_at(self.end.into()", "let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", ".continuation.try_lock()", "state.read_attestation(self, snapshot, receipt).await?", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_receipt(&self.material, receipt, &signature, fresh)?", "Ok(signature)"],
-]
+required = ["pub struct OriginalCellQ24NoUpdateStageOwnersV1", "origin: Origin", "end: Instant", "continuation: Mutex<Continuation>", "root: Option<Arc<RootResidentLearningEffectGateV3>>", "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1"]
+forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", "impl Clone for OriginalCellQ24NoUpdateStageOwnersV1", "pub root:", "pub continuation:", "pub material:", "pub fn install_fresh_resident_gate(", "Arc<dyn LearningIterationStageOwnerPortsV1", "FnOnce"]
+required_order = [["fn validate_recovery<'a>", "Box::pin(async move", "tokio::time::timeout_at(self.end.into()", "let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", ".continuation.try_lock()", "state.read_prefix(self, snapshot).await?", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.material, snapshot, &state, fresh)", "fn execute_stage<'a>"], ["fn execute_stage<'a>", "Box::pin(async move", "tokio::time::timeout_at(self.end.into()", "OriginalCellQ24NoUpdateStageOwnersV1::execute_original_stage(self, snapshot, stage)\n                    .await", "fn prepare_proposal<'a>"], ["fn prepare_proposal<'a>", "Box::pin(async {\n            Err(Error::OwnerUnavailable(", "fn receipt_attestation<'a>"], ["fn receipt_attestation<'a>", "Box::pin(async move", "tokio::time::timeout_at(self.end.into()", "let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", ".continuation.try_lock()", "state.read_attestation(self, snapshot, receipt).await?", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_receipt(&self.material, receipt, &signature, fresh)?", "Ok(signature)"]]
 
+[[protected_file.required_function_order]]
+function = "fn from_original_streams("
+sequence = ["fn from_original_streams(", "inputs::bind(material, streams, Origin::Fresh)"]
+top_level = []
 
+[[protected_file.required_function_order]]
+function = "fn recover_original_streams("
+sequence = ["fn recover_original_streams(", "inputs::bind(material, streams, Origin::Recovered)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn require_initial("
+sequence = ["fn require_initial(", "initial != &self.material.initial", "scope != &self.material.scope", "verifier.trust_digest() != self.material.verifier.trust_digest()", "verifier.scope_digest() != self.material.verifier.scope_digest()", "verifier.objective_digest() != self.material.verifier.objective_digest()", "return Err(Error::WrongScope)", "auth::require_material(&self.material, self.initial_binding)?", "Ok(())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn install_fresh_resident_gate("
+sequence = ["fn install_fresh_resident_gate(", "self.origin != Origin::Fresh || self.root.is_some()", "return Err(Error::WrongScope)", "self.root = Some(gate)", "Ok(())"]
+top_level = ["if self.origin != Origin::Fresh || self.root.is_some()", "self.root = Some(gate)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs"
-required = [
-  "LearningEvidenceRoleV1 as Role",
-  "SystemTime",
-  "UNIX_EPOCH",
-]
-forbidden = [
-  "SigningKey",
-  "UnixStream::connect",
-  "File::open",
-  "File::create",
-  "LearningEvidenceVerifierV1::new",
-  "with_root_learning_stage_owners(",
-  "permit_all",
-  "if false",
-  "unwrap_or",
-  "SigningKey",
-  ".sign(",
-  "VerifiedLearningEvidenceV1 {",
-]
-required_function_order = [
-  { function = "fn now(", sequence = ["fn now(", "SystemTime::now()", "duration_since(UNIX_EPOCH)", "value.as_secs()"], top_level = [] },
-  { function = "fn require_clock(", sequence = ["fn require_clock(", "if current < started_at", "return Err(Error::WrongScope)", "Ok(())"], top_level = [] },
-  { function = "fn require_material(", sequence = ["fn require_material(", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(material)", "if actual != binding", "return Err(Error::WrongScope)", "Ok(current)"], top_level = [] },
-  { function = "fn require_snapshot(", sequence = ["fn require_snapshot(", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "material.scope.validate_snapshot(snapshot)?", "snapshot.request != material.initial.request || snapshot.owners != material.initial.owners", "snapshot.receipts.len() > 5", "for (index, receipt)", "stage_index(receipt.observation.stage())? != index", "return Err(Error::WrongScope)", "Ok(())"], top_level = [] },
-  { function = "fn stage_index(", sequence = ["fn stage_index(", "Stage::Experience => Ok(0)", "Stage::Dataset => Ok(1)", "Stage::Training => Ok(2)", "Stage::Selection => Ok(3)", "Stage::NextUse => Ok(4)", "Stage::Evaluation | Stage::Proposal", "Err(Error::OwnerUnavailable("], top_level = [] },
-  { function = "fn require_receipt_position(", sequence = ["fn require_receipt_position(", "stage_index(receipt.observation.stage())?", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "snapshot.receipts.get(index)", "original != receipt", "index != snapshot.receipts.len()", "coordinator.next_stage() != Some(receipt.observation.stage())", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?"], top_level = [] },
-  { function = "fn verify_receipt(", sequence = ["fn verify_receipt(", "receipt.observation.stage()", "Stage::Experience | Stage::Dataset | Stage::NextUse => Role::Observer", "Stage::Training => Role::Generator", "Stage::Selection => Role::Selector", "Stage::Evaluation | Stage::Proposal", "return Err(Error::OwnerUnavailable(", "&receipt.actor_id != material.initial.owners.owner(stage)", "receipt.observed_unix_seconds != signature.issued_at", "receipt.observed_unix_seconds > at", "material.verifier.verify(", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "actual.principal().principal_id != receipt.actor_id", "actual.trust_digest() != material.initial.owners.evidence_trust_digest", "actual.objective_digest() != material.initial.request.envelope.objective_digest", "Ok(actual)"], top_level = [] },
-  { function = "fn verify_prefix(", sequence = ["fn verify_prefix(", "require_snapshot(material, snapshot)?", "state.records.len() < snapshot.receipts.len()", "snapshot.receipts.iter().zip(&state.records)", "receipt != &original.0", "verify_receipt(material, receipt, &original.1, at)?", "verified.len() >= 4", "verify_signed_actor_separation(&verified[2], &verified[3], at)", "verified.len() == 5", "verify_signed_actor_separation(&verified[2], &verified[4], at)", "verify_signed_actor_separation(&verified[3], &verified[4], at)"], top_level = [] },
-]
+required = ["LearningEvidenceRoleV1 as Role", "SystemTime", "UNIX_EPOCH"]
+forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", "SigningKey", ".sign(", "VerifiedLearningEvidenceV1 {"]
 
+[[protected_file.required_function_order]]
+function = "fn now("
+sequence = ["fn now(", "SystemTime::now()", "duration_since(UNIX_EPOCH)", "value.as_secs()"]
+top_level = []
 
+[[protected_file.required_function_order]]
+function = "fn require_clock("
+sequence = ["fn require_clock(", "if current < started_at", "return Err(Error::WrongScope)", "Ok(())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn require_material("
+sequence = ["fn require_material(", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(material)", "if actual != binding", "return Err(Error::WrongScope)", "Ok(current)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn require_snapshot("
+sequence = ["fn require_snapshot(", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "material.scope.validate_snapshot(snapshot)?", "snapshot.request != material.initial.request\n        || snapshot.owners != material.initial.owners", "snapshot.receipts.len() > 5", "for (index, receipt)", "stage_index(receipt.observation.stage())? != index", "return Err(Error::WrongScope)", "Ok(())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn stage_index("
+sequence = ["fn stage_index(", "Stage::Experience => Ok(0)", "Stage::Dataset => Ok(1)", "Stage::Training => Ok(2)", "Stage::Selection => Ok(3)", "Stage::NextUse => Ok(4)", "Stage::Evaluation | Stage::Proposal", "Err(Error::OwnerUnavailable("]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn require_receipt_position("
+sequence = ["fn require_receipt_position(", "stage_index(receipt.observation.stage())?", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "snapshot.receipts.get(index)", "original != receipt", "index != snapshot.receipts.len()", "coordinator.next_stage() != Some(receipt.observation.stage())", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn verify_receipt("
+sequence = ["fn verify_receipt(", "receipt.observation.stage()", "Stage::Experience | Stage::Dataset | Stage::NextUse => Role::Observer", "Stage::Training => Role::Generator", "Stage::Selection => Role::Selector", "Stage::Evaluation | Stage::Proposal", "return Err(Error::OwnerUnavailable(", "&receipt.actor_id != material.initial.owners.owner(stage)", "receipt.observed_unix_seconds != signature.issued_at", "receipt.observed_unix_seconds > at", "material\n        .verifier\n        .verify(", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "actual.principal().principal_id != receipt.actor_id", "actual.trust_digest() != material.initial.owners.evidence_trust_digest", "actual.objective_digest() != material.initial.request.envelope.objective_digest", "Ok(actual)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn verify_prefix("
+sequence = ["fn verify_prefix(", "require_snapshot(material, snapshot)?", "state.records.len() < snapshot.receipts.len()", "snapshot.receipts.iter().zip(&state.records)", "receipt != &original.0", "verify_receipt(material, receipt, &original.1, at)?", "verified.len() >= 4", "verify_signed_actor_separation(&verified[2], &verified[3], at)", "verified.len() == 5", "verify_signed_actor_separation(&verified[2], &verified[4], at)", "verify_signed_actor_separation(&verified[3], &verified[4], at)"]
+top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
-required = [
-  "super::super::ordinary_stage_owners::Origin",
-]
-forbidden = [
-  "SigningKey",
-  "UnixStream::connect",
-  "File::open",
-  "File::create",
-  "LearningEvidenceVerifierV1::new",
-  "with_root_learning_stage_owners(",
-  "permit_all",
-  "if false",
-  "unwrap_or",
-  "original_owner_command_channel_v1(",
-  "Instant::now",
-  "UnixStream",
-  "pub fn bind_original_stage_channel(",
-  "HostAuthorityPeerChannel::from_stream(",
-  "RootObservationStream::from_stream",
-  "Instant::now()",
-]
-required_function_order = [
-  { function = "fn bind_original_stage_channel(", sequence = ["fn bind_original_stage_channel(", "let started_at = now()?", "OriginalCircuitSelectionCommandContextV1::from_original_training(", "dataset.snapshot().clone()", "material.scope.clone()", "material.verifier.clone()", "training", "context.initial()? != material.initial", "context.binding(started_at)?", "peer.check_peer_lifetime()?", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "dataset, material", "require_clock(started_at, fresh)?", "context.binding(fresh)? != binding", "Origin::Fresh => false", "Origin::Recovered => true", "Ok(Self {", "channel: Mutex::new(Some(Channel { peer, next_request_id: 1, execution_requested }))", "retained: Mutex::new(None)"], top_level = ["let started_at = now()?", "peer.check_peer_lifetime()?", "require_clock(started_at, fresh)?", "Ok(Self {"] },
-]
+required = ["super::super::ordinary_stage_owners::Origin"]
+forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", "original_owner_command_channel_v1(", "Instant::now", "UnixStream", "pub fn bind_original_stage_channel(", "HostAuthorityPeerChannel::from_stream(", "RootObservationStream::from_stream", "Instant::now()"]
 
-
+[[protected_file.required_function_order]]
+function = "fn bind_original_stage_channel("
+sequence = ["fn bind_original_stage_channel(", "let started_at = now()?", "OriginalCircuitSelectionCommandContextV1::from_original_training(", "dataset.snapshot().clone()", "material.scope.clone()", "material.verifier.clone()", "training", "context.initial()? != material.initial", "context.binding(started_at)?", "peer.check_peer_lifetime()?", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "dataset, material", "require_clock(started_at, fresh)?", "context.binding(fresh)? != binding", "Origin::Fresh => false", "Origin::Recovered => true", "Ok(Self {", "channel: Mutex::new(Some(Channel {\n                peer,\n                next_request_id: 1,\n                execution_requested,\n            }))", "retained: Mutex::new(None)"]
+top_level = ["let started_at = now()?", "peer.check_peer_lifetime()?", "require_clock(started_at, fresh)?", "Ok(Self {"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs"
-required = [
-  "super::super::ordinary_stage_owners::Origin",
-]
-forbidden = [
-  "SigningKey",
-  "UnixStream::connect",
-  "File::open",
-  "File::create",
-  "LearningEvidenceVerifierV1::new",
-  "with_root_learning_stage_owners(",
-  "permit_all",
-  "if false",
-  "unwrap_or",
-  "original_owner_command_channel_v1(",
-  "Instant::now",
-  "UnixStream",
-  "pub fn bind_original_stage_channel(",
-  "HostAuthorityPeerChannel::from_stream(",
-  "RootObservationStream::from_stream",
-  "Instant::now()",
-]
-required_function_order = [
-  { function = "fn bind_original_stage_channel(", sequence = ["fn bind_original_stage_channel(", "let started_at = now()?", "OriginalCircuitNextUseCommandContextV1::from_original_selection(", "material.scope.clone()", "material.verifier.clone()", "selection", "let mut original_dataset = context.selection.clone()", "original_dataset.receipts[2].predecessor", "original_dataset.receipts.truncate(2)", "context.initial()? != material.initial || &original_dataset != dataset.snapshot()", "context.binding(started_at)?", "peer.check_peer_lifetime()?", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "dataset, material", "require_clock(started_at, fresh)?", "context.binding(fresh)? != binding", "Origin::Fresh => false", "Origin::Recovered => true", "Ok(Self {", "channel: Mutex::new(Some(Channel { peer, next_request_id: 1, execution_requested }))", "retained: Mutex::new(None)"], top_level = ["let started_at = now()?", "peer.check_peer_lifetime()?", "require_clock(started_at, fresh)?", "Ok(Self {"] },
-]
+required = ["super::super::ordinary_stage_owners::Origin"]
+forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", "original_owner_command_channel_v1(", "Instant::now", "UnixStream", "pub fn bind_original_stage_channel(", "HostAuthorityPeerChannel::from_stream(", "RootObservationStream::from_stream", "Instant::now()"]
 
-
+[[protected_file.required_function_order]]
+function = "fn bind_original_stage_channel("
+sequence = ["fn bind_original_stage_channel(", "let started_at = now()?", "OriginalCircuitNextUseCommandContextV1::from_original_selection(", "material.scope.clone()", "material.verifier.clone()", "selection", "let mut original_dataset = context.selection.clone()", "original_dataset.receipts[2].predecessor", "original_dataset.receipts.truncate(2)", "context.initial()? != material.initial || &original_dataset != dataset.snapshot()", "context.binding(started_at)?", "peer.check_peer_lifetime()?", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "dataset, material", "require_clock(started_at, fresh)?", "context.binding(fresh)? != binding", "Origin::Fresh => false", "Origin::Recovered => true", "Ok(Self {", "channel: Mutex::new(Some(Channel {\n                peer,\n                next_request_id: 1,\n                execution_requested,\n            }))", "retained: Mutex::new(None)"]
+top_level = ["let started_at = now()?", "peer.check_peer_lifetime()?", "require_clock(started_at, fresh)?", "Ok(Self {"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs"
-required = [
-  "runtime.learning.original-circuit.completion-readiness.v1",
-  "#[serde(deny_unknown_fields)]",
-  "pub(crate) struct OriginalCircuitCompletionReadinessClientV1",
-  "retained: Mutex<Option<Readback>>",
-]
-forbidden = [
-  "SigningKey",
-  "UnixStream::connect",
-  "File::open",
-  "File::create",
-  "LearningEvidenceVerifierV1::new",
-  "with_root_learning_stage_owners(",
-  "permit_all",
-  "if false",
-  "unwrap_or",
-  "pub fn bind_original_stage_channel(",
-  "original_owner_command_channel_v1(",
-  "Instant::now",
-  "pub now:",
-  "pub execute:",
-  "pub ready:",
-  "pub snapshot:",
-  "pub observation:",
-  "HostAuthorityPeerChannel::from_stream(",
-  "RootObservationStream::from_stream",
-  "Instant::now()",
-]
-required_function_order = [
-  { function = "fn new(", sequence = ["fn new(", "original::mode(context)? != original::Mode::NextUse", "purpose: PURPOSE.into()", "original: original::Request::new(context, binding, request_id)?"], top_level = [] },
-  { function = "fn require_context(", sequence = ["fn require_context(", "self.purpose != PURPOSE || original::mode(context)? != original::Mode::NextUse", "self.original.require_context(context, binding, request_id)"], top_level = [] },
-  { function = "fn bind_original_stage_channel(", sequence = ["fn bind_original_stage_channel(", "let started_at = now()?", "let context = Context {", "prefix: selection.snapshot().clone()", "scope: material.scope.clone()", "verifier: material.verifier.clone()", "training_evidence: selection.training_attestation().clone()", "selection_evidence: Some(selection.attestation().clone())", "original::context_binding(&context, started_at)?", "LearningIterationCoordinatorV1::new(", "let mut original_dataset = context.prefix.clone()", "original_dataset.receipts[2].predecessor", "original_dataset.receipts.truncate(2)", "initial.snapshot() != &material.initial || &original_dataset != dataset.snapshot()", "peer.check_peer_lifetime()?", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "dataset, material", "fresh < started_at || original::context_binding(&context, fresh)? != binding", "Ok(Self {", "channel: Mutex::new(Some(Channel { peer, next_request_id: 1 }))", "retained: Mutex::new(None)"], top_level = ["let started_at = now()?", "peer.check_peer_lifetime()?", "Ok(Self {"] },
-  { function = "fn read_current(", sequence = ["fn read_current(", "self.channel.try_lock()", ".take().ok_or(Error::Unavailable)?", "let started_at = now()?", "original::context_binding(&self.context, started_at)? != self.binding", "!(1..=128).contains(&channel.next_request_id)", "Request::new(&self.context, self.binding, request_id)?", "channel.next_request_id = request_id.checked_add(1)", "serde_json::to_vec(&request)?", "tokio::task::spawn_blocking(move ||", "channel.peer.request(&bytes)?", "serde_json::from_slice(&response)?", "response.request.require_context(&self.context, self.binding, request_id)?", "Readiness::NotReady => None", "Readiness::Ready { read } => Some(read.decode(&self.context)?)", "channel.peer.check_peer_lifetime()?", "let fresh = now()?", "fresh < started_at || original::context_binding(&self.context, fresh)? != self.binding", "self.retained.try_lock()", "retained.as_ref().is_some_and(|prior| current.as_ref() != Some(prior))", "return Err(Error::Binding(", "*retained = Some(ready.clone())", "*self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel)", "Ok(current)"], top_level = ["let started_at = now()?", "channel.peer.check_peer_lifetime()?", "let fresh = now()?", "*self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel)", "Ok(current)"] },
-]
+required = ["runtime.learning.original-circuit.completion-readiness.v1", "#[serde(deny_unknown_fields)]", "pub(crate) struct OriginalCircuitCompletionReadinessClientV1", "retained: Mutex<Option<Readback>>"]
+forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", "pub fn bind_original_stage_channel(", "original_owner_command_channel_v1(", "Instant::now", "pub now:", "pub execute:", "pub ready:", "pub snapshot:", "pub observation:", "HostAuthorityPeerChannel::from_stream(", "RootObservationStream::from_stream", "Instant::now()"]
 
+[[protected_file.required_function_order]]
+function = "fn new("
+sequence = ["fn new(", "original::mode(context)? != original::Mode::NextUse", "purpose: PURPOSE.into()", "original: original::Request::new(context, binding, request_id)?"]
+top_level = []
 
+[[protected_file.required_function_order]]
+function = "fn require_context("
+sequence = ["fn require_context(", "self.purpose != PURPOSE || original::mode(context)? != original::Mode::NextUse", "self.original.require_context(context, binding, request_id)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn bind_original_stage_channel("
+sequence = ["fn bind_original_stage_channel(", "let started_at = now()?", "let context = Context {", "prefix: selection.snapshot().clone()", "scope: material.scope.clone()", "verifier: material.verifier.clone()", "training_evidence: selection.training_attestation().clone()", "selection_evidence: Some(selection.attestation().clone())", "original::context_binding(&context, started_at)?", "LearningIterationCoordinatorV1::new(", "let mut original_dataset = context.prefix.clone()", "original_dataset.receipts[2].predecessor", "original_dataset.receipts.truncate(2)", "initial.snapshot() != &material.initial || &original_dataset != dataset.snapshot()", "peer.check_peer_lifetime()?", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "dataset, material", "fresh < started_at || original::context_binding(&context, fresh)? != binding", "Ok(Self {", "channel: Mutex::new(Some(Channel {\n                peer,\n                next_request_id: 1,\n            }))", "retained: Mutex::new(None)"]
+top_level = ["let started_at = now()?", "peer.check_peer_lifetime()?", "Ok(Self {"]
+
+[[protected_file.required_function_order]]
+function = "fn read_current("
+sequence = ["fn read_current(", "self\n            .channel\n            .try_lock()", ".take()\n            .ok_or(Error::Unavailable)?", "let started_at = now()?", "original::context_binding(&self.context, started_at)? != self.binding", "!(1..=128).contains(&channel.next_request_id)", "Request::new(&self.context, self.binding, request_id)?", "channel.next_request_id = request_id.checked_add(1)", "serde_json::to_vec(&request)?", "tokio::task::spawn_blocking(move ||", "channel.peer.request(&bytes)?", "serde_json::from_slice(&response)?", "response\n            .request\n            .require_context(&self.context, self.binding, request_id)?", "Readiness::NotReady => None", "Readiness::Ready { read } => Some(read.decode(&self.context)?)", "channel.peer.check_peer_lifetime()?", "let fresh = now()?", "fresh < started_at || original::context_binding(&self.context, fresh)? != self.binding", "self.retained.try_lock()", "retained\n                .as_ref()\n                .is_some_and(|prior| current.as_ref() != Some(prior))", "return Err(Error::Binding(", "*retained = Some(ready.clone())", "*self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel)", "Ok(current)"]
+top_level = ["let started_at = now()?", "channel.peer.check_peer_lifetime()?", "let fresh = now()?", "*self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel)", "Ok(current)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs"
-required = [
-  "OriginalCircuitLearningReadOwnerV1<C, S>",
-]
-forbidden = [
-  "SigningKey",
-  "UnixStream::connect",
-  "File::open",
-  "File::create",
-  "LearningEvidenceVerifierV1::new",
-  "with_root_learning_stage_owners(",
-  "permit_all",
-  "if false",
-  "attest_completed_task(",
-  "attest_original",
-  "execute_training(",
-  "publish(",
-  "into_circuit_feature_task(",
-  "claim(",
-  "complete(",
-]
-required_function_order = [
-  { function = "fn serve_completion_readiness(", sequence = ["fn serve_completion_readiness(", "require_timing(timeout, lifetime)?", "wire::mode(&self.context)? != wire::Mode::NextUse", "self.connections.try_acquire()", "original_owner_command_channel_v1(", "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime", "self.serve_readiness_channel(&mut channel)"], top_level = [] },
-  { function = "fn serve_readiness_channel(", sequence = ["fn serve_readiness_channel(", "for request_id in 1..=128", "channel.exchange(|bytes|", "self.readiness_response(bytes, request_id)", "failure = Some(error)", "HostIssuerTransportError::InvalidRequest", "Ok(false) => return Ok(request_id - 1)", "Err(failure.unwrap_or(Error::Transport(error)))", "Err(Error::Unavailable)"], top_level = [] },
-  { function = "fn readiness_response(", sequence = ["fn readiness_response(", "let started_at = now()?", "serde_json::from_slice(bytes)?", "request.require_context(&self.context, self.binding, request_id)?", "wire::context_binding(&self.context, started_at)? != self.binding", "self.read_original_readiness()?", "let fresh = now()?", "fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding", "None => readiness::Readiness::NotReady", "Some(read) => readiness::Readiness::Ready", "wire::OriginalRead::from_original(read)?", "serde_json::to_vec(&readiness::Response { request, result })?", "bytes.is_empty() || bytes.len() > 16_384", "Ok(bytes)"], top_level = ["let started_at = now()?", "request.require_context(&self.context, self.binding, request_id)?", "let fresh = now()?", "Ok(bytes)"] },
-  { function = "fn read_original_readiness(", sequence = ["fn read_original_readiness(", "self.require_task_input_current()?", "wire::decision(&self.context)?", "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?", "self.require_original_selection(&selection)?", "CircuitTaskSourceReadbackV1::read_run_publication(", "&self.source, &self.identity, &self.cell.task.source().scope.run_id", "Err(CircuitTaskErrorV1::ReconciliationRequired)", "PublishedCircuitCellOwnerV1::snapshot(&self.cell, &self.cell.task.source().scope)", "None", "Err(error) => return Err(Error::Source(error))", "Ok(before)", "self.read_original()?", "current.source_publication != Some(before.publication_digest())", "Some(current)", "self.require_task_input_current()?", "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)? != selection", "return Err(Error::Binding(", "self.require_task_input_current()?", "Ok(current)"], top_level = ["let current = match publication", "Ok(current)"] },
-]
+required = ["OriginalCircuitLearningReadOwnerV1<C, S>"]
+forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "attest_completed_task(", "attest_original", "execute_training(", "publish(", "into_circuit_feature_task(", "claim(", "complete("]
 
+[[protected_file.required_function_order]]
+function = "fn serve_completion_readiness("
+sequence = ["fn serve_completion_readiness(", "require_timing(timeout, lifetime)?", "wire::mode(&self.context)? != wire::Mode::NextUse", "self\n            .connections\n            .try_acquire()", "original_owner_command_channel_v1(", "stream,\n            consumer,\n            consumer_uid,\n            original_consumer_pidfd,\n            timeout,\n            lifetime", "self.serve_readiness_channel(&mut channel)"]
+top_level = []
 
+[[protected_file.required_function_order]]
+function = "fn serve_readiness_channel("
+sequence = ["fn serve_readiness_channel(", "for request_id in 1..=128", "channel.exchange(|bytes|", "self.readiness_response(bytes, request_id)", "failure = Some(error)", "HostIssuerTransportError::InvalidRequest", "Ok(false) => return Ok(request_id - 1)", "Err(failure.unwrap_or(Error::Transport(error)))", "Err(Error::Unavailable)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn readiness_response("
+sequence = ["fn readiness_response(", "let started_at = now()?", "serde_json::from_slice(bytes)?", "request.require_context(&self.context, self.binding, request_id)?", "wire::context_binding(&self.context, started_at)? != self.binding", "self.read_original_readiness()?", "let fresh = now()?", "fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding", "None => readiness::Readiness::NotReady", "Some(read) => readiness::Readiness::Ready", "wire::OriginalRead::from_original(read)?", "serde_json::to_vec(&readiness::Response { request, result })?", "bytes.is_empty() || bytes.len() > 16_384", "Ok(bytes)"]
+top_level = ["let started_at = now()?", "request.require_context(&self.context, self.binding, request_id)?", "let fresh = now()?", "Ok(bytes)"]
+
+[[protected_file.required_function_order]]
+function = "fn read_original_readiness("
+sequence = ["fn read_original_readiness(", "self.require_task_input_current()?", "wire::decision(&self.context)?", "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?", "self.require_original_selection(&selection)?", "CircuitTaskSourceReadbackV1::read_run_publication(", "&self.source,\n            &self.identity,\n            &self.cell.task.source().scope.run_id", "Err(CircuitTaskErrorV1::ReconciliationRequired)", "PublishedCircuitCellOwnerV1::snapshot(&self.cell, &self.cell.task.source().scope)", "None", "Err(error) => return Err(Error::Source(error))", "Ok(before)", "self.read_original()?", "current.source_publication != Some(before.publication_digest())", "Some(current)", "self.require_task_input_current()?", "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?\n            != selection", "return Err(Error::Binding(", "self.require_task_input_current()?", "Ok(current)"]
+top_level = ["let current = match publication", "Ok(current)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-neuron/src/cell_generation_physical_current.rs"
@@ -9335,22 +9271,110 @@ required_function_order = [{ function = "fn from_original_owners(", sequence = [
 path = "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs"
 required = ["pub struct OriginalCellQ24NoUpdateStageStreamsV1", "pub experience: OriginalCellQ24NoUpdatePeerStreamV1", "pub dataset: OriginalCellQ24NoUpdatePeerStreamV1", "pub trainer: OriginalCellQ24NoUpdatePeerStreamV1", "pub selector: OriginalCellQ24NoUpdatePeerStreamV1", "pub next_use: OriginalCellQ24NoUpdatePeerStreamV1", "pub completion: OriginalCellQ24NoUpdateTaskStreamV1", "pub version: OriginalCellQ24NoUpdateTaskStreamV1"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", "serde::", "pub snapshot:", "pub receipt:", "pub batch:", "pub ready:", "RootResidentLearningEffectGateV3::"]
-required_function_order = [{ function = "fn bind(", sequence = ["fn bind(", "let admitted_at = Instant::now()", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)", "require_timing(input.timeout, input.lifetime, Duration::from_secs(30))?", "require_timing(streams.version.timeout, streams.version.lifetime, Duration::from_secs(30))?", "Duration::from_millis(500)", "material.initial.owners.owner(stage)", "return Err(Error::WrongScope)", "let lifetime =", "streams.completion.lifetime", "let end = admitted_at.checked_add(lifetime)", "OriginalCellQ24NoUpdateStageStreamsV1", "OriginalCellQ24MaterialCommandClientV1::from_original_experience_stream(", "OriginalCellQ24MaterialCommandClientV1::recover_original_experience_stream(", "OriginalCellQ24MaterialCommandClientV1::from_original_dataset_stream(", "OriginalCellQ24MaterialCommandClientV1::recover_original_dataset_stream(", "OriginalCellQ24TrainingCommandConnectionV1::from_original_stream(", "OriginalCellQ24TrainingCommandConnectionV1::recover_from_original_stream(", "let version = original_owner_command_channel_v1(", "v.stream, v.peer, v.uid, v.original_task_pidfd, v.timeout, v.lifetime", "version.check_peer_lifetime()", "let selector = role_channel(s)?", "let next_use = role_channel(c)?", "let completion = original_owner_command_channel_v1(", "completion.check_peer_lifetime()", "auth::require_material(&material, initial_binding)?", "auth::require_clock(started_at, fresh)?", "Instant::now() >= end", "Ok(OriginalCellQ24NoUpdateStageOwnersV1 {", "root: None"], top_level = ["let admitted_at = Instant::now()", "let end = admitted_at.checked_add(lifetime)", "let selector = role_channel(s)?", "let next_use = role_channel(c)?", "completion.check_peer_lifetime()", "auth::require_clock(started_at, fresh)?", "if Instant::now() >= end", "Ok(OriginalCellQ24NoUpdateStageOwnersV1 {", "let version = original_owner_command_channel_v1(", "version.check_peer_lifetime()"] }, { function = "fn role_channel(", sequence = ["fn role_channel(", "let peer = input.peer", "original_owner_command_channel_v1(", "input.stream", "pid: peer.pid", "boot_id: peer.boot_id", "process_start_ticks: peer.process_start_ticks", "peer.uid", "input.original_owner_pidfd", "input.timeout", "input.lifetime", "channel.check_peer_lifetime()", "Ok(channel)"], top_level = [] }, { function = "fn require_timing(", sequence = ["fn require_timing(", "timeout.is_zero() || timeout > limit || lifetime.is_zero() || lifetime > Duration::from_secs(300)", "return Err(Error::WrongScope)", "Ok(())"], top_level = [] }]
 
+[[protected_file.required_function_order]]
+function = "fn bind("
+sequence = ["fn bind(", "let admitted_at = Instant::now()", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)", "require_timing(input.timeout, input.lifetime, Duration::from_secs(30))?", "require_timing(\n        streams.version.timeout,\n        streams.version.lifetime,\n        Duration::from_secs(30),\n    )?", "Duration::from_millis(500)", "material.initial.owners.owner(stage)", "return Err(Error::WrongScope)", "let lifetime =", "streams.completion.lifetime", "let end = admitted_at.checked_add(lifetime)", "OriginalCellQ24NoUpdateStageStreamsV1", "OriginalCellQ24MaterialCommandClientV1::from_original_experience_stream(", "OriginalCellQ24MaterialCommandClientV1::recover_original_experience_stream(", "OriginalCellQ24MaterialCommandClientV1::from_original_dataset_stream(", "OriginalCellQ24MaterialCommandClientV1::recover_original_dataset_stream(", "OriginalCellQ24TrainingCommandConnectionV1::from_original_stream(", "OriginalCellQ24TrainingCommandConnectionV1::recover_from_original_stream(", "let version = original_owner_command_channel_v1(", "v.stream,\n        v.peer,\n        v.uid,\n        v.original_task_pidfd,\n        v.timeout,\n        v.lifetime", "version\n        .check_peer_lifetime()", "let selector = role_channel(s)?", "let next_use = role_channel(c)?", "let completion = original_owner_command_channel_v1(", "completion\n        .check_peer_lifetime()", "auth::require_material(&material, initial_binding)?", "auth::require_clock(started_at, fresh)?", "Instant::now() >= end", "Ok(OriginalCellQ24NoUpdateStageOwnersV1 {", "root: None"]
+top_level = ["let admitted_at = Instant::now()", "let end = admitted_at.checked_add(lifetime)", "let selector = role_channel(s)?", "let next_use = role_channel(c)?", "completion\n        .check_peer_lifetime()", "auth::require_clock(started_at, fresh)?", "if Instant::now() >= end", "Ok(OriginalCellQ24NoUpdateStageOwnersV1 {", "let version = original_owner_command_channel_v1(", "version\n        .check_peer_lifetime()"]
+
+[[protected_file.required_function_order]]
+function = "fn role_channel("
+sequence = ["fn role_channel(", "let peer = input.peer", "original_owner_command_channel_v1(", "input.stream", "pid: peer.pid", "boot_id: peer.boot_id", "process_start_ticks: peer.process_start_ticks", "peer.uid", "input.original_owner_pidfd", "input.timeout", "input.lifetime", "channel\n        .check_peer_lifetime()", "Ok(channel)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn require_timing("
+sequence = ["fn require_timing(", "timeout.is_zero()\n        || timeout > limit\n        || lifetime.is_zero()\n        || lifetime > Duration::from_secs(300)", "return Err(Error::WrongScope)", "Ok(())"]
+top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs"
 required = ["trainer_initial: Option<OriginalCellQ24TrainingCommandConnectionV1>", "selector_initial: Option<HostAuthorityPeerChannel>", "next_use_initial: Option<HostAuthorityPeerChannel>", "readiness_initial: Option<HostAuthorityPeerChannel>", "records: Vec<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>", "version_initial: Option<HostAuthorityPeerChannel>", "version: Option<OriginalCircuitRetainedVersionClientV1>"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", ".execute(", "::execute_training(", "::execute_selection(", "::attest_completed_task(", "RootResidentLearningEffectGateV3"]
-required_function_order = [{ function = "fn read_prefix(", sequence = ["fn read_prefix(", "if snapshot.receipts.is_empty()", "OriginalCellQ24MaterialCommandClientV1::readback(&self.experience)", "return Err(Error::CommitUncertain)", "for expected in &snapshot.receipts", "self.read_stage(owners, expected.observation.stage()).await?", "if &actual != expected", "auth::verify_prefix(&owners.material, snapshot, self, auth::now()?)"], top_level = [] }, { function = "fn read_stage(", sequence = ["fn read_stage(", "Stage::Experience", "OriginalCellQ24MaterialCommandClientV1::readback(&self.experience)", "Stage::Dataset", "OriginalCellQ24MaterialCommandClientV1::readback(&self.dataset)", "Stage::Training", "self.ensure_trainer(owners).await?", "OriginalCellQ24TrainingCommandClientV1::readback(client)", "Stage::Selection", "self.ensure_version(owners).await?", "OriginalCircuitRetainedVersionClientV1::readback(version)", "current.publication().is_none()", "self.ensure_selector(owners).await?", "OriginalCircuitSelectionCommandClientV1::readback(client)", "Stage::NextUse", "self.ensure_next_use(owners).await?", "OriginalCircuitNextUseCommandClientV1::readback(client)", "Stage::Evaluation | Stage::Proposal", "Err(Error::OwnerUnavailable("], top_level = [] }, { function = "fn read_attestation(", sequence = ["fn read_attestation(", "auth::require_receipt_position(snapshot, receipt)?", "self.read_stage(owners, receipt.observation.stage()).await?", "if &actual != receipt", "snapshot.receipts.iter().zip(&self.records)", "if expected != original", "auth::stage_index(receipt.observation.stage())?", "self.records.get(index).ok_or(Error::CommitUncertain)?.1.clone()"], top_level = [] }, { function = "fn ensure_trainer(", sequence = ["fn ensure_trainer(", "if self.trainer.is_none()", "OriginalCellQ24MaterialCommandClientV1::readback(&self.dataset)", "self.record_material(owners, &dataset)?", "self.trainer_initial.take()", "OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(", "initial, dataset", "Ok(())"], top_level = [] }, { function = "fn ensure_selector(", sequence = ["fn ensure_selector(", "if self.selector.is_none()", "self.ensure_trainer(owners).await?", "OriginalCellQ24TrainingCommandClientV1::readback(trainer)", "self.record_training(owners, &training)?", "self.original_dataset.as_ref()", "self.selector_initial.take()", "OriginalCircuitSelectionCommandClientV1::bind_original_stage_channel(", "&owners.material", "dataset, &training, owners.origin", "Ok(())"], top_level = [] }, { function = "fn ensure_next_use(", sequence = ["fn ensure_next_use(", "if self.next_use.is_none()", "self.ensure_selector(owners).await?", "OriginalCircuitSelectionCommandClientV1::readback(selector)", "self.record_selection(owners, &selection)?", "self.original_dataset.as_ref()", "self.next_use_initial.take()", "OriginalCircuitNextUseCommandClientV1::bind_original_stage_channel(", "&owners.material", "dataset, &selection, owners.origin", "Ok(())"], top_level = [] }, { function = "fn ensure_readiness(", sequence = ["fn ensure_readiness(", "if self.readiness.is_none()", "self.original_dataset.as_ref()", "self.original_selection.as_ref()", "self.readiness_initial.take()", "OriginalCircuitCompletionReadinessClientV1::bind_original_stage_channel(", "&owners.material, dataset, selection", "Ok(())"], top_level = [] }, { function = "fn record_material(", sequence = ["fn record_material(", "auth::require_snapshot(&owners.material, original.snapshot())?", "!(1..=2).contains(&count) || original.attestations().len() != count", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "original, &owners.material", "original.snapshot().receipts.iter().zip(original.attestations())", "self.pin(owners, receipt, signature)?", "self.original_dataset = Some(original.clone())"], top_level = [] }, { function = "fn record_training(", sequence = ["fn record_training(", "self.original_dataset.as_ref()", "auth::require_receipt_position(dataset.snapshot(), original.receipt())?", "self.pin(owners, original.receipt(), original.attestation())?", "self.original_training = Some(original.clone())"], top_level = [] }, { function = "fn record_selection(", sequence = ["fn record_selection(", "self.original_training.as_ref()", "original.training_attestation() != training.attestation()", "auth::require_snapshot(&owners.material, original.snapshot())?", "original.snapshot().receipts.len() != 4", "original.snapshot().training_no_update_v2().is_none()", "original.snapshot().receipts[..3]", "self.records.get(index).map(|record| &record.0) != Some(expected)", "self.pin(owners, original.receipt(), original.attestation())?", "self.original_selection = Some(original.clone())"], top_level = [] }, { function = "fn record_next_use(", sequence = ["fn record_next_use(", "self.original_selection.as_ref()", "original.training_attestation() != selection.training_attestation()", "original.selection_attestation() != selection.attestation()", "original.snapshot().receipts.len() != 5", "auth::require_snapshot(&owners.material, original.snapshot())?", "original.snapshot().receipts[..4]", "self.records.get(index).map(|record| &record.0) != Some(expected)", "self.pin(owners, original.receipt(), original.attestation())"], top_level = [] }, { function = "fn pin(", sequence = ["fn pin(", "auth::stage_index(receipt.observation.stage())?", "auth::verify_receipt(&owners.material, receipt, signature, auth::now()?)?", "self.records.get(index)", "prior != &(receipt.clone(), signature.clone())", "return Err(Error::WrongScope)", "self.records.len() != index || self.records.len() >= 5", "LearningIterationCoordinatorV1::from_snapshot(owners.material.initial.clone())?", "coordinator.record(prior.clone(), prior.observed_unix_seconds)?", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?", "owners.material.scope.validate_snapshot(coordinator.snapshot())?", "self.records.push((receipt.clone(), signature.clone()))"], top_level = [] }, { function = "fn ensure_version(", sequence = ["self.ensure_trainer(owners).await?", "OriginalCellQ24TrainingCommandClientV1::readback(trainer)", "self.record_training(owners, &training)?", "self.original_dataset.as_ref()", "self.version_initial.take()", "Origin::Fresh", "OriginalCircuitRetainedVersionClientV1::bind_original_stage_channel(", "Origin::Recovered", "OriginalCircuitRetainedVersionClientV1::recover_original_stage_channel("] }]
 
+[[protected_file.required_function_order]]
+function = "fn read_prefix("
+sequence = ["fn read_prefix(", "if snapshot.receipts.is_empty()", "OriginalCellQ24MaterialCommandClientV1::readback(&self.experience)", "return Err(Error::CommitUncertain)", "for expected in &snapshot.receipts", "self\n                .read_stage(owners, expected.observation.stage())\n                .await?", "if &actual != expected", "auth::verify_prefix(&owners.material, snapshot, self, auth::now()?)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn read_stage("
+sequence = ["fn read_stage(", "Stage::Experience", "OriginalCellQ24MaterialCommandClientV1::readback(&self.experience)", "Stage::Dataset", "OriginalCellQ24MaterialCommandClientV1::readback(&self.dataset)", "Stage::Training", "self.ensure_trainer(owners).await?", "OriginalCellQ24TrainingCommandClientV1::readback(client)", "Stage::Selection", "self.ensure_version(owners).await?", "OriginalCircuitRetainedVersionClientV1::readback(version)", "current.publication().is_none()", "self.ensure_selector(owners).await?", "OriginalCircuitSelectionCommandClientV1::readback(client)", "Stage::NextUse", "self.ensure_next_use(owners).await?", "OriginalCircuitNextUseCommandClientV1::readback(client)", "Stage::Evaluation | Stage::Proposal", "Err(Error::OwnerUnavailable("]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn read_attestation("
+sequence = ["fn read_attestation(", "auth::require_receipt_position(snapshot, receipt)?", "self.read_stage(owners, receipt.observation.stage()).await?", "if &actual != receipt", "snapshot.receipts.iter().zip(&self.records)", "if expected != original", "auth::stage_index(receipt.observation.stage())?", "self\n            .records\n            .get(index)\n            .ok_or(Error::CommitUncertain)?\n            .1\n            .clone()"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn ensure_trainer("
+sequence = ["fn ensure_trainer(", "if self.trainer.is_none()", "OriginalCellQ24MaterialCommandClientV1::readback(&self.dataset)", "self.record_material(owners, &dataset)?", "self.trainer_initial.take()", "OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(", "initial, dataset", "Ok(())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn ensure_selector("
+sequence = ["fn ensure_selector(", "if self.selector.is_none()", "self.ensure_trainer(owners).await?", "OriginalCellQ24TrainingCommandClientV1::readback(trainer)", "self.record_training(owners, &training)?", "self\n                .original_dataset\n                .as_ref()", "self.selector_initial.take()", "OriginalCircuitSelectionCommandClientV1::bind_original_stage_channel(", "&owners.material", "dataset,\n                    &training,\n                    owners.origin", "Ok(())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn ensure_next_use("
+sequence = ["fn ensure_next_use(", "if self.next_use.is_none()", "self.ensure_selector(owners).await?", "OriginalCircuitSelectionCommandClientV1::readback(selector)", "self.record_selection(owners, &selection)?", "self\n                .original_dataset\n                .as_ref()", "self.next_use_initial.take()", "OriginalCircuitNextUseCommandClientV1::bind_original_stage_channel(", "&owners.material", "dataset,\n                    &selection,\n                    owners.origin", "Ok(())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn ensure_readiness("
+sequence = ["fn ensure_readiness(", "if self.readiness.is_none()", "self\n                .original_dataset\n                .as_ref()", "self\n                .original_selection\n                .as_ref()", "self\n                .readiness_initial\n                .take()", "OriginalCircuitCompletionReadinessClientV1::bind_original_stage_channel(", "&owners.material,\n                    dataset,\n                    selection", "Ok(())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn record_material("
+sequence = ["fn record_material(", "auth::require_snapshot(&owners.material, original.snapshot())?", "!(1..=2).contains(&count) || original.attestations().len() != count", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(", "original,\n                &owners.material", "original\n            .snapshot()\n            .receipts\n            .iter()\n            .zip(original.attestations())", "self.pin(owners, receipt, signature)?", "self.original_dataset = Some(original.clone())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn record_training("
+sequence = ["fn record_training(", "self\n            .original_dataset\n            .as_ref()", "auth::require_receipt_position(dataset.snapshot(), original.receipt())?", "self.pin(owners, original.receipt(), original.attestation())?", "self.original_training = Some(original.clone())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn record_selection("
+sequence = ["fn record_selection(", "self\n            .original_training\n            .as_ref()", "original.training_attestation() != training.attestation()", "auth::require_snapshot(&owners.material, original.snapshot())?", "original.snapshot().receipts.len() != 4", "original.snapshot().training_no_update_v2().is_none()", "original.snapshot().receipts[..3]", "self.records.get(index).map(|record| &record.0) != Some(expected)", "self.pin(owners, original.receipt(), original.attestation())?", "self.original_selection = Some(original.clone())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn record_next_use("
+sequence = ["fn record_next_use(", "self\n            .original_selection\n            .as_ref()", "original.training_attestation() != selection.training_attestation()", "original.selection_attestation() != selection.attestation()", "original.snapshot().receipts.len() != 5", "auth::require_snapshot(&owners.material, original.snapshot())?", "original.snapshot().receipts[..4]", "self.records.get(index).map(|record| &record.0) != Some(expected)", "self.pin(owners, original.receipt(), original.attestation())"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn pin("
+sequence = ["fn pin(", "auth::stage_index(receipt.observation.stage())?", "auth::verify_receipt(&owners.material, receipt, signature, auth::now()?)?", "self.records.get(index)", "prior != &(receipt.clone(), signature.clone())", "return Err(Error::WrongScope)", "self.records.len() != index || self.records.len() >= 5", "LearningIterationCoordinatorV1::from_snapshot(owners.material.initial.clone())?", "coordinator.record(prior.clone(), prior.observed_unix_seconds)?", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?", "owners\n            .material\n            .scope\n            .validate_snapshot(coordinator.snapshot())?", "self.records.push((receipt.clone(), signature.clone()))"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn ensure_version("
+sequence = ["self.ensure_trainer(owners).await?", "OriginalCellQ24TrainingCommandClientV1::readback(trainer)", "self.record_training(owners, &training)?", "self\n                .original_dataset\n                .as_ref()", "self.version_initial.take()", "Origin::Fresh", "OriginalCircuitRetainedVersionClientV1::bind_original_stage_channel(", "Origin::Recovered", "OriginalCircuitRetainedVersionClientV1::recover_original_stage_channel("]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
 required = ["RootResidentLearningEffectGateV3::training_cancellation(gate)"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "LearningEvidenceVerifierV1::new", "with_root_learning_stage_owners(", "permit_all", "if false", "unwrap_or", "AtomicBool::new", "tokio::spawn(", "spawn_blocking(", "fit_or_readback(", "publish(", "into_circuit_feature_task("]
-required_function_order = [{ function = "fn execute_original_stage(", sequence = ["fn execute_original_stage(", "let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", "self.origin != Origin::Fresh", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage() != Some(stage)", "auth::stage_index(stage)?", "self.root.as_ref().ok_or(", "let before_readback =", "RootResidentLearningEffectGateV3::require_current(", "gate, snapshot, &self.material.scope", "before_readback?", "self.continuation.try_lock()", "state.read_prefix(self, snapshot).await?", "state.ensure_trainer(self).await?", "state.ensure_version(self).await?", "state.ensure_next_use(self).await?", "state.ensure_readiness(self)?", "Stage::Evaluation | Stage::Proposal", "return Err(Error::OwnerUnavailable(", "self.prepare_retained_version(snapshot, &mut state).await?", "state.ensure_selector(self).await?", "self.await_completed_c(snapshot, &mut state).await?", "let before_dispatch =", "RootResidentLearningEffectGateV3::require_current(", "gate, snapshot, &self.material.scope", "before_dispatch?", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.material, snapshot, &state, fresh)?", "let result = match stage", "OriginalCellQ24MaterialCommandClientV1::execute(&state.experience)", "OriginalCellQ24MaterialCommandClientV1::execute(&state.dataset)", "RootResidentLearningEffectGateV3::training_cancellation(gate)", "OriginalCellQ24TrainingCommandClientV1::execute_training(trainer, dispatch)", "OriginalCircuitSelectionCommandClientV1::execute_selection(selector)", "OriginalCircuitNextUseCommandClientV1::attest_completed_task(observer)", "ready.as_ref() != Some(&value.receipt().observation)", "return Err(Error::CommitUncertain)", "let after_dispatch =", "RootResidentLearningEffectGateV3::require_current(", "gate, snapshot, &self.material.scope", "if after_dispatch.is_err()", "return Err(Error::CommitUncertain)", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.material, snapshot, &state, fresh)?", "let receipt = result?", "auth::require_receipt_position(snapshot, &receipt)?", "state.records.get(index).ok_or(Error::CommitUncertain)?", "auth::verify_receipt(&self.material, &receipt, &original.1, fresh)?", "Ok(receipt)"], top_level = ["let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", "let result = match stage", "let receipt = result?", "Ok(receipt)", "let before_readback =", "before_readback?", "let before_dispatch =", "before_dispatch?", "let after_dispatch =", "if after_dispatch.is_err()"] }, { function = "fn await_completed_c(", sequence = ["fn await_completed_c(", "self.root.as_ref().ok_or(", "for _ in 0..128", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?", "state.readiness.as_ref()", "OriginalCircuitCompletionReadinessClientV1::read_current(readiness)", "if let Some(ready) = current", "state.read_prefix(self, snapshot).await?", "return Ok(ready.observation().clone())", "tokio::time::sleep(Duration::from_secs(2)).await", "Err(Error::OwnerUnavailable("], top_level = [] }, { function = "fn prepare_retained_version(", sequence = ["self.root.as_ref().ok_or(", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?", "state.version.as_ref()", "RootResidentLearningEffectGateV3::training_cancellation(gate)", "OriginalCircuitRetainedVersionClientV1::prepare_original_version(", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)", "return Err(Error::CommitUncertain)", "let mut actual = match dispatched", "for _ in 0..128", "read.publication().is_some()", "state.read_prefix(self, snapshot).await?", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?", "return Ok(())", "tokio::time::sleep(Duration::from_secs(2)).await", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope).await?", "OriginalCircuitRetainedVersionClientV1::readback(client)"], top_level = ["let dispatched =", "let mut actual = match dispatched", "for _ in 0..128"] }]
 
+[[protected_file.required_function_order]]
+function = "fn execute_original_stage("
+sequence = ["fn execute_original_stage(", "let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", "self.origin != Origin::Fresh", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()\n                != Some(stage)", "auth::stage_index(stage)?", "self\n            .root\n            .as_ref()\n            .ok_or(", "let before_readback =", "RootResidentLearningEffectGateV3::require_current(", "gate, snapshot, &self.material.scope", "before_readback?", "self.continuation.try_lock()", "state.read_prefix(self, snapshot).await?", "state.ensure_trainer(self).await?", "state.ensure_version(self).await?", "state.ensure_next_use(self).await?", "state.ensure_readiness(self)?", "Stage::Evaluation | Stage::Proposal", "return Err(Error::OwnerUnavailable(", "self.prepare_retained_version(snapshot, &mut state).await?", "state.ensure_selector(self).await?", "self.await_completed_c(snapshot, &mut state).await?", "let before_dispatch =", "RootResidentLearningEffectGateV3::require_current(", "gate, snapshot, &self.material.scope", "before_dispatch?", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.material, snapshot, &state, fresh)?", "let result = match stage", "OriginalCellQ24MaterialCommandClientV1::execute(&state.experience)", "OriginalCellQ24MaterialCommandClientV1::execute(&state.dataset)", "RootResidentLearningEffectGateV3::training_cancellation(gate)", "OriginalCellQ24TrainingCommandClientV1::execute_training(trainer, dispatch)", "OriginalCircuitSelectionCommandClientV1::execute_selection(selector)", "OriginalCircuitNextUseCommandClientV1::attest_completed_task(observer)", "ready.as_ref() != Some(&value.receipt().observation)", "return Err(Error::CommitUncertain)", "let after_dispatch =", "RootResidentLearningEffectGateV3::require_current(", "gate, snapshot, &self.material.scope", "if after_dispatch.is_err()", "return Err(Error::CommitUncertain)", "auth::require_material(&self.material, self.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.material, snapshot, &state, fresh)?", "let receipt = result?", "auth::require_receipt_position(snapshot, &receipt)?", "state.records.get(index).ok_or(Error::CommitUncertain)?", "auth::verify_receipt(&self.material, &receipt, &original.1, fresh)?", "Ok(receipt)"]
+top_level = ["let started_at = auth::now()?", "auth::require_snapshot(&self.material, snapshot)?", "let result = match stage", "let receipt = result?", "Ok(receipt)", "let before_readback =", "before_readback?", "let before_dispatch =", "before_dispatch?", "let after_dispatch =", "if after_dispatch.is_err()"]
+
+[[protected_file.required_function_order]]
+function = "fn await_completed_c("
+sequence = ["fn await_completed_c(", "self\n            .root\n            .as_ref()\n            .ok_or(", "for _ in 0..128", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)\n                .await?", "state.readiness.as_ref()", "OriginalCircuitCompletionReadinessClientV1::read_current(readiness)", "if let Some(ready) = current", "state.read_prefix(self, snapshot).await?", "return Ok(ready.observation().clone())", "tokio::time::sleep(Duration::from_secs(2)).await", "Err(Error::OwnerUnavailable("]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn prepare_retained_version("
+sequence = ["self\n            .root\n            .as_ref()\n            .ok_or(", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)\n            .await?", "state.version.as_ref()", "RootResidentLearningEffectGateV3::training_cancellation(gate)", "OriginalCircuitRetainedVersionClientV1::prepare_original_version(", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)", "return Err(Error::CommitUncertain)", "let mut actual = match dispatched", "for _ in 0..128", "read.publication().is_some()", "state.read_prefix(self, snapshot).await?", "RootResidentLearningEffectGateV3::require_current(\n                    gate,\n                    snapshot,\n                    &self.material.scope,\n                )\n                .await?", "return Ok(())", "tokio::time::sleep(Duration::from_secs(2)).await", "RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.material.scope)\n                .await?", "OriginalCircuitRetainedVersionClientV1::readback(client)"]
+top_level = ["let dispatched =", "let mut actual = match dispatched", "for _ in 0..128"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_learning_retained_publication.rs"
