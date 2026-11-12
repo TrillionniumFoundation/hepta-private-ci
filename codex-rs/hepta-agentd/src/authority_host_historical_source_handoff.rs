@@ -49,6 +49,39 @@ pub(super) struct RootHistoricalSourceHandoffV1 {
 }
 
 impl RootHistoricalSourceHandoffV1 {
+    /// Enclose the complete recipient action in the finalized handoff arm.
+    /// Source readback happens before and after the nested Source arm, never
+    /// recursively inside it. The returned digest remains data, not authority.
+    pub(super) fn with_finalized_source_data<T>(
+        &self,
+        pin: &RootHistoricalSourcePinV1,
+        action: impl FnOnce(Digest32) -> io::Result<T>,
+    ) -> io::Result<T> {
+        original_root()?;
+        RootDataRefusalV1::inspect(&self.refusal, || {
+            if self.poisoned
+                || self.expected.phase != HandoffPhase::Finalized
+                || self.store.load(&self.owner).map_err(io::Error::other)? != self.expected
+                || pin.readback_digest()?.to_string() != self.expected.pin
+            {
+                return Err(io::Error::other("original finalized handoff differs"));
+            }
+            let digest = Digest32::of_parts(&[
+                b"hepta.root.original-historical-handoff-data-cut.v1\0",
+                &serde_json::to_vec(&self.expected).map_err(io::Error::other)?,
+            ]);
+            let result = action(digest)?;
+            if pin.readback_digest()?.to_string() != self.expected.pin
+                || self.store.load(&self.owner).map_err(io::Error::other)? != self.expected
+            {
+                return Err(io::Error::other(
+                    "original handoff changed after recipient context",
+                ));
+            }
+            Ok(result)
+        })
+    }
+
     pub(super) fn begin(
         slot: &RegisteredGenerationInitial,
         config: &HostAuthorityServiceConfig,
