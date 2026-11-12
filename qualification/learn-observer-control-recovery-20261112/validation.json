@@ -1,0 +1,37 @@
+{
+  "head": "41dd2778dd90d2d8f8c48ba28a70dbfa03957b90",
+  "tree": "241e8fb88ea0cc10f5d52a30092762e3faa72b14",
+  "cwd": "/home/qq/hepta-learn-ff41-observer-20261112",
+  "status_after": "",
+  "observed_utc": "2026-11-12T06:07:24Z",
+  "results": [
+    {
+      "scope": "source_qa",
+      "argv": [
+        "/usr/bin/python3",
+        "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.843787670135498,
+      "log": "/home/qq/hepta-learn-ff41-observer-publication/guards-source_qa.log",
+      "sha256": "7dffe685ebf6ab61677fd6014476d40f2caed5aecfbf12df9f53d801767a36ab",
+      "bytes": 2757
+    },
+    {
+      "scope": "all_protected_inventory",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import sys,json;sys.path.insert(0,'scripts');import verify_hepta_callers as p;m=p._load_manifest(p.ROOT/'CALLERS.toml');b=p._boundary_rows(m);i=p._verify_privileged_inventory(m,b);f=p._verify_protected_files(p.ROOT,m);print(json.dumps({'protected':len(f),'boundaries':len(b),'inventory':len(i),'authorityGranted':False,'fullCallerScan':False}))"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5799887180328369,
+      "log": "/home/qq/hepta-learn-ff41-observer-publication/guards-all_protected_inventory.log",
+      "sha256": "3deba412f675d98f0d8bda33cbed803f048d493c420b5fecda8562351b0103b0",
+      "bytes": 108
+    }
+  ],
+  "native": "not run",
+  "full_caller_scan": "not run"
+}
