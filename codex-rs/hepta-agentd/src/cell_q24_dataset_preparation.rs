@@ -97,21 +97,14 @@ impl CellQ24DatasetFreezePreparationV1 {
             .ledger
             .lock()
             .map_err(|_| Error::Binding("ledger lock"))?;
-        let (tag, index) = match self.config.head {
-            CellQ24PrivateHeadV1::Drive { index } => (1_u8, index),
-            CellQ24PrivateHeadV1::Prediction { index } => (2_u8, index),
-        };
-        Ok(Digest32::of_parts(&[
-            b"hepta.agentd.original-q24-dataset-preparation.v1\0",
-            initial.snapshot().head_digest.as_array(),
-            ledger.binding_digest().as_array(),
-            Digest32::of_bytes(&payload).as_array(),
-            self.config.baseline.effective_weights_digest().as_array(),
-            &[tag],
-            &index.to_le_bytes(),
-            &self.config.rule.epochs.to_le_bytes(),
-            &self.config.rule.learning_rate_q24.to_le_bytes(),
-        ]))
+        Ok(crate::original_q24_dataset_preparation_identity_v1(
+            initial.snapshot().head_digest,
+            ledger.binding_digest(),
+            &payload,
+            self.config.baseline.effective_weights_digest(),
+            self.config.head,
+            self.config.rule,
+        ))
     }
 
     pub fn revalidate_source(&self) -> Result<(), Error> {
