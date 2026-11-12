@@ -110,3 +110,7 @@ fn require_digest(value: &str) -> io::Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "root_generation_initial_ready_data_tests.rs"]
+mod tests;

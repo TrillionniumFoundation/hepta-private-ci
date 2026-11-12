@@ -79,12 +79,19 @@ enum ArtifactAccess {
     OriginalReadView,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+enum EnrollmentRoute {
+    OriginalRootTrigger,
+    OriginalPeerReady,
+}
+
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Plan {
     phase: Phase,
     lose_ack: bool,
     artifact_access: ArtifactAccess,
+    enrollment_route: EnrollmentRoute,
     model_directory: PathBuf,
     artifacts: artifacts::Transfer,
     target: data::ObserverData,
@@ -218,21 +225,39 @@ fn initial_feature_preflight_rejects_inexecutable_target_before_current() -> any
 #[test]
 #[ignore = "actual UID0, original protected bind domains and dedicated non-Root child"]
 fn root_initial_publication_uses_original_consumer_and_readonly_recovery() -> anyhow::Result<()> {
-    exercise_original_initial_artifacts(ArtifactAccess::OriginalWriter)
+    exercise_original_initial_artifacts(
+        ArtifactAccess::OriginalWriter,
+        EnrollmentRoute::OriginalRootTrigger,
+    )
 }
 
 #[test]
 #[ignore = "actual UID0, original protected bind domains and dedicated non-Root child"]
 fn root_initial_readview_keeps_original_writer_locked_and_binds_live_session() -> anyhow::Result<()>
 {
-    exercise_original_initial_artifacts(ArtifactAccess::OriginalReadView)
+    exercise_original_initial_artifacts(
+        ArtifactAccess::OriginalReadView,
+        EnrollmentRoute::OriginalRootTrigger,
+    )
 }
 
-fn exercise_original_initial_artifacts(artifact_access: ArtifactAccess) -> anyhow::Result<()> {
+#[test]
+#[ignore = "actual UID0, original protected bind domains and dedicated non-Root child"]
+fn root_initial_peer_ready_registers_fixed_inputs_without_trigger_file() -> anyhow::Result<()> {
+    exercise_original_initial_artifacts(
+        ArtifactAccess::OriginalReadView,
+        EnrollmentRoute::OriginalPeerReady,
+    )
+}
+
+fn exercise_original_initial_artifacts(
+    artifact_access: ArtifactAccess,
+    enrollment_route: EnrollmentRoute,
+) -> anyhow::Result<()> {
     // SAFETY: only observes the parent process's actual kernel credentials.
     assert_eq!(unsafe { (libc::getuid(), libc::geteuid()) }, (0, 0));
     for lose_ack in [false, true] {
-        let mut fixture = fixture::Fixture::new(lose_ack, artifact_access)?;
+        let mut fixture = fixture::Fixture::new(lose_ack, artifact_access, enrollment_route)?;
         // CURRENT does not exist until the child passes complete Feature and
         // original Artifact/target validation and requests this purpose.
         assert!(fixture.head().is_err());
@@ -290,6 +315,12 @@ fn exercise_original_initial_artifacts(artifact_access: ArtifactAccess) -> anyho
             output.contains("ROOT_INITIAL_ORIGINAL lifecycle=passed"),
             "{output}"
         );
+        if enrollment_route == EnrollmentRoute::OriginalPeerReady {
+            assert!(
+                output.contains("ROOT_INITIAL_PEER_READY phase=Publish acknowledgement=observed"),
+                "{output}"
+            );
+        }
         println!("{output}");
     }
     Ok(())

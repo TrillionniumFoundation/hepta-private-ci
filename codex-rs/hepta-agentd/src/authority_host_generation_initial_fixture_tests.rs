@@ -38,6 +38,7 @@ pub(super) struct Fixture {
     model_directory: PathBuf,
     artifacts: artifacts::Transfer,
     artifact_access: ArtifactAccess,
+    enrollment_route: EnrollmentRoute,
     _artifact_writer:
         Option<Arc<std::sync::Mutex<codex_hepta_learning_artifacts::LearningArtifactOwnerService>>>,
     offer: UnixDatagram,
@@ -46,7 +47,11 @@ pub(super) struct Fixture {
 }
 
 impl Fixture {
-    pub(super) fn new(drop_ack: bool, artifact_access: ArtifactAccess) -> anyhow::Result<Self> {
+    pub(super) fn new(
+        drop_ack: bool,
+        artifact_access: ArtifactAccess,
+        enrollment_route: EnrollmentRoute,
+    ) -> anyhow::Result<Self> {
         let parent = PathBuf::from(
             std::env::var_os("HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT")
                 .ok_or_else(|| anyhow::anyhow!("original protected bind required"))?,
@@ -342,6 +347,7 @@ impl Fixture {
             model_directory,
             artifacts,
             artifact_access,
+            enrollment_route,
             _artifact_writer: artifact_writer,
             offer,
             pin,
@@ -418,6 +424,13 @@ impl Fixture {
         );
         let capability: crate::RootGenerationInitialEnrollmentCapabilityV1 = capability;
         let deployment = capability.with_original_initial_deployment(files)?;
+        let deployment = match self.enrollment_route {
+            EnrollmentRoute::OriginalRootTrigger => Some(deployment),
+            EnrollmentRoute::OriginalPeerReady => {
+                prepared.enable_original_initial_peer_ready(deployment)?;
+                None
+            }
+        };
         let target_writer = OpenOptions::new()
             .read(true)
             .write(true)
@@ -430,6 +443,7 @@ impl Fixture {
             phase,
             lose_ack: self.drop_ack,
             artifact_access: self.artifact_access,
+            enrollment_route: self.enrollment_route,
             model_directory: self.model_directory.clone(),
             artifacts: self.artifacts.clone(),
             target: data::ObserverData::from_original_observer(&self.target_config),
@@ -448,31 +462,33 @@ impl Fixture {
                 control(&self.offer, b"ORIGINAL_INPUTS_READY").with_context(|| {
                     format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY")
                 })?;
-                // The original child has now opened both real nonce owners.
-                // The production loader invokes the original same-PID cap.
-                let unchanged = support::protected_files(&self.current_path)?;
-                let claims_before = std::fs::read(self.local.join("device/authority.claims"))?;
-                deployment.component_trigger_initial()?;
-                assert_eq!(support::protected_files(&self.current_path)?, unchanged);
-                assert_eq!(
-                    std::fs::read(self.local.join("device/authority.claims"))?,
-                    claims_before
-                );
-                let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
-                let deployment: crate::RootGenerationInitialDeploymentV1 = deployment;
-                let outcome = deployment.wait_and_register_initial(&stopping);
-                if reject {
-                    anyhow::ensure!(
-                        outcome.is_err(),
-                        "original bad or sticky fenced target rejected"
+                // Only the explicitly selected legacy test route writes a
+                // trigger. Peer readiness is handled by actual product code.
+                if let Some(deployment) = deployment {
+                    let unchanged = support::protected_files(&self.current_path)?;
+                    let claims_before = std::fs::read(self.local.join("device/authority.claims"))?;
+                    deployment.component_trigger_initial()?;
+                    assert_eq!(support::protected_files(&self.current_path)?, unchanged);
+                    assert_eq!(
+                        std::fs::read(self.local.join("device/authority.claims"))?,
+                        claims_before
                     );
-                    send_data(&self.offer, &false)?;
-                } else {
-                    let registered = outcome.with_context(|| {
-                        format!("initial parent {phase:?}: registering original deployment")
-                    })?;
-                    anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
-                    send_data(&self.offer, &true)?;
+                    let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
+                    let deployment: crate::RootGenerationInitialDeploymentV1 = deployment;
+                    let outcome = deployment.wait_and_register_initial(&stopping);
+                    if reject {
+                        anyhow::ensure!(
+                            outcome.is_err(),
+                            "original bad or sticky fenced target rejected"
+                        );
+                        send_data(&self.offer, &false)?;
+                    } else {
+                        let registered = outcome.with_context(|| {
+                            format!("initial parent {phase:?}: registering original deployment")
+                        })?;
+                        anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
+                        send_data(&self.offer, &true)?;
+                    }
                 }
                 if phase == Phase::RetiredSession {
                     control(&self.offer, b"RETIRE_READY").with_context(|| {
