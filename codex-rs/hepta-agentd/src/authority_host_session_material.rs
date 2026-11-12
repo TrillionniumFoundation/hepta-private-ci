@@ -4,6 +4,34 @@ use super::*;
 use crate::authority_host_checkpoint::RootMaterialProfile;
 
 impl PreparedHostAuthoritySession {
+    /// Seal only this material-backed session's registered Agent journal root.
+    /// Recovery cannot select a new consumer directory, recreate a missing
+    /// journal or replace its protected Current with a caller-supplied cut.
+    pub fn seal_original_material_bootstrap(&self) -> io::Result<File> {
+        let end = Instant::now() + std::time::Duration::from_secs(30);
+        let before = self.observe_physical_current()?;
+        let identity = self.registration.registered_identity.identity()?;
+        let consumer_root = identity.layout.agent_root().join("final-use");
+        let sealed = self.seal_bootstrap(&consumer_root)?;
+        let after = self.observe_physical_current()?;
+        if before.current() != after.current()
+            || before.material_sha256() != after.material_sha256()
+            || before.material_bytes() != after.material_bytes()
+        {
+            return Err(io::Error::other(
+                "original physical Current changed during bootstrap sealing",
+            ));
+        }
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        Ok(sealed)
+    }
+
     /// Delegate only this actual Root session's original Root0600 writer FD.
     /// No DTO, path, owner or generation parameter can select a different file.
     /// The original recipient still validates its inode/live binding and must

@@ -125,7 +125,7 @@ impl RunningOrdinaryA {
         let own_pidfd = tempfile::tempfile()?;
         let mut command = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-authority-host")?);
         command
-            .arg("serve-fresh-session")
+            .arg("serve-fresh-material-session")
             .arg("--config")
             .arg(&plan.root.service)
             .arg("--registration")
