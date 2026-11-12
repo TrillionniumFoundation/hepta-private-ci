@@ -97,9 +97,9 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
 
     def test_legacy_or_non_root_provider_cannot_be_promoted(self):
         self.reject_each(WRAPPER, "into_original_retained_version_issuer", (
-            "self.protected_root.as_ref()", "root.original_uid != 0",
+            "self\n            .protected_root\n            .as_ref()", "root.original_uid != 0",
             "self.check_root()?", "super::super::remaining(root.end)?",
-            "self.stream.try_lock()", "if slot.is_none()", "provider: self",
+            "self\n                .stream\n                .try_lock()", "if slot.is_none()", "provider: self",
         ))
         self.reject_each(HOST, "from_original_owners", (
             "final_use_issuer: AgentdUnixFinalUseGrantProvider",
@@ -134,7 +134,7 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
             "!self.preparation_requested.load(Ordering::Acquire)",
             "self.read_original(&state)?", "let binding = original.final_use_binding().clone()",
             ".require_fresh(started, PublicationAccess::NewWork)?",
-            "state.final_use_issuer.take().ok_or(Error::ReadbackRequired)?",
+            "state\n            .final_use_issuer\n            .take()\n            .ok_or(Error::ReadbackRequired)?",
             "RetainedVersionFinalUseOutcomeV1::Requested as u8",
         ))
 
@@ -157,7 +157,7 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
         self.reject_each(HOST, "new", (
             "issuer_worker_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)",
             "RetainedVersionOriginV1::Fresh => RetainedVersionFinalUseOutcomeV1::Awaiting as u8",
-            "RetainedVersionOriginV1::Recovered => RetainedVersionFinalUseOutcomeV1::Published as u8",
+            "RetainedVersionOriginV1::Recovered => {\n                    RetainedVersionFinalUseOutcomeV1::Published as u8\n                }",
             "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)",
         ))
         source = (ROOT / WORKER).read_text()
@@ -174,8 +174,8 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
             "state.final_use_issuer.is_some()",
             "signed.grant.binding != original.final_use_binding()",
             "self.publication_requested.swap(true, Ordering::AcqRel)",
-            "publish_and_retain_original_trainer(", "task.install_original(published, cut, intent)",
-            "self.final_use_outcome.store(RetainedVersionFinalUseOutcomeV1::Published as u8, Ordering::Release)",
+            "publish_and_retain_original_trainer(", "task\n                .install_original(published, cut, intent)",
+            "self.final_use_outcome.store(\n                RetainedVersionFinalUseOutcomeV1::Published as u8,\n                Ordering::Release,\n            )",
         ))
         self.reject_each(EFFECT, "run_original_c", (
             "owner.read_original(&state)?",

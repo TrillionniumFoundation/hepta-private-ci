@@ -6294,12 +6294,14 @@ required_function_order = [
 path = "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
 required = ["Mutex<Option<Channel>>", "same_uid", "peer.pid == std::process::id()", "initial.owners.evidence_trust_digest != verifier.trust_digest()", "initial.request.envelope.objective_digest != verifier.objective_digest()", "LearningIterationStageV1::Proposal =>", "SystemTime::now()"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "initialize_host_authority", "create_protected", "AllowVerifier", "permit_all"]
-required_function_order = [
-  { function = "fn from_owner_stream(", sequence = ["LearningIterationCoordinatorV1::new(", "let same_uid", "expected.snapshot() != &initial", "initial.owners.evidence_trust_digest != verifier.trust_digest()", "RootObservationStream::from_stream_for_uid(", "channel: Mutex::new(Some(Channel"] },
-  { function = "fn readback(", sequence = ["let stage = receipt.observation.stage()", "snapshot.request != self.initial.request", "receipt.actor_id != self.actor_id", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "let mut channel = self", ".take()", "request_id.checked_add(1)", "wire::Request {", ".read(&request)", "response.schema != 1", "response.operation != request.operation", "response.request_id != request_id", "response.binding != request.binding", "response.snapshot_head != request.snapshot_head", "response.receipt_digest != request.receipt_digest", "response.evidence.decode()?", "SystemTime::now()", ".verify(role, &signature, &payload, now)", "verified.principal().principal_id != self.actor_id", "check_lifetime(", "= Some(channel)", "Ok(signature)"] },
-]
 
+[[protected_file.required_function_order]]
+function = "fn from_owner_stream("
+sequence = ["LearningIterationCoordinatorV1::new(", "let same_uid", "expected.snapshot() != &initial", "initial.owners.evidence_trust_digest != verifier.trust_digest()", "RootObservationStream::from_stream_for_uid(", "channel: Mutex::new(Some(Channel"]
 
+[[protected_file.required_function_order]]
+function = "fn readback("
+sequence = ["let stage = receipt.observation.stage()", "snapshot.request != self.initial.request", "receipt.actor_id != self.actor_id", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "let mut channel = self", ".take()", "request_id.checked_add(1)", "wire::Request {", ".read(&request)", "response.schema != 1", "response.operation != request.operation", "response.request_id != request_id", "response.binding != request.binding", "response.snapshot_head != request.snapshot_head", "response.receipt_digest != request.receipt_digest", "response.evidence.decode()?", "SystemTime::now()", ".verify(role, &signature, &payload, now)", "verified.principal().principal_id != self.actor_id", "check_lifetime(", "= Some(channel)", "Ok(signature)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration_evidence_wire.rs"
@@ -9599,8 +9601,31 @@ required_function_order = [{ function = "fn from_original(", sequence = ["Origin
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs"
 required = ["struct OriginalVersionChannel", "preparation_requested: bool", "struct QueuedVersionRequestFence"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "try_clone(", "permit_all", "forward_recovery", "LearningEvidenceVerifierV1::new", "RootResidentLearningProfileV3::new", "initialize_host_authority("]
-required_function_order = [{ function = "fn bind_original_stage_channel(", sequence = ["fn bind_original_stage_channel(", "Self::bind(\n            peer,\n            material,\n            dataset,\n            training,\n            RetainedVersionOriginV1::Fresh,\n        )"], top_level = [] }, { function = "fn recover_original_stage_channel(", sequence = ["fn recover_original_stage_channel(", "Self::bind(\n            peer,\n            material,\n            dataset,\n            training,\n            RetainedVersionOriginV1::Recovered,\n        )"], top_level = [] }, { function = "fn bind(", sequence = ["OriginalVersionCut::from_original(", "peer.check_peer_lifetime()?", "cut.require_fresh(started, PublicationAccess::Readback)?", "preparation_requested: origin == RetainedVersionOriginV1::Recovered"], top_level = [] }, { function = "fn exchange(", sequence = ["self.cut.require_fresh(started, access)?", "original.preparation_requested", "original.preparation_requested = true", "slot.take()", "1..=128", "wire::Request::new(", "encoded.len() > 16_384", "QueuedVersionRequestFence::new()", "spawn_blocking(", "dropped.load(Ordering::Acquire)", "cut.require_fresh(started, access)?", "channel.peer.request(&encoded)", "wire::Response", "response.request != request", "channel.peer.check_peer_lifetime()?", "self.cut\n            .require_fresh(started, access)\n            .map_err(|_| Error::CommitUncertain)?"], top_level = [] }, { function = "fn drop(", sequence = ["fn drop(", "self.cancelled.store(true, Ordering::Release)"], top_level = [] }]
 
+[[protected_file.required_function_order]]
+function = "fn bind_original_stage_channel("
+sequence = ["fn bind_original_stage_channel(", "Self::bind(\n            peer,\n            material,\n            dataset,\n            training,\n            RetainedVersionOriginV1::Fresh,\n        )"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn recover_original_stage_channel("
+sequence = ["fn recover_original_stage_channel(", "Self::bind(\n            peer,\n            material,\n            dataset,\n            training,\n            RetainedVersionOriginV1::Recovered,\n        )"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn bind("
+sequence = ["OriginalVersionCut::from_original(", "peer.check_peer_lifetime()?", "cut.require_fresh(started, PublicationAccess::Readback)?", "preparation_requested: origin == RetainedVersionOriginV1::Recovered"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn exchange("
+sequence = ["self.cut.require_fresh(started, access)?", "original.preparation_requested", "original.preparation_requested = true", "slot.take()", "1..=128", "wire::Request::new(", "encoded.len() > 16_384", "QueuedVersionRequestFence::new()", "spawn_blocking(", "dropped.load(Ordering::Acquire)", "cut.require_fresh(started, access)?", "channel.peer.request(&encoded)", "wire::Response", "response.request != request", "channel.peer.check_peer_lifetime()?", "self.cut\n            .require_fresh(started, access)\n            .map_err(|_| Error::CommitUncertain)?"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn drop("
+sequence = ["fn drop(", "self.cancelled.store(true, Ordering::Release)"]
+top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs"
@@ -9613,8 +9638,21 @@ required_function_order = [{ function = "fn new(", sequence = ["schema: 1", "pur
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs"
 required = ["pub struct OriginalCircuitRetainedVersionHostV1", "state: Mutex<RetainedVersionHostStateV1>", "preparation_requested: AtomicBool", "publication_requested: AtomicBool", "runtime_started: AtomicBool", "phase: Option<RetainedVersionHostPhaseV1>"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "try_clone(", "permit_all", "forward_recovery", "LearningEvidenceVerifierV1::new", "RootResidentLearningProfileV3::new", "initialize_host_authority("]
-required_function_order = [{ function = "fn from_original_owners(", sequence = ["require_original_command_initial(&material)", "require_initial_context(&dataset, &material)?", "task.require_completed_a(&inputs.completed)?", "RetainedVersionArtifactOwnerV1::new(", "Arc::clone(&inputs.authorities.artifacts)", "inputs.selection.signed.clone()", "inputs.selection.verifier.clone()", "Arc::clone(&inputs.current)", "RetainedVersionHostPhaseV1::Awaiting", "RetainedVersionOriginV1::Fresh"], top_level = [] }, { function = "fn recover_from_original_owners(", sequence = ["require_original_command_initial(&material)", "require_initial_context(&dataset, &material)?", "original.intent_digest.is_zero()", "original.training.receipts.len() != 3", "original.attestations.len() != 3", "RetainedVersionHostPhaseV1::Recovered", "RetainedVersionOriginV1::Recovered", "expected: Some(RetainedVersionColdCutV1"], top_level = [] }, { function = "fn new(", sequence = ["lifetime.is_zero() || lifetime > Duration::from_secs(300)", "Instant::now().checked_add(lifetime)", "preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "Handle::try_current()"], top_level = [] }]
 
+[[protected_file.required_function_order]]
+function = "fn from_original_owners("
+sequence = ["require_original_command_initial(&material)", "require_initial_context(&dataset, &material)?", "task.require_completed_a(&inputs.completed)?", "RetainedVersionArtifactOwnerV1::new(", "Arc::clone(&inputs.authorities.artifacts)", "inputs.selection.signed.clone()", "inputs.selection.verifier.clone()", "Arc::clone(&inputs.current)", "RetainedVersionHostPhaseV1::Awaiting", "RetainedVersionOriginV1::Fresh"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn recover_from_original_owners("
+sequence = ["require_original_command_initial(&material)", "require_initial_context(&dataset, &material)?", "original.intent_digest.is_zero()", "original.training.receipts.len() != 3", "original.attestations.len() != 3", "RetainedVersionHostPhaseV1::Recovered", "RetainedVersionOriginV1::Recovered", "expected: Some(RetainedVersionColdCutV1"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn new("
+sequence = ["lifetime.is_zero() || lifetime > Duration::from_secs(300)", "Instant::now().checked_add(lifetime)", "preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "Handle::try_current()"]
+top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs"
@@ -9634,15 +9672,56 @@ required_function_order = [{ function = "fn bind_original_predecessor(", sequenc
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs"
 required = ["struct QueuedFinalUseFence"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "try_clone(", "permit_all", "forward_recovery", "LearningEvidenceVerifierV1::new", "RootResidentLearningProfileV3::new", "initialize_host_authority(", "AgentdFinalUseIssuer::issue(", "ROOT_RESIDENT_LEARNING_EXECUTE", "prepare_agentd_generation_cold_drained_update_v1"]
-required_function_order = [{ function = "fn prepare_original(", sequence = ["self.origin != RetainedVersionOriginV1::Fresh", "self.preparation_requested.swap(true, Ordering::AcqRel)", "PublicationAccess::NewWork", "state.require_cut_current(&self.runtime)?", "state.artifacts.read_current()?", "state.phase.take()", "task.require_completed_a(&inputs.completed)?", "cut.require_fresh(", "state.trainer.take()", "prepare_original_circuit_retained_publication_v1(", "RetainedVersionHostPhaseV1::Prepared", "self\n            .read_original(state)"], top_level = [] }, { function = "fn publish_original_final_use(", sequence = ["self.origin != RetainedVersionOriginV1::Fresh", "signed.grant.binding != original.final_use_binding()", "self.publication_requested.swap(true, Ordering::AcqRel)", "QueuedFinalUseFence::new()", "spawn_blocking(", "require_not_cancelled(&cancellation)?", "self.bind_original_predecessor(&mut state)?", "self.read_original(&state)?", "signed.grant.binding != original.final_use_binding()", "PublicationAccess::NewWork", "require_not_cancelled(&cancellation)?", "state.phase.take()", "task.require_completed_a(&original.completed)?", "require_not_cancelled(&cancellation)?", "publish_and_retain_original_trainer(", "task\n                .install_original(published, cut, intent)", "state.trainer = Some(trainer)", "RetainedVersionHostPhaseV1::Installed", "state\n                .install_original_selection_reader()", "self\n                .read_original(&state)", "PublicationAccess::NewWork", "self.installed.notify_waiters()", "drop(queued)", "result"], top_level = [] }, { function = "fn run_original_c(", sequence = ["self.origin != RetainedVersionOriginV1::Fresh", "self.runtime_started.swap(true, Ordering::AcqRel)", "self.require_lifetime()?", "owner.read_original(&state)?", "PublicationAccess::NewWork", "config.take().ok_or(Error::ReadbackRequired)?", "crate::run(config, arg0_paths).await"], top_level = [] }, { function = "fn drop(", sequence = ["fn drop(", "self.cancelled.store(true, Ordering::Release)"], top_level = [] }]
 
+[[protected_file.required_function_order]]
+function = "fn prepare_original("
+sequence = ["self.origin != RetainedVersionOriginV1::Fresh", "self.preparation_requested.swap(true, Ordering::AcqRel)", "PublicationAccess::NewWork", "state.require_cut_current(&self.runtime)?", "state.artifacts.read_current()?", "state.phase.take()", "task.require_completed_a(&inputs.completed)?", "cut.require_fresh(", "state.trainer.take()", "prepare_original_circuit_retained_publication_v1(", "RetainedVersionHostPhaseV1::Prepared", "self\n            .read_original(state)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn publish_original_final_use("
+sequence = ["self.origin != RetainedVersionOriginV1::Fresh", "signed.grant.binding != original.final_use_binding()", "self.publication_requested.swap(true, Ordering::AcqRel)", "QueuedFinalUseFence::new()", "spawn_blocking(", "require_not_cancelled(&cancellation)?", "self.bind_original_predecessor(&mut state)?", "self.read_original(&state)?", "signed.grant.binding != original.final_use_binding()", "PublicationAccess::NewWork", "require_not_cancelled(&cancellation)?", "state.phase.take()", "task.require_completed_a(&original.completed)?", "require_not_cancelled(&cancellation)?", "publish_and_retain_original_trainer(", "task\n                .install_original(published, cut, intent)", "state.trainer = Some(trainer)", "RetainedVersionHostPhaseV1::Installed", "state\n                .install_original_selection_reader()", "self\n                .read_original(&state)", "PublicationAccess::NewWork", "self.installed.notify_waiters()", "drop(queued)", "result"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn run_original_c("
+sequence = ["self.origin != RetainedVersionOriginV1::Fresh", "self.runtime_started.swap(true, Ordering::AcqRel)", "self.require_lifetime()?", "owner.read_original(&state)?", "PublicationAccess::NewWork", "config.take().ok_or(Error::ReadbackRequired)?", "crate::run(config, arg0_paths).await"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn drop("
+sequence = ["fn drop(", "self.cancelled.store(true, Ordering::Release)"]
+top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
 required = ["impl OriginalCircuitRetainedVersionHostV1"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "try_clone(", "permit_all", "forward_recovery", "LearningEvidenceVerifierV1::new", "RootResidentLearningProfileV3::new", "initialize_host_authority("]
-required_function_order = [{ function = "fn serve_commands(", sequence = ["self.require_lifetime()?", "self.remaining_lifetime(lifetime)?", "spawn_blocking(", "original_owner_command_channel_v1(", "1..=128_u64", "self.require_lifetime()?", "channel.exchange(", "self.command_response(bytes, request_id)"], top_level = [] }, { function = "fn serve_original_ordinary(", sequence = ["tokio::try_join!", "serve_commands(", "OriginalCircuitRetainedVersionHostV1::run_original_c(Arc::clone(&self), arg0_paths)"], top_level = [] }, { function = "fn serve_original_selection_readback(", sequence = ["timeout.is_zero() || timeout > Duration::from_millis(500)", "self.remaining_lifetime(lifetime)?", "original_owner_command_channel_v1(", "loop", "self.require_lifetime()?", "channel.check_peer_lifetime()?", "state.selection_reader.as_ref().map(Arc::clone)", "spawn_blocking(", "OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel("], top_level = [] }, { function = "fn command_response(", sequence = ["request.schema != 1\n            || request.purpose != wire::OPERATION", "request.request_id != request_id", "request.initial_binding != self.initial_binding.to_string()", "request.operation_id != self.material.initial.request.operation_id.to_string()", "wire::digest(&request.binding)?", "wire::digest(&request.training_head)?", "require_original_command_initial(\n                &self.material,\n            )", "self.state.try_lock()", "self.bind_original_predecessor(&mut state)", "request.require_cut(", "wire::Action::Prepare => self.prepare_original(&mut state)", "wire::Action::Readback", "self.preparation_requested.store(true, Ordering::Release)", "self.read_original(&state)", "require_fresh(started, PublicationAccess::Readback)?", "duplicate_response_pin()", "self.encode_response(request, result, started, pin)"], top_level = [] }, { function = "fn encode_response(", sequence = ["require_original_command_initial(\n                &self.material,\n            )", "binding != self.initial_binding || fresh < started", "self.require_lifetime()?", "serde_json::to_vec", "bytes.len() > 16_384", "pin.require_fresh(started, PublicationAccess::Readback)?", "Ok(bytes)"], top_level = [] }]
 
+[[protected_file.required_function_order]]
+function = "fn serve_commands("
+sequence = ["self.require_lifetime()?", "self.remaining_lifetime(lifetime)?", "spawn_blocking(", "original_owner_command_channel_v1(", "1..=128_u64", "self.require_lifetime()?", "channel.exchange(", "self.command_response(bytes, request_id)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn serve_original_ordinary("
+sequence = ["tokio::try_join!", "serve_commands(", "OriginalCircuitRetainedVersionHostV1::run_original_c(Arc::clone(&self), arg0_paths)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn serve_original_selection_readback("
+sequence = ["timeout.is_zero() || timeout > Duration::from_millis(500)", "self.remaining_lifetime(lifetime)?", "original_owner_command_channel_v1(", "loop", "self.require_lifetime()?", "channel.check_peer_lifetime()?", "state.selection_reader.as_ref().map(Arc::clone)", "spawn_blocking(", "OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel("]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn command_response("
+sequence = ["request.schema != 1\n            || request.purpose != wire::OPERATION", "request.request_id != request_id", "request.initial_binding != self.initial_binding.to_string()", "request.operation_id != self.material.initial.request.operation_id.to_string()", "wire::digest(&request.binding)?", "wire::digest(&request.training_head)?", "require_original_command_initial(\n                &self.material,\n            )", "self.state.try_lock()", "self.bind_original_predecessor(&mut state)", "request.require_cut(", "wire::Action::Prepare => self.prepare_original(&mut state)", "wire::Action::Readback", "self.preparation_requested.store(true, Ordering::Release)", "self.read_original(&state)", "require_fresh(started, PublicationAccess::Readback)?", "duplicate_response_pin()", "self.encode_response(request, result, started, pin)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn encode_response("
+sequence = ["require_original_command_initial(\n                &self.material,\n            )", "binding != self.initial_binding || fresh < started", "self.require_lifetime()?", "serde_json::to_vec", "bytes.len() > 16_384", "pin.require_fresh(started, PublicationAccess::Readback)?", "Ok(bytes)"]
+top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs"
@@ -9678,12 +9757,12 @@ receiver_type = "OriginalCircuitRetainedVersionHostV1"
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs"
-required = ["enum OriginalVersionIssuerAccessV1 { Available, ReadbackOnly }", "const ORIGINAL_RETAINED_VERSION_DESTINATION: &str = \"agentd.cell-generation.next-task-same-model\";", "provider: AgentdUnixFinalUseGrantProvider,", "access: OriginalVersionIssuerAccessV1,"]
+required = ["enum OriginalVersionIssuerAccessV1 {\n    Available,\n    ReadbackOnly,\n}", "const ORIGINAL_RETAINED_VERSION_DESTINATION: &str = \"agentd.cell-generation.next-task-same-model\";", "provider: AgentdUnixFinalUseGrantProvider,", "access: OriginalVersionIssuerAccessV1,"]
 forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", "try_clone(", "permit_all", "forward_recovery", "LearningEvidenceVerifierV1::new", "RootResidentLearningProfileV3::new", "initialize_host_authority(", "DeploymentFinalUseIssuer::issue(", "ROOT_RESIDENT_LEARNING_EXECUTE", "AgentdUnixFinalUseGrantProvider::from_stream(", "derive(Clone", "impl Clone", "Deserialize"]
 
 [[protected_file.required_function_order]]
 function = "fn into_original_retained_version_issuer("
-sequence = ["self.protected_root.as_ref()", "root.original_uid != 0", "return Err(AgentdFinalUseIssuerError::PeerDenied)", "self.check_root()?", "super::super::remaining(root.end)?", "self.stream.try_lock()", "if slot.is_none()", "Ok(OriginalRootRetainedVersionIssuerV1", "provider: self", "access: OriginalVersionIssuerAccessV1::Available"]
+sequence = ["self\n            .protected_root\n            .as_ref()", "root.original_uid != 0", "return Err(AgentdFinalUseIssuerError::PeerDenied)", "self.check_root()?", "super::super::remaining(root.end)?", "self\n                .stream\n                .try_lock()", "if slot.is_none()", "Ok(OriginalRootRetainedVersionIssuerV1", "provider: self", "access: OriginalVersionIssuerAccessV1::Available"]
 
 [[protected_file.required_function_order]]
 function = "fn request_for_original_retained_version("
@@ -9700,7 +9779,7 @@ sequence = ["self.origin != RetainedVersionOriginV1::Fresh", "self.issuer_worker
 
 [[protected_file.required_function_order]]
 function = "fn claim_original_final_use("
-sequence = ["require_not_cancelled(cancelled)?", "self.require_lifetime()?", "self.origin != RetainedVersionOriginV1::Fresh", "self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Awaiting", "self.state.try_lock()", "RetainedVersionHostPhaseV1::Awaiting", "RetainedVersionHostPhaseV1::Prepared", "!self.preparation_requested.load(Ordering::Acquire)", "self.read_original(&state)?", "let binding = original.final_use_binding().clone()", ".require_fresh(started, PublicationAccess::NewWork)?", "require_not_cancelled(cancelled)?", "state.final_use_issuer.take().ok_or(Error::ReadbackRequired)?", "RetainedVersionFinalUseOutcomeV1::Requested as u8", "Ok(Some((issuer, binding)))"]
+sequence = ["require_not_cancelled(cancelled)?", "self.require_lifetime()?", "self.origin != RetainedVersionOriginV1::Fresh", "self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Awaiting", "self.state.try_lock()", "RetainedVersionHostPhaseV1::Awaiting", "RetainedVersionHostPhaseV1::Prepared", "!self.preparation_requested.load(Ordering::Acquire)", "self.read_original(&state)?", "let binding = original.final_use_binding().clone()", ".require_fresh(started, PublicationAccess::NewWork)?", "require_not_cancelled(cancelled)?", "state\n            .final_use_issuer\n            .take()\n            .ok_or(Error::ReadbackRequired)?", "RetainedVersionFinalUseOutcomeV1::Requested as u8", "Ok(Some((issuer, binding)))"]
 
 [[protected_file.required_function_order]]
 function = "fn drop("
@@ -9725,7 +9804,7 @@ sequence = ["RetainedVersionHostPhaseV1::Recovered", "RetainedVersionOriginV1::R
 
 [[protected_file.required_function_order]]
 function = "fn new("
-sequence = ["issuer_worker_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "final_use_outcome: AtomicU8::new(match origin", "RetainedVersionOriginV1::Fresh => RetainedVersionFinalUseOutcomeV1::Awaiting as u8", "RetainedVersionOriginV1::Recovered => RetainedVersionFinalUseOutcomeV1::Published as u8", "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)"]
+sequence = ["issuer_worker_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)", "final_use_outcome: AtomicU8::new(match origin", "RetainedVersionOriginV1::Fresh => RetainedVersionFinalUseOutcomeV1::Awaiting as u8", "RetainedVersionOriginV1::Recovered => {\n                    RetainedVersionFinalUseOutcomeV1::Published as u8\n                }", "runtime_started: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs"
@@ -9734,11 +9813,11 @@ forbidden = ["SigningKey", "UnixStream::connect", "File::open", "File::create", 
 
 [[protected_file.required_function_order]]
 function = "fn prepare_original("
-sequence = ["self.read_original(state)", "PublicationAccess::NewWork", "self.prepared.notify_waiters()", "Ok(actual)"]
+sequence = ["self\n            .read_original(state)", "PublicationAccess::NewWork", "self.prepared.notify_waiters()", "Ok(actual)"]
 
 [[protected_file.required_function_order]]
 function = "fn publish_original_final_use("
-sequence = ["self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Requested", "state.final_use_issuer.is_some()", "signed.grant.binding != original.final_use_binding()", "self.publication_requested.swap(true, Ordering::AcqRel)", "self.read_original(&state)?", "publish_and_retain_original_trainer(", "task.install_original(published, cut, intent)", "self.read_original(&state)", "PublicationAccess::NewWork", "self.final_use_outcome.store(RetainedVersionFinalUseOutcomeV1::Published as u8, Ordering::Release)", "self.installed.notify_waiters()"]
+sequence = ["self.original_final_use_outcome() != RetainedVersionFinalUseOutcomeV1::Requested", "state.final_use_issuer.is_some()", "signed.grant.binding != original.final_use_binding()", "self.publication_requested.swap(true, Ordering::AcqRel)", "self.read_original(&state)?", "publish_and_retain_original_trainer(", "task\n                .install_original(published, cut, intent)", "self\n                .read_original(&state)", "PublicationAccess::NewWork", "self.final_use_outcome.store(\n                RetainedVersionFinalUseOutcomeV1::Published as u8,\n                Ordering::Release,\n            )", "self.installed.notify_waiters()"]
 
 [[protected_file.required_function_order]]
 function = "fn run_original_c("
