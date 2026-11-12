@@ -20,7 +20,7 @@ use super::post_a_remaining;
 use super::refused;
 use crate::AgentdError;
 
-#[derive(Deserialize)]
+#[derive(Clone, Copy, Deserialize)]
 #[serde(rename_all = "snake_case")]
 enum MaterialMode {
     Create,
