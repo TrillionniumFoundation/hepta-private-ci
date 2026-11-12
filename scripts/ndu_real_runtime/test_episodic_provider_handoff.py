@@ -3,6 +3,7 @@
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
 from pathlib import Path
 import socket
 import tempfile
@@ -329,6 +330,68 @@ class ProviderHandoffTests(unittest.TestCase):
                 self.send()
             self.assertFalse(self.journal.exists())
         self.assertEqual(self.server.calls, [])
+
+    def test_symlink_launch_input_rejects_before_admission(self):
+        request = self.launch / "actor-output.bin"
+        real = self.root / "unmounted-private-history"
+        real.write_bytes(request.read_bytes())
+        request.unlink()
+        request.symlink_to(real)
+        with self.assertRaises(ValueError):
+            self.send()
+        self.assertFalse(self.journal.exists())
+        self.assertEqual(self.server.calls, [])
+
+    def test_oversized_launch_metadata_is_refused_before_json_decode(self):
+        receipt = self.launch / "RECEIPT.json"
+        receipt.write_bytes(b" " * 65537)
+        with self.assertRaisesRegex(ValueError, "bounded regular"):
+            self.send()
+        self.assertFalse(self.journal.exists())
+        self.assertEqual(self.server.calls, [])
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "POSIX FIFO control")
+    def test_fifo_launch_input_is_refused_without_opening_or_waiting(self):
+        request = self.launch / "actor-output.bin"
+        request.unlink()
+        os.mkfifo(request)
+        # The admission check must reject based on lstat before os.open can wait.
+        from unittest.mock import patch
+
+        original_open = os.open
+
+        def reject_fifo(path, *args, **kwargs):
+            if Path(path) == request:
+                raise AssertionError("FIFO was opened")
+            return original_open(path, *args, **kwargs)
+
+        with patch("os.open", side_effect=reject_fifo):
+            with self.assertRaisesRegex(ValueError, "bounded regular"):
+                self.send()
+        self.assertFalse(self.journal.exists())
+        self.assertEqual(self.server.calls, [])
+
+    def test_replay_rejects_symlinked_original_response(self):
+        self.assertEqual(self.send()["status"], "RECEIVED")
+        response = self.attempt() / "response.bin"
+        real = self.root / "redirected-response"
+        real.write_bytes(response.read_bytes())
+        response.unlink()
+        response.symlink_to(real)
+        self.assertEqual(self.send()["status"], "UNKNOWN")
+        self.assertEqual(len(self.server.calls), 1)
+
+    def test_oversized_replay_metadata_stays_unknown_without_send(self):
+        self.assertEqual(self.send()["status"], "RECEIVED")
+        (self.attempt() / "RECEIPT.json").write_bytes(b" " * 65537)
+        self.assertEqual(self.send()["status"], "UNKNOWN")
+        self.assertEqual(len(self.server.calls), 1)
+
+    def test_deeply_nested_replay_metadata_stays_unknown_without_send(self):
+        self.assertEqual(self.send()["status"], "RECEIVED")
+        (self.attempt() / "RECEIPT.json").write_bytes(b"[" * 2000 + b"0" + b"]" * 2000)
+        self.assertEqual(self.send()["status"], "UNKNOWN")
+        self.assertEqual(len(self.server.calls), 1)
 
 
 if __name__ == "__main__":

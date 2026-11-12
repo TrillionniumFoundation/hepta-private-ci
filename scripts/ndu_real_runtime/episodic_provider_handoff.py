@@ -14,6 +14,7 @@ import json
 import math
 import os
 from pathlib import Path
+import stat
 import time
 import urllib.error
 import urllib.parse
@@ -21,6 +22,7 @@ import urllib.request
 
 
 MAX_REQUEST_BYTES = 1048576
+MAX_METADATA_BYTES = 65536
 
 
 @dataclass(frozen=True)
@@ -58,6 +60,33 @@ def _canonical(value):
     return json.dumps(
         value, sort_keys=True, separators=(",", ":"), allow_nan=False
     ).encode()
+
+
+def _read_regular(path, limit):
+    """Refuse special files and bound bytes before JSON parsing or hashing."""
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode) or before.st_size > limit:
+        raise ValueError("bounded regular evidence file required")
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    descriptor = os.open(path, flags)
+    with os.fdopen(descriptor, "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino)
+            or opened.st_size > limit
+        ):
+            raise ValueError("bounded regular evidence file required")
+        raw = stream.read(limit + 1)
+        after = os.fstat(stream.fileno())
+    if (
+        len(raw) > limit
+        or len(raw) != after.st_size
+        or (opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns)
+        != (after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+    ):
+        raise ValueError("evidence bytes changed during bounded read")
+    return raw
 
 
 def _write(path, raw):
@@ -104,7 +133,7 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
             raise ValueError("bounded printable request/case identity required")
     if not isinstance(profile, HandoffProfile):
         raise ValueError("frozen handoff profile required")
-    if not isinstance(profile.endpoint, str):
+    if not isinstance(profile.endpoint, str) or len(profile.endpoint) > 8192:
         raise ValueError("endpoint URL required")
     route = urllib.parse.urlsplit(profile.endpoint)
     loopback = False
@@ -139,13 +168,16 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
     ):
         raise ValueError("bounded timeout and response size required")
     launch_dir = Path(launch_dir)
-    launch_raw = (launch_dir / "RECEIPT.json").read_bytes()
+    launch_raw = _read_regular(launch_dir / "RECEIPT.json", MAX_METADATA_BYTES)
     launch = _json(launch_raw)
-    request_raw = (launch_dir / "actor-output.bin").read_bytes()
-    stdout = (launch_dir / "stdout.bin").read_bytes()
+    request_raw = _read_regular(launch_dir / "actor-output.bin", MAX_REQUEST_BYTES)
+    stdout = _read_regular(
+        launch_dir / "stdout.bin", MAX_REQUEST_BYTES + MAX_METADATA_BYTES
+    )
     first, separator, actor_output = stdout.partition(b"\n")
     if (
-        launch.get("schema") != "hepta.mem9.isolated-launch.v1"
+        not isinstance(launch, dict)
+        or launch.get("schema") != "hepta.mem9.isolated-launch.v1"
         or launch.get("status") != "EXECUTED"
         or type(launch.get("returncode")) is not int
         or launch["returncode"] != 0
@@ -153,7 +185,7 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
         or launch.get("capture_truncated") is not False
         or launch.get("mode") not in {"on", "off"}
         or not isinstance(launch.get("session_id"), str)
-        or not launch["session_id"]
+        or not 1 <= len(launch["session_id"]) <= 128
         or launch.get("launcher_sha256") != profile.launcher_sha256
         or launch.get("actor_sha256") != profile.actor_sha256
         or launch.get("actor_output") != _pin(request_raw)
@@ -230,12 +262,21 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
         saved = output / "ADMISSION.json"
         if not saved.exists():
             return {**receipt, "reason": "INTERRUPTED_ADMISSION"}
-        if saved.read_bytes() != _canonical(admission):
+        try:
+            saved_raw = _read_regular(saved, MAX_METADATA_BYTES)
+        except (OSError, ValueError):
+            return {**receipt, "reason": "RETAINED_BYTES_CHANGED"}
+        if saved_raw != _canonical(admission):
             raise ValueError("request identity conflicts with durable admission")
         terminal = output / "RECEIPT.json"
         if not terminal.exists():
             return {**receipt, "reason": "UNSETTLED_OR_IN_FLIGHT"}
-        retained = _json(terminal.read_bytes())
+        try:
+            retained = _json(_read_regular(terminal, MAX_METADATA_BYTES))
+        except (OSError, ValueError, RecursionError):
+            return {**receipt, "reason": "RETAINED_BYTES_CHANGED"}
+        if not isinstance(retained, dict):
+            return {**receipt, "reason": "RETAINED_BYTES_CHANGED"}
         # Never regenerate or re-dispatch if retained evidence was lost/changed.
         if any(retained.get(key) != value for key, value in admission.items()):
             raise ValueError("retained receipt does not match admission")
@@ -249,16 +290,19 @@ def handoff(root, launch_dir, *, request_id, case_id, profile):
             or retained.get("transport_dispatches") != 1
         ):
             raise ValueError("incomplete received terminal")
-        for name, pin in (
-            ("request.bin", admission["request"]),
-            ("launch.json", admission["launch"]),
-            ("response.bin", retained["response"]),
-            ("response-headers.json", retained.get("response_headers")),
+        for name, pin, limit in (
+            ("request.bin", admission["request"], MAX_REQUEST_BYTES),
+            ("launch.json", admission["launch"], MAX_METADATA_BYTES),
+            ("response.bin", retained["response"], profile.max_response_bytes + 1),
+            ("response-headers.json", retained.get("response_headers"), 262144),
         ):
-            if pin is not None and (
-                not (output / name).is_file()
-                or _pin((output / name).read_bytes()) != pin
-            ):
+            if pin is None:
+                continue
+            try:
+                matches = _pin(_read_regular(output / name, limit)) == pin
+            except (OSError, ValueError):
+                matches = False
+            if not matches:
                 return {**receipt, "reason": "RETAINED_BYTES_CHANGED"}
         return retained
     _sync_directory(root)
