@@ -1,0 +1,69 @@
+{
+  "actual_terminal": {
+    "at_unix_ms": 1794518030037,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1d19bc7dd-2564-1c64",
+    "launch_nonce": "359754c715bf166a5be8963553d56623",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1274,
+        "stored": 1274
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "format": "hepta-postformat-extractor-v1-failed-original-readback-v1",
+  "native_job": "1a1d19bc7dd-2564-1c64",
+  "note": "Original initial admission MCP timeout retained. Same exact idempotency request returned launch.ok/reused=false. No changed request or second key. This known precondition failure leaves original source unchanged and no proposals frozen; it is not a Rust or source gate result.",
+  "original_binary_readbacks": [
+    {
+      "bytes": 1154,
+      "git_blob": "3abc6e992d743aeb94e9d97491367436f06bc9fa",
+      "name": "RESULT.json",
+      "sdk": "RESULT_READ_02.original.json",
+      "sha256": "a06603b0bfdc3df51c6c4e18f844b27bf63201f0729916916f7b088574fa58ff",
+      "version": "2050:50663503:1154:1794518029987969515:1794518029987969515"
+    },
+    {
+      "bytes": 991,
+      "git_blob": "dd61d21d51882568e5de0eef3fb55724e7228fba",
+      "name": "ERROR.json",
+      "sdk": "ERROR_READ_01.original.json",
+      "sha256": "75cc385716b0ce2b73014d9ec78403d4f0a64e187ca1829b8388940e0ce3462e",
+      "version": "2050:50663501:991:1794518025549379877:1794518025549379877"
+    },
+    {
+      "bytes": 496,
+      "git_blob": "4ac0f3a11fbad52e981f1c3c558a42cf9f5bb2ee",
+      "name": "SOURCE_COORDINATION_SH.json",
+      "sdk": "SH_LEASE_READ_01.original.json",
+      "sha256": "8ab64cb952b5596037c7f85779dd74672976c9e9d7b758b96a5030e43d6e1ddf",
+      "version": "2050:50663201:496:1794518012000068098:1794518012000068098"
+    }
+  ],
+  "qualification": false
+}

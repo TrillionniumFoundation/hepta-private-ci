@@ -1,0 +1,27 @@
+{
+  "creation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "41e85f61a46ae50c2dc0681c82095891f76a472b"
+    },
+    "isError": false
+  },
+  "readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"content\":[{\"type\":\"text\",\"text\":\"McpServerError: Connection failed.\"}],\"structuredContent\":{\"error\":\"McpServerError: Connection failed.\",\"error_code\":\"UNAVAILABLE\",\"error_data\":{\"type\":\"mcp_network_error\",\"code\":\"network_error\",\"message\":\"Connection failed.\"}},\"isError\":true}\n"
+    },
+    "isError": false
+  },
+  "binary_readback_note": null
+}

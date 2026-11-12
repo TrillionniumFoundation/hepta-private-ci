@@ -1,0 +1,95 @@
+{
+  "actual_final_format": {
+    "git_state": {
+      "bytes": 489,
+      "git_blob": "be108e81e8becd1b6dd3f4cac302b5f855d51b41",
+      "sha256": "e8ec74c83f7f671727d417e722da27a1337e70b0ef14b3a0481bd5d0ef609e14"
+    },
+    "git_state_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/final-nonrust-fmt-v2/final.git-state.json",
+    "job_id": "1a1d1cb5f1a-2564-1c7c",
+    "result": {
+      "bytes": 8585,
+      "git_blob": "7b9c39083f2acd84d41740c18e6288914496d136",
+      "sha256": "e2983c5ff45c3474ecc84be80eebd48fbde3c156ae193f56e309c90b0a420ea8"
+    },
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/final-nonrust-fmt-v2/RESULT.json",
+    "supervisor": {
+      "bytes": 912,
+      "git_blob": "cc5e721f649b1bb90619877e3a5c22e970cf3f58",
+      "sha256": "744efd4d8ea413862929697ff5ad994eeb0cb5a4124ae6f395ed9df7d80c0c36"
+    },
+    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1/FINAL_FORMAT_NORMAL.original.json"
+  },
+  "actual_final_format_review": {
+    "bytes": 3868,
+    "git_blob": "17a0b6bbfb5c807481efc78e13565d1e43e42507",
+    "sha256": "342c6903957d267fc708077c8b0f1ee574f86f170a6db958501e68f5694ba68a"
+  },
+  "before_inventory": {
+    "bytes": 5614896,
+    "filesystem_entries": 15188,
+    "git_blob": "445e54a43503dd79ba1e856e2e07acf532994ae6",
+    "sha256": "5e106b53d7dfb69c5beb84a4d726c4591ff96d032e7aaa1a5418ccbbb95a16ca",
+    "tracked_entries": 15188
+  },
+  "canonical_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "canonical_objects": {
+    "blob": 54,
+    "commit": 1,
+    "total": 62,
+    "tree": 7
+  },
+  "canonical_packet": {
+    "bytes": 3149217,
+    "git_blob": "5bf5d0b9cd4737df50523e5ded4e1a9ca8754f36",
+    "sha256": "33bd5c58b7353008f540878b6ea5cf06cfbe220d6ee6ff663957ad116b641865"
+  },
+  "canonical_packet_manifest": {
+    "bytes": 4321,
+    "git_blob": "95b40f12cc043898615bdd0a86f93ca4f8836ce6",
+    "sha256": "9d2927b604ae310212b5d2228db9f6a998f4505bf99d8fea9d6ab3cddaae6f75"
+  },
+  "canonical_parents": [
+    "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+  ],
+  "canonical_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "config": {
+    "bytes": 3724,
+    "git_blob": "decf734844b040344fcece643f59bbc82b2c1b88",
+    "sha256": "f157643b1179deb47dd48ba5f744a9382ebae6da99fdea1bc84dd9a7dcfbc7fa"
+  },
+  "driver": {
+    "bytes": 46094,
+    "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+    "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+  },
+  "expected_after_inventory": {
+    "bytes": 5611184,
+    "filesystem_entries": 15188,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e",
+    "tracked_entries": 15188
+  },
+  "expected_after_inventory_limit": "Prediction using the unchanged original compact serializer. Native must independently produce these exact bytes after its index/HEAD operation; not an observed clean source yet.",
+  "format": "hepta-root-final-canonical-alignment-input-approval-v1",
+  "independent_driver_peer_review": {
+    "bytes": 8212,
+    "git_blob": "4dd84b7e67d3112150212e80e5dfe221e1d6fa4e",
+    "sha256": "ee3b6dd4013224dfe5e0ba2acfd488415339d0b87c9d56d5b79e29fbe271658d"
+  },
+  "native_alignment_started": false,
+  "next_required": "Freeze the exact four-file bootstrap and seven-field900-second launch; Root reviews those exact bytes before a single native request.",
+  "qualification": false,
+  "real_qualified_task_chain_results": 0,
+  "reviewed_invariants": [
+    "All62 provided raw objects match exact type, length, SHA256 and Git object identity; canonical commit matches the actual server-issued commit and sole parent.",
+    "Actual complete15188 physical inventory and successful original final formatter are bound; all11 applied after-images previously reviewed; formatter changed zero source paths.",
+    "Existing driver765ada remains byte-for-byte unchanged; original action600/record180/outer900 and actual shared source EX lock/same-UID build guard remain unchanged.",
+    "Only exact missing canonical Git objects, an explicit whole-index tree/stat transition and detached HEAD CAS are authorized; physical source files, config, branch refs and existing objects must remain unchanged.",
+    "The entire physical tree must equal the canonical snapshot before index/HEAD writes; complete raw Git metadata and complete index flags/stat/checksum/cache-tree are audited.",
+    "Expected clean inventory is only a deterministic projection until native independently observes the exact full original-serializer bytes.",
+    "Any failure preserves partial original state without rollback, automatic retry or status promotion."
+  ],
+  "source_branch_ref_updated": false,
+  "status": "INPUTS_APPROVED_EXACT_LAUNCH_REVIEW_STILL_REQUIRED"
+}

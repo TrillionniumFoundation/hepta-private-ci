@@ -1,0 +1,181 @@
+{
+  "format": "hepta-final-nonrust-independent-static-peer-review-v1",
+  "created_utc": "2026-11-12T21:49:27.617450+00:00",
+  "status": "one_specific_blocking_source_scope_coverage_gap_pending_minimal_successor",
+  "proposal_manifest": {
+    "bytes": 14182,
+    "sha256": "c9c4470f27cef0c9de37e81d2096e9aef6850a28f2927c3de032d82744750f97",
+    "git_blob_sha": "10dffe87464c5a94cbf7c02f6b6ae1958697cd22"
+  },
+  "source_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+  "before_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+  "expected_unapplied_after_tree": "74a2fe12be39aba5ab55d537124cd9462673fd9e",
+  "prior_old17_review_blob": "032c411dc951e9565cfb9c3f569dfb6f41e2b9ec",
+  "read_only_inputs": {
+    "FENCE_REVIEW.json": {
+      "bytes": 821595,
+      "sha256": "adb28537cc32aa0a29a520115bcd757467145f9f17f6b19c0bc9bd829deb13c5",
+      "git_blob_sha": "ef22adde2c3944addcc3d7e04684ec1a46dcd06c"
+    },
+    "NEW_ORDINARY_QA_REVIEW.json": {
+      "bytes": 16933,
+      "sha256": "9f4d7b537d80e5f6b38001713765333a00914f984b01bc111e7cc861d9f5563b",
+      "git_blob_sha": "ed456bf515c2e7a258ac0fa3e373eb5e33a8b61d"
+    },
+    "ALL_CAPTURED_QA_METHOD_REVIEW.json": {
+      "bytes": 11637,
+      "sha256": "6c46a8ada010bbe3b4cf35cd99b3042c58f861ca6cb65ff9ab2ed85027b73eb0",
+      "git_blob_sha": "d4682e4f8447b0359072cff8b7397e32e0810def"
+    },
+    "OLD_QA_MIGRATIONS.json": {
+      "bytes": 189709,
+      "sha256": "60c489ed25ab18df78554d88fe35caf700b20f607468d4f08252c5ad2d5bc4ec",
+      "git_blob_sha": "1215cfdffc8bb9f90cf7095e86783b9fbc6737d5"
+    }
+  },
+  "structural_and_semantic_checks": {
+    "all_nonprotected_CALLERS_fields_and_569_boundaries_identical": true,
+    "old_protected_rows_retained_with_original_order_and_paths": 412,
+    "old_protected_rows_changed_explicitly": 39,
+    "old_protected_rows_unchanged": 373,
+    "new_protected_rows_appended": 10,
+    "protected_rows_after": 422,
+    "distinct_protected_paths_before_after": [
+      341,
+      351
+    ],
+    "original_forbidden_arrays_all_unchanged": true,
+    "original_file_level_required_order_sequences_all_retained_exactly": true,
+    "row409_three_original_literal_call_guards_exactly_retained_as_additional_guards": true,
+    "explicit_extra_guard_relocations": [
+      {
+        "from": "fn bind_original_stage_channel(",
+        "kind": "same_checks_moved_to_shared_typed_binder",
+        "markers": [
+          "let started_at = now()?",
+          "peer.check_peer_lifetime()?",
+          "Ok(Self {"
+        ],
+        "row": 300,
+        "to": "fn bind_profile("
+      },
+      {
+        "after": "request.require_profile(&self.context, self.binding, request_id)?",
+        "before": "request.require_context(self.context.legacy()?, self.binding, request_id)?",
+        "function": "fn readiness_response(",
+        "kind": "typed_profile_dispatch_preserving_legacy_check",
+        "row": 301
+      },
+      {
+        "from": "fn bind_original_selection(",
+        "kind": "same_checks_moved_to_shared_opaque_binding",
+        "markers": [
+          "if context.initial()? != self.material.initial",
+          "let binding = context_binding(&context, started_at)?;",
+          "self.peer.check_peer_lifetime()?;",
+          "let (original, current) =",
+          "let verified_at =",
+          "if current < started_at || verified_at < current || original != self.initial_binding",
+          "let verified = wire::authenticate_completed(",
+          "if verified != selection || context_binding(&context, verified_at)? != binding",
+          "let initial = self.material.initial.clone();",
+          "let actor_id = initial.owners.selector.clone();",
+          "let verifier = self.material.verifier.clone();",
+          "let reader = OriginalSelectionReadbackV1 {",
+          "Ok(LearningIterationEvidenceClientV1 {"
+        ],
+        "row": 390,
+        "to": "fn finish_binding("
+      },
+      {
+        "after": "request.operation = operation(context).into();",
+        "before": "request.operation = OPERATION.into();",
+        "function": "fn request(",
+        "kind": "same_request_field_with_typed_purpose",
+        "row": 390
+      }
+    ],
+    "only_three_removed_raw_required_markers_have_explicit_actual_owner_migrations": [
+      {
+        "after": "self.observe_original(original, wire::Action::Readback)?",
+        "before": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote",
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+        "row": 271
+      },
+      {
+        "after": "self.observe_original(original, wire::Action::Readback)?",
+        "before": "OriginalCircuitNextUseReceiptOwnerV1::readback_remote(",
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+        "row": 282
+      },
+      {
+        "after": "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(",
+        "before": "Err(Error::OwnerUnavailable(\n                    \"original Candidate selection and adoption route is absent\",\n                ))",
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "row": 324
+      }
+    ],
+    "all49_fence_report_before_after_rows_equal_actual_TOML": true,
+    "all49_actual_Rust_source_pins_equal_native73_capture": true,
+    "17_literal_specs_common_fields_exactly_equal_approved_v2_plan": true,
+    "10_module_mount_specs_common_fields_exactly_equal_approved_v2_plan": true,
+    "scope_guard_data_exactly_matches_fence_report": true,
+    "new_boundary_constant_and_digest_exactly_match_actual_unchanged569_rows": true,
+    "nine_new_pure_scope_helper_algorithms_match_approved_extractor_after_name_prefix_and_exception_class_substitution": true,
+    "allowlist_original_bytes_preserved_and_one_exact_CALLERS_digest_appended": "51e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb",
+    "full_captured_QA_files": 21,
+    "full_captured_original_methods": 184,
+    "unchanged_original_methods": 167,
+    "explicitly_migrated_original_methods": 17,
+    "new_methods": 18,
+    "removed_methods": 0,
+    "prior_related_subset": {
+      "files": 17,
+      "original_methods": 152,
+      "unchanged_methods": 135,
+      "migrated_methods": 17
+    },
+    "original_verifier_collector_three_ignored_authority_and_600s_budget_unmodified": true
+  },
+  "new18_semantic_review": [
+    "Complete evaluated-prefix attacks preserve replayed 4/5/6 cuts, distinct candidate versus retained parent, exact next stage, rejection of legacy TrainingNoUpdate and Adopt substitution. The boolean NoUpdate check is not used alone.",
+    "Continuation and Root-stage attacks preserve full original request/owner/scope/trust/objective identities, same retained original channels, take-once admission, fresh-only effects and current Root checks around the real work.",
+    "Selection and C pin attacks require full original signatures, signed predecessor prefixes, exact 5/6 receipt lengths, current readbacks and failed-lane fencing; cut4 is not treated as real S or C.",
+    "Both Clone implementations are independently selected by exact root impl header and complete impl body, with actual-context clone and hidden nested-impl counterexamples.",
+    "Original command helpers distinguish Legacy/Evaluated predecessor custody and Execute/Readback. The new C remote observation preserves actual T/B/S and final actual Source/Cell after predecessor validation.",
+    "Version attacks preserve the explicit pre-held original E connection, independent purpose, no recreated signer, complete cold read before reader installation, subsequent failed-bind admission clearing and separate invalid-wire behavior.",
+    "Published and fresh checks precede S connection serving and C start; original FinalUse and Prepared custody remain consumed, with the same returned T/E preserved. Unknown/Denied is not rewritten as complete NoUpdate or fraud.",
+    "Readiness attacks keep legacy and evaluated purpose separation, take-before-I/O, exact original framing, same authenticated Ready acceptance and rejection of changed Ready or Ready-to-NotReady before connection restoration.",
+    "All seventeen critical literals are checked at real masked-code expression spans; same-length replacement plus original-string comment, unrelated-function and nested-function decoys are rejected by the intended mechanism. Ten module mounts require actual production root declarations, not comments, cfg(test), or a nested unused function.",
+    "The new typed-edge test is an exact inventory/hash check, not a substitute for full caller collection. Existing full-collector assertions and the original three ignored fragments stay. The reported 49/49 and 18/18 are separately recorded scoped diagnostics, not full gate or Rust results."
+  ],
+  "blocking_finding": {
+    "id": "UNREACHED_SUPPLEMENTARY_SCOPE_GUARDS",
+    "new_QA_blob": "e2f43f04110ea00b8aeede4ce5f9bd76d10ad531",
+    "declared_guard_paths": 20,
+    "declared_guard_scopes": 34,
+    "unreached_guard_paths_and_scope_counts": {
+      "authority_host_learning_resident_stages.rs": 4,
+      "cell_q24_candidate_stage_owners.rs": 4,
+      "circuit_evaluated_retention_publication.rs": 1,
+      "circuit_evaluated_selection_receipt.rs": 1,
+      "circuit_feature_current.rs": 4,
+      "circuit_next_use_command.rs": 2,
+      "circuit_next_use_command_service.rs": 1,
+      "circuit_retained_version.rs": 1,
+      "circuit_selection_command.rs": 2,
+      "circuit_selection_command_service.rs": 1
+    },
+    "unreached_scope_count": 21,
+    "exact_control_flow": "actual_scopes is called only by verifies plus the two-Clone test. verifies is called for attack target files and the ten new protected files. The listed ten paths are neither attack targets nor new protected files. actual_literals and actual_mounts call their own span functions and never enforce the corresponding ORDINARY_SCOPE_GUARDS masked hashes.",
+    "impact": "The default test path does not enforce these supplementary root/function/type bindings; the original generic/root-item file-order fallback cannot be described as having complete supplementary scoped QA coverage for all34 entries.",
+    "minimal_proposed_correction": "Inside the existing new test_new_typed_edges_and_old_boundary_inventory_are_exact, iterate every ORDINARY_SCOPE_GUARDS path, read the actual source and call actual_scopes (or verifies). Keep18 methods, every original assertion, collector, authority and budgets; make a new immutable proposal rather than modifyingv1.",
+    "root_disposition": "Root explicitly accepted the finding and authorized sole non-Rust author ordinary_path to prepare this minimal successor. No corrected source has been read or accepted by this review yet."
+  },
+  "limits": [
+    "No H, source modification, Rust compile, test method, caller validator, protection validator or extractor main executed during this independent review. Data/AST/hash comparisons only.",
+    "The21/184 denominator is the full captured QA set; prior17/152 evidence was a correct smaller related-file subset.",
+    "Full original gates must run after actual final formatter and canonical source freeze. This candidate has not been applied, formatted again, deployed or shown to perform real authorized A/B/C with independent results and complete costs.",
+    "Scoped source guards are not formal authority or runtime behavioral proofs. Existing raw/file-level generic fallback limitations remain explicitly limited."
+  ]
+}

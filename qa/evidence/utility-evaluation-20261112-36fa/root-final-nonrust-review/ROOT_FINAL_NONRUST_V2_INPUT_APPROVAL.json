@@ -1,0 +1,80 @@
+{
+  "actual_final_fmt": "not_started",
+  "actual_native_application": "not_started",
+  "authorized_scope": "Apply exact existing eleven non-Rust paths under original EX lock, then one original just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f, 900 seconds, unchanged complete source/Git/input audits.",
+  "automatic_retry": false,
+  "baseline_inventory": {
+    "bytes": 5614211,
+    "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+    "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "candidate_physical_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "changed_paths_from_actual_source": 11,
+  "changed_paths_from_v1_proposal": [
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py"
+  ],
+  "complete_leaf_count": 15188,
+  "delta": "Exactly three appended lines in one existing new test; removing them restores the entire V1 file bytes and AST. Other ten after-images are identical.",
+  "driver": {
+    "bytes": 22679,
+    "git_blob": "080753bf6fa5070c0f71096ace0cf199762ee42c",
+    "sha256": "dd5c81cdbfd7f53346304d0d36164b5d7ac753daa854c6dbff0d7e554788dccc"
+  },
+  "fix_authorized": false,
+  "format": "hepta-root-final-nonrust-v2-input-approval-v1",
+  "full_gates": "not_run",
+  "outer_seconds": 2100,
+  "qualification": false,
+  "real_authorized_task_chain_results": 0,
+  "ref_updates_authorized_in_this_action": false,
+  "rust_tests_authorized_in_this_action": false,
+  "scope_coverage": {
+    "actual_paths": 20,
+    "actual_scopes": 34,
+    "missing": [],
+    "observed_calls": 234,
+    "qualification": false
+  },
+  "scoped_actual_diagnostic": {
+    "bytes": 849,
+    "git_blob": "a5eaf7657a8085585ea2c4a046a26012fdd31fd0",
+    "sha256": "dfb4ebf955654f9877f94c8ae225e21551cb5fe9ce02ffbb96edfff013336d52"
+  },
+  "scoped_actual_raw_log": {
+    "bytes": 4103,
+    "git_blob": "85b9a54c547695ec9583df1262dbe0aeea449c8d",
+    "sha256": "b0197c62a6235c08fc85f11648aa9eb38e6d787b0453f4bd90ece4a7e9d86ccb"
+  },
+  "scoped_coverage_observation": {
+    "bytes": 93307,
+    "git_blob": "d322616eb7ac884e54e68413aa7aab6921d999cd",
+    "sha256": "5ded24a1ce2935f5638db783c6e5a22023bbeee1f0cfee77cba24f31a78efe11"
+  },
+  "status": "APPROVED_FOR_ONE_FINAL_NONRUST_APPLY_AND_ORIGINAL_FMT_PENDING_EXACT_LAUNCH",
+  "tree_nodes": 1849,
+  "v1_peer_blocker_preserved": {
+    "bytes": 11507,
+    "git_blob": "a595a8c817529cd1b6a49467d0c42aa4292794a2",
+    "sha256": "acada02d1f8fcfa8870004746929e5028f47b919532414a7435fe7fd3826380a"
+  },
+  "v1_root_complete_material_review": {
+    "bytes": 3015,
+    "git_blob": "b3422802e86e9383aca4ed503a0923d6475c6d86",
+    "sha256": "a019227f3ce3177d967e024dd2b39a0cdd30123bbbe4587fcc7d751b74971ef3"
+  },
+  "v2_manifest": {
+    "bytes": 15635,
+    "git_blob": "66e013b04b2f67392ba9c3e14a627becf29739a9",
+    "sha256": "4ea07438c30d2b247b36c6bbdc1c5464d63951ac960dc19aa6ed0302ad5183a9"
+  },
+  "v2_packet": {
+    "bytes": 2442538,
+    "git_blob": "5aa96020a8701f6e12b93c6a214964f61b69224f",
+    "sha256": "d1c1151be959db7917832a1573a3ab2b3fd04f0840740806c20fed9743b86441"
+  },
+  "v2_peer_resolution": {
+    "bytes": 6601,
+    "git_blob": "19ee2480b741a7866f1a348a81aeaf136d1397a6",
+    "sha256": "151622e7295e17ead172980c49b8d6d0381a51cfe15600d316e9b296af5db7a6"
+  }
+}

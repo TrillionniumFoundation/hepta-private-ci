@@ -1,0 +1,42 @@
+--- FENCE_MATRIX.original.json
++++ FENCE_MATRIX_V2.json
+@@ -3122,7 +3122,7 @@
+         "kind": "unique_function",
+         "name": "operation"
+       },
+-      "prefix_regex": "Self::EvaluatedNoUpdate\\s*=>",
++      "prefix_regex": "Self::EvaluatedNoUpdate\\s*=>\\s*\\{",
+       "expected_rust_literal": "\"runtime.learning.original-evaluated-retained-version.command.v1\"",
+       "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+       "not_a_verdict_cache": true
+@@ -3133,7 +3133,7 @@
+         "kind": "unique_function",
+         "name": "authenticate"
+       },
+-      "prefix_regex": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>",
++      "prefix_regex": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>\\s*\\{",
+       "expected_rust_literal": "b\"hepta.agentd.original-retained-version.command.v1\\0\"",
+       "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+       "not_a_verdict_cache": true
+@@ -3144,7 +3144,7 @@
+         "kind": "unique_function",
+         "name": "authenticate"
+       },
+-      "prefix_regex": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>",
++      "prefix_regex": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>\\s*\\{",
+       "expected_rust_literal": "b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"",
+       "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+       "not_a_verdict_cache": true
+--- extractor.f868.py
++++ extractor-v2.py
+@@ -20,8 +20,8 @@
+ import traceback
+ 
+ sys.dont_write_bytecode = True
+-PLAN_SHA256 = "9e83fffb854297f7e70f1b72e9f594c2159c4b81955b64ac2eaeeab669b2eb2d"
+-PLAN_BLOB = "ffaabdbd254bea8e3d45572c1e8e961625ee5119"
++PLAN_SHA256 = "8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e"
++PLAN_BLOB = "420daa1d2fb8397016b23a294e25a23ebe01e0d0"
+ DRIVER_SHA256 = "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+ DRIVER_BLOB = "51181866cbbb6e0176aab04117efffa8b6792b31"
+ SCHEMA = "hepta.utility.postformat-fence-proposals.v1"

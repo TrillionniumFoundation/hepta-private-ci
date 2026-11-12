@@ -1,0 +1,320 @@
+{
+  "derived_compressed_documents": [
+    {
+      "encoding": "base64 plus LF; decode then gzip-decompress",
+      "gzip": {
+        "bytes": 84067,
+        "git_blob": "098363749f5ba36593ef5272d4dfcb2f4669d652",
+        "sha256": "d284568579757bcd1e8f04170d5c3103a5c9872164fdb9f9de32e479100afa35"
+      },
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/FENCE_REVIEW.json.gz.b64",
+      "raw": {
+        "bytes": 821595,
+        "git_blob": "ef22adde2c3944addcc3d7e04684ec1a46dcd06c",
+        "sha256": "adb28537cc32aa0a29a520115bcd757467145f9f17f6b19c0bc9bd829deb13c5"
+      }
+    },
+    {
+      "encoding": "base64 plus LF; decode then gzip-decompress",
+      "gzip": {
+        "bytes": 89597,
+        "git_blob": "99fbf2189b06b301f93cd4cf7ee45d3940c0e533",
+        "sha256": "9975d2f9ae30de40d1d3f772a79d1806d9b5f709ab5b6d31228f5e5d15a1af5e"
+      },
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/EXACT_NONRUST_DELTA.patch.gz.b64",
+      "raw": {
+        "bytes": 723773,
+        "git_blob": "5765510c8b96ad1b3e73a57f6d9914c0b644d1b9",
+        "sha256": "15832086b6ea7453b538b142bb6ef4dd663d7f80d945e1369b2620739f48ff61"
+      }
+    }
+  ],
+  "entries": [
+    {
+      "bytes": 14182,
+      "git_blob": "10dffe87464c5a94cbf7c02f6b6ae1958697cd22",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/MANIFEST.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/MANIFEST.json",
+      "provenance": "exact local original",
+      "sha256": "c9c4470f27cef0c9de37e81d2096e9aef6850a28f2927c3de032d82744750f97"
+    },
+    {
+      "bytes": 262141,
+      "git_blob": "b8dd78bfba8db0e9270ffbf810ed59b4d335963e",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/NONRUST_PACKET.json.gz.part001.b64",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/NONRUST_PACKET.json.gz.part001.b64",
+      "provenance": "exact local original",
+      "sha256": "bd37fa31d0ff502280e3b564027eac5f17e81f4d15cecbb5c74ace808d132782"
+    },
+    {
+      "bytes": 262141,
+      "git_blob": "21239697cef16038a89ef518f163c2e4a137fd19",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/NONRUST_PACKET.json.gz.part002.b64",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/NONRUST_PACKET.json.gz.part002.b64",
+      "provenance": "exact local original",
+      "sha256": "2582577f8cc6eed47a090cd1e3ff52be11a6612bd7800a2ef33a7181873fccc9"
+    },
+    {
+      "bytes": 114489,
+      "git_blob": "d46ba7885dc724f02e80f67b58047acf387332d0",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/NONRUST_PACKET.json.gz.part003.b64",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/NONRUST_PACKET.json.gz.part003.b64",
+      "provenance": "exact local original",
+      "sha256": "e3803cdcf280110cff4e542cf2b59b5a01ffcbd249f4687986f87eb730d01866"
+    },
+    {
+      "bytes": 189709,
+      "git_blob": "1215cfdffc8bb9f90cf7095e86783b9fbc6737d5",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/OLD_QA_MIGRATIONS.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/OLD_QA_MIGRATIONS.json",
+      "provenance": "exact local original",
+      "sha256": "60c489ed25ab18df78554d88fe35caf700b20f607468d4f08252c5ad2d5bc4ec"
+    },
+    {
+      "bytes": 16933,
+      "git_blob": "ed456bf515c2e7a258ac0fa3e373eb5e33a8b61d",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/NEW_ORDINARY_QA_REVIEW.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/NEW_ORDINARY_QA_REVIEW.json",
+      "provenance": "exact local original",
+      "sha256": "9f4d7b537d80e5f6b38001713765333a00914f984b01bc111e7cc861d9f5563b"
+    },
+    {
+      "bytes": 11637,
+      "git_blob": "d4682e4f8447b0359072cff8b7397e32e0810def",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/ALL_CAPTURED_QA_METHOD_REVIEW.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/ALL_CAPTURED_QA_METHOD_REVIEW.json",
+      "provenance": "exact local original",
+      "sha256": "6c46a8ada010bbe3b4cf35cd99b3042c58f861ca6cb65ff9ab2ed85027b73eb0"
+    },
+    {
+      "bytes": 12346,
+      "git_blob": "4fedd75810129f715be91cceb73381eeba7b6c7b",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/SCOPED_49_VALIDATOR.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/SCOPED_49_VALIDATOR.json",
+      "provenance": "exact local original",
+      "sha256": "2a3f93dfd0a957e9c346e2887fbc90d28de900537182121f235dffab63e2a00f"
+    },
+    {
+      "bytes": 112093,
+      "git_blob": "319f5077a16ce2d670ec8ffe92a3f249f0ff06f6",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/FENCE_REVIEW.json.gz.b64",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/FENCE_REVIEW.json.gz.b64",
+      "provenance": "derived gzip/base64 transport of exact local original bytes",
+      "sha256": "be46c439d786a6e7ff4f98878b79a7543dca5dd4460613d400ae1da7c80ac44b"
+    },
+    {
+      "bytes": 119465,
+      "git_blob": "ed25aeaff1728ffb0e5a82296f29a8785dd729c4",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/EXACT_NONRUST_DELTA.patch.gz.b64",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/EXACT_NONRUST_DELTA.patch.gz.b64",
+      "provenance": "derived gzip/base64 transport of exact local original bytes",
+      "sha256": "7e9c9901cbea174fc0a242fce3fbb95d378131523cff9e05f14878b6115dd2c2"
+    },
+    {
+      "bytes": 891,
+      "git_blob": "95b9577e6a2e8d535ba48dbaef9f1c804d6539dd",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/diagnostic-new18/RESULT.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/diagnostic-new18/RESULT.json",
+      "provenance": "exact local original",
+      "sha256": "58755536f5f607ad5ea1451f2bfd22217f6f0a38d63464d033624bf4a3cd6566"
+    },
+    {
+      "bytes": 13598,
+      "git_blob": "aec36e926056417f507deccea80e205935a471e8",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/diagnostic-new18/INPUT_INVENTORY.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/diagnostic-new18/INPUT_INVENTORY.json",
+      "provenance": "exact local original",
+      "sha256": "e85b16afd7df4681971c78f82694bf49dbe8c4fdee96ced704a0c1b49d4fa810"
+    },
+    {
+      "bytes": 13598,
+      "git_blob": "aec36e926056417f507deccea80e205935a471e8",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/diagnostic-new18/AFTER_INVENTORY.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/diagnostic-new18/AFTER_INVENTORY.json",
+      "provenance": "exact local original",
+      "sha256": "e85b16afd7df4681971c78f82694bf49dbe8c4fdee96ced704a0c1b49d4fa810"
+    },
+    {
+      "bytes": 4103,
+      "git_blob": "fa967eb0eda0a674c7f7a66c27e014147d0ce9cf",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/diagnostic-new18/new18.raw.log",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/diagnostic-new18/new18.raw.log",
+      "provenance": "exact local original",
+      "sha256": "008d713960cdb5d3d339da296d8cb3e4313e6b7e2d217e91891fd322ef858386"
+    },
+    {
+      "bytes": 1858,
+      "git_blob": "9ca567df2d1cab9eab0dc882dde80923528b10d6",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/diagnostic-new18/run_scoped.py",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/diagnostic-new18/run_scoped.py",
+      "provenance": "exact local original",
+      "sha256": "6a0d3fbb333620ccb44e0f740291ca682ac63e874be0890d10ea5649a7e6cda5"
+    },
+    {
+      "bytes": 8654,
+      "git_blob": "25f3b3035d8e0096e3f27f083708bb99acd54c78",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-oldqa17-preparation-v1/MANIFEST.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-oldqa17-preparation-v1/MANIFEST.json",
+      "provenance": "exact local original",
+      "sha256": "ef347485ac55ba6b5c3c88b10950d247ebed1bee690236805a38526bf0dc5337"
+    },
+    {
+      "bytes": 26626,
+      "git_blob": "a083a8b87195f57ec306f32ba7400328719ca0ec",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-oldqa17-preparation-v1/EXACT_OLD_METHOD_DELTA.patch",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-oldqa17-preparation-v1/EXACT_OLD_METHOD_DELTA.patch",
+      "provenance": "exact local original",
+      "sha256": "2e23f2083453e6859ff0ef15fd6e2b3157a5e1b05bdc09086b6e3b1bcfe435e0"
+    },
+    {
+      "bytes": 3931,
+      "git_blob": "f81b81bf0a6b63c9821818f3f91b0ffaa7b68ffb",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-final-nonrust-v1/PEER_REVIEW_SNAPSHOT_ORIGINAL.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-final-nonrust-v1/PEER_REVIEW_SNAPSHOT_ORIGINAL.json",
+      "provenance": "exact local original",
+      "sha256": "ff5149cdde908b142fc6a775f9b8ae68b1c31e4cc5d44317a8b55b96175a49ad"
+    },
+    {
+      "bytes": 183793,
+      "git_blob": "249c39aed67ebc6ef6f1474be3bed5ebb3d02d2e",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-exact-recovery/PROPOSALS.exact-recovered.json.gz.b64",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-exact-recovery/PROPOSALS.exact-recovered.json.gz.b64",
+      "provenance": "exact recovery proof / derived transport; not a second native read",
+      "sha256": "e94323f560804f611b810d13d62f34e10488736751a629ace194bd24aa138a67"
+    },
+    {
+      "bytes": 1942,
+      "git_blob": "571a57ecac41472750bf3a080d882e0657c414e9",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-exact-recovery/EXACT_RECOVERY_REVIEW.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-exact-recovery/EXACT_RECOVERY_REVIEW.json",
+      "provenance": "exact recovery proof / derived transport; not a second native read",
+      "sha256": "2d28d7a57368c6870e7d440ad229a4001442a2996406cf237a243b0dc7efccf2"
+    },
+    {
+      "bytes": 124075,
+      "git_blob": "420daa1d2fb8397016b23a294e25a23ebe01e0d0",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/FENCE_MATRIX_V2.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/FENCE_MATRIX_V2.json",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e"
+    },
+    {
+      "bytes": 23468,
+      "git_blob": "9f13a0e39e012982a5ac539aec1f1bb980e83fa7",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/extractor-v2.py",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/extractor-v2.py",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5"
+    },
+    {
+      "bytes": 2531,
+      "git_blob": "fa6f42c3416d4ff27649dbeffd75865f06dfc451",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/EXACT_DELTA.patch",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/EXACT_DELTA.patch",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "3ac94ba058805f2406c2bbe4fe478f798b5779847de45a415110a169493f84e3"
+    },
+    {
+      "bytes": 313917,
+      "git_blob": "8c9a73f10489be4ffec7b103f954a25ba3ec4675",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/ACTUAL_SCOPE_REVIEW.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/ACTUAL_SCOPE_REVIEW.json",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "49683c7fa0a98675b87b29bca74f80f5f57c51c766ac1b3a5ef54bcb6e69bb32"
+    },
+    {
+      "bytes": 34865,
+      "git_blob": "cff67875673a20fd587e078ea6114de8e0fd717e",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/WAITING_CONTRACT_V2.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/WAITING_CONTRACT_V2.json",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "f2be22d600e2c796fff935ac49e621021c66a52f3b926fe8dd46c989bda7a39b"
+    },
+    {
+      "bytes": 1245,
+      "git_blob": "1ca472393a0d69f0f40837a1dda10526e43ff97e",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/CONTRACT_DELTA.patch",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/CONTRACT_DELTA.patch",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "0fa395a357f37c5e94be0370b49ff94db728c37a6be36c26ed34bace7b75978f"
+    },
+    {
+      "bytes": 5588,
+      "git_blob": "2f195309eff036f829e76d83beeba7f4bed41047",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/reconstruct_proposal_candidate.py",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/reconstruct_proposal_candidate.py",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "c84f7a4beeea2421667d446b71e9ffc5fa87fada97fee2bdba83b691b1b638fc"
+    },
+    {
+      "bytes": 904,
+      "git_blob": "1df0427836d18e265e9d03ce440b925a01917def",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/PROPOSAL_CANDIDATE_RECONSTRUCTION.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/PROPOSAL_CANDIDATE_RECONSTRUCTION.json",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "1dc0482c66aec03bd331a2ce5a6dff52f7339ff9713e50519e48dc2b511f1530"
+    },
+    {
+      "bytes": 3491,
+      "git_blob": "d0fc054afbbeb75c008154a445f70392b9659f30",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-extractor-v2-preparation/MANIFEST.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-extractor-v2-preparation/MANIFEST.json",
+      "provenance": "immutable historical preparation; its HOLD status is preserved",
+      "sha256": "2036050945230b1f8d604ed4f43c9a65235a7a93b3b0e42c80645123cb7cd0c2"
+    },
+    {
+      "bytes": 10304,
+      "git_blob": "acbe3ebfa6e941f97c2e05a77b2ede30bb0e35d9",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-actual-review-preparation/verify_actual_shared_capture.py",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-actual-review-preparation/verify_actual_shared_capture.py",
+      "provenance": "exact offline review/preparation; no native execution",
+      "sha256": "b8197c87dc10abc8c4554ae1d28c8af36477c251bbbacc8f6c43d74df0a7e044"
+    },
+    {
+      "bytes": 33010,
+      "git_blob": "3c8aae1858a17812b09ac7d71e19728a99fff0e5",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-actual-review-preparation/ACTUAL_SHARED_CAPTURE_PEER_REVIEW.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-actual-review-preparation/ACTUAL_SHARED_CAPTURE_PEER_REVIEW.json",
+      "provenance": "exact offline review/preparation; no native execution",
+      "sha256": "07bb683e54a082cd9b018a9423868cda4da76c3affbb3d383a81ee5554402dfb"
+    },
+    {
+      "bytes": 34871,
+      "git_blob": "07a2e35e0f6ead580bb57201b7c41546cef92fae",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-actual-review-preparation/EXTRACTOR_CONTRACT_V5_PENDING_ROOT_REVIEW.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-actual-review-preparation/EXTRACTOR_CONTRACT_V5_PENDING_ROOT_REVIEW.json",
+      "provenance": "exact offline review/preparation; no native execution",
+      "sha256": "28acee60569b680ed79caefae60e757bc931c1ad7f2b8f418fcfc4cde25a8169"
+    },
+    {
+      "bytes": 18245,
+      "git_blob": "a969961eb9dd39c6e083327e9bb401c7984c0cd1",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-actual-review-preparation/ACTUAL_LITERAL_PREFIX_DIAGNOSTIC.json",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-actual-review-preparation/ACTUAL_LITERAL_PREFIX_DIAGNOSTIC.json",
+      "provenance": "exact offline review/preparation; no native execution",
+      "sha256": "629cb4c26ae7cb41e5b4cb712ecc0fb584cfc33bd87190f5dcb63c6a407bfe61"
+    },
+    {
+      "bytes": 11414,
+      "git_blob": "b0aa1f4e1836e5e315a8f1d4d8921d5217901245",
+      "local_path": "/tmp/hepta-36fa-final-nonrust-evidence-package-v1/postformat-actual-review-preparation/package_final_nonrust.py",
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/postformat-actual-review-preparation/package_final_nonrust.py",
+      "provenance": "exact offline review/preparation; no native execution",
+      "sha256": "60d1a72d73df4586d083a4db18bccf3a2b6df3e43431f0f529378ec53b432ad4"
+    }
+  ],
+  "format": "hepta-postformat-nonrust-evidence-archive-v1",
+  "limits": [
+    "Evidence paths preserve actual and prepared status separately.",
+    "All candidate source postimages are contained in three NONRUST_PACKET parts; source files larger than the evidence blob budget are not duplicated as loose evidence.",
+    "The 4 MB derived expected leaf map is reconstructed from the exact original 15188-leaf inventory plus the packet changes; no duplicate map payload is required.",
+    "The exact native PROPOSALS recovery is validated against actual successful RESULT bytes/SHA256/Git identity, not a claim of a second native whole-file read.",
+    "Scoped source attacks and protection diagnostics do not qualify a full source tree or actual A/B/C execution."
+  ],
+  "qualification": false,
+  "source_packet": {
+    "bytes": 2442314,
+    "git_blob": "5300dbea46941ff805fb3612a47b6e5f7fe6617a",
+    "sha256": "cf50c26f030a08ac05045696fe21355c65b36a932e63f5ac2bf0ceb9ed487776"
+  }
+}

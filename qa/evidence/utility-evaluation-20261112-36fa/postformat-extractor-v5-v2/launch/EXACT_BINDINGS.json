@@ -1,0 +1,82 @@
+{
+  "format": "hepta-original-postformat-extractor-v2-exact-launch-v1",
+  "status": "PREPARED_WAITING_ROOT_FINAL_LAUNCHER_REVIEW",
+  "root_extractor_v2_contract_approval": "50349a15a8b382fd573c7c14140e138b2856cf64",
+  "independent_static_peer_review": "8a8c826a50f121b39d38a736cf2327cadb94fabe",
+  "original_v1_failure_preserved": {
+    "job": "1a1d19bc7dd-2564-1c64",
+    "normal_status_git_blob": "96e7c27396b7f7a4d4b2e6598335b62878b9f7e5",
+    "result_git_blob": "3abc6e992d743aeb94e9d97491367436f06bc9fa",
+    "error_git_blob": "dd61d21d51882568e5de0eef3fb55724e7228fba",
+    "source_after_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "changed_control_constants": [
+    "BASE fresh v2 directory",
+    "PINS extractor original v2",
+    "PINS matrix v2",
+    "PINS Root-approved v2 contract"
+  ],
+  "all_5_bootstrap_function_definitions_byte_identical": true,
+  "all_other_ast_nodes_identical": true,
+  "request_only_changed_fields": [
+    "args[2] exact bootstrap",
+    "stdin exact three supplied inputs",
+    "idempotency_key fresh v2"
+  ],
+  "fresh_external_base": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v2",
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "source_head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "source_head_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "actual_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+  "actual_full_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+  "timeout_seconds": 600,
+  "timeout_scope": "Independent read-only proposal preparation, not a gate budget change. Missing terminal/timeout remains Unknown.",
+  "supplied_inputs": [
+    {
+      "name": "extractor.py",
+      "bytes": 23468,
+      "sha256": "58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5",
+      "git_blob": "9f13a0e39e012982a5ac539aec1f1bb980e83fa7"
+    },
+    {
+      "name": "FENCE_MATRIX.original.json",
+      "bytes": 124075,
+      "sha256": "8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e",
+      "git_blob": "420daa1d2fb8397016b23a294e25a23ebe01e0d0"
+    },
+    {
+      "name": "CONTRACT_ROOT_REVIEWED.json",
+      "bytes": 34904,
+      "sha256": "7964d5a805cce1f9df4e6f0afc735dae04b4947663feba6ef9bd2b8c00876976",
+      "git_blob": "e621bef8a82b0e8364252fb97c5297f471050f68"
+    }
+  ],
+  "no_native_H_main_or_gate_executions": true,
+  "source_or_ref_writes": false,
+  "artifacts": [
+    {
+      "name": "ACTUAL_BOOTSTRAP.py",
+      "bytes": 9492,
+      "sha256": "794efe2fb9a9ec5a0d0b65784c1ea6354fb52a44ae3407d57786938ebaf2a00e",
+      "git_blob": "b02ccb0c91272682c48117fbc3c6b0b4b8eaa508"
+    },
+    {
+      "name": "BOOTSTRAP_PAYLOAD.json",
+      "bytes": 243449,
+      "sha256": "e0c78ecdfdbfc23517a599b679d261797c1db496af619b95b9d80ff16e7d8fb4",
+      "git_blob": "7497c99db0b5ece6586609b1b9e1973470d0f694"
+    },
+    {
+      "name": "ACTUAL_PROCESS_INPUT.json",
+      "bytes": 253382,
+      "sha256": "a49ef924bd9cd949f4c14b84d5525bf2102a506d7289668f1274cd35ccec87ef",
+      "git_blob": "731c5d9cdff02e0e25a4af1baae99b072e37a53c"
+    },
+    {
+      "name": "v1-to-v2-bootstrap.diff",
+      "bytes": 2230,
+      "sha256": "42d2451e58ffe8a6a2484724a6e25ef60079b413f0feea40a245b7ce33ed543c",
+      "git_blob": "0e1b6f8abc0d4c184545d345b1661441132495fc"
+    }
+  ]
+}

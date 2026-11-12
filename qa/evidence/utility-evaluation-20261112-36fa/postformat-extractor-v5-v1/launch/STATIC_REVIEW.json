@@ -1,0 +1,25 @@
+{
+  "format": "hepta-postformat-extractor-launch-static-review-v1",
+  "template": {
+    "bytes": 9346,
+    "sha256": "d4a1dd5099e326ccbc37f7064ee524339da5c0343aae308644cb42366a300868",
+    "git_blob": "0af942f1be53a1a86125cbb8ba61dad551858988"
+  },
+  "actual_function_or_main_executions": 0,
+  "static_ast_compile_only": true,
+  "original_bootstrap": "/tmp/hepta-36fa-postformat-capture-launch-v1/ACTUAL_BOOTSTRAP.py",
+  "reused_definitions_exact": [
+    "check",
+    "identity",
+    "real_parents"
+  ],
+  "retain_only_change": "path = BASE / name -> path = CONTROLS / name",
+  "new_definition": "copied_input: stable nofollow full-byte read of existing pinned CALLERS/inventory originals",
+  "extractor_f868_bytes_unchanged": true,
+  "inventory_5118_bytes_unchanged": true,
+  "root_contract_pin_absent_means_hold": true,
+  "callers_working_blob_matches_plan": "50eee584787ed0706ef2f900a09f1ca9d9cd8819",
+  "callers_working_sha256_matches_plan": "8610f25a4d8ace133d07894f35c6bf5c5bdba0a4fb77bd7056ec24b5d2a302da",
+  "callers_actual_source": "ACTUAL_73_FILES.json/ files[path=CALLERS.toml]/actual stable raw read, not substitute index bytes",
+  "no_native_H_or_gate_executions": true
+}

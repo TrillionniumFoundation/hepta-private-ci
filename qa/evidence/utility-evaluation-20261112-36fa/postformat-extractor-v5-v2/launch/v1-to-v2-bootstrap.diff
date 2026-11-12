@@ -1,0 +1,22 @@
+--- v1/ACTUAL_BOOTSTRAP.py
++++ v2/ACTUAL_BOOTSTRAP.py
+@@ -1,15 +1,15 @@
+ import base64, fcntl, hashlib, json, os, pathlib, stat, sys, traceback
+ 
+-BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1')
++BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v2')
+ CONTROLS = BASE / 'controls'
+ RECORDS = BASE / 'records'
+ SOURCE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1')
+ LOCK = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock')
+ LOCK_IDENTITY = {'device': 2050, 'inode': 50139448, 'mode': 384, 'uid': 1000, 'nlink': 1}
+ PINS = {
+-    'extractor.py': {'bytes': 23468, 'sha256': 'faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb', 'git_blob': 'f8686d5986f0f21404621d7e2d6a78634dc3f578'},
+-    'FENCE_MATRIX.original.json': {'bytes': 124054, 'sha256': '9e83fffb854297f7e70f1b72e9f594c2159c4b81955b64ac2eaeeab669b2eb2d', 'git_blob': 'ffaabdbd254bea8e3d45572c1e8e961625ee5119'},
+-    'CONTRACT_ROOT_REVIEWED.json': {'bytes': 34904, 'sha256': '3a38750c67485b73cea29e7e2bfd81fc975616c6e75e86c96fcba533315f5fcd', 'git_blob': 'a8797749da150f68d15f17028d6d0d7d43677047'},
++    'extractor.py': {'bytes': 23468, 'sha256': '58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5', 'git_blob': '9f13a0e39e012982a5ac539aec1f1bb980e83fa7'},
++    'FENCE_MATRIX.original.json': {'bytes': 124075, 'sha256': '8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e', 'git_blob': '420daa1d2fb8397016b23a294e25a23ebe01e0d0'},
++    'CONTRACT_ROOT_REVIEWED.json': {'bytes': 34904, 'sha256': '7964d5a805cce1f9df4e6f0afc735dae04b4947663feba6ef9bd2b8c00876976', 'git_blob': 'e621bef8a82b0e8364252fb97c5297f471050f68'},
+     'STRUCTURAL_CALLERS.original.toml': {'bytes': 1294564, 'sha256': '8610f25a4d8ace133d07894f35c6bf5c5bdba0a4fb77bd7056ec24b5d2a302da', 'git_blob': '50eee584787ed0706ef2f900a09f1ca9d9cd8819'},
+     'inventory-driver-v2.py': {'bytes': 22946, 'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2', 'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'},
+ }

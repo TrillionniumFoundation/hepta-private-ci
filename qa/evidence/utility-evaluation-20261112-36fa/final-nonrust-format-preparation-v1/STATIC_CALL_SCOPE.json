@@ -1,0 +1,963 @@
+{
+  "format": "hepta-final-format-thin-control-static-call-review-v1",
+  "m_calls": [
+    {
+      "function": "read_input",
+      "lineno": 96,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "parse",
+      "lineno": 97,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "read_input",
+      "lineno": 98,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "parse_supervisor",
+      "lineno": 99,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 100,
+      "literal_args": [
+        null,
+        "actual capture supervisor job"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 101,
+      "literal_args": [
+        null,
+        "actual complete postformat capture"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 107,
+      "literal_args": [
+        null,
+        "complete capture final audits"
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 109,
+      "literal_args": [
+        "CAPTURE_RESULT.original.json",
+        null
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 109,
+      "literal_args": [
+        "CAPTURE_NORMAL.original.json",
+        null
+      ]
+    },
+    {
+      "function": "read_input",
+      "lineno": 111,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 113,
+      "literal_args": [
+        null,
+        null,
+        "complete actual capture packet"
+      ]
+    },
+    {
+      "function": "parse",
+      "lineno": 114,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 115,
+      "literal_args": [
+        null,
+        "actual capture source identity"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 121,
+      "literal_args": [
+        null,
+        "fixed desktop account"
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 122,
+      "literal_args": [
+        null,
+        1000000
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 123,
+      "literal_args": [
+        null,
+        "HOLD: formal source application and final-format approval absent"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 126,
+      "literal_args": [
+        null,
+        "exact thin and unchanged original driver pins"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 128,
+      "literal_args": [
+        null,
+        "HEAD identity and actual dirty baseline remain separate"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 131,
+      "literal_args": [
+        null,
+        "original formatter argv and unchanged budgets"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 134,
+      "literal_args": [
+        null,
+        "no fix/test/ref scope"
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 139,
+      "literal_args": [
+        "ACTUAL_DRIVER.py",
+        null
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 139,
+      "literal_args": [
+        "MAINTENANCE_V5.original.py",
+        null
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 140,
+      "literal_args": [
+        "APPROVED_CONFIG.original.json",
+        null
+      ]
+    },
+    {
+      "function": "read_input",
+      "lineno": 141,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "parse",
+      "lineno": 142,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 143,
+      "literal_args": [
+        "V5_APPROVED_CONFIG.original.json",
+        null
+      ]
+    },
+    {
+      "function": "read_input",
+      "lineno": 145,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "parse",
+      "lineno": 146,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "read_input",
+      "lineno": 147,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "parse_supervisor",
+      "lineno": 148,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 149,
+      "literal_args": [
+        null,
+        "actual V5 completed original commands, not a new execution"
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 154,
+      "literal_args": [
+        "V5_RESULT.original.json",
+        null
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 154,
+      "literal_args": [
+        "V5_NORMAL.original.json",
+        null
+      ]
+    },
+    {
+      "function": "load_module",
+      "lineno": 155,
+      "literal_args": [
+        null,
+        null,
+        "hepta_final_format_original_inventory"
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 156,
+      "literal_args": [
+        "INVENTORY_DRIVER.original.py",
+        null
+      ]
+    },
+    {
+      "function": "load_module",
+      "lineno": 165,
+      "literal_args": [
+        null,
+        null,
+        "hepta_final_format_original_execute_logged"
+      ]
+    },
+    {
+      "function": "git_state",
+      "lineno": 167,
+      "literal_args": []
+    },
+    {
+      "function": "parse",
+      "lineno": 168,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 169,
+      "literal_args": [
+        null,
+        "exact original Git state unchanged after V5"
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 170,
+      "literal_args": [
+        "SOURCE_GIT_STATE.before.json",
+        null
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 172,
+      "literal_args": [
+        null,
+        null,
+        "actual complete dirty baseline"
+      ]
+    },
+    {
+      "function": "gzrecord",
+      "lineno": 173,
+      "literal_args": [
+        "SOURCE.before.inventory.json.gz",
+        null
+      ]
+    },
+    {
+      "function": "parse",
+      "lineno": 174,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 175,
+      "literal_args": [
+        null,
+        "actual full baseline source identity and counts"
+      ]
+    },
+    {
+      "function": "actual_leaf_map",
+      "lineno": 177,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 178,
+      "literal_args": [
+        null,
+        "actual complete physical baseline tree"
+      ]
+    },
+    {
+      "function": "metadata_inventory",
+      "lineno": 180,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "gzrecord",
+      "lineno": 181,
+      "literal_args": [
+        "SOURCE_GIT_METADATA.before.json.gz",
+        null
+      ]
+    },
+    {
+      "function": "gzrecord",
+      "lineno": 192,
+      "literal_args": [
+        "INITIAL_DIRTY_PREIMAGES.json.gz",
+        null
+      ]
+    },
+    {
+      "function": "check_fmt_base",
+      "lineno": 195,
+      "literal_args": []
+    },
+    {
+      "function": "environment_preflight",
+      "lineno": 196,
+      "literal_args": []
+    },
+    {
+      "function": "read_input",
+      "lineno": 197,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 198,
+      "literal_args": [
+        "NONRUST_PACKET.original.json",
+        null
+      ]
+    },
+    {
+      "function": "parse",
+      "lineno": 199,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 200,
+      "literal_args": [
+        null,
+        "ordinary reviewed packet exact baseline"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 208,
+      "literal_args": [
+        null,
+        "exact approved existing non-Rust paths only"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 224,
+      "literal_args": [
+        null,
+        "independently reconstruct exact approved after-apply tree"
+      ]
+    },
+    {
+      "function": "verify_original_inputs",
+      "lineno": 227,
+      "literal_args": []
+    },
+    {
+      "function": "check",
+      "lineno": 232,
+      "literal_args": [
+        null,
+        "full source unchanged immediately before apply"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 233,
+      "literal_args": [
+        null,
+        "Git unchanged immediately before apply"
+      ]
+    },
+    {
+      "function": "active_build_processes",
+      "lineno": 234,
+      "literal_args": []
+    },
+    {
+      "function": "jwrite",
+      "lineno": 235,
+      "literal_args": [
+        "APPLY.process-preflight.json",
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 236,
+      "literal_args": [
+        null,
+        "unchanged original global build/formatter guard before source application"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 268,
+      "literal_args": [
+        null,
+        "all physical source leaves equal the approved non-Rust result"
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 269,
+      "literal_args": [
+        null,
+        "no index/HEAD/config/ref change by source application"
+      ]
+    },
+    {
+      "function": "capture_source",
+      "lineno": 270,
+      "literal_args": [
+        "apply.after",
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 271,
+      "literal_args": [
+        null,
+        "only exact reviewed application paths changed"
+      ]
+    },
+    {
+      "function": "event",
+      "lineno": 274,
+      "literal_args": [
+        "reviewed_nonrust_application_completed"
+      ]
+    },
+    {
+      "function": "now",
+      "lineno": 279,
+      "literal_args": []
+    },
+    {
+      "function": "jwrite",
+      "lineno": 285,
+      "literal_args": [
+        "READONLY_COMMANDS.json",
+        null
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 286,
+      "literal_args": [
+        "INPUT_IDENTITIES.json",
+        null
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 287,
+      "literal_args": [
+        "SOURCE_ENTRY_SNAPSHOTS.json",
+        null
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 291,
+      "literal_args": [
+        "ARTIFACTS.json",
+        null
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 293,
+      "literal_args": [
+        "RESULT.json",
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 303,
+      "literal_args": [
+        null,
+        1000000
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 304,
+      "literal_args": [
+        null,
+        "launcher-pinned formal config"
+      ]
+    },
+    {
+      "function": "parse",
+      "lineno": 305,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "real_directory",
+      "lineno": 306,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "real_directory",
+      "lineno": 306,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 307,
+      "literal_args": [
+        null,
+        "existing attempt: reconcile the original job, never overwrite"
+      ]
+    },
+    {
+      "function": "now",
+      "lineno": 312,
+      "literal_args": []
+    },
+    {
+      "function": "set_alarm",
+      "lineno": 315,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 137,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 140,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 156,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 158,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 159,
+      "literal_args": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "function": "write",
+      "lineno": 161,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "read_input",
+      "lineno": 168,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "jbytes",
+      "lineno": 192,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 214,
+      "literal_args": [
+        null,
+        "no deletion/new path/mode or Rust change"
+      ]
+    },
+    {
+      "function": "read_actual_leaf",
+      "lineno": 216,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 217,
+      "literal_args": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 219,
+      "literal_args": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 220,
+      "literal_args": [
+        null,
+        "no claimed no-op source update"
+      ]
+    },
+    {
+      "function": "real_directory",
+      "lineno": 240,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 241,
+      "literal_args": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 242,
+      "literal_args": [
+        null,
+        "current owned regular preimage mode"
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 246,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 250,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 254,
+      "literal_args": [
+        null,
+        null,
+        "complete source sibling postimage"
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 255,
+      "literal_args": [
+        null,
+        null,
+        "preimage before atomic replacement"
+      ]
+    },
+    {
+      "function": "pin_bytes",
+      "lineno": 262,
+      "literal_args": [
+        null,
+        null,
+        "actual atomic postimage"
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 265,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 289,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "jwrite",
+      "lineno": 319,
+      "literal_args": [
+        "SOURCE_COORDINATION_EX.json",
+        null
+      ]
+    },
+    {
+      "function": "stage",
+      "lineno": 325,
+      "literal_args": [
+        "fmt",
+        null,
+        null
+      ]
+    },
+    {
+      "function": "check",
+      "lineno": 188,
+      "literal_args": [
+        null,
+        "supported baseline dirty file"
+      ]
+    },
+    {
+      "function": "read_actual_leaf",
+      "lineno": 189,
+      "literal_args": [
+        null,
+        null
+      ]
+    },
+    {
+      "function": "git_state",
+      "lineno": 233,
+      "literal_args": []
+    },
+    {
+      "function": "regular_read",
+      "lineno": 241,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 254,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 255,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "regular_read",
+      "lineno": 262,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "actual_leaf_map",
+      "lineno": 268,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "git_state",
+      "lineno": 269,
+      "literal_args": []
+    },
+    {
+      "function": "merkle",
+      "lineno": 275,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "sha256",
+      "lineno": 304,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "now",
+      "lineno": 345,
+      "literal_args": []
+    },
+    {
+      "function": "check",
+      "lineno": 347,
+      "literal_args": [
+        null,
+        "no actual coordination lease"
+      ]
+    },
+    {
+      "function": "merkle",
+      "lineno": 178,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "merkle",
+      "lineno": 225,
+      "literal_args": [
+        null
+      ]
+    },
+    {
+      "function": "now",
+      "lineno": 247,
+      "literal_args": []
+    },
+    {
+      "function": "now",
+      "lineno": 265,
+      "literal_args": []
+    },
+    {
+      "function": "now",
+      "lineno": 320,
+      "literal_args": []
+    },
+    {
+      "function": "now",
+      "lineno": 340,
+      "literal_args": []
+    },
+    {
+      "function": "bounded_record",
+      "lineno": 342,
+      "literal_args": [
+        null
+      ]
+    }
+  ],
+  "main_executed": false,
+  "native_tools_called": false,
+  "only_original_maintenance_stage": "fmt",
+  "original_driver_sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431",
+  "thin_driver_sha256": "dd5c81cdbfd7f53346304d0d36164b5d7ac753daa854c6dbff0d7e554788dccc"
+}

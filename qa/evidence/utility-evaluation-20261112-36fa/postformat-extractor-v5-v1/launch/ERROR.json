@@ -1,0 +1,5 @@
+{
+  "error": "PreconditionRejected('actual literal immediately follows code prefix')",
+  "kind": "precondition",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/extractor.py\", line 463, in main\n    \"path\": path, **literal_span(proof, masked[path], sources[path], spec)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/extractor.py\", line 258, in literal_span\n    require(literal is not None, \"actual literal immediately follows code prefix\")\n  File \"/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/extractor.py\", line 36, in require\n    raise PreconditionRejected(reason)\nPreconditionRejected: actual literal immediately follows code prefix\n"
+}

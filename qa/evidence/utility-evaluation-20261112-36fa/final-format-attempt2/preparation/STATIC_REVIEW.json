@@ -1,0 +1,41 @@
+{
+  "H_execution": false,
+  "all_function_bodies_exact": true,
+  "automatic_retry": false,
+  "driver_diff": {
+    "bytes": 571,
+    "git_blob": "934a62707f8b37fd66f79c016d170028dd857759",
+    "sha256": "4969f5a9ea7588553bc381fe93b5ecbf4b9d530125782d0df04b95999d6e0183"
+  },
+  "format": "hepta-finalfmt-successor-namespace-only-static-review-v1",
+  "new_bootstrap_hold": {
+    "bytes": 5575,
+    "git_blob": "5785238bdc89f2fef1380ce37a4c0290a4a481e3",
+    "sha256": "3803df8c10d1b3d3ed8c492c79fe8d8a4429593f5569c14ddb6070f1321a8bad"
+  },
+  "new_config": {
+    "bytes": 2492,
+    "git_blob": "27865648b0c70a921acabb7a3e4dab54d74677b6",
+    "sha256": "788b2e85ed227d05dcf2b2aaf06b52b9c74778115781493135a306de2b368ee8"
+  },
+  "only_driver_changes": [
+    "CONTROL fixed new attempt directory v2",
+    "OUT fixed new attempt records v2"
+  ],
+  "original_driver": {
+    "bytes": 22679,
+    "git_blob": "080753bf6fa5070c0f71096ace0cf199762ee42c",
+    "sha256": "dd5c81cdbfd7f53346304d0d36164b5d7ac753daa854c6dbff0d7e554788dccc"
+  },
+  "original_guard_environment_recording_and_budget_unchanged": true,
+  "previous_actual_final_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+  "previous_attempt_job": "1a1d1c33b57-2564-1c77",
+  "previous_attempt_status": "FAILED_PRECONDITION before all source writes and fmt",
+  "source_application": false,
+  "successor_driver": {
+    "bytes": 22679,
+    "git_blob": "24d705376fe042f040d87b6a5fc72a67780b01fa",
+    "sha256": "a0cb7e886255c53e34f21002051209580bdb8e2089d4a892f6789ae95d15ea04"
+  },
+  "unchanged_function_count": 9
+}

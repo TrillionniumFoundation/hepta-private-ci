@@ -1,0 +1,27 @@
+{
+  "creation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "c57c1d124a4d2d73fa8c72c900ca55598be3fe3e"
+    },
+    "isError": false
+  },
+  "readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"content\":[{\"type\":\"text\",\"text\":\"tool call error: tool call failed for `codex_apps/h.process_status`\\n\\nCaused by:\\n    Mcp error: -32603: MCP request timed out\"}],\"isError\":true}\n"
+    },
+    "isError": false
+  },
+  "binary_readback_note": null
+}

@@ -1,0 +1,104 @@
+{
+  "format": "hepta-original-postformat-extractor-launch-plan-v1",
+  "status": "HOLD_WAITING_ROOT_APPROVED_CONTRACT",
+  "native_main_executions": 0,
+  "source_or_ref_writes": false,
+  "extractor_original": {
+    "bytes": 23468,
+    "sha256": "faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb",
+    "git_blob": "f8686d5986f0f21404621d7e2d6a78634dc3f578"
+  },
+  "matrix_original": {
+    "bytes": 124054,
+    "sha256": "9e83fffb854297f7e70f1b72e9f594c2159c4b81955b64ac2eaeeab669b2eb2d",
+    "git_blob": "ffaabdbd254bea8e3d45572c1e8e961625ee5119"
+  },
+  "inventory_original": {
+    "bytes": 22946,
+    "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+    "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+  },
+  "structural_callers_actual_working_input": {
+    "bytes": 1294564,
+    "sha256": "8610f25a4d8ace133d07894f35c6bf5c5bdba0a4fb77bd7056ec24b5d2a302da",
+    "git_blob": "50eee584787ed0706ef2f900a09f1ca9d9cd8819"
+  },
+  "actual_shared_capture_root_review": "360fbd83861c31e4c219ccfa3aba25d4d005b29c",
+  "shared_lock_actual_identity": {
+    "device": 2050,
+    "inode": 50139448,
+    "mode": 384,
+    "uid": 1000,
+    "nlink": 1
+  },
+  "staging": {
+    "new_external_base": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1",
+    "controls": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls",
+    "records_created_only_by_original_extractor": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/records",
+    "supplied_in_stdin": [
+      "extractor.py",
+      "FENCE_MATRIX.original.json",
+      "CONTRACT_ROOT_REVIEWED.json"
+    ],
+    "copied_under_actual_shared_lock": [
+      "STRUCTURAL_CALLERS.original.toml",
+      "inventory-driver-v2.py"
+    ],
+    "bounded_stdin_bytes": 1048576,
+    "all_inputs_verified_by": [
+      "bytes",
+      "sha256",
+      "git_blob"
+    ],
+    "new_source_files_written": 0,
+    "create_only": true,
+    "no_existing_directory_reuse_or_rename_retry": true
+  },
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/extractor.py",
+    "--root",
+    "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "--contract",
+    "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/CONTRACT_ROOT_REVIEWED.json",
+    "--contract-sha256",
+    null,
+    "--plan",
+    "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/FENCE_MATRIX.original.json",
+    "--inventory-driver",
+    "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/inventory-driver-v2.py",
+    "--structural-callers",
+    "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/controls/STRUCTURAL_CALLERS.original.toml",
+    "--records",
+    "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1/records"
+  ],
+  "environment_exact_overrides": {
+    "GIT_OPTIONAL_LOCKS": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "budget": {
+    "supervisor_timeout_seconds": 600,
+    "scope": "Independent read-only marker proposal preparation. No test, caller, source-closure or maintenance gate budget changes.",
+    "extractor_modified": false,
+    "timeout_or_missing_original_terminal": "Unknown; preserve partial original records, no success inference or automatic retry."
+  },
+  "shared_lock_scope": "Same actual inode, LOCK_SH|LOCK_NB held across exec. Original extractor independently opens and locks same path. Cooperative exclusion only; original full inventory before/after remains mandatory.",
+  "qualification": {
+    "source_closure": "not_run",
+    "full_caller": "not_run",
+    "rust_tests": "not_run",
+    "proposal_requires_review": true
+  },
+  "launch_authorization": "This template is not approval. Root must provide and approve the final exact contract and launcher/input identity; only native may issue the one supervisor request.",
+  "bootstrap_template": {
+    "bytes": 9346,
+    "sha256": "d4a1dd5099e326ccbc37f7064ee524339da5c0343aae308644cb42366a300868",
+    "git_blob": "0af942f1be53a1a86125cbb8ba61dad551858988"
+  },
+  "bootstrap_diff": {
+    "bytes": 11324,
+    "sha256": "9c988b2154e0333ebf8b30ff9a00634961e99a9662477ef8a286487d8ecd2323",
+    "git_blob": "1b2a541aa7eeb8f2b892d8ee90380626f1f0d714"
+  }
+}

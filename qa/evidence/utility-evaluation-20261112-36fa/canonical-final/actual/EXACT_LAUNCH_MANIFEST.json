@@ -1,0 +1,76 @@
+{
+  "canonical_objects_locally_rehashed": 62,
+  "canonical_packet_gzip": {
+    "bytes": 664656,
+    "git_blob": "c27e85ba08e352512bdf8b91b7251ddf2129aea1",
+    "sha256": "98ddc3c3de117cc6522c0c8e1e513255fbc13d227dde1d40bd04599986f4324e"
+  },
+  "files": [
+    {
+      "bytes": 5712,
+      "git_blob": "576b63e0bbf711f22650dd450f0ebc0beadeeeaa",
+      "name": "ACTUAL_BOOTSTRAP.py",
+      "path": "/tmp/hepta-36fa-final-canonical-alignment-launch-v1/ACTUAL_BOOTSTRAP.py",
+      "sha256": "cd9b4cdb4d6b9b9b305021cb4c234ca205e9d85a5a8fe1c34c8bd91e8fe86a16"
+    },
+    {
+      "bytes": 954027,
+      "git_blob": "5941b3a76183e947d005158a308ad2bde671992f",
+      "name": "ACTUAL_STDIN.json",
+      "path": "/tmp/hepta-36fa-final-canonical-alignment-launch-v1/ACTUAL_STDIN.json",
+      "sha256": "fa2efadbffa4beb397b339d959d1cb307df28435596e1ed15819e0adb51730c0"
+    },
+    {
+      "bytes": 960107,
+      "git_blob": "90dc1c537adc27b7d5868a5e578229a35e559274",
+      "name": "ACTUAL_PROCESS_INPUT.json",
+      "path": "/tmp/hepta-36fa-final-canonical-alignment-launch-v1/ACTUAL_PROCESS_INPUT.json",
+      "sha256": "9ae8de36c7266febc6ba007a08188caf50347da141c686bdefa02cec500ded41"
+    },
+    {
+      "bytes": 3724,
+      "git_blob": "decf734844b040344fcece643f59bbc82b2c1b88",
+      "name": "APPROVED_CONFIG.original.json",
+      "path": "/tmp/hepta-36fa-final-canonical-alignment-launch-v1/APPROVED_CONFIG.original.json",
+      "sha256": "f157643b1179deb47dd48ba5f744a9382ebae6da99fdea1bc84dd9a7dcfbc7fa"
+    }
+  ],
+  "format": "hepta-final-canonical-alignment-exact-launch-v1",
+  "four_inputs": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 3724,
+      "git_blob": "decf734844b040344fcece643f59bbc82b2c1b88",
+      "sha256": "f157643b1179deb47dd48ba5f744a9382ebae6da99fdea1bc84dd9a7dcfbc7fa"
+    },
+    "CANONICAL_PACKET.json": {
+      "bytes": 3149217,
+      "git_blob": "5bf5d0b9cd4737df50523e5ded4e1a9ca8754f36",
+      "sha256": "33bd5c58b7353008f540878b6ea5cf06cfbe220d6ee6ff663957ad116b641865"
+    },
+    "FINAL_FORMAT_NORMAL.original.json": {
+      "bytes": 912,
+      "git_blob": "cc5e721f649b1bb90619877e3a5c22e970cf3f58",
+      "sha256": "744efd4d8ea413862929697ff5ad994eeb0cb5a4124ae6f395ed9df7d80c0c36"
+    },
+    "driver.py": {
+      "bytes": 46094,
+      "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+      "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+    }
+  },
+  "key": "hepta-utility-36fa-final-canonical-alignment-v1",
+  "main_execution_performed": false,
+  "native_dispatch_performed": false,
+  "only_bootstrap_changes": [
+    "CANONICAL_PACKET.json pin",
+    "APPROVED_CONFIG.json pin"
+  ],
+  "outer_seconds": 900,
+  "physical_tree_unchanged": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "root_input_approval_git_blob": "b616588f256a1534050108327ef0219871f1413f",
+  "source_after": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_before": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "state": "FROZEN_AWAITING_ROOT_EXACT_LAUNCH_REVIEW",
+  "stdin_under_tool_limit": true,
+  "template_inverse_replacement_exact": true
+}

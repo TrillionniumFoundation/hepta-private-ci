@@ -1,0 +1,159 @@
+{
+  "format": "hepta-final-canonical-alignment-hold-independent-peer-review-v1",
+  "created_utc": "2026-11-12T21:54:46.844272+00:00",
+  "status": "no_specific_blocker_identified_in_HOLD_control_scope",
+  "scope": "Narrow read-only review of canonical object/index/HEAD alignment after separately successful actual final formatting. No native action, formatter, source gate, Cargo, or main executed.",
+  "reviewed_inputs": {
+    "driver.HOLD.py": {
+      "bytes": 46094,
+      "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2",
+      "git_blob_sha": "765ada67a33f4d9aeaf29c9c522898057083cafb"
+    },
+    "PLAN.HOLD.json": {
+      "bytes": 8098,
+      "sha256": "e0245f272e17dcc7dcbd5e65c5f0c1d00f8e1f6d346df985205e8f8945ff496d",
+      "git_blob_sha": "d10a3120d43e2a502056cf607184a389ebdd4a1a"
+    },
+    "STATIC_DELTA.json": {
+      "bytes": 2018,
+      "sha256": "b402e5e7ae9463a9f031ef6b2cc54b190e88ff14561975c8690534a0c2a0236a",
+      "git_blob_sha": "05b9bc773d8faa687e55f140014bc31e47eca808"
+    },
+    "WAITING_CONFIG.json": {
+      "bytes": 1460,
+      "sha256": "59334554b083190fbf426a6a0aa308b643d25108a77a17cb59591250e72de4c2",
+      "git_blob_sha": "8d82292b697bd82266a800e6e7d5d5762563a0c9"
+    },
+    "ORIGINAL_TO_HOLD.diff": {
+      "bytes": 51572,
+      "sha256": "69f2dee3d2b5e4a05fa5241909d5efed784dbab01545d79219009ed722aca4ed",
+      "git_blob_sha": "e7aff4f1fe787e5770327255cd409088eb10d0c4"
+    }
+  },
+  "original_driver": {
+    "bytes": 41629,
+    "sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae",
+    "git_blob_sha": "89434a961e4cc117874464f0308aa8b216c760ed"
+  },
+  "independent_definition_comparison": {
+    "byte_identical_original_definitions": [
+      "now",
+      "check",
+      "sha256",
+      "oid",
+      "nodup",
+      "parse",
+      "encoded",
+      "pin",
+      "real_directory",
+      "regular_read",
+      "read_input",
+      "write",
+      "jwrite",
+      "gzrecord",
+      "event",
+      "remaining",
+      "alarm_handler",
+      "disarm",
+      "arm_if_remaining",
+      "active_build_processes",
+      "concurrency_check",
+      "intent",
+      "command",
+      "git",
+      "git_state",
+      "parse_index",
+      "metadata_inventory",
+      "verify_metadata",
+      "verify_commit",
+      "snapshot",
+      "load_inventory"
+    ],
+    "count": 31,
+    "changed_original_definitions": [
+      "inventory_summary",
+      "verify_object_union",
+      "preflight",
+      "import_objects",
+      "final_source",
+      "final_git",
+      "final_inputs",
+      "retain_partial",
+      "main"
+    ],
+    "new_definitions": [
+      "physical_projection",
+      "lock_identity",
+      "parse_supervisor",
+      "validate_final_format",
+      "validate_canonical_index",
+      "align_index_and_head"
+    ],
+    "removed_physical_single_file_definitions": [
+      "advance_source",
+      "index_preservation"
+    ],
+    "observed_sets_exactly_match_declared_delta": true
+  },
+  "reviewed_boundaries": [
+    {
+      "boundary": "HOLD and exact future inputs",
+      "assessment": "preflight requires launcher-pinned config bytes, explicit approved status and authorization, fixed old detached9c4/ee42 identity, actual final-format proof and supervisor identity, exact canonical packet type/count/body SHA identities, exact new commit/tree/ordered parents and every excluded action=False. Current WAITING/canonical/final-format values remain absent; this review does not fill or approve them."
+    },
+    {
+      "boundary": "Actual formatter producer/consumer schema",
+      "assessment": "validate_final_format checks the one original fmt stage, original argv with --base c0f,900 seconds, returncode0 without timeout/output limit, exact source identity, complete source/Git/input/lock audits and reviewed formatter path set. The consumed stage fields match the retained originalV5 stage producer reused by the finalfmt wrapper."
+    },
+    {
+      "boundary": "Object import and full physical equality",
+      "assessment": "Only explicitly missing approved original objects are written; existing object bodies must be equal. Both original and canonical15188-leaf snapshots plus explicit commit anchors are traversed and their full raw objects checked. The complete new tree leaf mode/OID map must equal actual full working-file content before index/HEAD writes. No all-history or ancestry-fsck claim is introduced."
+    },
+    {
+      "boundary": "Index-only transition",
+      "assessment": "align_index_and_head rechecks exact old Git state, full inventory and the unchanged global concurrency guard. It records intent, runs read-tree with one exact tree and no-u/-m/--reset, then an explicit full update-index --refresh, then write-tree requiring the approved tree. No worktree replacement, restore, checkout or reset remains."
+    },
+    {
+      "boundary": "Complete index evidence",
+      "assessment": "parse_index retains original version2/checksum/population/padding/extension checks. validate_canonical_index checks all15188 stage0 paths, modes, blobs, exact normal name flags and each actual filesystem stat field. It accepts only the understood TREE cache extension, records all complete entry deltas and raw bytes, and grants no zero-stat/ignore-stat exception."
+    },
+    {
+      "boundary": "Physical source and detached HEAD",
+      "assessment": "After index transition the full physical row projection must still equal the observed baseline before HEAD CAS. Only after exact canonical index audit does update-ref --no-deref HEAD NEW OLD run. Final HEAD raw bytes and tree are checked, full source must be clean with every row matching index, and full physical contents/modes remain equal to before."
+    },
+    {
+      "boundary": "Git metadata and input preservation",
+      "assessment": "The original metadata auditor permits only HEAD/index and exact missing canonical loose-object additions plus their affected object-directory metadata. Existing objects, config, refs and all other metadata must remain unchanged. No alternates/shallow/grafts/replace/ref/network operations are added; every externally pinned input and the actual EX-lock inode are checked again."
+    },
+    {
+      "boundary": "Deadlines and partial outcomes",
+      "assessment": "The unchanged command runner uses remaining action deadline and preserves observed versus unknown command terminals, with wrapper alarm disabled around child cleanup. Action600/records180/outer900 remain. A failure retains partial HEAD/index/config/source evidence with no rollback/retry; final audit uncertainty becomes UNKNOWN_PARTIAL_CANONICAL_ALIGNMENT. Clean-only success requires completed sequence and all final audits verified."
+    }
+  ],
+  "fixed_budgets": {
+    "action_seconds": 600,
+    "record_seconds": 180,
+    "outer_seconds": 900,
+    "formatter_seconds_in_required_historical_proof": 900
+  },
+  "source_and_ref_scope": {
+    "native_source": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "old_commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "old_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "complete_leaf_count": 15188,
+    "physical_source_writes": false,
+    "branch_or_remote_ref_updates": false,
+    "future_explicit_local_detached_HEAD_CAS_only": true
+  },
+  "pending_actual_inputs": [
+    "Normal complete finalfmt terminal/result and exact postformat inventory/Git state.",
+    "Root-reviewed authentic canonical commit/tree/ordered parents and raw object packet.",
+    "Exact projected after-inventory with canonical HEAD/index and unchanged physical rows.",
+    "Final approved config/launcher identities and native one-attempt authorization."
+  ],
+  "limits": [
+    "No result from current finalfmt or canonical alignment is inferred from predicted trees or HOLD objects.",
+    "This review covers the fixed control765ada only. Filling actual pins must preserve these boundaries and receive the existing final Root review.",
+    "CANONICAL_SOURCE_ALIGNED_CLEAN_ONLY is source preparation, not evaluator, source-closure, fullcaller, native, ordinary, Root or realA/B/C qualification.",
+    "No speculative refactor, new test, extra deadline or permission expansion was introduced."
+  ]
+}

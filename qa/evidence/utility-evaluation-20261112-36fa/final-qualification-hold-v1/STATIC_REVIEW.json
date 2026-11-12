@@ -1,0 +1,70 @@
+{
+  "checks": {
+    "actual_future_source_environment_proofs_not_filled": true,
+    "any_module_or_control_main_executed": false,
+    "eval_command_and_budget_equal_plan": true,
+    "focused_all_budgets_12000_21000_preserved": true,
+    "historical_163_test_count_not_a_gate": true,
+    "no_repeat_fix_or_fmt_in_qualification": true,
+    "original_native_source_recorders_exact": {
+      "canonical-wrapper.previous.py": "5be7e21dff083c19c2b56c75964d6fa1a765a412",
+      "hepta_ci_exec.original.py": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "hepta_ci_junit.original.py": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "native-driver.original.py": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "source-gates-driver.original.py": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    "original_outer_native_definition_comparison": [
+      {
+        "name": "git",
+        "same_source": true
+      },
+      {
+        "name": "sha",
+        "same_source": true
+      },
+      {
+        "name": "write",
+        "same_source": true
+      },
+      {
+        "name": "save",
+        "same_source": true
+      },
+      {
+        "name": "state",
+        "same_source": true
+      },
+      {
+        "name": "snapshot",
+        "same_source": true
+      },
+      {
+        "name": "verify_clean",
+        "same_source": true
+      },
+      {
+        "name": "archive_stage",
+        "same_source": true
+      }
+    ],
+    "source_main_and_budgets_600_300_4800_preserved": true,
+    "source_wrapper_inconsistent_success_does_not_pass": true,
+    "syntax_compiled_to_code_objects_only": true
+  },
+  "dispatches": {
+    "Cargo": 0,
+    "H": 0,
+    "formatter": 0,
+    "source_gates": 0
+  },
+  "format": "hepta-final-qualification-hold-static-review-v1",
+  "remaining_actual_inputs": [
+    "Root-approved actual final-format normal supervisor/result/postimage review",
+    "Actual final canonical SHA/tree/parents and clean alignment normal supervisor/result",
+    "Actual canonical complete physical inventory and original native compact snapshot hash",
+    "Current approved restored runtime 17-field input and original seed-bound proofs",
+    "Fresh external records/clone/Root parent/idempotency key and staged control identities",
+    "Root-reviewed actual host request and outer source-gate execution budget"
+  ],
+  "state": "PREPARED_HOLD_NOT_EXECUTED"
+}

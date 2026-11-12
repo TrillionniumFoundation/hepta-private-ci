@@ -1,0 +1,387 @@
+{
+  "after": {
+    "bytes": 101550,
+    "git_blob_sha": "e2f43f04110ea00b8aeede4ce5f9bd76d10ad531",
+    "sha256": "7ffd03efc96438ccee1b8a6bc0ac7de1f72bcdc1fead57e222d1ff2663710a74"
+  },
+  "before_with_old_migrations": {
+    "bytes": 27936,
+    "git_blob_sha": "0c114fe87e62252896ec9472017e70fcc6a8358b",
+    "sha256": "470a61b043b003d44751e3afee3cd0c34eac2a35f617a7fca5d90091071aea97"
+  },
+  "boundary_signature": "b8e7f02aac1b5ca68580764ee7922e7f16519d3fb1583ed45b0ce4961b1c84f3",
+  "format": "hepta-new-ordinary-source-attack-proposal-v1",
+  "helper_provenance": [
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "depth_at",
+      "original_source": {
+        "bytes": 568,
+        "git_blob_sha": "3f9a7b3f400eca2ea8734128bce57370cc4ca6b3",
+        "sha256": "c468065b4b514ce7795c062eb8640ec101e699bd72fcf23908d9f13e2dcc9451"
+      },
+      "qa_source": {
+        "bytes": 586,
+        "git_blob_sha": "2121ed03be203793da4c50d6d3e9a51e27d1b562",
+        "sha256": "86fbe7f73f35e735d0dec335d4bfbb52f6fc79742aa1631fd489cf1b8b650b42"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "body_open",
+      "original_source": {
+        "bytes": 484,
+        "git_blob_sha": "455d5e15b52dfaa6c7dfca0e343c62bcb9708dc3",
+        "sha256": "18299350ecbadca0718438ea375f790adb1a6131c306dd23a7c8a4b48590986e"
+      },
+      "qa_source": {
+        "bytes": 498,
+        "git_blob_sha": "49e3f0944c94d67949745f579c4fbb7838d474ca",
+        "sha256": "26c61a98f62420af3725b04682717a0e5ba7e113b6a912b12cfc52459e8eb529"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "item_end",
+      "original_source": {
+        "bytes": 167,
+        "git_blob_sha": "ffd7c3bb3793017b39255ba38dd93563a289d8f5",
+        "sha256": "b88a7fcb7f8b25e806a4d3f92036e60b07a6bcdb347a9b7e75875863051daae6"
+      },
+      "qa_source": {
+        "bytes": 185,
+        "git_blob_sha": "97af1398ddae386d6aeb268d8e5a164c32e458c1",
+        "sha256": "55da5c94e34b432da7c69f8aa2326acfa510efd9f3b35b99cc6c763f27ccc20c"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "root_containers",
+      "original_source": {
+        "bytes": 723,
+        "git_blob_sha": "69414b090d83e5f3d3861b7808607cca7983d610",
+        "sha256": "c6de8ef94e9927f3f11fac678b27935c1d7ea3ea3248cd38a4fef54552365e4c"
+      },
+      "qa_source": {
+        "bytes": 768,
+        "git_blob_sha": "9639d70076a2fbdac25794dd574c367e81b68cd9",
+        "sha256": "cf45c79b11505d5b94bd98fce99eb051a7c4cff4a6ffa5e32f6495753a49f121"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "function_location",
+      "original_source": {
+        "bytes": 482,
+        "git_blob_sha": "31c46125b2c827cdecb0169a7b2e548dfe25acd7",
+        "sha256": "d5a094ac378d6335b193da76fd2198afabbff2efafbaa66d6fee7b6d3e54b8cf"
+      },
+      "qa_source": {
+        "bytes": 518,
+        "git_blob_sha": "44f4f395013e5588d663d7b087df8473b45281c5",
+        "sha256": "ec0d5b7aea2070a3a9c245539952c634a79346fdd314faa578ae155d16b71fbe"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "select_scope",
+      "original_source": {
+        "bytes": 2242,
+        "git_blob_sha": "2afb00a4ffa26fe981a90f4bdf1578ece7f120ed",
+        "sha256": "000c92667db611355874edd290dc309ea3ee7c437a7f327bb890802735b6c0ab"
+      },
+      "qa_source": {
+        "bytes": 2373,
+        "git_blob_sha": "52cc4db2a3e562bfe8272356d931eedb7888b2ef",
+        "sha256": "613a859a0f4b9fee5fcb12165300280328d863a3dfa631fc649da5aa56d02c23"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "without_nested_functions",
+      "original_source": {
+        "bytes": 785,
+        "git_blob_sha": "775e39d935841b47956abba49b41bce6fd08ae7b",
+        "sha256": "3e097aab63df73c865538424401fd8b11085a71fe09a5382e8285f45a32b2fc9"
+      },
+      "qa_source": {
+        "bytes": 812,
+        "git_blob_sha": "b70269608e111609754519f25633ff5bd0cd336c",
+        "sha256": "49e4c4d433ec96c095a11fd475b634b1265c4ee2643a4928fc6410005d90e270"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "literal_span",
+      "original_source": {
+        "bytes": 1431,
+        "git_blob_sha": "25ccaaef99c9cf98f6facffe9256b12af69b0ee1",
+        "sha256": "5616c68088312345ce998bc992bba3cd016ba957e48d29f8019734e12cdc398d"
+      },
+      "qa_source": {
+        "bytes": 1512,
+        "git_blob_sha": "c1a4c55eb7badff4a9c0d2d38e2ccb2b80eb3664",
+        "sha256": "c7c6a660f5b95f42bca9007afe576862bf95d3427fd8b9a08c85374f367bbf51"
+      }
+    },
+    {
+      "adaptation": "Only local function names are prefixed and precondition failures use the original VerificationFailure class; all source masks/item spans remain original.",
+      "original_name": "mount_span",
+      "original_source": {
+        "bytes": 1061,
+        "git_blob_sha": "c658b8d82da30de42a2056a6603e1abcb3d1e4f0",
+        "sha256": "6b1f5eba2db91acaf7687a6947975a677967362c9e79a2be20104fac4d963574"
+      },
+      "qa_source": {
+        "bytes": 1088,
+        "git_blob_sha": "06b7ef232b0eba90cb9b9825c46edcd3340e8ba7",
+        "sha256": "cd015d2eaee065f4872aadd34d1f2c78366974118f32ef3470d38c232c49bd0b"
+      }
+    }
+  ],
+  "limits": "Source mutations exercise parsing/ordering/guard mechanisms only; no real authorized task, independent B, owner signature, executed C, daemon or Root recovery is established.",
+  "literal_specs": [
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-selection.command.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-next-use.command.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      }
+    },
+    {
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      }
+    },
+    {
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-selection-command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      }
+    },
+    {
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      }
+    },
+    {
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-next-use-command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit.completion-readiness.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "prefix_regex": "\\bconst\\s+PURPOSE\\s*:\\s*&str\\s*=",
+      "scope": {
+        "kind": "module_constant"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit.evaluated-completion-readiness.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "prefix_regex": "\\bconst\\s+EVALUATED_PURPOSE\\s*:\\s*&str\\s*=",
+      "scope": {
+        "kind": "module_constant"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-evaluated-retained-version.command.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "prefix_regex": "Self::EvaluatedNoUpdate\\s*=>\\s*\\{",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      }
+    },
+    {
+      "expected_rust_literal": "b\"hepta.agentd.original-retained-version.command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "prefix_regex": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>\\s*\\{",
+      "scope": {
+        "kind": "unique_function",
+        "name": "authenticate"
+      }
+    },
+    {
+      "expected_rust_literal": "b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "prefix_regex": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>\\s*\\{",
+      "scope": {
+        "kind": "unique_function",
+        "name": "authenticate"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit-selection.command.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "scope": {
+        "kind": "module_constant"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit-next-use.command.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "scope": {
+        "kind": "module_constant"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-retained-version.command.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "scope": {
+        "kind": "module_constant"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit-selection.readback.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "scope": {
+        "kind": "module_constant"
+      }
+    },
+    {
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-selection-readback.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "prefix_regex": "Ok\\(Digest32::of_parts\\(&\\[",
+      "scope": {
+        "kind": "unique_function",
+        "name": "context_binding"
+      }
+    },
+    {
+      "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-selection.readback.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "prefix_regex": "\\bif\\s+context\\.evaluated\\.is_some\\(\\)\\s*\\{",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      }
+    }
+  ],
+  "module_mounts": [
+    {
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "module_name": "retained",
+      "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "path_literal": "\"cell_q24_candidate_stage_retained.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "module_name": "execution",
+      "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "path_literal": "\"cell_q24_candidate_stage_retained_execute.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "module_name": "readback",
+      "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "path_literal": "\"cell_q24_candidate_stage_retained_readback.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "module_name": "evaluated",
+      "parent": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "path_literal": "\"circuit_evaluated_selection_command.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "module_name": "command_owner_adapter",
+      "parent": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "path_literal": "\"circuit_evaluated_selection_command_owner_adapter.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "module_name": "evaluated",
+      "parent": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "path_literal": "\"circuit_evaluated_selection_command_service.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "module_name": "evaluated",
+      "parent": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "path_literal": "\"circuit_evaluated_next_use_command.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "module_name": "evaluated",
+      "parent": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "path_literal": "\"circuit_evaluated_next_use_command_service.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "module_name": "remote",
+      "parent": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "path_literal": "\"circuit_evaluated_next_use_remote.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "module_name": "prepared_custody",
+      "parent": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "path_literal": "\"circuit_retained_version_prepared.rs\""
+    }
+  ],
+  "new_methods": [
+    "test_actual_protocol_literals_reject_same_length_comment_and_dead_code_decoys",
+    "test_clone_and_cold_recovery_cannot_promote_original_origin",
+    "test_cold_reader_is_installed_only_after_two_complete_current_reads",
+    "test_complete_evaluated_prefix_cannot_admit_legacy_adopt_or_wrong_owner",
+    "test_each_selector_clone_is_bound_to_its_actual_root_impl",
+    "test_evaluated_remote_c_finishes_with_actual_source_cell_after_predecessors",
+    "test_final_use_and_prepared_custody_are_consumed_by_original_owners",
+    "test_four_five_six_pins_keep_full_signed_predecessors",
+    "test_later_cold_bind_failure_and_invalid_wire_have_separate_effects",
+    "test_new_production_modules_are_real_and_cannot_gain_authority_factories",
+    "test_new_typed_edges_and_old_boundary_inventory_are_exact",
+    "test_only_published_and_fresh_version_can_serve_s_or_start_c",
+    "test_original_command_helpers_keep_distinct_legacy_and_evaluated_reads",
+    "test_original_continuation_channels_are_consumed_once",
+    "test_readiness_has_exact_typed_purposes_and_monotone_channel_state",
+    "test_root_current_checks_surround_actual_retained_effects",
+    "test_version_prepare_is_once_and_completion_requires_actual_readiness",
+    "test_version_requires_actual_preheld_e_and_distinct_purpose"
+  ],
+  "new_source_or_verdict_cache": false,
+  "original_budget_changed": false,
+  "original_full_collector_changed": false,
+  "original_verifier_changed": false,
+  "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+  "qualification": false,
+  "removed_old_methods": [],
+  "scope_guards": {
+    "paths": 20,
+    "scopes": 34
+  },
+  "source_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+  "status": "unapplied_proposal_not_executed"
+}

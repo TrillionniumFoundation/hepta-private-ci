@@ -1,0 +1,14 @@
+--- original-driver-080753.py
++++ successor-v2-HOLD.py
+@@ -21,9 +21,9 @@
+ import types
+ 
+ EVIDENCE = Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1')
+-CONTROL = EVIDENCE / 'final-nonrust-fmt-control-v1'
++CONTROL = EVIDENCE / 'final-nonrust-fmt-control-v2'
+ CONFIG = CONTROL / 'APPROVED_CONFIG.json'
+-OUT = EVIDENCE / 'final-nonrust-fmt-v1'
++OUT = EVIDENCE / 'final-nonrust-fmt-v2'
+ LOCK = EVIDENCE / 'SOURCE_COORDINATION.lock'
+ LOCK_ID = {'device': 2050, 'inode': 50139448, 'uid': 1000, 'mode': 384, 'nlink': 1}
+ V5 = EVIDENCE / 'driver-v5.py'

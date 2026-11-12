@@ -1,0 +1,123 @@
+{
+  "actual_aligned_full_inventory": {
+    "bytes": 5611184,
+    "filesystem_entries": 15188,
+    "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+    "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e",
+    "tracked_entries": 15188
+  },
+  "actual_alignment": {
+    "job_id": "1a1d1ddc8e4-2564-1c83",
+    "result": {
+      "bytes": 368586,
+      "git_blob": "2678be6c23d00696d356e988120887a61f88bfab",
+      "sha256": "33cd2a23b1bd4a4b7b8ec5d41b5658d3149d701e7096cea00aee6f5d9f2f82c7"
+    },
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1/run/RESULT.json",
+    "supervisor": {
+      "bytes": 910,
+      "git_blob": "879685b4776ef2f9237587ae20cc8916391504de",
+      "sha256": "70b7c7ab7c5b895d9fea60f88aa87d7f7ae8aed70483cf83b4ec788a17a68886"
+    },
+    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-246d-v1/CANONICAL_ALIGNMENT_NORMAL.original.json"
+  },
+  "actual_final_format": {
+    "job_id": "1a1d1cb5f1a-2564-1c7c",
+    "result": {
+      "bytes": 8585,
+      "git_blob": "7b9c39083f2acd84d41740c18e6288914496d136",
+      "sha256": "e2983c5ff45c3474ecc84be80eebd48fbde3c156ae193f56e309c90b0a420ea8"
+    },
+    "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/final-nonrust-fmt-v2/RESULT.json",
+    "supervisor": {
+      "bytes": 912,
+      "git_blob": "cc5e721f649b1bb90619877e3a5c22e970cf3f58",
+      "sha256": "744efd4d8ea413862929697ff5ad994eeb0cb5a4124ae6f395ed9df7d80c0c36"
+    },
+    "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-canonical-alignment-v1/FINAL_FORMAT_NORMAL.original.json"
+  },
+  "configuration": {
+    "bytes": 10939,
+    "git_blob": "83b87db774f7ce591c647fb86641bbdb4006491e",
+    "sha256": "5ee1f5ae249986823b72b154284a4fa484d91a5d3c05ccc865d595f2e95a9f4d"
+  },
+  "exact_full_inventory_recovery": "The previously prepared complete original-serializer bytes now match the successful native alignment RESULT in length, SHA256 and Git blob. This is exact recovery, not a second native full read.",
+  "exact_launch_review_still_required": true,
+  "format": "hepta-root-final-qualification-input-approval-v1",
+  "frozen_controls": {
+    "admission": {
+      "bytes": 14294,
+      "git_blob": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+      "sha256": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f"
+    },
+    "native_driver": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native_wrapper": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "plan": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "source_wrapper": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  },
+  "native_compact_expected": {
+    "bytes": 3530181,
+    "git_blob": "7e48e7b0441e61c3cfb0707070a5a2564be60155",
+    "sha256": "2fa7277b524b57b91c4517655ea086ad0314a4a33df0d47ed230d8afb931a62a"
+  },
+  "native_compact_independent_projection": {
+    "bytes": 4605,
+    "git_blob": "db525f6a8bfce617007fe488ea8f10235e940313",
+    "sha256": "c8aedf866d3531b97616deb2f367ab8b5f187d9423fa775118cb5f7132a8ab96"
+  },
+  "native_compact_status": "Expected only; actual original native snapshot remains mandatory.",
+  "native_tests_started": false,
+  "parents": [
+    "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+  ],
+  "qualified": false,
+  "real_qualified_task_chain_results": 0,
+  "required_execution_order": [
+    "Complete original source5118 clone/freeze/source-closure600/self-test300/verify4800 and retain all actual outcomes",
+    "Then original native unfiltered eval3600,focused7200 within12000,all ordinary7200 thenRoot7200 within21000"
+  ],
+  "root_review": "Root read the complete admission/source/native wrappers and independent163c7b4 review. Original b92,5118,recorder,collector,14 phase limits,8MiB stack,nextest default/overrides,retries0 and source/original-owner assertions remain unchanged.",
+  "runtime_guard_exact_projected_keys": [
+    "runtime_restoration",
+    "environment",
+    "tool_files",
+    "v8_files",
+    "formatter_tool_files",
+    "create_target_if_absent",
+    "minimum_target_free_bytes",
+    "inherited_source_environment",
+    "tool_identity_projection"
+  ],
+  "runtime_guard_source": {
+    "bytes": 9668,
+    "git_blob": "a66ab71a3504f29240da6048ca2c45ca3735e89b",
+    "sha256": "47acb8e9130d497035fad7b90ec0a9c4d0b3277e71c6b9392b75a7107d4599e1"
+  },
+  "source": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_driver": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py",
+  "source_gates_configuration": {
+    "bytes": 820,
+    "git_blob": "e57dd8482d4801c7233b35e27fdaf253a0d7bc2e",
+    "sha256": "986712a39a2d87733f86f464e3191830b70f77c22d00d51865a32eb62aa18adf"
+  },
+  "source_gates_started": false,
+  "source_wrapper_outer_timeout": "Bind only after recovering the original typed request or explicit original contract; not inferred from phase sums.",
+  "status": "ACTUAL_FINAL_SOURCE_AND_INPUTS_VERIFIED_EXACT_LAUNCH_REVIEW_REQUIRED",
+  "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+}

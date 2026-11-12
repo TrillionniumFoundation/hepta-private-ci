@@ -1,0 +1,68 @@
+{
+  "all_other_bootstrap_code_equal": true,
+  "bootstrap": {
+    "bytes": 9492,
+    "git_blob": "b02ccb0c91272682c48117fbc3c6b0b4b8eaa508",
+    "sha256": "794efe2fb9a9ec5a0d0b65784c1ea6354fb52a44ae3407d57786938ebaf2a00e"
+  },
+  "dispatch_rule": "One exact frozen seven-field v2 request. Preserve original v1 rejection and all admission/transport observations; same-key reconciliation only if this callback is lost.",
+  "executor": "native_ci_audit only",
+  "format": "hepta-root-extractor-v2-exact-launch-review-v1",
+  "idempotency_key": "hepta-utility-36fa-postformat-fence-proposals-v5-v2",
+  "input_approval_blob": "50349a15a8b382fd573c7c14140e138b2856cf64",
+  "only_changes_from_approved_v1": [
+    "fresh v2 external base/key",
+    "exact new extractor, plan and approved-contract pins and supplied bytes"
+  ],
+  "outer_seconds": 600,
+  "pinned_files": {
+    "CONTRACT_ROOT_REVIEWED.json": {
+      "bytes": 34904,
+      "git_blob": "e621bef8a82b0e8364252fb97c5297f471050f68",
+      "sha256": "7964d5a805cce1f9df4e6f0afc735dae04b4947663feba6ef9bd2b8c00876976"
+    },
+    "FENCE_MATRIX.original.json": {
+      "bytes": 124075,
+      "git_blob": "420daa1d2fb8397016b23a294e25a23ebe01e0d0",
+      "sha256": "8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e"
+    },
+    "STRUCTURAL_CALLERS.original.toml": {
+      "bytes": 1294564,
+      "git_blob": "50eee584787ed0706ef2f900a09f1ca9d9cd8819",
+      "sha256": "8610f25a4d8ace133d07894f35c6bf5c5bdba0a4fb77bd7056ec24b5d2a302da"
+    },
+    "extractor.py": {
+      "bytes": 23468,
+      "git_blob": "9f13a0e39e012982a5ac539aec1f1bb980e83fa7",
+      "sha256": "58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5"
+    },
+    "inventory-driver-v2.py": {
+      "bytes": 22946,
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    }
+  },
+  "qualification": false,
+  "reviewed_at": "2026-11-12T21:19:29.278630+00:00",
+  "source_writes": false,
+  "status": "APPROVED_ONE_READONLY_V2_EXTRACTION_AFTER_RETAINED_V1_REJECTION",
+  "stdin": {
+    "bytes": 243449,
+    "git_blob": "7497c99db0b5ece6586609b1b9e1973470d0f694",
+    "sha256": "e0c78ecdfdbfc23517a599b679d261797c1db496af619b95b9d80ff16e7d8fb4"
+  },
+  "tests": 0,
+  "typed_input": {
+    "bytes": 253382,
+    "git_blob": "731c5d9cdff02e0e25a4af1baae99b072e37a53c",
+    "sha256": "a49ef924bd9cd949f4c14b84d5525bf2102a506d7289668f1274cd35ccec87ef"
+  },
+  "unchanged_fields": [
+    "explicit executable/args shape/cwd/host",
+    "600-second independent read-only budget",
+    "same actual shared lock identity and inherited lock",
+    "create-only staging and failed partial retention",
+    "actual stable working CALLERS copy and original inventory driver copy",
+    "no source write, formatter, fix, test or gate"
+  ]
+}

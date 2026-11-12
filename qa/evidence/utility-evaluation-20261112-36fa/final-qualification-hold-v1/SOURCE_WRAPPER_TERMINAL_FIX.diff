@@ -1,0 +1,19 @@
+--- source-gates-wrapper.draft-96ce9558.py
++++ source-gates-wrapper.HOLD.py
+@@ -78,7 +78,15 @@
+         stream.write(original_raw); stream.flush(); os.fsync(stream.fileno())
+     result['original_run_status'] = payload['status']
+     result['original_records'] = cfg['records']
+-    result['status'] = 'passed' if result['driver_returncode'] == 0 and payload['status'] == 'passed' else payload['status']
++    if payload['status'] == 'passed':
++        if result['driver_returncode'] == 0:
++            result['status'] = 'passed'
++        else:
++            result['status'] = 'unknown' if result['driver_returncode'] is None else 'failed'
++            result['inconsistent_original_terminal'] = {
++                'driver_returncode': result['driver_returncode'], 'original_run_status': payload['status']}
++    else:
++        result['status'] = payload['status']
+ except BaseException as error:
+     result['error'] = type(error).__name__ + ': ' + str(error)
+     if result.get('driver_returncode') not in (None, 0):

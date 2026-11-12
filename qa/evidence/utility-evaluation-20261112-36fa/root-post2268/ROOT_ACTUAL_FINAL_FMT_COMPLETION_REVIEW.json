@@ -1,0 +1,86 @@
+{
+  "actual_file_review_basis": "All15188 file hash/mode rows and actual complete inventory identity match the independently reconstructed physical tree; every applied after-image was already fully reviewed in V2. No formatter-created Rust changes.",
+  "actual_final_git_state": {
+    "bytes": 489,
+    "git_blob": "be108e81e8becd1b6dd3f4cac302b5f855d51b41",
+    "sha256": "e8ec74c83f7f671727d417e722da27a1337e70b0ef14b3a0481bd5d0ef609e14"
+  },
+  "actual_fmt_interval": [
+    "2026-11-12T22:05:58.973041+00:00",
+    "2026-11-12T22:06:14.346336+00:00"
+  ],
+  "actual_fmt_returncode": 0,
+  "actual_full_inventory": {
+    "bytes": 5614896,
+    "git_blob": "445e54a43503dd79ba1e856e2e07acf532994ae6",
+    "sha256": "5e106b53d7dfb69c5beb84a4d726c4591ff96d032e7aaa1a5418ccbbb95a16ca"
+  },
+  "actual_physical_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "applied_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+    "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+    "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+  ],
+  "canonical_commit_created": false,
+  "complete_final_audits_verified": 3,
+  "complete_leaf_count": 15188,
+  "first_rejected_attempt_preserved": "1a1d1c33b57-2564-1c77",
+  "format": "hepta-root-actual-final-format-completion-review-v1",
+  "formatter_changed_paths": [],
+  "full_inventory_recovery": "Exact full original byte identity matched against actual successful native RESULT; reconstructed from original complete3f28 inventory, independently reviewed actual11 postimages and unchanged original compact serializer. Not a second native full-inventory download.",
+  "full_source_gates": "not_run",
+  "job": "1a1d1cb5f1a-2564-1c7c",
+  "native_head_before_canonical_alignment": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "native_head_tree_before_alignment": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "normal_sdk": {
+    "bytes": 912,
+    "git_blob": "cc5e721f649b1bb90619877e3a5c22e970cf3f58",
+    "sha256": "744efd4d8ea413862929697ff5ad994eeb0cb5a4124ae6f395ed9df7d80c0c36"
+  },
+  "original_fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "original_fmt_seconds": 900,
+  "original_inputs_unchanged": 22,
+  "preserved_first_transport_observation_failures": [
+    {
+      "bytes": 179,
+      "git_blob": "d7bc200b39841bf34beb2e1ed42b01d723c3eea9",
+      "name": "RESULT_READ_01.original.json",
+      "sha256": "65787099b1bc91f2978043aa1f40b1554efd27410feb6507d9ed02d796c8052f"
+    },
+    {
+      "bytes": 182,
+      "git_blob": "c57c1d124a4d2d73fa8c72c900ca55598be3fe3e",
+      "name": "STATUS_01.original.json",
+      "sha256": "49601799ecb0e32c18f45ea77317623ebfe784b09dd1023c965d56858788da5a"
+    },
+    {
+      "bytes": 279,
+      "git_blob": "41e85f61a46ae50c2dc0681c82095891f76a472b",
+      "name": "STDOUT_READ_01.original.json",
+      "sha256": "6336265f5bcc5718bae353a91c46e169b9e4937f2a7c03253d77b4b5ce3da85b"
+    }
+  ],
+  "qualification": false,
+  "real_qualified_task_chain_results": 0,
+  "result": {
+    "bytes": 8585,
+    "git_blob": "7b9c39083f2acd84d41740c18e6288914496d136",
+    "sha256": "e2983c5ff45c3474ecc84be80eebd48fbde3c156ae193f56e309c90b0a420ea8"
+  },
+  "rust_tests": "not_run",
+  "source_ref_changed": false,
+  "status": "ACTUAL_APPLICATION_AND_FINAL_FORMAT_VERIFIED_CANONICAL_FREEZE_READY"
+}

@@ -1,0 +1,26 @@
+{
+  "encoding": {
+    "NONRUST_PACKET.json": "base64 of gzip; bounded decompressed exact raw pin checked before filesystem writes",
+    "other_files": "base64 of exact raw bytes"
+  },
+  "format": "hepta-final-format-bootstrap-template-static-review-v1",
+  "four_files": [
+    "driver.py",
+    "CAPTURE_NORMAL.original.json",
+    "NONRUST_PACKET.json",
+    "APPROVED_CONFIG.json"
+  ],
+  "main_plan": "one create-only control directory then exec frozen driver; original driver takes EX before source inspection/application; outer2100, no main authorized by template",
+  "native_executed": false,
+  "pins_absent": [
+    "NONRUST_PACKET.json",
+    "APPROVED_CONFIG.json"
+  ],
+  "structural_source": "/tmp/hepta-36fa-postformat-capture-launch-v1/ACTUAL_BOOTSTRAP.py",
+  "unchanged_writer_functions": [
+    "check",
+    "identity",
+    "real_parents",
+    "retain"
+  ]
+}

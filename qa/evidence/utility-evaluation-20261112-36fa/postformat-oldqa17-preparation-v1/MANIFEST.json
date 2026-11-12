@@ -1,0 +1,215 @@
+{
+  "actual_source_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+  "changed_old_test_methods": [
+    {
+      "method": "test_registered_calls_are_exact_and_extra_callers_are_rejected",
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py"
+    },
+    {
+      "method": "test_legacy_tnu_version_and_readiness_reject_evaluated_contexts",
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py"
+    },
+    {
+      "method": "test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority",
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py"
+    },
+    {
+      "method": "test_attestation_and_readback_use_live_original_owners_without_running_c",
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py"
+    },
+    {
+      "method": "test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors",
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py"
+    },
+    {
+      "method": "test_readiness_only_original_unresolved_publication_remains_pending",
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py"
+    },
+    {
+      "method": "test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity",
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py"
+    },
+    {
+      "method": "test_opaque_dataset_training_and_selection_cannot_be_detached_or_renewed",
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py"
+    },
+    {
+      "method": "test_wire_purpose_action_sequence_and_original_context_cannot_change",
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py"
+    },
+    {
+      "method": "test_service_checks_read_only_request_before_the_same_original_owner",
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py"
+    },
+    {
+      "method": "test_command_and_readback_keep_actual_owner_and_original_transport_bounds",
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py"
+    },
+    {
+      "method": "test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied",
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py"
+    },
+    {
+      "method": "test_authentication_does_not_open_candidate_effects_or_original_root_factories",
+      "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py"
+    },
+    {
+      "method": "test_legacy_or_non_root_provider_cannot_be_promoted",
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+    },
+    {
+      "method": "test_cold_and_unknown_never_reset_the_original_issuer",
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+    },
+    {
+      "method": "test_publication_and_c_runtime_keep_the_original_verifier_tail",
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+    },
+    {
+      "method": "test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback",
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+    }
+  ],
+  "constant_changes": [
+    "new actual helper paths",
+    "ADMITTED remote readback actual caller"
+  ],
+  "files": [
+    {
+      "after": {
+        "bytes": 27936,
+        "git_blob_sha": "0c114fe87e62252896ec9472017e70fcc6a8358b",
+        "sha256": "470a61b043b003d44751e3afee3cd0c34eac2a35f617a7fca5d90091071aea97"
+      },
+      "before": {
+        "bytes": 26872,
+        "git_blob_sha": "4b824b6562195eb23e82ec41d7ce727a6885427a",
+        "sha256": "ac47d2af70cb786b68ade4cc2999cdc7be496be6598376451484992dbcc8e852"
+      },
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 14282,
+        "git_blob_sha": "a8b366ff752ddd52f6bf2a06a60c0ca9b0529370",
+        "sha256": "c28f52a4525faae4bc81b77b30bc06afa9abe4d72b46a4473e120f2a4c5e2cf8"
+      },
+      "before": {
+        "bytes": 14070,
+        "git_blob_sha": "90c95e989d59dd67a005f89588de27062f70e992",
+        "sha256": "113cac56debefe87460e3ebc76ee34201a00a9d7439449f5061c5f90e3af20e6"
+      },
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 18326,
+        "git_blob_sha": "63c0ab0ff9e24bc96fe77a7559940dd6467d5748",
+        "sha256": "03c35867cb6fd3e681eda655be822107fbf153d65e12ea37eb352b0b20ea364f"
+      },
+      "before": {
+        "bytes": 17639,
+        "git_blob_sha": "27f9f64ff416ab65d5f068a5e25fcae8385b10ab",
+        "sha256": "615372987e280bd49098130779e0c0347fe2762c1e81796b477d1d728b99d869"
+      },
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 22707,
+        "git_blob_sha": "daf7be67eb98a2213b794e8c7d6fefee808fd322",
+        "sha256": "8b9250570e1fcdb51f10076da4d9f1fac8ac16824d6fde0157db5e08ed4e44cf"
+      },
+      "before": {
+        "bytes": 22402,
+        "git_blob_sha": "4891478d53b6da4ffe830adaaba2bcfa45b31619",
+        "sha256": "1f12f51b7b5c7fdd2300a35888bbc2e5b5415f49ac449c6e6749f6e3c900357a"
+      },
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 24442,
+        "git_blob_sha": "701576c41fdd1043778a026221ed09f3fcbb2e92",
+        "sha256": "343f666445888fca75e8304823911bb3e1ea54502f7d5ce7b689b60779961dd5"
+      },
+      "before": {
+        "bytes": 23165,
+        "git_blob_sha": "724aef5bba1f9124b18601344ecaeb3ce2288b21",
+        "sha256": "c6ebba5304d1c8c906956cdb3611bdd0b2e08eea802623c9661c11f8c123b720"
+      },
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 17243,
+        "git_blob_sha": "1e768e18b8e5471874d7a739a453cdd30f3e2346",
+        "sha256": "f7c84642f2aa7c9ae015ddc88cd5b18c72a3636fe37f219e7b10f3ef9ccdeeb9"
+      },
+      "before": {
+        "bytes": 16564,
+        "git_blob_sha": "9db8a2178c629ca8a6c7136bc25e9833579c2edd",
+        "sha256": "76dd1212624361df213bf0759a16f79a265c3c3d1e5a44d2342eca0a83a22a23"
+      },
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 9934,
+        "git_blob_sha": "bd4f03a6fbb9741fc05ff6d02fe9646a6e035cbc",
+        "sha256": "bdb5004adfe4cbaa7debee1fc28e65f2f7ec5b7c806042907d525accac67ba2e"
+      },
+      "before": {
+        "bytes": 9787,
+        "git_blob_sha": "bcf2dbb0824b0a99d9acfd8c54afe51356d212a1",
+        "sha256": "9b71b1793c6969fef17488bd221b01e688464b41c04fade74dc1cbb96e4074ef"
+      },
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 13407,
+        "git_blob_sha": "fcac2b103dae7c46942c74863e5d4a748e505ac2",
+        "sha256": "998f04c71afd88886ad7741ee4262abb334e7d086a8d049ee6bbb581eaa13e89"
+      },
+      "before": {
+        "bytes": 13049,
+        "git_blob_sha": "5fb67098c33f4ccc055fb3e8ac18486543680eec",
+        "sha256": "547b93c64daf821fbc4b3b75cc7e1c6225799cd0164f7a24853124a5f6a67034"
+      },
+      "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 12151,
+        "git_blob_sha": "d756a549e3ce6846769680b09912167809015455",
+        "sha256": "92967d3e5643efd28e93858ffc045bad425da34384ed4307a48674c798ab77fa"
+      },
+      "before": {
+        "bytes": 11172,
+        "git_blob_sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+        "sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818"
+      },
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+    }
+  ],
+  "format": "hepta-old-qa-migration-review-snapshot-v1",
+  "new_planned_methods_present": 0,
+  "new_planned_methods_still_pending": 18,
+  "non_test_helper_changes": [
+    "OriginalSelectionReadbackClosureTests.mutate optional explicit Legacy arm scope"
+  ],
+  "old_method_map": {
+    "bytes": 189709,
+    "git_blob_sha": "1215cfdffc8bb9f90cf7095e86783b9fbc6737d5",
+    "sha256": "60c489ed25ab18df78554d88fe35caf700b20f607468d4f08252c5ad2d5bc4ec"
+  },
+  "old_test_methods_removed": 0,
+  "patch": {
+    "bytes": 26626,
+    "git_blob_sha": "a083a8b87195f57ec306f32ba7400328719ca0ec",
+    "sha256": "2e23f2083453e6859ff0ef15fd6e2b3157a5e1b05bdc09086b6e3b1bcfe435e0"
+  },
+  "qualification": false,
+  "status": "frozen_candidate_only_not_executed_not_final_nonrust"
+}

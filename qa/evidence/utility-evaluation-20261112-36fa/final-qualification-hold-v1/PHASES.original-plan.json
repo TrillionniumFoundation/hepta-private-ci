@@ -1,0 +1,73 @@
+[
+  {
+    "id": "eval-lib",
+    "implementation": "original run/collect command; fresh four-case coverage, dynamic complete library count",
+    "timeout_seconds": 3600
+  },
+  {
+    "id": "native-toolchain",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "helper-build",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 3600
+  },
+  {
+    "id": "helper-verify-before",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "focused",
+    "implementation": "unchanged original b92 main",
+    "outer_driver_budget_seconds": 12000,
+    "timeout_seconds": 7200
+  },
+  {
+    "id": "ordinary",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 7200
+  },
+  {
+    "id": "root-setup",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 60
+  },
+  {
+    "id": "root",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 7200
+  },
+  {
+    "id": "all-native-driver",
+    "implementation": "unchanged original b92 main",
+    "outer_driver_budget_seconds": 21000
+  },
+  {
+    "id": "helper-verify-after",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "root-cleanup",
+    "implementation": "unchanged original b92 main",
+    "timeout_seconds": 60
+  },
+  {
+    "id": "source-closure",
+    "implementation": "unchanged original 5118 main",
+    "timeout_seconds": 600
+  },
+  {
+    "id": "caller-self-test",
+    "implementation": "unchanged original 5118 main",
+    "timeout_seconds": 300
+  },
+  {
+    "id": "caller-verify",
+    "implementation": "unchanged original 5118 main",
+    "timeout_seconds": 4800
+  }
+]

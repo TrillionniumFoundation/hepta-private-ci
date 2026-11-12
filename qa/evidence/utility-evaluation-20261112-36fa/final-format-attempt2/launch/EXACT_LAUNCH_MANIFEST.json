@@ -1,0 +1,66 @@
+{
+  "H_called": false,
+  "changes_to_template": "Only approved-config None pin filled; all executable statements unchanged.",
+  "compressed_packet": {
+    "bytes": 479019,
+    "git_blob": "98f5978157ac980d64c1186b81ee39a81ce38330",
+    "sha256": "d1edc3a26cedb246c528877067625a3d0f9e351e68cb207bd2aa270e1b3312b0"
+  },
+  "execution_attempt": "fresh v2 after known precondition failure; original v1 preserved",
+  "expected_physical_tree_after_apply": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "format": "hepta-final-nonrust-format-exact-launch-v2",
+  "four_original_input_pins": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2698,
+      "git_blob": "035ffe2ad6ad3e2e8c21c8a2776b03fbeacc9838",
+      "sha256": "233c1645073ba2e666560a427486923d09b7c1d3c8905de3b264bff38c1a3e6b"
+    },
+    "CAPTURE_NORMAL.original.json": {
+      "bytes": 909,
+      "git_blob": "8146d2ad99259a1965038f01dd3f8f186cd3e5a0",
+      "sha256": "1ad13e624fa88b3509d5519c26335c92449d803ff775f8f14068d65dbbfb106e"
+    },
+    "NONRUST_PACKET.json": {
+      "bytes": 2442538,
+      "git_blob": "5aa96020a8701f6e12b93c6a214964f61b69224f",
+      "sha256": "d1c1151be959db7917832a1573a3ab2b3fd04f0840740806c20fed9743b86441"
+    },
+    "driver.py": {
+      "bytes": 22679,
+      "git_blob": "24d705376fe042f040d87b6a5fc72a67780b01fa",
+      "sha256": "a0cb7e886255c53e34f21002051209580bdb8e2089d4a892f6789ae95d15ea04"
+    }
+  },
+  "inner_formatter_seconds": 900,
+  "key": "hepta-utility-36fa-final-nonrust-fmt-v2",
+  "outer_seconds": 2100,
+  "records": {
+    "ACTUAL_BOOTSTRAP.py": {
+      "bytes": 5720,
+      "git_blob": "bf8608fea3352ea603a70e9b9d369b91c391a6c8",
+      "sha256": "f5dac75e8447f812cfaf6ad53c40e161681e4907f057ebe739f0eb128005766d"
+    },
+    "ACTUAL_PROCESS_INPUT.json": {
+      "bytes": 679988,
+      "git_blob": "b423b3e7603df510cf6c9d2c8f1009f39bdaeff6",
+      "sha256": "16e7803f6708e80064d447010eab9e078e6b2b16e1efa0ff78bd7f6ef6d07d99"
+    },
+    "ACTUAL_STDIN.json": {
+      "bytes": 673907,
+      "git_blob": "19b2efc91b032c85a5774056e2a57632dbc28be1",
+      "sha256": "6f97371680cb73bda5859f67e46c3ea3904c2fef032f67c55a80887141d4dd4a"
+    },
+    "APPROVED_CONFIG.original.json": {
+      "bytes": 2698,
+      "git_blob": "035ffe2ad6ad3e2e8c21c8a2776b03fbeacc9838",
+      "sha256": "233c1645073ba2e666560a427486923d09b7c1d3c8905de3b264bff38c1a3e6b"
+    }
+  },
+  "source_main_started": false,
+  "source_proposal_version": "v2",
+  "template": {
+    "bytes": 5575,
+    "git_blob": "5785238bdc89f2fef1380ce37a4c0290a4a481e3",
+    "sha256": "3803df8c10d1b3d3ed8c492c79fe8d8a4429593f5569c14ddb6070f1321a8bad"
+  }
+}

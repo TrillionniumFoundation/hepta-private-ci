@@ -1,0 +1,63 @@
+{
+  "allowed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+    "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+    "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+  ],
+  "baseline_inventory": {
+    "bytes": 5614211,
+    "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+    "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "baseline_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+  "current_readonly_probe_blob": "7f8c48f294ac3f284cf028bb8a29fdcd23fd0712",
+  "driver": {
+    "bytes": 22679,
+    "git_blob": "24d705376fe042f040d87b6a5fc72a67780b01fa",
+    "sha256": "a0cb7e886255c53e34f21002051209580bdb8e2089d4a892f6789ae95d15ea04"
+  },
+  "expected_after_leaf_count": 15188,
+  "expected_after_physical_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "fix_authorized": false,
+  "fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "fmt_seconds": 900,
+  "format": "hepta-final-nonrust-format-approval-v1",
+  "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "head_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+  "nonrust_packet": {
+    "bytes": 2442538,
+    "git_blob": "5aa96020a8701f6e12b93c6a214964f61b69224f",
+    "sha256": "d1c1151be959db7917832a1573a3ab2b3fd04f0840740806c20fed9743b86441"
+  },
+  "original_source_input_review_blob": "d80ce0a181264e2df6c7c0d6f11666797deef5e8",
+  "original_v5_driver": {
+    "bytes": 63007,
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+  },
+  "outer_seconds": 2100,
+  "peer_semantic_review_blob": "19ee2480b741a7866f1a348a81aeaf136d1397a6",
+  "preflight_seconds": 600,
+  "previous_failed_finalfmt_job": "1a1d1c33b57-2564-1c77",
+  "record_seconds": 300,
+  "ref_updates_authorized": false,
+  "root_execution_approved": true,
+  "root_input_review_blob": "da1c27546fbdb542916b1f55f03b82cced7ad0b7",
+  "source_proposal_version": "v2",
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "status": "ROOT_APPROVED_TO_EXECUTE",
+  "test_commands_authorized": false
+}

@@ -1,0 +1,149 @@
+{
+  "actual": {
+    "complete_source_clean": true,
+    "detached": true,
+    "index_equals_tree": true,
+    "normal_stat_refresh_verified": true,
+    "physical_bytes_unchanged": true,
+    "physical_equals_canonical_before_index_change": true,
+    "physical_modes_unchanged": true,
+    "verified_canonical_objects": 62,
+    "verified_snapshot_objects": 16501
+  },
+  "after": {
+    "commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+    "git_state": {
+      "config_bytes": 102,
+      "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+      "head": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "head_raw_sha256": "b9574db38f4d8ea2988f352f2296104aaefb1322806c2e96a785828cef7ff26f",
+      "index_bytes": 2072488,
+      "index_sha256": "edccb2d6e1f0b2d2169ef64959948c08217a9c640a675d1d6dc48da9c23fc82d",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+    },
+    "inventory": {
+      "bytes": 5611184,
+      "filesystem_entries": 15188,
+      "git_blob": "663373f936c2ff130aec96ad34654cc9811773c2",
+      "sha256": "df891018254756c61007f91dd7cd9f794a550dc6ad33f389849eb44eaffc9b3e",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "9c4a11f61d30e9cc352bf44d56c98909d202a55d"
+    ],
+    "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+  },
+  "before": {
+    "commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "git_state": {
+      "config_bytes": 102,
+      "config_sha256": "cf0afb097e81d25b8554a3f4fce7294881cdebf1aedff43d685afbfadf44bb73",
+      "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+      "head_raw_sha256": "7c61d8265f2d2f889ca81f0e9b83067f17a9536d75524816a03dba0bd476e847",
+      "index_bytes": 2072488,
+      "index_sha256": "01caa6fd0abf858fc04292a4b9aa7792585df023fc34b5f8b8f8bcb2defb9e7d",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+    },
+    "inventory": {
+      "bytes": 5614896,
+      "filesystem_entries": 15188,
+      "git_blob": "445e54a43503dd79ba1e856e2e07acf532994ae6",
+      "sha256": "5e106b53d7dfb69c5beb84a4d726c4591ff96d032e7aaa1a5418ccbbb95a16ca",
+      "tracked_entries": 15188
+    },
+    "parents": [
+      "86dd56a930277e0d1aef3e475e35c2b5d60b43b7"
+    ],
+    "tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7"
+  },
+  "chunks": [
+    {
+      "bytes": 65536,
+      "chunk_sha256": "40824e72b1b019fabcddc432dd6dce2cb67e949b676c15e36b2d91c57080f9a2",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "sdk": "RESULT_READ_01.original.json"
+    },
+    {
+      "bytes": 65536,
+      "chunk_sha256": "b013d0f2fda42d9aed13d12d2b6ac6b1ecc5682e5ee875118be584c4da1617e0",
+      "eof": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "sdk": "RESULT_READ_02.original.json"
+    },
+    {
+      "bytes": 65536,
+      "chunk_sha256": "6c113fd9182e414e643271a836e4d2777cad4e9db235e485c4b0eeee2bff2eae",
+      "eof": false,
+      "next_offset": 196608,
+      "offset": 131072,
+      "sdk": "RESULT_READ_03.original.json"
+    },
+    {
+      "bytes": 65536,
+      "chunk_sha256": "c4f0b7432e03d43adf4c22644cb0e1994136b2e3007c568444478b7f72eb7238",
+      "eof": false,
+      "next_offset": 262144,
+      "offset": 196608,
+      "sdk": "RESULT_READ_04_RETRY01.original.json"
+    },
+    {
+      "bytes": 65536,
+      "chunk_sha256": "0f946807532d4c8328be654004a974abea392ceaf95610500ae3424968195839",
+      "eof": false,
+      "next_offset": 327680,
+      "offset": 262144,
+      "sdk": "RESULT_READ_05.original.json"
+    },
+    {
+      "bytes": 40906,
+      "chunk_sha256": "9b2f2cee9b716357876e552dd2d37b81ac7bb425771f3a7bae198d70af7921d7",
+      "eof": true,
+      "next_offset": 368586,
+      "offset": 327680,
+      "sdk": "RESULT_READ_06.original.json"
+    }
+  ],
+  "commands_count": 160,
+  "final_audits": [
+    {
+      "check": "source",
+      "finished_at": "2026-11-12T22:26:13.412040+00:00",
+      "started_at": "2026-11-12T22:26:08.770091+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "git",
+      "finished_at": "2026-11-12T22:26:16.525918+00:00",
+      "started_at": "2026-11-12T22:26:13.412058+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "inputs",
+      "finished_at": "2026-11-12T22:26:16.557324+00:00",
+      "started_at": "2026-11-12T22:26:16.525944+00:00",
+      "status": "verified"
+    }
+  ],
+  "local_head_advanced": true,
+  "normal": {
+    "bytes": 910,
+    "git_blob": "879685b4776ef2f9237587ae20cc8916391504de",
+    "sha256": "70b7c7ab7c5b895d9fea60f88aa87d7f7ae8aed70483cf83b4ec788a17a68886"
+  },
+  "qualification": false,
+  "result": {
+    "bytes": 368586,
+    "git_blob": "2678be6c23d00696d356e988120887a61f88bfab",
+    "sha256": "33cd2a23b1bd4a4b7b8ec5d41b5658d3149d701e7096cea00aee6f5d9f2f82c7"
+  },
+  "scope": "Actual six fixed-version binary chunks assembled; the original offset196608 transport timeout is retained separately and was repaired by one read-only retry. No main request repeated.",
+  "status": "CANONICAL_SOURCE_ALIGNED_CLEAN_ONLY",
+  "version": "2050:50402411:368586:1794522376568633359:1794522376568633359"
+}

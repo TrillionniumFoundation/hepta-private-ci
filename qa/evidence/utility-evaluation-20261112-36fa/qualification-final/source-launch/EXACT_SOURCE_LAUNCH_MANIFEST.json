@@ -1,0 +1,118 @@
+{
+  "H_or_source_gate_main_dispatched": false,
+  "eight_input_pins": {
+    "APPROVED_QUALIFICATION_INPUT.json": {
+      "bytes": 10939,
+      "git_blob": "83b87db774f7ce591c647fb86641bbdb4006491e",
+      "sha256": "5ee1f5ae249986823b72b154284a4fa484d91a5d3c05ccc865d595f2e95a9f4d"
+    },
+    "APPROVED_SOURCE_GATES_CONFIG.json": {
+      "bytes": 820,
+      "git_blob": "e57dd8482d4801c7233b35e27fdaf253a0d7bc2e",
+      "sha256": "986712a39a2d87733f86f464e3191830b70f77c22d00d51865a32eb62aa18adf"
+    },
+    "CANONICAL_ALIGNMENT_NORMAL.original.json": {
+      "bytes": 910,
+      "git_blob": "879685b4776ef2f9237587ae20cc8916391504de",
+      "sha256": "70b7c7ab7c5b895d9fea60f88aa87d7f7ae8aed70483cf83b4ec788a17a68886"
+    },
+    "PLAN.original.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "native-driver.original.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native-wrapper.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "qualification-admission.py": {
+      "bytes": 14294,
+      "git_blob": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+      "sha256": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f"
+    },
+    "source-gates-wrapper.py": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  },
+  "exception_boundary": "Only staging enclosed by bootstrap try/except; unchanged source wrapper dispatched afterward so its failure retains original identity.",
+  "existing_control_refused_not_overwritten": true,
+  "files": [
+    {
+      "bytes": 6316,
+      "git_blob": "d6b2df2a5753c2703242ef036fc8088b3333dd5b",
+      "name": "ACTUAL_SOURCE_BOOTSTRAP.py",
+      "path": "/tmp/hepta-36fa-final-source-qualification-launch-v1/ACTUAL_SOURCE_BOOTSTRAP.py",
+      "sha256": "85d4fea1209029176a0b4c89d571fb9d58338c59da4affb1c36b22822d68fff4"
+    },
+    {
+      "bytes": 124568,
+      "git_blob": "e0f8b35d17b3469bfea8479c5c0e7d6dd829b47e",
+      "name": "ACTUAL_SOURCE_STDIN.json",
+      "path": "/tmp/hepta-36fa-final-source-qualification-launch-v1/ACTUAL_SOURCE_STDIN.json",
+      "sha256": "bd28edf18d776d5d34d3e911f010041c12e5a0f77d4aa1a3485d0f41b519017c"
+    },
+    {
+      "bytes": 131261,
+      "git_blob": "8877d1e3e5c426f07319736121a760593a15a770",
+      "name": "ACTUAL_SOURCE_PROCESS_INPUT.json",
+      "path": "/tmp/hepta-36fa-final-source-qualification-launch-v1/ACTUAL_SOURCE_PROCESS_INPUT.json",
+      "sha256": "eb7d6514b58a2c32c9f5c78368e9ff97f531a99fc0d3553a0575ef31e645c2ac"
+    },
+    {
+      "bytes": 6494,
+      "git_blob": "abaa7136a60b401af8c58da579376e7b85a24ada",
+      "name": "SOURCE_BOOTSTRAP_FROM_CANONICAL_TEMPLATE.diff",
+      "path": "/tmp/hepta-36fa-final-source-qualification-launch-v1/SOURCE_BOOTSTRAP_FROM_CANONICAL_TEMPLATE.diff",
+      "sha256": "e443b34b039c36341ef550b16d02e665a512f0991a34467a079df97b70412dc1"
+    }
+  ],
+  "format": "hepta-final-source-qualification-exact-launch-v1",
+  "historical_outer_budget_evidence": {
+    "actual_timeout_seconds": 7200,
+    "original_job_id": "1a1d01a6652-2564-1b2d",
+    "original_request_digest": "6a23671b567a45deb91b60ae415660f3fd6e41fe47bb7e9f94aed6676f47947a",
+    "original_request_git_blob": "eae8d46956ac3afd89bf18b30d69997cbe925788"
+  },
+  "input_local_sources": {
+    "APPROVED_QUALIFICATION_INPUT.json": "/tmp/hepta-36fa-after2268-20261112/APPROVED_FINAL_QUALIFICATION_INPUT.json",
+    "APPROVED_SOURCE_GATES_CONFIG.json": "/tmp/hepta-36fa-after2268-20261112/APPROVED_FINAL_SOURCE_GATES_CONFIG.json",
+    "CANONICAL_ALIGNMENT_NORMAL.original.json": "/tmp/hepta-36fa-final-canonical-alignment-launch-v1/STATUS_01.original.json",
+    "PLAN.original.json": "/tmp/hepta-36fa-exact-source-qualification-plan-v2/PLAN.json",
+    "native-driver.original.py": "/tmp/hepta-36fa-final-qualification-hold-v1/native-driver.original.py",
+    "native-wrapper.py": "/tmp/hepta-36fa-final-qualification-hold-v1/native-wrapper.HOLD.py",
+    "qualification-admission.py": "/tmp/hepta-36fa-final-qualification-hold-v1/qualification-admission.HOLD.py",
+    "source-gates-wrapper.py": "/tmp/hepta-36fa-final-qualification-hold-v1/source-gates-wrapper.HOLD.py"
+  },
+  "key": "hepta-utility-36fa-final-source-gates-246d-v1",
+  "native_main_dispatched": false,
+  "original_gate_budgets": {
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "outer_seconds": 7200,
+  "qualification_plan_git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+  "reused_stager_function_bytes": [
+    "check",
+    "identity",
+    "real_parents",
+    "retain"
+  ],
+  "root_input_approval_git_blob": "09b8c0ed0737013a1265548c627c35cd46d86a22",
+  "source": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_first_native_after_complete_original_evidence": true,
+  "source_scope": "Original 5118 full shared/no-hardlinks clone/freeze/three gates; no native or formatter/fix dispatched by this request.",
+  "source_wrapper_git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+  "staging_new_private_control_only": true,
+  "status": "WAITING_FOR_ROOT_EXACT_LAUNCH_REVIEW",
+  "tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "unchanged_original_native_driver_git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f"
+}

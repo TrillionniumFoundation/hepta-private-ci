@@ -1,0 +1,88 @@
+{
+  "actual_reason": "Actual Rustfmt changed these three match arms to mandatory single-tail-expression blocks; prefix now requires the exact observed opening brace. No optional brace, literal value, scope, masker, function, budget, inventory or authority change.",
+  "actual_source_inventory": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+  "all_scope_shape_review": {
+    "bytes": 313917,
+    "git_blob_sha": "8c9a73f10489be4ffec7b103f954a25ba3ec4675",
+    "sha256": "49683c7fa0a98675b87b29bca74f80f5f57c51c766ac1b3a5ef54bcb6e69bb32"
+  },
+  "approved_original_extractor": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+  "approved_original_plan": "ffaabdbd254bea8e3d45572c1e8e961625ee5119",
+  "changes": [
+    {
+      "after": "Self::EvaluatedNoUpdate\\s*=>\\s*\\{",
+      "before": "Self::EvaluatedNoUpdate\\s*=>",
+      "pointer": "/critical_literals/8/prefix_regex"
+    },
+    {
+      "after": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>\\s*\\{",
+      "before": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>",
+      "pointer": "/critical_literals/9/prefix_regex"
+    },
+    {
+      "after": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>\\s*\\{",
+      "before": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>",
+      "pointer": "/critical_literals/10/prefix_regex"
+    }
+  ],
+  "contract_base": "a8797749da150f68d15f17028d6d0d7d43677047",
+  "extractor_only_changes": [
+    "PLAN_SHA256",
+    "PLAN_BLOB"
+  ],
+  "files": [
+    {
+      "bytes": 124075,
+      "git_blob_sha": "420daa1d2fb8397016b23a294e25a23ebe01e0d0",
+      "name": "FENCE_MATRIX_V2.json",
+      "sha256": "8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e"
+    },
+    {
+      "bytes": 23468,
+      "git_blob_sha": "9f13a0e39e012982a5ac539aec1f1bb980e83fa7",
+      "name": "extractor-v2.py",
+      "sha256": "58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5"
+    },
+    {
+      "bytes": 2531,
+      "git_blob_sha": "fa6f42c3416d4ff27649dbeffd75865f06dfc451",
+      "name": "EXACT_DELTA.patch",
+      "sha256": "3ac94ba058805f2406c2bbe4fe478f798b5779847de45a415110a169493f84e3"
+    },
+    {
+      "bytes": 313917,
+      "git_blob_sha": "8c9a73f10489be4ffec7b103f954a25ba3ec4675",
+      "name": "ACTUAL_SCOPE_REVIEW.json",
+      "sha256": "49683c7fa0a98675b87b29bca74f80f5f57c51c766ac1b3a5ef54bcb6e69bb32"
+    },
+    {
+      "bytes": 34865,
+      "git_blob_sha": "cff67875673a20fd587e078ea6114de8e0fd717e",
+      "name": "WAITING_CONTRACT_V2.json",
+      "sha256": "f2be22d600e2c796fff935ac49e621021c66a52f3b926fe8dd46c989bda7a39b"
+    },
+    {
+      "bytes": 1245,
+      "git_blob_sha": "1ca472393a0d69f0f40837a1dda10526e43ff97e",
+      "name": "CONTRACT_DELTA.patch",
+      "sha256": "0fa395a357f37c5e94be0370b49ff94db728c37a6be36c26ed34bace7b75978f"
+    },
+    {
+      "bytes": 5588,
+      "git_blob_sha": "2f195309eff036f829e76d83beeba7f4bed41047",
+      "name": "reconstruct_proposal_candidate.py",
+      "sha256": "c84f7a4beeea2421667d446b71e9ffc5fa87fada97fee2bdba83b691b1b638fc"
+    },
+    {
+      "bytes": 904,
+      "git_blob_sha": "1df0427836d18e265e9d03ce440b925a01917def",
+      "name": "PROPOSAL_CANDIDATE_RECONSTRUCTION.json",
+      "sha256": "1dc0482c66aec03bd331a2ce5a6dff52f7339ff9713e50519e48dc2b511f1530"
+    }
+  ],
+  "format": "hepta-postformat-extractor-v2-preparation",
+  "old_native_result_inferred": false,
+  "qualification": false,
+  "source_unchanged": true,
+  "status": "HOLD_requires_root_review_and_separate_actual_run"
+}

@@ -1,0 +1,44 @@
+{
+  "canonical_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "exact_match_count": 1,
+  "limit": "Lossless reconstruction matched the complete official Git object identity; not a new raw server read.",
+  "metadata_source": "CANONICAL_COMMIT_READ.response.json",
+  "original_parent_commit": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+  "original_parent_raw": "/tmp/hepta-36fa-checkpoint1867-recovery/RECOVERED_PEER_CANONICAL_COMMIT.raw",
+  "raw_bytes": {
+    "bytes": 845,
+    "git_blob": "b7b45b320a31676787a6aff3980849738ec22a2e",
+    "sha256": "1b2bd54cb7055eeada8d0c3f771a5546206ae310dbaa31a1d9cabc329aa637b9"
+  },
+  "status": "exact_official_commit_identity_recovered",
+  "trials": [
+    {
+      "bytes": 845,
+      "commit_sha": "5f674bb77b4c6908d18d18acc0f810215696d8e2",
+      "matches_official_identity": false,
+      "offset": "+0000",
+      "terminal_lf": false
+    },
+    {
+      "bytes": 846,
+      "commit_sha": "65dae8747c82fa215edfa09ebd7d4201cfc9c00a",
+      "matches_official_identity": false,
+      "offset": "+0000",
+      "terminal_lf": true
+    },
+    {
+      "bytes": 845,
+      "commit_sha": "246d8cb614770252ee42029a5c014f2a4904176a",
+      "matches_official_identity": true,
+      "offset": "-0500",
+      "terminal_lf": false
+    },
+    {
+      "bytes": 846,
+      "commit_sha": "29f76faca185dc83ede54b930a23e7de3246d541",
+      "matches_official_identity": false,
+      "offset": "-0500",
+      "terminal_lf": true
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "actual_git_before_and_after_equal": true,
+  "actual_sh_lease": {
+    "at": "2026-11-12T20:51:56.649763+00:00",
+    "device": 2050,
+    "fd": 3,
+    "inode": 50139448,
+    "lock_acquired": "LOCK_SH|LOCK_NB",
+    "mode": 384,
+    "nlink": 1,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+    "pid": 2161339,
+    "qualification": false,
+    "scope": "This task cooperative writers only; full inventories remain mandatory.",
+    "uid": 1000
+  },
+  "all_raw_file_hashes_and_inventory_rows_verified": true,
+  "complete_actual_file_count": 73,
+  "format": "hepta-postformat-handoff-complete-readback-v1",
+  "full_packet_identity": {
+    "bytes": 3018618,
+    "git_blob": "1399f73925ee43aff84829c9ae681d0bde017e1e",
+    "sha256": "44477f7ce5ec90f2d052911745fb3b244111155a9539a22365c545b47e86c9a1"
+  },
+  "git_publication": "This verifier computes identities only. Root separately publishes the retained originals.",
+  "gzip_identity": {
+    "bytes": 626888,
+    "git_blob": "711f4f90220c228850023947792cb407d156c6f8",
+    "sha256": "760d8a79a868c3980baccfa45937701897852290d5e11a2aa07118f47f889df5"
+  },
+  "native_job": "1a1d1880477-2564-1c56",
+  "new_native_execution": false,
+  "normal_terminal_observed": true,
+  "original_source_before_and_after_equal": true,
+  "original_transport_timeouts_preserved": [
+    "GIT_AFTER_json_gz_READ.original.json",
+    "GIT_BEFORE_json_gz_READ.original.json",
+    "PACKET_READ_327680.original.json",
+    "PACKET_READ_458752.original.json",
+    "PACKET_READ_524288.original.json",
+    "SOURCE_COORDINATION_SH_json_READ.original.json"
+  ],
+  "qualification": false,
+  "readbacks": [
+    {
+      "chunk_sha256": "2e1ef9d1dfc3033481d09e86d908437328f4a95e3f39f098bcb0337c06f09d8d",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 0,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_000000.original.json",
+      "sdk_identity": {
+        "bytes": 87844,
+        "git_blob": "390b3a4c913ec439deb4e4ef1f5ca681b1486723",
+        "sha256": "7fe0a714c74d4a9bab7fc4bbbff2dcc699de2a5073c9f433945a86142187b66c"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "69fee3cc8b53108ca28c19f2d7ee8f0cadeec37f5537f14abc7464bd4f72f2a5",
+      "eof": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_065536.original.json",
+      "sdk_identity": {
+        "bytes": 87849,
+        "git_blob": "c89f64c271f3b24f8c5df12a8309f18e2f1fd6f0",
+        "sha256": "77e03d158c32684694faaa88bb3371ae4c7b6a8a11760031127a38fd86ecfd11"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "e677842407b4a7a138a3edc722bd2199a5054cc7109710dbd6b45dfba9f4af49",
+      "eof": false,
+      "next_offset": 196608,
+      "offset": 131072,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_131072.original.json",
+      "sdk_identity": {
+        "bytes": 87850,
+        "git_blob": "ca944d86b80cf00b0afb4041ee6379f572a8fdbc",
+        "sha256": "62652b502b53249d9f650a199dcebd26e6c9758e16f86512316d08f4739dcc0e"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "7121f3304529370987630859da06300508c23bc94bc7f89d53dcdd705a990ae7",
+      "eof": false,
+      "next_offset": 262144,
+      "offset": 196608,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_196608.original.json",
+      "sdk_identity": {
+        "bytes": 87850,
+        "git_blob": "ffc06b4446ecb9d20e5d7efdfff6ebfb7fbdd7dd",
+        "sha256": "b51a382dcc501941236e46790783e2d5648ab1619aa5e83c1490422697a13339"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "a9600ce1cbde0654fb044ab0fc2c600542c83e542459e78eccc9ec3d758a5d08",
+      "eof": false,
+      "next_offset": 327680,
+      "offset": 262144,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_262144.original.json",
+      "sdk_identity": {
+        "bytes": 87850,
+        "git_blob": "13d022b081ed01c7e26e88795dbed7308e59376f",
+        "sha256": "4a80bad0d267a40b20a639c35311edb2cb1874f63d02d1508c4845ee22e0922b"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "cd1892755e349a3fd9a36a190841995806c5762c1ab8359ed7649e71186cf685",
+      "eof": false,
+      "next_offset": 393216,
+      "offset": 327680,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_327680_RETRY01.original.json",
+      "sdk_identity": {
+        "bytes": 87850,
+        "git_blob": "a06912756b78d5d2f536f7c2e0af2cfe02c850b1",
+        "sha256": "fa943047062f2662905272f3057827c6a3f240a5f943176951a41d125c101f67"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "c29cdff04e38fa3570a1541c908d2c160cc96ef1c4b56103aef3ac5cd479111a",
+      "eof": false,
+      "next_offset": 458752,
+      "offset": 393216,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_393216.original.json",
+      "sdk_identity": {
+        "bytes": 87850,
+        "git_blob": "518b8d8d85eb81bed691f5c389447af07a36e7af",
+        "sha256": "416d3da58a76bae3c0ad40ea79b1b1ec2c12951491b44fb6d0aaf5fd717e4ad6"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "b66f998b768b8129a5932dcfc4bb837d91c3a7cd9d2e419532d2ce30e877f232",
+      "eof": false,
+      "next_offset": 524288,
+      "offset": 458752,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_458752_RETRY01.original.json",
+      "sdk_identity": {
+        "bytes": 87850,
+        "git_blob": "57d5f41c3ac54aafe8000925f149b0e95745c03c",
+        "sha256": "efe08e6f82764879587f8e968f9033cd405d16b8f1bc43a80b10b92605024639"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "cafcc6caac92370f96d72f979f18c297edcd1d418bcf6f98f82df20807585343",
+      "eof": false,
+      "next_offset": 589824,
+      "offset": 524288,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_524288_RETRY01.original.json",
+      "sdk_identity": {
+        "bytes": 87850,
+        "git_blob": "4ab431debd813c80c83f41b96a5ee9b343fc985a",
+        "sha256": "0b40474472559dd7509420ee8222d82ecf0d4d2869bccf5eb15311d6d9a2a22e"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "100613102dd7b33f2a5806d5eb61ad21e08bd79d3f11487143b80314e1a2e64e",
+      "eof": true,
+      "next_offset": 626888,
+      "offset": 589824,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/ACTUAL_73_FILES.json.gz",
+      "sdk": "PACKET_READ_589824.original.json",
+      "sdk_identity": {
+        "bytes": 49885,
+        "git_blob": "212226f6648374778e82d1e20440c671e6149180",
+        "sha256": "5012325a79cde3e178005fcb953728118114a52c43276d09d173ae8da695de38"
+      },
+      "size": 626888,
+      "version": "2050:50401559:626888:1794516721097205008:1794516721097205008"
+    },
+    {
+      "chunk_sha256": "f4e97ad97b4242438806cae18f1df6be9833061d005f9a598b761aee1b64cae1",
+      "eof": true,
+      "next_offset": 414,
+      "offset": 0,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/SOURCE_COORDINATION_SH.json",
+      "sdk": "SOURCE_COORDINATION_SH_json_READ_RETRY01.original.json",
+      "sdk_identity": {
+        "bytes": 1007,
+        "git_blob": "9b9dc50a36969760176692e2ca96573ed539d305",
+        "sha256": "8f4fc5d84bf17111dd2995060afa7b67df06dd89f6d459faa5c5f519c20dbc67"
+      },
+      "size": 414,
+      "version": "2050:50401550:414:1794516716650015634:1794516716650015634"
+    },
+    {
+      "chunk_sha256": "60638500cc7d25dc06439d46bcac7a6e0748ea56a1a14824445c259d63223b3a",
+      "eof": true,
+      "next_offset": 1412,
+      "offset": 0,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/GIT_BEFORE.json.gz",
+      "sdk": "GIT_BEFORE_json_gz_READ_RETRY01.original.json",
+      "sdk_identity": {
+        "bytes": 2333,
+        "git_blob": "04bbfb9ef624b616ae62c6c0f61ac588cab8c3a0",
+        "sha256": "e93feea7fd309d7ed1b750287b8805bd276bf909bcca5d41471a71433e8191c7"
+      },
+      "size": 1412,
+      "version": "2050:50401551:1412:1794516717268046383:1794516717268046383"
+    },
+    {
+      "chunk_sha256": "60638500cc7d25dc06439d46bcac7a6e0748ea56a1a14824445c259d63223b3a",
+      "eof": true,
+      "next_offset": 1412,
+      "offset": 0,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-handoff-v5-v1/GIT_AFTER.json.gz",
+      "sdk": "GIT_AFTER_json_gz_READ_RETRY01.original.json",
+      "sdk_identity": {
+        "bytes": 2332,
+        "git_blob": "352a02da0a66cfefec2024faeba8d27a79d7cee7",
+        "sha256": "6b6905f4509c5870ab7e117cc4d3d96f2fe88e56a4997232627a829706f0d256"
+      },
+      "size": 1412,
+      "version": "2050:50401569:1412:1794516725219903425:1794516725219903425"
+    }
+  ],
+  "source_inventory_identity": {
+    "bytes": 5614211,
+    "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+    "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "source_inventory_provenance": "Root exact recovery of the original V5 bytes; this readback is not a second native inventory execution."
+}

@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "detail": "Early capture retained the original native binary gzip UTF8=false field; verification uses its exact native bytes and full-readback base64 companion.",
+      "kind": "local_inventory_collection_guard"
+    },
+    {
+      "detail": "Root appended entries while preparation was in progress. Earlier captures are retained. A local fixed208-row assertion rejected an actual209-row snapshot before map mutation; the successor local helper verifies append-only growth and records the actual count. The filename ROOT_UPLOADS_208_ROWS.original.jsonl is an earlier failed-guard capture, not a claim that its actual row count is208.",
+      "kind": "Root_append_only_ledger"
+    }
+  ],
+  "format": "hepta-local-preparation-reconciliation-notes-v1",
+  "native_source_run_or_retry": false,
+  "original_error_SDK_reconstructed": false,
+  "qualification_inference": false
+}

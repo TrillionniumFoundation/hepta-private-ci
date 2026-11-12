@@ -1,0 +1,99 @@
+{
+  "all_nonprotected_fields_identical": true,
+  "all_original_row_order_and_paths_identical": true,
+  "boundary_count": 569,
+  "comparison_scope": "Rows retain original array indexes; several paths intentionally have multiple protection rows. No path-deduplication is used.",
+  "distinct_protected_paths_after": 351,
+  "distinct_protected_paths_before": 341,
+  "every_old_forbidden_array_identical": true,
+  "format": "hepta-root-callers-preservation-crosscheck-v1",
+  "full_caller": "not_run",
+  "new_rows": [
+    {
+      "index": 412,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs"
+    },
+    {
+      "index": 413,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs"
+    },
+    {
+      "index": 414,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs"
+    },
+    {
+      "index": 415,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs"
+    },
+    {
+      "index": 416,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+    },
+    {
+      "index": 417,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+    },
+    {
+      "index": 418,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs"
+    },
+    {
+      "index": 419,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+    },
+    {
+      "index": 420,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs"
+    },
+    {
+      "index": 421,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs"
+    }
+  ],
+  "old_row_indexes_changed": [
+    203,
+    267,
+    269,
+    270,
+    271,
+    279,
+    280,
+    281,
+    282,
+    293,
+    295,
+    298,
+    299,
+    300,
+    301,
+    324,
+    339,
+    340,
+    351,
+    353,
+    358,
+    359,
+    360,
+    361,
+    362,
+    364,
+    365,
+    366,
+    367,
+    370,
+    371,
+    372,
+    373,
+    374,
+    381,
+    383,
+    390,
+    391,
+    409
+  ],
+  "old_rows_semantically_identical": 373,
+  "protected_rows_after": 422,
+  "protected_rows_before": 412,
+  "qualification": false,
+  "status": "structural_semantic_preservation_verified_peer_scope_review_pending"
+}

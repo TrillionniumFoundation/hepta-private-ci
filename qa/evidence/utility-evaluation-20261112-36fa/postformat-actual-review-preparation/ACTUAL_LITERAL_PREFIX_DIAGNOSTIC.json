@@ -1,0 +1,424 @@
+{
+  "native_result_inferred": false,
+  "rows": [
+    {
+      "index": 0,
+      "result": {
+        "end": 3016,
+        "literal": "\"runtime.learning.original-circuit-evaluated-selection.command.v1\"",
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+        "prefix_start": 2939,
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "start": 2950
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-selection.command.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 1,
+      "result": {
+        "end": 2307,
+        "literal": "\"runtime.learning.original-circuit-evaluated-next-use.command.v1\"",
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+        "prefix_start": 2231,
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "start": 2242
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-next-use.command.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 2,
+      "result": {
+        "end": 7951,
+        "literal": "b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\"",
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+        "prefix_start": 7838,
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "start": 7886
+      },
+      "spec": {
+        "expected_rust_literal": "b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 3,
+      "result": {
+        "end": 8142,
+        "literal": "b\"hepta.agentd.original-circuit-selection-command.v1\\0\"",
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+        "prefix_start": 8042,
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "start": 8087
+      },
+      "spec": {
+        "expected_rust_literal": "b\"hepta.agentd.original-circuit-selection-command.v1\\0\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 4,
+      "result": {
+        "end": 8944,
+        "literal": "b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\"",
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+        "prefix_start": 8832,
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "start": 8880
+      },
+      "spec": {
+        "expected_rust_literal": "b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 5,
+      "result": {
+        "end": 9137,
+        "literal": "b\"hepta.agentd.original-circuit-next-use-command.v1\\0\"",
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+        "prefix_start": 9038,
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "start": 9083
+      },
+      "spec": {
+        "expected_rust_literal": "b\"hepta.agentd.original-circuit-next-use-command.v1\\0\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 6,
+      "result": {
+        "end": 965,
+        "literal": "\"runtime.learning.original-circuit.completion-readiness.v1\"",
+        "prefix_regex": "\\bconst\\s+PURPOSE\\s*:\\s*&str\\s*=",
+        "prefix_start": 884,
+        "scope": {
+          "kind": "module_constant"
+        },
+        "start": 906
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit.completion-readiness.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+        "prefix_regex": "\\bconst\\s+PURPOSE\\s*:\\s*&str\\s*=",
+        "scope": {
+          "kind": "module_constant"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 7,
+      "result": {
+        "end": 1072,
+        "literal": "\"runtime.learning.original-circuit.evaluated-completion-readiness.v1\"",
+        "prefix_regex": "\\bconst\\s+EVALUATED_PURPOSE\\s*:\\s*&str\\s*=",
+        "prefix_start": 967,
+        "scope": {
+          "kind": "module_constant"
+        },
+        "start": 1003
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit.evaluated-completion-readiness.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+        "prefix_regex": "\\bconst\\s+EVALUATED_PURPOSE\\s*:\\s*&str\\s*=",
+        "scope": {
+          "kind": "module_constant"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "error": "PreconditionRejected('actual literal immediately follows code prefix')",
+      "index": 8,
+      "matched_prefixes": [
+        {
+          "following_raw": " {\n                \"runtime.learning.original-evaluated-retained-version.command.v1\"\n            }\n        }\n    }\n}\n\n#[derive(Clone, Copy, Eq, PartialEq)]\nenum RetainedVersionOriginV1 {\n    Fresh,\n    Recovered,\n}\n\nfn now() -> Result<u64, Error> {\n ",
+          "prefix": "Self::EvaluatedNoUpdate =>"
+        }
+      ],
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-evaluated-retained-version.command.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+        "prefix_regex": "Self::EvaluatedNoUpdate\\s*=>",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        }
+      },
+      "status": "rejected"
+    },
+    {
+      "error": "PreconditionRejected('actual literal immediately follows code prefix')",
+      "index": 9,
+      "matched_prefixes": [
+        {
+          "following_raw": " {\n                b\"hepta.agentd.original-retained-version.command.v1\\0\"\n            }\n            RetainedVersionPurposeV1::EvaluatedNoUpdate => {\n                b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"\n            }\n      ",
+          "prefix": "RetainedVersionPurposeV1::TrainingNoUpdate =>"
+        }
+      ],
+      "spec": {
+        "expected_rust_literal": "b\"hepta.agentd.original-retained-version.command.v1\\0\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "prefix_regex": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>",
+        "scope": {
+          "kind": "unique_function",
+          "name": "authenticate"
+        }
+      },
+      "status": "rejected"
+    },
+    {
+      "error": "PreconditionRejected('actual literal immediately follows code prefix')",
+      "index": 10,
+      "matched_prefixes": [
+        {
+          "following_raw": " {\n                b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"\n            }\n        };\n        Ok(Digest32::of_parts(&[\n            domain,\n            self.initial_binding.as_array(),\n            &encode_original_owner_snapshot",
+          "prefix": "RetainedVersionPurposeV1::EvaluatedNoUpdate =>"
+        }
+      ],
+      "spec": {
+        "expected_rust_literal": "b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "prefix_regex": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>",
+        "scope": {
+          "kind": "unique_function",
+          "name": "authenticate"
+        }
+      },
+      "status": "rejected"
+    },
+    {
+      "index": 11,
+      "result": {
+        "end": 1216,
+        "literal": "\"runtime.learning.original-circuit-selection.command.v1\"",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "prefix_start": 1136,
+        "scope": {
+          "kind": "module_constant"
+        },
+        "start": 1160
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit-selection.command.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "scope": {
+          "kind": "module_constant"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 12,
+      "result": {
+        "end": 1232,
+        "literal": "\"runtime.learning.original-circuit-next-use.command.v1\"",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "prefix_start": 1153,
+        "scope": {
+          "kind": "module_constant"
+        },
+        "start": 1177
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit-next-use.command.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "scope": {
+          "kind": "module_constant"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 13,
+      "result": {
+        "end": 452,
+        "literal": "\"runtime.learning.original-retained-version.command.v1\"",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "prefix_start": 373,
+        "scope": {
+          "kind": "module_constant"
+        },
+        "start": 397
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-retained-version.command.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "scope": {
+          "kind": "module_constant"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 14,
+      "result": {
+        "end": 1323,
+        "literal": "\"runtime.learning.original-circuit-selection.readback.v1\"",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "prefix_start": 1238,
+        "scope": {
+          "kind": "module_constant"
+        },
+        "start": 1266
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit-selection.readback.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+        "scope": {
+          "kind": "module_constant"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 15,
+      "result": {
+        "end": 10929,
+        "literal": "b\"hepta.agentd.original-circuit-selection-readback.v1\\0\"",
+        "prefix_regex": "Ok\\(Digest32::of_parts\\(&\\[",
+        "prefix_start": 10840,
+        "scope": {
+          "kind": "unique_function",
+          "name": "context_binding"
+        },
+        "start": 10873
+      },
+      "spec": {
+        "expected_rust_literal": "b\"hepta.agentd.original-circuit-selection-readback.v1\\0\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "prefix_regex": "Ok\\(Digest32::of_parts\\(&\\[",
+        "scope": {
+          "kind": "unique_function",
+          "name": "context_binding"
+        }
+      },
+      "status": "located"
+    },
+    {
+      "index": 16,
+      "result": {
+        "end": 12408,
+        "literal": "\"runtime.learning.original-circuit-evaluated-selection.readback.v1\"",
+        "prefix_regex": "\\bif\\s+context\\.evaluated\\.is_some\\(\\)\\s*\\{",
+        "prefix_start": 12300,
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "start": 12341
+      },
+      "spec": {
+        "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-selection.readback.v1\"",
+        "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+        "not_a_verdict_cache": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "prefix_regex": "\\bif\\s+context\\.evaluated\\.is_some\\(\\)\\s*\\{",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        }
+      },
+      "status": "located"
+    }
+  ],
+  "status": "offline_scoped_actual_literal_diagnostic"
+}

@@ -1,0 +1,84 @@
+{
+  "H_tools_called": false,
+  "ast_and_compile_only": true,
+  "changed_original_definitions": [
+    "inventory_summary",
+    "verify_object_union",
+    "preflight",
+    "import_objects",
+    "final_source",
+    "final_git",
+    "final_inputs",
+    "retain_partial",
+    "main"
+  ],
+  "config": {
+    "bytes": 1460,
+    "git_blob": "8d82292b697bd82266a800e6e7d5d5762563a0c9",
+    "sha256": "59334554b083190fbf426a6a0aa308b643d25108a77a17cb59591250e72de4c2"
+  },
+  "diff": {
+    "bytes": 51572,
+    "git_blob": "e7aff4f1fe787e5770327255cd409088eb10d0c4",
+    "sha256": "69f2dee3d2b5e4a05fa5241909d5efed784dbab01545d79219009ed722aca4ed"
+  },
+  "driver": {
+    "bytes": 46094,
+    "git_blob": "765ada67a33f4d9aeaf29c9c522898057083cafb",
+    "sha256": "6fa25f21dce6aa93dc17b0f490107e767676df44c42d6b2c564def1cba7c4bb2"
+  },
+  "format": "hepta-canonical-alignment-static-delta-v1",
+  "future_actual_pins": null,
+  "native_main_executed": false,
+  "new_definitions": [
+    "physical_projection",
+    "lock_identity",
+    "parse_supervisor",
+    "validate_final_format",
+    "validate_canonical_index",
+    "align_index_and_head"
+  ],
+  "original": {
+    "bytes": 41629,
+    "git_blob": "89434a961e4cc117874464f0308aa8b216c760ed",
+    "sha256": "898c319e760a3b92e7f8a0a31574fc0a2dfeb781f4e74234ab0d65caee76f6ae"
+  },
+  "removed_physical_single_file_definitions": [
+    "advance_source",
+    "index_preservation"
+  ],
+  "source_repo_modified": false,
+  "unchanged_original_definitions": [
+    "now",
+    "check",
+    "sha256",
+    "oid",
+    "nodup",
+    "parse",
+    "encoded",
+    "pin",
+    "real_directory",
+    "regular_read",
+    "read_input",
+    "write",
+    "jwrite",
+    "gzrecord",
+    "event",
+    "remaining",
+    "alarm_handler",
+    "disarm",
+    "arm_if_remaining",
+    "active_build_processes",
+    "concurrency_check",
+    "intent",
+    "command",
+    "git",
+    "git_state",
+    "parse_index",
+    "metadata_inventory",
+    "verify_metadata",
+    "verify_commit",
+    "snapshot",
+    "load_inventory"
+  ]
+}

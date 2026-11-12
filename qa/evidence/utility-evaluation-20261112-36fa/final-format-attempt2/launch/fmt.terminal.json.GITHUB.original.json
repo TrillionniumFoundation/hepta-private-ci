@@ -1,0 +1,27 @@
+{
+  "creation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "dddab6520fb2c0dec018fccdad8ea6115470307e"
+    },
+    "isError": false
+  },
+  "readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"argv\":[\"just\",\"fmt\",\"--base\",\"c0f78493f815780f68b9bf5e390a21314d79311f\"],\"command_returned\":true,\"execution\":{\"log_bytes\":0,\"log_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"observed_failed_tests\":0,\"observed_passed_tests\":0,\"output_limit_exceeded\":false,\"returncode\":0,\"timed_out\":false},\"execution_outcome\":\"completed\",\"finished_at\":\"2026-11-12T22:06:14.346336+00:00\",\"maximum_log_bytes\":67108864,\"name\":\"fmt\",\"raw_log_retained\":true,\"retention\":{\"complete\":true,\"inventory\":{\"bytes\":5614896,\"git_blob\":\"445e54a43503dd79ba1e856e2e07acf532994ae6\",\"sha256\":\"5e106b53d7dfb69c5beb84a4d726c4591ff96d032e7aaa1a5418ccbbb95a16ca\"},\"postimages\":{\"HEAD_working_patch_bytes\":918135,\"HEAD_working_patch_sha256\":\"ca4e6b9e3918f352e46218c4c43cfc79c080bd456d454e1c6dcb9532b2b9fffe\",\"all_actual_physical_leaf_count\":15188,\"all_actual_physical_tree\":\"d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087\",\"change_count\":0,\"paths\":[],\"tree_scope\":\"Every supported physical source leaf, including untracked/ignored files; no Git tree/ref was written.\",\"untracked_are_in_exact_transition_packet\":true}},\"started_at\":\"2026-11-12T22:05:58.973041+00:00\",\"status\":\"completed_review_required\",\"test_command\":false,\"timeout_seconds\":900,\"working_directory\":\"/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1\"}\n"
+    },
+    "isError": false
+  },
+  "binary_readback_note": null
+}

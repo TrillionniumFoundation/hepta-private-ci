@@ -1,0 +1,156 @@
+{
+  "format": "hepta-old-qa17-independent-static-peer-review-v1",
+  "created_utc": "2026-11-12T21:25:18.906702+00:00",
+  "status": "no_blocking_semantic_weakening_identified_in_fixed_partial_draft",
+  "scope": "Read-only review of the frozen nine-file old-method migration draft; not final non-Rust acceptance and no QA or source gate execution.",
+  "source": {
+    "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "head_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "actual_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+    "actual_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+    "actual73_packet": {
+      "bytes": 3018618,
+      "sha256": "44477f7ce5ec90f2d052911745fb3b244111155a9539a22365c545b47e86c9a1",
+      "git_blob_sha": "1399f73925ee43aff84829c9ae681d0bde017e1e"
+    },
+    "root_shared_capture_review_blob": "360fbd83861c31e4c219ccfa3aba25d4d005b29c"
+  },
+  "reviewed_inputs": {
+    "MANIFEST.json": {
+      "bytes": 8654,
+      "sha256": "ef347485ac55ba6b5c3c88b10950d247ebed1bee690236805a38526bf0dc5337",
+      "git_blob_sha": "25f3b3035d8e0096e3f27f083708bb99acd54c78"
+    },
+    "OLD_QA_MIGRATIONS.json": {
+      "bytes": 189709,
+      "sha256": "60c489ed25ab18df78554d88fe35caf700b20f607468d4f08252c5ad2d5bc4ec",
+      "git_blob_sha": "1215cfdffc8bb9f90cf7095e86783b9fbc6737d5"
+    },
+    "EXACT_OLD_METHOD_DELTA.patch": {
+      "bytes": 26626,
+      "sha256": "2e23f2083453e6859ff0ef15fd6e2b3157a5e1b05bdc09086b6e3b1bcfe435e0",
+      "git_blob_sha": "a083a8b87195f57ec306f32ba7400328719ca0ec"
+    }
+  },
+  "checks": {
+    "nine_preimages_match_actual73_bytes_sha256_and_git": true,
+    "nine_postimages_match_manifest_bytes_sha256_and_git": true,
+    "recomputed_unified_diff_exactly_equals_provided_patch": true,
+    "baseline_qa_files": 17,
+    "baseline_test_methods": 152,
+    "explicitly_changed_test_methods": 17,
+    "remaining_test_methods_byte_and_ast_identical": 135,
+    "removed_old_methods": 0,
+    "new_methods_in_this_draft": 0,
+    "new_methods_still_pending": 18,
+    "method_map_before_after_AST_matches_actual_files": true,
+    "changed_nontest_method": "OriginalSelectionReadbackClosureTests.mutate only",
+    "old_verifier_changed": false
+  },
+  "explicit_auxiliary_changes": [
+    {
+      "change": "ADMITTED original-circuit-selection-remote-readback tuple",
+      "before": "circuit_selection_command_readback_service.rs",
+      "after": "circuit_evaluated_selection_command_service.rs",
+      "assessment": "Matches actual current caller. The existing complete-collector test and all direct/UFCS injections, actual-caller deletion with fresh cache, receiver-cache boundaries and three ignored fragments remain byte-identical."
+    },
+    {
+      "change": "mutate(..., branch=None)",
+      "assessment": "For old calls with branch=None the original span/mutation code is identical. New calls require exactly one branch marker inside the already chosen function, then use the original balanced Rust item end to select that actual arm. The unique actual Legacy arm is fenced separately from its evaluated sibling; no mutation or verifier was run in this review."
+    }
+  ],
+  "method_reviews": [
+    {
+      "id": "M01",
+      "assessment": "The source set now uses the original complete _source_files collector and exactly the three configured ignored fragments. All eight exact membership checks, unknown direct-call injections, seven nonempty-expected removal attacks, two duplicate-real-REMOTE attacks and authority=False check remain. It does not remove a real source file in this method; the pre-existing attack changes the expected tuple to empty. The separate selection-readback test retains actual-file deletion with a fresh cache."
+    },
+    {
+      "id": "M02",
+      "assessment": "Legacy-only entry points still require legacy(), and legacy() still rejects Evaluated. Shared readiness_response/read_original_readiness checks move to require_profile/decision. Original legacy profile delegations and legacy3/4-cut wire attacks remain; explicit legacy require_context delegation and wrong-arm substitution attacks are added."
+    },
+    {
+      "id": "M03",
+      "assessment": "Original Selector attest/readback attacks follow the actual shared observe_original implementation. The command/evidence delegations are separately deleted or switched between Execute and Readback. Original spawn_blocking, 500ms, exact receipt authentication and digest checks stay, with evaluated owner branch attacks added."
+    },
+    {
+      "id": "M04",
+      "assessment": "Original Observer attest/readback and actual Selector input attacks follow observe_original. The unchanged rejects helper selects the first selector field within this function, which is the actual Legacy arm in the pinned source; it does not assert unique selector text across both arms. Original final clock, signature/digest and 500ms checks remain. New evaluated calls and action/delegation checks are added."
+    },
+    {
+      "id": "M05",
+      "assessment": "The original read-only request-before-owner check and moving-that-check-late attack remain at the readback service. Original Legacy snapshot/live/trainer and readback-versus-attest attacks move to the precise unique Legacy arm of observe_original; service delegation and Readback-to-Execute substitution are also tested."
+    },
+    {
+      "id": "M06",
+      "assessment": "The legacy host factory keeps its concrete FinalUse provider parameter and explicitly selects TrainingNoUpdate. Its original completed-A, artifact-owner and protected Root issuer conversion checks move into from_original_profile, with the wrapper delegation checked separately. All existing provider-promotion checks remain."
+    },
+    {
+      "id": "M07",
+      "assessment": "Recovered origin and absence of a new issuer are checked in recover_original_profile; the legacy public-in-crate wrapper retains its explicit TrainingNoUpdate discriminator and delegation. All old no-reset, recovered already-started flags and fresh/recovered outcome attacks remain."
+    },
+    {
+      "id": "M08",
+      "assessment": "Actual Version command_response now delegates to read_original_recovery; denial, Requested and Uncertain checks remain. The recovery helper receives separate deletion attacks for each real read before and after local reader construction. This draft does not claim to include the new cold-reader admission attacks, which remain part of the pending new methods."
+    },
+    {
+      "id": "M09",
+      "assessment": "Readiness binding attacks move to bind_profile plus the explicit legacy wrapper discriminator. Original publication observation, only ReconciliationRequired pending handling, current physical publication equality and bounded framing checks remain."
+    },
+    {
+      "id": "M10",
+      "assessment": "Readiness response authentication and post-I/O freshness follow ReadProfile. Original take-before-I/O, peer lifetime, bounded request sequence, same completed identity and no Ready-to-NotReady regression checks remain. The original legacy purpose check is retained, with explicit legacy require_context delegation added."
+    },
+    {
+      "id": "M11",
+      "assessment": "Old Candidate/Root absence-of-TNU refusal checks and all six empty original Root factory/assembly caller sets stay. The Candidate guard marker is made exact to the actual conditional rather than a generic matches! occurrence. New evaluated-stage validation/delegation deletion attacks are added; this method alone does not prove the complete evaluated-prefix contract."
+    },
+    {
+      "id": "M12",
+      "assessment": "Every original checkpoint, actual T/B signature binding and missing-capability denial attack remains byte-for-byte in this method; it only adds the Root stage delegation deletion attack."
+    },
+    {
+      "id": "M13",
+      "assessment": "Every old unavailable-B/adoption, original common-owner execution, authority-forgery and reconnect attack remains byte-for-byte; two checks are added for the evaluated NoUpdate selector and actual retained-stage delegation. The opaque complete-prefix validation requires separate planned new fences/attacks and is not replaced by the boolean selector alone."
+    },
+    {
+      "id": "M14",
+      "assessment": "The same original late-bound peer, Material/Dataset and actual clock checks move to readiness bind_profile; Selector and C continue their original bind functions. All original no-reopen/no-renew, Recovered-not-Fresh and take-once initial connection attacks remain. The readiness legacy wrapper discriminator is checked separately."
+    },
+    {
+      "id": "M15",
+      "assessment": "The three legacy context construction inputs stay in bind_original_selection. All remaining original peer, initial Material, Dataset, signature, time and ownership checks move to finish_binding; all old check strings and inequality reversal remain. A separate deletion attack on the wrapper-to-helper call is added."
+    },
+    {
+      "id": "M16",
+      "assessment": "Request and observed-operation checks follow operation(context); original schema, sequence, binding, operation ID, training head, scope, actor, read-only action and purpose-confusion attacks stay. Both actual legacy/evaluated operation dispatch arms are checked."
+    },
+    {
+      "id": "M17",
+      "assessment": "The effect retains requested-only admission, binding, once-only publication, installed task, Published-before-C, config.take and visibility attacks. The actual consuming Prepared::publish delegation is checked, and both original publication implementations plus retention of T versus same T/E are checked at their new source location."
+    }
+  ],
+  "nonblocking_cost_observation": {
+    "method": "M01",
+    "exact_verify_boundary_calls_in_current_code": 25,
+    "breakdown": {
+      "baseline": 8,
+      "unknown_pure_function_injection": 8,
+      "empty_expected_tuple_attack": 7,
+      "duplicate_real_remote_source": 2
+    },
+    "cache_argument": "All calls currently use the four-argument uncached path.",
+    "scope": "A concrete repeated type-index construction cost exists after moving to the complete source set. No duration, timeout cause or 600-second outcome is inferred. Existing verifier cache could be reused only for proven identical type indices (baseline, pure function injection, expected-only row change); duplicate real source needs its own cache. Reported to the sole QA author, not modified here.",
+    "author_disposition": "Sole QA author confirms this draft remains unchanged: Root approved only the full collector and ignored-argument migration, with no new cache; original 600-second source-closure budget stays. No cache or optional test was added."
+  },
+  "limits": [
+    "No test method, protected validator, caller validator, extractor main, H/native process, Cargo or formatter was executed. Only bytes/hash, Python AST/diff and production-source reading were used.",
+    "The 49-row final protection proposal and 18 new attacks are not included in this partial draft. Their completeness and actual outcomes remain pending.",
+    "Source-level mutation guards do not prove real authenticated primary-Eligible/retention-Ineligible behavior, task authorization, independent operational evaluation, complete costs, deployment or cold recovery.",
+    "A source-fence rejection is not evidence of objective fraud and is not a fabricated NoUpdate or comparison verdict."
+  ],
+  "static_comparison": {
+    "bytes": 73953,
+    "sha256": "7f706680f9b2a1e6314bd079ef35a20da74803ecd973166bb963ea25076ad116",
+    "git_blob_sha": "bdb616edad6bdc431f3fc5ecc462b9ba6ac15a3a"
+  }
+}

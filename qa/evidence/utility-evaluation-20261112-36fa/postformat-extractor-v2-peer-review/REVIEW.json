@@ -1,0 +1,3353 @@
+{
+  "format": "hepta-extractor-v2-independent-static-peer-review-v1",
+  "status": "NO_BLOCKING_CHANGE_FOUND_IN_EXACT_FORMAT_PREFIX_SYNC",
+  "inputs": {
+    "actual_73_file_capture": {
+      "bytes": 3018618,
+      "sha256": "44477f7ce5ec90f2d052911745fb3b244111155a9539a22365c545b47e86c9a1",
+      "git_blob": "1399f73925ee43aff84829c9ae681d0bde017e1e"
+    },
+    "old_plan": {
+      "bytes": 124054,
+      "sha256": "9e83fffb854297f7e70f1b72e9f594c2159c4b81955b64ac2eaeeab669b2eb2d",
+      "git_blob": "ffaabdbd254bea8e3d45572c1e8e961625ee5119"
+    },
+    "new_plan": {
+      "bytes": 124075,
+      "sha256": "8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e",
+      "git_blob": "420daa1d2fb8397016b23a294e25a23ebe01e0d0"
+    },
+    "old_extractor": {
+      "bytes": 23468,
+      "sha256": "faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb",
+      "git_blob": "f8686d5986f0f21404621d7e2d6a78634dc3f578"
+    },
+    "new_extractor": {
+      "bytes": 23468,
+      "sha256": "58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5",
+      "git_blob": "9f13a0e39e012982a5ac539aec1f1bb980e83fa7"
+    }
+  },
+  "plan_changes_exact": [
+    [
+      "/critical_literals/8/prefix_regex",
+      "Self::EvaluatedNoUpdate\\s*=>",
+      "Self::EvaluatedNoUpdate\\s*=>\\s*\\{"
+    ],
+    [
+      "/critical_literals/9/prefix_regex",
+      "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>",
+      "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>\\s*\\{"
+    ],
+    [
+      "/critical_literals/10/prefix_regex",
+      "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>",
+      "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>\\s*\\{"
+    ]
+  ],
+  "extractor_change_exact": "Only PLAN_SHA256 and PLAN_BLOB values; all 21 function/class definitions and all remaining bytes unchanged.",
+  "formatted_source_verification": {
+    "paths": 46,
+    "all_actual_bytes_match_original_approved_contract": true,
+    "source_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc"
+  },
+  "pure_scope_locations": [
+    {
+      "id": "existing-203",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "selector_count": 6,
+      "actual_spans": [
+        {
+          "start": 13301,
+          "end": 13717,
+          "owner": "impl PublishedCircuitFeatureTaskV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 15180,
+          "end": 15460,
+          "owner": "impl PublishedCircuitFeatureTaskV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10124,
+          "end": 11265,
+          "owner": "impl PublishedCircuitFeatureTaskV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11271,
+          "end": 13120,
+          "owner": "impl PublishedCircuitFeatureTaskV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 13727,
+          "end": 14793,
+          "owner": "impl PublishedCircuitFeatureTaskV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 14799,
+          "end": 15174,
+          "owner": "impl PublishedCircuitFeatureTaskV1",
+          "kind": "root_impl_method"
+        }
+      ]
+    },
+    {
+      "id": "existing-267",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "selector_count": 7,
+      "actual_spans": [
+        {
+          "start": 3590,
+          "end": 3680,
+          "owner": "impl OriginalCircuitLearningReadbackV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4831,
+          "end": 5915,
+          "owner": "impl OriginalCircuitLearningReadClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6091,
+          "end": 8027,
+          "owner": "impl OriginalCircuitLearningReadClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8251,
+          "end": 9163,
+          "owner": "impl OriginalCircuitLearningReadClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9167,
+          "end": 9489,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 9491,
+          "end": 9691,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 4239,
+          "end": 4825,
+          "owner": "impl OriginalCircuitLearningReadClientV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-269",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "selector_count": 7,
+      "actual_spans": [
+        {
+          "start": 1742,
+          "end": 2370,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2387,
+          "end": 3233,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4199,
+          "end": 4843,
+          "owner": "impl Response",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5193,
+          "end": 5728,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 5741,
+          "end": 6574,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 6587,
+          "end": 7543,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 7556,
+          "end": 10124,
+          "owner": null,
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-270",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "selector_count": 8,
+      "actual_spans": [
+        {
+          "start": 2300,
+          "end": 4224,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4473,
+          "end": 5329,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5509,
+          "end": 6541,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6547,
+          "end": 6980,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6986,
+          "end": 8042,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8048,
+          "end": 8856,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8860,
+          "end": 9503,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 1540,
+          "end": 1961,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-271",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+      "selector_count": 2,
+      "actual_spans": [
+        {
+          "start": 636,
+          "end": 1094,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1100,
+          "end": 3355,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-279",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "selector_count": 19,
+      "actual_spans": [
+        {
+          "start": 9438,
+          "end": 9988,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10150,
+          "end": 10700,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 17520,
+          "end": 18753,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12695,
+          "end": 15526,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 16508,
+          "end": 17508,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 18765,
+          "end": 20199,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 20211,
+          "end": 21709,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 21715,
+          "end": 22609,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 22615,
+          "end": 24206,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11940,
+          "end": 12274,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12440,
+          "end": 12683,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 15779,
+          "end": 16097,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 16269,
+          "end": 16496,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7933,
+          "end": 8441,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 8449,
+          "end": 8984,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 11466,
+          "end": 11688,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10941,
+          "end": 11449,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6030,
+          "end": 6119,
+          "owner": "trait NextUseSources",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5572,
+          "end": 6270,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-280",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "selector_count": 7,
+      "actual_spans": [
+        {
+          "start": 1759,
+          "end": 2398,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2415,
+          "end": 3274,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4243,
+          "end": 4891,
+          "owner": "impl Response",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5241,
+          "end": 5774,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 5787,
+          "end": 6612,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 6625,
+          "end": 7576,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 7589,
+          "end": 11240,
+          "owner": null,
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-281",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "selector_count": 8,
+      "actual_spans": [
+        {
+          "start": 2286,
+          "end": 4828,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5077,
+          "end": 5933,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6114,
+          "end": 7179,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7185,
+          "end": 7618,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7624,
+          "end": 8794,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8800,
+          "end": 9606,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9610,
+          "end": 10246,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 1485,
+          "end": 1949,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-282",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "selector_count": 2,
+      "actual_spans": [
+        {
+          "start": 658,
+          "end": 1116,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1122,
+          "end": 3506,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-293",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "selector_count": 16,
+      "actual_spans": [
+        {
+          "start": 4286,
+          "end": 5174,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5180,
+          "end": 5642,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5648,
+          "end": 7414,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7679,
+          "end": 8534,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10348,
+          "end": 10856,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11110,
+          "end": 12219,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12225,
+          "end": 13964,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 14136,
+          "end": 14683,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 14699,
+          "end": 14836,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 14852,
+          "end": 15243,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 15255,
+          "end": 18839,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 18843,
+          "end": 19072,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 19073,
+          "end": 19274,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 9691,
+          "end": 9780,
+          "owner": "impl Drop for QueuedExecuteFence",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3938,
+          "end": 4228,
+          "owner": null,
+          "kind": "root_type"
+        },
+        {
+          "start": 8699,
+          "end": 8997,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-295",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "selector_count": 16,
+      "actual_spans": [
+        {
+          "start": 4360,
+          "end": 4937,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4943,
+          "end": 5493,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5499,
+          "end": 8404,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8671,
+          "end": 9632,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11680,
+          "end": 12186,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12439,
+          "end": 13634,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 13640,
+          "end": 15385,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 15640,
+          "end": 16228,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 16244,
+          "end": 16379,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 16395,
+          "end": 16782,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 16794,
+          "end": 20374,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 20378,
+          "end": 20609,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 20610,
+          "end": 20813,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 11031,
+          "end": 11120,
+          "owner": "impl Drop for QueuedExecuteFence",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3965,
+          "end": 4304,
+          "owner": null,
+          "kind": "root_type"
+        },
+        {
+          "start": 9883,
+          "end": 10229,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-298",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "selector_count": 2,
+      "actual_spans": [
+        {
+          "start": 3267,
+          "end": 4887,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 801,
+          "end": 3240,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-299",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+      "selector_count": 2,
+      "actual_spans": [
+        {
+          "start": 3059,
+          "end": 4914,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 689,
+          "end": 3032,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-300",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "selector_count": 10,
+      "actual_spans": [
+        {
+          "start": 1254,
+          "end": 1676,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1693,
+          "end": 2089,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4316,
+          "end": 5084,
+          "owner": "impl OriginalCircuitCompletionReadinessClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8061,
+          "end": 10290,
+          "owner": "impl OriginalCircuitCompletionReadinessClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2106,
+          "end": 2823,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2840,
+          "end": 3557,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5101,
+          "end": 6123,
+          "owner": "impl OriginalCircuitCompletionReadinessClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6129,
+          "end": 7875,
+          "owner": "impl OriginalCircuitCompletionReadinessClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1139,
+          "end": 1222,
+          "owner": null,
+          "kind": "root_type"
+        },
+        {
+          "start": 4060,
+          "end": 4249,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-301",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+      "selector_count": 6,
+      "actual_spans": [
+        {
+          "start": 1152,
+          "end": 1831,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3488,
+          "end": 4216,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4243,
+          "end": 5434,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5440,
+          "end": 7206,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1993,
+          "end": 2783,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2789,
+          "end": 3461,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-324",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "selector_count": 8,
+      "actual_spans": [
+        {
+          "start": 1258,
+          "end": 1809,
+          "owner": "impl ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1826,
+          "end": 2297,
+          "owner": "impl ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2547,
+          "end": 3520,
+          "owner": "impl ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3543,
+          "end": 3985,
+          "owner": "impl ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4069,
+          "end": 4535,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4541,
+          "end": 5055,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5061,
+          "end": 5557,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5563,
+          "end": 6287,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for ResidentOriginalStageOwnersV3",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-339",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "selector_count": 9,
+      "actual_spans": [
+        {
+          "start": 2969,
+          "end": 3327,
+          "owner": "impl OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3337,
+          "end": 3702,
+          "owner": "impl OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3719,
+          "end": 4377,
+          "owner": "impl OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4574,
+          "end": 4810,
+          "owner": "impl OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4383,
+          "end": 4557,
+          "owner": "impl OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4902,
+          "end": 7103,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7109,
+          "end": 8809,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8815,
+          "end": 9185,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9191,
+          "end": 11283,
+          "owner": "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-340",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "selector_count": 1,
+      "actual_spans": [
+        {
+          "start": 809,
+          "end": 6613,
+          "owner": null,
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-351",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "selector_count": 10,
+      "actual_spans": [
+        {
+          "start": 1911,
+          "end": 2940,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3187,
+          "end": 3883,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5072,
+          "end": 5780,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5797,
+          "end": 6837,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6843,
+          "end": 7671,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7677,
+          "end": 8110,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8116,
+          "end": 10184,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4056,
+          "end": 4429,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1520,
+          "end": 1894,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4602,
+          "end": 5055,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-353",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "selector_count": 14,
+      "actual_spans": [
+        {
+          "start": 5652,
+          "end": 6562,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6585,
+          "end": 9485,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9508,
+          "end": 10583,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10606,
+          "end": 11341,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12977,
+          "end": 14047,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 14070,
+          "end": 15148,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 15165,
+          "end": 16099,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 16116,
+          "end": 17110,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 17127,
+          "end": 17714,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 17731,
+          "end": 18782,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 18799,
+          "end": 19739,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 19745,
+          "end": 20969,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11364,
+          "end": 12954,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2830,
+          "end": 4637,
+          "owner": "impl Continuation",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-358",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "selector_count": 4,
+      "actual_spans": [
+        {
+          "start": 5596,
+          "end": 5755,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 5756,
+          "end": 5899,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 5229,
+          "end": 5494,
+          "owner": "impl RetainedVersionPurposeV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5113,
+          "end": 5191,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-359",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "selector_count": 9,
+      "actual_spans": [
+        {
+          "start": 1194,
+          "end": 3478,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6743,
+          "end": 8973,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9145,
+          "end": 9906,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3495,
+          "end": 5451,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5468,
+          "end": 5695,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5712,
+          "end": 6726,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10070,
+          "end": 10539,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10556,
+          "end": 10929,
+          "owner": "impl OriginalVersionCut",
+          "kind": "unique_function"
+        },
+        {
+          "start": 758,
+          "end": 1152,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-360",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "selector_count": 9,
+      "actual_spans": [
+        {
+          "start": 2128,
+          "end": 2571,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2588,
+          "end": 3038,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4461,
+          "end": 4965,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6162,
+          "end": 10237,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11213,
+          "end": 11294,
+          "owner": "impl Drop for QueuedVersionRequestFence",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3055,
+          "end": 3741,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3758,
+          "end": 4455,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4971,
+          "end": 5582,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10243,
+          "end": 10948,
+          "owner": "impl OriginalCircuitRetainedVersionClientV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-361",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 967,
+          "end": 1459,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1475,
+          "end": 1805,
+          "owner": "impl Request",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3022,
+          "end": 5104,
+          "owner": "impl OriginalResult",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-362",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "selector_count": 11,
+      "actual_spans": [
+        {
+          "start": 7044,
+          "end": 7823,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11216,
+          "end": 11762,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 14936,
+          "end": 16543,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2357,
+          "end": 2610,
+          "owner": "impl InitialVersionEvidence",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2615,
+          "end": 2841,
+          "owner": "impl InitialVersionEvidence",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7988,
+          "end": 8851,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8857,
+          "end": 11060,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11925,
+          "end": 12555,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12561,
+          "end": 14930,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 16549,
+          "end": 16713,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2203,
+          "end": 2322,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "existing-364",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "selector_count": 9,
+      "actual_spans": [
+        {
+          "start": 1058,
+          "end": 4069,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5502,
+          "end": 6552,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9899,
+          "end": 11060,
+          "owner": "impl RetainedVersionHostStateV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11066,
+          "end": 12694,
+          "owner": "impl RetainedVersionHostStateV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6605,
+          "end": 6851,
+          "owner": "impl RetainedVersionHostStateV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4393,
+          "end": 5485,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6857,
+          "end": 9156,
+          "owner": "impl RetainedVersionHostStateV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9162,
+          "end": 9490,
+          "owner": "impl RetainedVersionHostStateV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9496,
+          "end": 9882,
+          "owner": "impl RetainedVersionHostStateV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-365",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "selector_count": 6,
+      "actual_spans": [
+        {
+          "start": 849,
+          "end": 3340,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4786,
+          "end": 9257,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9592,
+          "end": 12128,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12375,
+          "end": 12456,
+          "owner": "impl Drop for QueuedFinalUseFence",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3565,
+          "end": 4397,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12459,
+          "end": 12630,
+          "owner": null,
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-366",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "selector_count": 7,
+      "actual_spans": [
+        {
+          "start": 927,
+          "end": 2529,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2775,
+          "end": 3614,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3861,
+          "end": 4782,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8025,
+          "end": 12659,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12665,
+          "end": 13590,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4794,
+          "end": 7590,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7596,
+          "end": 8019,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-367",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 2247,
+          "end": 3234,
+          "owner": "impl OriginalCircuitRetainedTaskInputsV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3251,
+          "end": 5706,
+          "owner": "impl OriginalCircuitRetainedTaskInputsV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5762,
+          "end": 8946,
+          "owner": "impl RetainedVersionInstalledTaskV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-370",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "selector_count": 7,
+      "actual_spans": [
+        {
+          "start": 7044,
+          "end": 7823,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11216,
+          "end": 11762,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 14936,
+          "end": 16543,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7988,
+          "end": 8851,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8857,
+          "end": 11060,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11925,
+          "end": 12555,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12561,
+          "end": 14930,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-371",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "selector_count": 5,
+      "actual_spans": [
+        {
+          "start": 849,
+          "end": 3340,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4786,
+          "end": 9257,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9592,
+          "end": 12128,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3565,
+          "end": 4397,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12459,
+          "end": 12630,
+          "owner": null,
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-372",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 2775,
+          "end": 3614,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8025,
+          "end": 12659,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4794,
+          "end": 7590,
+          "owner": "impl OriginalCircuitRetainedVersionHostV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-373",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "selector_count": 14,
+      "actual_spans": [
+        {
+          "start": 2000,
+          "end": 2557,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2724,
+          "end": 3288,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3437,
+          "end": 3530,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3547,
+          "end": 5939,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10236,
+          "end": 11229,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5945,
+          "end": 7601,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7772,
+          "end": 8060,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8077,
+          "end": 8189,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8206,
+          "end": 8508,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8649,
+          "end": 9306,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9323,
+          "end": 9559,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9576,
+          "end": 9735,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9758,
+          "end": 10057,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8525,
+          "end": 8632,
+          "owner": "impl OriginalCircuitEvaluatedRetentionContextV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-374",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "selector_count": 5,
+      "actual_spans": [
+        {
+          "start": 5276,
+          "end": 5373,
+          "owner": "impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 'static> PreparedOriginalCircuitEvaluatedRetentionV1<Old, New>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5383,
+          "end": 5464,
+          "owner": "impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 'static> PreparedOriginalCircuitEvaluatedRetentionV1<Old, New>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6173,
+          "end": 9066,
+          "owner": "impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 'static> PreparedOriginalCircuitEvaluatedRetentionV1<Old, New>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5636,
+          "end": 5914,
+          "owner": "impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 'static> PreparedOriginalCircuitEvaluatedRetentionV1<Old, New>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2062,
+          "end": 5117,
+          "owner": null,
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-381",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "selector_count": 20,
+      "actual_spans": [
+        {
+          "start": 1616,
+          "end": 1875,
+          "owner": "impl Clone for OriginalCircuitEvaluatedSelectionReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2217,
+          "end": 2320,
+          "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4667,
+          "end": 4977,
+          "owner": "impl Profile",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4994,
+          "end": 5310,
+          "owner": "impl Profile",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5327,
+          "end": 5722,
+          "owner": "impl Profile",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5928,
+          "end": 6012,
+          "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6018,
+          "end": 6228,
+          "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6234,
+          "end": 6327,
+          "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6339,
+          "end": 6646,
+          "owner": "impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitEvaluatedSelectionReceiptSourcesV1<'_, C>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6884,
+          "end": 7165,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7335,
+          "end": 7615,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7621,
+          "end": 10362,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10378,
+          "end": 10878,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10894,
+          "end": 11231,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 11237,
+          "end": 12070,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12085,
+          "end": 13142,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 2337,
+          "end": 2479,
+          "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2496,
+          "end": 2871,
+          "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2888,
+          "end": 4523,
+          "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 13396,
+          "end": 14846,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-383",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "selector_count": 15,
+      "actual_spans": [
+        {
+          "start": 2138,
+          "end": 2486,
+          "owner": "impl Profile",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2503,
+          "end": 2902,
+          "owner": "impl Profile",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3130,
+          "end": 3214,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3220,
+          "end": 3306,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3312,
+          "end": 3522,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3528,
+          "end": 3621,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3633,
+          "end": 3992,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources for OriginalCircuitEvaluatedNextUseReceiptSourcesV1<'_, C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4230,
+          "end": 4509,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4598,
+          "end": 4876,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4882,
+          "end": 7897,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7913,
+          "end": 8481,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8497,
+          "end": 8902,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8908,
+          "end": 9715,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 9730,
+          "end": 11493,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 1897,
+          "end": 2004,
+          "owner": "impl OriginalCircuitEvaluatedNextUseReceiptV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-390",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "selector_count": 9,
+      "actual_spans": [
+        {
+          "start": 1667,
+          "end": 3267,
+          "owner": "impl OriginalCircuitSelectionReadbackConnectionV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3430,
+          "end": 4065,
+          "owner": "impl OriginalCircuitSelectionReadbackConnectionV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8073,
+          "end": 10696,
+          "owner": "impl OriginalSelectionReadbackV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 10711,
+          "end": 10986,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 10999,
+          "end": 11292,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 11305,
+          "end": 12211,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 4230,
+          "end": 5098,
+          "owner": "impl OriginalCircuitSelectionReadbackConnectionV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5104,
+          "end": 7571,
+          "owner": "impl OriginalCircuitSelectionReadbackConnectionV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 12213,
+          "end": 12447,
+          "owner": null,
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-391",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 852,
+          "end": 1715,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1790,
+          "end": 2286,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2292,
+          "end": 3396,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "existing-409",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "selector_count": 14,
+      "actual_spans": [
+        {
+          "start": 1641,
+          "end": 2040,
+          "owner": "impl Clone for OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2105,
+          "end": 2522,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2532,
+          "end": 2975,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2992,
+          "end": 3225,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3242,
+          "end": 3311,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3328,
+          "end": 3529,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3546,
+          "end": 5433,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5450,
+          "end": 5824,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5841,
+          "end": 6406,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7197,
+          "end": 7795,
+          "owner": "impl OriginalCircuitLearningReadClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7812,
+          "end": 8176,
+          "owner": "impl OriginalCircuitLearningReadClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8816,
+          "end": 9172,
+          "owner": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6422,
+          "end": 6986,
+          "owner": "impl OriginalCircuitEvaluatedLearningReadContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8192,
+          "end": 8554,
+          "owner": "impl OriginalCircuitLearningReadClientV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "new-412",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "selector_count": 9,
+      "actual_spans": [
+        {
+          "start": 2357,
+          "end": 2737,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2749,
+          "end": 6580,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6586,
+          "end": 7286,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7292,
+          "end": 8749,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 8764,
+          "end": 9083,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 9085,
+          "end": 10464,
+          "owner": null,
+          "kind": "unique_function"
+        },
+        {
+          "start": 10656,
+          "end": 11099,
+          "owner": "impl Owners",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1421,
+          "end": 1666,
+          "owner": null,
+          "kind": "root_type"
+        },
+        {
+          "start": 1668,
+          "end": 2311,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "new-413",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 529,
+          "end": 4540,
+          "owner": "impl Owners",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4583,
+          "end": 7056,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 7068,
+          "end": 8203,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "new-414",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "selector_count": 7,
+      "actual_spans": [
+        {
+          "start": 348,
+          "end": 810,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 827,
+          "end": 2307,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2324,
+          "end": 3948,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3971,
+          "end": 4520,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4543,
+          "end": 5625,
+          "owner": "impl EvaluatedContinuation",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5674,
+          "end": 6659,
+          "owner": "impl Owners",
+          "kind": "unique_function"
+        },
+        {
+          "start": 6692,
+          "end": 8105,
+          "owner": "impl Owners",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "new-415",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "selector_count": 11,
+      "actual_spans": [
+        {
+          "start": 820,
+          "end": 1357,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1374,
+          "end": 1875,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1892,
+          "end": 2803,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2820,
+          "end": 3033,
+          "owner": "impl OriginalCircuitSelectionCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3601,
+          "end": 4189,
+          "owner": "impl PartialEq for OriginalCircuitSelectionCommandReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4320,
+          "end": 4971,
+          "owner": "impl std::fmt::Debug for OriginalCircuitSelectionCommandReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5038,
+          "end": 5160,
+          "owner": "impl OriginalCircuitSelectionCommandReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5177,
+          "end": 5412,
+          "owner": "impl OriginalCircuitSelectionCommandReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 5627,
+          "end": 6617,
+          "owner": "impl OriginalCircuitSelectionCommandClientV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 275,
+          "end": 762,
+          "owner": "impl Clone for OriginalCircuitSelectionCommandContextV1",
+          "kind": "root_impl_method"
+        },
+        {
+          "start": 3037,
+          "end": 3534,
+          "owner": "impl Clone for OriginalCircuitSelectionCommandReceiptV1",
+          "kind": "root_impl_method"
+        }
+      ]
+    },
+    {
+      "id": "new-416",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 259,
+          "end": 526,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 536,
+          "end": 1081,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1310,
+          "end": 1925,
+          "owner": "impl OriginalCircuitEvaluatedSelectionReceiptV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "new-417",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 789,
+          "end": 2083,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2100,
+          "end": 4313,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 458,
+          "end": 683,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "new-418",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "selector_count": 8,
+      "actual_spans": [
+        {
+          "start": 230,
+          "end": 418,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 435,
+          "end": 1018,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1035,
+          "end": 2095,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2112,
+          "end": 2324,
+          "owner": "impl OriginalCircuitNextUseCommandContextV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2392,
+          "end": 3049,
+          "owner": "impl PartialEq for OriginalCircuitNextUseCommandReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3176,
+          "end": 3893,
+          "owner": "impl std::fmt::Debug for OriginalCircuitNextUseCommandReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3958,
+          "end": 4097,
+          "owner": "impl OriginalCircuitNextUseCommandReceiptV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 4154,
+          "end": 5144,
+          "owner": "impl OriginalCircuitNextUseCommandClientV1",
+          "kind": "unique_function"
+        }
+      ]
+    },
+    {
+      "id": "new-419",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "selector_count": 3,
+      "actual_spans": [
+        {
+          "start": 785,
+          "end": 2660,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2677,
+          "end": 5018,
+          "owner": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 456,
+          "end": 681,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "new-420",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "selector_count": 12,
+      "actual_spans": [
+        {
+          "start": 678,
+          "end": 758,
+          "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 763,
+          "end": 847,
+          "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 852,
+          "end": 938,
+          "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 943,
+          "end": 1153,
+          "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1158,
+          "end": 1392,
+          "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1398,
+          "end": 1990,
+          "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2002,
+          "end": 2283,
+          "owner": "impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2372,
+          "end": 2635,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2651,
+          "end": 3128,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3144,
+          "end": 3458,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 3468,
+          "end": 4070,
+          "owner": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+          "kind": "unique_function"
+        },
+        {
+          "start": 177,
+          "end": 595,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    },
+    {
+      "id": "new-421",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "selector_count": 7,
+      "actual_spans": [
+        {
+          "start": 1006,
+          "end": 1249,
+          "owner": "impl RetainedVersionPreparedV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1266,
+          "end": 1489,
+          "owner": "impl RetainedVersionPreparedV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1506,
+          "end": 1750,
+          "owner": "impl RetainedVersionPreparedV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 1767,
+          "end": 2001,
+          "owner": "impl RetainedVersionPreparedV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2018,
+          "end": 2249,
+          "owner": "impl RetainedVersionPreparedV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 2272,
+          "end": 3265,
+          "owner": "impl RetainedVersionPreparedV1",
+          "kind": "unique_function"
+        },
+        {
+          "start": 614,
+          "end": 956,
+          "owner": null,
+          "kind": "root_type"
+        }
+      ]
+    }
+  ],
+  "original_literal_plan_on_actual_formatted_bytes": [
+    {
+      "index": 0,
+      "status": "located",
+      "span": {
+        "prefix_start": 2939,
+        "start": 2950,
+        "end": 3016,
+        "literal": "\"runtime.learning.original-circuit-evaluated-selection.command.v1\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>"
+      }
+    },
+    {
+      "index": 1,
+      "status": "located",
+      "span": {
+        "prefix_start": 2231,
+        "start": 2242,
+        "end": 2307,
+        "literal": "\"runtime.learning.original-circuit-evaluated-next-use.command.v1\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>"
+      }
+    },
+    {
+      "index": 2,
+      "status": "located",
+      "span": {
+        "prefix_start": 7838,
+        "start": 7886,
+        "end": 7951,
+        "literal": "b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\["
+      }
+    },
+    {
+      "index": 3,
+      "status": "located",
+      "span": {
+        "prefix_start": 8042,
+        "start": 8087,
+        "end": 8142,
+        "literal": "b\"hepta.agentd.original-circuit-selection-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\["
+      }
+    },
+    {
+      "index": 4,
+      "status": "located",
+      "span": {
+        "prefix_start": 8832,
+        "start": 8880,
+        "end": 8944,
+        "literal": "b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\["
+      }
+    },
+    {
+      "index": 5,
+      "status": "located",
+      "span": {
+        "prefix_start": 9038,
+        "start": 9083,
+        "end": 9137,
+        "literal": "b\"hepta.agentd.original-circuit-next-use-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\["
+      }
+    },
+    {
+      "index": 6,
+      "status": "located",
+      "span": {
+        "prefix_start": 884,
+        "start": 906,
+        "end": 965,
+        "literal": "\"runtime.learning.original-circuit.completion-readiness.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+PURPOSE\\s*:\\s*&str\\s*="
+      }
+    },
+    {
+      "index": 7,
+      "status": "located",
+      "span": {
+        "prefix_start": 967,
+        "start": 1003,
+        "end": 1072,
+        "literal": "\"runtime.learning.original-circuit.evaluated-completion-readiness.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+EVALUATED_PURPOSE\\s*:\\s*&str\\s*="
+      }
+    },
+    {
+      "index": 8,
+      "status": "rejected",
+      "error": "PreconditionRejected('actual literal immediately follows code prefix')"
+    },
+    {
+      "index": 9,
+      "status": "rejected",
+      "error": "PreconditionRejected('actual literal immediately follows code prefix')"
+    },
+    {
+      "index": 10,
+      "status": "rejected",
+      "error": "PreconditionRejected('actual literal immediately follows code prefix')"
+    },
+    {
+      "index": 11,
+      "status": "located",
+      "span": {
+        "prefix_start": 1136,
+        "start": 1160,
+        "end": 1216,
+        "literal": "\"runtime.learning.original-circuit-selection.command.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      }
+    },
+    {
+      "index": 12,
+      "status": "located",
+      "span": {
+        "prefix_start": 1153,
+        "start": 1177,
+        "end": 1232,
+        "literal": "\"runtime.learning.original-circuit-next-use.command.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      }
+    },
+    {
+      "index": 13,
+      "status": "located",
+      "span": {
+        "prefix_start": 373,
+        "start": 397,
+        "end": 452,
+        "literal": "\"runtime.learning.original-retained-version.command.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      }
+    },
+    {
+      "index": 14,
+      "status": "located",
+      "span": {
+        "prefix_start": 1238,
+        "start": 1266,
+        "end": 1323,
+        "literal": "\"runtime.learning.original-circuit-selection.readback.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      }
+    },
+    {
+      "index": 15,
+      "status": "located",
+      "span": {
+        "prefix_start": 10840,
+        "start": 10873,
+        "end": 10929,
+        "literal": "b\"hepta.agentd.original-circuit-selection-readback.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "context_binding"
+        },
+        "prefix_regex": "Ok\\(Digest32::of_parts\\(&\\["
+      }
+    },
+    {
+      "index": 16,
+      "status": "located",
+      "span": {
+        "prefix_start": 12300,
+        "start": 12341,
+        "end": 12408,
+        "literal": "\"runtime.learning.original-circuit-evaluated-selection.readback.v1\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "prefix_regex": "\\bif\\s+context\\.evaluated\\.is_some\\(\\)\\s*\\{"
+      }
+    }
+  ],
+  "new_literal_plan_on_actual_formatted_bytes": [
+    {
+      "index": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "actual_source": {
+        "bytes": 6620,
+        "sha256": "6a636d476bdad0031fa5f7eb0dd99ee10e198068e62e689fbb3e898d06eb4fdb",
+        "git_blob": "1898e4b702bcc36e8eac04eebb5e53313b36c7f1"
+      },
+      "span": {
+        "prefix_start": 2939,
+        "start": 2950,
+        "end": 3016,
+        "literal": "\"runtime.learning.original-circuit-evaluated-selection.command.v1\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>"
+      },
+      "actual_raw_prefix_and_literal": "Some(_) => \"runtime.learning.original-circuit-evaluated-selection.command.v1\""
+    },
+    {
+      "index": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "actual_source": {
+        "bytes": 5147,
+        "sha256": "e2bb63b88d40d5dd01c369cd19c57308eee2ca054fd08d4134363201a307432e",
+        "git_blob": "c685d27d598c9e966c0e4497a8307436c66cbb5f"
+      },
+      "span": {
+        "prefix_start": 2231,
+        "start": 2242,
+        "end": 2307,
+        "literal": "\"runtime.learning.original-circuit-evaluated-next-use.command.v1\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "prefix_regex": "Some\\s*\\(_\\)\\s*=>"
+      },
+      "actual_raw_prefix_and_literal": "Some(_) => \"runtime.learning.original-circuit-evaluated-next-use.command.v1\""
+    },
+    {
+      "index": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "actual_source": {
+        "bytes": 19420,
+        "sha256": "f71f684576cb404f2a6ab4ad9537b8b128788e3e54f5bee626b499212dd0229d",
+        "git_blob": "14334773c7db9d4d911da4ed7643271c8f6b1d70"
+      },
+      "span": {
+        "prefix_start": 7838,
+        "start": 7886,
+        "end": 7951,
+        "literal": "b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\["
+      },
+      "actual_raw_prefix_and_literal": "return Ok(Digest32::of_parts(&[\n                b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\""
+    },
+    {
+      "index": 3,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "actual_source": {
+        "bytes": 19420,
+        "sha256": "f71f684576cb404f2a6ab4ad9537b8b128788e3e54f5bee626b499212dd0229d",
+        "git_blob": "14334773c7db9d4d911da4ed7643271c8f6b1d70"
+      },
+      "span": {
+        "prefix_start": 8042,
+        "start": 8087,
+        "end": 8142,
+        "literal": "b\"hepta.agentd.original-circuit-selection-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\["
+      },
+      "actual_raw_prefix_and_literal": "        Ok(Digest32::of_parts(&[\n            b\"hepta.agentd.original-circuit-selection-command.v1\\0\""
+    },
+    {
+      "index": 4,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "actual_source": {
+        "bytes": 20874,
+        "sha256": "fb4c925a0bb034518a59c8198f22ec4beea98a974495628e2977003b6d4e827e",
+        "git_blob": "bc809c51ed025a2908274af83f05c8e752f24074"
+      },
+      "span": {
+        "prefix_start": 8832,
+        "start": 8880,
+        "end": 8944,
+        "literal": "b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\["
+      },
+      "actual_raw_prefix_and_literal": "return Ok(Digest32::of_parts(&[\n                b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\""
+    },
+    {
+      "index": 5,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "actual_source": {
+        "bytes": 20874,
+        "sha256": "fb4c925a0bb034518a59c8198f22ec4beea98a974495628e2977003b6d4e827e",
+        "git_blob": "bc809c51ed025a2908274af83f05c8e752f24074"
+      },
+      "span": {
+        "prefix_start": 9038,
+        "start": 9083,
+        "end": 9137,
+        "literal": "b\"hepta.agentd.original-circuit-next-use-command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\["
+      },
+      "actual_raw_prefix_and_literal": "        Ok(Digest32::of_parts(&[\n            b\"hepta.agentd.original-circuit-next-use-command.v1\\0\""
+    },
+    {
+      "index": 6,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "actual_source": {
+        "bytes": 10505,
+        "sha256": "f6b939a3c2369e2ef7c3d02c7730291a564de83cda43b6692e00c73e3acb884f",
+        "git_blob": "858941ba17c031bc321b5dce504672491c7e57e7"
+      },
+      "span": {
+        "prefix_start": 884,
+        "start": 906,
+        "end": 965,
+        "literal": "\"runtime.learning.original-circuit.completion-readiness.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+PURPOSE\\s*:\\s*&str\\s*="
+      },
+      "actual_raw_prefix_and_literal": "const PURPOSE: &str = \"runtime.learning.original-circuit.completion-readiness.v1\""
+    },
+    {
+      "index": 7,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "actual_source": {
+        "bytes": 10505,
+        "sha256": "f6b939a3c2369e2ef7c3d02c7730291a564de83cda43b6692e00c73e3acb884f",
+        "git_blob": "858941ba17c031bc321b5dce504672491c7e57e7"
+      },
+      "span": {
+        "prefix_start": 967,
+        "start": 1003,
+        "end": 1072,
+        "literal": "\"runtime.learning.original-circuit.evaluated-completion-readiness.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+EVALUATED_PURPOSE\\s*:\\s*&str\\s*="
+      },
+      "actual_raw_prefix_and_literal": "const EVALUATED_PURPOSE: &str =\n    \"runtime.learning.original-circuit.evaluated-completion-readiness.v1\""
+    },
+    {
+      "index": 8,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "actual_source": {
+        "bytes": 5900,
+        "sha256": "cf58ac1dbe5515145801d34806543cb77cec035d1fcebf84656a7d6e719f2470",
+        "git_blob": "e6f841ab40dbfe35f5763b726f391830a76c9b44"
+      },
+      "span": {
+        "prefix_start": 5354,
+        "start": 5399,
+        "end": 5464,
+        "literal": "\"runtime.learning.original-evaluated-retained-version.command.v1\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "prefix_regex": "Self::EvaluatedNoUpdate\\s*=>\\s*\\{"
+      },
+      "actual_raw_prefix_and_literal": "Self::EvaluatedNoUpdate => {\n                \"runtime.learning.original-evaluated-retained-version.command.v1\""
+    },
+    {
+      "index": 9,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "actual_source": {
+        "bytes": 10932,
+        "sha256": "852be295698241c101f6f494526079eb7d5bb3c5376530fee64c5c1366963e59",
+        "git_blob": "518aaa1a22b3320215813ae0aa2eaf9a7b15cb12"
+      },
+      "span": {
+        "prefix_start": 8221,
+        "start": 8285,
+        "end": 8339,
+        "literal": "b\"hepta.agentd.original-retained-version.command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "authenticate"
+        },
+        "prefix_regex": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>\\s*\\{"
+      },
+      "actual_raw_prefix_and_literal": "RetainedVersionPurposeV1::TrainingNoUpdate => {\n                b\"hepta.agentd.original-retained-version.command.v1\\0\""
+    },
+    {
+      "index": 10,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "actual_source": {
+        "bytes": 10932,
+        "sha256": "852be295698241c101f6f494526079eb7d5bb3c5376530fee64c5c1366963e59",
+        "git_blob": "518aaa1a22b3320215813ae0aa2eaf9a7b15cb12"
+      },
+      "span": {
+        "prefix_start": 8366,
+        "start": 8431,
+        "end": 8495,
+        "literal": "b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "authenticate"
+        },
+        "prefix_regex": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>\\s*\\{"
+      },
+      "actual_raw_prefix_and_literal": "RetainedVersionPurposeV1::EvaluatedNoUpdate => {\n                b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\""
+    },
+    {
+      "index": 11,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "actual_source": {
+        "bytes": 10125,
+        "sha256": "9067f8ecbe6bbbc65be65adacb27c2dfa2fa5f031c5dfbed51e422e543da3e57",
+        "git_blob": "39a8a422113f41de5cd3f4fa15aa384c1570c72a"
+      },
+      "span": {
+        "prefix_start": 1136,
+        "start": 1160,
+        "end": 1216,
+        "literal": "\"runtime.learning.original-circuit-selection.command.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      },
+      "actual_raw_prefix_and_literal": "const OPERATION: &str = \"runtime.learning.original-circuit-selection.command.v1\""
+    },
+    {
+      "index": 12,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "actual_source": {
+        "bytes": 11241,
+        "sha256": "44a576945168d5263bef87f431543e03eb250458be6b3b61ed72d0f60e3a72b6",
+        "git_blob": "76502f7c77cdb9c95a3f9e2fa24c5faf4d8e43c9"
+      },
+      "span": {
+        "prefix_start": 1153,
+        "start": 1177,
+        "end": 1232,
+        "literal": "\"runtime.learning.original-circuit-next-use.command.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      },
+      "actual_raw_prefix_and_literal": "const OPERATION: &str = \"runtime.learning.original-circuit-next-use.command.v1\""
+    },
+    {
+      "index": 13,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "actual_source": {
+        "bytes": 5432,
+        "sha256": "69b3b358b4017ad240497580a8b3d2819b1cb665136cc619f4cc41a3dd32b21d",
+        "git_blob": "02f8f03d1d4f52db6d476e0f84bb3d353d91769d"
+      },
+      "span": {
+        "prefix_start": 373,
+        "start": 397,
+        "end": 452,
+        "literal": "\"runtime.learning.original-retained-version.command.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      },
+      "actual_raw_prefix_and_literal": "const OPERATION: &str = \"runtime.learning.original-retained-version.command.v1\""
+    },
+    {
+      "index": 14,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "actual_source": {
+        "bytes": 12448,
+        "sha256": "47a03a2bb480311dfc28773edbcdaf1df19f43987e83f0afda2670ff2ab57053",
+        "git_blob": "7c1d6207a6ac276b5ec3f9be14850eb354afb461"
+      },
+      "span": {
+        "prefix_start": 1238,
+        "start": 1266,
+        "end": 1323,
+        "literal": "\"runtime.learning.original-circuit-selection.readback.v1\"",
+        "scope": {
+          "kind": "module_constant"
+        },
+        "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*="
+      },
+      "actual_raw_prefix_and_literal": "const OPERATION: &str =\n    \"runtime.learning.original-circuit-selection.readback.v1\""
+    },
+    {
+      "index": 15,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "actual_source": {
+        "bytes": 12448,
+        "sha256": "47a03a2bb480311dfc28773edbcdaf1df19f43987e83f0afda2670ff2ab57053",
+        "git_blob": "7c1d6207a6ac276b5ec3f9be14850eb354afb461"
+      },
+      "span": {
+        "prefix_start": 10840,
+        "start": 10873,
+        "end": 10929,
+        "literal": "b\"hepta.agentd.original-circuit-selection-readback.v1\\0\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "context_binding"
+        },
+        "prefix_regex": "Ok\\(Digest32::of_parts\\(&\\["
+      },
+      "actual_raw_prefix_and_literal": "Ok(Digest32::of_parts(&[\n        b\"hepta.agentd.original-circuit-selection-readback.v1\\0\""
+    },
+    {
+      "index": 16,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "actual_source": {
+        "bytes": 12448,
+        "sha256": "47a03a2bb480311dfc28773edbcdaf1df19f43987e83f0afda2670ff2ab57053",
+        "git_blob": "7c1d6207a6ac276b5ec3f9be14850eb354afb461"
+      },
+      "span": {
+        "prefix_start": 12300,
+        "start": 12341,
+        "end": 12408,
+        "literal": "\"runtime.learning.original-circuit-evaluated-selection.readback.v1\"",
+        "scope": {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        "prefix_regex": "\\bif\\s+context\\.evaluated\\.is_some\\(\\)\\s*\\{"
+      },
+      "actual_raw_prefix_and_literal": "if context.evaluated.is_some() {\n        \"runtime.learning.original-circuit-evaluated-selection.readback.v1\""
+    }
+  ],
+  "actual_module_mounts": [
+    {
+      "start": 1856,
+      "end": 1918,
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "module_name": "retained"
+    },
+    {
+      "start": 1276,
+      "end": 1347,
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "module_name": "execution"
+    },
+    {
+      "start": 1348,
+      "end": 1419,
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "module_name": "readback"
+    },
+    {
+      "start": 1928,
+      "end": 1993,
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "module_name": "evaluated"
+    },
+    {
+      "start": 404,
+      "end": 495,
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "module_name": "command_owner_adapter"
+    },
+    {
+      "start": 1290,
+      "end": 1363,
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "module_name": "evaluated"
+    },
+    {
+      "start": 1994,
+      "end": 2058,
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "module_name": "evaluated"
+    },
+    {
+      "start": 1310,
+      "end": 1382,
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "module_name": "evaluated"
+    },
+    {
+      "start": 243,
+      "end": 303,
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "module_name": "remote"
+    },
+    {
+      "start": 2082,
+      "end": 2152,
+      "child": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "module_name": "prepared_custody"
+    }
+  ],
+  "counts": {
+    "protected_rows": 49,
+    "scope_selectors": 382,
+    "literal_spans": 17,
+    "module_mounts": 10
+  },
+  "narrowing_review": "Only three prefix patterns require the actual opening block brace after the same match arm. No optional brace/alternate scope is introduced. The exact literal, owner/function selector, original masking, nested-function exclusion, unique-match requirement, immediate-raw-literal check and real masked expression check are unchanged.",
+  "actual_fmt_cross_reference": {
+    "audit_report": "4be399c11ac6e3c8edc68f8f50637ee53f1de3a3",
+    "retained_version_after": "e6f841ab40dbfe35f5763b726f391830a76c9b44",
+    "retained_version_context_after": "518aaa1a22b3320215813ae0aa2eaf9a7b15cb12",
+    "meaning": "These are three of the 15 already reviewed single-tail-expression blocks in the actual 43-file formatting transition."
+  },
+  "execution_scope": {
+    "original_extractor_main_calls": 0,
+    "original_validator_gate_calls": 0,
+    "rust_tests": 0,
+    "native_or_H_calls": 0,
+    "source_or_ref_writes": false,
+    "analysis_only_calls": "Original pure select_scope/literal_span/mount_span on actual captured bytes; no native-result inference."
+  },
+  "limitations": [
+    "This static peer review does not establish the original f868 native terminal.",
+    "New actual run requires its own Root-approved contract, fresh external records/key, exact launcher pins and native authorization.",
+    "No source closure, full caller, Rust test or ordinary-loop PASS is inferred."
+  ]
+}

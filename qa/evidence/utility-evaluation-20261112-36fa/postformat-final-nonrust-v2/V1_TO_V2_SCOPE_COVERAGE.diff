@@ -1,0 +1,14 @@
+--- v1/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py
++++ v2/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py
+@@ -1166,8 +1166,11 @@
+         observed = hashlib.sha256(json.dumps(checked, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+         self.assertEqual(observed, ORDINARY_COMPLETE_BOUNDARY_SHA256)
+         self.assertEqual(self.manifest["boundary"][-28:], ORDINARY_NEW_BOUNDARIES)
+         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
++        for path in ORDINARY_SCOPE_GUARDS:
++            with self.subTest(actual_root_scopes=path):
++                self.actual_scopes(path, (ROOT / path).read_text())
+ 
+     def test_complete_evaluated_prefix_cannot_admit_legacy_adopt_or_wrong_owner(self):
+         path = "cell_q24_candidate_stage_retained.rs"
+         for marker in (

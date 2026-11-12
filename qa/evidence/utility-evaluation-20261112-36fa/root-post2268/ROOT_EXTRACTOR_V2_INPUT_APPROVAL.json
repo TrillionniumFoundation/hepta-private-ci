@@ -1,0 +1,105 @@
+{
+  "actual_plan_changes": [
+    {
+      "index": 8,
+      "literal_unchanged": "\"runtime.learning.original-evaluated-retained-version.command.v1\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "prefix_after": "Self::EvaluatedNoUpdate\\s*=>\\s*\\{",
+      "prefix_before": "Self::EvaluatedNoUpdate\\s*=>",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      }
+    },
+    {
+      "index": 9,
+      "literal_unchanged": "b\"hepta.agentd.original-retained-version.command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "prefix_after": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>\\s*\\{",
+      "prefix_before": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>",
+      "scope": {
+        "kind": "unique_function",
+        "name": "authenticate"
+      }
+    },
+    {
+      "index": 10,
+      "literal_unchanged": "b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "prefix_after": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>\\s*\\{",
+      "prefix_before": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>",
+      "scope": {
+        "kind": "unique_function",
+        "name": "authenticate"
+      }
+    }
+  ],
+  "actual_source_full_capture_review": "360fbd83861c31e4c219ccfa3aba25d4d005b29c",
+  "all_code_except_two_plan_pin_values_byte_equal": true,
+  "all_other_plan_fields_unchanged": true,
+  "approved_contract_transformation": [
+    "status -> root_reviewed_actual_native_formatted_source",
+    "root_review_blob -> this review identity"
+  ],
+  "checks": [
+    "Exact three new required opening braces match actual rustfmt single-tail-expression blocks already independently reviewed. No optional/generic-prefix relaxation.",
+    "All original 49 rows, 382 scope selectors, 17 literal values and owners, 10 mounts, masking/unique/immediate checks and full source admission are unchanged.",
+    "Independent actual-byte scope check locates the complete new plan; that offline analysis does not assert native execution or qualification.",
+    "HOLD contract differs only by extractor identity, fresh run identity and pending approval fields; 46 source pins, actual maintenance/capture inputs and complete source identity stay identical."
+  ],
+  "format": "hepta-root-extractor-v2-actual-prefix-approval-v1",
+  "gate_budgets_changed": false,
+  "hold_contract": {
+    "bytes": 34865,
+    "git_blob": "cff67875673a20fd587e078ea6114de8e0fd717e",
+    "sha256": "f2be22d600e2c796fff935ac49e621021c66a52f3b926fe8dd46c989bda7a39b"
+  },
+  "independent_peer_review": {
+    "bytes": 99579,
+    "git_blob": "8a8c826a50f121b39d38a736cf2327cadb94fabe",
+    "sha256": "c6eb44adbe36644c037f883eae06307f0ffffc88f69f05064011bd5cbd97ff34"
+  },
+  "known_original_attempt": {
+    "error": {
+      "bytes": 991,
+      "git_blob": "dd61d21d51882568e5de0eef3fb55724e7228fba",
+      "sha256": "75cc385716b0ce2b73014d9ec78403d4f0a64e187ca1829b8388940e0ce3462e"
+    },
+    "job_id": "1a1d19bc7dd-2564-1c64",
+    "normal": {
+      "bytes": 908,
+      "git_blob": "96e7c27396b7f7a4d4b2e6598335b62878b9f7e5",
+      "sha256": "26f4f0a17081da4d1af142fb7b0ed4d107662e560e7ddd69f0e6e0ebee273fda"
+    },
+    "original_admission_timeout_and_reconciliation": "Original failed transport observation retained separately; actual later same-key receipt reports reused=false, not a fabricated reused=true callback.",
+    "reason": "PreconditionRejected('actual literal immediately follows code prefix')",
+    "result": {
+      "bytes": 1154,
+      "git_blob": "3abc6e992d743aeb94e9d97491367436f06bc9fa",
+      "sha256": "a06603b0bfdc3df51c6c4e18f844b27bf63201f0729916916f7b088574fa58ff"
+    },
+    "returncode": 1,
+    "source_changed": false,
+    "timed_out": false
+  },
+  "new_extractor": {
+    "bytes": 23468,
+    "git_blob": "9f13a0e39e012982a5ac539aec1f1bb980e83fa7",
+    "sha256": "58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5"
+  },
+  "new_plan": {
+    "bytes": 124075,
+    "git_blob": "420daa1d2fb8397016b23a294e25a23ebe01e0d0",
+    "sha256": "8659d2be91dc521353c1d81122aa1cce05047161edafba59f79924ef3b5a3b5e"
+  },
+  "new_qualification_claim": false,
+  "next": "Prepare fresh v2 create-only launcher with exact plan/extractor/approved-contract pins and review it before sole native dispatch. Preserve V1 original failed result unchanged.",
+  "previous_actual_source_approval": "98a0c5c64e308f7b2c7e2369783dafe79f21aae4",
+  "read_only_preparation_seconds": 600,
+  "real_qualified_task_chain_outcomes": 0,
+  "reviewed_at": "2026-11-12T21:17:42.472200+00:00",
+  "source_writes": false,
+  "status": "APPROVED_NARROW_ACTUAL_FORMAT_PREFIX_SUCCESSOR; EXACT_LAUNCH_REVIEW_PENDING",
+  "unchanged_top_level_class_count": 1,
+  "unchanged_top_level_function_count": 20
+}

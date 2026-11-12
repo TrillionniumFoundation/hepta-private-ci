@@ -1,0 +1,27 @@
+{
+  "creation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "d7bc200b39841bf34beb2e1ed42b01d723c3eea9"
+    },
+    "isError": false
+  },
+  "readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"content\":[{\"type\":\"text\",\"text\":\"tool call error: tool call failed for `codex_apps/h.binary_read`\\n\\nCaused by:\\n    Mcp error: -32603: MCP request timed out\"}],\"isError\":true}\n"
+    },
+    "isError": false
+  },
+  "binary_readback_note": null
+}

@@ -1,0 +1,59 @@
+{
+  "actual_final_format_postimages_reviewed": false,
+  "admission_path": null,
+  "admission_pin": {
+    "bytes": 14294,
+    "git_blob": "5208cfa83a1f279c7fb76c4536adfa41c1df5f6f",
+    "sha256": "ddf8d1fb6240dc7a0f2a6bc00b5ae0269cb2157a87957be9dfcf87c1c35e895f"
+  },
+  "canonical_alignment": null,
+  "coordination_lock": {
+    "device": 2050,
+    "inode": 50139448,
+    "mode": 384,
+    "nlink": 1,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+    "uid": 1000
+  },
+  "expected_file_count": 15188,
+  "expected_inventory_sha256": null,
+  "final_format": null,
+  "full_physical_inventory": null,
+  "inventory_driver_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py",
+  "maintenance_guard_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/driver-v5.py",
+  "native_driver_path": null,
+  "native_driver_pin": {
+    "bytes": 14986,
+    "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+    "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+  },
+  "parents": null,
+  "plan_path": null,
+  "plan_pin": {
+    "bytes": 32246,
+    "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+    "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+  },
+  "positive_eval_cases": [
+    "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+    "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+    "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+    "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+  ],
+  "records": null,
+  "records_parent": "/home/qian-qi/hepta-utility-36fa-evidence",
+  "repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "reviewed_formatter_changed_paths": null,
+  "root_execution_approved": false,
+  "root_parent": null,
+  "run_identity": null,
+  "runtime_guard": null,
+  "schema": "hepta.utility.final-source-qualification-handoff.v1",
+  "source": null,
+  "source_gates_config_path": null,
+  "source_gates_config_pin": null,
+  "source_gates_handoff_records": null,
+  "state": "HOLD_WAITING_FOR_ACTUAL_FINAL_FORMAT_AND_CANONICAL_ALIGNMENT",
+  "target": "/data/hepta-utility-36fa-final-native-target-v1",
+  "tree": null
+}

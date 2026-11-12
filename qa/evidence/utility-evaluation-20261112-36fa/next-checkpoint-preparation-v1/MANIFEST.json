@@ -1,0 +1,372 @@
+{
+  "base_files": 2268,
+  "base_readme": "3e8b17601e82f5f7be49d172784bc2c4a452a080",
+  "base_readme_archive": "checkpoints/README_2268FILES_BEFORE_FINAL_NONRUST.md",
+  "complete_source_native_qualification": "Pending at bound input cutoff; Root will append later actual execution records.",
+  "created_commit_ref_PR_H_or_source_run": false,
+  "cutoff": "2026-11-12T22:36:44.085972+00:00",
+  "fixed_data_combined_paths": 2732,
+  "fixed_data_increment_paths": 464,
+  "format": "hepta-next-evidence-checkpoint-preparation-v1",
+  "generated_filemaps_exclude_their_own_recursive_identity": true,
+  "lossless_provenance_transport": [
+    {
+      "gzip": {
+        "bytes": 17215,
+        "git_blob": "f26adf3257474958a07306d35a18186ba9939a89",
+        "sha256": "fab87456cd4393f887a9aa210d86d98b509e607f73dca79136991e9c97f91b15"
+      },
+      "original": {
+        "bytes": 558627,
+        "git_blob": "4f5c95825c31a4ef35beaf6fd4486dd706e96ad1",
+        "sha256": "6ff9535ee2a7e5075f09a347f33a0c3ba160904f38a532aa20e4907f5f309367"
+      },
+      "original_name": "PATH_PROVENANCE.json",
+      "parts": [
+        {
+          "bytes": 22957,
+          "git_blob": "d7dc342910e6085ec08a9899a825f596ab87b4a6",
+          "path": "next-checkpoint-preparation-v1/metadata-parts/PATH_PROVENANCE.json.gz.part001.b64",
+          "sha256": "b063f74a7387bd67863fb1ef3d2acd3da80b5c728c7eaf835bff2de577fbaa15"
+        }
+      ],
+      "reconstruction": "Base64 decode each listed part, concatenate gzip bytes in order, then gzip decompress and verify original3pins."
+    },
+    {
+      "gzip": {
+        "bytes": 21561,
+        "git_blob": "4ebff73313db1e74ca058ff50d0af7c8451aa0ca",
+        "sha256": "d7d1c5989c6a8041473ab256e79f9c565d77c7dcc06d55e5fd52f01fcbef5b42"
+      },
+      "original": {
+        "bytes": 581589,
+        "git_blob": "c38e5219678c395870a9d2e332e8107cf2c8693e",
+        "sha256": "2a5e9b58c0afe834a74df7c27eab79d2326d53054561c5c2cb7322095ffd6dde"
+      },
+      "original_name": "FINAL_PATH_PROVENANCE.json",
+      "parts": [
+        {
+          "bytes": 28749,
+          "git_blob": "f575c0fccbeb6d13ea5056c17b698a59527f920c",
+          "path": "next-checkpoint-preparation-v1/metadata-parts/FINAL_PATH_PROVENANCE.json.gz.part001.b64",
+          "sha256": "d772d102dec6a5ce07f600f9b27a48c6a73ceada907c28aa17ed600471ed6922"
+        }
+      ],
+      "reconstruction": "Base64 decode each listed part, concatenate gzip bytes in order, then gzip decompress and verify original3pins."
+    },
+    {
+      "gzip": {
+        "bytes": 80104,
+        "git_blob": "9fad641a40516d505c6afe151c205ca562c76bee",
+        "sha256": "bc4923f9d0a69cfd75b53a89306373d3ad4e7cfd1a6f2f4f3a6217b64f608524"
+      },
+      "original": {
+        "bytes": 1299953,
+        "git_blob": "6dc1e1e8692c85f2ebd44885195a42234094bf4c",
+        "sha256": "8cc023bf3e58e42a5e8cce08f01845a701d5fc77c5715593d3fc7afd11de3e3d"
+      },
+      "original_name": "BLOB_VERIFICATION_PROVENANCE.json",
+      "parts": [
+        {
+          "bytes": 106809,
+          "git_blob": "ef28d137ac05e91c57362b0d45954b467a525384",
+          "path": "next-checkpoint-preparation-v1/metadata-parts/BLOB_VERIFICATION_PROVENANCE.json.gz.part001.b64",
+          "sha256": "ec873f5e7750c8d33f8fe723379c69843aa59811e6a98e6e069786c61a471a93"
+        }
+      ],
+      "reconstruction": "Base64 decode each listed part, concatenate gzip bytes in order, then gzip decompress and verify original3pins."
+    }
+  ],
+  "payloads": [
+    {
+      "bytes": 10219,
+      "git_blob": "f42ec61e2fdf4c5efde5c671c55b4be9ec4f8f25",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/ADDITIONAL_UPLOAD_QUEUE.original.json",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--ADDITIONAL_UPLOAD_QUEUE.original.json",
+      "sha256": "1bdb52a15b3511bddcc43960495edd1a95bb451bd4955edd7e7d9a875d54b89e"
+    },
+    {
+      "bytes": 304258,
+      "git_blob": "74d4561ca66bef869b6c7f85d04dbed50961d5ed",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/BASE_2268_PUBLISH_PLAN.original.json",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--BASE_2268_PUBLISH_PLAN.original.json",
+      "sha256": "4133012025f8ae4e76103380bc7a590d5ff5b6663d37cbaf1709e0fd943e0b90"
+    },
+    {
+      "bytes": 17536,
+      "git_blob": "d6d944718c3fdba9121b5f5073947f08273e501d",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/EXTRA_UPLOAD_QUEUE.original.json",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--EXTRA_UPLOAD_QUEUE.original.json",
+      "sha256": "a6420088271cff3d5a2607b934ee0a2cc6ad46cc441393077a2c4fe449812673"
+    },
+    {
+      "bytes": 27168,
+      "git_blob": "b96e01cc94a79e8b1947ff5e9ca907fe593468ac",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/PENDING_KNOWN_ENTRIES.original.json",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--PENDING_KNOWN_ENTRIES.original.json",
+      "sha256": "6b4ae9ce0094be270879555c00c6fe12626079e777f9ac3a3918e71135078931"
+    },
+    {
+      "bytes": 26586,
+      "git_blob": "a1edede97f3b4e7142aeb9db5a56a24fcf36d732",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/PENDING_KNOWN_PROVENANCE.original.json",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--PENDING_KNOWN_PROVENANCE.original.json",
+      "sha256": "335ab3a3027ccb81c8ded7c3b9b4b3257890565625e4c62d3b22757aa17392b3"
+    },
+    {
+      "bytes": 4766,
+      "git_blob": "f1859a7606cad1a62edaf1eac72f8f2c660e79ce",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/ROOT_COLLECTOR.original.py",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--ROOT_COLLECTOR.original.py",
+      "sha256": "ebb7d8f838131eb494dd6f3c150ebf623358a8783740e1baf6691fb1f3c492a0"
+    },
+    {
+      "bytes": 66115,
+      "git_blob": "952dba153d7103bde21269d890fd4eedd0d39abd",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/ROOT_UPLOADS.original.1ae6ff6c6aa338be.jsonl",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--ROOT_UPLOADS.original.1ae6ff6c6aa338be.jsonl",
+      "sha256": "1ae6ff6c6aa338be9aaececcc64ef80cdd4f52385cfb779f1a35786ef9b15bc0"
+    },
+    {
+      "bytes": 65429,
+      "git_blob": "e43e0752408bb13ce94db191a1cfc69293c843bb",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/ROOT_UPLOADS.original.jsonl",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--ROOT_UPLOADS.original.jsonl",
+      "sha256": "88ad23726e47285433685174973cb42aa742f608ee21fbd9dfde7564e388843a"
+    },
+    {
+      "bytes": 20931,
+      "git_blob": "3f07baba64e39907bd3cb6e4661be20a3454ae89",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/input-snapshots/UPLOAD_QUEUE.original.json",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/input-snapshots--UPLOAD_QUEUE.original.json",
+      "sha256": "c92088669e93a7a3d658af9585c3c608133ae603f728942c8c9432546594a361"
+    },
+    {
+      "bytes": 68196,
+      "git_blob": "1d9726cbd0d530b641f19470e0a9b4720830e0c7",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/canonical-actual-addendum/ROOT_UPLOADS_208_ROWS.original.jsonl",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/canonical-actual-addendum--ROOT_UPLOADS_208_ROWS.original.jsonl",
+      "sha256": "9cd6947e6a3009a3d08087b2c24de86fce757a74e37d9512ec926906ea9793ea"
+    },
+    {
+      "bytes": 68878,
+      "git_blob": "832ff6e5f3dbd1284409c4e7f548031fd71071bf",
+      "kind": "exact stable local input snapshot; original producer not re-executed",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/final-snapshots/ROOT_UPLOADS.original.jsonl",
+      "path": "next-checkpoint-preparation-v1/input-snapshots/final-snapshots--ROOT_UPLOADS.original.jsonl",
+      "sha256": "e463fe5561ff4888c17cdd47f19382ea091c4a97be3b0b7a38fdde1bb6c2fcc6"
+    },
+    {
+      "bytes": 14997,
+      "git_blob": "b8057542106bc81f39bfa7097c7bf039fd783ff6",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/collect_independent_increment.py",
+      "path": "next-checkpoint-preparation-v1/collect_independent_increment.py",
+      "sha256": "130c345ab9e15ca4d0ac8c79c073b3fc0a74d398943ffbafad66f6a3be137bac"
+    },
+    {
+      "bytes": 4258,
+      "git_blob": "eeb2d6f33a2f0412bdf21c9a84d109e0521ddde8",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/append_canonical_observation.py",
+      "path": "next-checkpoint-preparation-v1/append_canonical_observation.py",
+      "sha256": "07548896d699304903f09942b98ee5d5068e9bd98b976c01bf12282bc981b446"
+    },
+    {
+      "bytes": 8905,
+      "git_blob": "cad89d82fecff26e9b3937f7f34a43b1833441e0",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/finish_checkpoint_preparation.py",
+      "path": "next-checkpoint-preparation-v1/finish_checkpoint_preparation.py",
+      "sha256": "a8814da118305ff8cd21b655d241ab89842e33ef146bfb2743d3316d7edbae68"
+    },
+    {
+      "bytes": 9702,
+      "git_blob": "7000138f33a4379d15ba6656a640431c68ab5984",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/package_preparation_metadata.py",
+      "path": "next-checkpoint-preparation-v1/package_preparation_metadata.py",
+      "sha256": "39651f91a9fa0a1ade9148cf86e12285fac0d0e24cd4c79aeb8828b7295dc072"
+    },
+    {
+      "bytes": 835,
+      "git_blob": "62685f4589bc1e1ee6a3a8c2fe47b6ef3562c727",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/COLLECTION_SUMMARY.json",
+      "path": "next-checkpoint-preparation-v1/COLLECTION_SUMMARY.json",
+      "sha256": "d1f06317e06a59708cd9fa0135eed05ee783beacb5ee23e0f8dae242eb5ec241"
+    },
+    {
+      "bytes": 506,
+      "git_blob": "e03fbcd0b393a75b95734928263285c3b5b9b750",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/BASE_PRESERVATION_REVIEW.json",
+      "path": "next-checkpoint-preparation-v1/BASE_PRESERVATION_REVIEW.json",
+      "sha256": "fe17fc438632cd1d63900a3a180ff044645cc768cd62104fab975e9e09c6b708"
+    },
+    {
+      "bytes": 16459,
+      "git_blob": "67b3ed7c6e9510f37eb73b3849b5fc1b43bdf771",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/INPUT_SNAPSHOT_INDEX.json",
+      "path": "next-checkpoint-preparation-v1/INPUT_SNAPSHOT_INDEX.json",
+      "sha256": "659d91509d6f58d563567825aa82d76d753d1b7a105200cb83df89c4f6273c76"
+    },
+    {
+      "bytes": 20296,
+      "git_blob": "99c17e61beb6ebb6e4c1260cb7ef6bdbe0dc55d0",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/INPUT_SNAPSHOT_RESOLUTION.json",
+      "path": "next-checkpoint-preparation-v1/INPUT_SNAPSHOT_RESOLUTION.json",
+      "sha256": "eb15c1e9bf5c92c8b2bb81db07147622a1135c1c5fbed7f9ee01171923ad375e"
+    },
+    {
+      "bytes": 268319,
+      "git_blob": "92550559c7517c07c8ce1a7d94f07cd6db3c8e15",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/BASE_2268_FILEMAP.json",
+      "path": "next-checkpoint-preparation-v1/BASE_2268_FILEMAP.json",
+      "sha256": "5e1457bf0ad4ae4be9739659d744675877bf34c30a38b4ae4d8679405a53263e"
+    },
+    {
+      "bytes": 52052,
+      "git_blob": "79783eb810a7292972bf11201199bff4523b0523",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/FINAL_EVIDENCE_INCREMENTAL_FILEMAP.json",
+      "path": "next-checkpoint-preparation-v1/FINAL_EVIDENCE_INCREMENTAL_FILEMAP.json",
+      "sha256": "7272e110fb4c8209371bba81c6ba05396b904af8f980b50a7d8462127fb84474"
+    },
+    {
+      "bytes": 320368,
+      "git_blob": "c053c1145518189b74a82fc3774f46254484f780",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/FINAL_EVIDENCE_FILEMAP_BEFORE_README.json",
+      "path": "next-checkpoint-preparation-v1/FINAL_EVIDENCE_FILEMAP_BEFORE_README.json",
+      "sha256": "ef93beeee8e97c86366f00e8fc402c443a3d201f563252df47a7d96ab2c30bad"
+    },
+    {
+      "bytes": 2235,
+      "git_blob": "438906ea64a35476b20e411531036bc707f5e2ac",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/FINAL_FACTS_AND_LIMITS.json",
+      "path": "next-checkpoint-preparation-v1/FINAL_FACTS_AND_LIMITS.json",
+      "sha256": "8c9d6b3c6d07c4e448bec8efad4ee86af453055c543faf7308e0efef0f63515e"
+    },
+    {
+      "bytes": 1211,
+      "git_blob": "40854787dc8171cadee1ff91a121e22bb4cd22d8",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/FINAL_OBJECT_VERIFICATION_REVIEW.json",
+      "path": "next-checkpoint-preparation-v1/FINAL_OBJECT_VERIFICATION_REVIEW.json",
+      "sha256": "2ff1ac0dc430a6b2d901ba04aec9d6eb0e1f926bec78f47ad5383264a50a9ab3"
+    },
+    {
+      "bytes": 23099,
+      "git_blob": "42c6a438fb07d6b217c39d4d4fc24bdb49383525",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/NEW_SMALL_OBJECT_UPLOADS.json",
+      "path": "next-checkpoint-preparation-v1/NEW_SMALL_OBJECT_UPLOADS.json",
+      "sha256": "db37b49d85fbcb68ea3c41d2bbb7fd0b850eb51ee958bdaf11c1ed3e1325b9b6"
+    },
+    {
+      "bytes": 12844,
+      "git_blob": "ea17b8ce7cae1bb75725f4f54a940689f7118565",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/FINAL_NATIVE_AND_PUBLICATION_UPLOADS.json",
+      "path": "next-checkpoint-preparation-v1/FINAL_NATIVE_AND_PUBLICATION_UPLOADS.json",
+      "sha256": "0d51921877747ac42ba6c5d78b41434ae40bd58009f8f69b8085ca6591a1cf37"
+    },
+    {
+      "bytes": 12670,
+      "git_blob": "55a8842e59f0fbdbe21195a3264d66846d22e9f8",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/FINAL_NATIVE_AND_PUBLICATION_INDEX.json",
+      "path": "next-checkpoint-preparation-v1/FINAL_NATIVE_AND_PUBLICATION_INDEX.json",
+      "sha256": "f8ebd94fece54e141667dfab286f2f334e09c7df54162389afc30d14cda90fab"
+    },
+    {
+      "bytes": 5218,
+      "git_blob": "8b3eaa8aae3643f367deac759b8bbdd5c4d266eb",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/CANONICAL_OBSERVATION_ADDENDUM.json",
+      "path": "next-checkpoint-preparation-v1/CANONICAL_OBSERVATION_ADDENDUM.json",
+      "sha256": "800bd5b0a5f58bc073bc020097af547ab9243ef0e81cb6acc3a927a1ad5fc41a"
+    },
+    {
+      "bytes": 12759,
+      "git_blob": "a422625bfda25015d95e82ac61af26306fb8b1a5",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/IDENTICAL_BLOB_PATH_ALIASES.json",
+      "path": "next-checkpoint-preparation-v1/IDENTICAL_BLOB_PATH_ALIASES.json",
+      "sha256": "14cd4deb7019d81bf72cad46a5011daecaa7178fdd577fc65f3a26a25d9560ea"
+    },
+    {
+      "bytes": 898,
+      "git_blob": "a2699650632e721f2e364917ac1f9aeed6afc0f5",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/PREPARATION_READ_RECONCILIATION_NOTES.json",
+      "path": "next-checkpoint-preparation-v1/PREPARATION_READ_RECONCILIATION_NOTES.json",
+      "sha256": "cde00dabe60d50d9e85c84a5377e90328e46914f118dc77e5ccb57f78558e8b7"
+    },
+    {
+      "bytes": 17028,
+      "git_blob": "b9a0b35830430d64fd47ce1a94e55b36a0dba841",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/README.DRAFT.md",
+      "path": "next-checkpoint-preparation-v1/README.DRAFT.md",
+      "sha256": "9a268bb474a44cc594f203eb7478d2fada5fed5b62ddd4c3a9bccf462c3c6239"
+    },
+    {
+      "bytes": 7279,
+      "git_blob": "740d02e70b7468f1087c44c9c26c2b962aa1b9b3",
+      "kind": "derived independent checkpoint preparation; not an execution result",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/PR.DRAFT.md",
+      "path": "next-checkpoint-preparation-v1/PR.DRAFT.md",
+      "sha256": "5686fc8ff72936edce28b262ae8547f0110065db4dd012dc11bd179bdd9617f3"
+    },
+    {
+      "bytes": 22957,
+      "git_blob": "d7dc342910e6085ec08a9899a825f596ab87b4a6",
+      "kind": "deterministic lossless transport of full provenance",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/metadata-parts/PATH_PROVENANCE.json.gz.part001.b64",
+      "path": "next-checkpoint-preparation-v1/metadata-parts/PATH_PROVENANCE.json.gz.part001.b64",
+      "sha256": "b063f74a7387bd67863fb1ef3d2acd3da80b5c728c7eaf835bff2de577fbaa15"
+    },
+    {
+      "bytes": 28749,
+      "git_blob": "f575c0fccbeb6d13ea5056c17b698a59527f920c",
+      "kind": "deterministic lossless transport of full provenance",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/metadata-parts/FINAL_PATH_PROVENANCE.json.gz.part001.b64",
+      "path": "next-checkpoint-preparation-v1/metadata-parts/FINAL_PATH_PROVENANCE.json.gz.part001.b64",
+      "sha256": "d772d102dec6a5ce07f600f9b27a48c6a73ceada907c28aa17ed600471ed6922"
+    },
+    {
+      "bytes": 106809,
+      "git_blob": "ef28d137ac05e91c57362b0d45954b467a525384",
+      "kind": "deterministic lossless transport of full provenance",
+      "local_path": "/tmp/hepta-36fa-next-evidence-preparation-v1/metadata-parts/BLOB_VERIFICATION_PROVENANCE.json.gz.part001.b64",
+      "path": "next-checkpoint-preparation-v1/metadata-parts/BLOB_VERIFICATION_PROVENANCE.json.gz.part001.b64",
+      "sha256": "ec873f5e7750c8d33f8fe723379c69843aa59811e6a98e6e069786c61a471a93"
+    }
+  ],
+  "publication_instructions": [
+    "Merge FINAL_EVIDENCE_INCREMENTAL_FILEMAP without changing any2268existing SHA.",
+    "Add the preparation PLACEMENT payloads.",
+    "The separately proposed README may replace current README only after its old3e8 exactblob archive is retained.",
+    "Append later actual Root source-launch/hosted/qualification records and final commit/count readback; do not infer a gate outcome from these controls."
+  ],
+  "real_qualified_task_chains": 0,
+  "source_commit": "246d8cb614770252ee42029a5c014f2a4904176a",
+  "source_ref_publication": "Actual Root publication and exact readback retained; this preparation does not update refs.",
+  "source_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+}

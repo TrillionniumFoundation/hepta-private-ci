@@ -1,0 +1,53 @@
+{
+  "actual_original_guard": {
+    "active_matching_processes": [
+      {
+        "comm": "rustc",
+        "pid": 2320700,
+        "uid": 1000
+      }
+    ],
+    "scope": "Same-UID process names only; no environment/argument values or credentials inspected; no processes killed.",
+    "unreadable_matching_processes": []
+  },
+  "admission": {
+    "bytes": 7114,
+    "git_blob": "b55e3264a0b5572d5a1df9937206c464963a7aa1",
+    "sha256": "21f81de08bd8488e2ad13a403c8fa3581555254a2ef9ef3ffa7711b75dd109a3"
+  },
+  "all_three_final_audits_verified": true,
+  "current_process_state": "not_inferred_from_historical_sample",
+  "format": "hepta-root-final-fmt-attempt1-failure-review-v1",
+  "formatter_dispatched": false,
+  "job": "1a1d1c33b57-2564-1c77",
+  "next_step": "One current read-only original-scope process observation; fresh output path/identity may be reviewed only after the condition permits. Preserve original guard and every prior attempt; no process killing, reset, deadline or stack changes.",
+  "normal_exit_code": 1,
+  "normal_sdk": {
+    "bytes": 907,
+    "git_blob": "838f31a05e30f802de3aa137970d8e93ad4bb8c3",
+    "sha256": "162a31f3a13d0ed774c54b6d639c707b90a425912c71cbe5fff7b9a864832ab7"
+  },
+  "normal_state": "failed",
+  "original_inputs_unchanged": 21,
+  "original_process_guard": {
+    "bytes": 226,
+    "git_blob": "1938147d303b32ebb174fec6a6d2952aedfe8f9e",
+    "sha256": "0d482b0daec3e2d12b617e6e3bf61bc043fa96ca40b7f1be29aba8cc89fdbbb8"
+  },
+  "process_origin": "unknown_not_inspected",
+  "qualification": false,
+  "result": {
+    "bytes": 4995,
+    "git_blob": "2a00c4457b6c2501ffd869ee9a79e022f8bbea06",
+    "sha256": "c29c4b3db349fba0cc1f485836c4cd612bb4d0eb8d03c1063ce7901bd2870396"
+  },
+  "source_applied_paths": [],
+  "source_before_after_inventory": {
+    "bytes": 5614211,
+    "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+    "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "source_before_after_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+  "status": "known_original_concurrency_precondition_failure_no_source_application_or_formatter_dispatch",
+  "timed_out": false
+}

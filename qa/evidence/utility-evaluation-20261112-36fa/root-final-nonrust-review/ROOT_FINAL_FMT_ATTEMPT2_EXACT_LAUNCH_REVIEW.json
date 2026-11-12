@@ -1,0 +1,77 @@
+{
+  "bootstrap": {
+    "bytes": 5720,
+    "git_blob": "bf8608fea3352ea603a70e9b9d369b91c391a6c8",
+    "sha256": "f5dac75e8447f812cfaf6ad53c40e161681e4907f057ebe739f0eb128005766d"
+  },
+  "bootstrap_only_changes": "Only the absent approved-config PIN is filled; the other three raw pins already match the successor template. Complete remaining AST identical, including base path, input cap, create-only staging, bounded gzip read, four-file strict schema and exec argv.",
+  "cwd": "/home/qian-qi",
+  "expected_after_physical_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "formal_config": {
+    "bytes": 2698,
+    "git_blob": "035ffe2ad6ad3e2e8c21c8a2776b03fbeacc9838",
+    "sha256": "233c1645073ba2e666560a427486923d09b7c1d3c8905de3b264bff38c1a3e6b"
+  },
+  "format": "hepta-root-final-fmt-exact-launch-review-v1",
+  "four_raw_inputs": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2698,
+      "git_blob": "035ffe2ad6ad3e2e8c21c8a2776b03fbeacc9838",
+      "sha256": "233c1645073ba2e666560a427486923d09b7c1d3c8905de3b264bff38c1a3e6b"
+    },
+    "CAPTURE_NORMAL.original.json": {
+      "bytes": 909,
+      "git_blob": "8146d2ad99259a1965038f01dd3f8f186cd3e5a0",
+      "sha256": "1ad13e624fa88b3509d5519c26335c92449d803ff775f8f14068d65dbbfb106e"
+    },
+    "NONRUST_PACKET.json": {
+      "bytes": 2442538,
+      "git_blob": "5aa96020a8701f6e12b93c6a214964f61b69224f",
+      "sha256": "d1c1151be959db7917832a1573a3ab2b3fd04f0840740806c20fed9743b86441"
+    },
+    "driver.py": {
+      "bytes": 22679,
+      "git_blob": "24d705376fe042f040d87b6a5fc72a67780b01fa",
+      "sha256": "a0cb7e886255c53e34f21002051209580bdb8e2089d4a892f6789ae95d15ea04"
+    }
+  },
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-final-nonrust-fmt-v2",
+  "native_attempt_observed": false,
+  "original_bootstrap_template": {
+    "bytes": 5575,
+    "git_blob": "5785238bdc89f2fef1380ce37a4c0290a4a481e3",
+    "sha256": "3803df8c10d1b3d3ed8c492c79fe8d8a4429593f5569c14ddb6070f1321a8bad"
+  },
+  "original_fmt_seconds": 900,
+  "outer_seconds": 2100,
+  "peer_resolution_blob": "19ee2480b741a7866f1a348a81aeaf136d1397a6",
+  "qualification": false,
+  "root_input_review_blob": "da1c27546fbdb542916b1f55f03b82cced7ad0b7",
+  "scope": "Sole native executor may dispatch these exact seven fields once; retain original response and any partial effects. Reconcile only identical identity if transport is lost. No new fix/test/ref operation or relaxed deadlines.",
+  "source_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+    "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+    "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+  ],
+  "status": "APPROVED_FOR_ONE_EXACT_NATIVE_LAUNCH",
+  "stdin": {
+    "bytes": 673907,
+    "git_blob": "19b2efc91b032c85a5774056e2a57632dbc28be1",
+    "sha256": "6f97371680cb73bda5859f67e46c3ea3904c2fef032f67c55a80887141d4dd4a"
+  },
+  "typed_field_count": 7,
+  "typed_request": {
+    "bytes": 679988,
+    "git_blob": "b423b3e7603df510cf6c9d2c8f1009f39bdaeff6",
+    "sha256": "16e7803f6708e80064d447010eab9e078e6b2b16e1efa0ff78bd7f6ef6d07d99"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "actual_extractor_job": "1a1d1a2125c-2564-1c69",
+  "actual_extractor_normal_sdk": {
+    "bytes": 911,
+    "git_blob": "8a26b629d66f38e0128d9a836bbd004569d42970",
+    "sha256": "090f5e38c52d0f3c4ed28be8b7d28d027adc31de8cbf1e287d2b13265350ea81"
+  },
+  "actual_extractor_result": {
+    "bytes": 1420,
+    "git_blob": "6fb998771533e0c0963e12a3120135861969d4c5",
+    "sha256": "482f724f2b8fcd06eb69bf8e82d5000741338c0ee12d8c0a406db7e8f2e30f07"
+  },
+  "actual_prior_rust_postimages_github_full_readback": 43,
+  "after_candidate_physical_tree": "74a2fe12be39aba5ab55d537124cd9462673fd9e",
+  "allowlist": "All original bytes retained; one exact final CALLERS SHA256 appended.",
+  "baseline_inventory": {
+    "bytes": 5614211,
+    "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+    "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+  },
+  "before_physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc",
+  "changed_existing_nonrust_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+    "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+    "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+    "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+    "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py"
+  ],
+  "complete_leaf_count": 15188,
+  "complete_tree_node_count": 1849,
+  "exact_recovered_original_proposal": {
+    "bytes": 1721112,
+    "git_blob": "810316dcfd611585eef1eb262b4a76e7b06ce921",
+    "sha256": "aa28b954c9e1e2a3d4ab7bba642a5c117900954a262082535daf4cbf8c26f8d1"
+  },
+  "final_fmt": "not_started",
+  "format": "hepta-root-final-nonrust-candidate-review-v1",
+  "full_source_gate": "not_run",
+  "manifest": {
+    "bytes": 14182,
+    "git_blob": "10dffe87464c5a94cbf7c02f6b6ae1958697cd22",
+    "sha256": "c9c4470f27cef0c9de37e81d2096e9aef6850a28f2927c3de032d82744750f97"
+  },
+  "native_application": "not_started",
+  "old_qa": {
+    "explicitly_changed": 17,
+    "files": 21,
+    "methods": 184,
+    "new": 18,
+    "removed": 0,
+    "source_and_ast_unchanged": 167
+  },
+  "packet": {
+    "bytes": 2442314,
+    "git_blob": "5300dbea46941ff805fb3612a47b6e5f7fe6617a",
+    "sha256": "cf50c26f030a08ac05045696fe21355c65b36a932e63f5ac2bf0ceb9ed487776"
+  },
+  "peer_semantic_review": "pending",
+  "qualification": false,
+  "real_authorized_ABC": "not_established",
+  "recovery_scope": "Independent raw identity match to actual successful native RESULT, plus complete companion decoding; not a second native full-output read.",
+  "rust_tests": "not_run",
+  "status": "exact_unapplied_candidate_verified_pending_peer_and_native"
+}

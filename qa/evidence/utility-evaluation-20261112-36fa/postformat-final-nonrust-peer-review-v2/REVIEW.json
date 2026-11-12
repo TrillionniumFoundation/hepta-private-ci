@@ -1,0 +1,119 @@
+{
+  "format": "hepta-final-nonrust-independent-static-peer-review-v2",
+  "created_utc": "2026-11-12T21:51:47.012162+00:00",
+  "status": "no_remaining_specific_semantic_blocker_in_reviewed_final_nonrust_v2",
+  "prior_review_and_preserved_finding_blob": "a595a8c817529cd1b6a49467d0c42aa4292794a2",
+  "reviewed_final_manifest": {
+    "bytes": 15635,
+    "sha256": "4ea07438c30d2b247b36c6bbdc1c5464d63951ac960dc19aa6ed0302ad5183a9",
+    "git_blob_sha": "66e013b04b2f67392ba9c3e14a627becf29739a9"
+  },
+  "unapplied_candidate_tree": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "actual_source_inventory_sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+  "source_delta": {
+    "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "before": {
+      "bytes": 101550,
+      "sha256": "7ffd03efc96438ccee1b8a6bc0ac7de1f72bcdc1fead57e222d1ff2663710a74",
+      "git_blob_sha": "e2f43f04110ea00b8aeede4ce5f9bd76d10ad531"
+    },
+    "after": {
+      "bytes": 101717,
+      "sha256": "ba93d929b11eea543d7a726374081b00faf7e44fb791296a1f09380fb758dc88",
+      "git_blob_sha": "b9d8241d3ade2189b36d4122f1175c500fd8a723"
+    },
+    "patch": {
+      "bytes": 871,
+      "sha256": "b7d71f3ed7ca79db0935b2b2274e9b4e015dc268f764a5b731a1485098e05e98",
+      "git_blob_sha": "264d4ba4a4231ea97fa0190a3b79122ed956595d"
+    },
+    "exact_added_text": "        for path in ORDINARY_SCOPE_GUARDS:\n            with self.subTest(actual_root_scopes=path):\n                self.actual_scopes(path, (ROOT / path).read_text())\n",
+    "whole_file_inverse_byte_equal": true,
+    "whole_file_AST_equal_after_removing_only_added_loop": true,
+    "other_ten_source_postimages_byte_identical_to_v1": true
+  },
+  "closure_of_specific_finding": {
+    "old_issue": "10 paths / 21 of34 supplementary owner/root/type scope guards were declared but never reached by the default new QA methods.",
+    "correction": "The existing discovered unittest method test_new_typed_edges_and_old_boundary_inventory_are_exact now iterates every path in ORDINARY_SCOPE_GUARDS, reads that actual source, and calls the unchanged actual_scopes. That helper iterates every guard at each path and checks its exact actual root/function/type span hash.",
+    "default_test_path_now_enforces_paths": 20,
+    "default_test_path_now_enforces_scopes": 34,
+    "new_methods_added_by_correction": 0,
+    "old_statements_removed": 0,
+    "cache_added": false,
+    "collector_verifier_budget_authority_changes": false,
+    "assessment": "The specific default-execution omission is closed without optional selectors, fallback acceptance, changing the original verifier, or depending on the literal/module checks to enforce unrelated scope hashes."
+  },
+  "reviewed_scoped_execution_records_from_ordinary_path": {
+    "result": {
+      "bytes": 849,
+      "sha256": "dfb4ebf955654f9877f94c8ae225e21551cb5fe9ce02ffbb96edfff013336d52",
+      "git_blob_sha": "a5eaf7657a8085585ea2c4a046a26012fdd31fd0"
+    },
+    "raw": {
+      "bytes": 4103,
+      "sha256": "b0197c62a6235c08fc85f11648aa9eb38e6d787b0453f4bd90ece4a7e9d86ccb",
+      "git_blob_sha": "85b9a54c547695ec9583df1262dbe0aeea449c8d"
+    },
+    "coverage": {
+      "bytes": 93307,
+      "sha256": "5ded24a1ce2935f5638db783c6e5a22023bbeee1f0cfee77cba24f31a78efe11",
+      "git_blob_sha": "d322616eb7ac884e54e68413aa7aab6921d999cd"
+    },
+    "observer": {
+      "bytes": 2349,
+      "sha256": "99857d66b2ca2e8d24054708fe2108f2ca16fe1f5f2b45c17ba713d0f7e4a459",
+      "git_blob_sha": "09122e139131ab52839602643996ba6915ba6a60"
+    },
+    "observed_in_original_raw": "Ran18 tests in5.325s; OK",
+    "process_returncode": 0,
+    "timeout": false,
+    "observer_call_records": 234,
+    "independently_recomputed_successful_actual_source_guard_union": 34,
+    "every_successful_actual_source_observation_SHA_matches_actual73_capture": true,
+    "scope_union_exactly_equals_all34_guard_identifiers": true,
+    "input_after_inventory_byte_equal": true,
+    "observer_semantics": "Read-only wrapper calls the same original actual_scopes, returns its original result, rethrows every exception, records successful exact-source identities, and restores the class method in finally. No cached source or verdict.",
+    "scope": "New18 source-mechanism tests on actual73-file review projection only. These records were read and independently checked; this peer review did not execute them again."
+  },
+  "carried_forward_v1_findings": {
+    "CALLERS569_boundary_and_authority_data_unchanged": true,
+    "protection_rows": {
+      "before": 412,
+      "migrated": 39,
+      "unchanged": 373,
+      "added": 10,
+      "after": 422,
+      "distinct_paths_before_after": [
+        341,
+        351
+      ]
+    },
+    "all_original_forbidden_arrays_and_old_file_order_sequences_retained": true,
+    "explicit_extra_guard_relocations_and_row409_original_literal_guards_reviewed": true,
+    "all49_source_pins_equal_actual_capture": true,
+    "critical_literal_specs": 17,
+    "actual_module_mount_specs": 10,
+    "two_Clone_implementations_bound_to_distinct_actual_root_impls": true,
+    "full_captured_QA": {
+      "files": 21,
+      "original_methods": 184,
+      "unchanged_methods": 167,
+      "migrated_methods": 17,
+      "new_methods": 18,
+      "removed_methods": 0
+    },
+    "prior_related_subset": {
+      "files": 17,
+      "original_methods": 152,
+      "unchanged_methods": 135
+    },
+    "allowlist": "Original bytes retained; only the precise final CALLERS SHA25651e264baee978b4b453c427bfd267701a1c341f4861329689f8c07231ba2c8bb was appended. Unchanged byv2.",
+    "fullcollector_original_three_ignored_and_original600s_budget_preserved": true
+  },
+  "limits": [
+    "No H/native command, source mutation, Cargo, formatter, test method or full validator was executed by this review.",
+    "The original49-row diagnostic and the new18-method scoped run are preserved as scoped results; they do not establish complete source closure, full caller verification, Rust tests, real authorized A/B/C, independent operational evaluation, costs, deployment or daemon/Root recovery.",
+    "Final nonRust application and the separate original900s formatter remain pending actual execution and source freeze. If any protected Rust bytes drift, their guards must be reconciled against actual postimages before qualification.",
+    "No additional authority, contract threshold, test budget, comparison verdict or fraud conclusion is introduced. Generic/file-level fallback limitations remain bounded by the reviewed supplementary checks, not represented as a formal runtime proof."
+  ]
+}

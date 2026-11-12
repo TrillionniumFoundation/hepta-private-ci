@@ -1,0 +1,43 @@
+{
+  "actual_native_outer_seconds": 45000,
+  "actual_source_outer_seconds": 7200,
+  "configuration_unchanged": "83b87db774f7ce591c647fb86641bbdb4006491e",
+  "directory_list_sdk": {
+    "bytes": 305,
+    "git_blob": "664bf9dfdb47a63b7f6580e528eadfdf6bb0eaec",
+    "sha256": "51b41200eefc3134b222056ce840859d7187aad230e7e81e995a57147da7d79f"
+  },
+  "earlier_input_review": "09b8c0ed0737013a1265548c627c35cd46d86a22",
+  "exact_launch_review_required": true,
+  "format": "hepta-final-source-outer-budget-actual-recovery-addendum-v1",
+  "historical_native_typed_request": {
+    "bytes": 14898,
+    "git_blob": "d64b521f2cfaa36039d0b4a2b4d7a5774433f0b1",
+    "sha256": "69a6d942a66e94657c5efc0c42961204c67c4657af430fc707207b3993cd7f5f"
+  },
+  "historical_source_job": "1a1d01a6652-2564-1b2d",
+  "historical_source_request": {
+    "bytes": 990,
+    "git_blob": "eae8d46956ac3afd89bf18b30d69997cbe925788",
+    "sha256": "81fb594800d838ccc1f4bc348bc5af409abb66ce62a9f2d981c9e99143a2ebbd"
+  },
+  "historical_source_request_digest": "6a23671b567a45deb91b60ae415660f3fd6e41fe47bb7e9f94aed6676f47947a",
+  "native_tests_started": false,
+  "no_phase_stack_or_budget_changes": true,
+  "original_source_phase_seconds": {
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "qualification": false,
+  "read_sdk": {
+    "bytes": 1747,
+    "git_blob": "9b2dfc58560ffb5a8ae268830bac035f3faa4cd2",
+    "sha256": "50a44052edf8bd9a0fb777ab208e5208249b8cb84d41c34393510df1cf0dd4ec"
+  },
+  "recovery": "Read only the previously observed exact original task job directory and its request.json. Original launch and terminal omit timeout; their prior absence remains preserved. The recovered request matches the same job and request digest. No new process was launched to obtain it.",
+  "required_order": "Original source wrapper fully ends and original records/terminal are collected before native wrapper begins.",
+  "source_config_unchanged": "e57dd8482d4801c7233b35e27fdaf253a0d7bc2e",
+  "source_gates_started": false,
+  "status": "ORIGINAL_OUTER_LIMITS_RECOVERED_WITHOUT_GUESSING"
+}

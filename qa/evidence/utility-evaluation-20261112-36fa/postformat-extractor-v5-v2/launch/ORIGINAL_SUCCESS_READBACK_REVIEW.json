@@ -1,0 +1,112 @@
+{
+  "actual_normal_terminal": {
+    "at_unix_ms": 1794518440999,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1d1a2125c-2564-1c69",
+    "launch_nonce": "d304d20d51dc98d84f4f2c770d6ee01c",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1498,
+        "stored": 1498
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "actual_original_source_files_metadata": [
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v2/records/SOURCE_BEFORE.json",
+      "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+      "size": 5614211,
+      "version": "2050:50663522:5614211:1794518432462418488:1794518432462418488"
+    },
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v2/records/SOURCE_AFTER.json",
+      "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f",
+      "size": 5614211,
+      "version": "2050:50663524:5614211:1794518440850524768:1794518440850524768"
+    }
+  ],
+  "actual_proposal_pin": {
+    "bytes": 1721112,
+    "git_blob_sha": "810316dcfd611585eef1eb262b4a76e7b06ce921",
+    "sha256": "aa28b954c9e1e2a3d4ab7bba642a5c117900954a262082535daf4cbf8c26f8d1"
+  },
+  "actual_result_identity": {
+    "bytes": 1420,
+    "git_blob": "6fb998771533e0c0963e12a3120135861969d4c5",
+    "sha256": "482f724f2b8fcd06eb69bf8e82d5000741338c0ee12d8c0a406db7e8f2e30f07"
+  },
+  "actual_source_lock": {
+    "device": 2050,
+    "extractor_also_acquires_same_lock": true,
+    "fd": 3,
+    "inherited_across_exec": true,
+    "inode": 50139448,
+    "lock_acquired": "LOCK_SH|LOCK_NB",
+    "mode": 384,
+    "nlink": 1,
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+    "pid": 2227830,
+    "qualification": false,
+    "scope": "This task cooperative writers only; full original before/after inventories remain mandatory.",
+    "source_writes": false,
+    "uid": 1000
+  },
+  "format": "hepta-postformat-extractor-v2-original-readback-v1",
+  "full_original_stdout_identity": {
+    "bytes": 1498,
+    "git_blob": "4b2af19d53d4af70a576a666c56b822953101a14",
+    "sha256": "79ac9163fc857359b46adc12d0f1eb8afa08342b8976d945ed2b7b6ce04f2ac1"
+  },
+  "proposal_bytes_transferred": false,
+  "proposal_reconstruction_status": "Awaiting ordinary exact candidate comparison; no match claimed by this record.",
+  "qualification": false,
+  "source_inventory_full_transfer_not_repeated": true,
+  "source_inventory_reference": "The retained complete source bytes have original identity 3f28; these two new file_info observations independently bind each actual V2 record file, not a new extraction execution."
+}

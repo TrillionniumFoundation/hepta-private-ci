@@ -1,0 +1,110 @@
+{
+  "action_scope": [
+    "Acquire existing exact coordination lock EX in the new parent process and hold through all final audits; no exec after acquiring, parent retains lease across formatter child lifetime.",
+    "Verify actual V5 success and actual SH73 success proofs; observe full current 3f28 source and unchanged original Git state.",
+    "Retain all 43 existing dirty actual preimages before any source update.",
+    "Validate final reviewed existing non-Rust path packet and full after-leaf map/Merkle; no Rust source writes by application.",
+    "Original environment/tool/V8/min32GiB/global process admission stays byte-for-byte in original V5.",
+    "Check original global process guard again before source replacements; journal attempt then atomic same-parent replacement only for each approved non-Rust path, no rollback.",
+    "Capture exact whole after-application source and all delta; run original just fmt --base c0f once with original 900 seconds; never fix or test.",
+    "Retain original log/helper result, all source changes (including any unexpected ignored/temp leaf), complete raw Git equality and original input equality; partial failures stay preserved.",
+    "Any formatter source change has requires_fence_refresh_review=true; never automatically freeze or publish a source."
+  ],
+  "actual_current_source": {
+    "complete_inventory": {
+      "bytes": 5614211,
+      "git_blob": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+      "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+    },
+    "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+    "head_tree": "ee42ec7e6289e0ccdbe03a5af0b39216a5a6dab7",
+    "physical_tree": "65b898bad23cd58c7f6fd53fafe618f9cf9562dc"
+  },
+  "budgets": {
+    "original_fmt": 900,
+    "outer": 2100,
+    "preflight_and_application": 600,
+    "scope": "Original V5 budgets minus unused 7200-second fix; 300 outer launch/cleanup allowance unchanged.",
+    "total_evidence": 300
+  },
+  "driver": {
+    "bytes": 22679,
+    "git_blob": "080753bf6fa5070c0f71096ace0cf199762ee42c",
+    "sha256": "dd5c81cdbfd7f53346304d0d36164b5d7ac753daa854c6dbff0d7e554788dccc"
+  },
+  "existing_original_driver": {
+    "bytes": 63007,
+    "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+    "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/driver-v5.py",
+    "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+  },
+  "format": "hepta-final-nonrust-format-control-plan-v1",
+  "fresh_native_control": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/final-nonrust-fmt-control-v1",
+  "fresh_native_output": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/final-nonrust-fmt-v1",
+  "important_limits": [
+    "This is preparation, not native qualification.",
+    "No source refs/HEAD/index/Git objects are written.",
+    "Existing QA/CALLERS/allowlist paths only; no modes/deletes/new paths.",
+    "Original formatter does not cover qa/b4-no-bypass scripts, CALLERS.toml or the size allowlist. Their actual reviewed bytes are independently bound."
+  ],
+  "main_executed": false,
+  "new_native_files_only": [
+    "driver.py",
+    "APPROVED_CONFIG.json (formal only, never stage HOLD under this basename)",
+    "NONRUST_PACKET.json",
+    "CAPTURE_NORMAL.original.json"
+  ],
+  "proposed_key": "hepta-utility-36fa-final-nonrust-fmt-v1",
+  "remaining_inputs": [
+    "ordinary final packet raw bytes/hash, ordered exact existing paths and expected complete after-tree/leafcount",
+    "Root formal config/status",
+    "exact create-only bootstrap/typed request for a single new unique key"
+  ],
+  "reuse": {
+    "forbidden_original_entrypoints": [
+      "main",
+      "initial_preflight",
+      "validate_config",
+      "stage(fix)"
+    ],
+    "globals_set": [
+      "OUT",
+      "record_remaining",
+      "result",
+      "cfg (original exact V5 config for original environment guard only)",
+      "inventory_module",
+      "execute_module",
+      "initial_inventory",
+      "latest_inventory",
+      "initial_git_state",
+      "initial_git_metadata",
+      "initial_environment",
+      "raw_cache",
+      "source_entry_snapshots",
+      "input_pins"
+    ],
+    "original_module_functions_modified": false,
+    "reused_original_functions": [
+      "regular_read",
+      "read_input",
+      "git_state",
+      "metadata_inventory",
+      "actual_leaf_map",
+      "merkle",
+      "read_actual_leaf",
+      "environment_preflight",
+      "active_build_processes",
+      "check_fmt_base",
+      "capture_source",
+      "archive_transition",
+      "stage(fmt)",
+      "finalize_source",
+      "finalize_inputs",
+      "bounded_record",
+      "write",
+      "jwrite",
+      "gzrecord"
+    ]
+  },
+  "status": "HOLD_STATIC_ONLY"
+}

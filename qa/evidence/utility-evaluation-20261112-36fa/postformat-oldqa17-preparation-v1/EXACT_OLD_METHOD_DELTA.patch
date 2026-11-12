@@ -1,0 +1,446 @@
+--- a/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py
++++ b/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py
+@@ -127,30 +127,40 @@
+             self.verifies(path, changed)
+ 
+     def test_registered_calls_are_exact_and_extra_callers_are_rejected(self):
+-        paths = {path for identifier in EXPECTED for path in (
+-            self.boundaries[identifier].definition_path,
+-            *self.boundaries[identifier].product_callers,
+-        )}
+-        sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text())) for path in paths}
++        source_roots = PROOF._string_tuple(self.manifest, "source_roots")
++        ignored = PROOF._string_tuple(self.manifest, "ignored_path_fragments")
++        self.assertEqual(source_roots, ("codex-rs",))
++        self.assertEqual(ignored, ("/tests/", "/examples/", "_tests.rs"))
++        sources = {
++            path.relative_to(ROOT).as_posix(): PROOF._strip_cfg_test_items(
++                PROOF._strip_rust_non_code(path.read_text(encoding="utf-8"))
++            )
++            for path in PROOF._source_files(ROOT, source_roots)
++        }
++        for attack_path in (
++            AGENT + "unregistered_evaluated_read.rs",
++            AGENT + "unregistered_real_remote_s.rs",
++        ):
++            self.assertFalse(PROOF._is_ignored(attack_path, ignored))
+         for identifier, expected in EXPECTED.items():
+             with self.subTest(boundary=identifier):
+                 row = self.boundaries[identifier]
+                 self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
+                 self.assertEqual(row.product_callers, expected)
+-                PROOF._verify_boundary(ROOT, row, sources, ())
++                PROOF._verify_boundary(ROOT, row, sources, ignored)
+                 method = row.symbol.rsplit("::", 1)[-1]
+                 changed = dict(sources)
+                 changed[AGENT + "unregistered_evaluated_read.rs"] = f"fn bypass(owner: &{row.receiver_type}) {{ owner.{method}(); }}"
+                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+-                    PROOF._verify_boundary(ROOT, row, changed, ())
++                    PROOF._verify_boundary(ROOT, row, changed, ignored)
+                 if expected:
+                     with self.assertRaises(PROOF.VerificationFailure):
+-                        PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ())
++                        PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ignored)
+         for identifier in ("learning_original_published_read_client_current", "learning_original_evaluated_read_selection_binding"):
+             changed = dict(sources)
+             changed[AGENT + "unregistered_real_remote_s.rs"] = sources[REMOTE]
+             with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+-                PROOF._verify_boundary(ROOT, self.boundaries[identifier], changed, ())
++                PROOF._verify_boundary(ROOT, self.boundaries[identifier], changed, ignored)
+         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
+ 
+     def test_all_actual_product_functions_have_guards(self):
+@@ -262,7 +272,11 @@
+             (READINESS, "serve_completion_readiness"), (READINESS, "readiness_response"),
+             (READINESS, "read_original_readiness"),
+         ):
+-            self.rejects(path, function, "self.context.legacy()?")
++            marker = {
++                "readiness_response": "request.require_profile(&self.context, self.binding, request_id)?",
++                "read_original_readiness": "self.context.decision()?",
++            }.get(function, "self.context.legacy()?")
++            self.rejects(path, function, marker)
+             self.rejects_unused_body(path, function)
+         for marker in ("LearningIterationObservationV1::TrainingNoUpdateV2(_)", "(3, Some(LearningIterationStageV1::Selection), None)", "(4, Some(LearningIterationStageV1::NextUse), Some(_))"):
+             self.rejects(WIRE, "mode", marker)
+@@ -273,6 +287,11 @@
+             ("require_request", "return request.require_context(context, binding, request_id);"),
+         ):
+             self.rejects(PROFILE, function, marker)
++        readiness_client = AGENT + "circuit_learning_completion_readiness.rs"
++        self.rejects(readiness_client, "require_profile",
++                     "self.require_context(legacy, binding, request_id)")
++        self.rejects(readiness_client, "require_profile",
++                     "ReadProfile::TrainingNoUpdate(legacy)", "ReadProfile::Evaluated(legacy)")
+ 
+     def test_actual_source_and_cell_surround_each_read_and_five_cut_c_result(self):
+         for function, markers in (
+--- a/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py
++++ b/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py
+@@ -222,6 +222,8 @@
+             self.verifies(path, source)
+             with self.assertRaises(PROOF.VerificationFailure):
+                 self.verifies(path, source + "\n" + body + "\n")
++        self.rejects(CORE, "fn execute_stage<'a>", "retained::is_evaluated_no_update(snapshot)")
++        self.rejects(CORE, "fn execute_stage<'a>", "self.execute_evaluated_retained_stage(snapshot, stage).await")
+ 
+ 
+ if __name__ == "__main__":
+--- a/qa/b4-no-bypass/test_original_next_use_command_source_closure.py
++++ b/qa/b4-no-bypass/test_original_next_use_command_source_closure.py
+@@ -20,6 +20,7 @@
+ sys.modules[SPEC.name] = PROOF
+ SPEC.loader.exec_module(PROOF)
+ AGENT = "codex-rs/hepta-agentd/src/"
++EVALUATED_SERVICE = AGENT + "circuit_evaluated_next_use_command_service.rs"
+ MAIN = AGENT + "circuit_next_use_command.rs"
+ WIRE = AGENT + "circuit_next_use_command_wire.rs"
+ SERVICE = AGENT + "circuit_next_use_command_service.rs"
+@@ -156,23 +157,29 @@
+                      "OriginalCircuitNextUseCommandClientV1::readback(self).await?")
+ 
+     def test_attestation_and_readback_use_live_original_owners_without_running_c(self):
+-        self.rejects(SERVICE, "fn original_response(",
++        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
+                      "OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion(")
+-        self.rejects(SERVICE, "fn original_response(",
++        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
+                      "OriginalCircuitNextUseReceiptOwnerV1::readback_remote(")
+-        self.rejects(SERVICE, "fn original_response(", "selector: &self.selector")
++        self.rejects(EVALUATED_SERVICE, "fn observe_original(", "selector: &self.selector")
+         self.rejects(SERVICE, "fn serve_commands(", "tokio::task::spawn_blocking(")
+         self.rejects(SERVICE, "fn serve_evidence_readback(",
+                      "timeout > Duration::from_millis(500)")
+         self.rejects(SERVICE, "fn command_response(", "let current = now()?")
+         self.rejects(SERVICE, "fn command_response(", "require_clock(started_at, current)?")
+         self.rejects(EVIDENCE, "fn evidence_response(",
+-                     "OriginalCircuitNextUseReceiptOwnerV1::readback_remote(")
++                     "self.observe_original(original, wire::Action::Readback)?")
+         self.rejects(EVIDENCE, "fn evidence_response(",
+                      "wire::authenticate_receipt(&self.context, receipt, signed, current)?")
+         self.rejects(EVIDENCE, "fn evidence_response(",
+                      "request.receipt_digest != original.attestation.payload_digest.to_string()")
+         self.rejects(EVIDENCE, "fn evidence_response(", "require_clock(started_at, current)?")
++        self.rejects(SERVICE, "fn original_response(", "self.observe_original(")
++        self.rejects(SERVICE, "fn original_response(", "wire::Action::Execute", "wire::Action::Readback")
++        self.rejects(EVIDENCE, "fn evidence_response(", "wire::Action::Readback", "wire::Action::Execute")
++        for marker in ("OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(",
++                       "OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion("):
++            self.rejects(EVALUATED_SERVICE, "fn observe_original(", marker)
+ 
+     def test_response_requires_actual_retained_c_with_new_run_and_original_roles(self):
+         for function, marker in (
+--- a/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
++++ b/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
+@@ -209,7 +209,8 @@
+                 "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+                 "dataset, material",
+             ):
+-                self.rejects(path, "fn bind_original_stage_channel(", marker)
++                function = "fn bind_profile(" if path == READINESS else "fn bind_original_stage_channel("
++                self.rejects(path, function, marker)
+             for addition in (
+                 "fn reopen() { original_owner_command_channel_v1(); }",
+                 "fn reopen() { HostAuthorityPeerChannel::from_stream(); }",
+@@ -227,6 +228,7 @@
+             ("fn ensure_readiness(", "self\n                .readiness_initial\n                .take()"),
+         ):
+             self.rejects(STATE, function, marker)
++        self.rejects(READINESS, "fn bind_original_stage_channel(", "ReadProfile::TrainingNoUpdate(context)")
+ 
+     def test_readiness_only_original_unresolved_publication_remains_pending(self):
+         for marker in (
+@@ -242,28 +244,30 @@
+             self.rejects(READINESS_OWNER, "fn read_original_readiness(", marker)
+         self.rejects(READINESS_OWNER, "fn serve_readiness_channel(", "for request_id in 1..=128")
+         self.rejects(READINESS_OWNER, "fn readiness_response(", "bytes.is_empty() || bytes.len() > 16_384")
+-        self.rejects(READINESS, "fn bind_original_stage_channel(", "original::context_binding(&context, started_at)?")
++        self.rejects(READINESS, "fn bind_profile(", "context.binding(started_at)?")
++        self.rejects(READINESS, "fn bind_original_stage_channel(", "ReadProfile::TrainingNoUpdate(context)")
+ 
+     def test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity(self):
+         for marker in (
+             ".take()\n            .ok_or(Error::Unavailable)?",
+             "!(1..=128).contains(&channel.next_request_id)",
+             "channel.peer.request(&bytes)?",
+-            "response\n            .request\n            .require_context(",
++            "response\n            .request\n            .require_profile(",
+             "channel.peer.check_peer_lifetime()?",
+             "let fresh = now()?",
+-            "fresh < started_at || original::context_binding(&self.context, fresh)? != self.binding",
++            "fresh < started_at || self.context.binding(fresh)? != self.binding",
+             "retained\n                .as_ref()\n                .is_some_and(|prior| current.as_ref() != Some(prior))",
+             "*retained = Some(ready.clone())",
+         ):
+             self.rejects(READINESS, "fn read_current(", marker)
+         self.rejects(READINESS, "fn require_context(", "self.purpose != PURPOSE")
+         for marker in (
+-            "request.require_context(self.context.legacy()?, self.binding, request_id)?",
++            "request.require_profile(&self.context, self.binding, request_id)?",
+             "self.read_original_readiness()?",
+-            "fresh < started_at\n            || wire::context_binding(self.context.legacy()?, fresh)? != self.binding",
++            "fresh < started_at || self.context.binding(fresh)? != self.binding",
+         ):
+             self.rejects(READINESS_OWNER, "fn readiness_response(", marker)
++        self.rejects(READINESS, "fn require_profile(", "self.require_context(legacy, binding, request_id)")
+ 
+     def test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added(self):
+         self.rejects(CORE, "fn prepare_proposal<'a>", "Err(Error::OwnerUnavailable(")
+--- a/qa/b4-no-bypass/test_original_selection_readback_source_closure.py
++++ b/qa/b4-no-bypass/test_original_selection_readback_source_closure.py
+@@ -20,6 +20,7 @@
+ sys.modules[SPEC.name] = PROOF
+ SPEC.loader.exec_module(PROOF)
+ AGENT = "codex-rs/hepta-agentd/src/"
++EVALUATED_SERVICE = AGENT + "circuit_evaluated_selection_command_service.rs"
+ CLIENT = AGENT + "circuit_selection_command_readback.rs"
+ SERVICE = AGENT + "circuit_selection_command_readback_service.rs"
+ EVALUATED = AGENT + "circuit_evaluated_selection_readback_owner.rs"
+@@ -80,7 +81,7 @@
+     "learning_original_owner_command_channel": (EVALUATED, CLIENT, SERVICE),
+     "learning_original_material_initial_context_check": (CLIENT,),
+     "learning_original_material_dataset_context_check": (CLIENT,),
+-    "learning_original_circuit_selection_remote_readback": (SERVICE,),
++    "learning_original_circuit_selection_remote_readback": (EVALUATED_SERVICE,),
+ }
+ 
+ 
+@@ -107,12 +108,17 @@
+             with self.assertRaises(PROOF.VerificationFailure):
+                 PROOF._verify_protected_files(root, {"protected_file": rows})
+ 
+-    def mutate(self, path, function, marker, replacement=""):
++    def mutate(self, path, function, marker, replacement="", branch=None):
+         original = (ROOT / path).read_text()
+         code = PROOF._strip_rust_non_code(original)
+         start = code.index(function)
+         end = PROOF._rust_item_end(code, start)
+         self.assertIsNotNone(end)
++        if branch is not None:
++            self.assertEqual(code[start:end + 1].count(branch), 1)
++            start = code.index(branch, start, end + 1)
++            end = PROOF._rust_item_end(code, start)
++            self.assertIsNotNone(end)
+         body = original[start:end + 1]
+         self.assertEqual(body.count(marker), 1, (path, function, marker))
+         changed = body.replace(marker, replacement, 1)
+@@ -227,13 +233,17 @@
+         )
+         for marker in checks:
+             with self.subTest(marker=marker):
+-                self.mutate(CLIENT, "fn bind_original_selection(", marker)
+-        self.mutate(
+-            CLIENT, "fn bind_original_selection(",
++                function = ("fn bind_original_selection(" if marker in checks[:3]
++                            else "fn finish_binding(")
++                self.mutate(CLIENT, function, marker)
++        self.mutate(
++            CLIENT, "fn finish_binding(",
+             "if verified != selection || context_binding(&context, verified_at)? != binding",
+             "if verified == selection && context_binding(&context, verified_at)? == binding",
+         )
+         self.mutate(CLIENT, "fn context_binding(", "context.binding(current)?.as_array()")
++        self.mutate(CLIENT, "fn bind_original_selection(",
++                    "self.finish_binding(dataset, selection, context, started_at)")
+ 
+     def test_wire_purpose_action_sequence_and_original_context_cannot_change(self):
+         original = (ROOT / CLIENT).read_text()
+@@ -243,10 +253,10 @@
+             CLIENT, original.replace(purpose, '"runtime.learning.original-circuit-selection.command.v1"', 1)
+         )
+         self.mutate(CLIENT, "fn request(", "wire::Action::Readback", "wire::Action::Execute")
+-        self.mutate(CLIENT, "fn request(", "request.operation = OPERATION.into();")
++        self.mutate(CLIENT, "fn request(", "request.operation = operation(context).into();")
+         checks = (
+             "observed.schema != expected.schema",
+-            "observed.operation != OPERATION",
++            "observed.operation != operation(context)",
+             "observed.request_id != request_id",
+             "!(1..=128).contains(&request_id)",
+             "observed.binding != expected.binding",
+@@ -260,6 +270,8 @@
+             with self.subTest(marker=marker):
+                 replacement = marker.replace("!=", "==") if "!=" in marker else marker.replace("!", "", 1)
+                 self.mutate(CLIENT, "fn require_request(", marker, replacement)
++        self.mutate(CLIENT, "fn operation(", "None => OPERATION")
++        self.mutate(CLIENT, "fn operation(", "Some(_)")
+ 
+     def test_service_checks_read_only_request_before_the_same_original_owner(self):
+         guard = "readonly::require_request(&request, &self.context, request_id, now()?)?;"
+@@ -273,18 +285,24 @@
+         checks = (
+             "let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;",
+             "let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;",
+-            "snapshot: &self.context.training,",
+-            "live: &self.live,",
+-            "trainer: &self.trainer,",
+         )
+         for marker in checks:
+             with self.subTest(marker=marker):
+                 self.mutate(SERVICE, "fn original_selection_readback_response(", marker)
+         self.mutate(
+-            SERVICE, "fn original_selection_readback_response(",
++            EVALUATED_SERVICE, "fn observe_original(",
+             "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(",
+             "OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(",
+-        )
++            branch="OriginalPredecessors::Legacy(trainer) => {",
++        )
++        for marker in ("snapshot: &self.context.training,", "live: &self.live,", "trainer,"):
++            with self.subTest(original_predecessor=marker):
++                self.mutate(EVALUATED_SERVICE, "fn observe_original(", marker,
++                            branch="OriginalPredecessors::Legacy(trainer) => {")
++        self.mutate(SERVICE, "fn original_selection_readback_response(",
++                    "self.observe_original(original, wire::Action::Readback)")
++        self.mutate(SERVICE, "fn original_selection_readback_response(",
++                    "wire::Action::Readback", "wire::Action::Execute")
+ 
+     def test_client_requires_fresh_complete_original_evidence_before_restoring_peer(self):
+         checks = (
+--- a/qa/b4-no-bypass/test_original_selector_command_source_closure.py
++++ b/qa/b4-no-bypass/test_original_selector_command_source_closure.py
+@@ -21,6 +21,7 @@
+ sys.modules[SPEC.name] = PROOF
+ SPEC.loader.exec_module(PROOF)
+ AGENT = "codex-rs/hepta-agentd/src/"
++EVALUATED_SERVICE = AGENT + "circuit_evaluated_selection_command_service.rs"
+ MAIN = AGENT + "circuit_selection_command.rs"
+ WIRE = AGENT + "circuit_selection_command_wire.rs"
+ SERVICE = AGENT + "circuit_selection_command_service.rs"
+@@ -151,19 +152,25 @@
+                      "OriginalCircuitSelectionCommandClientV1::readback(self).await?")
+ 
+     def test_command_and_readback_keep_actual_owner_and_original_transport_bounds(self):
+-        self.rejects(SERVICE, "fn original_response(",
++        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
+                      "OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(")
+-        self.rejects(SERVICE, "fn original_response(",
++        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
+                      "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(")
+         self.rejects(SERVICE, "fn serve_commands(", "tokio::task::spawn_blocking(")
+         self.rejects(SERVICE, "fn serve_evidence_readback(",
+                      "timeout > Duration::from_millis(500)")
+         self.rejects(EVIDENCE, "fn evidence_response(",
+-                     "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(")
++                     "self.observe_original(original, wire::Action::Readback)?")
+         self.rejects(EVIDENCE, "fn evidence_response(",
+                      "wire::authenticate_receipt(&self.context, receipt, signed, now()?)?")
+         self.rejects(EVIDENCE, "fn evidence_response(",
+                      "request.receipt_digest != original.attestation.payload_digest.to_string()")
++        self.rejects(SERVICE, "fn original_response(", "self.observe_original(")
++        self.rejects(SERVICE, "fn original_response(", "wire::Action::Execute", "wire::Action::Readback")
++        self.rejects(EVIDENCE, "fn evidence_response(", "wire::Action::Readback", "wire::Action::Execute")
++        for marker in ("OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection(",
++                       "OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection("):
++            self.rejects(EVALUATED_SERVICE, "fn observe_original(", marker)
+ 
+     def test_response_verifies_exact_extension_baseline_and_independent_original_roles(self):
+         for function, marker in (
+--- a/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py
++++ b/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py
+@@ -164,6 +164,8 @@
+         ):
+             self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
+         self.rejects(AUTH, "fn verify_non_model_attestations(", "snapshot.training_no_update_v2().is_none()")
++        self.rejects(STAGES, "fn require_stage(",
++                     "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(")
+ 
+ 
+ if __name__ == "__main__":
+--- a/qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py
++++ b/qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py
+@@ -206,7 +206,7 @@
+         self.rejects(STAGES, "fn require_stage(",
+                      "matches!(self, Self::Candidate(_))\n                    && snapshot.training_no_update_v2().is_none()")
+         self.rejects(CANDIDATE, "fn execute_stage<'a>",
+-                     "matches!(stage, Stage::Selection | Stage::NextUse)")
++                     "if matches!(stage, Stage::Selection | Stage::NextUse)\n                    && snapshot.training_no_update_v2().is_none()")
+         self.rejects(CANDIDATE, "fn execute_stage<'a>",
+                      "snapshot.training_no_update_v2().is_none()")
+         boundaries = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
+@@ -217,6 +217,10 @@
+         ):
+             self.assertEqual(boundaries[identifier].product_callers, ())
+         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
++        self.rejects(STAGES, "fn require_stage(",
++                     "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(")
++        self.rejects(CANDIDATE, "fn execute_stage<'a>",
++                     "self.execute_evaluated_retained_stage(snapshot, stage).await")
+ 
+ 
+ if __name__ == "__main__":
+--- a/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py
++++ b/qa/b4-no-bypass/test_retained_version_issuer_source_closure.py
+@@ -21,6 +21,8 @@
+ sys.modules[SPEC.name] = PROOF
+ SPEC.loader.exec_module(PROOF)
+ AGENT = "codex-rs/hepta-agentd/src/"
++VERSION_STATE = AGENT + "circuit_retained_version_state.rs"
++PREPARED = AGENT + "circuit_retained_version_prepared.rs"
+ WRAPPER = AGENT + "root_retained_version_issuer.rs"
+ WORKER = AGENT + "circuit_retained_version_issuer.rs"
+ HOST = AGENT + "circuit_retained_version_host.rs"
+@@ -103,6 +105,9 @@
+         ))
+         self.reject_each(HOST, "from_original_owners", (
+             "final_use_issuer: AgentdUnixFinalUseGrantProvider",
++            "Self::from_original_profile(", "InitialVersionEvidence::TrainingNoUpdate",
++        ))
++        self.reject_each(HOST, "from_original_profile", (
+             "task.require_completed_a(&inputs.completed)?",
+             "RetainedVersionArtifactOwnerV1::new(",
+             "AgentdUnixFinalUseGrantProvider::into_original_retained_version_issuer(",
+@@ -151,7 +156,7 @@
+         self.rejects(WORKER, "require_not_cancelled", "cancelled.load(Ordering::Acquire)")
+ 
+     def test_cold_and_unknown_never_reset_the_original_issuer(self):
+-        self.reject_each(HOST, "recover_from_original_owners", (
++        self.reject_each(HOST, "recover_original_profile", (
+             "RetainedVersionOriginV1::Recovered", "final_use_issuer: None",
+         ))
+         self.reject_each(HOST, "new", (
+@@ -167,6 +172,9 @@
+         ):
+             with self.subTest(injected=injected):
+                 self.rejects_source(WORKER, source + "\nfn unsafe_reset() { " + injected + " }\n")
++        self.reject_each(HOST, "recover_from_original_owners", (
++            "Self::recover_original_profile(", "InitialVersionEvidence::TrainingNoUpdate",
++        ))
+ 
+     def test_publication_and_c_runtime_keep_the_original_verifier_tail(self):
+         self.reject_each(EFFECT, "publish_original_final_use", (
+@@ -174,7 +182,7 @@
+             "state.final_use_issuer.is_some()",
+             "signed.grant.binding != original.final_use_binding()",
+             "self.publication_requested.swap(true, Ordering::AcqRel)",
+-            "publish_and_retain_original_trainer(", "task\n                .install_original(published, cut, intent)",
++            ".block_on((*original).publish(signed))", "task\n                .install_original(published, cut, intent)",
+             "self.final_use_outcome.store(\n                RetainedVersionFinalUseOutcomeV1::Published as u8,\n                Ordering::Release,\n            )",
+         ))
+         self.reject_each(EFFECT, "run_original_c", (
+@@ -187,15 +195,24 @@
+             "pub(super) async fn publish_original_final_use(",
+             "pub async fn publish_original_final_use(", 1,
+         ))
++        self.reject_each(PREPARED, "publish", (
++            "PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(",
++            "PreparedOriginalCircuitEvaluatedRetentionV1::publish_and_retain_original_evidence(",
++            "Ok((task, trainer, None))", "Ok((task, trainer, Some(evaluator)))",
++        ))
+ 
+     def test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback(self):
+         self.rejects(SERVICE, "serve_original_ordinary",
+                      "OriginalCircuitRetainedVersionHostV1::serve_original_final_use(")
+         self.reject_each(SERVICE, "command_response", (
+-            "self.read_original(&state)", "self.original_final_use_outcome()",
++            "self.read_original_recovery(&mut state)", "self.original_final_use_outcome()",
+             "RetainedVersionFinalUseOutcomeV1::Denied", "wire::OriginalResult::FinalUseDenied",
+             "RetainedVersionFinalUseOutcomeV1::Requested",
+             "RetainedVersionFinalUseOutcomeV1::Uncertain",
++        ))
++        self.reject_each(VERSION_STATE, "read_original_recovery", (
++            "let before = self.read_original(state)?;",
++            "let after = self.read_original(state)?;",
+         ))
+ 
+     def test_no_new_key_policy_socket_or_resident_grant_authorizes_publication(self):

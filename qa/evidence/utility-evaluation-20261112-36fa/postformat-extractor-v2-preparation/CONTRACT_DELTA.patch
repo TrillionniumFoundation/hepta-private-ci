@@ -1,0 +1,29 @@
+--- approved-v1-contract.json
++++ WAITING_CONTRACT_V2.json
+@@ -76,7 +76,7 @@
+     "git_blob_sha": "1563de8825fc183d345d10d03e68d79b2d9211ca",
+     "sha256": "3f28f2ea4b78a0b3faa41024bd1664c2201ad21cb3c3f3465cb40192b034f58f"
+   },
+-  "extractor_sha256": "faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb",
++  "extractor_sha256": "58ee30837ea213dfbf49568b5c555e59e540e7244a6d2645d4ab955d69b1bbd5",
+   "formatted_source_pins": {
+     "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs": {
+       "bytes": 6290,
+@@ -629,8 +629,8 @@
+     "rust_tests": "not_run",
+     "source_closure": "not_run"
+   },
+-  "root_review_blob": "98a0c5c64e308f7b2c7e2369783dafe79f21aae4",
+-  "run_identity": "hepta-utility-36fa-postformat-fence-proposals-v5-v1",
++  "root_review_blob": null,
++  "run_identity": "hepta-utility-36fa-postformat-fence-proposals-v5-v2",
+   "schema": "hepta.utility.postformat-fence-contract.v1",
+   "source_identity": {
+     "head": "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+@@ -644,5 +644,5 @@
+     "published": false,
+     "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+   },
+-  "status": "root_reviewed_actual_native_formatted_source"
++  "status": "WAITING_ROOT_REVIEW_ACTUAL_FORMAT_PREFIX_V2"
+ }

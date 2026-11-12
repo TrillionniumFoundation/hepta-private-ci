@@ -1,0 +1,78 @@
+{
+  "actual_input_approval_blob": "98a0c5c64e308f7b2c7e2369783dafe79f21aae4",
+  "all_three_supplied_inputs_verified": true,
+  "bootstrap": {
+    "bytes": 9492,
+    "git_blob": "ef335fe27291492f29cdb69c70bb85ce19cf9bab",
+    "sha256": "45fdf50ce42fd1980055a0fcbcac8494385e077f58b25bc39159ef272c2b932c"
+  },
+  "budget_scope": "New read-only proposal extraction, no change to maintenance or qualification gate budgets.",
+  "create_only_and_failed_partials_retained": true,
+  "dispatch_rule": "Use exactly the frozen seven-field request once. If original callback is lost, reconcile only with identical request/key; do not start a new attempt or rewrite an outcome.",
+  "exact_existing_source_lock": {
+    "device": 2050,
+    "inode": 50139448,
+    "mode": 384,
+    "nlink": 1,
+    "uid": 1000
+  },
+  "executor": "native_ci_audit only",
+  "format": "hepta-root-exact-f868-launch-review-v1",
+  "full_source_capture_review_blob": "360fbd83861c31e4c219ccfa3aba25d4d005b29c",
+  "idempotency_key": "hepta-utility-36fa-postformat-fence-proposals-v5-v1",
+  "new_control_root": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/postformat-fence-proposals-v5-v1",
+  "original_extractor_unchanged": true,
+  "outer_seconds": 600,
+  "pinned_files": {
+    "CONTRACT_ROOT_REVIEWED.json": {
+      "bytes": 34904,
+      "git_blob": "a8797749da150f68d15f17028d6d0d7d43677047",
+      "sha256": "3a38750c67485b73cea29e7e2bfd81fc975616c6e75e86c96fcba533315f5fcd"
+    },
+    "FENCE_MATRIX.original.json": {
+      "bytes": 124054,
+      "git_blob": "ffaabdbd254bea8e3d45572c1e8e961625ee5119",
+      "sha256": "9e83fffb854297f7e70f1b72e9f594c2159c4b81955b64ac2eaeeab669b2eb2d"
+    },
+    "STRUCTURAL_CALLERS.original.toml": {
+      "bytes": 1294564,
+      "git_blob": "50eee584787ed0706ef2f900a09f1ca9d9cd8819",
+      "sha256": "8610f25a4d8ace133d07894f35c6bf5c5bdba0a4fb77bd7056ec24b5d2a302da"
+    },
+    "extractor.py": {
+      "bytes": 23468,
+      "git_blob": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+      "sha256": "faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb"
+    },
+    "inventory-driver-v2.py": {
+      "bytes": 22946,
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    }
+  },
+  "qualification": false,
+  "reviewed_at": "2026-11-12T21:10:17.531485+00:00",
+  "source_writes": false,
+  "status": "APPROVED_ONE_READONLY_F868_EXTRACTION",
+  "stdin": {
+    "bytes": 243421,
+    "git_blob": "6227ea3b0f9769ec6ddad0e4676ba82902aeece3",
+    "sha256": "36062a18f93e236eb86a8f8ba7ddd1ba0ce26abb83a576db9bfd96aeec42f333"
+  },
+  "tests": 0,
+  "two_existing_inputs": "Actual working CALLERS and original inventory driver read stably under the exact inherited shared lock, full pinned bytes verified then copied into fresh external controls. Index bytes are not substituted.",
+  "typed_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "typed_input": {
+    "bytes": 253354,
+    "git_blob": "4c13743afd65df0614fe839ed1657975a4c3a08a",
+    "sha256": "157b5b80f5925e3826717a26ac5c1cccea91564ba4cbd8ccdeea89a652174bc1"
+  }
+}

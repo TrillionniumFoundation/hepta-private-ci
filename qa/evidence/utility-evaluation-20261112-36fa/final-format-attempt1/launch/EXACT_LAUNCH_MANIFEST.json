@@ -1,0 +1,65 @@
+{
+  "H_called": false,
+  "changes_to_template": "Only the two None pins are replaced with exact reviewed raw identities; all executable statements are unchanged.",
+  "compressed_packet": {
+    "bytes": 479019,
+    "git_blob": "98f5978157ac980d64c1186b81ee39a81ce38330",
+    "sha256": "d1edc3a26cedb246c528877067625a3d0f9e351e68cb207bd2aa270e1b3312b0"
+  },
+  "expected_physical_tree_after_apply": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087",
+  "format": "hepta-final-nonrust-format-exact-launch-v1",
+  "four_original_input_pins": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2479,
+      "git_blob": "6255bd067ebff2e4ca0cf890e791266645a38338",
+      "sha256": "726a8ba07e1950643aca8a09b67becb98ddc142dc1151b303227e0f0765b2b24"
+    },
+    "CAPTURE_NORMAL.original.json": {
+      "bytes": 909,
+      "git_blob": "8146d2ad99259a1965038f01dd3f8f186cd3e5a0",
+      "sha256": "1ad13e624fa88b3509d5519c26335c92449d803ff775f8f14068d65dbbfb106e"
+    },
+    "NONRUST_PACKET.json": {
+      "bytes": 2442538,
+      "git_blob": "5aa96020a8701f6e12b93c6a214964f61b69224f",
+      "sha256": "d1c1151be959db7917832a1573a3ab2b3fd04f0840740806c20fed9743b86441"
+    },
+    "driver.py": {
+      "bytes": 22679,
+      "git_blob": "080753bf6fa5070c0f71096ace0cf199762ee42c",
+      "sha256": "dd5c81cdbfd7f53346304d0d36164b5d7ac753daa854c6dbff0d7e554788dccc"
+    }
+  },
+  "inner_formatter_seconds": 900,
+  "key": "hepta-utility-36fa-final-nonrust-fmt-v1",
+  "outer_seconds": 2100,
+  "records": {
+    "ACTUAL_BOOTSTRAP.py": {
+      "bytes": 5720,
+      "git_blob": "a7d3768678bcdf7d51e21b38fca96eac2705abd7",
+      "sha256": "6499a567f32b0bd5c7c598cbb8c101826d0ba2ba6a0ff8122da2bf698eab0060"
+    },
+    "ACTUAL_PROCESS_INPUT.json": {
+      "bytes": 679696,
+      "git_blob": "8bdc74ba9b6c7e009b478c21c87b6d546821797a",
+      "sha256": "3b625edabb3dbce4a57a79776a617bb76acb46dc5aaf4bac238bef68281919a3"
+    },
+    "ACTUAL_STDIN.json": {
+      "bytes": 673615,
+      "git_blob": "4e208dbc01db65103137918e42ef5b80247281fd",
+      "sha256": "7207549f1da76b5942cd74c36ac3c0adec70c901bc66e44fea0ace9c14a80e62"
+    },
+    "APPROVED_CONFIG.original.json": {
+      "bytes": 2479,
+      "git_blob": "6255bd067ebff2e4ca0cf890e791266645a38338",
+      "sha256": "726a8ba07e1950643aca8a09b67becb98ddc142dc1151b303227e0f0765b2b24"
+    }
+  },
+  "source_main_started": false,
+  "source_proposal_version": "v2",
+  "template": {
+    "bytes": 5427,
+    "git_blob": "cc4c7a0ec14643218695b33ce3f01ee28bd0eef9",
+    "sha256": "84269572a7790b4df2a11c86c2e5807ab0cffeae1a1efa15b09355bb7e78215a"
+  }
+}
