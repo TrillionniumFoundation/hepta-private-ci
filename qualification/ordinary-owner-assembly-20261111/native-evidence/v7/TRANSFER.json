@@ -1,0 +1,700 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.original-records-transfer.v1",
+  "generated_at_utc": "2026-11-12 02:38:15 UTC",
+  "status": "complete-original-whole-archive-transferred; secondary-tar-parse-and-separate-log-payload-retrieval-pending",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "remote": {
+    "host": "ai395",
+    "directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112",
+    "read_tool": "h_read_multiple_files",
+    "read_batches": "single file in sequence; at most one batch in flight for this agent",
+    "snapshot_scope": "independent_file; not an atomic multi-file snapshot",
+    "remote_processes_started": false,
+    "remote_files_modified": false
+  },
+  "original_export": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/export.json",
+    "version": "66306:74464702:8597:1794448591227526707:1794448591227526707",
+    "bytes": 8597,
+    "sha256": "79bf39392b719e271413f14bf77cacdb019f5139c0742cf87d8db7366eab978e",
+    "git_blob": "2396211a6aa2eab5d241626305fd4ad25d136d50",
+    "uploaded": true,
+    "original_bytes_preserved": true
+  },
+  "exact_export_request": {
+    "git_blob": "756fa6d7b788651a87d0c702109f1ce0d28ce577",
+    "bytes": 133413,
+    "sha256": "3f3a3a85ad365fbf22bdf5fb9e02994f1fbec47a1ccbeecfa005471279c8fbad",
+    "already_existing_original_blob": true
+  },
+  "archive": {
+    "original_remote_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/original-records.tar.xz",
+    "bytes": 1987064,
+    "sha256": "2a42b2f2980b8c99d5d7b7b102334e2b51d95e29f1343559b67a1ccb42526d96",
+    "git_blob": "ae30082e8132df598c6f1c4b2b66a788bd21ecd3",
+    "upload_encoding": "base64",
+    "github_upload_result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "ae30082e8132df598c6f1c4b2b66a788bd21ecd3"
+      },
+      "isError": false
+    },
+    "bytes_modified": false
+  },
+  "verification_layers": {
+    "original_native_exporter": {
+      "status": "verified-original-record-export",
+      "claimed_members": 174,
+      "claimed_payload_files": 173,
+      "original_manifest_sha256": "2356cbd7b425ec7d2b10ac99981a5ee04230166716ebc0c10679379942f69ed3",
+      "source_before": {
+        "head": "0c896bdf941f4174797ff45378bc7439075c11e4",
+        "status": "",
+        "tree": "fc41816656e41af926c868e6cc327f88e7ae1001"
+      },
+      "source_after": {
+        "head": "0c896bdf941f4174797ff45378bc7439075c11e4",
+        "status": "",
+        "tree": "fc41816656e41af926c868e6cc327f88e7ae1001"
+      },
+      "evidence": "Original export.json and its fixed archive bytes; this transfer does not rerun the exporter."
+    },
+    "independent_v8_whole_and_parts": {
+      "base64_bytes": 2649420,
+      "archive_bytes": 1987064,
+      "sha256": "2a42b2f2980b8c99d5d7b7b102334e2b51d95e29f1343559b67a1ccb42526d96",
+      "git_blob": "ae30082e8132df598c6f1c4b2b66a788bd21ecd3",
+      "helper_git_blob": "e8dc87e68c5241d244088fdad4a3302654b991db",
+      "environment": "pure V8; no local or remote process",
+      "all_56_part_hashes_rechecked": true,
+      "canonical_base64_padding": true,
+      "status": "passed",
+      "strict_base64_alphabet_and_length": true,
+      "expected_size_sha256_git_all_matched": true
+    },
+    "independent_local_tar_parse": {
+      "status": "not_completed",
+      "reason": "Local environment became unavailable before a completion receipt was obtained.",
+      "orchestrator_cell": "g2:868",
+      "cell_wait_terminated": true,
+      "claim_of_tar_member_replay": false,
+      "claim_of_local_junit_reparse": false,
+      "original_archive_unchanged": true
+    }
+  },
+  "part_transfer": {
+    "part_count": 56,
+    "total_base64_bytes": 2649420,
+    "all_h_reported_lengths_sha256_and_stored_versions_checked": true,
+    "parts": [
+      {
+        "index": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-000.txt",
+        "size": 48000,
+        "sha256": "2061efbfc10cbd65a49befbf335d3ff0ab02849a1d2257a03c3bf18028f90761",
+        "version": "66306:74464646:48000:1794448591224570260:1794448591224570260",
+        "eof": true
+      },
+      {
+        "index": 1,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-001.txt",
+        "size": 48000,
+        "sha256": "810d32d87808da926b25bc7aa7dff945d37be2cf4a37235f0542c1fa42ce125b",
+        "version": "66306:74464647:48000:1794448591224632917:1794448591224632917",
+        "eof": true
+      },
+      {
+        "index": 2,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-002.txt",
+        "size": 48000,
+        "sha256": "541bd0b4de0238920ef1ea59917840cbe738b6954f4f5612e0f986bbd90fad98",
+        "version": "66306:74464648:48000:1794448591224658847:1794448591224658847",
+        "eof": true
+      },
+      {
+        "index": 3,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-003.txt",
+        "size": 48000,
+        "sha256": "2f1bb09b353f42d34e0e0bfb660998099bb63071622b4161afa1a40f3d3eb585",
+        "version": "66306:74464649:48000:1794448591224690695:1794448591224690695",
+        "eof": true
+      },
+      {
+        "index": 4,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-004.txt",
+        "size": 48000,
+        "sha256": "e5569ccef5e1e67887da4f3cd6357f44bfe6b2a32cf2cd5f1d3c77a89c1442d2",
+        "version": "66306:74464650:48000:1794448591224711965:1794448591224711965",
+        "eof": true
+      },
+      {
+        "index": 5,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-005.txt",
+        "size": 48000,
+        "sha256": "6a3350a1eb797f08b2f85210427fd7415643510e588571ebf6352a34846316b0",
+        "version": "66306:74464651:48000:1794448591224732144:1794448591224732144",
+        "eof": true
+      },
+      {
+        "index": 6,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-006.txt",
+        "size": 48000,
+        "sha256": "a1d1969081b7738cf8d73405793496553dc52b6e4ca5620c57608b67765f451a",
+        "version": "66306:74464652:48000:1794448591224751743:1794448591224751743",
+        "eof": true
+      },
+      {
+        "index": 7,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-007.txt",
+        "size": 48000,
+        "sha256": "1d0e7644ef1216e527023ea7f5008e75a606e46349e7e70a4534d0a1d0943fe8",
+        "version": "66306:74464653:48000:1794448591224771253:1794448591224771253",
+        "eof": true
+      },
+      {
+        "index": 8,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-008.txt",
+        "size": 48000,
+        "sha256": "97e0473e2e3d2f59884e3ce7dec32acdf9a950ccb933799be8b40cfaf338601c",
+        "version": "66306:74464654:48000:1794448591224799082:1794448591224799082",
+        "eof": true
+      },
+      {
+        "index": 9,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-009.txt",
+        "size": 48000,
+        "sha256": "7d6d31473e24ff703f069d7d095b485679a3888f372ffe26d052329f0ff54121",
+        "version": "66306:74464655:48000:1794448591224816521:1794448591224816521",
+        "eof": true
+      },
+      {
+        "index": 10,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-010.txt",
+        "size": 48000,
+        "sha256": "47d88c1e98bdfc2db23430b0cebd0831c5af7a4daf3bbd98d30f284ba3912fe2",
+        "version": "66306:74464656:48000:1794448591224834440:1794448591224834440",
+        "eof": true
+      },
+      {
+        "index": 11,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-011.txt",
+        "size": 48000,
+        "sha256": "d469785ec8cc87d86e5465f2ca6cf028e5d75c1d750ce8a9b916f80e8e7ee424",
+        "version": "66306:74464657:48000:1794448591224857480:1794448591224857480",
+        "eof": true
+      },
+      {
+        "index": 12,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-012.txt",
+        "size": 48000,
+        "sha256": "1d8edd10a1941aae6866f9eb6cf778dda8c92abf3ed344d0fb7c343db03dcf17",
+        "version": "66306:74464658:48000:1794448591224875339:1794448591224875339",
+        "eof": true
+      },
+      {
+        "index": 13,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-013.txt",
+        "size": 48000,
+        "sha256": "16756a4e9130cdd6857dbac5d95b8b003f3951ad5dc85b820dd8ebcaf2bf4cc2",
+        "version": "66306:74464659:48000:1794448591224903178:1794448591224903178",
+        "eof": true
+      },
+      {
+        "index": 14,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-014.txt",
+        "size": 48000,
+        "sha256": "f9bfe578b6c3587bbfb59468e0ffdbd9d801e7d5955104673987c8cd3fc18447",
+        "version": "66306:74464660:48000:1794448591224923367:1794448591224923367",
+        "eof": true
+      },
+      {
+        "index": 15,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-015.txt",
+        "size": 48000,
+        "sha256": "e5d1a13b56f45d4284001dc2a698b844bbe47f2e2e7675728b34b924b380861c",
+        "version": "66306:74464661:48000:1794448591224942277:1794448591224942277",
+        "eof": true
+      },
+      {
+        "index": 16,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-016.txt",
+        "size": 48000,
+        "sha256": "a59d9c828a5e6816ec179640c27b05e8e7c08b386eb727f7571b5d84cedb8630",
+        "version": "66306:74464662:48000:1794448591224960786:1794448591224960786",
+        "eof": true
+      },
+      {
+        "index": 17,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-017.txt",
+        "size": 48000,
+        "sha256": "96e5af8598dfc5c9741f93c2acdb4694a566f119132c77f5091bef03f120a2ae",
+        "version": "66306:74464663:48000:1794448591224983455:1794448591224983455",
+        "eof": true
+      },
+      {
+        "index": 18,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-018.txt",
+        "size": 48000,
+        "sha256": "938be6310993fffe0846017189eb53567439b68e05023b2bccf46d50c995829b",
+        "version": "66306:74464664:48000:1794448591225010394:1794448591225010394",
+        "eof": true
+      },
+      {
+        "index": 19,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-019.txt",
+        "size": 48000,
+        "sha256": "a60b50a64ad4660082b8e8d18f900283d786254de89a21944e4bbd0afa3b6638",
+        "version": "66306:74464665:48000:1794448591225029954:1794448591225029954",
+        "eof": true
+      },
+      {
+        "index": 20,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-020.txt",
+        "size": 48000,
+        "sha256": "e184798a495309c1aa971b46d40d6142f58132ad6fc246fd6087defdab460dd3",
+        "version": "66306:74464666:48000:1794448591225051013:1794448591225051013",
+        "eof": true
+      },
+      {
+        "index": 21,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-021.txt",
+        "size": 48000,
+        "sha256": "b3d76aa52b1e715bec65b1a71e57abf6513a334181e40a2ff040899e62216e80",
+        "version": "66306:74464667:48000:1794448591225068592:1794448591225068592",
+        "eof": true
+      },
+      {
+        "index": 22,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-022.txt",
+        "size": 48000,
+        "sha256": "ced585e89a763c6f4cae3f21bb030e11cf738b13c489ac3d19ec349c4e36f550",
+        "version": "66306:74464668:48000:1794448591225085562:1794448591225085562",
+        "eof": true
+      },
+      {
+        "index": 23,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-023.txt",
+        "size": 48000,
+        "sha256": "873f7a9cdfdf81177d23555c42dd16f3167a1722a69f86d1402be8dd3a90188f",
+        "version": "66306:74464669:48000:1794448591225109791:1794448591225109791",
+        "eof": true
+      },
+      {
+        "index": 24,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-024.txt",
+        "size": 48000,
+        "sha256": "50ab0dce0a91051e9a1b94589b408ecc956c5a2765a62a63e7ac2870a3f90efa",
+        "version": "66306:74464670:48000:1794448591225127200:1794448591225127200",
+        "eof": true
+      },
+      {
+        "index": 25,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-025.txt",
+        "size": 48000,
+        "sha256": "54f02b76a892fd9be8461150814955e2b157c52c88e1485a96ef3474e5c46850",
+        "version": "66306:74464671:48000:1794448591225144190:1794448591225144190",
+        "eof": true
+      },
+      {
+        "index": 26,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-026.txt",
+        "size": 48000,
+        "sha256": "adff089d61f0725ce723bf1c7ac31bd9d6f6cecb9ca730a4e61fd578a133796a",
+        "version": "66306:74464672:48000:1794448591225161709:1794448591225161709",
+        "eof": true
+      },
+      {
+        "index": 27,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-027.txt",
+        "size": 48000,
+        "sha256": "d9a05e3d3f2dfeb94cf0350a669af24baef171cd56db82ecd17709284f3e9d31",
+        "version": "66306:74464673:48000:1794448591225179938:1794448591225179938",
+        "eof": true
+      },
+      {
+        "index": 28,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-028.txt",
+        "size": 48000,
+        "sha256": "2762d33d4b7a2acc52df27da06621ad400867dea56586886e976cdd1afe4a84b",
+        "version": "66306:74464674:48000:1794448591225206717:1794448591225206717",
+        "eof": true
+      },
+      {
+        "index": 29,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-029.txt",
+        "size": 48000,
+        "sha256": "06da5a1486eb46b422d6c96108cf4e9e7b7a2f3f379a102adddba95c4f064e5d",
+        "version": "66306:74464675:48000:1794448591225230657:1794448591225230657",
+        "eof": true
+      },
+      {
+        "index": 30,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-030.txt",
+        "size": 48000,
+        "sha256": "b148aaa861a018242229014c5393f859845d68cc96eee7d526ab56e2644cc4f2",
+        "version": "66306:74464676:48000:1794448591225250556:1794448591225250556",
+        "eof": true
+      },
+      {
+        "index": 31,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-031.txt",
+        "size": 48000,
+        "sha256": "9d8c828c999d4a872bb21ac0dc4585391148493bf57f192f580be1a0e97fb6b6",
+        "version": "66306:74464677:48000:1794448591225267855:1794448591225267855",
+        "eof": true
+      },
+      {
+        "index": 32,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-032.txt",
+        "size": 48000,
+        "sha256": "5cae5367b07d5db638b93571af7ee83e01ae4a644c23a8ed53cd77ea4d8a53dd",
+        "version": "66306:74464678:48000:1794448591225287455:1794448591225287455",
+        "eof": true
+      },
+      {
+        "index": 33,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-033.txt",
+        "size": 48000,
+        "sha256": "1733748c90f33a9e529248394ed4305a305cab7f151b85f972438a753e9d0295",
+        "version": "66306:74464679:48000:1794448591225313844:1794448591225313844",
+        "eof": true
+      },
+      {
+        "index": 34,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-034.txt",
+        "size": 48000,
+        "sha256": "ccc5cad84980fe11dd240258c83da17016f066453d8cb5e1ce787f982320d8a2",
+        "version": "66306:74464680:48000:1794448591225331483:1794448591225331483",
+        "eof": true
+      },
+      {
+        "index": 35,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-035.txt",
+        "size": 48000,
+        "sha256": "9b6c362cf6f199ad55c3e056ca4a4a6e42e392a45b5125f78ab11e570eb9977e",
+        "version": "66306:74464681:48000:1794448591225349883:1794448591225349883",
+        "eof": true
+      },
+      {
+        "index": 36,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-036.txt",
+        "size": 48000,
+        "sha256": "72dfd2816790b19355fa8506d54fbe32ce2ea28542a2f32f30f04e0d8e27200a",
+        "version": "66306:74464682:48000:1794448591225366842:1794448591225366842",
+        "eof": true
+      },
+      {
+        "index": 37,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-037.txt",
+        "size": 48000,
+        "sha256": "a5043fefbe596f0a95a7021c7d920d760cd1c8b00682ead4037971f65ed8c3b0",
+        "version": "66306:74464683:48000:1794448591225384051:1794448591225384051",
+        "eof": true
+      },
+      {
+        "index": 38,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-038.txt",
+        "size": 48000,
+        "sha256": "3bba343d64038dedad35a69c0123ae274fce5da1e82a0c3c28454cb7b27a5e0c",
+        "version": "66306:74464684:48000:1794448591225413070:1794448591225413070",
+        "eof": true
+      },
+      {
+        "index": 39,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-039.txt",
+        "size": 48000,
+        "sha256": "68507d2353541887c98826248a5c971acb6e92ad771d8e05e638cd35c173cc05",
+        "version": "66306:74464685:48000:1794448591225431370:1794448591225431370",
+        "eof": true
+      },
+      {
+        "index": 40,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-040.txt",
+        "size": 48000,
+        "sha256": "e79bbb175cc9b3821e3d91c5d130b4b43d07de49a20203bd48cbe19668b09f70",
+        "version": "66306:74464686:48000:1794448591225448419:1794448591225448419",
+        "eof": true
+      },
+      {
+        "index": 41,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-041.txt",
+        "size": 48000,
+        "sha256": "846364e5cac3fc27a4444303f52597fd76c621e16b6f3267214d2e4a959a1593",
+        "version": "66306:74464687:48000:1794448591225466948:1794448591225466948",
+        "eof": true
+      },
+      {
+        "index": 42,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-042.txt",
+        "size": 48000,
+        "sha256": "b3aa124110c10ff2b45a55c412016c61d6522a1f67acc4f79c8e8fb9c1cb61b7",
+        "version": "66306:74464688:48000:1794448591225485978:1794448591225485978",
+        "eof": true
+      },
+      {
+        "index": 43,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-043.txt",
+        "size": 48000,
+        "sha256": "49bb3ea4f0781163f9f1ec5193274cde50e71533c27e4b34ec4ecdbae1fcadc5",
+        "version": "66306:74464689:48000:1794448591225515307:1794448591225515307",
+        "eof": true
+      },
+      {
+        "index": 44,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-044.txt",
+        "size": 48000,
+        "sha256": "5310b1110ae2695bda77a3a3bca7e1d2b3fdd0a3be324c27a58ed66271433bde",
+        "version": "66306:74464690:48000:1794448591225536096:1794448591225536096",
+        "eof": true
+      },
+      {
+        "index": 45,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-045.txt",
+        "size": 48000,
+        "sha256": "980af98bbe0af8e33675d19881c55b8cd3036ca6a385e81f4d7a2e320b464353",
+        "version": "66306:74464691:48000:1794448591225559065:1794448591225559065",
+        "eof": true
+      },
+      {
+        "index": 46,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-046.txt",
+        "size": 48000,
+        "sha256": "22dee6ebd71ec65afc1e0fd057b6f6a477417745686e1e9aa2cacaa9af8b1638",
+        "version": "66306:74464692:48000:1794448591225577435:1794448591225577435",
+        "eof": true
+      },
+      {
+        "index": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-047.txt",
+        "size": 48000,
+        "sha256": "84679954bcc664eb8ebe6b302e43ac1d2aeb22e2381976511b0e3bfd0aec68d4",
+        "version": "66306:74464693:48000:1794448591225595504:1794448591225595504",
+        "eof": true
+      },
+      {
+        "index": 48,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-048.txt",
+        "size": 48000,
+        "sha256": "0cd6afb4fb78f97b4d183cdc2398e7b915fa7feeb503381a3a77eedb556a99db",
+        "version": "66306:74464694:48000:1794448591225621193:1794448591225621193",
+        "eof": true
+      },
+      {
+        "index": 49,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-049.txt",
+        "size": 48000,
+        "sha256": "a8349713c534fc1600d5553478de4748467a0270d880f9d9f5d11673bd46ccc5",
+        "version": "66306:74464695:48000:1794448591225640102:1794448591225640102",
+        "eof": true
+      },
+      {
+        "index": 50,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-050.txt",
+        "size": 48000,
+        "sha256": "9815b65d14985e70ff632dd0d9e740bbcab721a1cb52a4e6a6a9934fd25d28de",
+        "version": "66306:74464696:48000:1794448591225659292:1794448591225659292",
+        "eof": true
+      },
+      {
+        "index": 51,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-051.txt",
+        "size": 48000,
+        "sha256": "05cf2c18fbf27341acffe86ad4873a0529464dca381f567b6a765bf7eaba3135",
+        "version": "66306:74464697:48000:1794448591225679361:1794448591225679361",
+        "eof": true
+      },
+      {
+        "index": 52,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-052.txt",
+        "size": 48000,
+        "sha256": "f29cd24deb029741f3f2b2d631dc30809c92640b6e816c672f83aea00aa297f0",
+        "version": "66306:74464698:48000:1794448591225696880:1794448591225696880",
+        "eof": true
+      },
+      {
+        "index": 53,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-053.txt",
+        "size": 48000,
+        "sha256": "45b52d3b311a51df2b9bde8e61812adf41ac9f2636a447ffa5e55ee5d954cd9a",
+        "version": "66306:74464699:48000:1794448591225729259:1794448591225729259",
+        "eof": true
+      },
+      {
+        "index": 54,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-054.txt",
+        "size": 48000,
+        "sha256": "9f742a3ca539327983a4b6ba9303b37d2c9fe8df6cd9ae2cfa098f8799122a32",
+        "version": "66306:74464700:48000:1794448591225748299:1794448591225748299",
+        "eof": true
+      },
+      {
+        "index": 55,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-055.txt",
+        "size": 9420,
+        "sha256": "804eceb572a790bc58c169ffc9b8b26e5810b8b74d03120d6a6625141721017f",
+        "version": "66306:74464701:9420:1794448591225765328:1794448591225765328",
+        "eof": true
+      }
+    ],
+    "transport_read_failures": [
+      {
+        "start": 1,
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-001.txt"
+        ],
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        }
+      },
+      {
+        "start": 2,
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-002.txt"
+        ],
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        }
+      },
+      {
+        "start": 8,
+        "paths": [
+          "/home/qq/af52-learning-local-decision-20261111/ordinary-903-and-0c-root17-original-records-export-v7-20261112/part-008.txt"
+        ],
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        }
+      }
+    ],
+    "transport_failure_count": 3,
+    "all_failed_part_reads_recovered": true
+  },
+  "requested_separate_v5_log": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-0c896bd-root17-diagnostic-v5/records/root.execution.json.e2d887ff3431418381b1611fe75d82b3.log",
+    "bytes": 48616,
+    "sha256": "3bee9168c4b56996a447642c9bf3e35d6b285f2b26664bd07d72f98b0717df40",
+    "status": "original closed read operation completed; immutable payload retrieval and separate upload pending",
+    "exact_read_request": {
+      "idempotency_key": "af52-v7-original-v5-rootlog-read-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-0c896bd-root17-diagnostic-v5/records/root.execution.json.e2d887ff3431418381b1611fe75d82b3.log"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 131072
+        }
+      }
+    },
+    "exact_read_request_git_blob": "a68327e587cb8df43562d07caa19c50e84b5c02d",
+    "start_attempts": [
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.operation_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    ],
+    "operation_admission": {
+      "admission_is_not_dispatch_completion": true,
+      "async_state": "queued",
+      "authenticated_chatgpt_caller_isolation": false,
+      "automatic_retry": false,
+      "credential_metadata_resume": true,
+      "cross_session_resume": true,
+      "delivery_proven": false,
+      "execution_resume_after_restart": false,
+      "idempotency_binding_retained": true,
+      "operation_id": "430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51",
+      "ownership_scope": "authenticated_private_operator_credential",
+      "reused": false,
+      "session_scope": "authenticated_private_operator_credential",
+      "tool_name": "read_multiple_files"
+    },
+    "status_result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "no_new_process_or_native_execution": true,
+    "archive_extraction_claimed": false
+  },
+  "scope": {
+    "new_native_execution": false,
+    "no_source_ref_pr_changes": true,
+    "no_git_push": true,
+    "no_credentials_permissions_or_proxy_changes": true,
+    "original_source_runs_separate": [
+      {
+        "source_sha": "903b6fbae86acff2db2ab0422b9852421d938032",
+        "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f",
+        "original_component_counts_reported_by_root": {
+          "executed": 17,
+          "passed": 15,
+          "failed": 2
+        },
+        "counts_not_locally_reparsed_this_transfer": true
+      },
+      {
+        "source_sha": "0c896bdf941f4174797ff45378bc7439075c11e4",
+        "tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+        "original_component_counts_reported_by_root": {
+          "executed": 17,
+          "passed": 15,
+          "failed": 2
+        },
+        "counts_not_locally_reparsed_this_transfer": true
+      }
+    ],
+    "counts_not_added_across_sources": true,
+    "business_acceptance": false,
+    "ordinary_full_chain_count": 0,
+    "ordinary_positive_adoption_count": 0,
+    "ordinary_no_update_rollback_count": 0,
+    "independent_ordinary_c_accepted": false,
+    "daemon_root_cold_restart_accepted": false
+  }
+}
