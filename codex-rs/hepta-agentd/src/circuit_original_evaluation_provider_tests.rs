@@ -22,9 +22,8 @@ async fn preregistered() -> anyhow::Result<(
     BFixture,
     crate::OriginalCellEvaluationPanelRegistrationV1,
 )> {
-    let preview = support::admission("original-B-profile-preview").await?;
+    let preview = support::admission("positive-source-envelope-request").await?;
     let objective = support::source(&preview, [Q, Q / 4])?.objective_digest;
-    drop(preview);
     let at = now()?;
     let primary = BFixture::new("original-B", objective, at)?;
     let retention = BFixture::new("original-retention", objective, at)?;
@@ -33,7 +32,7 @@ async fn preregistered() -> anyhow::Result<(
         vec![retention.task()?],
     )?;
     let original =
-        PositiveFixture::ready_with_profile(registration.evaluation_profile(), at).await?;
+        PositiveFixture::ready_with_admission(registration.evaluation_profile(), at, preview).await?;
     assert_eq!(
         original.config.decision.request.envelope.objective_digest,
         objective
@@ -343,6 +342,28 @@ async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_
     assert!(runner.run(&mut provider).is_err());
     assert_eq!(provider.releases, 1);
     assert_eq!(runner.bytes(), consumed);
+    original.finish().await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes()
+-> anyhow::Result<()> {
+    let (original, mut primary, _retention, registration) = preregistered().await?;
+    primary
+        .populate(
+            &original,
+            ObservationMode::NonCanonicalOrder,
+            /*changed_candidate_action*/ false,
+        )
+        .await?;
+    let config = primary.config(&original, &registration)?;
+    let source_before = primary.all_source_bytes()?;
+    let mut cohort = CohortAt::read(primary.owners(), config, primary.at)?;
+    let ledger_before = cohort.bytes()?;
+    let manifest = cohort.original.observed_manifest_digest()?;
+    assert_eq!(cohort.current()?, manifest);
+    assert_eq!(cohort.bytes()?, ledger_before);
+    assert_eq!(primary.all_source_bytes()?, source_before);
     original.finish().await
 }
 

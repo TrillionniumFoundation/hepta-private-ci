@@ -318,6 +318,8 @@ mod circuit_cell_ports;
 mod circuit_cell_representation_encoder;
 mod circuit_credit;
 #[cfg(target_os = "linux")]
+mod circuit_experience_intake;
+#[cfg(target_os = "linux")]
 mod circuit_feature_current;
 mod circuit_learning_delivery;
 #[cfg(target_os = "linux")]
@@ -827,6 +829,14 @@ pub use circuit_credit::CircuitCreditErrorV1;
 pub use circuit_credit::CircuitCreditSupportV1;
 pub use circuit_credit::CircuitCreditTargetV1;
 pub use circuit_credit::circuit_learning_run_id_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_experience_intake::OriginalCircuitExperienceErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_experience_intake::OriginalCircuitExperienceReceiptV1;
+#[cfg(target_os = "linux")]
+pub use circuit_experience_intake::OriginalCircuitExperienceRequestV1;
+#[cfg(target_os = "linux")]
+pub use circuit_experience_intake::append_original_circuit_experience_v1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
 #[cfg(target_os = "linux")]

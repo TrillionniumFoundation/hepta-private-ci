@@ -250,12 +250,7 @@ impl crate::OriginalCellEvaluationHostV1 {
             &evaluation,
             signatures,
             fixture.host.as_ref().expect("original Evaluator"),
-            [
-                credentials.experience.clone(),
-                credentials.dataset.clone(),
-                credentials.generator.clone(),
-                credentials.evaluator.clone(),
-            ],
+            credentials.resident_checkpoint_signers(),
         )
         .await?;
         assert_eq!(fixture.original_files()?, original_files);
