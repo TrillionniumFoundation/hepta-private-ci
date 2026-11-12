@@ -207,6 +207,17 @@ impl SigningFilesData {
 }
 
 impl StageFilesData {
+    pub(super) fn require_original_training_capacity(&self) -> Result<(), AgentdError> {
+        // One original header acknowledgement and two actual claim/complete
+        // pairs: Training and the Generator's independent B plan signature.
+        if self.training_receipt.owner.max_records < 5 {
+            return Err(refused(
+                "original Training witness cannot hold the required B plan",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn into_original_inputs(
         self,
         prepared: Arc<crate::CellQ24PreparedLearningV1>,
@@ -214,6 +225,7 @@ impl StageFilesData {
         files: &mut OriginalFiles,
         queue_capacity: usize,
     ) -> Result<crate::OriginalCellQ24LearningInputsV1, AgentdError> {
+        Self::require_original_training_capacity(&self)?;
         prepared.revalidate_source().map_err(refused)?;
         let objective = authorities.verifier.objective_digest();
         // Validate every key, file lifecycle and physical alias before any
