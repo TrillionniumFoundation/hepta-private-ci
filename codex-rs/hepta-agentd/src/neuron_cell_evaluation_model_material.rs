@@ -87,6 +87,31 @@ impl OriginalCellEvaluationModelMaterialV1 {
         Ok(())
     }
 
+    /// Pure transitive window for a new original Selector signature. It is
+    /// derived only after full material verification and never renews evidence.
+    pub(crate) fn original_publication_expiry(&self, current: u64) -> Result<u64, Error> {
+        self.authenticate_current(current)?;
+        let body = codec::Body::decode(&self.bytes)?;
+        let mut expiry = self.context.training_evidence.expires_at
+            .min(self.evaluation.attestation().expires_at);
+        for member in &body.members {
+            for (encoded, role) in [
+                (&member.generator, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Generator),
+                (&member.evaluator, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator),
+                (&member.execution, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator),
+                (&member.freeze, codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator),
+            ] {
+                let (payload, signed) = crate::learning_owner_evidence::decode(encoded)?;
+                let verified = self.context.verifier.verify(role, &signed, &payload, current)?;
+                expiry = expiry.min(signed.expires_at).min(verified.principal().expires_at);
+            }
+        }
+        if expiry <= current {
+            return Err(Error::Binding("original complete panel signature window"));
+        }
+        Ok(expiry)
+    }
+
     pub(crate) fn require_original_model_input(
         &self,
         training: &LearningIterationSnapshotV1,

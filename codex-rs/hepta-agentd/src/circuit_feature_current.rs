@@ -48,6 +48,18 @@ mod retirement;
 
 #[path = "circuit_learning_retained_publication.rs"]
 mod retained_publication;
+
+#[path = "circuit_learning_model_publication.rs"]
+mod model_publication;
+pub use model_publication::OriginalCircuitModelPublicationContextV1;
+pub use model_publication::OriginalCircuitModelPublicationErrorV1;
+pub use model_publication::OriginalCircuitModelPublicationInputsV1;
+pub use model_publication::OriginalCircuitModelPublicationRecoveryV1;
+pub use model_publication::OriginalCircuitModelPublicationSelectionV1;
+pub use model_publication::OriginalCircuitModelPublicationV1;
+pub use model_publication::PreparedOriginalCircuitModelPublicationV1;
+pub use model_publication::prepare_original_circuit_model_publication_v1;
+pub use model_publication::recover_original_circuit_model_publication_v1;
 pub use control::PublishedCircuitFeatureControlV1;
 pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;
