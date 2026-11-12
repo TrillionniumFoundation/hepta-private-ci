@@ -19,6 +19,9 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "cell_q24_local_decision_owner.rs"
 SIGNING = AGENT + "cell_q24_local_decision_signing.rs"
+ROOT_OWNER = AGENT + "cell_q24_local_decision_root.rs"
+ROOT_MODEL = AGENT + "cell_q24_learning_model_root.rs"
+DISPATCH = AGENT + "cell_q24_learning_model_dispatch.rs"
 
 
 class RootLocalDecisionSourceClosureTests(unittest.TestCase):
@@ -32,7 +35,7 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, SIGNING)
+            for path in (OWNER, SIGNING, ROOT_OWNER, ROOT_MODEL, DISPATCH)
         }
 
     def rejects(self, path, function, marker):
@@ -59,7 +62,8 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
         for suffix in ("sign", "prefix", "projection"):
             row = self.boundaries["q24_local_original_private_" + suffix]
             with self.subTest(boundary=row.identifier):
-                self.assertEqual(row.product_callers, (OWNER,) if suffix == "sign" else ())
+                expected = (OWNER, ROOT_OWNER) if suffix == "sign" else (ROOT_OWNER,)
+                self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
                 if suffix == "sign":
                     with self.assertRaises(PROOF.VerificationFailure):
@@ -73,6 +77,39 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
                 )
                 with self.assertRaises(PROOF.VerificationFailure):
                     PROOF._verify_boundary(ROOT, row, extra, ())
+
+    def test_remote_model_and_selector_have_only_real_aggregate_callers(self):
+        expected = {
+            "q24_local_root_attest": (ROOT_MODEL,),
+            "q24_local_root_read": (ROOT_MODEL,),
+            "q24_model_root_dispatch": (DISPATCH,),
+            "q24_model_root_operation": (),
+        }
+        for identifier, callers in expected.items():
+            with self.subTest(boundary=identifier):
+                row = self.boundaries[identifier]
+                self.assertEqual(row.product_callers, callers)
+                PROOF._verify_boundary(ROOT, row, self.sources, ())
+
+    def test_root_decision_keeps_post_read_even_when_journal_fails(self):
+        for function, marker in (
+            ("fn attest_original_root_decision(", "let bytes = self.sign_original_proposal(&proposal, &saved);"),
+            ("fn read_original_root_decision(", "let bytes = self.journal.read(&saved);"),
+            ("fn original_root_proposal(", "self.proposal_prefix(factory, snapshot)?"),
+            ("fn original_root_proposal(", "self.require_original_proposal(prefix, &original)"),
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(ROOT_OWNER, function, marker)
+
+    def test_root_model_keeps_training_and_b_on_same_original_operation(self):
+        for marker in (
+            "OriginalQ24TrainingOperationV1::read_original_training_evidence(original)?",
+            "!snapshot.receipts.starts_with(&evidence.snapshot().receipts)",
+            "snapshot.receipts.get(evidence.snapshot().receipts.len()) != Some(before.receipt())",
+            "!before.same_original_observation(&after)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(ROOT_MODEL, "fn model_root_action_in_operation(", marker)
 
     def test_original_factory_and_exact_prefix_cannot_be_removed(self):
         for function, marker in (
