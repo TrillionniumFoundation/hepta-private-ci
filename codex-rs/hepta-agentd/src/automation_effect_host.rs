@@ -60,6 +60,9 @@ use sha2::Sha256;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "automation_effect_host_context.rs"]
+mod provider_context;
+
 #[path = "automation_effect_host_pon_task_acceptance.rs"]
 mod pon_task_acceptance;
 
@@ -818,6 +821,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     provider_scope: String,
     destination_id: String,
     final_use_scope_digest: Sha256Digest,
+    provider_context_digest: Sha256Digest,
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
     // Serialize refreshes; the existing durable authority owns the only head.
@@ -910,6 +914,13 @@ impl AgentdAutomationEffectHost {
             headers.append(name, value);
         }
 
+        let provider_context_digest = provider_context::digest(
+            "http-v1",
+            &config.provider_scope,
+            &config.destination_id,
+            &declared_contract_digest,
+            &contract_verifying_key,
+        );
         let attestation = HttpProviderEffectContractAttestation::verify_signed(
             config.contract_id.clone(),
             declared_contract_digest,
@@ -963,6 +974,7 @@ impl AgentdAutomationEffectHost {
             provider_scope: config.provider_scope,
             destination_id: config.destination_id,
             final_use_scope_digest,
+            provider_context_digest,
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
@@ -1030,6 +1042,13 @@ impl AgentdAutomationEffectHost {
             &config.contract_verifying_key_hex,
             "contract_verifying_key_hex",
         )?;
+        let provider_context_digest = provider_context::digest(
+            "pon-v2",
+            &config.provider_scope,
+            &config.destination_id,
+            &declared_contract_digest,
+            &contract_verifying_key,
+        );
         HttpProviderEffectContractAttestation::verify_signed(
             config.contract_id.clone(),
             declared_contract_digest,
@@ -1089,6 +1108,7 @@ impl AgentdAutomationEffectHost {
             provider_scope: config.provider_scope,
             destination_id: config.destination_id,
             final_use_scope_digest,
+            provider_context_digest,
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
@@ -1136,6 +1156,7 @@ impl AgentdAutomationEffectHost {
             adapter: self.adapter.clone(),
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
+            provider_context_digest: self.provider_context_digest.clone(),
         };
         store
             .execute_authorized_taskflow_effect(
@@ -1187,7 +1208,10 @@ impl AgentdAutomationEffectHost {
                 AgentdError::Protocol(format!("read settled provider occurrence: {error}"))
             })?
         {
-            let chain = if pending.provider_effect_key.is_some() && pending.wire_payload.is_some() {
+            let chain = if pending.provider_effect_key.is_some()
+                && pending.wire_payload.is_some()
+                && pending.provider_context_digest.as_ref() == Some(&self.provider_context_digest)
+            {
                 let provider_intent = self.provider_intent(&pending)?;
                 self.adapter
                     .current_chain_observation(&provider_intent, pending.wire_payload.as_deref())
@@ -1230,6 +1254,8 @@ impl AgentdAutomationEffectHost {
                 {
                     let chain = if pending.provider_effect_key.is_some()
                         && pending.wire_payload.is_some()
+                        && pending.provider_context_digest.as_ref()
+                            == Some(&self.provider_context_digest)
                     {
                         let provider_intent = self.provider_intent(&pending)?;
                         self.adapter
@@ -1252,7 +1278,10 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(_) => {}
             }
         }
-        if pending.provider_effect_key.is_none() || pending.wire_payload.is_none() {
+        if pending.provider_effect_key.is_none()
+            || pending.wire_payload.is_none()
+            || pending.provider_context_digest.as_ref() != Some(&self.provider_context_digest)
+        {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
         }
         let provider_intent = self.provider_intent(&pending)?;
@@ -1421,6 +1450,11 @@ impl AgentdAutomationEffectHost {
                 "pending effect owner differs from this host".to_string(),
             ));
         }
+        if pending.provider_context_digest.as_ref() != Some(&self.provider_context_digest) {
+            return Err(AgentdError::GenerationFenced(
+                "pending effect requires its original provider transport and contract".to_string(),
+            ));
+        }
         let expected = ProviderEffectKey::for_taskflow_v2(
             &self.provider_scope,
             &self.agent_id,
@@ -1460,9 +1494,14 @@ struct AgentdAuthorizedEffectDriver {
     adapter: AgentdProviderEffectAdapter,
     provider_scope: String,
     destination_id: String,
+    provider_context_digest: Sha256Digest,
 }
 
 impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
+    fn recovery_context_digest(&self) -> Option<Sha256Digest> {
+        Some(self.provider_context_digest.clone())
+    }
+
     fn recovery_key(
         &self,
         owner_agent_id: &codex_hepta_contracts::AgentId,
@@ -1685,6 +1724,10 @@ fn hex_nibble(value: u8) -> Option<u8> {
         _ => None,
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "automation_effect_host_context_tests.rs"]
+mod context_tests;
 
 #[cfg(all(test, unix))]
 #[path = "automation_effect_host_identity_tests.rs"]

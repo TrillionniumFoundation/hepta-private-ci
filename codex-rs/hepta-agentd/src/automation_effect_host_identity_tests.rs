@@ -16,10 +16,15 @@ use wiremock::matchers::path;
 use wiremock::matchers::path_regex;
 
 // Preserve the former product driver's key at the real owner + HTTP boundary.
-// The upgraded host only reads its resulting durable attempt and receipt.
+// Freeze the transport before sending; the legacy key is retained, never
+// retroactively rebound from an old database without transport evidence.
 struct LegacyHttpDriver(AgentdAuthorizedEffectDriver);
 
 impl AuthorizedEffectDriver for LegacyHttpDriver {
+    fn recovery_context_digest(&self) -> Option<Sha256Digest> {
+        self.0.recovery_context_digest()
+    }
+
     fn recovery_key(
         &self,
         _owner_agent_id: &AgentId,
@@ -82,6 +87,7 @@ async fn host_provider_identity_terminal_execute_uses_store_owner_not_shared_sub
             adapter: host.adapter.clone(),
             provider_scope: host.provider_scope.clone(),
             destination_id: host.destination_id.clone(),
+            provider_context_digest: host.provider_context_digest.clone(),
         };
         // The existing generic owner intentionally permits independent caller
         // subjects. Use its real dispatch so the foreign terminal is valid.
@@ -190,6 +196,7 @@ async fn host_provider_identity_legacy_http_queries_original_occurrence_and_reta
         adapter: host.adapter.clone(),
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
+        provider_context_digest: host.provider_context_digest.clone(),
     });
     fixture
         .store
