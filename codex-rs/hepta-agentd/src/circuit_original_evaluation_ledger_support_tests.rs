@@ -4,12 +4,22 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+/// Faults are signed before the original ledger append; no retained row or
+/// signature is edited. They exercise the B consumer's own Source join.
+#[derive(Clone, Copy, Debug)]
+pub(in super::super) enum DecisionBinding {
+    ExactSource,
+    WrongPolicy,
+    WrongPublication,
+}
+
 pub(in super::super) fn decision(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
     episode: &StableId,
     publication: &crate::CircuitTaskSourcePublicationV1,
     at: u64,
+    binding: DecisionBinding,
 ) -> anyhow::Result<()> {
     let input = publication.input();
     let policy = publication.original_policy()?;
@@ -19,7 +29,7 @@ pub(in super::super) fn decision(
         .map(|entry| entry.candidate_id.clone())
         .collect::<Vec<_>>();
     candidates.sort();
-    let value = ProductionDecisionV2 {
+    let mut value = ProductionDecisionV2 {
         record_id: input.scope.run_id.clone(),
         episode_id: episode.clone(),
         run_snapshot_digest: input.ndu_snapshot_digest,
@@ -44,6 +54,20 @@ pub(in super::super) fn decision(
         },
         support_digest: publication.publication_digest(),
     };
+    match binding {
+        DecisionBinding::ExactSource => {}
+        DecisionBinding::WrongPolicy => {
+            value.policy_digest = d("validly-signed-unrelated-B-policy");
+            assert_ne!(
+                value.policy_digest,
+                Digest32::of_bytes(publication.output())
+            );
+        }
+        DecisionBinding::WrongPublication => {
+            value.support_digest = d("validly-signed-unrelated-B-publication");
+            assert_ne!(value.support_digest, publication.publication_digest());
+        }
+    }
     let evidence = sign(
         writer.verifier(),
         &credentials.generator,

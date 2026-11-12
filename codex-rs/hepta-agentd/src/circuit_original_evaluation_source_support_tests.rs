@@ -8,6 +8,7 @@ use crate::circuit_task::source_test_support as source_support;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::FixedQ32;
+use material::evaluation_provider::DecisionBinding;
 use pretty_assertions::assert_eq;
 
 pub(super) enum ObservationMode {
@@ -138,6 +139,22 @@ impl BFixture {
         mode: ObservationMode,
         changed_candidate_action: bool,
     ) -> anyhow::Result<()> {
+        Box::pin(self.populate_with_decision_binding(
+            original,
+            mode,
+            changed_candidate_action,
+            DecisionBinding::ExactSource,
+        ))
+        .await
+    }
+
+    pub(super) async fn populate_with_decision_binding(
+        &mut self,
+        original: &PositiveFixture,
+        mode: ObservationMode,
+        changed_candidate_action: bool,
+        decision_binding: DecisionBinding,
+    ) -> anyhow::Result<()> {
         let baseline = original.config.decision.request.selected_bundle.digest()?;
         let candidate = original.candidate.digest()?;
         let rule = self.rule.clone();
@@ -165,6 +182,7 @@ impl BFixture {
                 &episode.episode_id,
                 &publication,
                 history_at,
+                decision_binding,
             )?;
             let value = [
                 FixedQ32::ONE,
@@ -210,6 +228,7 @@ impl BFixture {
                 &target.episode.episode_id,
                 &publication,
                 rule.candidate_plan.fold.evaluation_start,
+                decision_binding,
             )?;
             let mut candidate_input = input;
             candidate_input.scope.run_id = target.candidate_run_id.clone();

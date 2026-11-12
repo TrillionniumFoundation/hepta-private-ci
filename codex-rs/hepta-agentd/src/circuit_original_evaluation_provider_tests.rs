@@ -387,3 +387,6 @@ async fn original_evaluation_accepts_unsorted_source_policy_without_reordering_i
 
 #[path = "circuit_original_evaluation_panel_tests.rs"]
 mod panel_members;
+
+#[path = "circuit_original_evaluation_decision_binding_tests.rs"]
+mod decision_binding;

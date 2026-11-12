@@ -282,7 +282,7 @@ impl Fixture {
                 MaterialFixtureProfile::CandidatePages => FixedQ32::from_raw(2_i64 << 32),
             }),
             unit_profile_digest: d("explicit-material-unit"),
-            support_digest: publication.publication_digest(),
+            support_digest: d("explicit-terminal-outcome-support"),
             watermark: OutcomeWatermarkV1 {
                 latest_observable_at: at - 8,
                 expected_delay_profile_digest: d("delay"),

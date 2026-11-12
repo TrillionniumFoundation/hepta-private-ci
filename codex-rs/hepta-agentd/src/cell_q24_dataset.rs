@@ -2,9 +2,10 @@
 //! This restricted profile materializes one source run and retains every active
 //! Decision/Outcome/optional Credit source in the original signed Dataset cut.
 //! It produces no signature, training claim, independent evaluation or adoption.
-//! The v2 inclusion policy pins the original input's NDU snapshot and exact
-//! Source policy/publication. Legacy freezes must be separately authorized for
-//! this policy; full-RunStart snapshot records are never reinterpreted as NDU.
+//! The v3 inclusion policy pins the Decision to the input's NDU snapshot and
+//! exact Source policy/publication. Outcome support remains the Observer's
+//! independently signed measurement reference. Legacy freezes need a separate
+//! authorization; full-RunStart records are never reinterpreted as NDU.
 
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -95,7 +96,7 @@ impl CellQ24DatasetRuleV1 {
             CellQ24PrivateHeadV1::Prediction { index } => (2_u8, index),
         };
         Ok(Digest32::of_parts(&[
-            b"hepta.cell.q24.original-dataset.v2\0single-run;HQ24I001;active-authenticated-terminal-outcome;optional-same-outcome-credit-lineage;Q32-exact-divide-256;reject-outside-eight;no-output-label;run-snapshot=source-input-ndu;policy=source-output;support=source-publication;candidate-set=ledger-sorted;policy-order=source-output;deterministic-propensity-one;observed-at-or-after-ceil-source-admission;finalized-at-or-after-window-end",
+            b"hepta.cell.q24.original-dataset.v3\0single-run;HQ24I001;active-authenticated-terminal-outcome;optional-same-outcome-credit-lineage;Q32-exact-divide-256;reject-outside-eight;no-output-label;run-snapshot=source-input-ndu;policy=source-output;decision-support=source-publication;outcome-support=observer-measurement;candidate-set=ledger-sorted;policy-order=source-output;deterministic-propensity-one;observed-at-or-after-ceil-source-admission;finalized-at-or-after-window-end",
             initial.head_digest.as_array(),
             self.unit_profile_digest.as_array(),
             &[tag],
@@ -478,6 +479,9 @@ fn terminal_target(
     };
     // The ledger authenticates the records but does not know this Source.
     // Enforce the join here even when the writer did not use the intake API.
+    // Outcome support is an independently signed measurement reference, not a
+    // second copy of the Decision's Source publication. The immutable ledger
+    // joins it through the same episode; the signed freeze pins the full event.
     // Only a derived set is sorted; the original policy bytes remain intact.
     let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;
     let admitted_at = source
@@ -500,7 +504,7 @@ fn terminal_target(
         || decision.selected_candidate_id != *policy.selected()
         || decision.selected_propensity != ProbabilityQ32::ONE
         || outcome.episode_id != decision.episode_id
-        || outcome.support_digest != source.publication_digest()
+        || outcome.support_digest.is_zero()
         || outcome.unit_profile_digest != unit
         || outcome.terminality != AuthenticatedOutcomeTerminality::Terminal
         || outcome.observed_at.is_none()

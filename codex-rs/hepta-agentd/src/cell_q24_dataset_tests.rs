@@ -171,6 +171,8 @@ fn append_decision(
 }
 
 fn outcome(publication: &CircuitTaskSourcePublicationV1, value: i64) -> AuthenticatedOutcomeV1 {
+    let support_digest = d("original-outcome-support");
+    assert_ne!(support_digest, publication.publication_digest());
     AuthenticatedOutcomeV1 {
         record_id: id("outcome-record"),
         outcome_id: id("outcome"),
@@ -179,7 +181,7 @@ fn outcome(publication: &CircuitTaskSourcePublicationV1, value: i64) -> Authenti
         observed_at: Some(40),
         value: Some(FixedQ32::from_raw(value)),
         unit_profile_digest: d("reward-units"),
-        support_digest: publication.publication_digest(),
+        support_digest,
         watermark: OutcomeWatermarkV1 {
             latest_observable_at: 45,
             expected_delay_profile_digest: d("delay"),

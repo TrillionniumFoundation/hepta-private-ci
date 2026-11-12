@@ -283,6 +283,8 @@ impl<'a> Episode<'a> {
             || input.objective_digest != config.rule.objective_digest
             || decision.objective_digest != config.rule.objective_digest
             || decision.run_snapshot_digest != input.ndu_snapshot_digest
+            || decision.policy_digest != Digest32::of_bytes(source.output())
+            || decision.support_digest != source.publication_digest()
             || decision.selected_candidate_id != *policy.selected()
             || decision.selected_propensity != ProbabilityQ32::ONE
             || decision.candidate_ids != canonical_candidates
@@ -290,6 +292,9 @@ impl<'a> Episode<'a> {
             || decision.authentication_digest.is_zero()
             || decision.support_digest.is_zero()
             || outcome.authentication_digest.is_zero()
+            // The Observer signs its own measurement evidence. The episode
+            // joins that event to the source-bound Decision; its support need
+            // not equal the Source publication or use any particular encoding.
             || outcome.support_digest.is_zero()
             || outcome.terminality != AuthenticatedOutcomeTerminality::Terminal
             || outcome.censoring_reason.is_some()

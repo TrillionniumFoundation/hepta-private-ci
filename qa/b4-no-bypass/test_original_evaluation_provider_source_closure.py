@@ -216,6 +216,20 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
         ):
             self.rejects(RECORDS, "fn read_episode(", marker)
 
+    def test_decision_joins_exact_source_while_outcome_keeps_independent_measurement_support(self):
+        for marker in (
+            "decision.policy_digest != Digest32::of_bytes(source.output())",
+            "decision.support_digest != source.publication_digest()",
+        ):
+            self.rejects(RECORDS, "fn read_episode(", marker)
+            self.rejects(RECORDS, "fn read_episode(", marker, marker.replace(" != ", " == "))
+        marker = "outcome.support_digest.is_zero()"
+        self.rejects(RECORDS, "fn read_episode(", marker)
+        self.rejects(RECORDS, "fn read_episode(", marker, "!" + marker)
+        for operator in ("!=", "=="):
+            wrong = f"outcome.support_digest {operator} source.publication_digest()"
+            self.rejects(RECORDS, "fn read_episode(", marker, wrong)
+
     def test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions(self):
         for marker in (
             "arm.bundle_digest() != bundle", "left.scope.principal_digest != right.scope.principal_digest",

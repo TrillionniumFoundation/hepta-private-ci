@@ -271,7 +271,7 @@ pub(super) fn terminal_outcome_with_value(
         observed_at: Some(at),
         value: Some(value),
         unit_profile_digest: d("explicit-positive-terminal-unit"),
-        support_digest: publication.publication_digest(),
+        support_digest: d("explicit-positive-independent-terminal-label"),
         watermark: OutcomeWatermarkV1 {
             latest_observable_at: at,
             expected_delay_profile_digest: d("explicit-positive-observation-delay"),
