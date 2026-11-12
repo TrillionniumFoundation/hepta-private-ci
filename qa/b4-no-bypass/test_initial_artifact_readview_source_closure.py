@@ -22,7 +22,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 CALLERS = {
-    "root_initial_artifact_authorities": [],
+    "root_initial_artifact_authorities": [AGENT + "production_initial_q24.rs"],
     "root_initial_artifact_revalidate": [
         "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs",
         "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
@@ -76,7 +76,7 @@ class InitialArtifactReadviewClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_closed_callers_are_actual_and_constructor_has_no_product_caller_yet(self):
+    def test_closed_callers_are_actual_with_the_original_main_assembly(self):
         rows = {r["id"]: r for r in self.manifest["boundary"]}
         for identifier, callers in CALLERS.items():
             with self.subTest(boundary=identifier):
