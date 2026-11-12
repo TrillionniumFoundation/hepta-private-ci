@@ -25,7 +25,7 @@ pub(super) enum OpenMode {
 }
 
 impl OpenMode {
-    fn original(self) -> crate::OriginalCellQ24LearningOpenV1 {
+    pub(super) fn original(self) -> crate::OriginalCellQ24LearningOpenV1 {
         match self {
             Self::Create => crate::OriginalCellQ24LearningOpenV1::Create,
             Self::Recover => crate::OriginalCellQ24LearningOpenV1::Recover,
@@ -71,7 +71,7 @@ enum LocalPolicy {
     DeferQualified,
 }
 
-struct OriginalJournal {
+pub(super) struct OriginalJournal {
     journal: File,
     witness: File,
     scope: JournalScope,
@@ -81,7 +81,7 @@ struct OriginalJournal {
 }
 
 impl JournalData {
-    fn open(
+    pub(super) fn open(
         &self,
         files: &mut OriginalFiles,
         objective: Digest32,
@@ -116,7 +116,7 @@ impl JournalData {
 }
 
 impl OriginalJournal {
-    fn open_witness(self) -> Result<(File, FileAnchorWitnessStore), AgentdError> {
+    pub(super) fn open_witness(self) -> Result<(File, FileAnchorWitnessStore), AgentdError> {
         let witness = FileAnchorWitnessStore::open(
             self.witness,
             self.scope,

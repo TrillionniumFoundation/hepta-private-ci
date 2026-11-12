@@ -27,6 +27,8 @@ pub(super) struct Deployment {
     pub(super) freeze: owners::SigningFilesData,
     pub(super) freeze_mode: owners::OpenMode,
     pub(super) stages: owners::StageFilesData,
+    pub(super) delivery: owners::JournalData,
+    pub(super) delivery_mode: owners::OpenMode,
     pub(super) queue_capacity: usize,
 }
 

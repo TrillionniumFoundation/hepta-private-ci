@@ -237,6 +237,7 @@ fn main() -> anyhow::Result<()> {
             match production {
                 Some(launch) => {
                     let (launch, config) = launch.assemble_original_initial_q24(config).await?;
+                    let (launch, config) = launch.assemble_original_post_a_q24(config).await?;
                     launch.run(config, arg0_paths).await?;
                 }
                 None => codex_hepta_agentd::run(config, arg0_paths).await?,
