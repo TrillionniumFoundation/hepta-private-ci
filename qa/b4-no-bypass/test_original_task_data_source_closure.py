@@ -268,6 +268,10 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
     def test_data_and_consumer_modules_cannot_open_files_or_construct_authority(self):
         for path in (DATA, DECISION, TASK):
             for forbidden in ("File::open(path)", "OpenOptions::new()", "std::fs::read(path)",
+                              "use std::fs::File as Alias; Alias::open(path)",
+                              "use tokio::fs as alias; alias::read(path)",
+                              "ReadOnlyLedgerViewV1::open(file)", "CellOwnerJournalReadbackV1::open(file)",
+                              "NeuronGenerationCurrentOwnerV1::new()", "RootDataRefusalV1::create_fresh()",
                               "RootAuthorityDirectory::open(path)", "CellGenerationCurrentV1::new()",
                               "SigningKey::from_bytes(bytes)", "ActivatedLearningTrustV1::new()",
                               "CircuitCommittedTraceV2 {}", "CircuitReceiptV2 {}"):
