@@ -25,6 +25,17 @@ def main():
         cmd.add_argument("--operation", required=True)
         if name == "capture":
             cmd.add_argument("--request", required=True)
+    for name in (
+        "source-capture",
+        "source-read",
+        "source-active",
+        "source-decision-read",
+    ):
+        cmd = commands.add_parser(name)
+        cmd.add_argument("--config", required=True)
+        cmd.add_argument("--operation", required=True)
+        if name not in ("source-read", "source-decision-read"):
+            cmd.add_argument("--request", required=True)
     args = parser.parse_args()
     try:
         if args.command == "smoke":
@@ -36,6 +47,23 @@ def main():
 
             request = load_request(args.request) if args.command == "capture" else None
             result = run_capture(args.config, args.operation, request)
+        elif args.command == "source-decision-read":
+            from .source_entry import read_source_decision
+
+            result = read_source_decision(args.config, args.operation)
+        elif args.command in ("source-capture", "source-read", "source-active"):
+            from .entry import load_request
+            from .source_entry import run_source_capture
+
+            request = (
+                None if args.command == "source-read" else load_request(args.request)
+            )
+            result = run_source_capture(
+                args.config,
+                args.operation,
+                request if args.command == "source-capture" else None,
+                active=request if args.command == "source-active" else None,
+            )
         else:
             from .fixture import write_json
             from .report import build_report
@@ -47,7 +75,7 @@ def main():
             if args.output:
                 write_json(args.output, result)
         print(json.dumps(result, sort_keys=True, allow_nan=False))
-        return 2 if result.get("status") == "failed" else 0
+        return 2 if result.get("status") in ("failed", "unknown") else 0
     except (Invalid, OSError, ValueError, TypeError, KeyError, UnicodeError) as error:
         message = (
             str(error)
