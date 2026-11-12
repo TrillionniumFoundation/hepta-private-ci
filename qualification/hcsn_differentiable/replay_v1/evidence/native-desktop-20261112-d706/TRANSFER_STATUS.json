@@ -1,0 +1,59 @@
+{
+  "schema": "hcsn-c2-d706-evidence-transfer-status-v1",
+  "scope": "Artifact transport only; no additional model execution",
+  "native_archive": {
+    "bytes": 10976581,
+    "sha256": "d17e71b766631f3789dcb43bdd312dacfbc4ea0ce7e4fc14074587584900a2fe",
+    "git_blob": "deededd79d8a72d55059e7b7c439f66434a679f0",
+    "native_member_verification": true,
+    "downloaded_in_full_to_coordinator": false
+  },
+  "binary_read_attempt": {
+    "first_chunk": {
+      "offset": 0,
+      "length": 65536,
+      "sha256": "8c99561c727b651b2d2a9fbe9638c3d825c01b5fdd5e522be1eade19359605c4",
+      "version": "2050:50090404:10976581:1794466335757587799:1794466335757587799"
+    },
+    "later_parallel_offsets": [
+      65536,
+      131072,
+      196608,
+      262144
+    ],
+    "later_result": "four read calls failed after approximately 120 seconds; original exception details were not retained in JSON",
+    "file_changed": false,
+    "disposition": "No repeated model job; switched to immutable native Git blob upload"
+  },
+  "small_originals": {
+    "operation_id": "c340d302be8b8cf3f67d17724cac344ccadeeeca79fdcfc7c797d32553727b8d",
+    "serialized_original_sdk_bytes": 41060,
+    "serialized_original_sdk_sha256": "d6aab43c61bfcba3bc291758646f4561bda25f218d74b87f6b4575b3c96e1981",
+    "recovered": [
+      "INDEPENDENT_AUDIT.json",
+      "AUDIT_EXIT.json",
+      "ZIP_RECEIPT.json",
+      "MANIFEST.json",
+      "audit-time.txt"
+    ],
+    "each_original_file_sha256_verified": true
+  },
+  "upload": {
+    "idempotency_key": "c2-d706-native-archive-git-blob-upload-v1",
+    "session_id": "dpty-d940c4c9ff7f24e36415550473cc18b4f1e2058b95c38e6f25e211bd3a918b6a",
+    "initial_acknowledgement": "unknown",
+    "read_before_reconciliation": "unknown terminal identity",
+    "early_outcome_read": "retained tool error; did not establish failed upload or zero execution",
+    "reconciled_same_request_key": true,
+    "reconciliation_reused": false,
+    "terminal": "exited",
+    "exit_code": 0,
+    "output_complete": true,
+    "authenticated_login": "ProfHepta",
+    "operation": "immutable Git blob only",
+    "sha_matched_native_bytes": true
+  },
+  "model_replay_count_in_this_attempt": 26,
+  "other_attempt_optimizer_calls": "UNKNOWN",
+  "full_independent_c2_replays": 0
+}

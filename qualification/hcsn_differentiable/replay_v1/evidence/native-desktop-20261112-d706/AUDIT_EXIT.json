@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/home/qian-qi/hcsn-c2-real-replay-20261112-d706-attempt001/audit-time.txt",
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hcsn-c2-real-replay-20261112-d706-attempt001/audit_replay_originals.py",
+    "--root",
+    "/home/qian-qi/hcsn-c2-real-replay-20261112-d706-attempt001",
+    "--output",
+    "/home/qian-qi/hcsn-c2-real-replay-20261112-d706-attempt001/INDEPENDENT_AUDIT.json"
+  ],
+  "finished_unix_ns": 1794466334933678034,
+  "model_forwards": 0,
+  "optimizer_calls": 0,
+  "returncode": 0,
+  "scientific_admission": "HOLD_NO_GO"
+}
