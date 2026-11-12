@@ -1,0 +1,758 @@
+{
+  "scope": "Closed original 42ef and d2 ordinary-A failures, d2 scoped compile, actual helper/product manifests and build logs, child stdout/stderr and exact drivers. Pinned executable files are excluded; no test success is inferred from compilation. Prior JUnit files marked excluded retain their original status.",
+  "collector_uid": 0,
+  "files": [
+    {
+      "path": "drivers/root_42efbb8d_native_tests_v1.py",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/root_42efbb8d_native_tests_v1.py",
+      "bytes": 15690,
+      "sha256": "fa362709625317b70ae8907e813d7aafe1a008386114ac1513dfa373e662b154",
+      "git_blob": "370cf243c503283e940482488e872e4491eb73a6",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "drivers/root_d2a78cd8_native_tests_v1.py",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/root_d2a78cd8_native_tests_v1.py",
+      "bytes": 15694,
+      "sha256": "8e3767e7672f4988c6fecb70303ddc43b49bda5af4a06c5411f2ee7d7306e61d",
+      "git_blob": "81f411907309b0e64a8bcfb908f3689049208806",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "drivers/root_d2a78cd8_scoped_fix_v1.py",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/root_d2a78cd8_scoped_fix_v1.py",
+      "bytes": 9112,
+      "sha256": "308551192d285fd0eba22a63027aaee56a2daac58019a908504e10a5b7027f22",
+      "git_blob": "148eaefb3c5ce210dbdf8617d19599e52cd5b29e",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-COxkfb/stderr.log",
+      "original_path": "/tmp/ordinary-q24-original-process-COxkfb/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-COxkfb/stdout.log",
+      "original_path": "/tmp/ordinary-q24-original-process-COxkfb/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-gxEkvg/stderr.log",
+      "original_path": "/tmp/ordinary-q24-original-process-gxEkvg/stderr.log",
+      "bytes": 93,
+      "sha256": "52f5000ed0e74a6077731bcd1a609342d43c51cedced9a2cb7ec7948204eac04",
+      "git_blob": "2cc389fbf9c46f39c2e3df9a0552732df6d0083a",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-gxEkvg/stdout.log",
+      "original_path": "/tmp/ordinary-q24-original-process-gxEkvg/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-r5ifDt/stderr.log",
+      "original_path": "/tmp/ordinary-q24-original-process-r5ifDt/stderr.log",
+      "bytes": 81,
+      "sha256": "4d35b0231519ae75e85a11d357654bb3a646ff59acd0ef06070b560a18136f77",
+      "git_blob": "10ff3e185761569c8a86b89b6f8d5e17149d067d",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-r5ifDt/stdout.log",
+      "original_path": "/tmp/ordinary-q24-original-process-r5ifDt/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-vE9WiZ/stderr.log",
+      "original_path": "/tmp/ordinary-q24-original-process-vE9WiZ/stderr.log",
+      "bytes": 50,
+      "sha256": "16e3fea699c455ecd04624e016a6ae4cdc2e6c50eaea593d9b6f19d190d9ecfd",
+      "git_blob": "b2c9533cfd69a536d4d3db32129a760899512cf4",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-vE9WiZ/stdout.log",
+      "original_path": "/tmp/ordinary-q24-original-process-vE9WiZ/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 0,
+      "gid": 0,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-42efbb8d-ff41-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "original_path": "/tmp/hepta-native-42efbb8d-ff41-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1020427,
+      "sha256": "377e3f1838c289d74996b41ee56d019120ce40e293beb2f5591cc3d59c79f42b",
+      "git_blob": "5251a2297f1203124b374d4d0e1a8b31af30bb0d",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-42efbb8d-ff41-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "original_path": "/tmp/hepta-native-42efbb8d-ff41-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 19786,
+      "sha256": "4cfa2c873264bf8a8883bfcd44992aa0af9c996885264edaa572512f34c20e97",
+      "git_blob": "fa317d53ec53dc74e6f7ef12c68243798b35d8ad",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-42efbb8d-ff41-v1/helpers/env.json",
+      "original_path": "/tmp/hepta-native-42efbb8d-ff41-v1/helpers/env.json",
+      "bytes": 221,
+      "sha256": "57cb69165793e2e0c57bdbc823035b784e5b2d6d083fab519b485a596c4d8b35",
+      "git_blob": "758525100e72afe97250552d58856a6d0421ee52",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-42efbb8d-ff41-v1/helpers/manifest.json",
+      "original_path": "/tmp/hepta-native-42efbb8d-ff41-v1/helpers/manifest.json",
+      "bytes": 1772,
+      "sha256": "3ad92fce5a27d80b2f9d4343a24b01eb050330def623169a812470ef87761fd5",
+      "git_blob": "806d575d889460547895b205a086f4a9cf280874",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-42efbb8d-ff41-v1/product-env.json",
+      "original_path": "/tmp/hepta-native-42efbb8d-ff41-v1/product-env.json",
+      "bytes": 407,
+      "sha256": "1b8f80a75d71f5089cc506bf56a9a92d952022bfcc7637ecddbcdd5efecc2854",
+      "git_blob": "834c06cf45a00119e4a8a882c488cc82f9dc094a",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-42efbb8d-ff41-v1/product-manifest.json",
+      "original_path": "/tmp/hepta-native-42efbb8d-ff41-v1/product-manifest.json",
+      "bytes": 1383,
+      "sha256": "1fd4a476d33367e628ff42da17f7c542ce41934f4028cb7235138f6f276f2b32",
+      "git_blob": "68e5fe741c2e3a8db3aca050e3d62ef2c2e5845a",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-d2a78cd8-ff41-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "original_path": "/tmp/hepta-native-d2a78cd8-ff41-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1020423,
+      "sha256": "ae69d1e5beb19591f94f90571df1e4ebb48c7c1c0cd036d9f22fcf4af266068c",
+      "git_blob": "ac8ed13f53ff6b7dbf627b7a5d5a9892280c75ac",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-d2a78cd8-ff41-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "original_path": "/tmp/hepta-native-d2a78cd8-ff41-v1/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 19298,
+      "sha256": "acb6a9a06de826decc9adddf4553e2b4caa811b44592ded773722e632d1d7b7b",
+      "git_blob": "f1db3568b5899f8a65c206d663a543c8c03a2602",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-d2a78cd8-ff41-v1/helpers/env.json",
+      "original_path": "/tmp/hepta-native-d2a78cd8-ff41-v1/helpers/env.json",
+      "bytes": 221,
+      "sha256": "7d3a146c73fbd5820da04777549d30063236bbc871b1223fd5b92d53741145ae",
+      "git_blob": "75dadd17229cc757df455b7764ea9b7777fce31d",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-d2a78cd8-ff41-v1/helpers/manifest.json",
+      "original_path": "/tmp/hepta-native-d2a78cd8-ff41-v1/helpers/manifest.json",
+      "bytes": 1772,
+      "sha256": "778d47a0c2f3e14482c065ac489a095dfc4545d463c13a27b67902a6692e0317",
+      "git_blob": "2d66d53bc0420ad0472cb38f3336380ae1882bba",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-d2a78cd8-ff41-v1/product-env.json",
+      "original_path": "/tmp/hepta-native-d2a78cd8-ff41-v1/product-env.json",
+      "bytes": 407,
+      "sha256": "f3e5ed908f87ca3c8e6eced4051887059c5ba9d4ba60f7efa783308f283cc56f",
+      "git_blob": "07231c2f925bdc3a34b0a0206b8a51b8bd660a92",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "public/hepta-native-d2a78cd8-ff41-v1/product-manifest.json",
+      "original_path": "/tmp/hepta-native-d2a78cd8-ff41-v1/product-manifest.json",
+      "bytes": 1383,
+      "sha256": "225fa721984f35f8dd5e7da079e8e526439b28f8aea6fef2c3bbae8435030581",
+      "git_blob": "06e4abc2efe95e8478784d928e0ebdae16df0c02",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/a-library-binaries-build-uid1000.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/a-library-binaries-build-uid1000.stderr.log",
+      "bytes": 23189,
+      "sha256": "b82844fc06cfcce9d7c3fee2351627e84afe68efdb9964723d878f14642462df",
+      "git_blob": "7f4f610a0e9854e0bad61626827ed9df992911d7",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/a-library-binaries-build-uid1000.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/a-library-binaries-build-uid1000.stdout.log",
+      "bytes": 1838,
+      "sha256": "0137c9e2426c28e515b9938077225a818ae8948549a9f8c289b6703ceffb04c3",
+      "git_blob": "2cf6094debecbd034f70e0117e116578bf841441",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/helper-build.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/helper-build.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/helper-build.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/helper-build.stdout.log",
+      "bytes": 160,
+      "sha256": "9f21fff0a27a804919e6e8bee99b0115877279369c832d31478c520f32c9e750",
+      "git_blob": "3afff011a1a526c48f91f60b578eaba8c5a94b6f",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/helper-verify.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/helper-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/helper-verify.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/helper-verify.stdout.log",
+      "bytes": 1030,
+      "sha256": "21f2395f6d5b92fa0c2da3e026c39bf23b4955cbc60f62cf2f4712f191163779",
+      "git_blob": "9d20dba8348041e9e57dea94f5f7f0961858e57f",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/mount-cleanup.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/mount-cleanup.json",
+      "bytes": 257,
+      "sha256": "133899e5b6b5670e86e5fb49de3d3ba66d79d4e70a2f720084809bdbfde40df5",
+      "git_blob": "f2bf58062cd198bfde21a6f8d7d9ea19a3d5c27f",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a-collection.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a-collection.json",
+      "bytes": 1314,
+      "sha256": "ce09463794d5704a7db2cf44f0af26ee45770fd7fa364b072fcbdd9604a139cb",
+      "git_blob": "adbd8a1c1c20f8590fb5421f214e5cfc463f8444",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a-execution.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a-execution.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a-execution.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a-execution.stdout.log",
+      "bytes": 40586,
+      "sha256": "ca275f44940e3b7963ca199e65fff92fc202ca293e9908c8633ae31f028deea2",
+      "git_blob": "0801010e41fc56c58484890cecf555c45e79eae4",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a-fresh-native-observed-0.xml",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a-fresh-native-observed-0.xml",
+      "bytes": 2008,
+      "sha256": "d319439f9df2f1346c27d7fb13c08dbaa13aca0b42e4041c91ddb01b86605daa",
+      "git_blob": "2d750572a6400d4918aba971703b8c8b332c3566",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a-parent-coverage.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a-parent-coverage.json",
+      "bytes": 354,
+      "sha256": "c0766b8a1379542c25ef92af364ec972b1e65ae6cabbc7c98f3988e60b17c30c",
+      "git_blob": "cc9600214aaafd2693bb5ea08c1aa4a9b71f6e1d",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a-parent-roster.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a-parent-roster.json",
+      "bytes": 140,
+      "sha256": "02b430d6e8654b4bdbe85be837bdb5cd2e4fcfcdea7dd1cd77de8317e1b3a606",
+      "git_blob": "c5abdca2a36fe443eae823b166be00ad24b9acfd",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a-prior-junit-1-excluded.xml",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a-prior-junit-1-excluded.xml",
+      "bytes": 2108,
+      "sha256": "4b006ce1bd6442d97ccf0ff001e98bb4f2fce224d5b49b13f75751d75c92c0e7",
+      "git_blob": "3f899345f1005785fb5f3c63e4afae38e281fb94",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a.json",
+      "bytes": 1890,
+      "sha256": "f07666ea38dfa8063f373422e401863d6f5dd7e44fff12ee43220407527798d2",
+      "git_blob": "70f2d541e9e2278a2df1a4b1d66e2430478adfaf",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a.json.0215221d07d4494f963f7a9a959e0d2c.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a.json.0215221d07d4494f963f7a9a959e0d2c.log",
+      "bytes": 38898,
+      "sha256": "d2219209818021d4c12c0d145875d84a07bda2701e9e3095da76193b0cbf75bd",
+      "git_blob": "cf546463e8987d9f2a7dfd5d25cfef48fe3c8c0d",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a.summary.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a.summary.json",
+      "bytes": 1253,
+      "sha256": "f46acaa52dc67acc5bab6a146761857f151b8b037668f6dec4380f0a197e2488",
+      "git_blob": "9b2ec4c2e060ad5ee9e2c0282c59e63ea9ecb285",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/ordinary-a.xml",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/ordinary-a.xml",
+      "bytes": 2008,
+      "sha256": "d319439f9df2f1346c27d7fb13c08dbaa13aca0b42e4041c91ddb01b86605daa",
+      "git_blob": "2d750572a6400d4918aba971703b8c8b332c3566",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/product-build.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/product-build.stderr.log",
+      "bytes": 19162,
+      "sha256": "e38214db072511ff9bd7d6127b3cfd34e526b1d0174d0beaf088030c6273331a",
+      "git_blob": "777e33defa89ea38bb0e5391617e383474b50f34",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/product-build.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/product-build.stdout.log",
+      "bytes": 1020318,
+      "sha256": "c835f90c2b5de4a995e40d6dfb1e98dc942f2daa3f37f1c75d554ab15314d1d3",
+      "git_blob": "09e045dd9d8ea9c5be44b81c1f56c51c109eb0b1",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/result.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/result.json",
+      "bytes": 13264,
+      "sha256": "53c63bf164eed558610cf8c0d2b08c3ee42ae9a25eb9be5487ff26108b9b910f",
+      "git_blob": "57740e6f0edac29db86959d3fff211dc6648ae08",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/root-mount-setup.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/root-mount-setup.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-42efbb8d-native-tests-v1/root-mount-setup.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-42efbb8d-native-tests-v1/root-mount-setup.stdout.log",
+      "bytes": 508,
+      "sha256": "edfe2e9324b75cff108eeb70663b111edd464c04c55db9dc0baae564ba8b54d7",
+      "git_blob": "a5780686955ca69a3b8ae233c83dc48098d9412a",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/a-library-binaries-build-uid1000.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/a-library-binaries-build-uid1000.stderr.log",
+      "bytes": 22814,
+      "sha256": "7c9a4ae3b7bf0c87eba94eb387a02a702c239e001ec6fd85320de9e39166a6d4",
+      "git_blob": "41121731247336d5d29ff614f62ae33e25c99024",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/a-library-binaries-build-uid1000.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/a-library-binaries-build-uid1000.stdout.log",
+      "bytes": 1838,
+      "sha256": "0137c9e2426c28e515b9938077225a818ae8948549a9f8c289b6703ceffb04c3",
+      "git_blob": "2cf6094debecbd034f70e0117e116578bf841441",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/helper-build.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/helper-build.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/helper-build.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/helper-build.stdout.log",
+      "bytes": 160,
+      "sha256": "f176379fa078c3df1100ebeea469da14bf20fe0021c2e9e9444f5bc7262765ee",
+      "git_blob": "51c0e9859025462c841e0330dc7a158d5737b2bb",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/helper-verify.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/helper-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/helper-verify.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/helper-verify.stdout.log",
+      "bytes": 1030,
+      "sha256": "a2f3f88c7671330a45157ce693cf5cc1f74f3b2e61d1bc9ceee83073d77df88b",
+      "git_blob": "e8b1b68f369baed7148493c021f76127b227088e",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/mount-cleanup.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/mount-cleanup.json",
+      "bytes": 257,
+      "sha256": "2e70abf78b1ffb3cd68bf13fe1eb7facd258be30f1798bcef6a52bb7ccc34dce",
+      "git_blob": "667ac76d458beb6fe084e1950811ff30e3cda5fd",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a-collection.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a-collection.json",
+      "bytes": 1314,
+      "sha256": "ed178c6c3820715dbc6647c5d1cb55fa8c6740993c356196076edb4160eb32a8",
+      "git_blob": "02b2d7a756a372c3ac6ba41181ffe1dc1c8aa28d",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a-execution.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a-execution.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a-execution.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a-execution.stdout.log",
+      "bytes": 40649,
+      "sha256": "fddd283375fe3f217e8c54de00b0e20d83704bebf11345b718739fa058e24d04",
+      "git_blob": "00445308516052de7389259ebf4618735e92adb8",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a-fresh-native-observed-0.xml",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a-fresh-native-observed-0.xml",
+      "bytes": 2072,
+      "sha256": "63b59a0242ca92c660ce5a06126ec80851d265cb5799a584fb72b8a295d3e9cd",
+      "git_blob": "780a74ebb97fde7a55e1b160fac56d6e4a280a6c",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a-parent-coverage.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a-parent-coverage.json",
+      "bytes": 354,
+      "sha256": "c0766b8a1379542c25ef92af364ec972b1e65ae6cabbc7c98f3988e60b17c30c",
+      "git_blob": "cc9600214aaafd2693bb5ea08c1aa4a9b71f6e1d",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a-parent-roster.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a-parent-roster.json",
+      "bytes": 140,
+      "sha256": "02b430d6e8654b4bdbe85be837bdb5cd2e4fcfcdea7dd1cd77de8317e1b3a606",
+      "git_blob": "c5abdca2a36fe443eae823b166be00ad24b9acfd",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a-prior-junit-1-excluded.xml",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a-prior-junit-1-excluded.xml",
+      "bytes": 2008,
+      "sha256": "d319439f9df2f1346c27d7fb13c08dbaa13aca0b42e4041c91ddb01b86605daa",
+      "git_blob": "2d750572a6400d4918aba971703b8c8b332c3566",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a.json",
+      "bytes": 1889,
+      "sha256": "25bbd2d4c84b0df827d3b05f099b3965c4bd47c3ebb033fe2f98db844895092a",
+      "git_blob": "e39a87ac6368cd08924f887175dbe9f9d5163cbf",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a.json.820e28c347c2473b95923d9b1d04a4c8.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a.json.820e28c347c2473b95923d9b1d04a4c8.log",
+      "bytes": 38962,
+      "sha256": "64f3254d9ca3b26a6563e8639b74c35c5991cb335f7b0a0b950fec281fca117d",
+      "git_blob": "971b96e2d1804f2d72477be32ee70f3b777b5636",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a.summary.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a.summary.json",
+      "bytes": 1253,
+      "sha256": "1d8061fa0ce15ee2ef7b8a77dca783e69cc8a775088cacf9fe43ca030939c14e",
+      "git_blob": "bbb437bf7f3f083bcab19ddb2c606fe7c7d8c9e3",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/ordinary-a.xml",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/ordinary-a.xml",
+      "bytes": 2072,
+      "sha256": "63b59a0242ca92c660ce5a06126ec80851d265cb5799a584fb72b8a295d3e9cd",
+      "git_blob": "780a74ebb97fde7a55e1b160fac56d6e4a280a6c",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/product-build.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/product-build.stderr.log",
+      "bytes": 19162,
+      "sha256": "76dc473b870d3192fcce5adb1e274974897ee6c949252fc356b1414286a44810",
+      "git_blob": "9363909a790d1484fd599858986d4db175b11b45",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/product-build.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/product-build.stdout.log",
+      "bytes": 1020318,
+      "sha256": "d54f7c5e7a60d7195e7a4422f1c8a8a63ae17e89c53dfb981001bb43d8008b80",
+      "git_blob": "96d8632f43d0340769c3bed70f62568717f8a874",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/result.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/result.json",
+      "bytes": 13264,
+      "sha256": "70179023f3d72a6f336fbaf5b21405ea0ba2bb704960c098ca9cba17c8f4a48e",
+      "git_blob": "2a2701caacd71a13b9e1ddff6a039a521c39ae2c",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/root-mount-setup.stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/root-mount-setup.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-native-tests-v1/root-mount-setup.stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-native-tests-v1/root-mount-setup.stdout.log",
+      "bytes": 508,
+      "sha256": "bd26ded17149f79a0caf182fcedf9bdb663876e8b0ddbac18e3823c599583dcd",
+      "git_blob": "1ad02016436cdc59502ffd2133099712b5e4fc25",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-scoped-fix-v1/bundle-verify-import.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-scoped-fix-v1/bundle-verify-import.log",
+      "bytes": 395,
+      "sha256": "689c47e20f3de0d31c8f7ba7338b0e4ec8c3d7cd8ab4dca38e52d1d5757e72ae",
+      "git_blob": "ef1ef1c8f5b8066addcaee6ad91307d27b6c3159",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-scoped-fix-v1/fix.patch",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-scoped-fix-v1/fix.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-scoped-fix-v1/result.json",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-scoped-fix-v1/result.json",
+      "bytes": 4019,
+      "sha256": "03af89731e98df564662cd7378e9c3f1ba977521bb9570b8cf53c5adfccc087f",
+      "git_blob": "b945068564e57038a70849423f27ef8c2dde6018",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-scoped-fix-v1/source-import.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-scoped-fix-v1/source-import.log",
+      "bytes": 514,
+      "sha256": "2c7e61c99d01809e65f87c5c89c15e7f390a158cd21f042a1c947ef242b241df",
+      "git_blob": "43e3a55228b0eb3b5f33bf71de554a30fe60ef1d",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-scoped-fix-v1/stderr.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-scoped-fix-v1/stderr.log",
+      "bytes": 82013,
+      "sha256": "c5b9c5fe3475677834c5b1446f89f28020a764d8cd2751108b2dccb58c1e1677",
+      "git_blob": "54fdfcef3beb34f6821498e3053e2645d38f8e98",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    },
+    {
+      "path": "validation/root-d2a78cd8-scoped-fix-v1/stdout.log",
+      "original_path": "/home/qq/hepta-learn-ff41-tools/validation/root-d2a78cd8-scoped-fix-v1/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 384
+    }
+  ],
+  "file_count": 75,
+  "input_bytes": 4555510
+}
