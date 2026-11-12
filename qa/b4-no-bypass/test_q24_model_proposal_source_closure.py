@@ -146,8 +146,8 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
         path = AGENT + "authority_host_q24_evaluation_operation.rs"
         for marker in (
             "let end = self.end.min(frame_end)",
-            "self.record.inspect(end,",
-            "initial: &actual, writer_proof: &proof",
+            "OriginalBRecord::inspect(&self.record, end,",
+            "initial: &actual,\n                        writer_proof: &proof",
             "not_send: PhantomData",
             "Ok((value?, after, before, authorities))",
             "require_files(files, enrollment, now)?",

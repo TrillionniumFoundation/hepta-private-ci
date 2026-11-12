@@ -31,6 +31,7 @@ CALLERS = {
         AGENT + "learning_iteration_evaluation_evidence.rs",
         AGENT + "cell_q24_model_projection.rs",
         OWNER,
+        AGENT + "authority_host_q24_evaluation_execute.rs",
     ),
     "learning_evidence_original_owner_readback": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
