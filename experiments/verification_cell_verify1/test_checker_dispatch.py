@@ -189,3 +189,79 @@ class CheckerDispatchTests(unittest.TestCase):
                 authenticate=lambda *args: True,
             )
         self.assertEqual(self.journal.status("op")["result"]["status"], "pending")
+
+    def test_authentication_cannot_rewrite_original_reply(self):
+        def lost(operation, snapshot):
+            self.calls.append(operation)
+            raise KeyboardInterrupt()
+
+        with self.assertRaises(KeyboardInterrupt):
+            self.dispatch(run=lost)
+        for field, replacement in (
+            ("outcome", "pass"),
+            ("evidence_sha256", digest("substituted-evidence")),
+            ("actual_cost_units", 0.0),
+            ("actual_cost_units", True),
+        ):
+            with self.subTest(field=field, replacement=replacement):
+                reply = self.reply("op", self.source.snapshot, "fail", 1.0)
+
+                def authenticate(operation, received, request_sha, config_sha):
+                    object.__setattr__(received, field, replacement)
+                    return True
+
+                with self.assertRaisesRegex(
+                    ValueError, "checker reply changed during authentication"
+                ):
+                    self.journal.reconcile(
+                        "op",
+                        reply,
+                        read_snapshot=lambda snapshot: digest(asdict(snapshot)),
+                        authenticate=authenticate,
+                    )
+                self.assertEqual(
+                    self.journal.status("op")["result"]["status"], "pending"
+                )
+        self.assertEqual(self.calls, ["op"])
+
+    def test_snapshot_callback_cannot_rewrite_reply_and_original_can_reconcile(self):
+        reply = self.reply("op", self.source.snapshot, "fail", 1.0)
+        reads = []
+
+        def read_snapshot(snapshot):
+            reads.append(digest(asdict(snapshot)))
+            if len(reads) == 2:
+                object.__setattr__(reply, "outcome", "pass")
+            return digest(asdict(snapshot))
+
+        def invoke(operation, snapshot):
+            self.calls.append(operation)
+            return reply
+
+        with self.assertRaisesRegex(
+            ValueError, "checker reply changed during snapshot readback"
+        ):
+            self.dispatch(run=invoke, read_snapshot=read_snapshot)
+        self.assertEqual(
+            (self.dispatch()["status"], self.calls, len(reads)),
+            ("pending", ["op"], 2),
+        )
+        restored = self.journal.reconcile(
+            "op",
+            self.reply("op", self.source.snapshot, "fail", 1.0),
+            read_snapshot=lambda snapshot: digest(asdict(snapshot)),
+            authenticate=lambda *args: True,
+        )
+        self.assertEqual(
+            (restored["status"], restored["observation"]["outcome"], self.calls),
+            ("completed", "fail", ["op"]),
+        )
+
+    def test_mutated_numeric_alias_reply_does_not_enter_history(self):
+        reply = self.reply("op", self.source.snapshot, "pass", 1.0)
+        object.__setattr__(reply, "actual_cost_units", True)
+        result = self.dispatch(run=lambda operation, snapshot: reply)
+        self.assertEqual(
+            (result["status"], result["reason"], result["observation"]),
+            ("unknown", "invalid_checker_reply", None),
+        )

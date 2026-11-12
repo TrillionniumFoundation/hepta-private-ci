@@ -425,7 +425,13 @@ class DispatchJournal:
 
     @staticmethod
     def _reply_matches(request, reply):
-        return type(reply) is CheckerReply and (
+        if type(reply) is not CheckerReply:
+            return False
+        try:
+            CheckerReply(**asdict(reply))
+        except (AttributeError, TypeError, ValueError):
+            return False
+        return (
             reply.operation_id,
             reply.checker_id,
             reply.version_sha256,
@@ -442,6 +448,7 @@ class DispatchJournal:
         snapshot = Snapshot(**{**value, "target": Target(**value["target"])})
         expected = request["choice"]["snapshot_sha256"]
         valid = self._reply_matches(request, reply)
+        frozen_reply = canonical_json(asdict(reply)) if valid else None
         if reason is None and not valid:
             reason = "invalid_checker_reply"
         try:
@@ -449,6 +456,11 @@ class DispatchJournal:
                 reason = "stale_after_check"
         except Exception:
             reason = "snapshot_readback_failed"
+        if valid:
+            _require(
+                canonical_json(asdict(reply)) == frozen_reply,
+                "checker reply changed during snapshot readback",
+            )
         observation = (
             asdict(
                 CheckObservation(
@@ -524,6 +536,7 @@ class DispatchJournal:
         _require(
             self._reply_matches(retained[0], reply), "original bound reply required"
         )
+        frozen_reply = canonical_json(asdict(reply))
         _require(
             callable(authenticate)
             and authenticate(
@@ -531,6 +544,10 @@ class DispatchJournal:
             )
             is True,
             "original evidence authentication failed",
+        )
+        _require(
+            canonical_json(asdict(reply)) == frozen_reply,
+            "checker reply changed during authentication",
         )
         return self._complete(operation_id, retained[0], reply, read_snapshot, None)
 
