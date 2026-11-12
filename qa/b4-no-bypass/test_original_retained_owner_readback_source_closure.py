@@ -7,6 +7,7 @@ They add no deployment, caller authority or independent qualification evidence.
 
 import importlib.util
 from pathlib import Path
+import re
 import sys
 import tempfile
 import tomllib
@@ -45,7 +46,7 @@ class OriginalRetainedOwnerReadbackClosureTests(unittest.TestCase):
     def rejects(self, path, function, marker, replacement="", occurrence=0):
         if path == AGENT + "circuit_selection_receipt_owner.rs":
             # The same checks now receive the private evaluated/TNU profile.
-            # C retains its existing signature and remote/local ordering.
+            # C uses a separate explicit evaluated profile and keeps legacy Remote ordering.
             changes = (
                 ("authenticate_training(&self.config,", "authenticate_training(&self.config, &self.profile,"),
                 ("require_new_attestation(&self.config,", "require_new_attestation(&self.config, &self.profile,"),
@@ -58,18 +59,43 @@ class OriginalRetainedOwnerReadbackClosureTests(unittest.TestCase):
             for before, after in changes:
                 marker = marker.replace(before, after)
                 replacement = replacement.replace(before, after)
+        if path == AGENT + "circuit_next_use_receipt_owner.rs":
+            changes = (
+                ("authenticate_predecessors(&self.config,", "evaluated::authenticate_predecessors(&self.config, &self.profile,"),
+                ("receipt(&self.config,", "evaluated::receipt(&self.config, &self.profile,"),
+                ("if matches!(source.location(), ObservationLocation::RemoteOwner) {",
+                 "if matches!(source.location(), ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner) {"),
+                ("ObservationLocation::LocalOwner => {",
+                 "ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {"),
+            )
+            for before, after in changes:
+                marker = marker.replace(before, after)
+                replacement = replacement.replace(before, after)
         source = (ROOT / path).read_text()
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = start
-        for _ in range(occurrence + 1):
-            chosen = source.index(marker, offset, end + 1)
-            offset = chosen + len(marker)
+        if path == AGENT + "circuit_next_use_receipt_owner.rs":
+            # The mechanical private dispatch has rustfmt-wrapped calls. Match
+            # the same complete tokens and mutate the actual original span.
+            positions = [i for i in range(start, end + 1) if not source[i].isspace()]
+            compact = "".join(source[i] for i in positions)
+            wanted = re.sub(r"\s+", "", marker)
+            matches = list(re.finditer(re.escape(wanted), compact))
+            self.assertGreater(len(matches), occurrence, marker)
+            offset = matches[occurrence].start()
+            chosen = positions[offset]
+            stopped = positions[offset + len(wanted) - 1] + 1
+        else:
+            offset = start
+            for _ in range(occurrence + 1):
+                chosen = source.index(marker, offset, end + 1)
+                offset = chosen + len(marker)
+            stopped = chosen + len(marker)
         self.verifies(path, source)
         with self.assertRaises(PROOF.VerificationFailure, msg=(path, function, marker, occurrence)):
-            self.verifies(path, source[:chosen] + replacement + source[chosen + len(marker):])
+            self.verifies(path, source[:chosen] + replacement + source[stopped:])
 
     def test_private_source_kind_cannot_promote_remote_reads_to_local_protocol(self):
         for path, name, _, _, _ in OWNERS:
