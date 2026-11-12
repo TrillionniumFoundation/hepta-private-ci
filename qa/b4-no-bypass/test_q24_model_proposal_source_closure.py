@@ -158,6 +158,35 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
                     marker = "let now = service.original_learning_unix_seconds()?;\n            require_files(files, enrollment, now)?"
                 self.rejects(path, "fn with_operation<T>(", marker)
 
+    def test_root_model_uses_the_actual_b_callback_before_binding(self):
+        path = AGENT + "authority_host_q24_model_b_transport.rs"
+        for marker in (
+            "request.schema != 2", "request.request_id != *next_request_id",
+            "request.original_b != original.original_binding().to_string()",
+            "with_original_completed_evaluation(",
+            "crate::OriginalRootBEvaluationBorrowV1::writer_proof(&actual)",
+            "project_original_root_model(&actual, &scope, now)",
+            "material: projection.proposal_binding.clone()",
+            "before.material.as_ref() != Some(&projection.proposal_binding)",
+            "compare_and_set(factory.profile.store_owner(), &before, &after)",
+            "original_factory_lease(service, &after)? != reply.lease",
+            "owner_alive(owner_pidfd, frame_end)?",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn serve_original_b_model_request(", marker)
+
+    def test_original_factory_cannot_bypass_b_or_extend_the_frame(self):
+        path = AGENT + "authority_host_q24_model_transport.rs"
+        for marker in (
+            "exchange_with_original_deadline(|bytes, frame_end|",
+            "original_b::serve_original_b_model_request(",
+            "factory.original_b.is_some()",
+            "matches!(&request.command, Command::Bind { .. })",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn serve_q24_model_factory_with_end(", marker)
+        self.rejects(path, "fn original_factory_lease(", "service.issuer.revocations()?")
+
     def test_commit_cannot_skip_durable_claim_completion_or_witness(self):
         for marker in (
             "self.journal.claim(&key)",

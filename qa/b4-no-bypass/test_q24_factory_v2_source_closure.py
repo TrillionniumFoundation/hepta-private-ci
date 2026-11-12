@@ -30,7 +30,7 @@ CALLERS = {
     "root_q24_factory_v2_live_admission": (V2,),
     "root_q24_factory_v2_original_reservation": (V2,),
     "root_q24_factory_v2_live_context": (VAR,),
-    "root_q24_factory_versioned_live_context": (REG, WIRE, INPUTS, CLIENT),
+    "root_q24_factory_versioned_live_context": (REG, WIRE, INPUTS, CLIENT, A + "authority_host_q24_model_b_transport.rs"),
     "root_q24_factory_original_witness_generation": (CLIENT,),
     "root_q24_factory_original_witness_binding": (CLIENT,),
 }
