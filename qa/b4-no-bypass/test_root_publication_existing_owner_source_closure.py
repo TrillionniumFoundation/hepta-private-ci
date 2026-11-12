@@ -25,28 +25,31 @@ CALLERS = {
         AGENT + "neuron_generation_update_selection_root.rs",
     ),
     "root_learning_live_profile_action": (
-        AGENT + "authority_host_q24_model_registration.rs",
-        AGENT + "authority_host_q24_model_transport.rs",
-        AGENT + "authority_host_generation_publication_enrollment.rs",
-        AGENT + "authority_host_generation_publication_transport.rs",
-        AGENT + "authority_host_original_publication_route.rs",
-        AGENT + "authority_host_historical_read.rs",
-        AGENT + "authority_host_historical_read_session.rs",
-        AGENT + "authority_host_derived_learning_registration.rs",
-        AGENT + "authority_host_post_a_provider.rs",
-        AGENT + "authority_host_q24_model_registration_v2.rs",
-        AGENT + "authority_host_publication_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_original_publication_route.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+        "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs",
+        "codex-rs/hepta-agentd/src/authority_host_derived_learning_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_registration_v2.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_route.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_prepare.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_ingress.rs",
     ),
-    "q24_publication_original_b_manifest": (
-        AGENT + "cell_q24_publication_driver.rs",
-        AGENT + "cell_q24_publication_root_stage.rs",
-    ),
+    "q24_publication_original_b_manifest": (),
     "q24_publication_original_lane": (
-        AGENT + "cell_q24_publication_driver.rs",
-        AGENT + "cell_q24_publication_current.rs",
-        AGENT + "cell_q24_publication_root_stage.rs",
-        AGENT + "cell_q24_publication_successor_current.rs",
-        AGENT + "cell_q24_publication_historical_recovery.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs",
     ),
 }
 
@@ -108,7 +111,8 @@ class RootPublicationExistingOwnerSourceClosureTests(unittest.TestCase):
                 # mutant changes only the source path's custody registration.
                 sources = dict(self.sources)
                 sources[AGENT + "unregistered_publication_owner.rs"] = (
-                    self.sources[expected[-1]]
+                    self.sources[expected[-1]] if expected else
+                    f"fn bypass(owner: &{row.receiver_type}) {{ {row.symbol}(owner); }}"
                 )
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                     PROOF._verify_boundary(ROOT, row, sources, ())

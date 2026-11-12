@@ -24,13 +24,24 @@ PROFILE = A + "authority_host_learning_profile.rs"
 CALLERS = {
     "root_generation_publication_original_registration": (RUNTIME,),
     "root_publication_armed_registration": (REGISTRATION,),
-    "root_publication_original_initial_data": (REGISTRATION,),
+    "root_publication_original_initial_data": (
+        "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+    ),
     "root_publication_refusal_binding": (REGISTRATION,),
     "root_publication_refusal_enroll": (REGISTRATION,),
     "root_publication_refusal_inspect": (TRANSPORT,),
     "root_publication_refusal_persist": (OWNER,),
-    "root_publication_refusal_uncertain_ack": (RUNTIME,),
-    "root_publication_original_frame_deadline": ('codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs', 'codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs',),
+    "root_publication_refusal_uncertain_ack": (
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+    ),
+    "root_publication_original_frame_deadline": (
+        "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_serve.rs",
+        "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_serve.rs",
+    ),
 }
 
 
