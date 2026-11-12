@@ -1,6 +1,6 @@
 //! Ordinary first-A product assembly from the existing original Root inputs.
-//! It installs a real signed-task Circuit driver. Ledger/Observer and later
-//! historical learning owners are separate required handoffs, not inferred here.
+//! It installs a real signed-task Circuit driver. The optional Ledger profile
+//! uses actual Root-enrolled trust; later historical learning is a separate stage.
 
 use super::*;
 use crate::AgentdQ24CircuitTaskRuntimeV1;
@@ -15,6 +15,10 @@ mod clock;
 mod deployment;
 #[path = "production_initial_q24_files.rs"]
 mod files;
+#[path = "production_initial_q24_ledger_data.rs"]
+mod ledger_data;
+#[path = "production_initial_q24_ledger_files.rs"]
+mod ledger_files;
 #[path = "production_initial_q24_load.rs"]
 mod load;
 #[path = "production_initial_q24_writer.rs"]
@@ -22,8 +26,9 @@ pub(super) mod writer;
 
 impl AgentdProductionLaunch {
     /// Select only the explicit `q24-initial` CLI profile. Every other original
-    /// primary retains its existing composition. This path publishes no
-    /// Decision/Outcome and does not select or install learning owners.
+    /// primary retains its existing composition. The explicit Ledger option
+    /// consumes the original Root trust and external Observer role. It never
+    /// infers an Outcome from task success or assembles post-A learning here.
     pub async fn assemble_original_initial_q24(
         mut self,
         config: AgentdConfig,
@@ -55,6 +60,7 @@ impl AgentdProductionLaunch {
             .await?;
         self.require_original_initial_q24_session(config.identity())?;
         let load::OriginalInputs {
+            mut files,
             data,
             target,
             artifacts,
@@ -103,8 +109,34 @@ impl AgentdProductionLaunch {
         .await
         .map_err(|_| refused("original Initial publication acknowledgement lost"))??;
         self.require_original_initial_q24_session(config.identity())?;
+        let (published, ledger) = match data.ledger {
+            Some(deployment) => {
+                let root = self.root;
+                let identity = config.identity().clone();
+                let (root, published, ledger) = tokio::task::spawn_blocking(move || {
+                    initial_remaining(end)?;
+                    let trust =
+                        published.read_original_initial_learning_trust(&root.session, &identity)?;
+                    let ledger = ledger_files::open(deployment, trust, &mut files)?;
+                    // The same Root files, trust window, CURRENT, Artifact
+                    // selection and consumed FinalUse must still hold after IO.
+                    drop(published.read_original_initial_learning_trust(&root.session, &identity)?);
+                    initial_remaining(end)?;
+                    Ok::<_, AgentdError>((root, published, ledger))
+                })
+                .await
+                .map_err(|_| refused("original Ledger assembly acknowledgement lost"))??;
+                self.root = root;
+                (published, Some(ledger))
+            }
+            None => {
+                drop(files);
+                (published, None)
+            }
+        };
+        self.require_original_initial_q24_session(config.identity())?;
         self.retain_original_initial_source_capture(&published)?;
-        let runtime = config.with_q24_circuit_task_profile(CircuitQ24TaskProfileV1 {
+        let profile = CircuitQ24TaskProfileV1 {
             files: task,
             source_mode: CircuitQ24TaskOpenModeV1::Create,
             published_task: published,
@@ -117,7 +149,18 @@ impl AgentdProductionLaunch {
             maximum_cell_records: data.maximum_cell_records,
             queue_capacity: data.queue_capacity,
             clock: Arc::new(clock::sample),
-        })?;
+        };
+        let runtime = match ledger {
+            Some(inputs) => {
+                let crate::AgentdQ24LearningTaskRuntimeV1 { task, ledger } =
+                    config.with_q24_learning_task_profile(profile, inputs)?;
+                // Config/State owns the real producer until the actual joined
+                // runtime drains. Do not keep a second producer past capture.
+                drop(ledger);
+                task
+            }
+            None => config.with_q24_circuit_task_profile(profile)?,
+        };
         let AgentdQ24CircuitTaskRuntimeV1 {
             config,
             source,

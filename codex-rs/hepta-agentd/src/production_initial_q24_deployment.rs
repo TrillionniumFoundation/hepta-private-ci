@@ -24,6 +24,7 @@ use crate::OriginalSingleQ24SourceConfigurationV1;
 use crate::RootGenerationInitialModeV1;
 
 pub(super) struct OriginalDeployment {
+    pub(super) ledger: Option<super::ledger_data::LedgerDeploymentData>,
     pub(super) initial: OriginalRootInitialLaunchDataV1,
     pub(super) source: OriginalSingleQ24SourceConfigurationV1,
     pub(super) model: Arc<LoadedCellQ24ModelV1>,
@@ -39,6 +40,8 @@ pub(super) struct OriginalDeployment {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Deployment {
+    #[serde(default)]
+    ledger: Option<super::ledger_data::LedgerDeploymentData>,
     schema: String,
     identity_digest: String,
     clock: String,
@@ -183,6 +186,7 @@ pub(super) fn read(
         &source.source,
     )?;
     Ok(OriginalDeployment {
+        ledger: data.ledger,
         initial,
         source,
         model,

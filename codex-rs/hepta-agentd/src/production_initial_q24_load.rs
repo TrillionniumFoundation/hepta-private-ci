@@ -23,6 +23,7 @@ use crate::RootArtifactPublicationInputsV1;
 use crate::RootGenerationJournalInputsV1;
 
 pub(super) struct OriginalInputs {
+    pub(super) files: OriginalFiles,
     pub(super) data: OriginalDeployment,
     pub(super) target: RootGenerationJournalInputsV1,
     pub(super) artifacts: RootArtifactPublicationInputsV1,
@@ -126,6 +127,7 @@ pub(super) fn open(
     .map_err(invalid)?;
     super::clock::require_source_deadline(&data.source.source)?;
     Ok(OriginalInputs {
+        files,
         data,
         target,
         artifacts,
