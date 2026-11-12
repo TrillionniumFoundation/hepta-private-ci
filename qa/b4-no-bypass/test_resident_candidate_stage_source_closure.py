@@ -148,10 +148,21 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
             "Self::Candidate(_) => Ok(())",
         ):
             self.rejects(STAGES, "fn require_stage(", marker)
-        self.rejects(CANDIDATE, "fn execute_stage<'a>", "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(")
+        self.rejects(CANDIDATE, "fn execute_stage<'a>", "self.execute_original_evaluation(snapshot).await")
         self.rejects(AUTH, "fn original_attestations(", "stages.validate_recovery(snapshot).await?")
         self.rejects(AUTH, "fn original_attestations(", "let (_, fresh) = owner.read(cancellation).await?")
-        self.rejects(AUTH, "fn verify_attestations(", "LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal")
+        for marker in (
+            "LearningIterationStageV1::Proposal =>",
+            "snapshot.receipts.get(3) != Some(receipt)",
+            "receipt.predecessor != training.snapshot().head_digest",
+            "receipt.operation_id != profile.initial.request.operation_id",
+            "receipt.observed_unix_seconds > signature.issued_at",
+            "*candidate_bundle == candidate",
+            "*evaluation_profile == profile.initial.request.evaluation_profile",
+            "LearningEvidenceRoleV1::Evaluator",
+            "LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training]",
+        ):
+            self.rejects(AUTH, "fn verify_attestations(", marker)
         self.rejects(AUTH, "fn verify_attestations(", "snapshot.training_no_update_v2().is_none()")
 
 

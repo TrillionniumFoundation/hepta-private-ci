@@ -25,7 +25,7 @@ EXPECTED = {
     "cell_generation_original_physical_current": (MEMBER,),
     "learning_original_evaluation_panel_registration": (),
     "learning_original_evaluation_panel_owner": (),
-    "learning_original_evaluation_panel_current": (),
+    "learning_original_evaluation_panel_current": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",),
     "learning_original_evaluation_panel_member_current": (CORE,),
     "learning_original_evaluation_cohort_readback_current": (PROVIDER, MEMBER),
     "learning_original_evaluation_cohort_member_binding": (BINDING,),

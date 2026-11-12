@@ -55,7 +55,7 @@ EXPECTED = {
     "root_resident_final_observation": [
         "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
     ],
-    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs"],
+    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs","codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"],
     "root_resident_gate_training_cancel": [
         "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs"
     ],

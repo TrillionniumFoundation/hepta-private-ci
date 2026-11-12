@@ -102,8 +102,9 @@ pub(super) fn encode_completed(context: &Context, receipt: Receipt, current: u64
     let snapshot = encode_original_owner_snapshot_v1(&receipt.snapshot)?;
     let payload = learning_iteration_receipt_signing_bytes_v1(&receipt.receipt)?;
     let evidence = learning_owner_evidence::encode(&payload, &receipt.attestation)?;
-    // These remain within the existing 16 KiB channel ceiling. Oversized real
-    // contexts fail closed; this path does not enlarge a transport budget.
+    // Per-field bounds do not promise that both maxima fit in one frame.
+    // The service also checks the complete encoded envelope against the
+    // original 16 KiB ceiling; oversized real contexts fail closed.
     if snapshot.len() > 8192 || evidence.len() > 4096 {
         return Err(Error::Binding("bounded original Evaluation response"));
     }

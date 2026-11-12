@@ -15,7 +15,468 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 
 [privileged_inventory]
-required_boundary_ids = ["root_registered_learning_checkpoint_writer", "root_original_learning_checkpoint_exchange", "supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection", "memory_original_validated_target_retirement_ack", "memory_original_owner_current_readonly_receipt", "memory_original_notes_retirement_ack", "memory_original_calculator_retirement_ack", "memory_original_retirement_ack_commit", "authority_lease_exact_bounded_revoke", "root_live_admin_exact_issuer_revoke", "root_live_admin_committed_issuer_reply", "root_live_admin_exact_issuer_reply_record", "root_learning_explicit_registration", "root_learning_original_store_registration", "root_learning_original_store_reopen", "root_learning_original_owner_install", "root_learning_original_scope_seal", "root_learning_original_scope_capture", "root_learning_same_service_serve", "root_learning_registered_checkpoint_constructor", "root_learning_original_client_constructor", "root_learning_original_purpose_send", "root_learning_original_purpose_receive", "root_learning_original_handoff_consume", "root_learning_original_config_hold", "root_learning_original_stage_assembly", "root_learning_original_runtime_consume", "root_original_registered_ready_serve", "root_original_private_sealed_bytes", "root_learning_scoped_checkpoint_constructor", "root_learning_scoped_client_constructor", "root_learning_scoped_runtime_constructor", "learning_frozen_update_scope_constructor", "root_learning_scoped_profile_constructor", "root_learning_scoped_checkpoint_record", "learning_evidence_original_owner_constructor", "learning_evidence_original_owner_readback", "original_pinned_stream_explicit_uid", "cell_learning_evaluation_profile_freeze", "cell_learning_evaluation_receipt_prepare", "cell_learning_evaluation_original_readback", "generation_learning_original_stage_readback", "cell_original_evaluation_execution", "product_original_evaluation_execution", "root_learning_original_delivery_source", "root_learning_completed_circuit_source", "circuit_learning_exact_ack_retirement", "cell_completed_evaluation_readback", "product_completed_evaluation_readback", "cell_q24_single_head_training_plan", "cell_q24_single_head_candidate_validation", "cell_q24_native_training_fit", "cell_q24_original_training_observation", "learning_original_evaluator_attestation", "learning_original_evaluation_key", "circuit_feature_original_initial_publication", "circuit_feature_original_update_publication", "circuit_feature_guarded_private_cell", "circuit_feature_private_cell_writer", "circuit_feature_original_task_control", "circuit_q24_ordinary_profile_assembly", "circuit_feature_original_predecessor_recovery", "circuit_feature_acknowledged_readonly_history", "learning_original_training_receipt_create", "learning_original_training_receipt_recover", "learning_original_training_receipt_attest", "learning_original_training_receipt_readback", "cell_q24_original_training_execute", "cell_q24_original_training_pair_binding", "learning_original_training_stage_constructor", "learning_original_training_stage_execute", "learning_original_training_stage_readback", "learning_original_training_stage_attestation", "learning_original_training_snapshot_readback", "cell_q24_model_material_owner_create", "cell_q24_model_material_owner_recover", "cell_q24_model_material_owner_commit", "cell_q24_model_material_owner_readback", "learning_original_evaluation_receipt_create", "learning_original_evaluation_receipt_recover", "learning_original_evaluation_receipt_attest", "learning_original_evaluation_receipt_readback", "learning_original_owner_physical_current", "learning_original_training_model_create", "learning_original_training_model_recover", "learning_original_training_model_commit", "learning_original_training_model_readback", "learning_original_circuit_next_use_receipt_create", "learning_original_circuit_next_use_receipt_recover", "learning_original_circuit_next_use_receipt_attest", "learning_original_circuit_next_use_receipt_readback", "circuit_feature_original_next_use_observation", "learning_original_circuit_selection_receipt_create", "learning_original_circuit_selection_receipt_recover", "learning_original_circuit_selection_receipt_attest", "learning_original_circuit_selection_receipt_readback", "circuit_feature_original_selection_observation", "learning_original_material_create", "learning_original_material_recover", "learning_original_material_experience_attest", "learning_original_material_experience_readback", "learning_original_material_dataset_attest", "learning_original_material_dataset_readback", "learning_original_material_completed_dataset_read", "learning_original_training_source_capture", "learning_source_bound_training_owner_create", "learning_source_bound_training_owner_recover", "learning_source_bound_training_stage_constructor", "learning_source_bound_training_stage_execute", "learning_source_bound_training_stage_readback", "learning_source_bound_training_stage_attestation", "learning_source_bound_training_stage_model_create", "learning_source_bound_training_stage_model_recover", "learning_source_bound_training_stage_model_commit", "learning_source_bound_training_stage_model_readback", "learning_original_training_source_current", "learning_original_training_source_inputs", "learning_original_training_source_identity", "learning_source_bound_training_admission", "learning_source_bound_training_live_check", "learning_source_bound_training_work_deadline", "learning_original_material_readback_host", "learning_original_material_readback_custody", "learning_original_material_evidence_serve", "product_original_completed_execution_evidence_readback", "cell_original_completed_evaluation_evidence_readback", "product_original_execution_evidence_revalidate", "learning_original_circuit_model_selection_receipt_create", "learning_original_circuit_model_selection_receipt_recover", "learning_original_circuit_model_selection_receipt_attest", "learning_original_circuit_model_selection_receipt_readback", "learning_original_material_source_projection", "learning_original_material_source_decode", "learning_original_material_completed_source_read", "learning_original_material_source_serve", "learning_original_material_source_client", "learning_original_material_source_current", "learning_original_material_source_binding", "learning_original_remote_training_source_capture", "learning_original_training_command_client_create", "learning_original_training_command_client_recover", "learning_original_training_command_client_execute", "learning_original_training_command_client_readback", "learning_original_training_command_client_attestation", "learning_original_training_command_owner_create", "learning_original_training_command_owner_recover", "learning_original_training_command_owner_serve", "learning_original_training_command_owner_evidence", "learning_source_bound_training_command_context", "learning_original_owner_command_channel", "learning_original_owner_snapshot_encode", "learning_original_owner_snapshot_decode", "learning_original_execution_store_create", "learning_original_execution_store_recover", "learning_original_execution_store_readback_only", "learning_original_material_command_bootstrap", "learning_original_material_command_custody", "learning_original_material_command_serve_experience_commands", "learning_original_material_command_serve_dataset_commands", "learning_original_material_command_serve_experience_readback", "learning_original_material_command_serve_dataset_readback", "learning_original_material_command_serve_dataset_source", "learning_original_material_command_client_from_original_experience_stream", "learning_original_material_command_client_from_original_dataset_stream", "learning_original_material_command_client_recover_original_experience_stream", "learning_original_material_command_client_recover_original_dataset_stream", "learning_original_material_command_client_execute", "learning_original_material_command_client_readback", "learning_original_material_command_client_receipt_attestation", "learning_original_material_pair_readback", "learning_original_qualification_owner_create", "learning_original_qualification_owner_recover", "learning_original_qualification_owner_publish", "learning_original_qualification_owner_readback", "cell_original_qualification_publication", "learning_original_published_read_client_create", "learning_original_published_read_client_current", "learning_original_published_read_client_context", "learning_original_published_read_owner_create", "learning_original_published_read_owner_serve", "learning_original_source_input_current", "learning_original_circuit_selection_remote_attest", "learning_original_circuit_selection_remote_readback", "learning_original_circuit_next_use_remote_attest", "learning_original_circuit_next_use_remote_readback", "learning_original_selector_command_context", "learning_original_selector_command_owner_consume", "learning_original_selector_command_owner_profile", "learning_original_selector_command_owner_factory", "learning_original_selector_command_client_create", "learning_original_selector_command_client_recover", "learning_original_selector_command_client_execute", "learning_original_selector_command_client_readback", "learning_original_selector_command_client_attestation", "learning_original_selector_command_owner_serve", "learning_original_selector_command_owner_evidence", "learning_original_dataset_readback_attenuation", "learning_original_dataset_readback_current", "learning_original_dataset_readback_context", "learning_original_dataset_readback_cut", "learning_original_material_connection_create", "learning_original_material_connection_context", "learning_original_material_connection_dataset", "learning_original_training_bootstrap_create", "learning_original_training_bootstrap_recover", "learning_original_training_bootstrap_serve", "learning_original_training_bootstrap_evidence", "learning_original_training_initial_connection_create", "learning_original_training_initial_connection_recover", "learning_original_training_initial_connection_dataset", "learning_original_material_initial_context_check", "learning_original_material_dataset_context_check", "learning_original_next_use_command_context", "learning_original_next_use_command_owner_consume", "learning_original_next_use_command_owner_profile", "learning_original_next_use_command_owner_factory", "learning_original_next_use_command_client_create", "learning_original_next_use_command_client_recover", "learning_original_next_use_command_client_attest", "learning_original_next_use_command_client_readback", "learning_original_next_use_command_client_attestation", "learning_original_next_use_command_owner_serve", "learning_original_next_use_command_owner_evidence", "learning_original_candidate_material_native", "learning_original_candidate_material_verified", "learning_original_training_candidate_material", "learning_source_bound_training_candidate_material", "learning_original_candidate_initial_binding", "learning_original_candidate_client_binding", "learning_original_candidate_client_readback", "learning_original_candidate_command_serve", "learning_original_candidate_command_response", "learning_original_candidate_bootstrap_serve", "learning_original_no_update_stage_create", "learning_original_no_update_stage_recover", "learning_original_no_update_stage_initial", "learning_original_no_update_stage_resident_gate", "learning_original_no_update_stage_execute", "learning_original_selector_stage_binding", "learning_original_next_use_stage_binding", "learning_original_c_readiness_binding", "learning_original_c_readiness_current", "learning_original_c_readiness_serve", "cell_generation_original_physical_current", "root_resident_original_register", "root_resident_original_recover", "root_resident_original_custody_open", "root_resident_original_custody_retain", "root_resident_registration_create", "root_resident_registration_recover", "root_resident_service_register", "root_resident_service_recover", "root_resident_runtime_consume", "root_resident_coordinator_run", "root_resident_original_stream_serve", "root_resident_original_client_create", "root_resident_original_client_recover", "root_resident_original_client_readback", "root_resident_postclaim_admit", "root_resident_preclaim_channel", "root_resident_final_observation", "root_resident_gate_effect_current", "root_resident_gate_training_cancel", "root_resident_original_intent_fence", "root_resident_original_intent_current", "root_resident_late_enrollment_config", "root_resident_late_enrollment_submit", "root_resident_late_delivery_run", "root_resident_late_source_candidate", "root_resident_checkpoint_register", "root_resident_checkpoint_recover", "root_resident_checkpoint_fresh_cas", "root_resident_registered_fresh_admit", "root_resident_gate_begin_dispatch", "root_resident_gate_commit_checkpoint", "learning_original_evaluation_panel_registration", "learning_original_evaluation_panel_owner", "learning_original_evaluation_panel_current", "learning_original_evaluation_panel_member_current", "learning_original_candidate_stage_create", "learning_original_candidate_stage_recover", "learning_original_candidate_stage_initial", "learning_original_candidate_stage_resident_gate", "learning_original_candidate_stage_current_material", "root_resident_candidate_runtime_consume", "root_resident_concrete_stages_initial", "root_resident_concrete_stages_gate", "root_resident_concrete_stages_route", "learning_original_evaluation_cohort_capture", "learning_original_evaluation_holdout_provider", "learning_original_evaluation_material_current", "learning_original_source_policy_projection", "learning_original_evaluation_cohort_readback_retain", "learning_original_evaluation_cohort_readback_after_release", "learning_original_evaluation_cohort_readback_cold", "learning_original_evaluation_cohort_readback_current", "learning_original_evaluation_cohort_member_binding", "learning_original_evaluation_cohort_final_authentication"]
+required_boundary_ids = [
+  "root_registered_learning_checkpoint_writer",
+  "root_original_learning_checkpoint_exchange",
+  "supervisor_authorized_boot",
+  "memory_production_writer_open",
+  "cognitive_store_recovery_open",
+  "cognitive_production_mutation_capability",
+  "agentd_production_writer_host",
+  "agentd_production_operation_runtime",
+  "learning_artifact_owner_bootstrap",
+  "learning_artifact_owner_restart",
+  "learning_artifact_verified_current_view",
+  "provider_effect_coordinator",
+  "http_provider_effect_adapter",
+  "final_use_open_state",
+  "final_use_claim",
+  "final_use_claim_raw",
+  "final_use_delivery",
+  "final_use_delivery_witness",
+  "final_use_delivery_raw",
+  "final_use_dispatch",
+  "final_use_dispatch_witness",
+  "final_use_dispatch_raw",
+  "final_use_revocation_update",
+  "final_use_approval_trust",
+  "final_use_approval_verify",
+  "final_use_revocation_feed_trust",
+  "final_use_revocation_feed_apply",
+  "final_use_revocation_convergence_trust",
+  "final_use_revocation_convergence_verify",
+  "bao_final_use_consumer",
+  "bao_registered_consumer_new",
+  "bao_final_use_host_new",
+  "bao_registered_revocation_update",
+  "bao_registered_final_use_host",
+  "authority_lease_open_state",
+  "authority_lease_put",
+  "authority_lease_revoke",
+  "authority_lease_prune",
+  "authority_lease_epoch_advance",
+  "authority_lease_verify_use",
+  "authority_lease_delivery",
+  "authority_lease_delivery_witness",
+  "authority_lease_dispatch_raw",
+  "authority_lease_dispatch_witness",
+  "final_use_async_dispatch_fence",
+  "automation_taskflow_provider_effect_bridge",
+  "final_use_guarded_effect",
+  "notes_original_pending_call_proof",
+  "notes_original_operation_observation_proof",
+  "notes_original_thread_prepare",
+  "notes_original_writer_terminal_receipt",
+  "memory_original_owner_current_publication",
+  "memory_original_protected_current_readback",
+  "original_authbus_human_delivery_read",
+  "notes_original_human_turn_proof",
+  "root_registered_human_text_writer",
+  "root_registered_human_text_admission",
+  "root_human_text_same_issuer_cas",
+  "root_retained_human_text_lookup",
+  "root_live_human_session_install",
+  "root_original_human_text_verification",
+  "notes_original_turn_unprepared_admission",
+  "root_host_original_human_text_verification",
+  "notes_original_human_text_verification",
+  "root_prepared_fresh_session",
+  "root_retained_native_ui_launch",
+  "root_prepared_native_ui_execution",
+  "root_material_capture_original_image",
+  "root_material_verify_retained_image",
+  "root_material_install_original_generation",
+  "root_material_reopen_original_installation",
+  "root_material_release_registered_custody",
+  "root_material_fresh_registered_session",
+  "root_material_recover_registered_session",
+  "root_material_existing_session_open",
+  "root_material_resume_registered_handoff",
+  "root_material_current_observation_chain",
+  "root_original_writer_descriptor_chain",
+  "root_same_retained_service_serve",
+  "root_registered_material_recovery",
+  "root_registered_material_handoff_resume",
+  "root_original_writer_purpose_send",
+  "root_original_writer_purpose_receive",
+  "agentd_original_root_writer_consume",
+  "root_registered_writer_rotation",
+  "native_original_operation_host_attach",
+  "native_original_owner_current_ack",
+  "native_original_terminal_history_observation",
+  "root_original_authority_initialize",
+  "root_original_writer_authorize",
+  "root_same_registered_bootstrap_seal",
+  "root_same_registered_bootstrap_capture",
+  "root_original_physical_login_install",
+  "root_original_writer_successor_shape",
+  "root_original_issuer_writer_rotation",
+  "root_physical_current_retired_adoption",
+  "root_physical_recovery_retirement_admission",
+  "root_physical_fresh_service_genesis",
+  "root_physical_registered_checkpoint_genesis",
+  "root_physical_current_backend_genesis",
+  "root_registered_physical_current_observation",
+  "root_original_two_descriptor_send",
+  "root_original_two_descriptor_receive",
+  "native_original_writer_terminal_observation",
+  "native_original_writer_next_delivery_observation",
+  "root_notes_original_startup_before",
+  "root_notes_recovered_successor_startup_before",
+  "root_notes_original_reserved_session_binding",
+  "root_notes_registered_successor_policy_replace",
+  "root_notes_original_issuer_policy_cas",
+  "root_desktop_original_issuer_pair_policy_cas",
+  "root_retained_native_ready_launch",
+  "root_prepared_native_ready_execution",
+  "root_prepared_native_ready_text_session",
+  "root_original_bound_native_lanes",
+  "root_original_bound_native_lane_acceptance",
+  "root_original_ready_lane_bridge",
+  "notes_original_retained_reference_projection",
+  "desktop_original_retained_reference_projection",
+  "memory_original_sender_read_only_cut",
+  "notes_recorded_original_observation_proof",
+  "notes_previous_recovery_typed_resolution",
+  "root_live_admin_enable",
+  "root_live_admin_mint",
+  "root_live_admin_exchange",
+  "root_live_admin_checked_dispatch",
+  "root_live_admin_signed_artifact_verify",
+  "root_live_admin_exact_issuer_head_revoke",
+  "root_live_admin_fixed_notes_revoke_prepare",
+  "root_live_admin_existing_effect_revoke",
+  "root_live_admin_existing_signed_grant_revoke",
+  "root_live_admin_same_service_signed_revoke",
+  "root_live_admin_original_issue_observer_enable",
+  "root_live_admin_original_issue_observation",
+  "root_live_admin_original_bounded_lease_revoke",
+  "root_live_admin_retained_artifact_observe",
+  "root_live_admin_original_effect_state_observe",
+  "root_live_admin_same_service_effect_state_observe",
+  "agentd_original_registered_writer_custody",
+  "agentd_original_recovered_writer_custody_factory",
+  "agentd_original_root_handoff_unique_file",
+  "calculator_previous_recovery_owner_target",
+  "calculator_previous_recovery_host_attach",
+  "calculator_previous_recovery_process_attach",
+  "calculator_previous_recovery_runtime_selection",
+  "calculator_previous_recovery_config_selection",
+  "root_original_issuer_renewal_prepare",
+  "root_original_issuer_renewal_commit",
+  "root_desktop_original_startup_before",
+  "root_desktop_recovered_successor_startup_before",
+  "root_desktop_registered_successor_policy_replace",
+  "desktop_previous_original_cut_selection",
+  "desktop_previous_joint_config_selection",
+  "memory_original_validated_target_retirement_ack",
+  "memory_original_owner_current_readonly_receipt",
+  "memory_original_notes_retirement_ack",
+  "memory_original_calculator_retirement_ack",
+  "memory_original_retirement_ack_commit",
+  "authority_lease_exact_bounded_revoke",
+  "root_live_admin_exact_issuer_revoke",
+  "root_live_admin_committed_issuer_reply",
+  "root_live_admin_exact_issuer_reply_record",
+  "root_learning_explicit_registration",
+  "root_learning_original_store_registration",
+  "root_learning_original_store_reopen",
+  "root_learning_original_owner_install",
+  "root_learning_original_scope_seal",
+  "root_learning_original_scope_capture",
+  "root_learning_same_service_serve",
+  "root_learning_registered_checkpoint_constructor",
+  "root_learning_original_client_constructor",
+  "root_learning_original_purpose_send",
+  "root_learning_original_purpose_receive",
+  "root_learning_original_handoff_consume",
+  "root_learning_original_config_hold",
+  "root_learning_original_stage_assembly",
+  "root_learning_original_runtime_consume",
+  "root_original_registered_ready_serve",
+  "root_original_private_sealed_bytes",
+  "root_learning_scoped_checkpoint_constructor",
+  "root_learning_scoped_client_constructor",
+  "root_learning_scoped_runtime_constructor",
+  "learning_frozen_update_scope_constructor",
+  "root_learning_scoped_profile_constructor",
+  "root_learning_scoped_checkpoint_record",
+  "learning_evidence_original_owner_constructor",
+  "learning_evidence_original_owner_readback",
+  "original_pinned_stream_explicit_uid",
+  "cell_learning_evaluation_profile_freeze",
+  "cell_learning_evaluation_receipt_prepare",
+  "cell_learning_evaluation_original_readback",
+  "generation_learning_original_stage_readback",
+  "cell_original_evaluation_execution",
+  "product_original_evaluation_execution",
+  "root_learning_original_delivery_source",
+  "root_learning_completed_circuit_source",
+  "circuit_learning_exact_ack_retirement",
+  "cell_completed_evaluation_readback",
+  "product_completed_evaluation_readback",
+  "cell_q24_single_head_training_plan",
+  "cell_q24_single_head_candidate_validation",
+  "cell_q24_native_training_fit",
+  "cell_q24_original_training_observation",
+  "learning_original_evaluator_attestation",
+  "learning_original_evaluation_key",
+  "circuit_feature_original_initial_publication",
+  "circuit_feature_original_update_publication",
+  "circuit_feature_guarded_private_cell",
+  "circuit_feature_private_cell_writer",
+  "circuit_feature_original_task_control",
+  "circuit_q24_ordinary_profile_assembly",
+  "circuit_feature_original_predecessor_recovery",
+  "circuit_feature_acknowledged_readonly_history",
+  "learning_original_training_receipt_create",
+  "learning_original_training_receipt_recover",
+  "learning_original_training_receipt_attest",
+  "learning_original_training_receipt_readback",
+  "cell_q24_original_training_execute",
+  "cell_q24_original_training_pair_binding",
+  "learning_original_training_stage_constructor",
+  "learning_original_training_stage_execute",
+  "learning_original_training_stage_readback",
+  "learning_original_training_stage_attestation",
+  "learning_original_training_snapshot_readback",
+  "cell_q24_model_material_owner_create",
+  "cell_q24_model_material_owner_recover",
+  "cell_q24_model_material_owner_commit",
+  "cell_q24_model_material_owner_readback",
+  "learning_original_evaluation_receipt_create",
+  "learning_original_evaluation_receipt_recover",
+  "learning_original_evaluation_receipt_attest",
+  "learning_original_evaluation_receipt_readback",
+  "learning_original_owner_physical_current",
+  "learning_original_training_model_create",
+  "learning_original_training_model_recover",
+  "learning_original_training_model_commit",
+  "learning_original_training_model_readback",
+  "learning_original_circuit_next_use_receipt_create",
+  "learning_original_circuit_next_use_receipt_recover",
+  "learning_original_circuit_next_use_receipt_attest",
+  "learning_original_circuit_next_use_receipt_readback",
+  "circuit_feature_original_next_use_observation",
+  "learning_original_circuit_selection_receipt_create",
+  "learning_original_circuit_selection_receipt_recover",
+  "learning_original_circuit_selection_receipt_attest",
+  "learning_original_circuit_selection_receipt_readback",
+  "circuit_feature_original_selection_observation",
+  "learning_original_material_create",
+  "learning_original_material_recover",
+  "learning_original_material_experience_attest",
+  "learning_original_material_experience_readback",
+  "learning_original_material_dataset_attest",
+  "learning_original_material_dataset_readback",
+  "learning_original_material_completed_dataset_read",
+  "learning_original_training_source_capture",
+  "learning_source_bound_training_owner_create",
+  "learning_source_bound_training_owner_recover",
+  "learning_source_bound_training_stage_constructor",
+  "learning_source_bound_training_stage_execute",
+  "learning_source_bound_training_stage_readback",
+  "learning_source_bound_training_stage_attestation",
+  "learning_source_bound_training_stage_model_create",
+  "learning_source_bound_training_stage_model_recover",
+  "learning_source_bound_training_stage_model_commit",
+  "learning_source_bound_training_stage_model_readback",
+  "learning_original_training_source_current",
+  "learning_original_training_source_inputs",
+  "learning_original_training_source_identity",
+  "learning_source_bound_training_admission",
+  "learning_source_bound_training_live_check",
+  "learning_source_bound_training_work_deadline",
+  "learning_original_material_readback_host",
+  "learning_original_material_readback_custody",
+  "learning_original_material_evidence_serve",
+  "product_original_completed_execution_evidence_readback",
+  "cell_original_completed_evaluation_evidence_readback",
+  "product_original_execution_evidence_revalidate",
+  "learning_original_circuit_model_selection_receipt_create",
+  "learning_original_circuit_model_selection_receipt_recover",
+  "learning_original_circuit_model_selection_receipt_attest",
+  "learning_original_circuit_model_selection_receipt_readback",
+  "learning_original_material_source_projection",
+  "learning_original_material_source_decode",
+  "learning_original_material_completed_source_read",
+  "learning_original_material_source_serve",
+  "learning_original_material_source_client",
+  "learning_original_material_source_current",
+  "learning_original_material_source_binding",
+  "learning_original_remote_training_source_capture",
+  "learning_original_training_command_client_create",
+  "learning_original_training_command_client_recover",
+  "learning_original_training_command_client_execute",
+  "learning_original_training_command_client_readback",
+  "learning_original_training_command_client_attestation",
+  "learning_original_training_command_owner_create",
+  "learning_original_training_command_owner_recover",
+  "learning_original_training_command_owner_serve",
+  "learning_original_training_command_owner_evidence",
+  "learning_source_bound_training_command_context",
+  "learning_original_owner_command_channel",
+  "learning_original_owner_snapshot_encode",
+  "learning_original_owner_snapshot_decode",
+  "learning_original_execution_store_create",
+  "learning_original_execution_store_recover",
+  "learning_original_execution_store_readback_only",
+  "learning_original_material_command_bootstrap",
+  "learning_original_material_command_custody",
+  "learning_original_material_command_serve_experience_commands",
+  "learning_original_material_command_serve_dataset_commands",
+  "learning_original_material_command_serve_experience_readback",
+  "learning_original_material_command_serve_dataset_readback",
+  "learning_original_material_command_serve_dataset_source",
+  "learning_original_material_command_client_from_original_experience_stream",
+  "learning_original_material_command_client_from_original_dataset_stream",
+  "learning_original_material_command_client_recover_original_experience_stream",
+  "learning_original_material_command_client_recover_original_dataset_stream",
+  "learning_original_material_command_client_execute",
+  "learning_original_material_command_client_readback",
+  "learning_original_material_command_client_receipt_attestation",
+  "learning_original_material_pair_readback",
+  "learning_original_qualification_owner_create",
+  "learning_original_qualification_owner_recover",
+  "learning_original_qualification_owner_publish",
+  "learning_original_qualification_owner_readback",
+  "cell_original_qualification_publication",
+  "learning_original_published_read_client_create",
+  "learning_original_published_read_client_current",
+  "learning_original_published_read_client_context",
+  "learning_original_published_read_owner_create",
+  "learning_original_published_read_owner_serve",
+  "learning_original_source_input_current",
+  "learning_original_circuit_selection_remote_attest",
+  "learning_original_circuit_selection_remote_readback",
+  "learning_original_circuit_next_use_remote_attest",
+  "learning_original_circuit_next_use_remote_readback",
+  "learning_original_selector_command_context",
+  "learning_original_selector_command_owner_consume",
+  "learning_original_selector_command_owner_profile",
+  "learning_original_selector_command_owner_factory",
+  "learning_original_selector_command_client_create",
+  "learning_original_selector_command_client_recover",
+  "learning_original_selector_command_client_execute",
+  "learning_original_selector_command_client_readback",
+  "learning_original_selector_command_client_attestation",
+  "learning_original_selector_command_owner_serve",
+  "learning_original_selector_command_owner_evidence",
+  "learning_original_dataset_readback_attenuation",
+  "learning_original_dataset_readback_current",
+  "learning_original_dataset_readback_context",
+  "learning_original_dataset_readback_cut",
+  "learning_original_material_connection_create",
+  "learning_original_material_connection_context",
+  "learning_original_material_connection_dataset",
+  "learning_original_training_bootstrap_create",
+  "learning_original_training_bootstrap_recover",
+  "learning_original_training_bootstrap_serve",
+  "learning_original_training_bootstrap_evidence",
+  "learning_original_training_initial_connection_create",
+  "learning_original_training_initial_connection_recover",
+  "learning_original_training_initial_connection_dataset",
+  "learning_original_material_initial_context_check",
+  "learning_original_material_dataset_context_check",
+  "learning_original_next_use_command_context",
+  "learning_original_next_use_command_owner_consume",
+  "learning_original_next_use_command_owner_profile",
+  "learning_original_next_use_command_owner_factory",
+  "learning_original_next_use_command_client_create",
+  "learning_original_next_use_command_client_recover",
+  "learning_original_next_use_command_client_attest",
+  "learning_original_next_use_command_client_readback",
+  "learning_original_next_use_command_client_attestation",
+  "learning_original_next_use_command_owner_serve",
+  "learning_original_next_use_command_owner_evidence",
+  "learning_original_candidate_material_native",
+  "learning_original_candidate_material_verified",
+  "learning_original_training_candidate_material",
+  "learning_source_bound_training_candidate_material",
+  "learning_original_candidate_initial_binding",
+  "learning_original_candidate_client_binding",
+  "learning_original_candidate_client_readback",
+  "learning_original_candidate_command_serve",
+  "learning_original_candidate_command_response",
+  "learning_original_candidate_bootstrap_serve",
+  "learning_original_no_update_stage_create",
+  "learning_original_no_update_stage_recover",
+  "learning_original_no_update_stage_initial",
+  "learning_original_no_update_stage_resident_gate",
+  "learning_original_no_update_stage_execute",
+  "learning_original_selector_stage_binding",
+  "learning_original_next_use_stage_binding",
+  "learning_original_c_readiness_binding",
+  "learning_original_c_readiness_current",
+  "learning_original_c_readiness_serve",
+  "cell_generation_original_physical_current",
+  "root_resident_original_register",
+  "root_resident_original_recover",
+  "root_resident_original_custody_open",
+  "root_resident_original_custody_retain",
+  "root_resident_registration_create",
+  "root_resident_registration_recover",
+  "root_resident_service_register",
+  "root_resident_service_recover",
+  "root_resident_runtime_consume",
+  "root_resident_coordinator_run",
+  "root_resident_original_stream_serve",
+  "root_resident_original_client_create",
+  "root_resident_original_client_recover",
+  "root_resident_original_client_readback",
+  "root_resident_postclaim_admit",
+  "root_resident_preclaim_channel",
+  "root_resident_final_observation",
+  "root_resident_gate_effect_current",
+  "root_resident_gate_training_cancel",
+  "root_resident_original_intent_fence",
+  "root_resident_original_intent_current",
+  "root_resident_late_enrollment_config",
+  "root_resident_late_enrollment_submit",
+  "root_resident_late_delivery_run",
+  "root_resident_late_source_candidate",
+  "root_resident_checkpoint_register",
+  "root_resident_checkpoint_recover",
+  "root_resident_checkpoint_fresh_cas",
+  "root_resident_registered_fresh_admit",
+  "root_resident_gate_begin_dispatch",
+  "root_resident_gate_commit_checkpoint",
+  "learning_original_evaluation_panel_registration",
+  "learning_original_evaluation_panel_owner",
+  "learning_original_evaluation_panel_current",
+  "learning_original_evaluation_panel_member_current",
+  "learning_original_candidate_stage_create",
+  "learning_original_candidate_stage_recover",
+  "learning_original_candidate_stage_initial",
+  "learning_original_candidate_stage_resident_gate",
+  "learning_original_candidate_stage_current_material",
+  "root_resident_candidate_runtime_consume",
+  "root_resident_concrete_stages_initial",
+  "root_resident_concrete_stages_gate",
+  "root_resident_concrete_stages_route",
+  "learning_original_evaluation_cohort_capture",
+  "learning_original_evaluation_holdout_provider",
+  "learning_original_evaluation_material_current",
+  "learning_original_source_policy_projection",
+  "learning_original_evaluation_cohort_readback_retain",
+  "learning_original_evaluation_cohort_readback_after_release",
+  "learning_original_evaluation_cohort_readback_cold",
+  "learning_original_evaluation_cohort_readback_current",
+  "learning_original_evaluation_cohort_member_binding",
+  "learning_original_evaluation_cohort_final_authentication",
+  "learning_original_evaluation_host_consume",
+  "learning_original_evaluation_host_profile",
+  "learning_original_evaluation_host_receipt_current",
+  "learning_original_evaluation_host_constructor",
+  "learning_original_evaluation_host_serve",
+  "learning_original_evaluation_connection_create",
+  "learning_original_evaluation_connection_recover",
+  "learning_original_evaluation_connection_training",
+  "learning_original_evaluation_connection_recovery",
+  "learning_original_evaluation_command_execute",
+  "learning_original_evaluation_command_readback",
+  "learning_original_evaluation_command_attestation",
+]
 
 
 
@@ -7540,7 +8001,7 @@ symbol = "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion"
 receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
 definition_markers = ["pub async fn attest_original_completion<"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
 caller_markers = []
 
 
@@ -7558,7 +8019,7 @@ symbol = "OriginalCellEvaluationReceiptOwnerV1::readback"
 receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
 definition_markers = ["pub async fn readback<"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
 caller_markers = []
 
 
@@ -9728,7 +10189,7 @@ id = "learning_original_owner_command_channel"
 symbol = "original_owner_command_channel_v1"
 definition_path = "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
 definition_markers = ["pub(crate) fn original_owner_command_channel_v1("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs","codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_material_command.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs","codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs","codex-rs/hepta-agentd/src/circuit_learning_read_service.rs","codex-rs/hepta-agentd/src/circuit_selection_command.rs","codex-rs/hepta-agentd/src/circuit_selection_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs","codex-rs/hepta-agentd/src/circuit_next_use_command.rs","codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs","codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs","codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs"]
 caller_markers = []
 
 
@@ -9738,7 +10199,7 @@ id = "learning_original_owner_snapshot_encode"
 symbol = "encode_original_owner_snapshot_v1"
 definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
 definition_markers = ["pub(crate) fn encode_original_owner_snapshot_v1("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs","codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs","codex-rs/hepta-agentd/src/circuit_selection_command.rs","codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs","codex-rs/hepta-agentd/src/circuit_next_use_command.rs","codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs","codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs","codex-rs/hepta-agentd/src/circuit_selection_command.rs","codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs","codex-rs/hepta-agentd/src/circuit_next_use_command.rs","codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs"]
 caller_markers = []
 
 
@@ -9749,7 +10210,7 @@ id = "learning_original_owner_snapshot_decode"
 symbol = "decode_original_owner_snapshot_v1"
 definition_path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
 definition_markers = ["pub(crate) fn decode_original_owner_snapshot_v1("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs","codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs","codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs","codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs","codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs","codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs","codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs"]
 caller_markers = []
 
 
@@ -13008,7 +13469,7 @@ id = "root_resident_gate_effect_current"
 symbol = "RootResidentLearningEffectGateV3::require_current"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs"
 definition_markers = ["pub(crate) async fn require_current("]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs","codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"]
 caller_markers = []
 receiver_type = "RootResidentLearningEffectGateV3"
 
@@ -13212,7 +13673,7 @@ required_function_order = [{"function" = "fn compose(", "sequence" = ["stages: R
 path = "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs"
 required = ["pub(super) async fn original_attestations(", "pub(super) fn verify_attestations(", "stages: &ResidentOriginalStageOwnersV3"]
 forbidden = ["AllowVerifier", "permit_all", "SigningKey::generate", "SigningKey::from_bytes", "SignedLearningEvidenceV1::sign", "sign_payload(", "execute_stage("]
-required_function_order = [{"function" = "fn original_attestations(", "sequence" = ["profile.scope.validate_snapshot(snapshot)?", "stages.validate_recovery(snapshot).await?", "for receipt in &snapshot.receipts", "owner.read(cancellation).await?", "stages.receipt_attestation(snapshot, receipt, now / 1_000).await?", "let (_, fresh) = owner.read(cancellation).await?", "verify_attestations(", "fresh / 1_000", "Ok(signatures)"]}, {"function" = "fn verify_attestations(", "sequence" = ["profile.require_verifier(verifier)", "profile.scope.validate_snapshot(snapshot)?", "snapshot.request != profile.initial.request || snapshot.owners != profile.initial.owners", "signatures.len() != snapshot.receipts.len()", "signatures.len() > 5", "verifier.trust_digest() != snapshot.owners.evidence_trust_digest", "snapshot.receipts.iter().zip(signatures)", "LearningIterationStageV1::NextUse => LearningEvidenceRoleV1::Observer", "LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator", "LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector", "LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal", "return Err(Error::OwnerUnavailable(", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "verifier.verify(role, signature, &payload, now)", "evidence.principal().principal_id != receipt.actor_id", "&receipt.actor_id != snapshot.owners.owner(stage)", "evidence.trust_digest() != snapshot.owners.evidence_trust_digest", "evidence.objective_digest() != snapshot.request.envelope.objective_digest", "verified.push((stage, evidence))", "snapshot.training_no_update_v2().is_none()", "LearningIterationStageV1::NextUse", "verify_signed_actor_separation(&previous.1, current, now)", "Ok(())"]}]
+required_function_order = [{"function" = "fn original_attestations(","sequence" = ["profile.scope.validate_snapshot(snapshot)?","stages.validate_recovery(snapshot).await?","for receipt in &snapshot.receipts","owner.read(cancellation).await?","stages.receipt_attestation(snapshot, receipt, now / 1_000).await?","let (_, fresh) = owner.read(cancellation).await?","verify_attestations(","fresh / 1_000","Ok(signatures)"]},{"function" = "fn verify_attestations(","sequence" = ["profile.require_verifier(verifier)","profile.scope.validate_snapshot(snapshot)?","snapshot.request != profile.initial.request || snapshot.owners != profile.initial.owners","signatures.len() != snapshot.receipts.len()","signatures.len() > 5","verifier.trust_digest() != snapshot.owners.evidence_trust_digest","snapshot.receipts.iter().zip(signatures)","LearningIterationStageV1::NextUse => LearningEvidenceRoleV1::Observer","LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator","LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector","LearningIterationStageV1::Evaluation =>","LearningIterationCoordinatorV1::from_snapshot(","profile.initial.clone()","snapshot.receipts.len() < 4 || snapshot.training_no_update_v2().is_some()","snapshot.receipts.get(3) != Some(receipt)","for original in &snapshot.receipts[..3]","training.record(original.clone(), original.observed_unix_seconds)?","training.candidate().ok_or(Error::WrongScope)?","training.next_stage() != Some(LearningIterationStageV1::Evaluation)","receipt.predecessor != training.snapshot().head_digest","receipt.operation_id != profile.initial.request.operation_id","receipt.observed_unix_seconds > signature.issued_at","LearningIterationObservationV1::Evaluation","*candidate_bundle == candidate","*evaluation_profile == profile.initial.request.evaluation_profile","LearningEvidenceRoleV1::Evaluator","LearningIterationStageV1::Proposal =>","return Err(Error::OwnerUnavailable(","learning_iteration_receipt_signing_bytes_v1(receipt)?","verifier.verify(role, signature, &payload, now)","evidence.principal().principal_id != receipt.actor_id","&receipt.actor_id != snapshot.owners.owner(stage)","evidence.trust_digest() != snapshot.owners.evidence_trust_digest","evidence.objective_digest() != snapshot.request.envelope.objective_digest","verified.push((stage, evidence))","LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training]","snapshot.training_no_update_v2().is_none()","LearningIterationStageV1::NextUse","verify_signed_actor_separation(&previous.1, current, now)","Ok(())"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs"
@@ -13341,7 +13802,7 @@ symbol = "OriginalCellEvaluationPanelOwnerV1::read_current"
 receiver_type = "OriginalCellEvaluationPanelOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
 definition_markers = ["pub async fn read_current(", "self.read_current_with_clock(original::now).await", "self.fenced = true", "self.read_original_panel(&mut clock).await", "if result.is_ok()"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -13420,27 +13881,27 @@ symbol = "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate"
 receiver_type = "OriginalCellQ24CandidateStageOwnersV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs"
 definition_markers = ["pub(super) async fn read_original_candidate("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs","codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"]
 caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
-required = ["pub struct OriginalCellQ24CandidateStageStreamsV1", "pub candidate_material: OriginalCellQ24NoUpdatePeerStreamV1", "common: OriginalCellQ24NoUpdateStageOwnersV1", "protocol: OriginalCellEvaluationPanelRegistrationV1", "candidate: Mutex<CandidateLane>", "end: Instant", "impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1"]
+required = ["pub struct OriginalCellQ24CandidateStageStreamsV1","pub candidate_material: OriginalCellQ24NoUpdatePeerStreamV1","common: OriginalCellQ24NoUpdateStageOwnersV1","protocol: OriginalCellEvaluationPanelRegistrationV1","candidate: Mutex<CandidateLane>","end: Instant","impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV1","pub evaluator: OriginalCellQ24NoUpdatePeerStreamV1","evaluation: Mutex<EvaluationLane>"]
 forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "permit_all", "if false", "unwrap_or", "transmute", "PreparedLearningIterationProposalV1 {", "LearningIterationObservationV1::Evaluation", "LearningIterationObservationV1::TrainingNoUpdateV2", "impl Clone for OriginalCellQ24CandidateStageOwnersV1", "pub common: OriginalCellQ24NoUpdateStageOwnersV1", "pub protocol:", "pub candidate:", "pub fn install_fresh_resident_gate(", "RootResidentLearningEffectGateV3::new"]
 required_function_order = [{"function" = "fn from_original_streams(", "sequence" = ["fn from_original_streams(", "inputs::bind(material, streams, protocol, baseline, Origin::Fresh)"], "top_level" = []}, {"function" = "fn recover_original_streams(", "sequence" = ["fn recover_original_streams(", "inputs::bind(material, streams, protocol, baseline, Origin::Recovered)"], "top_level" = []}, {"function" = "fn require_initial(", "sequence" = ["fn require_initial(", "OriginalCellQ24NoUpdateStageOwnersV1::require_initial(", "initial.request.evaluation_profile != self.protocol.evaluation_profile()", "self.baseline.components() != &initial.request.selected_bundle.components", "Instant::now() >= self.end", "return Err(Error::WrongScope)", "Ok(())"], "top_level" = ["OriginalCellQ24NoUpdateStageOwnersV1::require_initial(", "if initial.request.evaluation_profile"]}, {"function" = "fn install_fresh_resident_gate(", "sequence" = ["fn install_fresh_resident_gate(", "&mut self", "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(", "&mut self.common, gate"], "top_level" = ["OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate("]}, {"function" = "fn require_live_deadline(", "sequence" = ["fn require_live_deadline(", "Instant::now() >= self.end", "return Err(Error::DeadlineExceeded)", "Ok(())"], "top_level" = ["if Instant::now() >= self.end"]}]
-required_order = [["fn validate_recovery<'a>", "tokio::time::timeout_at(self.end.into()", "self.require_live_deadline()?", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "self.common.origin == Origin::Recovered", "snapshot.receipts.len() == 3 && coordinator.candidate().is_some()", "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(", "LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await", "fn execute_stage<'a>"], ["fn execute_stage<'a>", "tokio::time::timeout_at(self.end.into()", "self.require_live_deadline()?", "if stage == Stage::Evaluation", "self.common.origin != Origin::Fresh", "return Err(Error::WrongScope)", "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(", "return Err(Error::OwnerUnavailable(", "matches!(stage, Stage::Selection | Stage::NextUse)", "snapshot.training_no_update_v2().is_none()", "return Err(Error::OwnerUnavailable(", "LearningIterationStageOwnerPortsV1::execute_stage(&self.common, snapshot, stage).await", "fn prepare_proposal<'a>"], ["fn prepare_proposal<'a>", "Box::pin(async", "Err(Error::OwnerUnavailable(", "fn receipt_attestation<'a>"], ["fn receipt_attestation<'a>", "tokio::time::timeout_at(self.end.into()", "self.require_live_deadline()?", "LearningIterationStageOwnerPortsV1::receipt_attestation(", "&self.common, snapshot, receipt, now_unix_seconds", ".await"]]
+required_order = [["fn validate_recovery<'a>","tokio::time::timeout_at(self.end.into()","self.require_live_deadline()?","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?","coordinator.candidate().is_some() && snapshot.receipts.len() >= 4","self.read_original_evaluation(snapshot).await?","snapshot.receipts.len() != 4","Err(Error::OwnerUnavailable(","self.common.origin == Origin::Recovered","snapshot.receipts.len() == 3 && coordinator.candidate().is_some()","OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(","CandidateRead::Readback","LearningIterationStageOwnerPortsV1::validate_recovery(&self.common, snapshot).await","fn execute_stage<'a>"],["fn execute_stage<'a>","tokio::time::timeout_at(self.end.into()","self.require_live_deadline()?","if stage == Stage::Evaluation","self.common.origin != Origin::Fresh","return Err(Error::WrongScope)","return self.execute_original_evaluation(snapshot).await","matches!(stage, Stage::Selection | Stage::NextUse)","snapshot.training_no_update_v2().is_none()","return Err(Error::OwnerUnavailable(","LearningIterationStageOwnerPortsV1::execute_stage(&self.common, snapshot, stage).await","fn prepare_proposal<'a>"],["fn prepare_proposal<'a>","Box::pin(async","Err(Error::OwnerUnavailable(","fn receipt_attestation<'a>"],["fn receipt_attestation<'a>","tokio::time::timeout_at(self.end.into()","self.require_live_deadline()?","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?","coordinator.candidate().is_some() && snapshot.receipts.len() >= 3","self.training_prefix(snapshot)?","receipt.observation.stage() == Stage::Evaluation","self.read_original_evaluation(snapshot).await?","original.receipt() != receipt","original.attestation().clone()","Stage::Experience | Stage::Dataset | Stage::Training","LearningIterationStageOwnerPortsV1::receipt_attestation(","&self.common, &training, receipt, now_unix_seconds","Err(Error::OwnerUnavailable(","LearningIterationStageOwnerPortsV1::receipt_attestation(","&self.common, snapshot, receipt, now_unix_seconds"]]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs"
 required = ["pub(super) fn bind(", "Origin::Fresh", "Origin::Recovered", "baseline: Arc<LoadedCellQ24ModelV1>"]
 forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "permit_all", "if false", "unwrap_or", "transmute", "PreparedLearningIterationProposalV1 {", "LearningIterationObservationV1::Evaluation", "LearningIterationObservationV1::TrainingNoUpdateV2", "from_original_dataset(", "pub fn bind(", "SignedLearningEvidenceV1 {", "OriginalCellQ24CandidateMaterialV1 {"]
-required_function_order = [{"function" = "fn bind(", "sequence" = ["fn bind(", "let admitted_at = Instant::now()", "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)", "material.initial.request.evaluation_profile != protocol.evaluation_profile()", "baseline.components() != &material.initial.request.selected_bundle.components", "peer.peer.actor_id != material.initial.owners.trainer", "peer.timeout.is_zero()", "peer.timeout > Duration::from_secs(30)", "peer.lifetime.is_zero()", "peer.lifetime > Duration::from_secs(300)", "return Err(Error::WrongScope)", "admitted_at.checked_add(peer.lifetime)", "OriginalCellQ24NoUpdateStageOwnersV1::from_original_streams(", "OriginalCellQ24NoUpdateStageOwnersV1::recover_original_streams(", "OriginalCellQ24TrainingCommandConnectionV1::from_original_stream(", "OriginalCellQ24TrainingCommandConnectionV1::recover_from_original_stream(", "let end = end.min(common.end)", "common.end = end", "auth::require_material(&material, binding)?", "auth::require_clock(started_at, fresh)?", "Instant::now() >= end", "return Err(Error::DeadlineExceeded)", "CandidateLane::new(candidate)"], "top_level" = ["let admitted_at = Instant::now()", "if material.initial.request.evaluation_profile", "let end = end.min(common.end)", "common.end = end", "let fresh = auth::require_material", "auth::require_clock(started_at, fresh)?", "if Instant::now() >= end"]}]
+required_function_order = [{"function" = "fn bind(","sequence" = ["fn bind(","let admitted_at = Instant::now()","OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)","material.initial.request.evaluation_profile != protocol.evaluation_profile()","baseline.components() != &material.initial.request.selected_bundle.components","peer.peer.actor_id != material.initial.owners.trainer","peer.timeout.is_zero()","peer.timeout > Duration::from_secs(30)","peer.lifetime.is_zero()","peer.lifetime > Duration::from_secs(300)","return Err(Error::WrongScope)","admitted_at.checked_add(peer.lifetime)","evaluator.peer.actor_id != material.initial.owners.evaluator","evaluator.timeout.is_zero()","evaluator.timeout > Duration::from_secs(30)","evaluator.lifetime.is_zero()","evaluator.lifetime > Duration::from_secs(300)","admitted_at.checked_add(evaluator.lifetime)","OriginalCellQ24NoUpdateStageOwnersV1::from_original_streams(","OriginalCellQ24NoUpdateStageOwnersV1::recover_original_streams(","OriginalCellQ24TrainingCommandConnectionV1::from_original_stream(","OriginalCellQ24TrainingCommandConnectionV1::recover_from_original_stream(","OriginalCellEvaluationCommandConnectionV1::from_original_stream(","OriginalCellEvaluationCommandConnectionV1::recover_from_original_stream(","let end = end.min(evaluator_end)","let end = end.min(common.end)","common.end = end","auth::require_material(&material, binding)?","auth::require_clock(started_at, fresh)?","Instant::now() >= end","return Err(Error::DeadlineExceeded)","CandidateLane::new(candidate)","EvaluationLane::new(evaluator)"],"top_level" = ["let admitted_at = Instant::now()","if material.initial.request.evaluation_profile","let end = end.min(common.end)","common.end = end","let fresh = auth::require_material","auth::require_clock(started_at, fresh)?","if Instant::now() >= end","let end = end.min(evaluator_end)"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs"
-required = ["struct CandidateIdentity", "receipt: LearningIterationReceiptV1", "attestation: SignedLearningEvidenceV1", "initial: Option<OriginalCellQ24TrainingCommandConnectionV1>", "client: Option<OriginalCellQ24CandidateReadbackClientV1>", "retained: Option<CandidateIdentity>", "failed: bool"]
+required = ["struct CandidateIdentity","receipt: LearningIterationReceiptV1","attestation: SignedLearningEvidenceV1","initial: Option<OriginalCellQ24TrainingCommandConnectionV1>","client: Option<OriginalCellQ24CandidateReadbackClientV1>","retained: Option<CandidateIdentity>","failed: bool","enum CandidateRead { Dispatch, Readback }","mode: CandidateRead"]
 forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "permit_all", "if false", "unwrap_or", "transmute", "PreparedLearningIterationProposalV1 {", "LearningIterationObservationV1::Evaluation", "LearningIterationObservationV1::TrainingNoUpdateV2", "pub initial:", "pub client:", "pub retained:", "OriginalCellQ24CandidateMaterialV1 {", "read_cached", "execute_training(", "commit_model_or_readback(", "evaluate_or_readback(", "publish("]
-required_function_order = [{"function" = "fn read_original_candidate(", "sequence" = ["fn read_original_candidate(", "let started_at = auth::now()?", "self.require_live_deadline()?", "auth::require_snapshot(&self.common.material, snapshot)?", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "snapshot.receipts.len() != 3", "coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)", "snapshot.training_no_update_v2().is_some()", "return Err(Error::WrongScope)", "coordinator.candidate().ok_or(Error::WrongScope)?", "if self.common.origin == Origin::Fresh", "RootResidentLearningEffectGateV3::require_current(", ".await?", "let mut state = self.common.continuation.try_lock()", "let mut lane = self.candidate.try_lock()", "if lane.failed", "return Err(Error::CommitUncertain)", "lane.failed = true", "state.read_prefix(&self.common, snapshot).await?", "state.original_dataset.as_ref()", "state.original_training.as_ref()", "snapshot.receipts.get(2) != Some(training.receipt())", "lane.initial.take()", "OriginalCellQ24TrainingCommandConnectionV1::bind_original_candidate_material(", "OriginalCellQ24CandidateReadbackClientV1::readback(client)", "map_err(candidate_failure)?", "material.receipt() != training.receipt()", "material.attestation() != training.attestation()", "material.bundle() != expected_bundle", "material.model().components() != &expected_bundle.components", "material.authority() != AuthorityPosture::DENY_ALL", "return Err(Error::WrongScope)", "state.read_prefix(&self.common, snapshot).await?", "if self.common.origin == Origin::Fresh", "RootResidentLearningEffectGateV3::require_current(", ".await?", "let fresh = auth::require_material(", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?", "state.original_training.as_ref()", "material.receipt() != current.receipt()", "material.attestation() != current.attestation()", "auth::verify_receipt(", "self.require_live_deadline()?", "let identity = CandidateIdentity", "bundle: material.bundle().clone()", "heads: Digest32::of_bytes(material.heads())", "receipt: material.receipt().clone()", "attestation: material.attestation().clone()", "lane.retained.as_ref().is_some_and(|prior| prior != &identity)", "return Err(Error::WrongScope)", "lane.retained = Some(identity)", "lane.failed = false", "Ok(material)"], "top_level" = ["let started_at = auth::now()?", "auth::require_snapshot(&self.common.material, snapshot)?", "let coordinator = LearningIterationCoordinatorV1::from_snapshot", "let expected_bundle = coordinator.candidate()", "let mut state = self.common.continuation.try_lock()", "let mut lane = self.candidate.try_lock()", "if lane.failed", "lane.failed = true", "let fresh = auth::require_material(", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(", "auth::verify_receipt(", "let identity = CandidateIdentity", "if lane.retained.as_ref()", "lane.retained = Some(identity)", "lane.failed = false", "Ok(material)"]}]
+required_function_order = [{"function" = "fn read_original_candidate(","sequence" = ["fn read_original_candidate(","let started_at = auth::now()?","self.require_live_deadline()?","auth::require_snapshot(&self.common.material, snapshot)?","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?","snapshot.receipts.len() != 3","coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)","snapshot.training_no_update_v2().is_some()","return Err(Error::WrongScope)","coordinator.candidate().ok_or(Error::WrongScope)?","mode == CandidateRead::Dispatch && self.common.origin != Origin::Fresh","return Err(Error::WrongScope)","if mode == CandidateRead::Dispatch","RootResidentLearningEffectGateV3::require_current(",".await?","let mut state = self.common.continuation.try_lock()","let mut lane = self.candidate.try_lock()","if lane.failed","return Err(Error::CommitUncertain)","lane.failed = true","state.read_prefix(&self.common, snapshot).await?","state.original_dataset.as_ref()","state.original_training.as_ref()","snapshot.receipts.get(2) != Some(training.receipt())","lane.initial.take()","OriginalCellQ24TrainingCommandConnectionV1::bind_original_candidate_material(","OriginalCellQ24CandidateReadbackClientV1::readback(client)","map_err(candidate_failure)?","material.receipt() != training.receipt()","material.attestation() != training.attestation()","material.bundle() != expected_bundle","material.model().components() != &expected_bundle.components","material.authority() != AuthorityPosture::DENY_ALL","return Err(Error::WrongScope)","state.read_prefix(&self.common, snapshot).await?","if mode == CandidateRead::Dispatch","RootResidentLearningEffectGateV3::require_current(",".await?","let fresh = auth::require_material(","auth::require_clock(started_at, fresh)?","auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?","state.original_training.as_ref()","material.receipt() != current.receipt()","material.attestation() != current.attestation()","auth::verify_receipt(","self.require_live_deadline()?","let identity = CandidateIdentity","bundle: material.bundle().clone()","heads: Digest32::of_bytes(material.heads())","receipt: material.receipt().clone()","attestation: material.attestation().clone()","lane.retained.as_ref().is_some_and(|prior| prior != &identity)","return Err(Error::WrongScope)","lane.retained = Some(identity)","lane.failed = false","Ok(material)"],"top_level" = ["let started_at = auth::now()?","auth::require_snapshot(&self.common.material, snapshot)?","let coordinator = LearningIterationCoordinatorV1::from_snapshot","let expected_bundle = coordinator.candidate()","let mut state = self.common.continuation.try_lock()","let mut lane = self.candidate.try_lock()","if lane.failed","lane.failed = true","let fresh = auth::require_material(","auth::require_clock(started_at, fresh)?","auth::verify_prefix(","auth::verify_receipt(","let identity = CandidateIdentity","if lane.retained.as_ref()","lane.retained = Some(identity)","lane.failed = false","Ok(material)"]}]
 
 [[boundary]]
 id = "root_resident_candidate_runtime_consume"
@@ -13620,3 +14081,171 @@ path = "codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs
 required = ["pub struct OriginalCircuitEvaluationCohortReadbackV1", "original: OriginalCircuitEvaluationCohortV1", "plan: CellEvaluationPlanV1", "last: Option<OriginalCircuitEvaluationCohortCurrentV1>", "fenced: bool", "freeze_payload: Vec<u8>", "same original cohort CURRENT and full signatures", "last actual cohort read and nondecreasing clock"]
 forbidden = ["Deserialize", "impl Clone for OriginalCircuitEvaluationCohortReadbackV1", "pub original:", "pub plan:", "pub last:", "pub fn retaining", "pub fn authenticate_current", "pub fn require_original_member", "pub fn read_current_with_clock", "pub fn reset", "SigningKey", "File::open", "File::create", "UnixStream::connect", "release_after_consumption(", "signing_key", "read_current_durable_snapshot(", "read_run_publication(", ".exchange(", ".request(", "unwrap_or", "if false"]
 required_function_order = [{ function = "fn retaining(", sequence = ["original: OriginalCircuitEvaluationCohortV1", "plan: CellEvaluationPlanV1", "original,", "plan,", "last: None", "fenced: false"], top_level = [] }, { function = "fn read_current(", sequence = ["fn read_current(", "self.read_current_with_clock(super::now)"], top_level = [] }, { function = "fn read_current_with_clock(", sequence = ["if self.fenced", "return Err(Error::Indeterminate)", "self.fenced = true", "self.original.read_current_with_clock(clock)?", "self.plan.product_plan().frozen_plan", "material.manifest != frozen.final_holdout_digest", "material.dataset.snapshot.dataset_digest != frozen.dataset_digest", "frozen.plan_digest", "material.manifest,", "material.dataset.snapshot.ledger_head_digest", "material.dataset.correction_cut_digest", "material.dataset.revocation_cut_digest", "self.original.rule_digest", "self.original.config.registration.evaluation_profile()", "self.original.config.training.head_digest", "self.original.config.scope.binding()", "self.original.owners.ledger.binding_digest()", "self.original.owners.ledger.trust_distribution_digest()", "&self.original.config.training_evidence", "&self.original.config.freeze_evidence", "evidence.signing_bytes()", "full.extend_from_slice(&evidence.signature)", "bytes.extend_from_slice(&material.freeze_payload)", "freeze_payload: material.freeze_payload", "if self.last.as_ref().is_some_and(|last| last != &observed)", "return Err(Error::Binding(", "self.last = Some(observed.clone())", "self.fenced = false", "Ok(observed)"], top_level = ["if self.fenced", "self.fenced = true", "let material = self.original.read_current_with_clock(clock)?", "if material.manifest != frozen.final_holdout_digest", "if self.last.as_ref().is_some_and", "self.last = Some(observed.clone())", "self.fenced = false", "Ok(observed)"] }, { function = "fn require_original_member(", sequence = ["registration.primary()", "registration.retention()", "member.plan_id == config.rule.plan_id", "if self.fenced", "self.original.fenced", "registration != &config.registration", "task != registered", "task.task_digest != config.rule.task_digest", "task.cohort_rule_digest != self.original.rule_digest", "training != &config.training", "scope != &config.scope", "plan != &self.plan", "training_evidence != &config.training_evidence", "verifier.trust_digest() != config.verifier.trust_digest()", "verifier.scope_digest() != config.verifier.scope_digest()", "verifier.objective_digest() != config.verifier.objective_digest()", "return Err(Error::Binding(", "Ok(())"], top_level = ["if self.fenced", "Ok(())"] }, { function = "fn authenticate_current(", sequence = ["if self.fenced || self.original.fenced", "return Err(Error::Indeterminate)", "self.fenced = true", "if self.last.as_ref() != Some(observed)", "current < self.original.last_observed_at", "return Err(Error::Binding(", "binding::authenticate_training(config, current)?", "config.verifier.verify(", "LearningEvidenceRoleV1::Evaluator", "&config.freeze_evidence", "&observed.freeze_payload", "current,", "verify_signed_role_separation(&training.generator, &evaluator, current)?", "LedgerWriter::freeze_dataset(", "&self.original.owners.ledger", "config.freeze_plan.clone()", "&config.freeze_evidence", "current,", "!= observed.dataset", "return Err(Error::Binding(", "LedgerWriter::read_dataset_records(", "&self.original.owners.ledger", "&observed.dataset", "current,", "self.original.last_observed_at = current", "self.fenced = false", "Ok(())"], top_level = ["if self.fenced || self.original.fenced", "self.fenced = true", "if self.last.as_ref() != Some(observed)", "let training = binding::authenticate_training", "let evaluator = config.verifier.verify", "verify_signed_role_separation(", "if LedgerWriter::freeze_dataset(", "let _ = LedgerWriter::read_dataset_records(", "self.original.last_observed_at = current", "self.fenced = false", "Ok(())"] }, { function = "fn authority(", sequence = ["fn authority(", "AuthorityPosture::DENY_ALL"], top_level = [] }]
+
+[[boundary]]
+id = "learning_original_evaluation_host_consume"
+symbol = "OriginalCellEvaluationReceiptOwnerV1::into_original_evaluation_host"
+receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+definition_markers = ["pub fn into_original_evaluation_host("]
+product_callers = []
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_host_profile"
+symbol = "OriginalCellEvaluationReceiptOwnerV1::original_host_profile"
+receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+definition_markers = ["pub(crate) fn original_host_profile("]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_host_receipt_current"
+symbol = "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed"
+receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+definition_markers = ["pub(crate) fn require_original_host_completed("]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_host_constructor"
+symbol = "OriginalCellEvaluationHostV1::from_original_receipt_owner"
+receiver_type = "OriginalCellEvaluationHostV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+definition_markers = ["pub(crate) fn from_original_receipt_owner("]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_host_serve"
+symbol = "OriginalCellEvaluationHostV1::serve_commands"
+receiver_type = "OriginalCellEvaluationHostV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs"
+definition_markers = ["pub async fn serve_commands("]
+product_callers = []
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_connection_create"
+symbol = "OriginalCellEvaluationCommandConnectionV1::from_original_stream"
+receiver_type = "OriginalCellEvaluationCommandConnectionV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+definition_markers = ["pub fn from_original_stream("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_connection_recover"
+symbol = "OriginalCellEvaluationCommandConnectionV1::recover_from_original_stream"
+receiver_type = "OriginalCellEvaluationCommandConnectionV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+definition_markers = ["pub fn recover_from_original_stream("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_connection_training"
+symbol = "OriginalCellEvaluationCommandConnectionV1::bind_original_training"
+receiver_type = "OriginalCellEvaluationCommandConnectionV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+definition_markers = ["pub fn bind_original_training("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_connection_recovery"
+symbol = "OriginalCellEvaluationCommandConnectionV1::bind_recovered_training"
+receiver_type = "OriginalCellEvaluationCommandConnectionV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+definition_markers = ["pub fn bind_recovered_training("]
+product_callers = []
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_command_execute"
+symbol = "OriginalCellEvaluationCommandClientV1::execute_evaluation"
+receiver_type = "OriginalCellEvaluationCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+definition_markers = ["pub async fn execute_evaluation("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_command_readback"
+symbol = "OriginalCellEvaluationCommandClientV1::readback"
+receiver_type = "OriginalCellEvaluationCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+definition_markers = ["pub async fn readback("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"]
+caller_markers = []
+
+
+[[boundary]]
+id = "learning_original_evaluation_command_attestation"
+symbol = "OriginalCellEvaluationCommandClientV1::receipt_attestation"
+receiver_type = "OriginalCellEvaluationCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+definition_markers = ["pub async fn receipt_attestation("]
+product_callers = []
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+required = ["enum HostOrigin", "FreshCreate", "ReadbackOnly", "host_origin: HostOrigin"]
+forbidden = ["pub host_origin", "pub(crate) host_origin", "pub(super) host_origin", "impl Clone for OriginalCellEvaluationReceiptOwnerV1"]
+required_function_order = [{ function = "fn create(", sequence = ["fn create(", "validate_config(&config, &key)?", "LearningOwnerJournalV1::create(", "host_origin: HostOrigin::FreshCreate"], top_level = [] }, { function = "fn recover(", sequence = ["fn recover(", "validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(", "host_origin: HostOrigin::ReadbackOnly"], top_level = [] }, { function = "fn original_host_profile(", sequence = ["&self", "&self.config", "matches!(self.host_origin, HostOrigin::ReadbackOnly)"], top_level = [] }, { function = "fn require_original_host_completed(", sequence = ["&mut self", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "learning_owner_evidence::encode(&payload, signed)?", "self.journal.read(&self.saved)? != expected", "Err(OwnerError::CommitUncertain.into())", "Ok(())"], top_level = ["let payload =", "let expected =", "if self.journal.read(", "Ok(())"] }, { function = "fn into_original_evaluation_host(", sequence = ["self,", "panel: crate::OriginalCellEvaluationPanelOwnerV1<", "crate::OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)"], top_level = [] }]
+required_order = [["fn attest_original_completion<", "self.host_origin = HostOrigin::ReadbackOnly", "if now()? >=", "self.prepare(&mut source)?", "self.journal.commit_once(", "fn readback<"]]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+required = ["pub struct OriginalCellEvaluationHostV1", "owners: Mutex<Owners>", "execution_requested: AtomicBool", "evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>", "retained: Option<Receipt>", "fenced: bool"]
+forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "permit_all", "if false", "unwrap_or", "transmute", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "pub owners:", "pub evaluator:", "pub retained:", "impl Clone for OriginalCellEvaluationHostV1", "pub fn from_original_receipt_owner(", "pub async fn read_panel(", "pub fn current_time("]
+required_function_order = [{ function = "fn from_original_receipt_owner(", sequence = ["evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>", "panel: Panel", "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&evaluator)", "panel.primary.qualification.config", "panel.fenced", "receipt.training != primary.training", "receipt.scope != primary.scope", "receipt.plan != primary.plan", "receipt.signing.plan != *primary.plan.product_plan()", "receipt.signing.execution_namespace != primary.execution_namespace", "receipt.signing.signer.principal != primary.context.evaluator", "receipt.signing.verifier.trust_digest() != primary.verifier.trust_digest()", "receipt.signing.verifier.scope_digest() != primary.verifier.scope_digest()", "receipt.signing.verifier.objective_digest() != primary.verifier.objective_digest()", "Context::from_checkpoint(", "primary.training_evidence.clone()", "context.binding(now()?)?", "Handle::try_current()", "execution_requested: AtomicBool::new(readback_only)", "Semaphore::new(4)"], top_level = [] }, { function = "fn completion(", sequence = ["if self.fenced", "return Err(Error::CommitUncertain)", "self.read_original_completion(context, action).await", "if result.is_err()", "LearningOriginalOwnerErrorV1::Pending", "ProductEvaluationExecutionStoreErrorV1::Missing", "self.fenced = true", "result"], top_level = ["if self.fenced", "let result =", "if result.is_err()"] }, { function = "fn read_original_completion(", sequence = ["self.current_time()?", "context.authenticate(started_at)?", "let before = self.read_panel().await?", "before.training() != &context.training", "before.training_evidence() != &context.training_evidence", "before.registration() != &context.registration", "if action == wire::Action::Execute", "self.current_time()?", "require_clock(started_at, current)?", "current >= context.training.request.envelope.expiry_unix_seconds", "let primary = &mut self.panel.primary", "OriginalCellEvaluationReceiptSourcesV1", "qualification: before.primary().qualification()", "context: &config.context", "evidence: &config.product_evidence", "trainer: primary.trainer.as_ref()", "wire::Action::Execute =>", "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(", "wire::Action::Readback =>", "OriginalCellEvaluationReceiptOwnerV1::readback(", "let after = self.read_panel().await?", "if before != after", "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(", "&completed.0, &completed.1", "let current = self.current_time()?", "require_clock(started_at, current)?", "current >= context.training.request.envelope.expiry_unix_seconds", "return Err(Error::CommitUncertain)", "self.authenticate_panel(&after, current)?", "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)", "config.signing.verifier.require_signer_binding(", "LearningEvidenceRoleV1::Evaluator", "contract::authenticate_receipt(context, completed.0, completed.1, current)?", "self.retained.as_ref().is_some_and(|previous| previous != &original)", "self.retained = Some(original.clone())", "Ok(original)"], top_level = ["let started_at =", "context.authenticate(started_at)?", "let before =", "let completed =", "let after =", "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(", "self.authenticate_panel(&after, current)?", "let original = contract::authenticate_receipt(", "self.retained = Some(original.clone())", "Ok(original)"] }, { function = "fn read_panel(", sequence = ["&mut self", "OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel).await.map_err(Error::from)"], top_level = [] }, { function = "fn authenticate_panel(", sequence = ["self.panel.retained.as_ref() != Some(observed)", "observed.retention().len() != self.panel.retention.len()", "self.panel.primary.authenticate(observed.primary(), current)?", "self.panel.retention.iter_mut().zip(observed.retention())", "owner.authenticate(member, current)?", "Ok(())"], top_level = [] }, { function = "fn current_time(", sequence = ["&self", "now()"], top_level = [] }, { function = "fn now(", sequence = ["fn now(", "super::original::now().map_err(Error::from)"], top_level = [] }, { function = "fn require_clock(", sequence = ["current < started_at", "return Err(Error::Binding(", "Ok(())"], top_level = [] }]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs"
+required = ["pub(super) struct Context", "pub struct OriginalCellEvaluationCommandReceiptV1", "training_evidence: SignedLearningEvidenceV1"]
+forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "permit_all", "if false", "unwrap_or", "transmute", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "pub struct Context", "impl Deserialize for OriginalCellEvaluationCommandReceiptV1", "pub fn from_receipt(", "pub fn from_checkpoint(", "pub fn from_original_training(", "AuthorityPosture::ALLOW", "FinalUseGrant"]
+required_function_order = [{ function = "fn from_original_training(", sequence = ["dataset: LearningIterationSnapshotV1", "training: &OriginalCellQ24TrainingCommandReceiptV1", "LearningIterationCoordinatorV1::from_snapshot(dataset)?", "coordinator.next_stage() != Some(LearningIterationStageV1::Training)", "coordinator.snapshot().receipts.len() != 2", "coordinator.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?", "Self::from_checkpoint(", "training.attestation().clone()"], top_level = [] }, { function = "fn from_checkpoint(", sequence = ["training_evidence: SignedLearningEvidenceV1", "Self { training, scope, registration, training_evidence, verifier }", "original.authenticate(super::now()?)?", "Ok(original)"], top_level = [] }, { function = "fn authenticate(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(self.training.clone())?", "self.scope.validate_snapshot(&self.training)?", "self.training.receipts.last()", "self.training.receipts.len() != 3", "coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)", "LearningIterationObservationV1::Training", "self.training.request.evaluation_profile != self.registration.evaluation_profile()", "self.training.owners.evidence_trust_digest != self.verifier.trust_digest()", "self.training.request.envelope.objective_digest != self.verifier.objective_digest()", "receipt.actor_id != self.training.owners.trainer", "receipt.observed_unix_seconds != self.training_evidence.issued_at", "receipt.observed_unix_seconds > current", "self.verifier.verify(", "LearningEvidenceRoleV1::Generator, &self.training_evidence", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "training.principal().principal_id != self.training.owners.trainer", "Ok(training)"], top_level = [] }, { function = "fn binding(", sequence = ["self.authenticate(current)?", "encode_original_owner_snapshot_v1(&self.training)?", "self.scope.binding().as_array()", "self.registration.evaluation_profile().as_array()", "self.verifier.trust_digest().as_array()", "self.verifier.scope_digest().as_array()", "self.verifier.objective_digest().as_array()", "&self.training_evidence.signing_bytes()", "&self.training_evidence.signature"], top_level = [] }, { function = "fn authenticate_receipt(", sequence = ["context.authenticate(current)?", "LearningIterationCoordinatorV1::from_snapshot(context.training.clone())?", "original.candidate()", "LearningIterationObservationV1::Evaluation", "*candidate_bundle == candidate", "*evaluation_profile == context.registration.evaluation_profile()", "receipt.operation_id != context.training.request.operation_id", "receipt.predecessor != context.training.head_digest", "receipt.actor_id != context.training.owners.evaluator", "receipt.observed_unix_seconds > signed.issued_at", "receipt.observed_unix_seconds > current", "context.verifier.verify(", "LearningEvidenceRoleV1::Evaluator, &signed", "learning_iteration_receipt_signing_bytes_v1(&receipt)?", "evaluator.principal().principal_id != context.training.owners.evaluator", "verify_signed_actor_separation(&generator, &evaluator, current)?", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?", "context.scope.validate_snapshot(coordinator.snapshot())?", "OriginalCellEvaluationCommandReceiptV1"], top_level = [] }, { function = "fn authority(", sequence = ["-> AuthorityPosture", "AuthorityPosture::DENY_ALL"], top_level = [] }]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+required = ["enum Origin { Fresh, ReadbackOnly }", "channel: HostAuthorityPeerChannel", "observed_at: u64", "channel: Mutex<Option<Channel>>", "retained: Mutex<Option<Receipt>>", "struct QueuedCancellation(Arc<AtomicBool>)"]
+forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "permit_all", "if false", "unwrap_or", "transmute", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "pub channel:", "pub context:", "impl Clone for OriginalCellEvaluationCommandConnectionV1", "impl Clone for OriginalCellEvaluationCommandClientV1", "execution_requested = false", "Origin::Fresh, retained", "Duration::from_secs(301)"]
+required_function_order = [{ function = "fn from_original_stream(", sequence = ["Self::bind_initial(", "verifier, timeout, lifetime, Origin::Fresh"], top_level = [] }, { function = "fn recover_from_original_stream(", sequence = ["Self::bind_initial(", "verifier, timeout, lifetime, Origin::ReadbackOnly"], top_level = [] }, { function = "fn bind_initial(", sequence = ["let started_at = now()?", "LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?", "scope.validate_snapshot(&initial)?", "&initial != expected.snapshot()", "peer.actor_id != initial.owners.evaluator", "initial.request.evaluation_profile != registration.evaluation_profile()", "initial.owners.evidence_trust_digest != verifier.trust_digest()", "initial.request.envelope.objective_digest != verifier.objective_digest()", "original_owner_command_channel_v1(", "peer.uid, original_owner_pidfd, timeout, lifetime", "let observed_at = now()?", "require_clock(started_at, observed_at)?", "Ok(Self"], top_level = [] }, { function = "fn bind_original_training(", sequence = ["self,", "original: &OriginalCellQ24TrainingCommandReceiptV1", "Context::from_original_training(", "self.scope.clone(), self.registration.clone(), self.verifier.clone(), original", "let origin = self.origin", "self.finish_binding(context, origin,"], top_level = [] }, { function = "fn bind_recovered_training(", sequence = ["self,", "Context::from_checkpoint(", "training_evidence, self.verifier.clone()", "wire::authenticate_completed(&context, snapshot, signed, now()?)", "self.finish_binding(context, Origin::ReadbackOnly, retained)"], top_level = [] }, { function = "fn finish_binding(", sequence = ["self, context: Context, origin: Origin", "context.initial()? != self.initial", "context.scope != self.scope", "context.registration != self.registration", "context.verifier.trust_digest() != self.verifier.trust_digest()", "context.verifier.scope_digest() != self.verifier.scope_digest()", "context.verifier.objective_digest() != self.verifier.objective_digest()", "self.origin == Origin::ReadbackOnly && origin != Origin::ReadbackOnly", "self.channel.check_peer_lifetime()?", "let current = now()?", "require_clock(self.observed_at, current)?", "context.binding(current)?", "wire::authenticate_completed(", "expected.snapshot.clone(), expected.attestation.clone(), current", "peer: self.channel", "execution_requested: origin == Origin::ReadbackOnly"], top_level = [] }, { function = "fn drop(", sequence = ["fn drop(", "self.0.store(true, Ordering::Release)"], top_level = [] }, { function = "fn exchange(", sequence = ["let started_at = now()?", "self.channel.try_lock()", "action == wire::Action::Execute", "channel.execution_requested", "slot.take().ok_or(Error::Unavailable)?", "channel.execution_requested = true", "QueuedCancellation(Arc::new(AtomicBool::new(false)))", "Arc::clone(&cancellation.0)", "self.context.authenticate(started_at)?", "!(1..=128).contains(&request_id)", "request_id.checked_add(1)", "wire::Request::new(&self.context, self.binding, request_id, action)", "serde_json::to_vec(&request)?", "encoded.len() > 16_384", "tokio::task::spawn_blocking(move ||", "action == wire::Action::Execute && queued.load(Ordering::Acquire)", "return Err(Error::CommitUncertain)", "channel.peer.request(&encoded)", "response.require_request(&request)?", "channel.peer.check_peer_lifetime()?", "let current = now()?", "require_clock(started_at, current)?", "self.context.authenticate(current)?", "wire::decode_completed(&self.context, snapshot, original_evidence, current)?", "retained.as_ref().is_some_and(|saved| saved != &original)", "*retained = Some(original.clone())", "wire::Outcome::Missing | wire::Outcome::Pending", "self.retained.try_lock()", "return Err(Error::CommitUncertain)", "wire::Outcome::Missing => Err(Error::Missing)", "wire::Outcome::Pending => Err(Error::Pending)", "wire::Outcome::PredecessorUnavailable => return Err(Error::PredecessorUnavailable)", "wire::Outcome::Uncertain => return Err(Error::CommitUncertain)", "Some(channel)", "drop(cancellation)", "result"], top_level = ["let started_at =", "let mut channel = {", "let cancellation =", "self.context.authenticate(started_at)?", "let (channel, bytes) =", "response.require_request(&request)?", "channel.peer.check_peer_lifetime()?", "let current =", "self.context.authenticate(current)?", "let result = match response.outcome", "drop(cancellation)"] }, { function = "fn execute_evaluation(", sequence = ["now()? >= self.context.training.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)", "self.exchange(wire::Action::Execute).await"], top_level = [] }, { function = "fn readback(", sequence = ["&self", "self.exchange(wire::Action::Readback).await"], top_level = [] }, { function = "fn receipt_attestation(", sequence = ["expected: &LearningIterationReceiptV1", "OriginalCellEvaluationCommandClientV1::readback(self).await?", "&original.receipt != expected", "Ok(original.attestation)"], top_level = [] }]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs"
+required = ["const PURPOSE: &str", "runtime.learning.original-cell-evaluation.command.v1", "serde(deny_unknown_fields)", "enum Outcome", "PredecessorUnavailable", "Uncertain"]
+forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "permit_all", "if false", "unwrap_or", "transmute", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "pub rows:", "pub plan:", "pub reward:", "pub context:", "pub signed:", "pub receipt:", "SignedLearningEvidenceV1 {", "impl Deserialize for Receipt"]
+required_function_order = [{ function = "fn require_context(", sequence = ["self.schema != 1", "self.purpose != PURPOSE", "self.request_id != request_id", "!(1..=128).contains(&self.request_id)", "self.binding != binding.to_string()", "self.operation_id != context.training.request.operation_id.as_str()", "self.training_head != context.training.head_digest.to_string()", "self.scope != context.scope.binding().to_string()", "self.evaluator != context.training.owners.evaluator.as_str()", "Ok(())"], top_level = [] }, { function = "fn require_request(", sequence = ["self.request.schema != expected.schema", "self.request.purpose != expected.purpose", "self.request.request_id != expected.request_id", "self.request.binding != expected.binding", "self.request.operation_id != expected.operation_id", "self.request.training_head != expected.training_head", "self.request.scope != expected.scope", "self.request.evaluator != expected.evaluator", "self.request.action != expected.action", "Ok(())"], top_level = [] }, { function = "fn encode_completed(", sequence = ["authenticate_completed(", "receipt.snapshot.clone(), receipt.attestation.clone(), current", "checked != receipt", "encode_original_owner_snapshot_v1(&receipt.snapshot)?", "learning_iteration_receipt_signing_bytes_v1(&receipt.receipt)?", "learning_owner_evidence::encode(&payload, &receipt.attestation)?", "snapshot.len() > 8192 || evidence.len() > 4096", "snapshot: STANDARD_NO_PAD.encode(snapshot)", "original_evidence: STANDARD_NO_PAD.encode(evidence)"], top_level = [] }, { function = "fn decode_completed(", sequence = ["snapshot.len() > 10_924 || original_evidence.len() > 5464", "STANDARD_NO_PAD.decode(&snapshot)", "STANDARD_NO_PAD.decode(&original_evidence)", "STANDARD_NO_PAD.encode(&snapshot_bytes) != snapshot", "STANDARD_NO_PAD.encode(&evidence_bytes) != original_evidence", "decode_original_owner_snapshot_v1(&snapshot_bytes)?", "learning_owner_evidence::decode(&evidence_bytes)?", "payload != learning_iteration_receipt_signing_bytes_v1(receipt)?", "authenticate_completed(context, snapshot, signed, current)"], top_level = [] }, { function = "fn authenticate_completed(", sequence = ["snapshot.request != context.training.request || snapshot.owners != context.training.owners", "snapshot.receipts.len() != context.training.receipts.len() + 1", "!snapshot.receipts.starts_with(&context.training.receipts)", "authenticate_receipt(context, receipt, signed, current)?", "result.snapshot != snapshot", "Ok(result)"], top_level = [] }]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs"
+required = ["impl OriginalCellEvaluationHostV1", "pub async fn serve_commands("]
+forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "permit_all", "if false", "unwrap_or", "transmute", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "self.execution_requested.store(false", "self.execution_requested =", "owners: Arc", "read_cached", "Action::Execute).await", "SourceBoundCellQ24TrainingStageV1"]
+required_function_order = [{ function = "fn serve_commands(", sequence = ["self: Arc<Self>", "original_consumer_pidfd: OwnedFd", "Arc::clone(&self.connections).try_acquire_owned()", "tokio::task::spawn_blocking(move ||", "let _permit = permit", "original_owner_command_channel_v1(", "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime", "self.serve_channel(&mut channel)"], top_level = [] }, { function = "fn serve_channel(", sequence = ["for request_id in 1..=128_u64", "channel.exchange(|bytes|", "self.command_response(bytes, request_id)", "return Ok(request_id - 1)", "Err(Error::Unavailable)"], top_level = [] }, { function = "fn command_response(", sequence = ["bytes.len() > 16_384", "serde_json::from_slice(bytes)?", "request.require_context(&self.context, self.binding, request_id)?", "self.context.authenticate(now()?)?", "wire::Action::Execute =>", "self.execution_requested.swap(true, Ordering::AcqRel)", "wire::Outcome::ReadbackRequired", "now()? >= self.context.training.request.envelope.expiry_unix_seconds", "wire::Outcome::Expired", "self.original_response(wire::Action::Execute)?", "wire::Action::Readback => self.original_response(wire::Action::Readback)?", "self.context.authenticate(now()?)?", "serde_json::to_vec(&wire::Response::new(request, outcome))?", "encoded.len() > 16_384", "Ok(encoded)"], top_level = [] }, { function = "fn original_response(", sequence = ["let completed =", "self.owners.try_lock()", "wire::Outcome::Busy", "self.runtime.block_on(owners.completion(&self.context, action))", "match completed", "wire::encode_completed(&self.context, original, now()?)", "original_state(error)"], top_level = [] }, { function = "fn original_state(", sequence = ["Error::Receipt(Receipt::Owner(Journal::Pending)) => wire::Outcome::Pending", "Error::Receipt(Receipt::Owner(Journal::Store(Store::Missing))) => wire::Outcome::Missing", "Error::DeadlineExceeded => wire::Outcome::Expired", "Error::Panel(_) | Error::Qualification(_) | Error::PredecessorUnavailable", "wire::Outcome::PredecessorUnavailable", "_ => wire::Outcome::Uncertain"], top_level = [] }]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"
+required = ["initial: Option<OriginalCellEvaluationCommandConnectionV1>", "client: Option<OriginalCellEvaluationCommandClientV1>", "retained: Option<OriginalCellEvaluationCommandReceiptV1>", "failed: bool", "enum Action { Execute, Readback }"]
+forbidden = ["SigningKey", "File::open", "File::create", "UnixStream::connect", "LearningEvidenceVerifierV1::new", "permit_all", "if false", "unwrap_or", "transmute", "FnOnce", "FnMut", "dyn LearningIterationStageOwnerPortsV1", "pub initial:", "pub client:", "pub retained:", "Action::Execute).or", "LearningIterationObservationV1::TrainingNoUpdateV2", "evaluate_or_readback(", "qualify_or_readback(", "commit_model_or_readback(", "PreparedLearningIterationProposalV1 {", "publish(", "RootResidentLearningEffectGateV3::new"]
+required_function_order = [{ function = "fn training_prefix(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "self.common.material.scope.validate_snapshot(snapshot)?", "snapshot.request != self.common.material.initial.request", "snapshot.owners != self.common.material.initial.owners", "!(3..=7).contains(&snapshot.receipts.len())", "snapshot.training_no_update_v2().is_some()", "complete.candidate().is_none()", "self.common.material.initial.clone()", "&snapshot.receipts[..3]", "prefix.record(original.clone(), original.observed_unix_seconds)?", "prefix.next_stage() != Some(Stage::Evaluation)", "prefix.candidate() != complete.candidate()", "self.common.material.scope.validate_snapshot(prefix.snapshot())?", "Ok(prefix.snapshot().clone())"], top_level = [] }, { function = "fn execute_original_evaluation(", sequence = ["self.common.origin != Origin::Fresh", "snapshot.receipts.len() != 3", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?", "Some(Stage::Evaluation)", "return Err(Error::WrongScope)", "self.original_evaluation(snapshot, Action::Execute).await?", "Ok(original.receipt().clone())"], top_level = [] }, { function = "fn read_original_evaluation(", sequence = ["snapshot: &LearningIterationSnapshotV1", "self.original_evaluation(snapshot, Action::Readback).await"], top_level = [] }, { function = "fn original_evaluation(", sequence = ["let started_at = auth::now()?", "self.require_live_deadline()?", "self.training_prefix(snapshot)?", "action == Action::Execute", "self.common.origin != Origin::Fresh || snapshot != &training_cut", "self.evaluation.try_lock()", "if lane.failed", "lane.failed = true", "let mode = if action == Action::Execute", "CandidateRead::Dispatch", "CandidateRead::Readback", "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(", "self, &training_cut, mode", "self.common.continuation.try_lock()", "common.read_prefix(&self.common, &training_cut).await?", "common.original_dataset.as_ref()", "common.original_training.as_ref()", "before.receipt() != training.receipt()", "before.attestation() != training.attestation()", "if lane.client.is_none()", "lane.initial.take()", "OriginalCellEvaluationCommandConnectionV1::bind_original_training(", "connection, dataset.snapshot().clone(), &training", "if action == Action::Execute", "RootResidentLearningEffectGateV3::require_current(", "gate, &training_cut, &self.common.material.scope", "OriginalCellEvaluationCommandClientV1::execute_evaluation(client).await", "OriginalCellEvaluationCommandClientV1::readback(client).await", "if action == Action::Execute", "RootResidentLearningEffectGateV3::require_current(", "gate, &training_cut, &self.common.material.scope", "return Err(Error::CommitUncertain)", "let original = result.map_err(evaluation_failure)?", "OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(", "self, &training_cut, mode", "before.bundle() != after.bundle()", "before.heads() != after.heads()", "before.receipt() != after.receipt()", "before.attestation() != after.attestation()", "common.read_prefix(&self.common, &training_cut).await?", "if action == Action::Execute", "RootResidentLearningEffectGateV3::require_current(", "gate, &training_cut, &self.common.material.scope", "let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?", "auth::require_clock(started_at, fresh)?", "auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?", "current_training != &training", "self.verify_original_evaluation(snapshot, &training_cut, &training, &original, fresh)?", "self.require_live_deadline()?", "lane.retained.as_ref().is_some_and(|saved| saved != &original)", "lane.retained = Some(original.clone())", "lane.failed = false", "Ok(original)"], top_level = [] }, { function = "fn verify_original_evaluation(", sequence = ["original.receipt()", "original.attestation()", "LearningIterationCoordinatorV1::from_snapshot(training_cut.clone())?", "candidate.candidate().ok_or(Error::WrongScope)?", "self.common.material.scope.validate_snapshot(original.snapshot())?", "original.snapshot().request != training_cut.request", "original.snapshot().owners != training_cut.owners", "original.snapshot().receipts.len() != 4", "!original.snapshot().receipts.starts_with(&training_cut.receipts)", "original.snapshot().receipts.last() != Some(receipt)", "original.training_attestation() != training.attestation()", "original.authority() != AuthorityPosture::DENY_ALL", "supplied.receipts.get(3).is_some_and(|saved| saved != receipt)", "receipt.operation_id != training_cut.request.operation_id", "receipt.predecessor != training_cut.head_digest", "receipt.actor_id != training_cut.owners.evaluator", "receipt.observed_unix_seconds > signed.issued_at", "receipt.observed_unix_seconds > current", "LearningIterationObservationV1::Evaluation", "*candidate_bundle == expected", "*evaluation_profile == self.protocol.evaluation_profile()", "auth::verify_receipt(", "training.receipt(), training.attestation(), current", "self.common.material.verifier.verify(", "LearningEvidenceRoleV1::Evaluator, signed", "learning_iteration_receipt_signing_bytes_v1(receipt)?", "evaluator.principal().principal_id != receipt.actor_id", "verify_signed_actor_separation(&generator, &evaluator, current)", "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?", "coordinator.snapshot() != original.snapshot()", "Ok(())"], top_level = [] }]
