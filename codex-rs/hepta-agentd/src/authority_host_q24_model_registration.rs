@@ -3,6 +3,8 @@
 use std::fs::OpenOptions;
 use std::os::unix::fs::DirBuilderExt;
 use std::os::unix::fs::OpenOptionsExt;
+use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::RootAuthorityDirectory;
@@ -35,84 +37,114 @@ pub fn register_host_q24_model_factory(
         owner_pidfd,
         learning_profile_file,
     )?;
-    service.with_learning_profile(
+    let end = Instant::now()
+        .checked_add(Duration::from_millis(config.timeout_ms))
+        .ok_or_else(|| io::Error::other("original factory registration deadline overflow"))?;
+    service.reserve_q24_model_factory_for_profile(
         &config,
         &registration,
         owner_pidfd,
         &learning.profile,
-        |initial, proof| {
-            let scope = learning.profile.require_cell_scope(&initial)?;
-            let now = service
-                .clock
-                .refresh_projection()
-                .map_err(io::Error::other)?
-                .observed_unix_ms
-                / 1000;
-            if now >= initial.request.envelope.expiry_unix_seconds {
-                return Err(io::Error::other(
-                    "expired work cannot reserve a new Model factory",
-                ));
-            }
-            let domain = witness_domain(&config, &reservation)?;
-            let directory = config.state_dir.join(DIRECTORY);
-            std::fs::DirBuilder::new().mode(0o700).create(&directory)?;
-            File::open(&config.state_dir)?.sync_all()?;
-            let journal = new_file(&directory.join("proposal.journal"))?;
-            let witness = new_file(&witness_path(&reservation))?;
-            let profile = HostAuthorityQ24ModelFactoryProfileV1::new(
-                &service.identity,
-                &proof,
-                &initial,
-                &scope,
-                FilePin::capture(&journal)?,
-                FilePin::capture(&witness)?,
-                domain,
-                policy_digest(&reservation)?,
-            )?;
-            let enrolled = FileAnchorWitnessStore::open(
-                witness,
-                JournalScope {
-                    scope_digest: profile.binding().parse().map_err(io::Error::other)?,
-                    objective_digest: initial.request.envelope.objective_digest,
-                },
-                Generation::new(service.identity.spawn_generation).map_err(io::Error::other)?,
-                WITNESS_RECORDS,
-            )
-            .map_err(io::Error::other)?;
-            if enrolled.current().map_err(io::Error::other)?.is_some() {
-                return Err(io::Error::other("new factory witness already has history"));
-            }
-            drop(enrolled);
-            HostAuthorityFrontierStore::initialize(
-                RootAuthorityDirectory::open(&directory).map_err(io::Error::other)?,
-                OWNER.into(),
-                FactoryRecord {
-                    profile: profile.clone(),
-                    epoch: 1,
-                    material: None,
-                },
-            )
-            .map_err(io::Error::other)?;
-            config.required_bind.verify()?;
-            witness_domain(&config, &reservation)?;
-            if service
-                .clock
-                .refresh_projection()
-                .map_err(io::Error::other)?
-                .observed_unix_ms
-                / 1000
-                >= initial.request.envelope.expiry_unix_seconds
-            {
-                return Err(io::Error::other(
-                    "factory reservation crossed its original work deadline",
-                ));
-            }
-            Ok(profile)
-        },
+        &reservation,
+        end,
     )
 }
 
 impl HostAuthorityService {
+    /// The original live service reserves this Root-derived scoped profile.
+    /// Existing/partial state remains an error; the original end cannot renew.
+    pub(crate) fn reserve_q24_model_factory_for_profile(
+        &self,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner_pidfd: &OwnedFd,
+        learning: &HostAuthorityLearningProfileV1,
+        reservation: &HostAuthorityQ24ModelFactoryReservationV1,
+        end: Instant,
+    ) -> io::Result<HostAuthorityQ24ModelFactoryProfileV1> {
+        require_factory_end(end)?;
+        let profile = self.with_learning_profile(
+            config,
+            registration,
+            owner_pidfd,
+            learning,
+            |initial, proof| {
+                require_factory_end(end)?;
+                let scope = learning.require_cell_scope(&initial)?;
+                let now = self
+                    .clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms
+                    / 1000;
+                if now >= initial.request.envelope.expiry_unix_seconds {
+                    return Err(io::Error::other(
+                        "expired work cannot reserve a new Model factory",
+                    ));
+                }
+                let domain = witness_domain(config, reservation)?;
+                let directory = config.state_dir.join(DIRECTORY);
+                require_factory_end(end)?;
+                std::fs::DirBuilder::new().mode(0o700).create(&directory)?;
+                File::open(&config.state_dir)?.sync_all()?;
+                let journal = new_file(&directory.join("proposal.journal"))?;
+                let witness = new_file(&witness_path(reservation))?;
+                let profile = HostAuthorityQ24ModelFactoryProfileV1::new(
+                    &self.identity,
+                    &proof,
+                    &initial,
+                    &scope,
+                    FilePin::capture(&journal)?,
+                    FilePin::capture(&witness)?,
+                    domain,
+                    policy_digest(reservation)?,
+                )?;
+                let enrolled = FileAnchorWitnessStore::open(
+                    witness,
+                    JournalScope {
+                        scope_digest: profile.binding().parse().map_err(io::Error::other)?,
+                        objective_digest: initial.request.envelope.objective_digest,
+                    },
+                    Generation::new(self.identity.spawn_generation).map_err(io::Error::other)?,
+                    WITNESS_RECORDS,
+                )
+                .map_err(io::Error::other)?;
+                if enrolled.current().map_err(io::Error::other)?.is_some() {
+                    return Err(io::Error::other("new factory witness already has history"));
+                }
+                drop(enrolled);
+                HostAuthorityFrontierStore::initialize(
+                    RootAuthorityDirectory::open(&directory).map_err(io::Error::other)?,
+                    OWNER.into(),
+                    FactoryRecord {
+                        profile: profile.clone(),
+                        epoch: 1,
+                        material: None,
+                    },
+                )
+                .map_err(io::Error::other)?;
+                config.required_bind.verify()?;
+                witness_domain(config, reservation)?;
+                if self
+                    .clock
+                    .refresh_projection()
+                    .map_err(io::Error::other)?
+                    .observed_unix_ms
+                    / 1000
+                    >= initial.request.envelope.expiry_unix_seconds
+                {
+                    return Err(io::Error::other(
+                        "factory reservation crossed its original work deadline",
+                    ));
+                }
+                require_factory_end(end)?;
+                Ok(profile)
+            },
+        )?;
+        require_factory_end(end)?;
+        Ok(profile)
+    }
+
     pub(crate) fn open_q24_model_factory(
         &self,
         config: &HostAuthorityServiceConfig,
@@ -290,6 +322,15 @@ impl RegisteredQ24ModelFactory {
         }
         Ok(current)
     }
+}
+
+fn require_factory_end(end: Instant) -> io::Result<()> {
+    if Instant::now() >= end {
+        return Err(io::Error::other(
+            "original factory registration deadline expired",
+        ));
+    }
+    Ok(())
 }
 
 fn witness_domain(
