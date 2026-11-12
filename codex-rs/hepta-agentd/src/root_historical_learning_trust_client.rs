@@ -3,6 +3,7 @@
 
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 
@@ -15,6 +16,14 @@ pub(crate) struct OriginalHistoricalLearningTrustV1 {
     payload: HistoricalLearningTrustPayloadV1,
     activated: ActivatedLearningTrustV1,
     evaluator: TrustedLearningSignerV1,
+}
+
+pub(crate) struct OriginalHistoricalStageAuthoritiesV1 {
+    pub(crate) verifier: LearningEvidenceVerifierV1,
+    pub(crate) experience: TrustedLearningSignerV1,
+    pub(crate) dataset: TrustedLearningSignerV1,
+    pub(crate) trainer: TrustedLearningSignerV1,
+    pub(crate) selector: TrustedLearningSignerV1,
 }
 
 impl OriginalHistoricalTaskReadReceiptV1 {
@@ -68,6 +77,41 @@ impl OriginalHistoricalTaskReadReceiptV1 {
 }
 
 impl OriginalHistoricalLearningTrustV1 {
+    /// The fixed original request chooses each principal. Descriptor data can
+    /// provide its existing key, but cannot select another enrolled role.
+    pub(crate) fn original_stage_authorities(
+        &self,
+    ) -> io::Result<OriginalHistoricalStageAuthoritiesV1> {
+        self.with_current_trust(|_, verifier, _, now| {
+            let owners = &self.initial_snapshot().owners;
+            let select = |principal: &codex_hepta_types::StableId, role| {
+                let mut matches = self
+                    .payload
+                    .signed
+                    .distribution
+                    .signers
+                    .iter()
+                    .filter(|signer| signer.principal_id == principal.as_str());
+                let signer = matches.next().ok_or_else(refused)?;
+                if matches.next().is_some() {
+                    return Err(refused());
+                }
+                let signer = signer.original_signer()?;
+                verifier
+                    .require_signer_binding(role, &signer, now)
+                    .map_err(io::Error::other)?;
+                Ok(signer)
+            };
+            Ok(OriginalHistoricalStageAuthoritiesV1 {
+                verifier: verifier.clone(),
+                experience: select(&owners.experience, LearningEvidenceRoleV1::Observer)?,
+                dataset: select(&owners.dataset, LearningEvidenceRoleV1::Observer)?,
+                trainer: select(&owners.trainer, LearningEvidenceRoleV1::Generator)?,
+                selector: select(&owners.selector, LearningEvidenceRoleV1::Selector)?,
+            })
+        })
+    }
+
     pub(crate) fn original_unix_seconds(&self) -> io::Result<u64> {
         let result = (|| {
             if self.receipt.client.fenced.load(Ordering::Acquire) {

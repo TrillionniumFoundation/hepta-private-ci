@@ -18,13 +18,13 @@ enum Access {
     Append,
 }
 
-pub(super) struct OriginalFiles {
+pub(in crate::production_launcher) struct OriginalFiles {
     owner: u32,
     opened: BTreeMap<(u64, u64), Access>,
 }
 
 impl OriginalFiles {
-    pub(super) fn new() -> Result<Self, AgentdError> {
+    pub(in crate::production_launcher) fn new() -> Result<Self, AgentdError> {
         // SAFETY: geteuid only reads this process's actual kernel credential.
         let owner = unsafe { libc::geteuid() };
         if owner == 0 {
@@ -36,15 +36,24 @@ impl OriginalFiles {
         })
     }
 
-    pub(super) fn read(&mut self, path: &Path) -> Result<File, AgentdError> {
+    pub(in crate::production_launcher) fn read(
+        &mut self,
+        path: &Path,
+    ) -> Result<File, AgentdError> {
         self.open(path, Access::Read)
     }
 
-    pub(super) fn write(&mut self, path: &Path) -> Result<File, AgentdError> {
+    pub(in crate::production_launcher) fn write(
+        &mut self,
+        path: &Path,
+    ) -> Result<File, AgentdError> {
         self.open(path, Access::Write)
     }
 
-    pub(super) fn append(&mut self, path: &Path) -> Result<File, AgentdError> {
+    pub(in crate::production_launcher) fn append(
+        &mut self,
+        path: &Path,
+    ) -> Result<File, AgentdError> {
         self.open(path, Access::Append)
     }
 
@@ -98,7 +107,7 @@ impl OriginalFiles {
     }
 }
 
-pub(super) fn require_unwritten(file: &File) -> Result<(), AgentdError> {
+pub(in crate::production_launcher) fn require_unwritten(file: &File) -> Result<(), AgentdError> {
     if file.metadata()?.len() != 0 {
         return Err(invalid("first-A owner file already contains history"));
     }

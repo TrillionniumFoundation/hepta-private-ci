@@ -14,7 +14,7 @@ mod clock;
 #[path = "production_initial_q24_deployment.rs"]
 mod deployment;
 #[path = "production_initial_q24_files.rs"]
-mod files;
+pub(super) mod files;
 #[path = "production_initial_q24_ledger_data.rs"]
 pub(super) mod ledger_data;
 #[path = "production_initial_q24_ledger_files.rs"]
