@@ -16,6 +16,10 @@ use crate::HostAuthorityPublicBootstrapV1;
 mod successor;
 pub(crate) use successor::OriginalQ24SuccessorSession;
 
+#[path = "root_independent_b_connection.rs"]
+mod independent_b;
+pub(crate) use independent_b::OriginalRootBEvaluationConnectionV1;
+
 /// Opaque, single-use connection capability captured by the actual original
 /// five-lane receiver. It carries no owner, issuer, grant or mutable authority.
 pub struct RootGenerationPublicationConnectionV1 {
