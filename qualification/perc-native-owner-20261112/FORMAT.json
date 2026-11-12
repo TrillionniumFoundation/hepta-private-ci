@@ -1,0 +1,39 @@
+{
+  "schema": "perc1.native-owner-source-format.v1",
+  "canonical_just_fmt_passed": true,
+  "python": {
+    "scripts/perc1_native_cell_probe.py": {
+      "before_sha256": "5d6932bca4a4b16939357a56e1f76b45851a1de5935cbd61232ed95f7b677509",
+      "after_sha256": "5d6932bca4a4b16939357a56e1f76b45851a1de5935cbd61232ed95f7b677509",
+      "ast_unchanged": true
+    },
+    "scripts/perc1_native_owner_probe.py": {
+      "before_sha256": "f9ae8c01754977de42491ca764f05a55bd52141f2c82a02b637ec8dc06216e4d",
+      "after_sha256": "7e6760becad92cd8e9c71f0e09b04a2c9ca93c8adf50a463e86b7aa778f2fcad",
+      "ast_unchanged": true
+    },
+    "scripts/perc1_native_owner_probe.rs": {
+      "before_sha256": "d50c1959af5461ba211688e0e90ead4f25774e62948d95cda3ee44bb1f4ffc8a",
+      "after_sha256": "6beb4438e8e3b64e727fd1980c2f822e6797fba32d8b9bcf05e92d56de78e302"
+    },
+    "scripts/perc1_native_owner_qualification.py": {
+      "before_sha256": "2b73b28a50c1e05c9a12d31bbdc4d899c4873d2a6e57f1ec4c4880629c1a8269",
+      "after_sha256": "3fe7331cf325dd50e56de2b5065dae29a9b9283eb2afe607e2076deb07b3e51f",
+      "ast_unchanged": true
+    }
+  },
+  "rust_compiled_source_canonicalizes_to_final_source": true,
+  "rust_source_command": [
+    "/workspace/scratch/747d27b1ca86/hepta-build-setup/rust196/bin/rustfmt",
+    "--edition",
+    "2021",
+    "--config",
+    "imports_granularity=Item,skip_children=true",
+    "--emit",
+    "stdout",
+    "/workspace/scratch/e11c579132dc/perc-native-build-v3/src/main.rs"
+  ],
+  "rustfmt_stdout_filename_header_removed": true,
+  "rust_source_stderr": "",
+  "tests_not_repeated_after_format": true
+}

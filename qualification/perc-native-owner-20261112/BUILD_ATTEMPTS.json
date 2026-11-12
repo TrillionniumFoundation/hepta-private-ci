@@ -1,0 +1,32 @@
+{
+  "schema": "perc1.native-owner-build-attempts.v1",
+  "attempts": [
+    {
+      "attempt": "v1",
+      "returncode": 101,
+      "binary_sha256": null,
+      "probe_source_sha256": "7709395d144d693486cba5856e473736bd166c54ac8bd3455fe676e2ab5bdbbc",
+      "source_ref": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "sources_unchanged": true
+    },
+    {
+      "attempt": "v2",
+      "returncode": 101,
+      "binary_sha256": null,
+      "probe_source_sha256": "cbeefbd9a24d92f32385d12fc7d80c9b5990961a79e8658d1768d8f8465c9692",
+      "source_ref": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "sources_unchanged": true
+    },
+    {
+      "attempt": "v3",
+      "returncode": 0,
+      "binary_sha256": "5cecad8e2e6706cba3b04c3786811921186576fed8817174f536cc93d1f7625c",
+      "probe_source_sha256": "d50c1959af5461ba211688e0e90ead4f25774e62948d95cda3ee44bb1f4ffc8a",
+      "source_ref": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "sources_unchanged": true
+    }
+  ],
+  "v1_failure": "offline dependency cache lacks serde_derive 1.0.229",
+  "v2_failure": "new probe serde_json macro recursion limit; no tests executed",
+  "v3_result": "compiled three unchanged native libraries and diagnostic head probe"
+}
