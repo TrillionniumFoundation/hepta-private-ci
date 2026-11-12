@@ -39,6 +39,47 @@ pub struct RunStartReadOnlyFrameV1 {
     pub observed_length: u64,
 }
 
+/// Complete physical prefix for a later owner's independent registration.
+/// An empty existing descriptor has no header or publication yet. This value
+/// is data, not an acknowledgement, source authentication or admission token.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct OriginalRunStartPrefixV1 {
+    pub length: u64,
+    pub digest: Digest32,
+}
+
+/// Observe a complete cut without inventing an acknowledged anchor. The caller
+/// owns any persistent refusal and must retain this cut before the new append.
+/// Nonempty history uses the original parser; no partial frame is accepted or
+/// repaired. Profiles remain per-record, as in the original journal owner.
+pub fn observe_original_run_start_prefix_v1(
+    file: &File,
+    journal_binding: Digest32,
+    max_records: usize,
+) -> Result<OriginalRunStartPrefixV1, RunStartStoreError> {
+    validate_domain(journal_binding, max_records)?;
+    let (before, bytes) = read_image(file)?;
+    if !bytes.is_empty() {
+        let replay = replay_reader(
+            &mut io::Cursor::new(&bytes),
+            journal_binding,
+            max_records,
+            before.length,
+        )?;
+        if replay.valid_length != replay.observed_length {
+            return Err(RunStartStoreError::Indeterminate);
+        }
+    }
+    let (after, confirmed) = read_image(file)?;
+    if before != after || bytes != confirmed {
+        return Err(RunStartStoreError::Indeterminate);
+    }
+    Ok(OriginalRunStartPrefixV1 {
+        length: before.length,
+        digest: Digest32::of_bytes(&bytes),
+    })
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct FileStamp {
     device: u64,
@@ -240,23 +281,27 @@ impl ReadOnlyRunStartViewV1 {
     }
 
     fn read_image(&self) -> Result<(FileStamp, Vec<u8>), RunStartStoreError> {
-        let before = file_stamp(&self.file)?;
+        let (before, bytes) = read_image(&self.file)?;
         if (before.device, before.inode) != self.identity {
-            return Err(RunStartStoreError::Indeterminate);
-        }
-        if before.length > MAX_FILE_BYTES {
-            return Err(RunStartStoreError::Capacity);
-        }
-        let length = usize::try_from(before.length).map_err(|_| RunStartStoreError::Capacity)?;
-        let mut bytes = vec![0_u8; length];
-        self.file
-            .read_exact_at(&mut bytes, /*offset*/ 0)
-            .map_err(|_| RunStartStoreError::Indeterminate)?;
-        if file_stamp(&self.file)? != before {
             return Err(RunStartStoreError::Indeterminate);
         }
         Ok((before, bytes))
     }
+}
+
+fn read_image(file: &File) -> Result<(FileStamp, Vec<u8>), RunStartStoreError> {
+    let before = file_stamp(file)?;
+    if before.length > MAX_FILE_BYTES {
+        return Err(RunStartStoreError::Capacity);
+    }
+    let length = usize::try_from(before.length).map_err(|_| RunStartStoreError::Capacity)?;
+    let mut bytes = vec![0_u8; length];
+    file.read_exact_at(&mut bytes, /*offset*/ 0)
+        .map_err(|_| RunStartStoreError::Indeterminate)?;
+    if file_stamp(file)? != before {
+        return Err(RunStartStoreError::Indeterminate);
+    }
+    Ok((before, bytes))
 }
 
 fn record_profile(record: &StoredRunStartRecord) -> Digest32 {
