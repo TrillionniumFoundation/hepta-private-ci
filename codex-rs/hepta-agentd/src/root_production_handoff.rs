@@ -28,6 +28,12 @@ pub use generation_publication::RootGenerationPublicationHandoffV1;
 pub use generation_publication::receive_root_generation_publication_handoff;
 pub use generation_publication::send_root_generation_publication_handoff;
 
+#[path = "root_independent_b_handoff.rs"]
+mod independent_b;
+pub use independent_b::RootIndependentBEvaluationHandoffV1;
+pub use independent_b::receive_root_independent_b_evaluation_handoff;
+pub use independent_b::send_root_independent_b_evaluation_handoff;
+
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
 #[path = "root_historical_task_read_handoff.rs"]
