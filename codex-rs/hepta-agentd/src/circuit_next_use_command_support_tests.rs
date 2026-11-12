@@ -152,7 +152,50 @@ pub(crate) fn serve_evidence<W: AnchorWitnessStore + Send + 'static>(
     owner: Arc<OriginalCircuitNextUseCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || owner.serve_evidence_channel(&mut channel))
+    std::thread::spawn(move || {
+        evidence_diagnostic_marker("transport_loop_begin", 0);
+        let result = owner.serve_evidence_channel(&mut channel);
+        evidence_diagnostic_marker("transport_loop_return", 0);
+        eprintln!("HEPTA_C_EVIDENCE_DIAGNOSTIC transport_result={result:?}");
+        result
+    })
+}
+
+/// One test-process monotonic clock. These markers neither send a request nor
+/// change a peer, receipt, channel lifetime, or response deadline.
+pub(crate) fn evidence_diagnostic_marker(stage: &str, request_id: u64) {
+    static STARTED: std::sync::OnceLock<std::time::Instant> = std::sync::OnceLock::new();
+    let elapsed = STARTED.get_or_init(std::time::Instant::now).elapsed();
+    eprintln!(
+        "HEPTA_C_EVIDENCE_DIAGNOSTIC stage={stage} request_id={request_id} elapsed_us={}",
+        elapsed.as_micros()
+    );
+}
+
+pub(super) struct EvidenceReadTiming {
+    request_id: u64,
+    started: std::time::Instant,
+}
+
+impl EvidenceReadTiming {
+    pub(super) fn begin(request_id: u64) -> Self {
+        evidence_diagnostic_marker("complete_request_arrived", request_id);
+        Self {
+            request_id,
+            started: std::time::Instant::now(),
+        }
+    }
+}
+
+impl Drop for EvidenceReadTiming {
+    fn drop(&mut self) {
+        evidence_diagnostic_marker("handler_return", self.request_id);
+        eprintln!(
+            "HEPTA_C_EVIDENCE_DIAGNOSTIC request_id={} handler_elapsed_us={}",
+            self.request_id,
+            self.started.elapsed().as_micros()
+        );
+    }
 }
 
 pub(crate) fn lose_ack<W: AnchorWitnessStore + Send + 'static>(
