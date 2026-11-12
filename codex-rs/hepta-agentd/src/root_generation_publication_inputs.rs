@@ -19,6 +19,10 @@ use crate::authority_host_service::generation_publication::PublicationVersion;
 use crate::root_generation_current_client::OriginalPublicationStream;
 use crate::root_generation_current_client::RootGenerationCurrentClient;
 
+#[path = "root_publication_preparation.rs"]
+mod preparation;
+pub(crate) use preparation::OriginalPreparedPublicationRoute;
+
 impl RootGenerationPublicationHandoffV1 {
     /// Trusted embedded hosts pass this actual owner to the existing Q24
     /// publication driver. No caller profile, issuer, grant, CAS or path is
@@ -58,6 +62,60 @@ impl RootGenerationPublicationHandoffV1 {
                 "original non-Root consumer and bounded publication timing required",
             ));
         }
+        let (bundle, _prepared) =
+            RootGenerationPublicationHandoffV1::read_original_route(&mut self, &connection, end)?;
+        let socket = bundle.socket.clone();
+        let stream = tokio::time::timeout(
+            timeout.min(publication_remaining(end)?),
+            tokio::net::UnixStream::connect(&socket),
+        )
+        .await
+        .map_err(|_| refused("publication Root connection timed out"))??;
+        publication_remaining(end)?;
+        let original = OriginalPublicationStream::from_stream_until(
+            stream.into_std()?,
+            self.root_pidfd,
+            AgentdRootAuthorityPeer {
+                pid: bundle.root.pid,
+                boot_id: bundle.root.boot_id.clone(),
+                process_start_ticks: bundle.root.process_start_ticks,
+            },
+            timeout,
+            end,
+        )?;
+        // Only observation occurs during bootstrap. Cancellation discards the
+        // result and original stream; it never starts a CURRENT mutation.
+        tokio::task::spawn_blocking(move || {
+            publication_remaining(end)?;
+            connection.require_original_publication_session()?;
+            let client = RootGenerationCurrentClient::from_original_stream(
+                original,
+                &bundle,
+                &bundle.learning_operation,
+                connection,
+            )?;
+            let current = NeuronGenerationCurrentOwnerV1::from_original_root_publication(client)?;
+            publication_remaining(end)?;
+            Ok(Arc::new(current))
+        })
+        .await
+        .map_err(|_| refused("publication connect worker lost"))?
+    }
+    fn read_original_route(
+        &mut self,
+        connection: &RootGenerationPublicationConnectionV1,
+        end: Instant,
+    ) -> Result<
+        (
+            PublicationBootstrap,
+            Option<crate::authority_host_runtime::PreparedPublicationData>,
+        ),
+        AgentdError,
+    > {
+        if publication_remaining(end)? > Duration::from_secs(300) {
+            return Err(refused("original publication end exceeds its bound"));
+        }
+        self.require_original_root()?;
         connection.require_original_publication_session()?;
         let size = self.bootstrap.metadata()?.len();
         if size == 0 || size > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {
@@ -74,7 +132,7 @@ impl RootGenerationPublicationHandoffV1 {
         if raw.len() as u64 != size {
             return Err(refused("publication bootstrap changed"));
         }
-        let (bundle, _prepared) =
+        let (bundle, prepared) =
             crate::authority_host_service::generation_publication::decode_original_publication_bootstrap(&raw)?;
         let version = PublicationVersion::from_purpose(&bundle.purpose)?;
         let (original, identity) = connection.original_launch_binding();
@@ -121,41 +179,9 @@ impl RootGenerationPublicationHandoffV1 {
             unsafe { libc::getegid() },
         )?;
         connection.require_original_publication_session()?;
-        let stream = tokio::time::timeout(
-            timeout.min(publication_remaining(end)?),
-            tokio::net::UnixStream::connect(&socket),
-        )
-        .await
-        .map_err(|_| refused("publication Root connection timed out"))??;
+        self.require_original_root()?;
         publication_remaining(end)?;
-        let original = OriginalPublicationStream::from_stream_until(
-            stream.into_std()?,
-            self.root_pidfd,
-            AgentdRootAuthorityPeer {
-                pid: bundle.root.pid,
-                boot_id: bundle.root.boot_id.clone(),
-                process_start_ticks: bundle.root.process_start_ticks,
-            },
-            timeout,
-            end,
-        )?;
-        // Only observation occurs during bootstrap. Cancellation discards the
-        // result and original stream; it never starts a CURRENT mutation.
-        tokio::task::spawn_blocking(move || {
-            publication_remaining(end)?;
-            connection.require_original_publication_session()?;
-            let client = RootGenerationCurrentClient::from_original_stream(
-                original,
-                &bundle,
-                &bundle.learning_operation,
-                connection,
-            )?;
-            let current = NeuronGenerationCurrentOwnerV1::from_original_root_publication(client)?;
-            publication_remaining(end)?;
-            Ok(Arc::new(current))
-        })
-        .await
-        .map_err(|_| refused("publication connect worker lost"))?
+        Ok((bundle, prepared))
     }
 }
 
