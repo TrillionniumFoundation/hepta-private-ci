@@ -371,10 +371,19 @@ stream_max_retries = 0
     state.mark_app_server_ready()?;
     if let Some(mode) = process_mode {
         let outcome = process::run(process::Run {
-            mode, identity: &identity, host: &host, output: &output, retained: &retained,
-            reads: reads.clone(), model: &model, request_id: &request_id,
-            snapshot: &snapshot, fact: &fact, tasks: &mut tasks,
-        }).await;
+            mode,
+            identity: &identity,
+            host: &host,
+            output: &output,
+            retained: &retained,
+            reads: reads.clone(),
+            model: &model,
+            request_id: &request_id,
+            snapshot: &snapshot,
+            fact: &fact,
+            tasks: &mut tasks,
+        })
+        .await;
         cancel.cancel();
         tokio::time::timeout(Duration::from_secs(2), server_task).await???;
         app.abort();

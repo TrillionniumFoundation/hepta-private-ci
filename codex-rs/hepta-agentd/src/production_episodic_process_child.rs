@@ -9,8 +9,8 @@ use std::io::Write;
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
-use std::process::Command;
 use std::process::Child;
+use std::process::Command;
 use std::process::Stdio;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -33,9 +33,11 @@ impl Drop for ChildGuard {
     fn drop(&mut self) {
         if let Some(mut child) = self.0.take() {
             let _ = child.kill();
-            let _ = std::thread::Builder::new().name("mem15-child-reaper".into()).spawn(move || {
-                let _ = child.wait();
-            });
+            let _ = std::thread::Builder::new()
+                .name("mem15-child-reaper".into())
+                .spawn(move || {
+                    let _ = child.wait();
+                });
         }
     }
 }
@@ -52,7 +54,11 @@ impl ObservedChild {
     }
 
     pub(super) fn import_ack(&self, snapshot: &str) -> Result<Value> {
-        let replies = self.stdout.lines().filter_map(|line| line.strip_prefix(ACK)).collect::<Vec<_>>();
+        let replies = self
+            .stdout
+            .lines()
+            .filter_map(|line| line.strip_prefix(ACK))
+            .collect::<Vec<_>>();
         if !self.success() || replies.len() != 1 {
             return Err("A import acknowledgement/OS exit unresolved; do not reimport".into());
         }
@@ -66,9 +72,12 @@ impl ObservedChild {
             || reply["imported"]["active_records"] != 1
             || envelope["sha256"].as_str() != Some(canonical.as_str())
             || reply["imported"]["snapshot_sha256"] != envelope["sha256"]
-            || !body["authority_id"].is_string() || !body["namespace"].is_string()
+            || !body["authority_id"].is_string()
+            || !body["namespace"].is_string()
             || !body["generation"].is_u64()
-            || ["authority_id", "namespace", "generation"].into_iter().any(|key| reply["imported"][key] != body[key])
+            || ["authority_id", "namespace", "generation"]
+                .into_iter()
+                .any(|key| reply["imported"][key] != body[key])
         {
             return Err("A acknowledgement does not bind the exact original import".into());
         }
@@ -77,7 +86,9 @@ impl ObservedChild {
 }
 
 fn now() -> Result<u64> {
-    Ok(u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos())?)
+    Ok(u64::try_from(
+        SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos(),
+    )?)
 }
 
 pub(super) fn pin(path: &Path) -> Result<Value> {
@@ -87,7 +98,9 @@ pub(super) fn pin(path: &Path) -> Result<Value> {
     let mut bytes = 0_usize;
     loop {
         let read = file.read(&mut buffer)?;
-        if read == 0 { break; }
+        if read == 0 {
+            break;
+        }
         hash.update(&buffer[..read]);
         bytes += read;
     }
@@ -95,7 +108,11 @@ pub(super) fn pin(path: &Path) -> Result<Value> {
 }
 
 fn private_file(path: &Path) -> Result<File> {
-    Ok(OpenOptions::new().create_new(true).write(true).mode(0o600).open(path)?)
+    Ok(OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(path)?)
 }
 
 pub(super) async fn observe(
@@ -109,7 +126,9 @@ pub(super) async fn observe(
     // Exclusive role directory is the no-reissue fence, including lost exit or ack.
     std::fs::create_dir(root)?;
     std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))?;
-    for name in ["work", "home", "cache"] { std::fs::create_dir(root.join(name))?; }
+    for name in ["work", "home", "cache"] {
+        std::fs::create_dir(root.join(name))?;
+    }
     let input_path = root.join("stdin.bin");
     let mut retained_input = private_file(&input_path)?;
     retained_input.write_all(input)?;
@@ -117,8 +136,13 @@ pub(super) async fn observe(
     drop(retained_input);
     let executable_before = pin(executable)?;
     let mut command = Command::new(executable);
-    command.args(args).env_clear().current_dir(root.join("work"));
-    command.env("HOME", root.join("home")).env("XDG_CACHE_HOME", root.join("cache"));
+    command
+        .args(args)
+        .env_clear()
+        .current_dir(root.join("work"));
+    command
+        .env("HOME", root.join("home"))
+        .env("XDG_CACHE_HOME", root.join("cache"));
     command.env("PATH", "/usr/bin:/bin").env("LANG", "C.UTF-8");
     command.envs(extra_env.iter().map(|(key, value)| (key, value)));
     command.stdin(Stdio::from(File::open(&input_path)?));
@@ -137,12 +161,18 @@ pub(super) async fn observe(
     let child = owned.0.as_mut().ok_or("owned child missing")?;
     let pid = child.id();
     let process_identity = std::fs::read_to_string(format!("/proc/{pid}/stat")).ok();
-    super::write_receipt(root, "STARTED.json", &serde_json::json!({
-        "pid": pid, "started_at_unix_ns": started, "proc_stat": process_identity,
-    }))?;
+    super::write_receipt(
+        root,
+        "STARTED.json",
+        &serde_json::json!({
+            "pid": pid, "started_at_unix_ns": started, "proc_stat": process_identity,
+        }),
+    )?;
     let deadline = tokio::time::Instant::now() + timeout;
     let (status, timed_out) = loop {
-        if let Some(status) = child.try_wait()? { break (status, false); }
+        if let Some(status) = child.try_wait()? {
+            break (status, false);
+        }
         if tokio::time::Instant::now() >= deadline {
             // Only this owned child handle is stopped. The owner may have committed:
             // killing A is not rollback; a missing ack remains UNKNOWN forever here.
@@ -176,11 +206,18 @@ pub(super) async fn observe(
         }
         Ok(std::fs::read_to_string(path)?)
     };
-    Ok(ObservedChild { receipt, stdout: read_output("stdout.bin")?, stderr: read_output("stderr.bin")? })
+    Ok(ObservedChild {
+        receipt,
+        stdout: read_output("stdout.bin")?,
+        stderr: read_output("stderr.bin")?,
+    })
 }
 
 pub(super) fn importer_test_name() -> String {
-    format!("{}::episodic_mem15_import_child", module_path!().split_once("::").expect("crate prefix").1)
+    format!(
+        "{}::episodic_mem15_import_child",
+        module_path!().split_once("::").expect("crate prefix").1
+    )
 }
 
 #[tokio::test]
@@ -190,21 +227,28 @@ async fn episodic_mem15_import_child() -> Result<()> {
         return Err("MEM15 parent child-role required".into());
     }
     let mut snapshot = String::new();
-    std::io::stdin().take(20 * 1024 + 1).read_to_string(&mut snapshot)?;
+    std::io::stdin()
+        .take(20 * 1024 + 1)
+        .read_to_string(&mut snapshot)?;
     if snapshot.is_empty() || snapshot.len() > 20 * 1024 {
         return Err("bounded original snapshot required".into());
     }
     let client = crate::AgentdClient::new(
-        std::env::var_os("HEPTA_MEM15_AGENTD_SOCKET").ok_or("socket required")?.into(),
+        std::env::var_os("HEPTA_MEM15_AGENTD_SOCKET")
+            .ok_or("socket required")?
+            .into(),
         AgentId::parse(std::env::var("HEPTA_MEM15_AGENT_ID")?)?,
         std::env::var("HEPTA_MEM15_GENERATION")?.parse()?,
     )?;
     let snapshot_sha256 = Sha256Digest::for_bytes(snapshot.as_bytes());
     let imported = client.import_episodic_snapshot(snapshot).await?;
-    println!("\n{ACK}{}", serde_json::to_string(&serde_json::json!({
-        "schema": "hepta.mem15.import-ack.v1", "pid": std::process::id(),
-        "snapshot_sha256": snapshot_sha256.as_str(), "imported": imported,
-    }))?);
+    println!(
+        "\n{ACK}{}",
+        serde_json::to_string(&serde_json::json!({
+            "schema": "hepta.mem15.import-ack.v1", "pid": std::process::id(),
+            "snapshot_sha256": snapshot_sha256.as_str(), "imported": imported,
+        }))?
+    );
     std::io::stdout().flush()?;
     Ok(())
 }
