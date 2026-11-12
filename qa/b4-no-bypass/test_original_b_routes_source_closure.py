@@ -52,11 +52,14 @@ EXPECTED = {
     "source_input_open": ("authority_host_q24_evaluation_registration",),
     "provider": ("authority_host_q24_evaluation_execute",),
     "record_register": ("authority_host_q24_evaluation_registration",),
-    "record_open": ("authority_host_q24_evaluation_registration",),
+    "record_open": (
+        "authority_host_q24_evaluation_registration", "authority_host_q24_evaluation_history",
+    ),
     "record_inspect": (
         "authority_host_q24_evaluation_registration", "authority_host_q24_evaluation_route",
         "authority_host_q24_evaluation_operation", "authority_host_q24_evaluation_prepare",
         "authority_host_q24_evaluation_ingress",
+        "authority_host_q24_evaluation_history",
     ),
 }
 
