@@ -1,0 +1,144 @@
+{
+  "schema": "hcsn-projected-semigroup-defect-evidence-v1",
+  "date_utc": "2026-11-12",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent_pr": 6075,
+  "source_parent_head": "1ffcea22cf080290849b0a195888fa958e569993",
+  "source_git_blobs": {
+    "qualification/hcsn_differentiable/operator.py": "4f68cbd2b9b620e48a1aa85a9a6d04ff2313ace3",
+    "qualification/hcsn_differentiable/contract.py": "802c227f7104658ef0accdb7b92bf497000eb714",
+    "qualification/hcsn_boundary_audit/test_semigroup_diagnostic.py": "6214bdccec05ddb793fbb8e193e4b0b55d1b3329"
+  },
+  "source_sha256": {
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"
+  },
+  "environment": {
+    "host": "heptaruntime desktop",
+    "interpreter": "/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python3",
+    "python": "3.12.3",
+    "torch": "2.8.0+cpu",
+    "dtype": "float64",
+    "threads": 1
+  },
+  "matrix_convention": "Q(dt) @ Q(dt) versus Q(2*dt); rowwise total variation = 0.5 * sum abs(row difference)",
+  "matrix_size": 25,
+  "grid": {
+    "active_cells": 16,
+    "endpoint": 4.8,
+    "phase_cells": 8,
+    "refractory": 0.2,
+    "tail_rate": 1,
+    "quadrature_order": 16,
+    "initial_log_std": 0.08
+  },
+  "parameters": {
+    "log_boundary": 0,
+    "sigma": 0.35,
+    "absolute_reset": 1.7332530178673953,
+    "discount": 0.08,
+    "drifts": [
+      -0.4,
+      0,
+      0.4
+    ],
+    "gaps": [
+      0.001,
+      0.02
+    ]
+  },
+  "measurements": [
+    {
+      "active_mean_total_variation": 0.015598882865301152,
+      "dt": 0.001,
+      "mass_error": 2.220446049250313e-16,
+      "matrices_finite": true,
+      "max_total_variation": 0.02367502218377265,
+      "mu": -0.4,
+      "row5_total_variation": 0.01592077216884516
+    },
+    {
+      "active_mean_total_variation": 0.04894826193347535,
+      "dt": 0.02,
+      "mass_error": 2.220446049250313e-16,
+      "matrices_finite": true,
+      "max_total_variation": 0.10269222762447545,
+      "mu": -0.4,
+      "row5_total_variation": 0.049384267780028225
+    },
+    {
+      "active_mean_total_variation": 0.015614302644797746,
+      "dt": 0.001,
+      "mass_error": 5.551115123125783e-16,
+      "matrices_finite": true,
+      "max_total_variation": 0.023689623092389506,
+      "mu": 0,
+      "row5_total_variation": 0.015937469056132483
+    },
+    {
+      "active_mean_total_variation": 0.05063870509388512,
+      "dt": 0.02,
+      "mass_error": 4.440892098500626e-16,
+      "matrices_finite": true,
+      "max_total_variation": 0.09262459023061453,
+      "mu": 0,
+      "row5_total_variation": 0.051121005865610816
+    },
+    {
+      "active_mean_total_variation": 0.01559829201099637,
+      "dt": 0.001,
+      "mass_error": 4.440892098500626e-16,
+      "matrices_finite": true,
+      "max_total_variation": 0.02367529385651671,
+      "mu": 0.4,
+      "row5_total_variation": 0.015920772168845156
+    },
+    {
+      "active_mean_total_variation": 0.04902921184451699,
+      "dt": 0.02,
+      "mass_error": 2.220446049250313e-16,
+      "matrices_finite": true,
+      "max_total_variation": 0.1084838821898577,
+      "mu": 0.4,
+      "row5_total_variation": 0.04938426778002814
+    }
+  ],
+  "native_jobs": [
+    {
+      "label": "REJECTED_EXACT_SEMIGROUP_NULL",
+      "id": "1a1cd69b5ae-2564-12a5",
+      "exit_code": 1,
+      "state": "failed",
+      "output_complete": true,
+      "output_durable": true
+    },
+    {
+      "label": "SIX_REGIME_GREEN",
+      "id": "1a1cd68fdb4-2564-12a3",
+      "exit_code": 0,
+      "state": "succeeded",
+      "output_complete": true,
+      "output_durable": true
+    },
+    {
+      "label": "PUBLISHED_BLOB_GREEN",
+      "id": "1a1cd6b4dda-2564-12ae",
+      "exit_code": 0,
+      "state": "succeeded",
+      "output_complete": true,
+      "output_durable": true
+    }
+  ],
+  "null_result": "Exact-semigroup assertion with 1e-8 threshold intentionally fails at zero drift dt=0.001; not software test regression",
+  "published_blob_native_regression": "2/2 PASS; zero skipped; exit 0",
+  "original_c2_modified": false,
+  "training_or_replay_performed": false,
+  "scientific_admission": "HOLD_NO_GO",
+  "limitations": [
+    "Synthetic fixed-law test; not a trained or full visited posterior audit",
+    "Nonzero semigroup discrepancy is diagnostic and not itself a continuum reference error bound",
+    "Causality cannot be assigned uniquely to spatial reprojection without additional controlled checks",
+    "No end-to-end task, energy, checkpoint, fair strong-baseline or production claim",
+    "No original C2 job was resumed or modified"
+  ]
+}
