@@ -141,6 +141,7 @@ pub use product_execution_file::LockedFileProductEvaluationExecutionErrorV1;
 pub use product_execution_file::LockedFileProductEvaluationExecutionStoreV1;
 pub use product_execution_file::ProductEvaluationExecutionAnchorV1;
 pub use product_execution_file::ReadOnlyProductEvaluationExecutionStoreV1;
+pub use product_execution_file::decode_original_product_evaluation_execution_image_v1;
 pub use product_execution_store::MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1;
 pub use product_execution_store::ProductEvaluationExecutionClaimV1;
 pub use product_execution_store::ProductEvaluationExecutionKeyV1;

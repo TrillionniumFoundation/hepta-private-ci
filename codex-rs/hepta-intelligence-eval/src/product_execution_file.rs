@@ -44,6 +44,10 @@ mod physical;
 mod readback;
 pub use readback::ReadOnlyProductEvaluationExecutionStoreV1;
 
+#[path = "product_execution_image_data.rs"]
+mod image_data;
+pub use image_data::decode_original_product_evaluation_execution_image_v1;
+
 const MAGIC: &[u8; 8] = b"HEPTEX01";
 const HEADER: usize = 72;
 const MAX_FILE_BYTES: u64 = 32 * 1024 * 1024;
