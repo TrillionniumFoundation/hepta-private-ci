@@ -247,6 +247,9 @@ impl<P: ControlProfile> ControlConnection<P> {
         let (reader, mut writer) = tokio::io::split(stream);
         let frame = frames::read_frame(reader).await?;
         let request: AgentdRequest = serde_json::from_slice(&frame)?;
+        let circuit_admission = request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+            && state.circuit_task_enabled()
+            && matches!(&request.method, crate::AgentdMethod::ObjectiveStart { .. });
         let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
             error_response(
                 &state,
@@ -263,8 +266,6 @@ impl<P: ControlProfile> ControlConnection<P> {
             // ACK must not cancel the continuation after durable computation.
             // The installed task owner still authenticates RunStart and enforces
             // its admission, AuthBus expiry, Circuit budget and lifecycle bounds.
-            let circuit_admission = state.circuit_task_enabled()
-                && matches!(&request.method, crate::AgentdMethod::ObjectiveStart { .. });
             let outcome = if circuit_admission {
                 P::response(&state, request).await
             } else {
@@ -292,8 +293,24 @@ impl<P: ControlProfile> ControlConnection<P> {
                 "agentd control response exceeded frame bound".to_string(),
             ));
         }
-        frames::write_frame(&mut writer, &bytes).await?;
-        Ok(())
+        let completed_circuit = circuit_admission
+            && matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)
+                if receipt.disposition.eq("circuit_succeeded"));
+        match frames::write_frame(&mut writer, &bytes).await {
+            // The original owner and all task postchecks already returned.
+            // Losing only its terminal transport ACK cannot undo that work or
+            // poison the joined control owner. No task is submitted again.
+            Err(AgentdError::Io(error))
+                if completed_circuit
+                    && matches!(
+                        error.kind(),
+                        ErrorKind::BrokenPipe | ErrorKind::ConnectionReset
+                    ) =>
+            {
+                Ok(())
+            }
+            result => result,
+        }
     }
 }
 

@@ -145,6 +145,8 @@ CASES = [['control.rs',
    'capture.capture_after_close(closed).await']]]
 
 
+CASES.append(['control.rs', 'fn serve_connection(', ['request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION', 'state.circuit_task_enabled()', 'crate::AgentdMethod::ObjectiveStart', 'P::response(&state, request).await', 'let completed_circuit = circuit_admission', 'matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)', 'if receipt.disposition', '.eq("circuit_succeeded")', 'match frames::write_frame(&mut writer, &bytes).await', 'Err(AgentdError::Io(error))', 'if completed_circuit', 'ErrorKind::BrokenPipe | ErrorKind::ConnectionReset', 'result => result']])
+
 class OriginalSourceExitClosureTests(unittest.TestCase):
     setUpClass = classmethod(component.InitialArtifactReadviewClosureTests.setUpClass.__func__)
     reject_removal = component.InitialArtifactReadviewClosureTests.reject_removal
@@ -158,6 +160,9 @@ class OriginalSourceExitClosureTests(unittest.TestCase):
                 seen[marker] = occurrence + 1
                 with self.subTest(file=filename, function=function, marker=marker, occurrence=occurrence):
                     self.reject_removal(filename, function, marker, occurrence)
+
+    def test_only_original_completed_circuit_ack_disconnect_is_nonfatal(self):
+        self.verify_cases([18])
 
     def test_control_completion_requires_all_accepted_connections(self):
         self.verify_cases([0, 1])
