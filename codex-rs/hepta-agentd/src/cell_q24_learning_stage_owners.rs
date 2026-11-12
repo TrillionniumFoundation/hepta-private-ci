@@ -41,6 +41,8 @@ mod successor;
 mod evaluation_root;
 use evaluation_root::OriginalRootBEvaluationActionV1;
 
+#[path = "cell_q24_learning_generation_operation.rs"]
+mod generation_operation;
 #[path = "cell_q24_learning_historical_operation.rs"]
 mod historical_operation;
 #[path = "cell_q24_learning_historical_stage.rs"]
@@ -318,6 +320,11 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         mut selection: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
         mut next_use: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
     ) -> Result<(), Error> {
+        if self.inner.has_original_root_evaluation()? {
+            self.install_original_generation_in_operation(snapshot.clone(), selection, next_use)
+                .await?;
+            return self.notify_original_successor_generation(&snapshot);
+        }
         let installed_snapshot = snapshot.clone();
         let inner = Arc::clone(&self.inner);
         self.inner

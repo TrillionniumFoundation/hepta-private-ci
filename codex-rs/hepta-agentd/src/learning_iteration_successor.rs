@@ -37,7 +37,51 @@ impl OriginalQ24SuccessorContext {
         owners.prepared().scope()
     }
 
-    pub(crate) async fn require_current_successor_context(&self) -> Result<(), AgentdError> {
+    pub(crate) fn require_original_successor_operation(
+        &self,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<(), AgentdError> {
+        self.session.require_current_successor_session()?;
+        let OriginalSuccessorSourceV1::Historical(source) = &self.source else {
+            return Err(successor_refused(
+                "historical original source operation required",
+            ));
+        };
+        RegisteredHistoricalLearningSourceV1::require_original_stage_operation(
+            source,
+            &self.identity,
+            read,
+        )?;
+        self.session.require_current_successor_session()
+    }
+
+    pub(crate) async fn with_current_successor_operation<T: Send + 'static>(
+        self: &Arc<Self>,
+        work: impl FnOnce() -> Result<T, AgentdError> + Send + 'static,
+    ) -> Result<T, AgentdError> {
+        if matches!(self.source, OriginalSuccessorSourceV1::Historical(_)) {
+            return self
+                .owners
+                .with_original_successor_read(Arc::clone(self), work)
+                .await
+                .map_err(|error| successor_refused(&error.to_string()));
+        }
+        self.require_current_successor_context().await?;
+        let result = work();
+        self.require_current_successor_context().await?;
+        result
+    }
+
+    pub(crate) async fn require_current_successor_context(
+        self: &Arc<Self>,
+    ) -> Result<(), AgentdError> {
+        if matches!(self.source, OriginalSuccessorSourceV1::Historical(_)) {
+            return self
+                .owners
+                .with_original_successor_read(Arc::clone(self), || Ok(()))
+                .await
+                .map_err(|error| successor_refused(&error.to_string()));
+        }
         self.session.require_current_successor_session()?;
         match &self.source {
             OriginalSuccessorSourceV1::Retained(retained) => {

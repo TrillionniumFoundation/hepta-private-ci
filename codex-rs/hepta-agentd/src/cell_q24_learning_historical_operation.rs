@@ -7,6 +7,8 @@ use crate::cell_q24_training_receipt_owner::OriginalQ24TrainingOperationV1;
 use crate::learning_iteration::historical_context::OriginalHistoricalStageAdmissionV1;
 use crate::learning_iteration::historical_context::OriginalHistoricalStageContextV1;
 
+#[path = "cell_q24_learning_b_operation.rs"]
+mod evaluation;
 #[path = "cell_q24_learning_historical_receipts.rs"]
 mod receipts;
 
@@ -42,7 +44,8 @@ pub(super) struct OriginalQ24StageOperationV1<'frame, 'owners, 'read, 'source> {
         FileAnchorWitnessStore,
     >,
     read: &'source OriginalPreparedReadV1<'source>,
-    context: &'frame OriginalHistoricalStageContextV1,
+    context: Option<&'frame OriginalHistoricalStageContextV1>,
+    original_b: Option<crate::OriginalRootIndependentBEvaluationReadbackV1>,
 }
 
 impl<'frame, 'owners, 'read, 'source> OriginalQ24StageOperationV1<'frame, 'owners, 'read, 'source> {
@@ -67,13 +70,81 @@ impl<'frame, 'owners, 'read, 'source> OriginalQ24StageOperationV1<'frame, 'owner
             runtime,
             training,
             read,
-            context,
+            context: Some(context),
+            original_b: None,
+        })
+    }
+
+    /// Publication borrows the same owners and source solely for original
+    /// receipt readback. It has no historical runtime/checkpoint context and
+    /// therefore cannot execute a stage or manufacture a recovery admission.
+    pub(super) fn from_original_receipt_read(
+        inner: &'frame Q24StageState,
+        owners: &'frame mut Q24StageOwners,
+        runtime: &'frame Handle,
+        training: &'frame mut OriginalQ24TrainingOperationV1<
+            'owners,
+            'read,
+            FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
+        >,
+        read: &'source OriginalPreparedReadV1<'source>,
+    ) -> Result<Self, Error> {
+        OriginalPreparedReadV1::require_prepared(read, &inner.prepared).map_err(unavailable)?;
+        if owners.root_evaluation.is_none()
+            || owners.evaluation.is_some()
+            || inner.verifier.trust_digest()
+                != inner.prepared.initial().owners.evidence_trust_digest
+            || inner.verifier.objective_digest()
+                != inner.prepared.initial().request.envelope.objective_digest
+        {
+            return Err(Error::WrongScope);
+        }
+        Ok(Self {
+            inner,
+            owners,
+            runtime,
+            training,
+            read,
+            context: None,
+            original_b: None,
         })
     }
 }
 
 impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
+    fn original_stage_context(&self) -> Result<&OriginalHistoricalStageContextV1, Error> {
+        self.context.ok_or(Error::WrongScope)
+    }
+
+    fn verifier(&self) -> &LearningEvidenceVerifierV1 {
+        self.context.map_or(
+            &self.inner.verifier,
+            OriginalHistoricalStageContextV1::verifier,
+        )
+    }
+
+    fn current_time(&self) -> Result<u64, Error> {
+        match self.context {
+            Some(context) => context.current_time(),
+            None => std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|value| value.as_secs())
+                .map_err(|_| Error::Unavailable),
+        }
+    }
+
     pub(super) fn run(
+        &mut self,
+        work: OriginalHistoricalWorkV1,
+    ) -> Result<OriginalHistoricalResultV1, Error> {
+        self.original_stage_context()?;
+        let result = self.run_stage(work);
+        self.finish_original_b_read()?;
+        result
+    }
+
+    fn run_stage(
         &mut self,
         work: OriginalHistoricalWorkV1,
     ) -> Result<OriginalHistoricalResultV1, Error> {
@@ -81,7 +152,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
             OriginalHistoricalWorkV1::Restore(mode) => self.restore(mode),
             OriginalHistoricalWorkV1::ConfirmRecovery(expected) => {
                 let actual = self.runtime.block_on(
-                    self.context
+                    self.original_stage_context()?
                         .restore_checkpoint(&self.inner.prepared.initial().request),
                 )?;
                 if actual.as_ref() != Some(&expected) {
@@ -105,17 +176,18 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         mode: OriginalHistoricalRestoreModeV1,
     ) -> Result<OriginalHistoricalResultV1, Error> {
         let initial = self.inner.prepared.initial();
-        let restored = self
-            .runtime
-            .block_on(self.context.restore_checkpoint(&initial.request))?;
+        let restored = self.runtime.block_on(
+            self.original_stage_context()?
+                .restore_checkpoint(&initial.request),
+        )?;
         let Some(snapshot) = restored else {
             if matches!(mode, OriginalHistoricalRestoreModeV1::Readback) {
                 return Err(Error::CommitUncertain);
             }
-            self.context
+            self.original_stage_context()?
                 .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
             let committed = self.runtime.block_on(
-                self.context
+                self.original_stage_context()?
                     .commit_checkpoint(codex_hepta_types::Digest32::ZERO, initial),
             )?;
             if committed != initial.head_digest {
@@ -157,7 +229,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         if coordinator.next_stage() != Some(stage) {
             return Err(Error::WrongScope);
         }
-        self.context
+        self.original_stage_context()?
             .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
         if let Some(decision) = coordinator.snapshot().receipts.iter().find(|receipt| {
             matches!(
@@ -169,22 +241,22 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         }
         let receipt = self.execute_stage(coordinator.snapshot(), stage)?;
         self.authenticate_receipt(coordinator.snapshot(), &receipt)?;
-        self.context
+        self.original_stage_context()?
             .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)?;
         self.inner
             .prepared
             .scope()
             .validate_observation(&receipt.observation)?;
         let previous = coordinator.snapshot().head_digest;
-        coordinator.record(receipt, self.context.current_time()?)?;
+        coordinator.record(receipt, self.current_time()?)?;
         let committed = self.runtime.block_on(
-            self.context
+            self.original_stage_context()?
                 .commit_checkpoint(previous, coordinator.snapshot()),
         )?;
         if committed != coordinator.snapshot().head_digest {
             return Err(Error::CommitUncertain);
         }
-        self.context
+        self.original_stage_context()?
             .require_in_operation(self.read, OriginalHistoricalStageAdmissionV1::NewWork)
             .map_err(|_| Error::CommitUncertain)?;
         Ok(OriginalHistoricalResultV1 {
@@ -217,25 +289,20 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
                 if original.snapshot() != snapshot {
                     return Err(Error::WrongScope);
                 }
-                Ok(self
-                    .owners
-                    .execute_original_root_evaluation(
-                        self.training,
-                        &original,
-                        self.inner.prepared.scope(),
-                    )?
-                    .receipt()
-                    .clone())
+                if self.original_b.is_some() {
+                    return Err(Error::WrongScope);
+                }
+                let observed = self.owners.execute_original_root_evaluation(
+                    self.training,
+                    &original,
+                    self.inner.prepared.scope(),
+                )?;
+                let receipt = observed.receipt().clone();
+                self.original_b = Some(observed);
+                Ok(receipt)
             }
             LearningIterationStageV1::Proposal => Ok(self
-                .owners
-                .model_root_action_in_operation(
-                    self.inner,
-                    self.runtime,
-                    self.training,
-                    snapshot,
-                    model::Action::CommitProposal,
-                )?
+                .model_root_action(snapshot, model::Action::CommitProposal)?
                 .0),
             LearningIterationStageV1::Selection
                 if snapshot.receipts.last().is_some_and(|receipt| {
@@ -243,14 +310,7 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
                 }) =>
             {
                 Ok(self
-                    .owners
-                    .model_root_action_in_operation(
-                        self.inner,
-                        self.runtime,
-                        self.training,
-                        snapshot,
-                        model::Action::CommitDecision,
-                    )?
+                    .model_root_action(snapshot, model::Action::CommitDecision)?
                     .0)
             }
             LearningIterationStageV1::Selection | LearningIterationStageV1::NextUse => {

@@ -37,7 +37,6 @@ impl OriginalCellQ24RootPublicationDriverV1 {
         recovery: OriginalCellQ24HistoricalFeatureRecoveryV1,
     ) -> Result<PublishedCircuitFeatureTaskV1, Error> {
         let original: &OriginalDecision = &self.driver.original;
-        original.require_current().await?;
         original.decision.require_root_publication()?;
         validation::feature_target(
             &original.decision,

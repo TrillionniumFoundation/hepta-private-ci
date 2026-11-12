@@ -22,15 +22,22 @@ pub(crate) struct OriginalSuccessorProof {
 
 impl OriginalSuccessorProof {
     pub(crate) async fn require_current_successor_publication(&self) -> Result<(), Error> {
-        self.context.require_current_successor_context().await?;
-        let current: &NeuronGenerationCurrentOwnerV1 = self.current.as_ref();
-        current.require_original_root_successor(
-            self.context.session(),
-            self.context.initial(),
-            self.context.scope(),
-        )?;
-        current.require_original_root_selection(&self.decision, &self.operation, self.selection)?;
-        self.context.require_current_successor_context().await?;
+        let context = Arc::clone(&self.context);
+        let current = Arc::clone(&self.current);
+        let decision = self.decision.clone();
+        let operation = self.operation.clone();
+        let selection = self.selection;
+        self.context
+            .with_current_successor_operation(move || {
+                let current: &NeuronGenerationCurrentOwnerV1 = current.as_ref();
+                current.require_original_root_successor(
+                    context.session(),
+                    context.initial(),
+                    context.scope(),
+                )?;
+                current.require_original_root_selection(&decision, &operation, selection)
+            })
+            .await?;
         Ok(())
     }
 }
