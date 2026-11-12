@@ -18,6 +18,19 @@
   },
   "groups": [
     {
+      "id": "elevated-isolation-admission",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 5,
+      "requiredTests": [
+        "elevated_admission_tests::elevated_raw_token_factories_refuse_live_base",
+        "elevated_admission_tests::elevated_capture_refuses_before_side_effects",
+        "elevated_admission_tests::elevated_public_selector_refuses_without_fallback",
+        "elevated_admission_tests::elevated_direct_session_refuses_before_side_effects",
+        "elevated_admission_tests::elevated_preparation_refuses_before_env_or_acl_changes"
+      ],
+      "filter": "test(=elevated_admission_tests::elevated_raw_token_factories_refuse_live_base) | test(=elevated_admission_tests::elevated_capture_refuses_before_side_effects) | test(=elevated_admission_tests::elevated_public_selector_refuses_without_fallback) | test(=elevated_admission_tests::elevated_direct_session_refuses_before_side_effects) | test(=elevated_admission_tests::elevated_preparation_refuses_before_env_or_acl_changes)"
+    },
+    {
       "id": "retained-windows-identity",
       "package": "codex-state",
       "expectedTestCount": 8,

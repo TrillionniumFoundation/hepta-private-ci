@@ -28,6 +28,7 @@ mod windows_impl {
     use crate::acl::allow_null_device;
     use crate::cap::load_or_create_cap_sids;
     use crate::cap::workspace_write_cap_sid_for_root;
+    use crate::elevated_admission::require_elevated_filesystem_isolation;
     use crate::env::ensure_non_interactive_pager;
     use crate::env::inherit_path_env;
     use crate::env::normalize_null_device_env;
@@ -58,6 +59,7 @@ mod windows_impl {
     pub fn run_windows_sandbox_capture_for_permission_profile(
         request: ElevatedSandboxProfileCaptureRequest<'_>,
     ) -> Result<CaptureResult> {
+        require_elevated_filesystem_isolation()?;
         let ElevatedSandboxProfileCaptureRequest {
             permission_profile,
             workspace_roots,
