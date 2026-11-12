@@ -1,0 +1,99 @@
+{
+  "schema": "framework-common-local-source-validation-v1",
+  "source": "4f7f0f4ef686e71353a5a3a9725c01f3dbffbc50",
+  "tree": "d9bed510c731b3afa501daf666b55106b8fb6136",
+  "checkout": "Existing task worktree, exact detached source, clean tracked status",
+  "toolchain": "Cargo, rustc, rustfmt, rustup and just absent; no Rust compilation or test result claimed",
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "3c8dabe46598599e91b2b8b80081e09069ff9426",
+        "HEAD"
+      ],
+      "chunk_id": "dd982a",
+      "wall_time_seconds": 0.000037622,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "chunk_id": "2a714b",
+      "wall_time_seconds": 0.073629502,
+      "exit_code": 0,
+      "original_token_count": 12,
+      "output": "{\"status\": \"PASS_HEPTA_CALLER_PROOF_SELF_TEST\"}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_control_generic_order_source_closure.py"
+      ],
+      "chunk_id": "09aec5",
+      "wall_time_seconds": 0.179539782,
+      "exit_code": 0,
+      "original_token_count": 71,
+      "output": "test_actual_generic_function_and_negative_mutants (test_control_generic_order_source_closure.ControlGenericFunctionOrderTests.test_actual_generic_function_and_negative_mutants) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.098s\n\nOK\n",
+      "scope": "One original test with actual function acceptance plus five rejected negative mutations"
+    }
+  ],
+  "git_integration": "git-merge-tree.json",
+  "initial_incomplete_worktree_observations": [
+    {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "chunk_id": "311bef",
+      "wall_time_seconds": 0.00002083,
+      "exit_code": 1,
+      "original_token_count": 39,
+      "output": "FAIL_HEPTA_CALLER_PROOF: cannot read caller manifest: [Errno 2] No such file or directory: '/workspace/scratch/81661093993d/framework-work/CALLERS.toml'\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_control_generic_order_source_closure.py"
+      ],
+      "chunk_id": "a21164",
+      "wall_time_seconds": 0.152343955,
+      "exit_code": 1,
+      "original_token_count": 400,
+      "output": "test_actual_generic_function_and_negative_mutants (test_control_generic_order_source_closure.ControlGenericFunctionOrderTests.test_actual_generic_function_and_negative_mutants) ... ERROR\n\n======================================================================\nERROR: test_actual_generic_function_and_negative_mutants (test_control_generic_order_source_closure.ControlGenericFunctionOrderTests.test_actual_generic_function_and_negative_mutants)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/81661093993d/framework-work/qa/b4-no-bypass/test_control_generic_order_source_closure.py\", line 23, in test_actual_generic_function_and_negative_mutants\n    manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text())\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/81661093993d/framework-work/CALLERS.toml'\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (errors=1)\n"
+    }
+  ],
+  "incomplete_worktree_correction": "Materialized exact tracked CALLERS.toml from the current source without changing it; repeated original negative-control test passed. Initial omissions are environment observations, not complete-source regression results.",
+  "full_caller_scan": {
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "status": "running at 2026-11-12 01:20:22 UTC",
+    "observed_result": null,
+    "no_pass_claimed": true
+  },
+  "rust_native_qualification": false
+}

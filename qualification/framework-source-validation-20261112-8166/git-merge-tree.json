@@ -1,0 +1,125 @@
+{
+  "schema": "framework-local-git-integration-v1",
+  "observed_at_utc": "2026-11-12T01:15:17.497245+00:00",
+  "source": "4f7f0f4ef686e71353a5a3a9725c01f3dbffbc50",
+  "tree": "d9bed510c731b3afa501daf666b55106b8fb6136",
+  "git_version": "git version 2.52.0",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "checks": [
+    {
+      "commit": "d1ed6f28a5400b98a07f004e9afb13c298c3d6d0",
+      "parents": [
+        "98730dda67417a93689835f4961d3e807abf107d",
+        "086cc7d21bb958c348e352395f0355793ba2de94"
+      ],
+      "recorded_tree": "7ffb7c4fe892e4f382273577f21f44b3f42e3401",
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "98730dda67417a93689835f4961d3e807abf107d",
+        "086cc7d21bb958c348e352395f0355793ba2de94"
+      ],
+      "exit_code": 0,
+      "stdout": "7ffb7c4fe892e4f382273577f21f44b3f42e3401\n",
+      "stderr": "",
+      "exact_match": true
+    },
+    {
+      "commit": "60b6608012d241e5c57e6a052ecf86c50bcb5847",
+      "parents": [
+        "d1ed6f28a5400b98a07f004e9afb13c298c3d6d0",
+        "21d2699b7ac7831f355f5acb9570a90da077dbe3"
+      ],
+      "recorded_tree": "efdd18661a9060db28ce0282c1e5129878f3b3f7",
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "d1ed6f28a5400b98a07f004e9afb13c298c3d6d0",
+        "21d2699b7ac7831f355f5acb9570a90da077dbe3"
+      ],
+      "exit_code": 0,
+      "stdout": "efdd18661a9060db28ce0282c1e5129878f3b3f7\n",
+      "stderr": "",
+      "exact_match": true
+    },
+    {
+      "commit": "3094bdffa883385c45f189bc704d36a971d085a5",
+      "parents": [
+        "60b6608012d241e5c57e6a052ecf86c50bcb5847",
+        "95894b8c958a1fab691f7779942f5fb25b778f9f"
+      ],
+      "recorded_tree": "32ec9cd45fca2b7e8112cdf88133dfc4e9d2debf",
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "60b6608012d241e5c57e6a052ecf86c50bcb5847",
+        "95894b8c958a1fab691f7779942f5fb25b778f9f"
+      ],
+      "exit_code": 0,
+      "stdout": "32ec9cd45fca2b7e8112cdf88133dfc4e9d2debf\n",
+      "stderr": "",
+      "exact_match": true
+    },
+    {
+      "commit": "654cb85ae53ac9ca7ec0d1a1eeca6b48e9336555",
+      "parents": [
+        "46aa9e8370cb68229a478e66a9ac58e1dc813253",
+        "307dced98e8b40c1e8321a357e1af1cde3400fef"
+      ],
+      "recorded_tree": "e9ba499fe6cd7571c683a568b70ced7455915eb9",
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "46aa9e8370cb68229a478e66a9ac58e1dc813253",
+        "307dced98e8b40c1e8321a357e1af1cde3400fef"
+      ],
+      "exit_code": 0,
+      "stdout": "e9ba499fe6cd7571c683a568b70ced7455915eb9\n",
+      "stderr": "",
+      "exact_match": true
+    },
+    {
+      "commit": "30ac0f6c16022744918401c95d23d74166c42f19",
+      "parents": [
+        "654cb85ae53ac9ca7ec0d1a1eeca6b48e9336555",
+        "4ae6bbe94ef5be31401ac31b4a6fdeb5128d548f"
+      ],
+      "recorded_tree": "03df1a34494525b542c31a08e5970cf798307a2c",
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "654cb85ae53ac9ca7ec0d1a1eeca6b48e9336555",
+        "4ae6bbe94ef5be31401ac31b4a6fdeb5128d548f"
+      ],
+      "exit_code": 0,
+      "stdout": "03df1a34494525b542c31a08e5970cf798307a2c\n",
+      "stderr": "",
+      "exact_match": true
+    },
+    {
+      "commit": "7643df848e0ee29db2c0e45b4dec01a0ac67af3b",
+      "parents": [
+        "0cef9fe240ba3d341732fe9e537e275fcd358b2d",
+        "ea4b1e0452adb10c8cb0b7eae2ba1754689d11c6"
+      ],
+      "recorded_tree": "9f9d5a064c4b73c6ae4e367911b5e287ea186198",
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "0cef9fe240ba3d341732fe9e537e275fcd358b2d",
+        "ea4b1e0452adb10c8cb0b7eae2ba1754689d11c6"
+      ],
+      "exit_code": 0,
+      "stdout": "9f9d5a064c4b73c6ae4e367911b5e287ea186198\n",
+      "stderr": "",
+      "exact_match": true
+    }
+  ],
+  "rust_native_qualification": false
+}
