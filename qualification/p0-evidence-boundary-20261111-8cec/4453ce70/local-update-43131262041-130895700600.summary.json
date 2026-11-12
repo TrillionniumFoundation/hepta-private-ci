@@ -1,0 +1,116 @@
+{
+  "schema": "hepta-ci-original-log-derived-summary-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6036,
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "source_parent": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+  "workflow": {
+    "name": "Hepta Cell local update contracts",
+    "path": ".github/workflows/hepta-cell-local-update.yml",
+    "run_id": 43131262041,
+    "run_attempt": 1,
+    "job_id": 130895700600,
+    "job_name": "native-local-update",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43131262041/jobs/130895700600"
+  },
+  "raw_job_log": {
+    "github_blob_sha": "02cffa9b8680b1a2af4635d1c947c2f8be1d0ae3",
+    "encoding": "utf-8",
+    "byte_count": 59657,
+    "retrieval": "github_fetch_workflow_job_logs structuredContent.content preserved without edits, including original leading BOM and line endings"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "--lib",
+    "--test-threads",
+    "2"
+  ],
+  "suite_summary": {
+    "raw_line": "2026-11-12T01:37:47.5474815Z      Summary [   1.084s] 125 tests run: 125 passed, 1 skipped",
+    "passed": 125,
+    "failed": 0,
+    "skipped": 1
+  },
+  "selector_boundary_observations": [
+    {
+      "observed_at": "2026-11-12T01:37:47.1697125Z",
+      "status": "PASS",
+      "duration_seconds": 0.018,
+      "package": "codex-hepta-learning-artifacts",
+      "test": "selection::tests::art_12_verified_selection_cannot_cross_scheduled_revocation",
+      "change_kind": "new negative boundary control"
+    },
+    {
+      "observed_at": "2026-11-12T01:37:47.1875808Z",
+      "status": "PASS",
+      "duration_seconds": 0.018,
+      "package": "codex-hepta-learning-artifacts",
+      "test": "selection::tests::art_12_verified_selection_cannot_outlive_selector_key",
+      "change_kind": "new negative boundary control"
+    },
+    {
+      "observed_at": "2026-11-12T01:37:47.2061094Z",
+      "status": "PASS",
+      "duration_seconds": 0.018,
+      "package": "codex-hepta-learning-artifacts",
+      "test": "selection::tests::art_12_verified_selection_records_only_selected_transition",
+      "change_kind": "existing positive control"
+    }
+  ],
+  "source_and_reports": {
+    "checkout_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "all_job_steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test native bundles and local-update restrictions",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Retain the native original report",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "source_inventory_snapshots_collected": false,
+    "final_tracked_worktree_check_performed": false,
+    "native_junit_uploaded": true,
+    "artifact_id": 13907531650,
+    "artifact_name": "cell-local-update-4453ce7089168c583553c434ce1bee92e209f8dd-1"
+  },
+  "coverage_limits": {
+    "qualification_scope": "Selected current-source learning-artifacts native unit suite, including Selector key validity and scheduled revocation boundaries and existing selected-transition positive control.",
+    "not_covered": "This lane does not execute agentd learning-owner tests, real-UID-0 suites, the ordinary business A/B/C chain, independent B or task utility. The later daemon workflow must supply full source-inventory and integration qualification.",
+    "cross_source_rule": "These execution facts belong only to source 4453ce7089168c583553c434ce1bee92e209f8dd; overlapping test suites are not additive independent tasks."
+  }
+}

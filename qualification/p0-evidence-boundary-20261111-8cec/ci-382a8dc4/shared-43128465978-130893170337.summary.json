@@ -1,0 +1,164 @@
+{
+  "schema": "hepta-ci-original-log-derived-summary-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6036,
+  "source_sha": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+  "source_tree": "4a6857ae34d43b1fa8caa467cb60c14b15d85d9b",
+  "source_parent": "08711bc7f339b99e03b7513a18084e55ebee5016",
+  "workflow": {
+    "name": "Hepta shared Cell framework",
+    "path": ".github/workflows/hepta-shared-framework.yml",
+    "run_id": 43128465978,
+    "run_attempt": 1,
+    "job_id": 130893170337,
+    "job_name": "owners",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128465978/jobs/130893170337"
+  },
+  "raw_job_log": {
+    "github_blob_sha": "4846a53e56536e8c3483a3d0fccf4bb4b5d68898",
+    "encoding": "utf-8",
+    "byte_count": 363301,
+    "retrieval": "github_fetch_workflow_job_logs structuredContent.content preserved without edits, including original leading BOM and line endings"
+  },
+  "suite_summary": {
+    "raw_line": "2026-11-12T01:36:24.7231955Z      Summary [ 472.866s] 1268 tests run: 1268 passed (4 slow), 77 skipped",
+    "passed": 1268,
+    "failed": 0,
+    "skipped": 77,
+    "slow": 4
+  },
+  "execution_record": {
+    "after": {
+      "commit": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+      "dirty": false,
+      "parents": [
+        "08711bc7f339b99e03b7513a18084e55ebee5016"
+      ],
+      "tree": "4a6857ae34d43b1fa8caa467cb60c14b15d85d9b"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+      "dirty": false,
+      "parents": [
+        "08711bc7f339b99e03b7513a18084e55ebee5016"
+      ],
+      "tree": "4a6857ae34d43b1fa8caa467cb60c14b15d85d9b"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "command_exit_code": 0,
+    "elapsed_seconds": 781.727695253,
+    "exit_code": 0,
+    "finished_at": "2026-11-12T01:36:24.796065+00:00",
+    "job": "owners",
+    "lane": "source-head",
+    "log_bytes": 236802,
+    "log_file": "tests.json.e4f47101ae8142b09568d18e0d1cac4e.log",
+    "log_sha256": "8c837201db420b8725e6e2ceef164a86669911d010e47d8e3d1aa917990b69b2",
+    "minimum_tests": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 1268,
+    "output_limit_exceeded": false,
+    "returncode": 0,
+    "run_attempt": "1",
+    "run_id": "43128465978",
+    "schema_version": 1,
+    "source_sha": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+    "started_at": "2026-11-12T01:23:23.067620+00:00",
+    "status": "passed",
+    "tested_sha": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "native_junit_collection": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "errors": 0,
+    "execution_file": "tests.json",
+    "execution_sha256": "fb0f3dbf6f32373e27477c16f1a3e05a8c058a476834eb26979142dcc5fd11b4",
+    "failures": 0,
+    "job": "owners",
+    "junit_bytes": 302765,
+    "junit_mtime_ns": 1794447384736824800,
+    "junit_sha256": "c1d6531f2dc50123654fc62b6ed9d93fea24a13f6b49a3a772de2cfb4af2cbf7",
+    "kind": "native-junit-collection",
+    "native_path": "codex-rs/target/nextest/local/junit.xml",
+    "run_attempt": "1",
+    "run_id": "43128465978",
+    "schema_version": 1,
+    "skipped_in_xml": 0,
+    "source_sha": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+    "source_tree": "4a6857ae34d43b1fa8caa467cb60c14b15d85d9b",
+    "status": "passed",
+    "total_testcases": 1268
+  },
+  "changed_test_observations": [
+    {
+      "observed_at": "2026-11-12T01:28:59.1532171Z",
+      "status": "PASS",
+      "duration_seconds": 1.295,
+      "package": "codex-hepta-agentd",
+      "test": "learning_iteration_evidence_client::tests::evaluation::insufficient::insufficient_evaluation_never_claims_a_receipt_before_or_after_cold_reopen",
+      "change_kind": "new regression test"
+    },
+    {
+      "observed_at": "2026-11-12T01:29:01.4851971Z",
+      "status": "PASS",
+      "duration_seconds": 2.332,
+      "package": "codex-hepta-agentd",
+      "test": "learning_iteration_evidence_client::tests::evaluation::insufficient::insufficient_qualification_refuses_legacy_no_update_histories_before_owner_io",
+      "change_kind": "new regression test"
+    },
+    {
+      "observed_at": "2026-11-12T01:29:20.9264120Z",
+      "status": "PASS",
+      "duration_seconds": 1.177,
+      "package": "codex-hepta-agentd",
+      "test": "neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut",
+      "change_kind": "new regression test"
+    },
+    {
+      "observed_at": "2026-11-12T01:30:28.9940207Z",
+      "status": "PASS",
+      "duration_seconds": 4.678,
+      "package": "codex-hepta-agentd",
+      "test": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_keeps_ineligible_and_insufficient_decisions_distinct",
+      "change_kind": "existing test renamed and updated"
+    }
+  ],
+  "coverage_limits": {
+    "packages_selected": [
+      "codex-hepta-automation",
+      "codex-hepta-neuron",
+      "codex-hepta-agentd"
+    ],
+    "intelligence_eval_unit_tests_selected": false,
+    "real_root_ignored_suite_selected": false,
+    "selector_update_in_445_included": false,
+    "ordinary_means": "Native --lib engineering unit tests, not real ordinary business tasks.",
+    "not_evidence_for_source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "cross_source_rule": "Keep this 382a8dc4 execution independent from earlier and later source executions; overlapping test counts are not additive independent task samples."
+  }
+}

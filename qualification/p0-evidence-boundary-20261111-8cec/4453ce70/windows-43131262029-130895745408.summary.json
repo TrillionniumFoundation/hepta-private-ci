@@ -1,0 +1,295 @@
+{
+  "schema": "hepta-ci-original-log-derived-summary-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6036,
+  "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "source_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "source_parent": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+  "workflow": {
+    "name": "Hepta Windows private-state native (security qualification only)",
+    "path": ".github/workflows/hepta-windows-private-state-native.yml",
+    "run_id": 43131262029,
+    "run_attempt": 1,
+    "job_id": 130895745408,
+    "job_name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43131262029/jobs/130895745408"
+  },
+  "raw_job_log": {
+    "github_blob_sha": "5a4f98ec334a3c2d188dd85567c1b9c96a4360cb",
+    "encoding": "utf-8",
+    "byte_count": 262104,
+    "retrieval": "github_fetch_workflow_job_logs structuredContent.content preserved without edits, including original BOM and CRLF line endings"
+  },
+  "native_test_selections": [
+    {
+      "package": "codex-utils-path",
+      "filter": "test(private_state_windows::)",
+      "passed": 15,
+      "skipped": 5,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-utils-path",
+        "--lib",
+        "-E",
+        "test(private_state_windows::)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "raw_summary_line": "2026-11-12T01:19:20.0400739Z      Summary [   0.198s] 15 tests run: 15 passed, 5 skipped\r"
+    },
+    {
+      "package": "codex-hepta-prompt-registry",
+      "filter": "test(durable::windows::tests::)",
+      "passed": 2,
+      "skipped": 26,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-prompt-registry",
+        "--lib",
+        "-E",
+        "test(durable::windows::tests::)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "raw_summary_line": "2026-11-12T01:19:35.6965142Z      Summary [   0.040s] 2 tests run: 2 passed, 26 skipped\r"
+    },
+    {
+      "package": "codex-hepta-contracts",
+      "filter": "test(final_use::store::windows::tests::)",
+      "passed": 3,
+      "skipped": 147,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "-E",
+        "test(final_use::store::windows::tests::)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "raw_summary_line": "2026-11-12T01:19:57.0818309Z      Summary [   0.100s] 3 tests run: 3 passed, 147 skipped\r"
+    },
+    {
+      "package": "codex-hepta-contracts",
+      "filter": "test(authority_lease::windows::tests::)",
+      "passed": 2,
+      "skipped": 148,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "-E",
+        "test(authority_lease::windows::tests::)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "raw_summary_line": "2026-11-12T01:19:58.5908897Z      Summary [   0.065s] 2 tests run: 2 passed, 148 skipped\r"
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "filter": "test(prompt_runtime::tests::)",
+      "passed": 12,
+      "skipped": 336,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(prompt_runtime::tests::)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "raw_summary_line": "2026-11-12T01:33:56.2416503Z      Summary [   1.763s] 12 tests run: 12 passed, 336 skipped\r"
+    }
+  ],
+  "native_selected_total_passed": 34,
+  "native_selected_total_failed": 0,
+  "harness_unit_tests": {
+    "passed": 6,
+    "raw_lines": [
+      "2026-11-12T01:34:01.9079990Z Ran 6 tests in 0.002s\r",
+      "2026-11-12T01:34:01.9080158Z OK\r"
+    ]
+  },
+  "directory_acquisition_probes": [
+    {
+      "exit_code": 0,
+      "lane": "positive",
+      "log_sha256": "f271145d89fa24cbfa37a43ddc3d06726ddc04af58516aa01449daccdfca3673",
+      "observations": {
+        "creation": "denied=true created=false",
+        "substitution": "swapped=true denied=true redirected=false"
+      },
+      "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+      }
+    },
+    {
+      "exit_code": 1,
+      "lane": "unchecked-create",
+      "log_sha256": "b252fe241e1a4ac565909a58398fd6b7f1877c3b68ca749ca99cf0ecc0e14fe4",
+      "observations": {
+        "creation": "denied=true created=true",
+        "substitution": "swapped=true denied=true redirected=false"
+      },
+      "patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+      "production_sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e",
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+      }
+    },
+    {
+      "exit_code": 1,
+      "lane": "path-check-open",
+      "log_sha256": "985bdd948287eef27860fc200aeeb71875d722ba1684d1151425b6c7e4a62c3d",
+      "observations": {
+        "creation": "denied=true created=false",
+        "substitution": "swapped=true denied=false redirected=true"
+      },
+      "patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+      "production_sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4",
+      "statuses": {
+        "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+        "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+      }
+    }
+  ],
+  "probe_interpretation": "The positive implementation passed both original attack rejection tests. The two deliberately weakened mutation controls exited 1 in the expected targeted test; these expected failures establish test sensitivity and are not an unexpected production-suite failure.",
+  "source_and_maintenance": {
+    "expected_checkout_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "exact_head_check_passed": true,
+    "formatter_check_passed": true,
+    "final_tracked_worktree_check_passed": true,
+    "full_source_inventory_recorded": false,
+    "format_command": [
+      "cargo",
+      "fmt",
+      "--package",
+      "codex-utils-path",
+      "--package",
+      "codex-hepta-prompt-registry",
+      "--package",
+      "codex-hepta-contracts",
+      "--package",
+      "codex-hepta-agentd",
+      "--",
+      "--check"
+    ],
+    "all_job_steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Install repository test runners",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify exact source identity and pinned native compiler",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Exercise actual Prompt Registry Windows durable owner",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Exercise signed final-use and authority-lease durable stores",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Validate Agentd Prompt Runtime integration and reopened state",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Enforce source-level Rust formatting for durable owners",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Prove directory acquisition rejects both original native attacks",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Confirm no generated or modified tracked source",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve exact source and all acquisition qualification logs",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "coverage_limits": {
+    "qualification_scope": "Windows private-state ACL, anti-reparse and hardlink boundaries; durable Prompt Registry and final-use/authority stores; selected Prompt Runtime integration tests; source formatting; native directory-acquisition mutation controls.",
+    "not_covered": "This workflow does not execute the Linux learning-owner and true-Root suites, the new Selector unit tests, independent held-out B, real business A/B/C, task utility, or RSI evidence.",
+    "cross_source_rule": "These execution facts belong only to source 4453ce7089168c583553c434ce1bee92e209f8dd."
+  }
+}

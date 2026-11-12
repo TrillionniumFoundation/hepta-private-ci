@@ -1,0 +1,623 @@
+﻿2026-11-12T01:37:04.7906045Z Current runner version: '2.338.2'
+2026-11-12T01:37:04.7931284Z ##[group]Runner Image Provisioner
+2026-11-12T01:37:04.7932201Z Hosted Compute Agent
+2026-11-12T01:37:04.7933019Z Version: 20261028.624
+2026-11-12T01:37:04.7933750Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T01:37:04.7934575Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T01:37:04.7935352Z Worker ID: {fab1b710-e2a2-49dd-b477-05ca89690b89}
+2026-11-12T01:37:04.7936144Z Region: northcentralus
+2026-11-12T01:37:04.7936837Z Cloud: Azure
+2026-11-12T01:37:04.7937486Z ##[endgroup]
+2026-11-12T01:37:04.7938879Z ##[group]Operating System
+2026-11-12T01:37:04.7939663Z Ubuntu
+2026-11-12T01:37:04.7940250Z 24.04.5
+2026-11-12T01:37:04.7941115Z LTS
+2026-11-12T01:37:04.7941738Z ##[endgroup]
+2026-11-12T01:37:04.7942332Z ##[group]Runner Image
+2026-11-12T01:37:04.7943102Z Image: ubuntu-24.04
+2026-11-12T01:37:04.7943732Z Version: 20261101.360.1
+2026-11-12T01:37:04.7945179Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T01:37:04.7946767Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T01:37:04.7947893Z ##[endgroup]
+2026-11-12T01:37:04.7949074Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T01:37:04.7951394Z Contents: read
+2026-11-12T01:37:04.7952051Z Metadata: read
+2026-11-12T01:37:04.7952743Z ##[endgroup]
+2026-11-12T01:37:04.7954934Z Secret source: Actions
+2026-11-12T01:37:04.7956098Z Cache mode: write
+2026-11-12T01:37:04.7956912Z Prepare workflow directory
+2026-11-12T01:37:04.8485571Z Prepare all required actions
+2026-11-12T01:37:04.8553640Z Getting action download info
+2026-11-12T01:37:05.0723671Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T01:37:05.1934597Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-12T01:37:05.4598962Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-12T01:37:05.6670170Z Complete job name: native-local-update
+2026-11-12T01:37:05.7541497Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T01:37:05.7543102Z with:
+2026-11-12T01:37:05.7543872Z   ref: 4453ce7089168c583553c434ce1bee92e209f8dd
+2026-11-12T01:37:05.7544865Z   persist-credentials: false
+2026-11-12T01:37:05.7545726Z   sparse-checkout: codex-rs
+scripts
+
+2026-11-12T01:37:05.7546768Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:37:05.7554495Z   token: ***
+2026-11-12T01:37:05.7555241Z   ssh-strict: true
+2026-11-12T01:37:05.7555957Z   ssh-user: git
+2026-11-12T01:37:05.7556638Z   clean: true
+2026-11-12T01:37:05.7557368Z   sparse-checkout-cone-mode: true
+2026-11-12T01:37:05.7558240Z   fetch-depth: 1
+2026-11-12T01:37:05.7558990Z   fetch-tags: false
+2026-11-12T01:37:05.7559699Z   show-progress: true
+2026-11-12T01:37:05.7560447Z   lfs: false
+2026-11-12T01:37:05.7561372Z   submodules: false
+2026-11-12T01:37:05.7562110Z   set-safe-directory: true
+2026-11-12T01:37:05.7563158Z env:
+2026-11-12T01:37:05.7563866Z   CARGO_BUILD_JOBS: 2
+2026-11-12T01:37:05.7564608Z   CARGO_INCREMENTAL: 0
+2026-11-12T01:37:05.7565381Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T01:37:05.7566194Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T01:37:05.7567003Z ##[endgroup]
+2026-11-12T01:37:05.9897738Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:37:05.9900076Z ##[group]Getting Git version info
+2026-11-12T01:37:05.9901697Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T01:37:05.9903504Z [command]/usr/bin/git version
+2026-11-12T01:37:05.9968070Z git version 2.56.0
+2026-11-12T01:37:05.9991134Z ##[endgroup]
+2026-11-12T01:37:06.0006926Z Temporarily overriding HOME='/home/runner/work/_temp/60477a1d-afa9-4ba8-a7ab-5cade51f22e5' before making global git config changes
+2026-11-12T01:37:06.0009734Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T01:37:06.0014053Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T01:37:06.0064123Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T01:37:06.0069308Z ##[group]Initializing the repository
+2026-11-12T01:37:06.0074682Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T01:37:06.0158163Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T01:37:06.0159769Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T01:37:06.0161414Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T01:37:06.0162637Z hint: call:
+2026-11-12T01:37:06.0163263Z hint:
+2026-11-12T01:37:06.0164126Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T01:37:06.0165082Z hint:
+2026-11-12T01:37:06.0165901Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T01:37:06.0167242Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T01:37:06.0168442Z hint:
+2026-11-12T01:37:06.0169009Z hint: 	git branch -m <name>
+2026-11-12T01:37:06.0169630Z hint:
+2026-11-12T01:37:06.0170377Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T01:37:06.0171817Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T01:37:06.0176836Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:37:06.0227025Z ##[endgroup]
+2026-11-12T01:37:06.0228394Z ##[group]Disabling automatic garbage collection
+2026-11-12T01:37:06.0230944Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T01:37:06.0269353Z ##[endgroup]
+2026-11-12T01:37:06.0270507Z ##[group]Setting up auth
+2026-11-12T01:37:06.0271839Z Removing SSH command configuration
+2026-11-12T01:37:06.0278099Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T01:37:06.0323355Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T01:37:06.0687236Z Removing HTTP extra header
+2026-11-12T01:37:06.0697048Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T01:37:06.0745072Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T01:37:06.1018267Z Removing includeIf entries pointing to credentials config files
+2026-11-12T01:37:06.1025499Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T01:37:06.1074880Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T01:37:06.1338272Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T01:37:06.1399296Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:06.1443635Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:06.1486475Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:06.1527983Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:06.1568490Z ##[endgroup]
+2026-11-12T01:37:06.1569286Z ##[group]Fetching the repository
+2026-11-12T01:37:06.1576432Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin 4453ce7089168c583553c434ce1bee92e209f8dd
+2026-11-12T01:37:06.5276115Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T01:37:06.5278211Z  * branch            4453ce7089168c583553c434ce1bee92e209f8dd -> FETCH_HEAD
+2026-11-12T01:37:06.5287767Z [command]/usr/bin/git rev-parse --verify --quiet 4453ce7089168c583553c434ce1bee92e209f8dd^{object}
+2026-11-12T01:37:06.5326968Z 4453ce7089168c583553c434ce1bee92e209f8dd
+2026-11-12T01:37:06.5332838Z ##[endgroup]
+2026-11-12T01:37:06.5334090Z ##[group]Determining the checkout info
+2026-11-12T01:37:06.5335788Z ##[endgroup]
+2026-11-12T01:37:06.5337569Z ##[group]Setting up sparse checkout
+2026-11-12T01:37:06.5338723Z [command]/usr/bin/git sparse-checkout set codex-rs scripts
+2026-11-12T01:37:06.5399259Z ##[endgroup]
+2026-11-12T01:37:06.5401348Z ##[group]Checking out the ref
+2026-11-12T01:37:06.5403645Z [command]/usr/bin/git checkout --progress --force 4453ce7089168c583553c434ce1bee92e209f8dd
+2026-11-12T01:37:15.2962600Z Updating files:   0% (1/11245)
+2026-11-12T01:37:15.3053377Z Updating files:   1% (113/11245)
+2026-11-12T01:37:15.3104967Z Updating files:   2% (225/11245)
+2026-11-12T01:37:15.3153124Z Updating files:   3% (338/11245)
+2026-11-12T01:37:15.3196234Z Updating files:   4% (450/11245)
+2026-11-12T01:37:15.3240315Z Updating files:   5% (563/11245)
+2026-11-12T01:37:15.3283254Z Updating files:   6% (675/11245)
+2026-11-12T01:37:15.3326997Z Updating files:   7% (788/11245)
+2026-11-12T01:37:15.3369667Z Updating files:   8% (900/11245)
+2026-11-12T01:37:15.3550609Z Updating files:   9% (1013/11245)
+2026-11-12T01:37:15.3567838Z Updating files:  10% (1125/11245)
+2026-11-12T01:37:15.3666573Z Updating files:  11% (1237/11245)
+2026-11-12T01:37:15.3792129Z Updating files:  12% (1350/11245)
+2026-11-12T01:37:15.3862270Z Updating files:  13% (1462/11245)
+2026-11-12T01:37:15.3947343Z Updating files:  14% (1575/11245)
+2026-11-12T01:37:15.4025686Z Updating files:  15% (1687/11245)
+2026-11-12T01:37:15.4093087Z Updating files:  16% (1800/11245)
+2026-11-12T01:37:15.4178819Z Updating files:  17% (1912/11245)
+2026-11-12T01:37:15.4262783Z Updating files:  18% (2025/11245)
+2026-11-12T01:37:15.4376491Z Updating files:  19% (2137/11245)
+2026-11-12T01:37:15.4451439Z Updating files:  20% (2249/11245)
+2026-11-12T01:37:15.4545098Z Updating files:  21% (2362/11245)
+2026-11-12T01:37:15.4667152Z Updating files:  22% (2474/11245)
+2026-11-12T01:37:15.4760574Z Updating files:  23% (2587/11245)
+2026-11-12T01:37:15.4902831Z Updating files:  24% (2699/11245)
+2026-11-12T01:37:15.5001590Z Updating files:  25% (2812/11245)
+2026-11-12T01:37:15.5055333Z Updating files:  26% (2924/11245)
+2026-11-12T01:37:15.5139200Z Updating files:  27% (3037/11245)
+2026-11-12T01:37:15.5208424Z Updating files:  28% (3149/11245)
+2026-11-12T01:37:15.5293225Z Updating files:  29% (3262/11245)
+2026-11-12T01:37:15.5353705Z Updating files:  30% (3374/11245)
+2026-11-12T01:37:15.5431472Z Updating files:  31% (3486/11245)
+2026-11-12T01:37:15.5552465Z Updating files:  32% (3599/11245)
+2026-11-12T01:37:15.5573398Z Updating files:  33% (3711/11245)
+2026-11-12T01:37:15.5662623Z Updating files:  33% (3722/11245)
+2026-11-12T01:37:15.5719716Z Updating files:  34% (3824/11245)
+2026-11-12T01:37:15.5847354Z Updating files:  35% (3936/11245)
+2026-11-12T01:37:15.5968808Z Updating files:  36% (4049/11245)
+2026-11-12T01:37:15.6049658Z Updating files:  37% (4161/11245)
+2026-11-12T01:37:15.6135773Z Updating files:  38% (4274/11245)
+2026-11-12T01:37:15.6212625Z Updating files:  39% (4386/11245)
+2026-11-12T01:37:15.6307573Z Updating files:  40% (4498/11245)
+2026-11-12T01:37:15.6398004Z Updating files:  41% (4611/11245)
+2026-11-12T01:37:15.6488027Z Updating files:  42% (4723/11245)
+2026-11-12T01:37:15.6563838Z Updating files:  43% (4836/11245)
+2026-11-12T01:37:15.6655497Z Updating files:  44% (4948/11245)
+2026-11-12T01:37:15.6745910Z Updating files:  45% (5061/11245)
+2026-11-12T01:37:15.6829734Z Updating files:  46% (5173/11245)
+2026-11-12T01:37:15.6912424Z Updating files:  47% (5286/11245)
+2026-11-12T01:37:15.6998412Z Updating files:  48% (5398/11245)
+2026-11-12T01:37:15.7083706Z Updating files:  49% (5511/11245)
+2026-11-12T01:37:15.7178426Z Updating files:  50% (5623/11245)
+2026-11-12T01:37:15.7240136Z Updating files:  51% (5735/11245)
+2026-11-12T01:37:15.7349129Z Updating files:  52% (5848/11245)
+2026-11-12T01:37:15.7430826Z Updating files:  53% (5960/11245)
+2026-11-12T01:37:15.7511606Z Updating files:  54% (6073/11245)
+2026-11-12T01:37:15.7597526Z Updating files:  55% (6185/11245)
+2026-11-12T01:37:15.7727549Z Updating files:  56% (6298/11245)
+2026-11-12T01:37:15.7796790Z Updating files:  57% (6410/11245)
+2026-11-12T01:37:15.7869366Z Updating files:  58% (6523/11245)
+2026-11-12T01:37:15.7948892Z Updating files:  59% (6635/11245)
+2026-11-12T01:37:15.8043058Z Updating files:  60% (6747/11245)
+2026-11-12T01:37:15.8124983Z Updating files:  61% (6860/11245)
+2026-11-12T01:37:15.8209393Z Updating files:  62% (6972/11245)
+2026-11-12T01:37:15.8298379Z Updating files:  63% (7085/11245)
+2026-11-12T01:37:15.8366066Z Updating files:  64% (7197/11245)
+2026-11-12T01:37:15.8447897Z Updating files:  65% (7310/11245)
+2026-11-12T01:37:15.8529872Z Updating files:  66% (7422/11245)
+2026-11-12T01:37:15.8610049Z Updating files:  67% (7535/11245)
+2026-11-12T01:37:15.8701977Z Updating files:  68% (7647/11245)
+2026-11-12T01:37:15.8823330Z Updating files:  69% (7760/11245)
+2026-11-12T01:37:15.8901691Z Updating files:  70% (7872/11245)
+2026-11-12T01:37:15.8960846Z Updating files:  71% (7984/11245)
+2026-11-12T01:37:15.9030860Z Updating files:  72% (8097/11245)
+2026-11-12T01:37:15.9107924Z Updating files:  73% (8209/11245)
+2026-11-12T01:37:15.9164774Z Updating files:  74% (8322/11245)
+2026-11-12T01:37:15.9218440Z Updating files:  75% (8434/11245)
+2026-11-12T01:37:15.9274484Z Updating files:  76% (8547/11245)
+2026-11-12T01:37:15.9346413Z Updating files:  77% (8659/11245)
+2026-11-12T01:37:15.9427253Z Updating files:  78% (8772/11245)
+2026-11-12T01:37:15.9493712Z Updating files:  79% (8884/11245)
+2026-11-12T01:37:15.9533528Z Updating files:  80% (8996/11245)
+2026-11-12T01:37:15.9574240Z Updating files:  81% (9109/11245)
+2026-11-12T01:37:15.9620068Z Updating files:  82% (9221/11245)
+2026-11-12T01:37:15.9744399Z Updating files:  83% (9334/11245)
+2026-11-12T01:37:15.9811012Z Updating files:  84% (9446/11245)
+2026-11-12T01:37:15.9850078Z Updating files:  85% (9559/11245)
+2026-11-12T01:37:15.9922333Z Updating files:  86% (9671/11245)
+2026-11-12T01:37:15.9960607Z Updating files:  87% (9784/11245)
+2026-11-12T01:37:16.0017055Z Updating files:  88% (9896/11245)
+2026-11-12T01:37:16.0110580Z Updating files:  89% (10009/11245)
+2026-11-12T01:37:16.0190619Z Updating files:  90% (10121/11245)
+2026-11-12T01:37:16.0255129Z Updating files:  91% (10233/11245)
+2026-11-12T01:37:16.0307853Z Updating files:  92% (10346/11245)
+2026-11-12T01:37:16.0399926Z Updating files:  93% (10458/11245)
+2026-11-12T01:37:16.0468607Z Updating files:  94% (10571/11245)
+2026-11-12T01:37:16.0538427Z Updating files:  95% (10683/11245)
+2026-11-12T01:37:16.0623768Z Updating files:  96% (10796/11245)
+2026-11-12T01:37:16.0731011Z Updating files:  97% (10908/11245)
+2026-11-12T01:37:16.0831941Z Updating files:  98% (11021/11245)
+2026-11-12T01:37:16.0913809Z Updating files:  99% (11133/11245)
+2026-11-12T01:37:16.0914447Z Updating files: 100% (11245/11245)
+2026-11-12T01:37:16.0914831Z Updating files: 100% (11245/11245), done.
+2026-11-12T01:37:16.1077520Z Note: switching to '4453ce7089168c583553c434ce1bee92e209f8dd'.
+2026-11-12T01:37:16.1077894Z 
+2026-11-12T01:37:16.1078212Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T01:37:16.1078964Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T01:37:16.1080004Z state without impacting any branches by switching back to a branch.
+2026-11-12T01:37:16.1080422Z 
+2026-11-12T01:37:16.1080942Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T01:37:16.1081611Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T01:37:16.1081963Z 
+2026-11-12T01:37:16.1082122Z   git switch -c <new-branch-name>
+2026-11-12T01:37:16.1082388Z 
+2026-11-12T01:37:16.1082538Z Or undo this operation with:
+2026-11-12T01:37:16.1082785Z 
+2026-11-12T01:37:16.1082913Z   git switch -
+2026-11-12T01:37:16.1083107Z 
+2026-11-12T01:37:16.1083436Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T01:37:16.1083904Z 
+2026-11-12T01:37:16.1084349Z HEAD is now at 4453ce7 fix(artifacts): retain original selector trust lifetime in the common candidate
+2026-11-12T01:37:16.1109030Z ##[endgroup]
+2026-11-12T01:37:16.1169913Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T01:37:16.1208177Z 4453ce7089168c583553c434ce1bee92e209f8dd
+2026-11-12T01:37:16.1219944Z ##[group]Removing auth
+2026-11-12T01:37:16.1220410Z Removing SSH command configuration
+2026-11-12T01:37:16.1225414Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T01:37:16.1273040Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T01:37:16.1562239Z Removing HTTP extra header
+2026-11-12T01:37:16.1567824Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T01:37:16.1615603Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T01:37:16.1898505Z Removing includeIf entries pointing to credentials config files
+2026-11-12T01:37:16.1902924Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T01:37:16.1942830Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T01:37:16.1943583Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T01:37:16.1944124Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T01:37:16.1944506Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T01:37:16.1953928Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T01:37:16.1992543Z /home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2002764Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2047911Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T01:37:16.2081905Z /home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2091116Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2138770Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T01:37:16.2179011Z /github/runner_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2192119Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2234157Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T01:37:16.2269352Z /github/runner_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2278035Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config
+2026-11-12T01:37:16.2324824Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T01:37:16.2605208Z Removing credentials config '/home/runner/work/_temp/git-credentials-dc8be633-fb16-4a57-90a1-52bf6067dd41.config'
+2026-11-12T01:37:16.2612612Z ##[endgroup]
+2026-11-12T01:37:16.2859943Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-12T01:37:16.2860360Z with:
+2026-11-12T01:37:16.2860581Z   tool: just@1.51.0,nextest@0.9.103
+2026-11-12T01:37:16.2861080Z   checksum: true
+2026-11-12T01:37:16.2861302Z   fallback: cargo-binstall
+2026-11-12T01:37:16.2861555Z env:
+2026-11-12T01:37:16.2861748Z   CARGO_BUILD_JOBS: 2
+2026-11-12T01:37:16.2861973Z   CARGO_INCREMENTAL: 0
+2026-11-12T01:37:16.2862210Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T01:37:16.2862457Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T01:37:16.2862697Z ##[endgroup]
+2026-11-12T01:37:16.2918343Z ##[start-action display=Run set -eu;id=__taiki-e_install-action.__run]
+2026-11-12T01:37:16.2971225Z ##[group]Run set -eu
+2026-11-12T01:37:16.2971553Z [36;1mset -eu[0m
+2026-11-12T01:37:16.2971830Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-12T01:37:16.2972223Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-12T01:37:16.2972733Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-12T01:37:16.2973195Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-12T01:37:16.2973580Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-12T01:37:16.2973888Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-12T01:37:16.2974224Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-12T01:37:16.2974530Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-12T01:37:16.2974793Z [36;1m    else[0m
+2026-11-12T01:37:16.2975017Z [36;1m      apk --no-cache add bash[0m
+2026-11-12T01:37:16.2975277Z [36;1m    fi[0m
+2026-11-12T01:37:16.2975495Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-12T01:37:16.2975744Z [36;1m  else[0m
+2026-11-12T01:37:16.2976005Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-12T01:37:16.2976327Z [36;1m    exit 1[0m
+2026-11-12T01:37:16.2976538Z [36;1m  fi[0m
+2026-11-12T01:37:16.2976739Z [36;1mfi[0m
+2026-11-12T01:37:16.3091540Z shell: /usr/bin/sh -e {0}
+2026-11-12T01:37:16.3091871Z env:
+2026-11-12T01:37:16.3092080Z   CARGO_BUILD_JOBS: 2
+2026-11-12T01:37:16.3092312Z   CARGO_INCREMENTAL: 0
+2026-11-12T01:37:16.3092542Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T01:37:16.3092809Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T01:37:16.3093051Z ##[endgroup]
+2026-11-12T01:37:16.3195329Z ##[end-action id=__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=27]
+2026-11-12T01:37:16.3217700Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__taiki-e_install-action.__run_2]
+2026-11-12T01:37:16.3239385Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-12T01:37:16.3239865Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-12T01:37:16.3260289Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T01:37:16.3260643Z env:
+2026-11-12T01:37:16.3260998Z   CARGO_BUILD_JOBS: 2
+2026-11-12T01:37:16.3261232Z   CARGO_INCREMENTAL: 0
+2026-11-12T01:37:16.3261489Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T01:37:16.3261740Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T01:37:16.3262002Z   INPUT_TOOL: just@1.51.0,nextest@0.9.103
+2026-11-12T01:37:16.3262278Z   INPUT_CHECKSUM: true
+2026-11-12T01:37:16.3262517Z   INPUT_FALLBACK: cargo-binstall
+2026-11-12T01:37:16.3266352Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-12T01:37:16.3266780Z   ACTION_USER_AGENT: taiki-e/install-action (44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-12T01:37:16.3267201Z ##[endgroup]
+2026-11-12T01:37:16.3474330Z info: host platform: x86_64_linux
+2026-11-12T01:37:16.3585295Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-12T01:37:16.3784988Z info: installing cargo-nextest@0.9.103
+2026-11-12T01:37:16.4002355Z info: downloading https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-12T01:37:16.7306015Z info: verifying sha256 checksum for cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-12T01:37:16.9306190Z info: cargo-nextest installed at /home/runner/.cargo/bin/cargo-nextest
+2026-11-12T01:37:16.9309586Z + cargo-nextest nextest --version
+2026-11-12T01:37:16.9330316Z cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)
+2026-11-12T01:37:16.9330904Z release: 0.9.103
+2026-11-12T01:37:16.9331350Z commit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0
+2026-11-12T01:37:16.9331827Z commit-date: 2025-08-25
+2026-11-12T01:37:16.9332136Z host: x86_64-unknown-linux-gnu
+2026-11-12T01:37:16.9334923Z 
+2026-11-12T01:37:16.9337244Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-12T01:37:16.9384056Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-12T01:37:16.9763136Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T01:37:17.1758343Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T01:37:17.3104744Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-12T01:37:17.3107683Z + cargo-binstall binstall -V
+2026-11-12T01:37:17.3118545Z 1.15.11
+2026-11-12T01:37:17.3246258Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-12T01:37:19.0892859Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-12T01:37:19.0893731Z  INFO This will install the following binaries:
+2026-11-12T01:37:19.0894323Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-12T01:37:19.0894793Z  INFO Installing binaries...
+2026-11-12T01:37:19.0909750Z  INFO Done in 1.777460916s
+2026-11-12T01:37:19.0934905Z ##[end-action id=__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=2771]
+2026-11-12T01:37:19.1002767Z ##[group]Run just test --locked -p codex-hepta-learning-artifacts --lib --test-threads 2
+2026-11-12T01:37:19.1003402Z [36;1mjust test --locked -p codex-hepta-learning-artifacts --lib --test-threads 2[0m
+2026-11-12T01:37:19.1026150Z shell: /usr/bin/bash -e {0}
+2026-11-12T01:37:19.1026409Z env:
+2026-11-12T01:37:19.1026618Z   CARGO_BUILD_JOBS: 2
+2026-11-12T01:37:19.1026849Z   CARGO_INCREMENTAL: 0
+2026-11-12T01:37:19.1027083Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T01:37:19.1027333Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T01:37:19.1027584Z ##[endgroup]
+2026-11-12T01:37:19.1109656Z RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+2026-11-12T01:37:19.1823880Z info: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu
+2026-11-12T01:37:19.3167586Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-12T01:37:19.3170364Z info: downloading 6 components
+2026-11-12T01:37:28.6699274Z warn: the missing active toolchain `1.96.0-x86_64-unknown-linux-gnu` has been auto-installed
+2026-11-12T01:37:28.6700234Z warn: this might cause rustup commands to take longer time to finish than expected
+2026-11-12T01:37:28.6701303Z info: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`
+2026-11-12T01:37:29.0229077Z     Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+2026-11-12T01:37:29.6016335Z     Updating git repository `https://github.com/openai-oss-forks/crossterm`
+2026-11-12T01:37:31.1651955Z     Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+2026-11-12T01:37:31.4400451Z     Updating crates.io index
+2026-11-12T01:37:31.4409975Z     Updating git repository `https://github.com/dzbarsky/rules_rust`
+2026-11-12T01:37:36.8010475Z     Updating git repository `https://github.com/helix-editor/nucleo.git`
+2026-11-12T01:37:38.7805033Z  Downloading crates ...
+2026-11-12T01:37:38.8166863Z   Downloaded cpufeatures v0.2.17
+2026-11-12T01:37:38.8184977Z   Downloaded cfg-if v1.0.5
+2026-11-12T01:37:38.8199229Z   Downloaded block-buffer v0.10.4
+2026-11-12T01:37:38.8212009Z   Downloaded const-oid v0.9.6
+2026-11-12T01:37:38.8231798Z   Downloaded base64ct v1.8.3
+2026-11-12T01:37:38.8261049Z   Downloaded subtle v2.6.1
+2026-11-12T01:37:38.8279882Z   Downloaded generic-array v0.14.7
+2026-11-12T01:37:38.8294515Z   Downloaded crypto-common v0.1.7
+2026-11-12T01:37:38.8305982Z   Downloaded spki v0.7.3
+2026-11-12T01:37:38.8324458Z   Downloaded signature v2.2.0
+2026-11-12T01:37:38.8340258Z   Downloaded rand_core v0.6.4
+2026-11-12T01:37:38.8355418Z   Downloaded version_check v0.9.5
+2026-11-12T01:37:38.8373081Z   Downloaded zeroize v1.9.1
+2026-11-12T01:37:38.8391605Z   Downloaded getrandom v0.2.17
+2026-11-12T01:37:38.8421904Z   Downloaded unicode-ident v1.0.27
+2026-11-12T01:37:38.8450517Z   Downloaded yansi v1.0.1
+2026-11-12T01:37:38.8475539Z   Downloaded der v0.7.10
+2026-11-12T01:37:38.8527667Z   Downloaded typenum v1.20.1
+2026-11-12T01:37:38.8564334Z   Downloaded serde v1.0.229
+2026-11-12T01:37:38.8598904Z   Downloaded pretty_assertions v1.4.1
+2026-11-12T01:37:38.8617177Z   Downloaded serde_core v1.0.229
+2026-11-12T01:37:38.8645702Z   Downloaded proc-macro2 v1.0.107
+2026-11-12T01:37:38.8675555Z   Downloaded ed25519-dalek v2.2.0
+2026-11-12T01:37:38.8708136Z   Downloaded diff v0.1.13
+2026-11-12T01:37:38.8736228Z   Downloaded sha2 v0.10.9
+2026-11-12T01:37:38.8762350Z   Downloaded semver v1.0.28
+2026-11-12T01:37:38.8785396Z   Downloaded syn v2.0.119
+2026-11-12T01:37:38.8892393Z   Downloaded digest v0.10.7
+2026-11-12T01:37:38.8910553Z   Downloaded pkcs8 v0.10.2
+2026-11-12T01:37:38.8938595Z   Downloaded curve25519-dalek v4.1.3
+2026-11-12T01:37:38.9022343Z   Downloaded curve25519-dalek-derive v0.1.1
+2026-11-12T01:37:38.9032900Z   Downloaded quote v1.0.47
+2026-11-12T01:37:38.9059860Z   Downloaded ed25519 v2.2.3
+2026-11-12T01:37:38.9077596Z   Downloaded rustc_version v0.4.1
+2026-11-12T01:37:38.9094308Z   Downloaded libc v0.2.191
+2026-11-12T01:37:38.9817031Z    Compiling version_check v0.9.5
+2026-11-12T01:37:38.9817873Z    Compiling typenum v1.20.1
+2026-11-12T01:37:39.1663890Z    Compiling generic-array v0.14.7
+2026-11-12T01:37:39.2698665Z    Compiling proc-macro2 v1.0.107
+2026-11-12T01:37:39.4887227Z    Compiling quote v1.0.47
+2026-11-12T01:37:39.5938651Z    Compiling zeroize v1.9.1
+2026-11-12T01:37:39.6803313Z    Compiling unicode-ident v1.0.27
+2026-11-12T01:37:39.8587136Z    Compiling block-buffer v0.10.4
+2026-11-12T01:37:39.9230346Z    Compiling crypto-common v0.1.7
+2026-11-12T01:37:40.0077178Z    Compiling const-oid v0.9.6
+2026-11-12T01:37:40.1010510Z    Compiling semver v1.0.28
+2026-11-12T01:37:40.1431780Z    Compiling der v0.7.10
+2026-11-12T01:37:40.2812782Z    Compiling rustc_version v0.4.1
+2026-11-12T01:37:40.5963058Z    Compiling digest v0.10.7
+2026-11-12T01:37:40.7051157Z    Compiling cfg-if v1.0.5
+2026-11-12T01:37:40.7384222Z    Compiling cpufeatures v0.2.17
+2026-11-12T01:37:40.7726308Z    Compiling spki v0.7.3
+2026-11-12T01:37:40.8769786Z    Compiling syn v2.0.119
+2026-11-12T01:37:40.9643395Z    Compiling curve25519-dalek v4.1.3
+2026-11-12T01:37:41.0929048Z    Compiling pkcs8 v0.10.2
+2026-11-12T01:37:41.2195527Z    Compiling sha2 v0.10.9
+2026-11-12T01:37:41.4415479Z    Compiling signature v2.2.0
+2026-11-12T01:37:41.5005579Z    Compiling subtle v2.6.1
+2026-11-12T01:37:41.5762621Z    Compiling ed25519 v2.2.3
+2026-11-12T01:37:41.6918743Z    Compiling diff v0.1.13
+2026-11-12T01:37:41.8243508Z    Compiling yansi v1.0.1
+2026-11-12T01:37:42.0102036Z    Compiling pretty_assertions v1.4.1
+2026-11-12T01:37:42.1296128Z    Compiling codex-hepta-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-types)
+2026-11-12T01:37:43.1491037Z    Compiling curve25519-dalek-derive v0.1.1
+2026-11-12T01:37:43.9838792Z    Compiling ed25519-dalek v2.2.0
+2026-11-12T01:37:44.1782521Z    Compiling codex-hepta-learning-artifacts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-artifacts)
+2026-11-12T01:37:46.2337980Z     Finished `test` profile [unoptimized] target(s) in 17.35s
+2026-11-12T01:37:46.4585299Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+2026-11-12T01:37:46.4586777Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+2026-11-12T01:37:46.4588191Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+2026-11-12T01:37:46.4589661Z warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+2026-11-12T01:37:46.4636976Z ────────────
+2026-11-12T01:37:46.4637585Z  Nextest run ID 01e0a92c-b347-4462-b515-ac7bccb53984 with nextest profile: local
+2026-11-12T01:37:46.4638377Z     Starting 125 tests across 1 binary (1 test skipped)
+2026-11-12T01:37:46.4692465Z         PASS [   0.004s] codex-hepta-learning-artifacts admin::tests::owner_status_is_bounded_read_only_and_scope_specific
+2026-11-12T01:37:46.4694534Z         PASS [   0.004s] codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_binds_exact_withdrawal_head
+2026-11-12T01:37:46.4732644Z         PASS [   0.004s] codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_rejects_unscoped_withdrawal_registry
+2026-11-12T01:37:46.4736000Z         PASS [   0.004s] codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_is_domain_registry_and_scope_bound
+2026-11-12T01:37:46.4773713Z         PASS [   0.004s] codex-hepta-learning-artifacts admission_v3::tests::art_05_withdrawal_race_invalidates_admission
+2026-11-12T01:37:46.4791988Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_bundle::tests::bundle_binds_every_component_and_rejects_missing_lineage
+2026-11-12T01:37:46.4819160Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_bundle::tests::changed_computation_requires_explicit_reset_or_qualified_migration
+2026-11-12T01:37:46.4821940Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_bundle::tests::readback_rejects_other_partition_owner_operation_version_or_checkpoint
+2026-11-12T01:37:46.4857883Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_bundle::tests::rollback_is_a_new_generation_bound_to_the_actual_current_bundle
+2026-11-12T01:37:46.4861346Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_implementation::tests::adapter_training_is_explicit_and_does_not_expand_to_domain_adapter
+2026-11-12T01:37:46.4899173Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_implementation::tests::deterministic_components_reject_neural_training_and_bad_lineage
+2026-11-12T01:37:46.4904366Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_implementation::tests::local_head_update_cannot_change_shared_base_or_domain_or_encoding
+2026-11-12T01:37:46.4941540Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_implementation::tests::python_bundle_and_native_reset_have_identical_commitments
+2026-11-12T01:37:46.4952245Z         PASS [   0.004s] codex-hepta-learning-artifacts cell_implementation::tests::temporal_kernel_updates_keep_state_meaning_and_input_contract_frozen
+2026-11-12T01:37:46.4976517Z         PASS [   0.004s] codex-hepta-learning-artifacts closure_v2::tests::art_01_manifest_v2_normalizes_complete_lineage
+2026-11-12T01:37:46.4981618Z         PASS [   0.004s] codex-hepta-learning-artifacts closure_v2::tests::art_02_persistent_withdrawal_blocks_future_admission_and_replays
+2026-11-12T01:37:46.5018291Z         PASS [   0.004s] codex-hepta-learning-artifacts closure_v2::tests::art_03_registry_head_witness_rejects_rollback
+2026-11-12T01:37:46.5022790Z         PASS [   0.004s] codex-hepta-learning-artifacts closure_v2::tests::art_04_lifecycle_forbids_self_selection_and_state_skips
+2026-11-12T01:37:46.5056294Z         PASS [   0.004s] codex-hepta-learning-artifacts closure_v2::tests::artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent
+2026-11-12T01:37:46.5063548Z         PASS [   0.004s] codex-hepta-learning-artifacts dataset_revocation::tests::batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input
+2026-11-12T01:37:46.5097800Z         PASS [   0.004s] codex-hepta-learning-artifacts dataset_revocation::tests::changed_notice_or_evaluator_under_same_operation_conflicts
+2026-11-12T01:37:46.5101181Z         PASS [   0.004s] codex-hepta-learning-artifacts dataset_revocation::tests::identical_retry_reuses_existing_events_and_history
+2026-11-12T01:37:46.5134441Z         PASS [   0.004s] codex-hepta-learning-artifacts dataset_revocation::tests::later_target_role_collision_discards_entire_preparation
+2026-11-12T01:37:46.5174652Z         PASS [   0.007s] codex-hepta-learning-artifacts dataset_revocation::tests::persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback
+2026-11-12T01:37:46.5192088Z         PASS [   0.004s] codex-hepta-learning-artifacts dataset_revocation::tests::quarantined_targets_revoke_and_previously_revoked_targets_are_reported
+2026-11-12T01:37:46.5218195Z         PASS [   0.004s] codex-hepta-learning-artifacts dataset_revocation::tests::stale_snapshot_missing_dataset_and_empty_notice_reject
+2026-11-12T01:37:46.5262155Z         PASS [   0.004s] codex-hepta-learning-artifacts durable_snapshots::tests::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry
+2026-11-12T01:37:46.5322000Z         PASS [   0.006s] codex-hepta-learning-artifacts durable_snapshots::tests::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt
+2026-11-12T01:37:46.5351227Z         PASS [   0.018s] codex-hepta-learning-artifacts dataset_revocation::tests::target_quota_rejects_without_partial_registry_mutation
+2026-11-12T01:37:46.5358891Z         PASS [   0.004s] codex-hepta-learning-artifacts iteration::tests::candidate_requires_predecessor_after_draft
+2026-11-12T01:37:46.5390581Z         PASS [   0.004s] codex-hepta-learning-artifacts iteration::tests::transitions_are_monotonic_and_terminal
+2026-11-12T01:37:46.5395987Z         PASS [   0.004s] codex-hepta-learning-artifacts iteration_ledger::tests::records_bounded_external_transitions
+2026-11-12T01:37:46.5428320Z         PASS [   0.004s] codex-hepta-learning-artifacts iteration_ledger::tests::snapshot_replay_is_exact_and_duplicate_receipts_fail
+2026-11-12T01:37:46.5473151Z         PASS [   0.007s] codex-hepta-learning-artifacts learning_iteration::local_decision_tests::local_decision_does_not_relax_frozen_base_or_execution_schema
+2026-11-12T01:37:46.5533650Z         PASS [   0.010s] codex-hepta-learning-artifacts learning_iteration::local_decision_tests::local_policy_cannot_choose_an_unbound_bundle_or_replace_a_prior_choice
+2026-11-12T01:37:46.5580983Z         PASS [   0.011s] codex-hepta-learning-artifacts learning_iteration::local_decision_tests::qualified_candidate_can_be_locally_retained_without_rewriting_evaluation
+2026-11-12T01:37:46.5583022Z         PASS [   0.005s] codex-hepta-learning-artifacts learning_iteration::local_decision_tests::signed_local_decision_binds_policy_reason_choice_and_evidence
+2026-11-12T01:37:46.5623855Z         PASS [   0.004s] codex-hepta-learning-artifacts learning_iteration::profile_tests::frozen_profile_is_required_and_committed_before_any_owner_work
+2026-11-12T01:37:46.5630014Z         PASS [   0.005s] codex-hepta-learning-artifacts learning_iteration::profile_tests::frozen_scope_preserves_the_owner_profile_across_request_and_snapshot_readback
+2026-11-12T01:37:46.5668821Z         PASS [   0.004s] codex-hepta-learning-artifacts learning_iteration::retained_tests::existing_cutover_signing_bytes_are_preserved_and_retained_use_has_its_own_tag
+2026-11-12T01:37:46.5686021Z         PASS [   0.006s] codex-hepta-learning-artifacts learning_iteration::profile_tests::trainer_and_evaluator_cannot_replace_the_frozen_profile
+2026-11-12T01:37:46.5746160Z         PASS [   0.008s] codex-hepta-learning-artifacts learning_iteration::retained_tests::retained_task_and_model_cutover_are_not_interchangeable
+2026-11-12T01:37:46.5761980Z         PASS [   0.007s] codex-hepta-learning-artifacts learning_iteration::retained_tests::retained_use_rejects_wrong_partition_selection_and_missing_owner_receipts
+2026-11-12T01:37:46.5805623Z         PASS [   0.004s] codex-hepta-learning-artifacts learning_iteration::tests::failed_validation_never_advances_checkpoint
+2026-11-12T01:37:46.5819959Z         PASS [   0.007s] codex-hepta-learning-artifacts learning_iteration::tests::completes_only_after_next_task_and_replays_every_durable_boundary
+2026-11-12T01:37:46.5859425Z         PASS [   0.005s] codex-hepta-learning-artifacts learning_iteration::tests::no_update_cannot_skip_selection_or_substitute_a_no_admissible_proposal
+2026-11-12T01:37:46.5902298Z         PASS [   0.004s] codex-hepta-learning-artifacts learning_iteration::tests::over_budget_dataset_and_cross_dataset_training_are_rejected
+2026-11-12T01:37:46.5911628Z         PASS [   0.009s] codex-hepta-learning-artifacts learning_iteration::tests::no_update_keeps_baseline_and_replays_selection_and_actual_next_use
+2026-11-12T01:37:46.5942066Z         PASS [   0.004s] codex-hepta-learning-artifacts learning_iteration::tests::owner_independence_is_checked_before_any_stage
+2026-11-12T01:37:46.5971198Z         PASS [   0.006s] codex-hepta-learning-artifacts learning_iteration::tests::replay_rejects_missing_receipts_changed_budget_and_false_next_use
+2026-11-12T01:37:46.6015206Z         PASS [   0.007s] codex-hepta-learning-artifacts learning_iteration::training_no_update_tests::trainer_no_update_rejects_dataset_baseline_quota_and_original_scope_changes
+2026-11-12T01:37:46.6032733Z         PASS [   0.006s] codex-hepta-learning-artifacts learning_iteration::training_no_update_tests::trainer_no_update_requires_selection_and_real_retained_use_without_candidate_or_evaluation
+2026-11-12T01:37:46.6079652Z         PASS [   0.005s] codex-hepta-learning-artifacts learning_iteration_scope::tests::organ_scope_preserves_cell_and_both_scopes_freeze_original_training_rule
+2026-11-12T01:37:46.6085372Z         PASS [   0.007s] codex-hepta-learning-artifacts learning_iteration_scope::tests::cell_scope_rejects_every_frozen_component_before_evaluation
+2026-11-12T01:37:46.6121090Z         PASS [   0.004s] codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_enforces_head_state_and_role
+2026-11-12T01:37:46.6134132Z         PASS [   0.005s] codex-hepta-learning-artifacts learning_iteration_scope::tests::scope_is_exactly_bound_and_base_release_requires_a_different_owner
+2026-11-12T01:37:46.6166837Z         PASS [   0.004s] codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_replays_exact_snapshot
+2026-11-12T01:37:46.6177455Z         PASS [   0.004s] codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_snapshot_replay_survives_actor_expiry
+2026-11-12T01:37:46.6767747Z         PASS [   0.060s] codex-hepta-learning-artifacts owner_host::tests::authenticated_current_head_is_discovered_and_signature_drift_rejects
+2026-11-12T01:37:46.6922027Z         PASS [   0.074s] codex-hepta-learning-artifacts owner_host::tests::current_head_rotation_preserves_history_and_requires_current_key_epoch
+2026-11-12T01:37:46.7233195Z         PASS [   0.046s] codex-hepta-learning-artifacts owner_host::tests::independent_current_head_anchor_rejects_restored_old_backup
+2026-11-12T01:37:46.7522066Z         PASS [   0.060s] codex-hepta-learning-artifacts owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot
+2026-11-12T01:37:46.7686777Z         PASS [   0.045s] codex-hepta-learning-artifacts owner_host::tests::owner_host_exclusively_fences_writer_lease
+2026-11-12T01:37:47.0293364Z         PASS [   0.261s] codex-hepta-learning-artifacts owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head
+2026-11-12T01:37:47.0369104Z         PASS [   0.007s] codex-hepta-learning-artifacts pinned::tests::cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup
+2026-11-12T01:37:47.0454385Z         PASS [   0.009s] codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_longer_fork_and_backwards_frontier
+2026-11-12T01:37:47.0526548Z         PASS [   0.007s] codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_consumer
+2026-11-12T01:37:47.0578916Z         PASS [   0.005s] codex-hepta-learning-artifacts pinned::tests::loads_exact_pinned_manifest_and_payload
+2026-11-12T01:37:47.0626430Z         PASS [   0.005s] codex-hepta-learning-artifacts pinned::tests::objective_and_compatibility_drift_are_pin_mismatches
+2026-11-12T01:37:47.0688678Z         PASS [   0.006s] codex-hepta-learning-artifacts pinned::tests::quarantined_candidate_blocks_loading
+2026-11-12T01:37:47.0736402Z         PASS [   0.005s] codex-hepta-learning-artifacts pinned::tests::revoked_ancestor_blocks_loading
+2026-11-12T01:37:47.0785936Z         PASS [   0.005s] codex-hepta-learning-artifacts pinned::tests::tampered_payload_is_rejected
+2026-11-12T01:37:47.0844398Z         PASS [   0.006s] codex-hepta-learning-artifacts pinned::tests::wrong_epoch_binding_is_rejected
+2026-11-12T01:37:47.0890431Z         PASS [   0.004s] codex-hepta-learning-artifacts publication::tests::art_07_crash_snapshots_never_promote_partial_publication
+2026-11-12T01:37:47.0932371Z         PASS [   0.004s] codex-hepta-learning-artifacts publication::tests::art_07_publication_requires_ordered_durable_phases_before_ack
+2026-11-12T01:37:47.0972209Z         PASS [   0.004s] codex-hepta-learning-artifacts publication::tests::art_07_registry_projection_cannot_swap_payload_or_identity
+2026-11-12T01:37:47.1014967Z         PASS [   0.004s] codex-hepta-learning-artifacts publication::tests::art_07_withdrawal_advance_blocks_recovered_publication
+2026-11-12T01:37:47.1054038Z         PASS [   0.004s] codex-hepta-learning-artifacts registry::tests::ancestor_revocation_makes_derived_artifacts_ineligible
+2026-11-12T01:37:47.1089289Z         PASS [   0.004s] codex-hepta-learning-artifacts registry::tests::artifact_producer_cannot_self_evaluate
+2026-11-12T01:37:47.1126618Z         PASS [   0.004s] codex-hepta-learning-artifacts registry::tests::derived_artifact_requires_monotonic_matching_lineage
+2026-11-12T01:37:47.1163165Z         PASS [   0.004s] codex-hepta-learning-artifacts registry::tests::event_identity_reuse_with_drift_fails
+2026-11-12T01:37:47.1204859Z         PASS [   0.004s] codex-hepta-learning-artifacts registry::tests::quarantine_and_revoke_remove_candidate_eligibility
+2026-11-12T01:37:47.1239638Z         PASS [   0.004s] codex-hepta-learning-artifacts registry::tests::registration_is_immutable_and_idempotent
+2026-11-12T01:37:47.1277436Z         PASS [   0.004s] codex-hepta-learning-artifacts registry::tests::snapshot_replay_preserves_lineage_and_state
+2026-11-12T01:37:47.1459884Z         PASS [   0.018s] codex-hepta-learning-artifacts selection::tests::art_12_independent_selector_binds_exact_current_and_manifest
+2026-11-12T01:37:47.1512360Z         PASS [   0.005s] codex-hepta-learning-artifacts selection::tests::art_12_selection_rejects_self_selection_and_revoked_selector
+2026-11-12T01:37:47.1697125Z         PASS [   0.018s] codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_cannot_cross_scheduled_revocation
+2026-11-12T01:37:47.1875808Z         PASS [   0.018s] codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_cannot_outlive_selector_key
+2026-11-12T01:37:47.2061094Z         PASS [   0.018s] codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_records_only_selected_transition
+2026-11-12T01:37:47.2096724Z         PASS [   0.004s] codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_has_one_physical_owner
+2026-11-12T01:37:47.2134867Z         PASS [   0.004s] codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_tracks_revocation_without_second_write
+2026-11-12T01:37:47.2173076Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::budget_tests::empty_snapshot_keeps_corrupt_semantics
+2026-11-12T01:37:47.2209214Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::budget_tests::exact_file_is_read_from_start_even_with_a_nonzero_cursor
+2026-11-12T01:37:47.2245891Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::budget_tests::global_ceiling_and_empty_payload_keep_capacity_semantics
+2026-11-12T01:37:47.2285717Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::budget_tests::pre_read_and_post_read_metadata_use_the_same_error_priority
+2026-11-12T01:37:47.2323874Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::budget_tests::short_nonempty_file_is_also_rejected_without_reading
+2026-11-12T01:37:47.2361493Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::budget_tests::wrong_exact_length_is_rejected_before_any_seek_or_read
+2026-11-12T01:37:47.2399934Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::lock_tests::created_target_held_by_another_writer_fails_busy_without_writing
+2026-11-12T01:37:47.2444370Z         PASS [   0.005s] codex-hepta-learning-artifacts storage::lock_tests::failed_read_releases_own_lock_with_transient_duplicate_retained
+2026-11-12T01:37:47.2494782Z         PASS [   0.005s] codex-hepta-learning-artifacts storage::lock_tests::readonly_handles_load_registry_and_payload
+2026-11-12T01:37:47.2540616Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::lock_tests::shared_readers_coexist_and_existing_path_cannot_be_recreated
+2026-11-12T01:37:47.2591882Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::lock_tests::write_guard_releases_lock_with_transient_duplicate_retained
+2026-11-12T01:37:47.2623712Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::bytes_appearing_after_atomic_creation_are_indeterminate
+2026-11-12T01:37:47.2674669Z         PASS [   0.005s] codex-hepta-learning-artifacts storage::tests::concurrent_creation_has_exactly_one_winner
+2026-11-12T01:37:47.2715638Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::contained_write_rejects_escape_and_validates_before_create
+2026-11-12T01:37:47.2754730Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::contained_write_rejects_symlink_ancestor
+2026-11-12T01:37:47.2796457Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::create_only_capability_debug_is_opaque
+2026-11-12T01:37:47.2837987Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::created_target_permissions_are_never_wider_than_owner_read_write
+2026-11-12T01:37:47.2884080Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::current_head_witness_rejects_stale_or_tampered_receipts
+2026-11-12T01:37:47.2929154Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::current_head_witness_round_trips_only_with_current_requirement
+2026-11-12T01:37:47.3540049Z         PASS [   0.061s] codex-hepta-learning-artifacts storage::tests::every_truncation_and_wrong_external_witness_rejects_without_repair
+2026-11-12T01:37:47.3582146Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::existing_empty_and_truncated_files_are_never_adopted
+2026-11-12T01:37:47.3626639Z         PASS [   0.005s] codex-hepta-learning-artifacts storage::tests::existing_nonempty_file_is_never_reopened_for_writing
+2026-11-12T01:37:47.3664416Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::existing_symlinks_are_never_followed_for_creation
+2026-11-12T01:37:47.3706903Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::noncanonical_encoding_rejects_even_with_rehashed_file_receipt
+2026-11-12T01:37:47.3749454Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::payload_corruption_and_invalid_receipt_reject
+2026-11-12T01:37:47.3792339Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::payload_rejects_wrong_bytes_without_reusing_its_created_target
+2026-11-12T01:37:47.3837063Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::revoked_payload_cannot_be_loaded_from_current_registry
+2026-11-12T01:37:47.3878091Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::sensor_core_kind_survives_durable_registry_roundtrip
+2026-11-12T01:37:47.3924012Z         PASS [   0.005s] codex-hepta-learning-artifacts storage::tests::snapshot_reopens_exact_history_and_revoked_ancestors
+2026-11-12T01:37:47.3962244Z         PASS [   0.004s] codex-hepta-learning-artifacts storage::tests::zero_binding_leaves_created_file_empty_for_host_reconciliation
+2026-11-12T01:37:47.4002846Z         PASS [   0.004s] codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_never_follows_final_symlink
+2026-11-12T01:37:47.4041294Z         PASS [   0.004s] codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_rejects_path_escape
+2026-11-12T01:37:47.4087292Z         PASS [   0.005s] codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_removes_only_zero_length_regular_file
+2026-11-12T01:37:47.5473568Z         PASS [   0.795s] codex-hepta-learning-artifacts owner_host::tests::owner_host_process_kill_reopen_matrix
+2026-11-12T01:37:47.5474523Z ────────────
+2026-11-12T01:37:47.5474815Z      Summary [   1.084s] 125 tests run: 125 passed, 1 skipped
+2026-11-12T01:37:47.5676404Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-12T01:37:47.5676840Z with:
+2026-11-12T01:37:47.5677163Z   name: cell-local-update-4453ce7089168c583553c434ce1bee92e209f8dd-1
+2026-11-12T01:37:47.5677576Z   path: codex-rs/target/nextest/local/junit.xml
+2026-11-12T01:37:47.5677903Z   if-no-files-found: warn
+2026-11-12T01:37:47.5678140Z   retention-days: 14
+2026-11-12T01:37:47.5678365Z   compression-level: 6
+2026-11-12T01:37:47.5678591Z   overwrite: false
+2026-11-12T01:37:47.5678828Z   include-hidden-files: false
+2026-11-12T01:37:47.5679068Z env:
+2026-11-12T01:37:47.5679262Z   CARGO_BUILD_JOBS: 2
+2026-11-12T01:37:47.5679483Z   CARGO_INCREMENTAL: 0
+2026-11-12T01:37:47.5679713Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-12T01:37:47.5679958Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-12T01:37:47.5680193Z ##[endgroup]
+2026-11-12T01:37:47.7432309Z (node:3362) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T01:37:47.7433043Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T01:37:47.7458070Z With the provided path, there will be 1 file uploaded
+2026-11-12T01:37:47.7464137Z Artifact name is valid!
+2026-11-12T01:37:47.7464797Z Root directory input is valid!
+2026-11-12T01:37:47.9727861Z Beginning upload of artifact content to blob storage
+2026-11-12T01:37:47.9968731Z (node:3362) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T01:37:48.1016413Z Uploaded bytes 4222
+2026-11-12T01:37:48.1333016Z Finished uploading artifact content to blob storage!
+2026-11-12T01:37:48.1333924Z SHA256 digest of uploaded artifact zip is 6f3ddf304430c09575f2787fa10a315b18eff44802794de6b319c3931a2ecd8a
+2026-11-12T01:37:48.1335472Z Finalizing artifact upload
+2026-11-12T01:37:48.5416164Z Artifact cell-local-update-4453ce7089168c583553c434ce1bee92e209f8dd-1.zip successfully finalized. Artifact ID 13907531650
+2026-11-12T01:37:48.5417807Z Artifact cell-local-update-4453ce7089168c583553c434ce1bee92e209f8dd-1 has been successfully uploaded! Final size is 4222 bytes. Artifact ID is 13907531650
+2026-11-12T01:37:48.5424021Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43131262041/artifacts/13907531650
+2026-11-12T01:37:48.5654745Z Post job cleanup.
+2026-11-12T01:37:48.6566920Z [command]/usr/bin/git version
+2026-11-12T01:37:48.6642107Z git version 2.56.0
+2026-11-12T01:37:48.6683842Z Temporarily overriding HOME='/home/runner/work/_temp/01ec848a-edaa-4771-aa8d-9773cbeff2e3' before making global git config changes
+2026-11-12T01:37:48.6685132Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T01:37:48.6689539Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T01:37:48.6726683Z Removing SSH command configuration
+2026-11-12T01:37:48.6733725Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T01:37:48.6775845Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T01:37:48.7076621Z Removing HTTP extra header
+2026-11-12T01:37:48.7113180Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T01:37:48.7193650Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T01:37:48.7573975Z Removing includeIf entries pointing to credentials config files
+2026-11-12T01:37:48.7607894Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T01:37:48.7652571Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T01:37:48.8148426Z Cleaning up orphan processes
+2026-11-12T01:37:48.8608312Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

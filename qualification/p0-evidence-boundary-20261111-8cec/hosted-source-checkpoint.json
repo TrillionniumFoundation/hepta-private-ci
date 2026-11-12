@@ -1,0 +1,48 @@
+{
+  "schema": "hepta-source-specific-hosted-validation-index-v1",
+  "recorded_at_utc": "2026-11-12 01:41:36 UTC",
+  "current_code_source": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "records": [
+    {
+      "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "log": "4453ce70/windows-43131262029-130895745408.log",
+      "summary": "4453ce70/windows-43131262029-130895745408.summary.json",
+      "log_github_blob_sha": "5a4f98ec334a3c2d188dd85567c1b9c96a4360cb",
+      "summary_github_blob_sha": "29955c42d9a575a06ef18949bc6a9e22450099a9",
+      "result": "34 selected Rust tests passed in 5 selections; 6 Python harness tests passed; positive attack controls passed and 2 intentionally weakened controls failed as expected; fmt and final tracked-clean checks passed. Security/platform lane only.",
+      "root_independently_fetched_provider_log_and_confirmed_blob": true
+    },
+    {
+      "source_sha": "382a8dc4a732109ef16daa88de45ce52ac58f92c",
+      "log": "ci-382a8dc4/shared-43128465978-130893170337.log",
+      "summary": "ci-382a8dc4/shared-43128465978-130893170337.summary.json",
+      "log_github_blob_sha": "4846a53e56536e8c3483a3d0fccf4bb4b5d68898",
+      "summary_github_blob_sha": "b6fae9b88791cb757a6d4f7644fd6be044cb29d1",
+      "result": "1268 native library tests passed, 77 skipped; source before/after clean. Does not include the Selector change in 445.",
+      "root_independently_fetched_provider_log_and_confirmed_blob": true
+    },
+    {
+      "source_sha": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "log": "4453ce70/local-update-43131262041-130895700600.log",
+      "summary": "4453ce70/local-update-43131262041-130895700600.summary.json",
+      "log_github_blob_sha": "02cffa9b8680b1a2af4635d1c947c2f8be1d0ae3",
+      "summary_github_blob_sha": "e0bec06b390c50153950241238ec5d5650754602",
+      "result": "125 learning-artifacts tests passed, 1 skipped; both new Selector boundaries and existing selected-transition control passed. This lane has no full before/after source inventory or Agentd/Root suite.",
+      "root_independently_fetched_provider_log_and_confirmed_blob": true
+    }
+  ],
+  "interpretation": "Keep each source, platform and selected suite separate. Test counts overlap and must not be summed as independent task samples. These are engineering qualifications, not independent net-benefit or real ordinary A/B/C evidence.",
+  "pending_at_recording": [
+    "445 Agentd plus UID0 Root native suite",
+    "445 full original caller verification",
+    "445 shared framework and remaining architecture/scoped CI"
+  ],
+  "acceptance": {
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "new_real_ordinary_chains": 0,
+    "new_independent_net_benefit_updates": 0,
+    "production_adoption": false,
+    "rsi_claim": false
+  }
+}
