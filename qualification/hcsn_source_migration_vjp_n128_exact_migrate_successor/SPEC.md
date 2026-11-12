@@ -1,22 +1,20 @@
-# Visit-897 N128 source-migration VJP AST-count successor
+# Visit-897 N128 source-migration VJP inventory successor
 
 Global status: **HOLD / NoUpdate / all_closed=false**.
 
-This is a separately frozen successor to Draft #6268 at
-`bdb904e546d5817cb11097cb9ca6f3f88a6f6bec`. It does not inherit numerical
+This is a separately frozen successor to Draft #6269 at
+`13d73718562795d6384ba4bde07c2d9af7edf3a9`. It does not inherit numerical
 qualification from that failed predecessor or from #6265's static CLEAR. All
-seven predecessor RED/UNKNOWN records remain explicit in `REQUEST.json`;
+eight predecessor RED/UNKNOWN records remain explicit in `REQUEST.json`;
 unrelated negative and `UNKNOWN` records are unchanged.
 
-Draft #6268 run `43277019131` / job `131388014924` passed the corrected five
-provenance checks and then stopped before candidate import because an older AST
-guard called `.count("migrate")` on a `set`. GitHub reports no artifact for that
-run. Its unique key is burned and its zero numerical counters remain retained.
-This successor keeps the membership set and separately counts exactly two
-direct `migrate(...)` AST calls in the frozen source, one for the baseline
-freeze and one for runtime transformation. Requiring exactly two does not
-weaken the prior at-least-two intent. No original byte gate is dropped or
-weakened.
+Draft #6269 run `43283690593` / job `131411347208` stopped before candidate
+import because the published `SOURCE.json` carried request-schema content and
+lacked `source_sha256`. GitHub reports no artifact for that run. Its unique key
+is burned and its zero numerical counters remain retained. This successor
+restores the complete #6268 immutable inventory, applies only the new identity,
+parent and changed-file hashes, and keeps the separately reviewed exact-two
+AST call gate. No original byte gate is dropped or weakened.
 
 ## Original-byte justification for the minimal fix
 
@@ -74,9 +72,9 @@ of 125 coordinates. Averaging and error cancellation cannot pass a gate.
 ## Source, resource and mutation closure
 
 Before importing the candidate, the workflow must bind every hash in
-`SOURCE.json`, the exact #6268 parent, the original law, N128 metadata/NPZ and
+`SOURCE.json`, the exact #6269 parent, the original law, N128 metadata/NPZ and
 `qualification/hcsn_initial_law/migration.py`. It must run the repository's
-pinned formatter against the exact #6268 base and leave a clean tree.
+pinned formatter against the exact #6269 base and leave a clean tree.
 
 The child is single-threaded and capped at 3 GiB address space, 900 CPU seconds
 and 1000 wall seconds. The host must expose at least 4 GiB `MemAvailable`
