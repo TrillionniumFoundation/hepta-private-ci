@@ -22,7 +22,7 @@ class PostAMainSourceTests(unittest.TestCase):
     def test_main_calls_the_real_profile_assembly_before_runtime(self):
         self.check_markers(AGENT + "main.rs", "fn main(", (
             "startup.receive().await?", "launch.assemble_original_initial_q24(config).await?",
-            "launch.assemble_original_post_a_q24(config).await?", "launch.run(config, arg0_paths).await?"))
+            "codex_hepta_agentd::AgentdProductionLaunch::assemble_original_post_a_q24(", "launch.run(config, arg0_paths).await?"))
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertEqual(rows["ordinary_post_a_q24_assembly"]["product_callers"], [AGENT + "main.rs"])
         for key in ("production_original_q24_assemble", "q24_successor_launch_prepare",
