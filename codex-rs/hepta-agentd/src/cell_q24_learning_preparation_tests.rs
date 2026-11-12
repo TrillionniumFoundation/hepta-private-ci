@@ -10,6 +10,9 @@ use crate::CellQ24LearningPreparationErrorV1 as Error;
 use crate::CellQ24PreparedLearningV1;
 use crate::HostAuthorityLearningProfileV1;
 
+#[path = "cell_q24_training_source_operation_tests.rs"]
+mod source_operation;
+
 pub(super) fn config(
     dataset: &Dataset,
     publication: &CircuitTaskSourcePublicationV1,

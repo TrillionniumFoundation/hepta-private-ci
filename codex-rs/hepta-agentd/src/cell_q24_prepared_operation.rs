@@ -27,6 +27,35 @@ impl CellQ24PreparedLearningV1 {
 }
 
 impl OriginalPreparedReadV1<'_> {
+    pub(crate) fn require_training_batch(
+        &self,
+        batch: &CellQ24TrainingBatchV1,
+    ) -> Result<(), CellQ24TrainingErrorV1> {
+        let original =
+            self.prepared
+                .batch
+                .source
+                .as_ref()
+                .ok_or(CellQ24TrainingErrorV1::Binding(
+                    "original Prepared Dataset capability absent",
+                ))?;
+        let candidate = batch
+            .source
+            .as_ref()
+            .ok_or(CellQ24TrainingErrorV1::Binding(
+                "original Trainer Dataset capability absent",
+            ))?;
+        if !Arc::ptr_eq(original, candidate) {
+            return Err(CellQ24TrainingErrorV1::Binding(
+                "operation borrowed another Trainer Dataset capability",
+            ));
+        }
+        Ok(OriginalDatasetOperationV1::require_original_batch(
+            self.operation,
+            batch,
+        )?)
+    }
+
     pub(crate) fn require_prepared(
         &self,
         prepared: &CellQ24PreparedLearningV1,
