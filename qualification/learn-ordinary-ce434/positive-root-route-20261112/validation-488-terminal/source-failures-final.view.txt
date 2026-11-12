@@ -1,0 +1,164 @@
+2300:a9|FAIL: test_full_evaluator_role_payload_and_original_generator_separation_remain_required (test_original_evaluation_host_source_closure.OriginalEvaluationHostClosureTests.test_full_evaluator_role_payload_and_original_generator_separation_remain_required)
+2301:4e|----------------------------------------------------------------------
+2302:a2|Traceback (most recent call last):
+2303:45|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 274, in test_full_evaluator_role_payload_and_original_generator_separation_remain_required
+2304:22|    self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
+2305:51|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_evaluation_host_source_closure.py", line 82, in rejects
+2306:69|    with self.assertRaises(PROOF.VerificationFailure):
+2307:99|AssertionError: VerificationFailure not raised
+2308:c5|
+2309:0f|======================================================================
+2310:68|FAIL: test_each_original_owner_and_fresh_signature_guard_is_effective (test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_each_original_owner_and_fresh_signature_guard_is_effective) (path='codex-rs/hepta-agentd/src/circuit_model_selection_receipt_binding.rs', function='fn sign_original_until(', marker='SignedLearningEvidenceV1')
+2311:4e|----------------------------------------------------------------------
+2312:a2|Traceback (most recent call last):
+2313:7d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_selection_source_closure.py", line 74, in test_each_original_owner_and_fresh_signature_guard_is_effective
+2314:b6|    self.rejects(path, function["function"], marker)
+2315:1d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_selection_source_closure.py", line 62, in rejects
+2316:69|    with self.assertRaises(PROOF.VerificationFailure):
+2317:99|AssertionError: VerificationFailure not raised
+2318:c5|
+2319:0f|======================================================================
+2320:a0|FAIL: test_each_original_owner_and_fresh_signature_guard_is_effective (test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_each_original_owner_and_fresh_signature_guard_is_effective) (path='codex-rs/hepta-agentd/src/circuit_model_selection_receipt_binding.rs', function='fn sign_original_until(', marker='issued_at')
+2321:4e|----------------------------------------------------------------------
+2322:a2|Traceback (most recent call last):
+2323:7d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_selection_source_closure.py", line 74, in test_each_original_owner_and_fresh_signature_guard_is_effective
+2324:b6|    self.rejects(path, function["function"], marker)
+2325:1d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_selection_source_closure.py", line 62, in rejects
+2326:69|    with self.assertRaises(PROOF.VerificationFailure):
+2327:99|AssertionError: VerificationFailure not raised
+2328:c5|
+2329:0f|======================================================================
+2330:71|FAIL: test_each_original_owner_and_fresh_signature_guard_is_effective (test_original_model_selection_source_closure.OriginalModelSelectionClosureTests.test_each_original_owner_and_fresh_signature_guard_is_effective) (path='codex-rs/hepta-agentd/src/circuit_model_selection_receipt_binding.rs', function='fn sign_original_until(', marker='expires_at')
+2331:4e|----------------------------------------------------------------------
+2332:a2|Traceback (most recent call last):
+2333:7d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_selection_source_closure.py", line 74, in test_each_original_owner_and_fresh_signature_guard_is_effective
+2334:b6|    self.rejects(path, function["function"], marker)
+2335:1d|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_model_selection_source_closure.py", line 62, in rejects
+2336:69|    with self.assertRaises(PROOF.VerificationFailure):
+2337:99|AssertionError: VerificationFailure not raised
+2338:c5|
+2339:0f|======================================================================
+2340:40|FAIL: test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend) (marker='snapshot.request != self.initial.request')
+2341:4e|----------------------------------------------------------------------
+2342:a2|Traceback (most recent call last):
+2343:cf|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 216, in test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend
+2344:40|    self.rejects(path, "readback", marker)
+2345:00|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+2346:59|    self.verifies(path, source)
+2347:b6|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 115, in verifies
+2348:a9|    PROOF._verify_protected_files(root, {"protected_file": self.rows(path)})
+2349:71|                                                           ^^^^^^^^^^^^^^^
+2350:7b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 91, in rows
+2351:81|    self.assertEqual(len(rows), 1)
+2352:38|AssertionError: 2 != 1
+2353:c5|
+2354:0f|======================================================================
+2355:ae|FAIL: test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend) (marker='receipt.actor_id != self.actor_id')
+2356:4e|----------------------------------------------------------------------
+2357:a2|Traceback (most recent call last):
+2358:cf|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 216, in test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend
+2359:40|    self.rejects(path, "readback", marker)
+2360:00|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+2361:59|    self.verifies(path, source)
+2362:b6|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 115, in verifies
+2363:a9|    PROOF._verify_protected_files(root, {"protected_file": self.rows(path)})
+2364:71|                                                           ^^^^^^^^^^^^^^^
+2365:7b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 91, in rows
+2366:81|    self.assertEqual(len(rows), 1)
+2367:38|AssertionError: 2 != 1
+2368:c5|
+2369:0f|======================================================================
+2370:ca|FAIL: test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend) (marker='LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?')
+2371:4e|----------------------------------------------------------------------
+2372:a2|Traceback (most recent call last):
+2373:cf|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 216, in test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend
+2374:40|    self.rejects(path, "readback", marker)
+2375:00|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+2376:59|    self.verifies(path, source)
+2377:b6|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 115, in verifies
+2378:a9|    PROOF._verify_protected_files(root, {"protected_file": self.rows(path)})
+2379:71|                                                           ^^^^^^^^^^^^^^^
+2380:7b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 91, in rows
+2381:81|    self.assertEqual(len(rows), 1)
+2382:38|AssertionError: 2 != 1
+2383:c5|
+2384:0f|======================================================================
+2385:ce|FAIL: test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend) (marker='learning_iteration_receipt_signing_bytes_v1(receipt)?')
+2386:4e|----------------------------------------------------------------------
+2387:a2|Traceback (most recent call last):
+2388:cf|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 216, in test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend
+2389:40|    self.rejects(path, "readback", marker)
+2390:00|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+2391:59|    self.verifies(path, source)
+2392:b6|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 115, in verifies
+2393:a9|    PROOF._verify_protected_files(root, {"protected_file": self.rows(path)})
+2394:71|                                                           ^^^^^^^^^^^^^^^
+2395:7b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 91, in rows
+2396:81|    self.assertEqual(len(rows), 1)
+2397:38|AssertionError: 2 != 1
+2398:c5|
+2399:0f|======================================================================
+2400:a0|FAIL: test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend) (marker='if let Some(command) = &self.command')
+2401:4e|----------------------------------------------------------------------
+2402:a2|Traceback (most recent call last):
+2403:cf|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 216, in test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend
+2404:40|    self.rejects(path, "readback", marker)
+2405:00|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+2406:59|    self.verifies(path, source)
+2407:b6|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 115, in verifies
+2408:a9|    PROOF._verify_protected_files(root, {"protected_file": self.rows(path)})
+2409:71|                                                           ^^^^^^^^^^^^^^^
+2410:7b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 91, in rows
+2411:81|    self.assertEqual(len(rows), 1)
+2412:38|AssertionError: 2 != 1
+2413:c5|
+2414:0f|======================================================================
+2415:fb|FAIL: test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend) (marker='.read_original_command(command, receipt, &payload, role)')
+2416:4e|----------------------------------------------------------------------
+2417:a2|Traceback (most recent call last):
+2418:cf|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 216, in test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend
+2419:40|    self.rejects(path, "readback", marker)
+2420:00|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+2421:59|    self.verifies(path, source)
+2422:b6|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 115, in verifies
+2423:a9|    PROOF._verify_protected_files(root, {"protected_file": self.rows(path)})
+2424:71|                                                           ^^^^^^^^^^^^^^^
+2425:7b|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 91, in rows
+2426:81|    self.assertEqual(len(rows), 1)
+2427:38|AssertionError: 2 != 1
+2428:c5|
+2429:0f|======================================================================
+2430:7d|FAIL: test_source_domain_does_not_replace_frozen_data_or_original_missing (test_original_training_source_capture_source_closure.OriginalTrainingSourceCaptureClosureTests.test_source_domain_does_not_replace_frozen_data_or_original_missing) (function='fn require_original_source_capture(', marker='ordinary Training requires original source capture')
+2431:4e|----------------------------------------------------------------------
+2432:a2|Traceback (most recent call last):
+2433:d1|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py", line 125, in test_source_domain_does_not_replace_frozen_data_or_original_missing
+2434:ed|    self.rejects(OWNER, function, marker)
+2435:5a|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py", line 71, in rejects
+2436:69|    with self.assertRaises(PROOF.VerificationFailure):
+2437:99|AssertionError: VerificationFailure not raised
+2438:c5|
+2439:0f|======================================================================
+2440:f3|FAIL: test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence (test_q24_model_proposal_source_closure.Q24ModelProposalSourceClosureTests.test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence) (path='codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs', marker='self.fenced = true')
+2441:4e|----------------------------------------------------------------------
+2442:a2|Traceback (most recent call last):
+2443:e4|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 176, in test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence
+2444:79|    self.rejects(path, "fn require_current(", marker)
+2445:31|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_q24_model_proposal_source_closure.py", line 56, in rejects
+2446:64|    self.assertEqual(body.count(marker), 1, marker)
+2447:6a|AssertionError: 2 != 1 : self.fenced = true
+2448:c5|
+2449:0f|======================================================================
+2450:f2|FAIL: test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied (test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied)
+2451:4e|----------------------------------------------------------------------
+2452:a2|Traceback (most recent call last):
+2453:d6|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 165, in test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied
+2454:22|    self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
+2455:a3|  File "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py", line 68, in rejects
+2456:69|    with self.assertRaises(PROOF.VerificationFailure):
+2457:99|AssertionError: VerificationFailure not raised
+2458:c5|
+2459:4e|----------------------------------------------------------------------
+2460:08|Ran 401 tests in 285.419s
+2461:c5|
+2462:52|FAILED (failures=13, errors=105)
+[end of file, 2462 lines total]
