@@ -313,6 +313,8 @@ mod tests;
 pub(crate) use tests::fixture_original_receipt_client;
 
 #[cfg(test)]
+pub(crate) use material::bootstrap_ports as original_material_bootstrap_test_ports;
+#[cfg(test)]
 pub(crate) use material::retained_version_dataset_fixture;
 #[cfg(test)]
 pub(crate) use selection_command::original_readback_test_ports;

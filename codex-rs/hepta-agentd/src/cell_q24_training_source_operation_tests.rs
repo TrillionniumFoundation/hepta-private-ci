@@ -6,6 +6,9 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
+
 use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;
 
 use super::*;
