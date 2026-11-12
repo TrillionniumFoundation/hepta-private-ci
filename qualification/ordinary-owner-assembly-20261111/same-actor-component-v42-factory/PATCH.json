@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f",
+  "reason": "V41 original full-caller typed receiver ambiguity; five real Factory calls made explicit",
+  "independent_review": "3c3e1842036f91ec5bb3f404da2ec579b1955708",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "pre": {
+        "blob": "ee320cabbb453beaf62fcb283376a5228bfb0433",
+        "bytes": 11355,
+        "sha256": "5d5a5c0f081d52cf483a73b71aa5edac3f834f495473c7f1a25aff2707d27007"
+      },
+      "post": {
+        "blob": "9d7fc1bc55daf72ad25652222b5adcfd26b7f72c",
+        "bytes": 11572,
+        "sha256": "9e076a8e56fa41505a4e455a46134bdfce72cc3e5639b35cc67e81de2b33a9d3"
+      },
+      "operations": [
+        {
+          "before": "        factory.require_current().await.map_err(unavailable)?;",
+          "after": "        AgentdRootQ24ModelFactoryV1::require_current(&mut factory)\n            .await\n            .map_err(unavailable)?;",
+          "expected_matches": 2
+        },
+        {
+          "before": ".block_on(factory.require_current())",
+          "after": ".block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut factory))",
+          "expected_matches": 1
+        },
+        {
+          "before": ".block_on(owners.factory.require_current())",
+          "after": ".block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))",
+          "expected_matches": 2
+        }
+      ]
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre": {
+        "blob": "cec0af947a10465414faff8f4e755e023a7f892d",
+        "bytes": 891444,
+        "sha256": "5b5caf74a100c39c2d91efbc3abc035ea8dae4a796685c9ad1e54b4c9c41bc86"
+      },
+      "post": {
+        "blob": "037b66f9c836509a75ad009a441381410cbfafdb",
+        "bytes": 891637,
+        "sha256": "be92133562d6c4db4960aca803936bfc247d249cb1230a2b2c971642f5825a2a"
+      },
+      "operations": [
+        {
+          "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs\"\nrequired = [\"OriginalCellQ24LearningInputsV1\",\"same_actor_work: Some(Arc::clone(&phase))\",\"evaluation: None\",\"generation: None\",\"let owners: &mut Q24StageOwners = &mut locked\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\",\"unsafe\",\".abort(\",\"SigningKey\",\"File::open(\",\".sign(\",\"NoUpdate {\"]\nrequired_order = [[\"fn in_original_same_actor_lane<\",\"phase.require_original_prepared(&self.prepared)?\",\"self.cancelled.load(Ordering::Acquire)\",\"try_acquire_owned()\",\"FenceAggregateOnDrop\",\"phase.reserve_original_blocking()?\",\"tokio::task::spawn_blocking(move ||\",\"let _permit = permit\",\"for_work.require_original_prepared(&prepared)?\",\"cancelled.load(Ordering::Acquire)\",\"owners.try_lock()\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\".block_on(owners.factory.require_current())\",\"cancelled.load(Ordering::Acquire)\",\"for_work.require_original_work_entry()?\",\"let result = work(owners, &training, &runtime)?\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\".block_on(owners.factory.require_current())\",\"cancelled.load(Ordering::Acquire)\",\"for_work.require_original_work_entry()?\",\"closing.disarm()\",\"admission.retain_original_handle(handle)\",\"phase.receive_original_job(job).await?\",\"fence.armed = false\",\"if result.is_ok()\",\"closing.disarm()\",\"result\"]]\nrequired_function_order = [\n  { function = \"fn from_original_same_actor_inputs(\", sequence = [\"phase.original_failure_scope()\",\"phase.require_original_prepared(&original.prepared)?\",\"factory.require_current().await\",\"phase.require_original_work_entry()?\",\"phase.reserve_original_blocking()?\",\"tokio::task::spawn_blocking(move ||\",\"for_work.require_original_prepared(&original.prepared)?\",\"CellQ24PreparedLearningV1::revalidate_source(&original.prepared)\",\"for_work.require_original_work_entry()?\",\"local_files.open_original_local_decision(\",\".require_learning_scope(\",\".require_local_policy(local.policy_digest())\",\".block_on(factory.require_current())\",\".require_context(\",\"CellQ24PreparedLearningV1::revalidate_source(&original.prepared)\",\"for_work.require_original_work_entry()?\",\"sources.open_original_source_pair(\",\"for_work.require_original_work_entry()?\",\"match original.mode\",\"OriginalCellQ24LearningOpenV1::Create\",\"experience.attest_experience()\",\"for_work.require_original_work_entry()?\",\".attest_dataset(&mut experience)\",\"OriginalCellQ24LearningOpenV1::Recover\",\"dataset.read_dataset(&mut experience)\",\"for_work.require_original_work_entry()?\",\"files.open_original_training_pair(\",\"for_work.require_original_work_entry()?\",\"closing.disarm()\",\"admission.retain_original_handle(handle)\",\"phase.receive_original_job(job).await??\",\"OriginalCellQ24TrainingStageV1::from_original_same_actor_owners(\",\"factory.require_current().await\",\"phase.require_original_prepared(&prepared)?\",\"same_actor_work: Some(Arc::clone(&phase))\",\"closing.disarm()\",\"Ok(aggregate)\"] },\n  { function = \"fn require_original_same_actor_work(\", sequence = [\"self.inner.same_actor_work.as_ref()\",\"phase.gate().close()\",\"Error::WrongScope\",\"!Arc::ptr_eq(original, phase)\",\"original.gate().close()\",\"phase.gate().close()\",\"return Err(Error::WrongScope)\",\"original.require_original_prepared(&self.inner.prepared)\"] },\n  { function = \"fn open_original_same_actor_generation(\", sequence = [\"phase.original_failure_scope()\",\"self.require_original_same_actor_work(phase)?\",\"phase.reserve_original_blocking()?\",\"tokio::task::spawn_blocking(move ||\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\"for_work.require_original_prepared(&prepared)?\",\"original.into_receipt_owners(&prepared)?\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\"for_work.require_original_work_entry()?\",\"closing.disarm()\",\"admission.retain_original_handle(handle)\",\"phase.receive_original_job(job).await??\",\"closing.disarm()\",\"Ok(result)\"] },\n  { function = \"fn require_original_phase_entry(\", sequence = [\"if let Some(phase) = &self.same_actor_work\",\"phase.require_original_prepared(&self.prepared)?\",\"Ok(())\"] },\n]\n\n",
+          "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs\"\nrequired = [\"OriginalCellQ24LearningInputsV1\",\"same_actor_work: Some(Arc::clone(&phase))\",\"evaluation: None\",\"generation: None\",\"let owners: &mut Q24StageOwners = &mut locked\"]\nforbidden = [\"AllowVerifier\",\"permit_all\",\"SigningKey::generate\",\"SigningKey::from_bytes\",\"unsafe\",\".abort(\",\"SigningKey\",\"File::open(\",\".sign(\",\"NoUpdate {\"]\nrequired_order = [[\"fn in_original_same_actor_lane<\",\"phase.require_original_prepared(&self.prepared)?\",\"self.cancelled.load(Ordering::Acquire)\",\"try_acquire_owned()\",\"FenceAggregateOnDrop\",\"phase.reserve_original_blocking()?\",\"tokio::task::spawn_blocking(move ||\",\"let _permit = permit\",\"for_work.require_original_prepared(&prepared)?\",\"cancelled.load(Ordering::Acquire)\",\"owners.try_lock()\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\".block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))\",\"cancelled.load(Ordering::Acquire)\",\"for_work.require_original_work_entry()?\",\"let result = work(owners, &training, &runtime)?\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\".block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))\",\"cancelled.load(Ordering::Acquire)\",\"for_work.require_original_work_entry()?\",\"closing.disarm()\",\"admission.retain_original_handle(handle)\",\"phase.receive_original_job(job).await?\",\"fence.armed = false\",\"if result.is_ok()\",\"closing.disarm()\",\"result\"]]\nrequired_function_order = [\n  { function = \"fn from_original_same_actor_inputs(\", sequence = [\"phase.original_failure_scope()\",\"phase.require_original_prepared(&original.prepared)?\",\"AgentdRootQ24ModelFactoryV1::require_current(&mut factory)\\n            .await\",\"phase.require_original_work_entry()?\",\"phase.reserve_original_blocking()?\",\"tokio::task::spawn_blocking(move ||\",\"for_work.require_original_prepared(&original.prepared)?\",\"CellQ24PreparedLearningV1::revalidate_source(&original.prepared)\",\"for_work.require_original_work_entry()?\",\"local_files.open_original_local_decision(\",\".require_learning_scope(\",\".require_local_policy(local.policy_digest())\",\".block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut factory))\",\".require_context(\",\"CellQ24PreparedLearningV1::revalidate_source(&original.prepared)\",\"for_work.require_original_work_entry()?\",\"sources.open_original_source_pair(\",\"for_work.require_original_work_entry()?\",\"match original.mode\",\"OriginalCellQ24LearningOpenV1::Create\",\"experience.attest_experience()\",\"for_work.require_original_work_entry()?\",\".attest_dataset(&mut experience)\",\"OriginalCellQ24LearningOpenV1::Recover\",\"dataset.read_dataset(&mut experience)\",\"for_work.require_original_work_entry()?\",\"files.open_original_training_pair(\",\"for_work.require_original_work_entry()?\",\"closing.disarm()\",\"admission.retain_original_handle(handle)\",\"phase.receive_original_job(job).await??\",\"OriginalCellQ24TrainingStageV1::from_original_same_actor_owners(\",\"AgentdRootQ24ModelFactoryV1::require_current(&mut factory)\\n            .await\",\"phase.require_original_prepared(&prepared)?\",\"same_actor_work: Some(Arc::clone(&phase))\",\"closing.disarm()\",\"Ok(aggregate)\"] },\n  { function = \"fn require_original_same_actor_work(\", sequence = [\"self.inner.same_actor_work.as_ref()\",\"phase.gate().close()\",\"Error::WrongScope\",\"!Arc::ptr_eq(original, phase)\",\"original.gate().close()\",\"phase.gate().close()\",\"return Err(Error::WrongScope)\",\"original.require_original_prepared(&self.inner.prepared)\"] },\n  { function = \"fn open_original_same_actor_generation(\", sequence = [\"phase.original_failure_scope()\",\"self.require_original_same_actor_work(phase)?\",\"phase.reserve_original_blocking()?\",\"tokio::task::spawn_blocking(move ||\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\"for_work.require_original_prepared(&prepared)?\",\"original.into_receipt_owners(&prepared)?\",\"CellQ24PreparedLearningV1::revalidate_source(&prepared)\",\"for_work.require_original_work_entry()?\",\"closing.disarm()\",\"admission.retain_original_handle(handle)\",\"phase.receive_original_job(job).await??\",\"closing.disarm()\",\"Ok(result)\"] },\n  { function = \"fn require_original_phase_entry(\", sequence = [\"if let Some(phase) = &self.same_actor_work\",\"phase.require_original_prepared(&self.prepared)?\",\"Ok(())\"] },\n]\n\n",
+          "expected_matches": 1
+        }
+      ],
+      "changed_markers": 5,
+      "caller_sets_unchanged": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "pre": {
+        "blob": "e5e5dc49a216d6fa490867ddf9d83d0c8146a6df",
+        "bytes": 12066,
+        "sha256": "afb0014567e482d033f68dcb2ba9f2aba5cff9b4ffc512fddd05626943e82e0c"
+      },
+      "post": {
+        "blob": "aecfeffe81112959020ab8358a501e35c6a76c99",
+        "bytes": 12066,
+        "sha256": "c183b7409b566591c44e4fbaeababc5ad8b65681ea3b673b8b5bfff37e3b9711"
+      },
+      "operations": [
+        {
+          "before": "sha256:5b5caf74a100c39c2d91efbc3abc035ea8dae4a796685c9ad1e54b4c9c41bc86 CALLERS.toml",
+          "after": "sha256:be92133562d6c4db4960aca803936bfc247d249cb1230a2b2c971642f5825a2a CALLERS.toml",
+          "expected_matches": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f",
+  "native_attempt": "ordinary-b399a82-seven-final-v16",
+  "terminal": {
+    "session": "dpty-eb9d7bd51e23f236a0b48fcfca695f1f28b0b472bbebcca981112912fedaa6eb",
+    "bytes": 7021,
+    "sha256": "2ea05193fadb4df3cdb4e283526336b3fc0e5becc242c58850ce74506800e65a",
+    "complete": true,
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 7021,
+      "bytes_stored": 7021,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794502532773,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 1750285,
+      "pid": 1750286,
+      "state": "exited"
+    }
+  },
+  "original_caller_execution": {
+    "after": {
+      "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "dirty": false,
+      "parents": [
+        "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+      ],
+      "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "dirty": false,
+      "parents": [
+        "53ed651d9bbaac6b6c0500d390b730f5910a2fa2"
+      ],
+      "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+    },
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "command_exit_code": 1,
+    "elapsed_seconds": 863.1224461789243,
+    "exit_code": 1,
+    "finished_at": "2026-11-12T17:14:11.456506+00:00",
+    "job": null,
+    "lane": "source-head",
+    "log_bytes": 212,
+    "log_file": "caller-full-verify.execution.json.983459a8e9d44cd4aa021efa382eb0f5.log",
+    "log_sha256": "9cdf190fe7e1132d33d9bad237f15f82038ea34069360aebdd0d910c79ece4f6",
+    "minimum_tests": 0,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 1,
+    "run_attempt": null,
+    "run_id": null,
+    "schema_version": 1,
+    "source_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+    "started_at": "2026-11-12T16:59:48.332791+00:00",
+    "status": "failed",
+    "tested_sha": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+    "timed_out": false,
+    "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-b399a82-seven-final-v16/source"
+  },
+  "original_caller_stdout": "FAIL_HEPTA_CALLER_PROOF: learning_original_q24_stage_require_current: codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs: unresolved possible OriginalCellQ24LearningStageOwnersV1::require_current receiver\n",
+  "qa_actual": [
+    {
+      "name": "qa-b4-no-bypass.execution.json",
+      "passed": 221,
+      "failed": 0,
+      "command_exit": 0,
+      "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "elapsed_seconds": 19.753075919114053,
+      "record_sha256": "7dff6def137240f3f400dba46204b4d7966d86dec9e6fdee2265c5f9db2793b4",
+      "log_file": "qa-b4-no-bypass.execution.json.686f4cb8a38041efb37876e07cc7d673.log",
+      "log_bytes": 43789,
+      "log_sha256": "51c744a0bcc8671c43ab30bacdf802c619a4b8db63bb2b437f4c3495fe1928d4"
+    },
+    {
+      "name": "qa-fault-matrix.execution.json",
+      "passed": 5,
+      "failed": 0,
+      "command_exit": 0,
+      "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "elapsed_seconds": 0.06650704308412969,
+      "record_sha256": "bb69530dbf05d3c908943b774703172f2e31e2698ad292d12f8b64c37bc67134",
+      "log_file": "qa-fault-matrix.execution.json.66669580219a442ea2d69e4e9615a0fd.log",
+      "log_bytes": 808,
+      "log_sha256": "cdaac012b1e66926aec5bfc03b760a186f6caaddd9e27e64378f28dffafd5d81"
+    },
+    {
+      "name": "qa-performance.execution.json",
+      "passed": 5,
+      "failed": 0,
+      "command_exit": 0,
+      "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "elapsed_seconds": 0.06771403993479908,
+      "record_sha256": "fb081e1652445951a782e9414ef872d8415d895c66733738e508903e74a42e44",
+      "log_file": "qa-performance.execution.json.aba1877c65274e5c9ffe673f8be22af4.log",
+      "log_bytes": 798,
+      "log_sha256": "d2e2593ee77736f956cca3f549cbae73da9b7113276c4db68ce1e54e82bd594f"
+    },
+    {
+      "name": "qa-vertical-slice.execution.json",
+      "passed": 5,
+      "failed": 0,
+      "command_exit": 0,
+      "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "elapsed_seconds": 0.06642951699905097,
+      "record_sha256": "b57ceda992753fbad3482ee2ddba0faa78532703d21935462bb5f24c7e10647a",
+      "log_file": "qa-vertical-slice.execution.json.f40d7781bcc84fb0add4dae9eb643487.log",
+      "log_bytes": 806,
+      "log_sha256": "0d46a2574bff0a38b57da271f9c648090d3d6b2e9bce9c78b59e37c679694fe6"
+    },
+    {
+      "name": "caller-self-test.execution.json",
+      "passed": 0,
+      "failed": 0,
+      "command_exit": 0,
+      "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "elapsed_seconds": 0.07292193616740406,
+      "record_sha256": "683345f9ba2764585ddbc66e571e4ef04e3457c234bd41b953de4d2e4178066b",
+      "log_file": "caller-self-test.execution.json.af418123ccbd40b1be514702966b576b.log",
+      "log_bytes": 48,
+      "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "final_source": {
+    "head": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+    "status": "",
+    "tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f"
+  },
+  "not_reached": [
+    "same-source-helper",
+    "ordinary-seven-package-native",
+    "Root17-UID0-native"
+  ],
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

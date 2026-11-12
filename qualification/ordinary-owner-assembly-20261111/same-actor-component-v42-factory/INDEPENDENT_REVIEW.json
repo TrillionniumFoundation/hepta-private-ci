@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "kind": "bounded-independent-v41-factory-receiver-diagnosis",
+  "source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "rust_same_as": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "status": "static-only-no-helper-execution",
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "blob": "ee320cabbb453beaf62fcb283376a5228bfb0433"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "blob": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+      "blob": "f15a3f5549a6eaf83c3759afab4366bf71938661"
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "cec0af947a10465414faff8f4e755e023a7f892d"
+    }
+  ],
+  "reported_failure": {
+    "source": "Root supplied original terminal result; this review did not run or re-read native records",
+    "boundary": "learning_original_q24_stage_require_current",
+    "message": "unresolved possible OriginalCellQ24LearningStageOwnersV1::require_current receiver",
+    "runtime_seconds": 863.122,
+    "exit_code": 1,
+    "no_test_qualification_inferred": true
+  },
+  "five_calls": [
+    {
+      "function": "from_original_same_actor_inputs",
+      "occurrence": "first async factory check",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "explicit mut factory parameter",
+      "replacement": "AgentdRootQ24ModelFactoryV1::require_current(&mut factory)",
+      "retained": "same await.map_err(unavailable)? and next phase guard"
+    },
+    {
+      "function": "from_original_same_actor_inputs",
+      "occurrence": "blocking closure",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "same move-captured explicit parameter",
+      "replacement": "AgentdRootQ24ModelFactoryV1::require_current(&mut factory)",
+      "retained": "same runtime.block_on(...).map_err(unavailable)? and local context/source checks"
+    },
+    {
+      "function": "from_original_same_actor_inputs",
+      "occurrence": "after original Work join tuple returns",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "tuple last field is the same moved factory, returned after exact original blocking work",
+      "replacement": "AgentdRootQ24ModelFactoryV1::require_current(&mut factory)",
+      "retained": "same await and prepared/aggregate construction order"
+    },
+    {
+      "function": "in_original_same_actor_lane",
+      "occurrence": "after actual Q24StageOwners lock, before original work callback",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "owners explicitly &mut Q24StageOwners; its factory field is explicitly the Factory type",
+      "replacement": "AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory)",
+      "retained": "same block_on/map_err, cancellation and real effect-entry checks"
+    },
+    {
+      "function": "in_original_same_actor_lane",
+      "occurrence": "after original callback, before closing guard disarm",
+      "actual_type": "AgentdRootQ24ModelFactoryV1",
+      "source": "same locked owners.factory field, no replacement",
+      "replacement": "AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory)",
+      "retained": "same block_on/map_err, cancellation and exact Work postcheck"
+    }
+  ],
+  "authority": "The real Factory method takes &mut self, keeps original phase checks, sticky fenced-before-Observe, actual Observe/Confirm equality, and clears fence only after success. The Stage require_current is a different &self method through its original in_lane. No new owner or weaker checker rule is needed.",
+  "metadata": {
+    "stage_boundary_callers_unchanged": true,
+    "context_boundary_callers_unchanged": true,
+    "factory_boundary_already_has_this_file": true,
+    "required_change": "Only actual protected source markers for those five occurrences; no caller-set change."
+  },
+  "other_same_file_candidates": {
+    "total_dot_method_intersections": 16,
+    "require_current": 5,
+    "local_require_context": "One actual local.require_context has an explicit OriginalCellQ24LocalDecisionOwnerV1<FileAnchorWitnessStore> binding and original method; no second confirmed unresolved receiver from static source.",
+    "other_receivers": "local_files, sources, experience, dataset and files have explicit original types. original.into_receipt_owners receives the explicit Generation handoff parameter.",
+    "scope": "This bounded text/type review is not a global field-index reconstruction or original typed resolver run.",
+    "intersections": [
+      {
+        "name": "require_current",
+        "offset": 706,
+        "boundaries": [
+          {
+            "id": "root_q24_factory_live_observation",
+            "receiver": "AgentdRootQ24ModelFactoryV1"
+          },
+          {
+            "id": "learning_original_q24_stage_require_current",
+            "receiver": "OriginalCellQ24LearningStageOwnersV1"
+          },
+          {
+            "id": "root_same_actor_context_current",
+            "receiver": "OriginalSameActorRootContext"
+          }
+        ],
+        "context": " closing = phase.original_failure_scope();\n        phase.require_original_prepared(&original.prepared)?;\n        factory.require_current().await.map_err(unavailable)?;\n        phase.require_original_work_entry()?;\n        let runtime = Handle::current();\n        let pre"
+      },
+      {
+        "name": "open_original_local_decision",
+        "offset": 1624,
+        "boundaries": [
+          {
+            "id": "learning_original_q24_policy_inputs",
+            "receiver": "OriginalCellQ24LocalDecisionFilesV1"
+          }
+        ],
+        "context": "                let local: OriginalCellQ24LocalDecisionOwnerV1<FileAnchorWitnessStore> =\n                    local_files.open_original_local_decision(\n                        &original.prepared,\n                        original.verifier.clone(),\n                        "
+      },
+      {
+        "name": "require_learning_scope",
+        "offset": 1852,
+        "boundaries": [
+          {
+            "id": "root_q24_factory_learning_scope",
+            "receiver": "AgentdRootQ24ModelFactoryV1"
+          }
+        ],
+        "context": "verifier.clone(),\n                        &factory,\n                    )?;\n                factory\n                    .require_learning_scope(original.prepared.initial(), original.prepared.scope())\n                    .map_err(unavailable)?;\n                factory\n  "
+      },
+      {
+        "name": "require_local_policy",
+        "offset": 2020,
+        "boundaries": [
+          {
+            "id": "root_q24_factory_local_policy",
+            "receiver": "AgentdRootQ24ModelFactoryV1"
+          }
+        ],
+        "context": "l(), original.prepared.scope())\n                    .map_err(unavailable)?;\n                factory\n                    .require_local_policy(local.policy_digest())\n                    .map_err(unavailable)?;\n                runtime\n                    .block_on(factory"
+      },
+      {
+        "name": "policy_digest",
+        "offset": 2047,
+        "boundaries": [
+          {
+            "id": "learning_original_local_policy_policy_digest",
+            "receiver": "OriginalCellQ24LocalDecisionOwnerV1"
+          }
+        ],
+        "context": "e())\n                    .map_err(unavailable)?;\n                factory\n                    .require_local_policy(local.policy_digest())\n                    .map_err(unavailable)?;\n                runtime\n                    .block_on(factory.require_current())\n       "
+      },
+      {
+        "name": "require_current",
+        "offset": 2170,
+        "boundaries": [
+          {
+            "id": "root_q24_factory_live_observation",
+            "receiver": "AgentdRootQ24ModelFactoryV1"
+          },
+          {
+            "id": "learning_original_q24_stage_require_current",
+            "receiver": "OriginalCellQ24LearningStageOwnersV1"
+          },
+          {
+            "id": "root_same_actor_context_current",
+            "receiver": "OriginalSameActorRootContext"
+          }
+        ],
+        "context": "licy_digest())\n                    .map_err(unavailable)?;\n                runtime\n                    .block_on(factory.require_current())\n                    .map_err(unavailable)?;\n                local\n                    .require_context(original.prepared.initial()"
+      },
+      {
+        "name": "require_context",
+        "offset": 2276,
+        "boundaries": [
+          {
+            "id": "learning_original_generation_receipt_require_context",
+            "receiver": "OriginalGenerationLearningReceiptOwnerV1"
+          },
+          {
+            "id": "learning_original_local_policy_require_context",
+            "receiver": "OriginalCellQ24LocalDecisionOwnerV1"
+          }
+        ],
+        "context": "ock_on(factory.require_current())\n                    .map_err(unavailable)?;\n                local\n                    .require_context(original.prepared.initial(), original.prepared.scope())\n                    .map_err(unavailable)?;\n                CellQ24PreparedLe"
+      },
+      {
+        "name": "open_original_source_pair",
+        "offset": 2712,
+        "boundaries": [
+          {
+            "id": "learning_original_q24_source_inputs",
+            "receiver": "OriginalCellQ24SourceInputsV1"
+          }
+        ],
+        "context": "et sources: crate::OriginalCellQ24SourceInputsV1 = original.sources;\n                let (experience, dataset) = sources.open_original_source_pair(\n                    Arc::clone(&original.prepared),\n                    original.verifier,\n                    original.mo"
+      },
+      {
+        "name": "attest_experience",
+        "offset": 3348,
+        "boundaries": [
+          {
+            "id": "learning_original_source_attest_experience",
+            "receiver": "OriginalCellQ24SourceReceiptOwnerV1"
+          }
+        ],
+        "context": " match original.mode {\n                    OriginalCellQ24LearningOpenV1::Create => {\n                        experience.attest_experience().map_err(unavailable)?;\n                        for_work.require_original_work_entry()?;\n                        dataset\n         "
+      },
+      {
+        "name": "attest_dataset",
+        "offset": 3517,
+        "boundaries": [
+          {
+            "id": "learning_original_source_attest_dataset",
+            "receiver": "OriginalCellQ24SourceReceiptOwnerV1"
+          }
+        ],
+        "context": "                   for_work.require_original_work_entry()?;\n                        dataset\n                            .attest_dataset(&mut experience)\n                            .map_err(unavailable)?\n                    }\n                    OriginalCellQ24LearningO"
+      },
+      {
+        "name": "read_dataset",
+        "offset": 3718,
+        "boundaries": [
+          {
+            "id": "learning_original_source_read_dataset",
+            "receiver": "OriginalCellQ24SourceReceiptOwnerV1"
+          }
+        ],
+        "context": ")?\n                    }\n                    OriginalCellQ24LearningOpenV1::Recover => {\n                        dataset.read_dataset(&mut experience).map_err(unavailable)?\n                    }\n                };\n                let cut = completed.snapshot().clone();\n"
+      },
+      {
+        "name": "open_original_training_pair",
+        "offset": 4053,
+        "boundaries": [
+          {
+            "id": "learning_original_q24_training_inputs",
+            "receiver": "OriginalCellQ24TrainingInputsV1"
+          }
+        ],
+        "context": "        let files: OriginalCellQ24TrainingInputsV1 = original.training;\n                let (training, receipts) = files.open_original_training_pair(\n                    &original.prepared,\n                    cut.clone(),\n                    original.mode,\n            "
+      },
+      {
+        "name": "require_current",
+        "offset": 5067,
+        "boundaries": [
+          {
+            "id": "root_q24_factory_live_observation",
+            "receiver": "AgentdRootQ24ModelFactoryV1"
+          },
+          {
+            "id": "learning_original_q24_stage_require_current",
+            "receiver": "OriginalCellQ24LearningStageOwnersV1"
+          },
+          {
+            "id": "root_same_actor_context_current",
+            "receiver": "OriginalSameActorRootContext"
+          }
+        ],
+        "context": "rr(unavailable)?;\n        CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;\n        factory.require_current().await.map_err(unavailable)?;\n        phase.require_original_prepared(&prepared)?;\n        let aggregate = Arc::new(Self {\n         "
+      },
+      {
+        "name": "into_receipt_owners",
+        "offset": 7506,
+        "boundaries": [
+          {
+            "id": "learning_original_q24_generation_inputs",
+            "receiver": "OriginalCellQ24GenerationHandoffV1"
+          }
+        ],
+        "context": "err(unavailable)?;\n                for_work.require_original_prepared(&prepared)?;\n                let owners = original.into_receipt_owners(&prepared)?;\n                CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;\n                for_w"
+      },
+      {
+        "name": "require_current",
+        "offset": 10147,
+        "boundaries": [
+          {
+            "id": "root_q24_factory_live_observation",
+            "receiver": "AgentdRootQ24ModelFactoryV1"
+          },
+          {
+            "id": "learning_original_q24_stage_require_current",
+            "receiver": "OriginalCellQ24LearningStageOwnersV1"
+          },
+          {
+            "id": "root_same_actor_context_current",
+            "receiver": "OriginalSameActorRootContext"
+          }
+        ],
+        "context": "revalidate_source(&prepared).map_err(unavailable)?;\n                runtime\n                    .block_on(owners.factory.require_current())\n                    .map_err(unavailable)?;\n                if cancelled.load(Ordering::Acquire) {\n                    return Err("
+      },
+      {
+        "name": "require_current",
+        "offset": 10783,
+        "boundaries": [
+          {
+            "id": "root_q24_factory_live_observation",
+            "receiver": "AgentdRootQ24ModelFactoryV1"
+          },
+          {
+            "id": "learning_original_q24_stage_require_current",
+            "receiver": "OriginalCellQ24LearningStageOwnersV1"
+          },
+          {
+            "id": "root_same_actor_context_current",
+            "receiver": "OriginalSameActorRootContext"
+          }
+        ],
+        "context": "revalidate_source(&prepared).map_err(unavailable)?;\n                runtime\n                    .block_on(owners.factory.require_current())\n                    .map_err(unavailable)?;\n                if cancelled.load(Ordering::Acquire) {\n                    return Err("
+      }
+    ]
+  },
+  "patch_authorship": "Root owns this fix; this subagent only diagnosed and reviewed real types.",
+  "actions_not_performed": [
+    "h",
+    "PTY",
+    "Cargo",
+    "Rust",
+    "Python",
+    "checker",
+    "native",
+    "ref/source mutation"
+  ]
+}

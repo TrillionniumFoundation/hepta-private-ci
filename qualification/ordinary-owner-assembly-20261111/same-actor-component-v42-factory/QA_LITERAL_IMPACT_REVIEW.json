@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "kind": "bounded-static-qa-literal-impact-review",
+  "source_commit": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "actual_source": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+    "git": "ee320cabbb453beaf62fcb283376a5228bfb0433",
+    "bytes": 11355,
+    "sha256": "5d5a5c0f081d52cf483a73b71aa5edac3f834f495473c7f1a25aff2707d27007"
+  },
+  "candidate_source_supplied_by_root": "9d7fc1bc55daf72ad25652222b5adcfd26b7f72c",
+  "scope": "The 19 current test_*.py files in qa/b4-no-bypass, pinned by the exact V41 directory listing; no Python/checker/native execution.",
+  "findings": {
+    "exact_target_basename_occurrences": 0,
+    "factory_require_current_plain_or_whitespace_separated_occurrences": 0,
+    "same_actor_training_fixture": "test_original_training_owner_source_closure.py names cell_q24_training_same_actor.rs, a different unchanged source.",
+    "other_require_current_mutations": "Existing mutations are anchored to publication, task drain, durable journals, model decoder or training plan functions, not the five Factory calls in cell_q24_learning_same_actor.rs.",
+    "recommended_qa_edits": 0,
+    "confidence_limit": "This is bounded raw source/fixture inspection, not a new QA run or a full typed caller verification."
+  },
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "git": "2aad87cdd5ad46a8b0ec91ea7936d7ccf374bdc7",
+      "bytes": 11342,
+      "sha256": "a7c3c80f7c42f234d1b3010288afa47d99a170cafea4103df64dcfd3cec277d4"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+      "git": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+      "bytes": 16037,
+      "sha256": "5f1606e2c9b0f2c496558e8f64f1794f6776fb8fbaa7173563f195e11f87c3f4"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+      "git": "d0f9e0cfac21f64bd2d2998c99fc094eee7493d5",
+      "bytes": 7288,
+      "sha256": "92231eee412250cc2887cdf2c1d60cb111c95f9d1c54af9e1169c8bcea851aaa"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+      "git": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+      "bytes": 9571,
+      "sha256": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "git": "a02606d9657638a135c1ab4a41b412b2bafdd585",
+      "bytes": 7656,
+      "sha256": "039a0f957bd6371e5fb33b2a0331899eac0e8250bb107f404e7e338d1ef593d0"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "git": "8d607e733cf950165475cd80b9e3a080b13ed949",
+      "bytes": 8442,
+      "sha256": "36c96acedbed534ce2df59f60afc362ce2cccdf7b9631a1a165b2303cb661fde"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "git": "ee0f5225031f82edf413a7f4bed12f77ff479a7b",
+      "bytes": 15236,
+      "sha256": "6128faf8dfe2857f50a46276e5ff6c41d77c28e073a94351a757e1ab21a86713"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+      "git": "a09ec96ea064b35216e43b17dd4726d3a36afc7e",
+      "bytes": 6674,
+      "sha256": "4b7a1453784b1304bba8062e4854e8fcf4de9b99cd35c55eb2d701517462f7ef"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "git": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+      "bytes": 11528,
+      "sha256": "cc65d676a2f7de668e05838d421d3caeda005a0545f7a8229aa156875a27644e"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "git": "95c91cf30e1197a9279cd0f7794b07c563368d51",
+      "bytes": 11309,
+      "sha256": "7a5087f88210897b39f2437929e1646a74edadda66292a0ee38e1ada0b534a53"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+      "git": "b422159a6afc6524387f7442f116c0bf46d0ce70",
+      "bytes": 5328,
+      "sha256": "54764bdfbd5104c14e3a434d193eb81596ef920d3faa9de413429746f0ac229b"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "git": "dd376c477770afae84963baf4a6f3b84b5deedf9",
+      "bytes": 6311,
+      "sha256": "b34e838f34cb7c624ed0f1411b5cb04e011e76ccf7230ae21bf637bfec10bdd2"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+      "git": "bfe51bdf1c0d1b25adc741ecf4a8bb3d7bb7ec93",
+      "bytes": 7803,
+      "sha256": "9f2f824ff9fae51156cdc3409c30576f4b2873eab9d35ec4f7f203344cac27a3"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "git": "93825fb458c37ac88158f0a7427999c6db5ecd4c",
+      "bytes": 5148,
+      "sha256": "e73bece8bb45bb203336c77125bc985ff57f6d5fe9053ad562c491d941fe165d"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "git": "7015e686e71d88293ffaebb9577d33bfde41a933",
+      "bytes": 19100,
+      "sha256": "34d0b93e56fdfa6c32cb4e3f8907ab7238691c6216131452cb51bad56a960aad"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "git": "5f6631d0f651ec4f4a1dc64122204b9dce74eaec",
+      "bytes": 12257,
+      "sha256": "e98cfefb71f1be4c86528b2c568aede4b108e7b2f0833ae5ca94249fbd211e51"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+      "git": "c177740b24a62a33a272b0c5b3cc530ca91af856",
+      "bytes": 4726,
+      "sha256": "e608f3179f6baa7ef89e759bad28dee11abb6f0f588a4f9c44a240d2f1518977"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "git": "83bb92cfca3d4724cb498730046bcfda3831631e",
+      "bytes": 6309,
+      "sha256": "7861208545a653bc9c02b619c66c2b34a07dca873db606dd1d416e8d7bde1e66"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "git": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+      "bytes": 46748,
+      "sha256": "fc879da40eb15575788a310cf2ddbe4dc988bfa192f729d3d842c9a3bf12b787"
+    }
+  ],
+  "not_performed": [
+    "source edits",
+    "QA edits",
+    "checker/helper changes",
+    "h",
+    "PTY",
+    "native",
+    "refs"
+  ]
+}

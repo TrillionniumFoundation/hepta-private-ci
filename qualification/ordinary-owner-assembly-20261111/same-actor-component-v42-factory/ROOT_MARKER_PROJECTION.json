@@ -1,0 +1,189 @@
+{
+  "schema": "hepta.factory-receiver-v42-static-projection.v1",
+  "scope": "Bounded JavaScript text/mask/order projection only; original checker and typed helper not run by this script.",
+  "source_blob": "9d7fc1bc55daf72ad25652222b5adcfd26b7f72c",
+  "metadata_blob": "037b66f9c836509a75ad009a441381410cbfafdb",
+  "boundary_rows": 638,
+  "protected_rows": 440,
+  "all_boundaries_and_privileged_inventory_unchanged": true,
+  "projection": {
+    "required": [
+      {
+        "marker": "OriginalCellQ24LearningInputsV1",
+        "position": 175
+      },
+      {
+        "marker": "same_actor_work: Some(Arc::clone(&phase))",
+        "position": 5962
+      },
+      {
+        "marker": "evaluation: None",
+        "position": 5702
+      },
+      {
+        "marker": "generation: None",
+        "position": 5740
+      },
+      {
+        "marker": "let owners: &mut Q24StageOwners = &mut locked",
+        "position": 10088
+      }
+    ],
+    "required_order": [
+      [
+        8378,
+        8828,
+        8889,
+        9045,
+        9140,
+        9584,
+        9645,
+        9699,
+        9806,
+        9873,
+        10016,
+        10151,
+        10274,
+        10414,
+        10698,
+        10755,
+        10820,
+        10943,
+        11083,
+        11209,
+        11266,
+        11339,
+        11412,
+        11460,
+        11489,
+        11521,
+        11557
+      ]
+    ],
+    "required_function_order": [
+      {
+        "function": "fn from_original_same_actor_inputs(",
+        "start": 347,
+        "end": 6085,
+        "positions": [
+          250,
+          290,
+          352,
+          474,
+          699,
+          760,
+          883,
+          956,
+          1081,
+          1325,
+          1564,
+          1732,
+          1865,
+          2021,
+          2154,
+          2279,
+          2450,
+          2901,
+          2974,
+          3016,
+          3083,
+          3161,
+          3262,
+          3388,
+          3456,
+          3629,
+          3793,
+          4097,
+          4154,
+          4295,
+          4448,
+          4512,
+          4805,
+          4927,
+          5615,
+          5694,
+          5720
+        ]
+      },
+      {
+        "function": "fn require_original_same_actor_work(",
+        "start": 6103,
+        "end": 6624,
+        "positions": [
+          156,
+          220,
+          254,
+          296,
+          340,
+          377,
+          411,
+          460
+        ]
+      },
+      {
+        "function": "fn open_original_same_actor_generation(",
+        "start": 6648,
+        "end": 8107,
+        "positions": [
+          411,
+          451,
+          645,
+          706,
+          829,
+          924,
+          1001,
+          1059,
+          1154,
+          1211,
+          1296,
+          1369,
+          1418,
+          1444
+        ]
+      },
+      {
+        "function": "fn require_original_phase_entry(",
+        "start": 8148,
+        "end": 8354,
+        "positions": [
+          70,
+          127,
+          195
+        ]
+      }
+    ]
+  },
+  "deleting_each_of_five_actual_calls": [
+    {
+      "offset": 699,
+      "original_call": "AgentdRootQ24ModelFactoryV1::require_current(&mut factory)",
+      "rejected": true,
+      "reason": "Error: missing at 4882 \"phase.require_original_work_entry()?\""
+    },
+    {
+      "offset": 2222,
+      "original_call": "AgentdRootQ24ModelFactoryV1::require_current(&mut factory)",
+      "rejected": true,
+      "reason": "Error: missing at 1776 \".block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut factory))\""
+    },
+    {
+      "offset": 5152,
+      "original_call": "AgentdRootQ24ModelFactoryV1::require_current(&mut factory)",
+      "rejected": true,
+      "reason": "Error: missing at 4576 \"AgentdRootQ24ModelFactoryV1::require_current(&mut factory)\\n            .await\""
+    },
+    {
+      "offset": 10284,
+      "original_call": "AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory)",
+      "rejected": true,
+      "reason": "Error: missing at 11248 \"let result = work(owners, &training, &runtime)?\""
+    },
+    {
+      "offset": 10953,
+      "original_call": "AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory)",
+      "rejected": true,
+      "reason": "Error: missing at 10875 \".block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))\""
+    }
+  ],
+  "native_executed": false
+}

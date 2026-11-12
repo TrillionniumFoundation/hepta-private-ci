@@ -13,7 +13,9 @@ impl OriginalCellQ24LearningStageOwnersV1 {
     ) -> Result<Arc<Self>, Error> {
         let mut closing = phase.original_failure_scope();
         phase.require_original_prepared(&original.prepared)?;
-        factory.require_current().await.map_err(unavailable)?;
+        AgentdRootQ24ModelFactoryV1::require_current(&mut factory)
+            .await
+            .map_err(unavailable)?;
         phase.require_original_work_entry()?;
         let runtime = Handle::current();
         let prepared = Arc::clone(&original.prepared);
@@ -40,7 +42,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     .require_local_policy(local.policy_digest())
                     .map_err(unavailable)?;
                 runtime
-                    .block_on(factory.require_current())
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut factory))
                     .map_err(unavailable)?;
                 local
                     .require_context(original.prepared.initial(), original.prepared.scope())
@@ -97,7 +99,9 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         .await
         .map_err(unavailable)?;
         CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
-        factory.require_current().await.map_err(unavailable)?;
+        AgentdRootQ24ModelFactoryV1::require_current(&mut factory)
+            .await
+            .map_err(unavailable)?;
         phase.require_original_prepared(&prepared)?;
         let aggregate = Arc::new(Self {
             inner: Arc::new(Q24StageState {
@@ -223,7 +227,7 @@ impl Q24StageState {
                 let owners: &mut Q24StageOwners = &mut locked;
                 CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
                 runtime
-                    .block_on(owners.factory.require_current())
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))
                     .map_err(unavailable)?;
                 if cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);
@@ -234,7 +238,7 @@ impl Q24StageState {
                 let result = work(owners, &training, &runtime)?;
                 CellQ24PreparedLearningV1::revalidate_source(&prepared).map_err(unavailable)?;
                 runtime
-                    .block_on(owners.factory.require_current())
+                    .block_on(AgentdRootQ24ModelFactoryV1::require_current(&mut owners.factory))
                     .map_err(unavailable)?;
                 if cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);

@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.same-actor-component-v42-root-review.v1",
+  "source_parent": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+  "source_parent_tree": "53f8928f48ffe35d3a271407baa5e80c77a76c0f",
+  "reason": "Original V41 full caller stopped on unresolved possible Stage::require_current in a file whose five calls hold the real Factory. Actual Factory signature and Q24StageOwners field checked from pinned sources.",
+  "type_evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+      "blob": "f15a3f5549a6eaf83c3759afab4366bf71938661",
+      "method": "pub(crate) async fn require_current(&mut self)"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "blob": "e049f2d28662c2ead8f57e411aefd6cd8cc3b8e9",
+      "field": "factory: AgentdRootQ24ModelFactoryV1"
+    }
+  ],
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_same_actor.rs",
+      "pre": {
+        "blob": "ee320cabbb453beaf62fcb283376a5228bfb0433",
+        "bytes": 11355,
+        "sha256": "5d5a5c0f081d52cf483a73b71aa5edac3f834f495473c7f1a25aff2707d27007"
+      },
+      "post": {
+        "blob": "9d7fc1bc55daf72ad25652222b5adcfd26b7f72c",
+        "bytes": 11572,
+        "sha256": "9e076a8e56fa41505a4e455a46134bdfce72cc3e5639b35cc67e81de2b33a9d3"
+      }
+    },
+    {
+      "path": "CALLERS.toml",
+      "pre": {
+        "blob": "cec0af947a10465414faff8f4e755e023a7f892d",
+        "bytes": 891444,
+        "sha256": "5b5caf74a100c39c2d91efbc3abc035ea8dae4a796685c9ad1e54b4c9c41bc86"
+      },
+      "post": {
+        "blob": "037b66f9c836509a75ad009a441381410cbfafdb",
+        "bytes": 891637,
+        "sha256": "be92133562d6c4db4960aca803936bfc247d249cb1230a2b2c971642f5825a2a"
+      }
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "pre": {
+        "blob": "e5e5dc49a216d6fa490867ddf9d83d0c8146a6df",
+        "bytes": 12066,
+        "sha256": "afb0014567e482d033f68dcb2ba9f2aba5cff9b4ffc512fddd05626943e82e0c"
+      },
+      "post": {
+        "blob": "aecfeffe81112959020ab8358a501e35c6a76c99",
+        "bytes": 12066,
+        "sha256": "c183b7409b566591c44e4fbaeababc5ad8b65681ea3b673b8b5bfff37e3b9711"
+      }
+    }
+  ],
+  "actual_call_changes": 5,
+  "semantic_effect": "The same actual mutably borrowed Factory runs the same Observe/Confirm and original failure/phase checks at the same awaits and block_on positions. No owner construction, call insertion/removal, execution order, catch/mapping, deadline, Gate, error, or return change.",
+  "metadata": "Only the one existing protected_file row changes five literal spellings, including exact newline plus await for two async calls. Factory caller already contains the file. Every boundary and privileged inventory is byte and structure unchanged.",
+  "allowlist": "Only existing CALLERS.toml exact digest updated; no wildcard or new exemption.",
+  "validation": {
+    "reversible_exact_ops": true,
+    "changed_protected_rows": 1,
+    "bounded_marker_projection": true,
+    "five_call_deletion_projections_rejected": true,
+    "independent_static_review": "3c3e1842036f91ec5bb3f404da2ec579b1955708",
+    "original_native": "Not executed for V42 yet; must run unchanged exact-source seven-package/Root17 harness. V41 pass/failure retained separately and not inherited.",
+    "qa_fixture_scope": {
+      "review": "6c734d56f6d9ef0ba9aeb04b1c44ac91e404a5e8",
+      "fixed_source": "b399a82f5bbf53fe270e477bd90ccd2cdedcdebf",
+      "files": 19,
+      "path_or_factory_call_literal_hits": 0,
+      "qa_edits": 0,
+      "scope": "Bounded exact QA bytes; no Python/checker/native run and no pass inferred."
+    }
+  },
+  "original_pins": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c"
+  },
+  "future_packages_installed": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "main_merged": false
+}
