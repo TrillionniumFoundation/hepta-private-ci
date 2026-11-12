@@ -94,6 +94,7 @@ CALLERS = {
         "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs",
         "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
         "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_acceptance.rs",
     ),
     "root_initial_exact_retained_record": (
         AGENT + "authority_host_generation_initial_enrollment.rs",
@@ -385,6 +386,8 @@ class RootHistoricalSourceCallerClosureTests(unittest.TestCase):
 
     def test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set(self):
         for identifier, call in (
+            ("root_generation_current_original_broker_head",
+             "fn unregistered(owner: &NeuronGenerationCurrentOwnerV1) { owner.original_broker_head(); }"),
             ("root_historical_source_fixed_inputs",
              "fn unregistered(inputs: RootHistoricalSourceInputsV1) { inputs.retain_original(identity, target, uid, gid); }"),
             ("root_historical_source_enable_unconnected",
