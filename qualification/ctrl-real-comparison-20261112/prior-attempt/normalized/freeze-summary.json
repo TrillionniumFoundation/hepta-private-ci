@@ -1,0 +1,54 @@
+{
+  "collection_plan_canonical_sha256": "09c6e229e13ff8009d232d5472a9ced3da6adac881d34cddd43fb0281ead3761",
+  "common_prior_budget_observation": {
+    "action_budget_seconds": 20.0,
+    "episode_cap_seconds": 60.0,
+    "provenance": "Prior FROZEN/config inspection; source raw JSON is not included in this package.",
+    "read_completion_bound_seconds": 10.0
+  },
+  "driver_pr": 6117,
+  "driver_sha256": "8ba99d4342118bba385816f43893804dff5b77339b319fd98bcc6f060b1a510c",
+  "export_canonical_sha256": "4bafc917be93ebce28931e20688ef0538f1b19db73a2f6e9a1015ab90f866c82",
+  "freeze": {
+    "original_freeze_job": "1a1ce4891a8-2564-15f0",
+    "path": "/home/qq/ctrl-prospective-20261112-736c/run-v1/FROZEN.json",
+    "raw_bytes_in_package": false,
+    "sha256": "75e33bfb3b2f6fdf7d749d3f3cd5e1b116a05322e2905106b56366e791db0df0"
+  },
+  "frozen_evaluation_actors": 24,
+  "frozen_evaluation_context_count_provenance": {
+    "local_independent_planned_actor_count": "originals/historical-local-progress.json records freeze.planned_evaluation_actors=24.",
+    "preparation_vs_freeze": "PREPARATION_REPORT evaluated candidate count 12 is earlier than the final freeze and is not the planned evaluation denominator.",
+    "root_agent_confirmation": "Root directly inspected original FROZEN through readback job 1a1ce66fd3a and confirmed 4 contexts; raw readback is not included here."
+  },
+  "frozen_evaluation_contexts": 4,
+  "limitations": [
+    "Registered development sources were already exposed research material; no fresh confirmation claim.",
+    "Control train and calibration sources were disjoint, but common content weights may have historical source exposure.",
+    "FROZEN, prepared input, collection ledger and large actor artifacts are identified by previously retrieved pins; their raw bytes were not recovered in this local assembly.",
+    "No new actor, resume, replay, source selection, reference read or experiment was performed to assemble this package."
+  ],
+  "methods": [
+    "STOP",
+    "light",
+    "tuned-fixed",
+    "point",
+    "unconditional",
+    "conditional"
+  ],
+  "output_root": "/home/qq/ctrl-prospective-20261112-736c/run-v1",
+  "planned_collection_branches": 252,
+  "planned_collection_pairs": 126,
+  "prepared_evaluation_contexts": 12,
+  "prepared_input_sha256": "1a0247df1b4969f4aabd8ff72dfd482b19714b0c92274b1cf4bf5cb6a353e614",
+  "prepared_sources": {
+    "calibration": 18,
+    "evaluation": 4,
+    "train": 24
+  },
+  "repository_root": "/home/qq/ctrl-macro-20261112-736c",
+  "schema": "ctrl.prior-freeze-summary.v1",
+  "source_commit": "0bc9cbac00a21aae25af1a96ccbedbf3707cfa4c",
+  "source_repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+  "study_id": "ctrl-prospective-20261112-736c"
+}

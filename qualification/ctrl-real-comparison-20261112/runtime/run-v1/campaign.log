@@ -1,0 +1,18 @@
+{"stage": "prepare", "status": "STARTED"}
+{"stage": "prepare", "exit_code": 0, "elapsed_seconds": 0.21381590887904167, "log_sha256": "5779412e29a80cc7e4beeec7bebc0a6040c449ba80492a5a27c0bdb1b66440d6", "time_ns": 1794467686836466300}
+{"stage": "frozen_freeze", "status": "STARTED"}
+{"stage": "frozen_freeze", "exit_code": 0, "elapsed_seconds": 0.16408955003134906, "log_sha256": "887ffaea2dae326bf168a18ee2becee55d273b5041877ab0b5025050e81f4573", "time_ns": 1794467687003571631}
+{"stage": "frozen_collect", "status": "STARTED"}
+{"stage": "frozen_collect", "exit_code": 0, "elapsed_seconds": 520.2744100270793, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "time_ns": 1794468207278827478}
+{"stage": "frozen_export", "status": "STARTED"}
+{"stage": "frozen_export", "exit_code": 0, "elapsed_seconds": 13.787164706038311, "log_sha256": "8ae0db18478953af5af11fa4a9f8b594055ae8ff0c869d7531ede8eae164e60b", "time_ns": 1794468221066815364}
+{"stage": "frozen_fit", "status": "STARTED"}
+{"stage": "frozen_fit", "exit_code": 1, "elapsed_seconds": 0.21527201915159822, "log_sha256": "5feaf3de3cb64ec8f9ac1df824b85c83333c0379365bee02ba6ae6acefd5147a", "time_ns": 1794468221282799157}
+Traceback (most recent call last):
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/qualification/ctrl-real-comparison-20261112/run_campaign.py", line 263, in <module>
+    main()
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/qualification/ctrl-real-comparison-20261112/run_campaign.py", line 166, in main
+    run(
+  File "/home/qq/ctrl-real-policy-20261112-1333-v2/qualification/ctrl-real-comparison-20261112/run_campaign.py", line 99, in run
+    raise RuntimeError("Original stage failed: " + name)
+RuntimeError: Original stage failed: frozen_fit

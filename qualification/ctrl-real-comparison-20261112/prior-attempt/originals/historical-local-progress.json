@@ -1,0 +1,44 @@
+{
+  "source_patch_pr": 6112,
+  "source_head": "0560acc78d10c6e8cf4413c69c9da4505cac1a57",
+  "driver_pr": 6117,
+  "driver_head": "0bc9cbac00a21aae25af1a96ccbedbf3707cfa4c",
+  "root_cpu_tests": 48,
+  "root_cpu_exit_code": 0,
+  "new_head_ci": "QUEUED",
+  "new_head_native_result": null,
+  "freeze_first_attempt": {
+    "job": "1a1ce446872-2564-15de",
+    "status": "FAILED_BEFORE_OUTPUT_OR_ACTOR",
+    "error": "ModuleNotFoundError: PIL",
+    "new_native_actors": 0
+  },
+  "prepared_input_sha256": "1a0247df1b4969f4aabd8ff72dfd482b19714b0c92274b1cf4bf5cb6a353e614",
+  "production_admission": false,
+  "freeze": {
+    "status": "SUCCEEDED",
+    "job": "1a1ce4891a8-2564-15f0",
+    "sha256": "75e33bfb3b2f6fdf7d749d3f3cd5e1b116a05322e2905106b56366e791db0df0",
+    "planned_pairs": 126,
+    "planned_evaluation_actors": 24
+  },
+  "experiment": {
+    "host": "ai395",
+    "idempotency_key": "ctrl-20261112-ai395-prospective-run-v1-736c",
+    "output": "/home/qq/ctrl-prospective-20261112-736c/run-v1",
+    "job": null,
+    "launch_status": "RESPONSE_PENDING",
+    "stages": [
+      "collect",
+      "export",
+      "fit",
+      "evaluate"
+    ]
+  },
+  "just_fmt": {
+    "host": "desktop",
+    "source_sha": "0560acc78d10c6e8cf4413c69c9da4505cac1a57",
+    "job": "1a1ce3f36e0-2564-15c6",
+    "stdout": "No changed files need formatting. Use --all for a full repository check."
+  }
+}

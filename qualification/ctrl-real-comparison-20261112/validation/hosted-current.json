@@ -1,0 +1,327 @@
+{
+  "schema": "ctrl.hosted-exact-head-verification.v1",
+  "observed_at": "2026-11-12 07:13:35 UTC",
+  "snapshot_finished_at": "2026-11-12 07:14:39 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "requested_source_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+  "pull_request": {
+    "number": 6159,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6159",
+    "state": "open",
+    "draft": true,
+    "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+    "base_sha": "0bc9cbac00a21aae25af1a96ccbedbf3707cfa4c",
+    "merge_commit_sha": "cb078c3cb48f2a5f4d7236d844c2491ed99c5b5a",
+    "mergeable": true,
+    "mergeable_state": "unstable"
+  },
+  "read_only": true,
+  "rerun_or_cancel_performed": false,
+  "polling_performed": false,
+  "check_runs": {
+    "total_count": 4,
+    "rows": [
+      {
+        "id": 131030315965,
+        "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-11-12T07:07:30Z",
+        "completed_at": "2026-11-12T07:07:30Z",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687658/job/131030315965",
+        "output": {
+          "title": null,
+          "summary": null,
+          "text": null,
+          "annotations_count": 0,
+          "annotations_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/131030315965/annotations"
+        }
+      },
+      {
+        "id": 131030315696,
+        "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-11-12T07:07:30Z",
+        "completed_at": "2026-11-12T07:07:30Z",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687658/job/131030315696",
+        "output": {
+          "title": null,
+          "summary": null,
+          "text": null,
+          "annotations_count": 0,
+          "annotations_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/131030315696/annotations"
+        }
+      },
+      {
+        "id": 131029477147,
+        "name": "EVOLVE-1 inherited and transfer regressions",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-12T07:05:24Z",
+        "completed_at": null,
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687778/job/131029477147",
+        "output": {
+          "title": null,
+          "summary": null,
+          "text": null,
+          "annotations_count": 0,
+          "annotations_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/131029477147/annotations"
+        }
+      },
+      {
+        "id": 131029473132,
+        "name": "metadata",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-12T07:05:29Z",
+        "completed_at": "2026-11-12T07:07:29Z",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687658/job/131029473132",
+        "output": {
+          "title": null,
+          "summary": null,
+          "text": null,
+          "annotations_count": 1,
+          "annotations_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/131029473132/annotations"
+        }
+      }
+    ]
+  },
+  "workflow_runs": {
+    "total_count": 6,
+    "rows": [
+      {
+        "id": 43172687967,
+        "name": "blocking-ci",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "event": "pull_request",
+        "status": "pending",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687967",
+        "created_at": "2026-11-12T07:05:22Z",
+        "updated_at": "2026-11-12T07:05:23Z",
+        "run_attempt": 1,
+        "jobs": []
+      },
+      {
+        "id": 43172687743,
+        "name": "Hepta CTRL critic and candidate contracts",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "event": "pull_request",
+        "status": "pending",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687743",
+        "created_at": "2026-11-12T07:05:22Z",
+        "updated_at": "2026-11-12T07:05:23Z",
+        "run_attempt": 1,
+        "jobs": []
+      },
+      {
+        "id": 43172687778,
+        "name": "Hepta EVOLVE-1 CPU contracts",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687778",
+        "created_at": "2026-11-12T07:05:22Z",
+        "updated_at": "2026-11-12T07:05:24Z",
+        "run_attempt": 1,
+        "jobs": [
+          {
+            "id": 131029477147,
+            "name": "EVOLVE-1 inherited and transfer regressions",
+            "status": "queued",
+            "conclusion": null,
+            "run_id": 43172687778,
+            "logs_url": null,
+            "steps": null
+          }
+        ]
+      },
+      {
+        "id": 43172687676,
+        "name": "CTRL native content identity fixture",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "event": "pull_request",
+        "status": "pending",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687676",
+        "created_at": "2026-11-12T07:05:22Z",
+        "updated_at": "2026-11-12T07:05:23Z",
+        "run_attempt": 1,
+        "jobs": []
+      },
+      {
+        "id": 43172687718,
+        "name": "Hepta architecture convergence",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "event": "pull_request",
+        "status": "pending",
+        "conclusion": null,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687718",
+        "created_at": "2026-11-12T07:05:22Z",
+        "updated_at": "2026-11-12T07:05:23Z",
+        "run_attempt": 1,
+        "jobs": []
+      },
+      {
+        "id": 43172687658,
+        "name": "v8-canary",
+        "head_sha": "0696d242632bd1bad6668267c52b0bd791241504",
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43172687658",
+        "created_at": "2026-11-12T07:05:22Z",
+        "updated_at": "2026-11-12T07:07:30Z",
+        "run_attempt": 1,
+        "jobs": [
+          {
+            "id": 131029473132,
+            "name": "metadata",
+            "status": "completed",
+            "conclusion": "success",
+            "run_id": 43172687658,
+            "logs_url": null,
+            "steps": [
+              {
+                "name": "Set up job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 1
+              },
+              {
+                "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 2
+              },
+              {
+                "name": "Set up Python",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 3
+              },
+              {
+                "name": "Resolve exact v8 crate version",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 4
+              },
+              {
+                "name": "Detect V8 canary changes",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 5
+              },
+              {
+                "name": "Check for a clean worktree",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 6
+              },
+              {
+                "name": "Post Set up Python",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 11
+              },
+              {
+                "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 12
+              },
+              {
+                "name": "Complete job",
+                "status": "completed",
+                "conclusion": "success",
+                "number": 13
+              }
+            ]
+          },
+          {
+            "id": 131030315696,
+            "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+            "status": "completed",
+            "conclusion": "skipped",
+            "run_id": 43172687658,
+            "logs_url": null,
+            "steps": null
+          },
+          {
+            "id": 131030315965,
+            "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+            "status": "completed",
+            "conclusion": "skipped",
+            "run_id": 43172687658,
+            "logs_url": null,
+            "steps": null
+          }
+        ]
+      }
+    ]
+  },
+  "commit_status": {
+    "state": "pending",
+    "total_count": 0,
+    "statuses": []
+  },
+  "verification": {
+    "source_matches_current_pr": true,
+    "all_returned_runs_match_source": true,
+    "check_count": 4,
+    "completed_checks": 3,
+    "queued_checks": 1,
+    "successful_checks": 1,
+    "skipped_checks": 2,
+    "failed_checks": 0,
+    "cpu": {
+      "run_id": 43172687743,
+      "status": "pending",
+      "conclusion": null,
+      "job_count": 0,
+      "actual_unique_non_skipped_methods": null,
+      "original_test_log": null,
+      "qualified": false
+    },
+    "native": {
+      "run_id": 43172687676,
+      "status": "pending",
+      "conclusion": null,
+      "job_count": 0,
+      "actual_unique_non_skipped_methods": null,
+      "original_test_log": null,
+      "qualified": false
+    },
+    "codespell": {
+      "status": "NOT_OBSERVED",
+      "completed_check_found": false,
+      "workflow_run_found": false,
+      "original_log": null,
+      "qualified": false
+    },
+    "policy_benefit_qualified": false,
+    "conclusion": "Only v8 metadata succeeded; both v8 builds skipped. CTRL CPU/native, architecture and blocking remain pending without jobs; EVOLVE has one queued job. No current-source CPU/native/codespell result exists in this bounded snapshot; no failed check was observed."
+  },
+  "ancillary_fetch_errors": [
+    {
+      "resource": "check-run metadata annotations",
+      "check_run_id": 131029473132,
+      "error_code": "INVALID_ARGUMENT",
+      "reason": "GitHub fetch rejected the annotations URL as unsupported; annotation contents were not obtained."
+    }
+  ],
+  "api_urls": [
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/6159",
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/0696d242632bd1bad6668267c52b0bd791241504/check-runs?per_page=100",
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=0696d242632bd1bad6668267c52b0bd791241504&per_page=100",
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/0696d242632bd1bad6668267c52b0bd791241504/status"
+  ]
+}
+

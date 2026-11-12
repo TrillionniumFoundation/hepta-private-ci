@@ -1,0 +1,66 @@
+{
+  "actor_launched": false,
+  "available_by_public_field": {
+    "date": {
+      "development_sources": 27,
+      "train_sources": 42
+    },
+    "total": {
+      "development_sources": 26,
+      "train_sources": 55
+    }
+  },
+  "eligible_families": [
+    "text_sufficient",
+    "text_image_complementary",
+    "preparation_required"
+  ],
+  "evaluation_contexts": 48,
+  "evaluation_families": [
+    "text_sufficient",
+    "text_image_complementary",
+    "preparation_required"
+  ],
+  "future_or_sealed_packet_opened": false,
+  "input_metadata_pins": [
+    {
+      "bytes": 1410133,
+      "path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/pilot-catalog.json",
+      "sha256": "8433d0c026b0818f8e60ee2f0ae7e7b57c57ae35cbb72cf212b89895b97d0904"
+    },
+    {
+      "bytes": 2006360,
+      "path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/source-registry.json",
+      "sha256": "09d5f57c5c4c5f421f16c51febd048b7746d5d52723d825240f8655bf7fbdd07"
+    },
+    {
+      "bytes": 3231,
+      "path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/public-source-exposure-20261107-v3.json",
+      "sha256": "6722edfc88e1089bcaf0fba9727c233416830fdc6682b461422d26bdfd4cb6af"
+    },
+    {
+      "bytes": 133401,
+      "path": "/home/qq/ctrl-real-study-20261112-1333/run-v1/BASE_PLAN.json",
+      "sha256": "63cdea48c9685550457e67269d9b553ea75a6d785faee15c837a5d05c4296a9c"
+    }
+  ],
+  "limits": [
+    "Registered development sources are already exposed research material, not fresh confirmation.",
+    "Calibration sources are disjoint for fresh control data; common content weights may have historical exposure.",
+    "Original V4 is not replayed; its unknown state is unchanged.",
+    "Exact code/evaluator/isolation pins remain pending; source image hashes are computed from canonical episode .bin files per register.py."
+  ],
+  "planned_collection_branches": 252,
+  "planned_collection_pairs": 126,
+  "private_references_opened": false,
+  "schema": "ctrl.material-preparation.v1",
+  "selected_sources": {
+    "calibration": 18,
+    "evaluation": 16,
+    "train": 24
+  },
+  "selection": "SHA256(study:source:source_id), canonical image SHA256(study:episode:episode_group); public prompt field",
+  "source_alias_full_image_check": "PASSED_SELECTED_FULL_IMAGE_BYTES",
+  "source_pins_frozen": false,
+  "study_id": "ctrl-real-policy-20261112-1333"
+}

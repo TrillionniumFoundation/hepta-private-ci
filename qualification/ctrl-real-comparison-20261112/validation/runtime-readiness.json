@@ -1,0 +1,173 @@
+{
+  "authoritative_terminal_source": "Supervisor exit.json with matching exit.witness.json, read through h.read_multiple_files.",
+  "configured_python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+  "executable": "/usr/bin/env",
+  "host": "ai395",
+  "idempotency_key": "ctrl-1333-runtime-readiness-v1",
+  "job_id": "1a1ce7dadec-2564-16c5",
+  "limitations": [
+    "This probes runtime availability, not final-candidate native test completion.",
+    "The new checkout did not exist at probe time; strict checkpoint load imported the preceding existing repository.",
+    "Landlock ABI and seccomp loadability do not alone prove an actor ran under those restrictions."
+  ],
+  "logs": {
+    "stderr": {
+      "bytes": 0,
+      "eof": true,
+      "raw_text": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 4100,
+      "eof": true,
+      "raw_text": "{\n  \"child_explicit_dependency_roots\": {\n    \"exit\": 0,\n    \"stderr\": \"\",\n    \"stdout\": \"{\\\"pillow\\\": \\\"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py\\\", \\\"torch\\\": \\\"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/torch/__init__.py\\\", \\\"prefix\\\": \\\"/home/qq/hepta-smollm2-weight-research-20261103/ci-env\\\", \\\"executable\\\": \\\"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python\\\"}\\n\"\n  },\n  \"control_plan\": {\n    \"matches_profile\": true,\n    \"path\": \"/home/qq/ndu-portfolio-frozen-20261109-eb02e89/preparation/control-plan.json\",\n    \"sha256\": \"74066034f59241184a98e04c1171af08ba1ff7e4a91e77391b2b5a0c07b68426\"\n  },\n  \"current_limits\": {\n    \"action_budget_seconds\": 20,\n    \"runtime_roots_exist\": {\n      \"/dev/null\": true,\n      \"/dev/urandom\": true,\n      \"/etc/ld.so.cache\": true,\n      \"/home/qq/ctrl-macro-20261112-736c\": true,\n      \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env\": true,\n      \"/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu\": true,\n      \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root\": true,\n      \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps\": true,\n      \"/lib\": true,\n      \"/lib64\": true,\n      \"/proc/cpuinfo\": true,\n      \"/usr\": true\n    }\n  },\n  \"font\": {\n    \"loaded\": true,\n    \"resolved\": \"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf\"\n  },\n  \"imports\": {\n    \"pillow_path\": \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py\",\n    \"pillow_version\": \"12.0.0\",\n    \"torch_path\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/torch/__init__.py\",\n    \"torch_version\": \"2.9.1+cpu\"\n  },\n  \"landlock\": {\n    \"abi\": 8,\n    \"errno\": 0\n  },\n  \"new_checkout_exists\": false,\n  \"ocr_--list-langs\": {\n    \"exit\": 0,\n    \"stderr\": \"\",\n    \"stdout\": \"List of available languages in \\\"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/share/tesseract-ocr/5/tessdata/\\\" (1):\\neng\\n\"\n  },\n  \"ocr_--version\": {\n    \"exit\": 0,\n    \"stderr\": \"\",\n    \"stdout\": \"tesseract 5.5.0\\n leptonica-1.86.0\\n  libgif 5.2.2 : libjpeg 8d (libjpeg-turbo 2.1.5) : libpng 1.6.57 : libtiff 4.7.0 : zlib 1.3.1 : libwebp 1.5.0 : libopenjp2 2.5.4\\n Found AVX512BW\\n Found AVX512F\\n Found AVX512VNNI\\n Found AVX2\\n Found AVX\\n Found FMA\\n Found SSE4.1\\n Found OpenMP 201511\\n Found libarchive 3.8.5 zlib/1.3.1 liblzma/5.8.3 bz2lib/1.0.8 liblz4/1.10.0 libzstd/1.5.7 nettle/3.10 libb2/bundled libacl/2.3.2 libattr/2.3.2\\n Found libcurl/8.18.0 OpenSSL/3.5.5 zlib/1.3.1 brotli/1.2.0 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.2 libssh2/1.11.1 nghttp2/1.68.0 librtmp/2.3 mit-krb5/1.22.1 OpenLDAP/2.6.10\\n\"\n  },\n  \"ocr_env\": {\n    \"LD_LIBRARY_PATH\": \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/lib/x86_64-linux-gnu\",\n    \"TESSDATA_PREFIX\": \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/share/tesseract-ocr/5/tessdata\",\n    \"tesseract\": \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/bin/tesseract\"\n  },\n  \"platform\": \"Linux-7.0.0-38-generic-x86_64-with-glibc2.43\",\n  \"prior_freeze_sha256\": \"75e33bfb3b2f6fdf7d749d3f3cd5e1b116a05322e2905106b56366e791db0df0\",\n  \"python_base_prefix\": \"/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu\",\n  \"python_executable\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python\",\n  \"python_prefix\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env\",\n  \"scope\": \"read-only runtime prerequisites; no fixture or corpus actor launch\",\n  \"seccomp_library\": \"libseccomp.so.2\",\n  \"seccomp_loadable\": true,\n  \"uid\": 1000,\n  \"weights\": {\n    \"matches_profile\": true,\n    \"parameter_sha256\": \"a5198d01f30ae6caef22a2e1f0d8d5c8dc4cd8169f5fdd7218c3c296ebd9c583\",\n    \"parameters\": 15132,\n    \"path\": \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1/models/common-collector-content/weights.pt\",\n    \"sha256\": \"db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54\"\n  }\n}\n",
+      "sha256": "e93cc99f05187634151e63917388300e4392a5c49b248d5994180eb069608c0d"
+    }
+  },
+  "probe": {
+    "child_explicit_dependency_roots": {
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"pillow\": \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py\", \"torch\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/torch/__init__.py\", \"prefix\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env\", \"executable\": \"/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python\"}\n"
+    },
+    "control_plan": {
+      "matches_profile": true,
+      "path": "/home/qq/ndu-portfolio-frozen-20261109-eb02e89/preparation/control-plan.json",
+      "sha256": "74066034f59241184a98e04c1171af08ba1ff7e4a91e77391b2b5a0c07b68426"
+    },
+    "current_limits": {
+      "action_budget_seconds": 20,
+      "runtime_roots_exist": {
+        "/dev/null": true,
+        "/dev/urandom": true,
+        "/etc/ld.so.cache": true,
+        "/home/qq/ctrl-macro-20261112-736c": true,
+        "/home/qq/hepta-smollm2-weight-research-20261103/ci-env": true,
+        "/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu": true,
+        "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root": true,
+        "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps": true,
+        "/lib": true,
+        "/lib64": true,
+        "/proc/cpuinfo": true,
+        "/usr": true
+      }
+    },
+    "font": {
+      "loaded": true,
+      "resolved": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    },
+    "imports": {
+      "pillow_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps/PIL/__init__.py",
+      "pillow_version": "12.0.0",
+      "torch_path": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/torch/__init__.py",
+      "torch_version": "2.9.1+cpu"
+    },
+    "landlock": {
+      "abi": 8,
+      "errno": 0
+    },
+    "new_checkout_exists": false,
+    "ocr_--list-langs": {
+      "exit": 0,
+      "stderr": "",
+      "stdout": "List of available languages in \"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/share/tesseract-ocr/5/tessdata/\" (1):\neng\n"
+    },
+    "ocr_--version": {
+      "exit": 0,
+      "stderr": "",
+      "stdout": "tesseract 5.5.0\n leptonica-1.86.0\n  libgif 5.2.2 : libjpeg 8d (libjpeg-turbo 2.1.5) : libpng 1.6.57 : libtiff 4.7.0 : zlib 1.3.1 : libwebp 1.5.0 : libopenjp2 2.5.4\n Found AVX512BW\n Found AVX512F\n Found AVX512VNNI\n Found AVX2\n Found AVX\n Found FMA\n Found SSE4.1\n Found OpenMP 201511\n Found libarchive 3.8.5 zlib/1.3.1 liblzma/5.8.3 bz2lib/1.0.8 liblz4/1.10.0 libzstd/1.5.7 nettle/3.10 libb2/bundled libacl/2.3.2 libattr/2.3.2\n Found libcurl/8.18.0 OpenSSL/3.5.5 zlib/1.3.1 brotli/1.2.0 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.2 libssh2/1.11.1 nghttp2/1.68.0 librtmp/2.3 mit-krb5/1.22.1 OpenLDAP/2.6.10\n"
+    },
+    "ocr_env": {
+      "LD_LIBRARY_PATH": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/lib/x86_64-linux-gnu",
+      "TESSDATA_PREFIX": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/share/tesseract-ocr/5/tessdata",
+      "tesseract": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/portable-ocr-v1/root/usr/bin/tesseract"
+    },
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "prior_freeze_sha256": "75e33bfb3b2f6fdf7d749d3f3cd5e1b116a05322e2905106b56366e791db0df0",
+    "python_base_prefix": "/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu",
+    "python_executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "python_prefix": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env",
+    "scope": "read-only runtime prerequisites; no fixture or corpus actor launch",
+    "seccomp_library": "libseccomp.so.2",
+    "seccomp_loadable": true,
+    "uid": 1000,
+    "weights": {
+      "matches_profile": true,
+      "parameter_sha256": "a5198d01f30ae6caef22a2e1f0d8d5c8dc4cd8169f5fdd7218c3c296ebd9c583",
+      "parameters": 15132,
+      "path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/pilot-run-v1/models/common-collector-content/weights.pt",
+      "sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54"
+    }
+  },
+  "probe_source_sha256": "c784c31dd022e8cc6a601e1c368273ecf5e3596d169c24eb5ed640b87f2b650d",
+  "request_digest": "c398c1b626438b9d7ab4ed6d78657b01ca7b2068de19557da734a2fd0bbfb676",
+  "schema": "ctrl.runtime-readiness.v1",
+  "scope": "Read-only runtime prerequisite check; no native fixture or corpus actor launched.",
+  "status_query": {
+    "final_status_inferred_from_query": false,
+    "result": "MCP_REQUEST_TIMED_OUT",
+    "tool": "h.process_status"
+  },
+  "terminal_files": [
+    {
+      "bytes": 500,
+      "parsed": {
+        "at_unix_ms": 1794465708438,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1ce7dadec-2564-16c5",
+        "launch_nonce": "206a73aa366b0ee75de35fbd2ee6e5a0",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 4100,
+            "stored": 4100
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "path": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ce7dadec-2564-16c5/exit.json",
+      "raw_text": "{\"at_unix_ms\": 1794465708438, \"cancelled\": false, \"exit_code\": 0, \"job_id\": \"1a1ce7dadec-2564-16c5\", \"launch_nonce\": \"206a73aa366b0ee75de35fbd2ee6e5a0\", \"log_bytes\": {\"stderr\": {\"seen\": 0, \"stored\": 0}, \"stdout\": {\"seen\": 4100, \"stored\": 4100}}, \"log_errors\": {\"stderr\": null, \"stdout\": null}, \"log_synced\": {\"stderr\": true, \"stdout\": true}, \"log_truncated\": {\"stderr\": false, \"stdout\": false}, \"output_complete\": true, \"output_durable\": true, \"terminal_publication_protocol\": 1, \"timed_out\": false}\n",
+      "sha256": "a0a3d0cf5d8b5ab663396f5fa3ee153dbb2f3fc766cc7d18efb4721c5cd16466"
+    },
+    {
+      "bytes": 207,
+      "parsed": {
+        "exit_sha256": "a0a3d0cf5d8b5ab663396f5fa3ee153dbb2f3fc766cc7d18efb4721c5cd16466",
+        "job_id": "1a1ce7dadec-2564-16c5",
+        "launch_nonce": "206a73aa366b0ee75de35fbd2ee6e5a0",
+        "terminal_publication_protocol": 1
+      },
+      "path": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1ce7dadec-2564-16c5/exit.witness.json",
+      "raw_text": "{\"exit_sha256\": \"a0a3d0cf5d8b5ab663396f5fa3ee153dbb2f3fc766cc7d18efb4721c5cd16466\", \"job_id\": \"1a1ce7dadec-2564-16c5\", \"launch_nonce\": \"206a73aa366b0ee75de35fbd2ee6e5a0\", \"terminal_publication_protocol\": 1}\n",
+      "sha256": "98580ca825e67230d8640ce95f1a5516aef23c55c0c662c5b2b887e28c57e17e"
+    }
+  ],
+  "verified_terminal_summary": {
+    "at_unix_ms": 1794465708438,
+    "cancelled": false,
+    "exit_code": 0,
+    "exit_witness_matches": true,
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false
+  }
+}
