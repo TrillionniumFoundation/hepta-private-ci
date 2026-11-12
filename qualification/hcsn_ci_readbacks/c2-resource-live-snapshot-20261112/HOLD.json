@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-c2-live-resource-hold-v1",
+  "overall": "HOLD_NO_GO",
+  "all_closed": false,
+  "full_independent_training_replay_completed": 0,
+  "full_independent_training_replay_denominator": 6,
+  "known_completed_diagnostic_optimizer_calls": 52,
+  "lifetime_optimizer_calls": "UNKNOWN",
+  "original_controller_terminal": "UNKNOWN",
+  "closed_by_this_observation": [
+    "point-in-time authenticated reachability for desktop and ai395",
+    "point-in-time host MemAvailable/MemTotal for desktop and ai395"
+  ],
+  "observed": {
+    "desktop_mem_available_kb": 78853476,
+    "desktop_mem_total_kb": 131760804,
+    "ai395_mem_available_kb": 109707308,
+    "ai395_mem_total_kb": 128650956
+  },
+  "still_missing": [
+    "ancestor-cgroup current/limit/headroom and ownership for a selected target",
+    "effective aggregate allocation, per-worker and whole-campaign memory/CPU limits",
+    "selected concurrency and calendar reservation for the six original fits",
+    "one coherent source/runtime/model/data freeze",
+    "all six original start-parent identities and a remaining-wall ledger that does not refund old attempts",
+    "new full-campaign decision binding all of the above"
+  ],
+  "non_transfer": [
+    "MemAvailable is host-level point-in-time data, not cgroup allocation or long-run feasibility",
+    "runtime configured concurrent_execution=unbounded_by_runtime is not a resource reservation",
+    "host health reachability is not a full-replay admission",
+    "no full replay, feasibility probe, model, optimizer, or native campaign was started"
+  ]
+}
