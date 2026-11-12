@@ -41,6 +41,9 @@ pub(crate) use transport::Reply;
 pub(crate) use transport::Request;
 pub(crate) use transport::Response;
 
+#[path = "authority_host_q24_model_b_binding.rs"]
+mod original_b;
+
 pub(crate) const PURPOSE: &str = "runtime.learning.q24-model-proposal.factory.v1";
 const OWNER: &str = "root-q24-model-proposal-factory-v1";
 const DIRECTORY: &str = "q24-model-proposal-factory-v1";
@@ -76,6 +79,7 @@ pub(crate) struct RegisteredQ24ModelFactory {
     journal_observer: File,
     witness_observer: File,
     files: Option<(File, File)>,
+    original_b: Option<std::sync::Arc<crate::OriginalRootIndependentBEvaluationFilesV1>>,
     pub(crate) socket_path: PathBuf,
 }
 
