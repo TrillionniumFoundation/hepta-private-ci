@@ -45,11 +45,11 @@ The audit originally inspected local `0b450608d0fa577b2d4c4c198883e7f5a432bf92` 
 | Final complete source closure and full caller verifier | **Unknown at environment disconnection** | Exact clean `19aa601f`; both started around 08:01 UTC. Source-closure budget 600 seconds and full-verifier budget 4800 seconds were retained. The new caller self-test had passed |
 | agentd behavior, ordinary suite and Root suite | **Pending** | Desktop locked dependency fetch passed with source and Cargo.lock unchanged; original agentd maintenance was compiling on clean 6d. The next persistent operation is bound to exact 19aa after the original maintenance terminates |
 
-The successful eval execution is not relabeled as an execution on a successor. A separate comparison read all 205 eval/dependency/build inputs at 91d and 6d byte-for-byte and verified equality. The 6d-to-19aa remote comparison changes only the one agentd file, outside that set; an explicit 19aa package supplement was not completed before the local environment disconnected.
+The successful eval execution is not relabeled as an execution on a successor. A separate comparison read all 205 eval/dependency/build inputs at 91d and 6d byte-for-byte and verified equality. The 6d-to-19aa comparison changes only the one agentd file, outside that set. A newly generated [remote source-equivalence record](REMOTE_EVAL_INPUT_EQUIVALENCE_91D0_19AA.json) resolves all 205 selected paths from 91d and 19aa, checks identical mode/type/blob/size, and verifies the complete changed-path set has no intersection. Its 13 Git-tree responses are untruncated. This is Git object identity evidence; it does not restore the lost SHA256 list or claim any new execution.
 
 ### Raw-package state at disconnection
 
-The following hashes identify the locally prepared packages; they are not links to files included in this initial checkpoint:
+The following hashes identify the original locally prepared packages; those packages are not represented as restored:
 
 - Eval package manifest: `3a8f290076513a035afd8b33d0f926fa5ba89cc9738afa84d8d3c4320a0997d5`, 25 stored files and 262,178 bytes. Seventeen raw originals were copied without altering their bytes.
 - Source-gates package manifest: `d06c893de93a26d6aaa27d4aa265429715c3c7f863981dc9e23af287b05d2ad7`, 40 original logical files represented by 79 stored files. Large original inventories were split into at most 262,144-byte parts with per-part and whole-file hashes and verified reconstruction.
@@ -78,3 +78,11 @@ Additional open requirements are the complete deployable identity and strongest 
 **Complete real ordinary Adopt: 0. Complete real ordinary evaluated NoUpdate: 0. Complete daemon-plus-Root cold recovery qualification: 0.**
 
 The repository test fixtures establish software mechanisms within their stated scopes. They create no independent real task distribution, observed causal improvement, model availability guarantee, public reward contract or permission to activate production.
+
+## Additional preserved material
+
+- [Original caller failure output](recovered-tool-output/91d0-caller-verify.log) and [caller self-test output](recovered-tool-output/91d0-caller-self-test.log) were recovered from complete previously observed tool outputs and match their original byte counts and SHA256. The [new recovery note](recovered-tool-output/recovery-note.json) distinguishes these two exact payloads from unavailable original inventories and closure logs. Its proposed paths retain the original package prefix; actual repository paths add `qa/`.
+- [Original 6d maintenance patch](native/agentd-6d-maintenance.patch) preserves all ten automatic postimages' diff, before any review or formatting. It is a failed maintenance result, not a source-head test pass.
+- [Ordinary integration map](ORDINARY_INTEGRATION_MAP.md) identifies the real reusable owners and the complete proposed Version/live-read/Selector/C/Root changes. It explicitly describes unimplemented work. Adding a Version purpose alone cannot close the ordinary chain.
+
+Raw log/JUnit files from the original local 163-test run and the four-test old-code control remain unavailable. Their observed outcomes are kept as historical observations; no reconstructed summary is presented as their original byte record.

@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.utility-evidence-index.v1",
+  "created_utc": "2026-11-12 08:19:38 UTC",
+  "production_source": "19aa601fa09321f1b6d1b3ff3b4d422908004e48",
+  "production_tree": "8f7d13bd9e0b737354ea37e62edd88fcc26b8500",
+  "evidence_parent": "cede817051cb4399684afe7cf770c27d767e64cf",
+  "files": [
+    {
+      "path": "README.md",
+      "git_blob": "ff8f475df82e763cde7a72dea249c27e1cf3b427"
+    },
+    {
+      "path": "SOURCE_AUDIT.md",
+      "git_blob": "80c52f200634e6bb0738e5071e24252d0d237cd0"
+    },
+    {
+      "path": "ORDINARY_INTEGRATION_MAP.md",
+      "git_blob": "2059d041fd450c99a04b657eb7d9d04afc2a85db"
+    },
+    {
+      "path": "REMOTE_EVAL_INPUT_EQUIVALENCE_91D0_19AA.json",
+      "git_blob": "8d6e952b9dc6dd9604ea7712c62d74cf4b993b5f"
+    },
+    {
+      "path": "recovered-tool-output/91d0-caller-verify.log",
+      "git_blob": "7234209c4e5cea9db2f43bb4e3503459d96ecf0d"
+    },
+    {
+      "path": "recovered-tool-output/91d0-caller-self-test.log",
+      "git_blob": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2"
+    },
+    {
+      "path": "recovered-tool-output/recovery-note.json",
+      "git_blob": "289db372ab448b9cad9a0f44a97dbb586bede8c6"
+    },
+    {
+      "path": "native/agentd-6d-maintenance.patch",
+      "git_blob": "9d91cc3d0ee72cf655aac45fe1f165c48fb3d907"
+    }
+  ],
+  "original_local_packages_restored": false,
+  "original_final_local_gate_terminal_status": "Unknown",
+  "native_behavior_tests_started": false,
+  "notes": "This new index covers only the included blobs. Original local raw logs/JUnit/inventories not present here are not represented as recovered. Git source equivalence is static, not execution."
+}
