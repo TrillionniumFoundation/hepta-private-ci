@@ -1,0 +1,41 @@
+{
+  "schema": "hcsn-real-recovery-evidence-collection-v1",
+  "observed_training_result": "six_diagnostics_succeeded_26_actual_optimizer_calls",
+  "training_job": "1a1ce749808-2564-1688",
+  "independent_audit_state": "UNKNOWN_transport_timeout",
+  "audit_idempotency_key": "hcsn-independent-real-recovery-audit-4092-attempt001",
+  "audit_original_dispatch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "audit_same_key_reconciliation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "archive_state": "UNKNOWN_transport_timeout",
+  "archive_idempotency_key": "hcsn-recovery-4092-originals-archive-v1",
+  "archive_dispatch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "full_training_replay_completed": 0,
+  "source_changed_after_training": false,
+  "unknown_execution_relaunched_under_new_key": false,
+  "original_c2_job": "1a1c74f3308-be2a-75",
+  "original_c2_state": "UNKNOWN_preserved"
+}
