@@ -12,3 +12,6 @@ mod admission;
 
 #[path = "authority_host_q24_evaluation_protocol.rs"]
 mod protocol;
+
+#[path = "authority_host_q24_evaluation_record.rs"]
+mod record;

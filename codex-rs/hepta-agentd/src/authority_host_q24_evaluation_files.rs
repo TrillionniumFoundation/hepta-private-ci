@@ -6,6 +6,7 @@ use std::fs::File;
 use std::fs::Metadata;
 use std::fs::OpenOptions;
 use std::io;
+use std::os::fd::AsRawFd;
 use std::os::unix::fs::FileExt;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::OpenOptionsExt;
@@ -45,6 +46,7 @@ impl OriginalBFileIdentity {
     }
 }
 
+#[derive(Clone, Copy)]
 pub(super) enum OriginalBFileAccess {
     ReadOnly,
     OwnerWriter,
@@ -177,12 +179,39 @@ impl OriginalBFile {
     }
 
     /// A writer is transferred once, never cloned into a daemon or provider.
-    pub(super) fn into_original_writer(self) -> io::Result<File> {
+    pub(super) fn take_original_writer(&mut self) -> io::Result<File> {
         self.require_original()?;
         if !matches!(self.access, OriginalBFileAccess::OwnerWriter) {
             return Err(io::Error::other("original B writer custody is absent"));
         }
-        Ok(self.file)
+        let readonly = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_CLOEXEC)
+            .open(format!("/proc/self/fd/{}", self.file.as_raw_fd()))?;
+        if OriginalBFileIdentity::capture(&readonly.metadata()?)? != self.identity {
+            return Err(io::Error::other(
+                "original B writer changed during transfer",
+            ));
+        }
+        self.require_original()?;
+        self.access = OriginalBFileAccess::ReadOnly;
+        Ok(std::mem::replace(&mut self.file, readonly))
+    }
+
+    pub(super) fn original_readonly(&self) -> io::Result<File> {
+        self.require_original()?;
+        if !matches!(self.access, OriginalBFileAccess::ReadOnly) {
+            return Err(io::Error::other("original B read-only custody is required"));
+        }
+        let file = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_CLOEXEC)
+            .open(format!("/proc/self/fd/{}", self.file.as_raw_fd()))?;
+        if OriginalBFileIdentity::capture(&file.metadata()?)? != self.identity {
+            return Err(io::Error::other("original B read-only identity differs"));
+        }
+        self.require_original()?;
+        Ok(file)
     }
 
     pub(super) fn require_digest(&self, expected: Digest32, maximum: usize) -> io::Result<Vec<u8>> {
