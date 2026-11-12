@@ -23,6 +23,9 @@ use crate::cell_composed_q24::OriginalQ24DatasetReadV1;
 use crate::cell_composed_q24::OriginalQ24OwnerReadV1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
+#[path = "cell_q24_training_stage_construction.rs"]
+mod construction;
+
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_training_stage_operation.rs"]
 mod operation;
@@ -70,24 +73,6 @@ pub struct OriginalCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitn
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
     OriginalCellQ24TrainingStageV1<TW, RW>
 {
-    /// Preflight an explicitly transferred pair before an aggregate can sign
-    /// or fit. Mixed genesis recovery does not waive the real Dataset cut.
-    #[cfg(target_os = "linux")]
-    pub(crate) fn require_original_pair(
-        training: &CellQ24TrainingOwnerV1<TW>,
-        receipts: &OriginalCellQ24TrainingReceiptOwnerV1<RW>,
-        dataset: &LearningIterationSnapshotV1,
-        scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
-    ) -> Result<(), Error> {
-        if &receipts.config.dataset != dataset || &receipts.config.scope != scope {
-            return Err(Error::Binding("exact original training pair Dataset"));
-        }
-        super::validate_config(&receipts.config, &receipts.key)?;
-        training.require_original_dataset_provenance()?;
-        training.require_original_dataset_scope(dataset, scope)?;
-        Ok(())
-    }
-
     /// Consume already authorized owners. No descriptor, key or trust is opened.
     pub async fn from_original_owners(
         training: CellQ24TrainingOwnerV1<TW>,
@@ -99,16 +84,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             lane: Arc::new(Semaphore::new(/*permits*/ 1)),
         };
         stage
-            .in_lane(|owners| {
-                super::validate_config(&owners.receipts.config, &owners.receipts.key)?;
-                match owners.receipts.journal.read(&owners.receipts.saved) {
-                    Ok(_) => owners.read_original_completion().map(|_| ()),
-                    Err(LearningOriginalOwnerErrorV1::Store(
-                        ProductEvaluationExecutionStoreErrorV1::Missing,
-                    )) => Ok(()),
-                    Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
-                }
-            })
+            .in_lane(|owners| owners.require_original_initial_receipts(&OriginalQ24OwnerReadV1))
             .await?;
         Ok(stage)
     }

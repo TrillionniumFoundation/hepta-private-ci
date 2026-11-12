@@ -34,6 +34,9 @@ use crate::OriginalGenerationLearningRoleV1;
 use crate::PreparedLearningIterationProposalV1;
 use crate::cell_q24_learning_owner_error::owner_error as unavailable;
 
+#[path = "cell_q24_learning_owner_initialization.rs"]
+mod initialization;
+
 #[path = "cell_q24_learning_successor.rs"]
 mod successor;
 
@@ -142,38 +145,21 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             .map_err(unavailable)?;
         let original_verifier = verifier.clone();
         let for_open = Arc::clone(&prepared);
-        let (experience, dataset, dataset_cut, training, receipts) =
-            tokio::task::spawn_blocking(move || {
-                for_open.revalidate_source().map_err(unavailable)?;
-                let (experience, dataset) =
-                    sources.open_original_source_pair(Arc::clone(&for_open), verifier, mode)?;
-                let mut experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> =
-                    experience;
-                let mut dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> =
-                    dataset;
-                let completed = match mode {
-                    OriginalCellQ24LearningOpenV1::Create => {
-                        experience.attest_experience().map_err(unavailable)?;
-                        dataset
-                            .attest_dataset(&mut experience)
-                            .map_err(unavailable)?
-                    }
-                    OriginalCellQ24LearningOpenV1::Recover => {
-                        dataset.read_dataset(&mut experience).map_err(unavailable)?
-                    }
-                };
-                let cut = completed.snapshot().clone();
-                let (training, receipts) =
-                    files.open_original_training_pair(&for_open, cut.clone(), mode)?;
-                Ok::<_, Error>((experience, dataset, cut, training, receipts))
-            })
-            .await
-            .map_err(|_| Error::CommitUncertain)??;
-        let training = OriginalCellQ24TrainingStageV1::from_original_owners(training, receipts)
-            .await
-            .map_err(unavailable)?;
-        prepared.revalidate_source().map_err(unavailable)?;
+        let opened = tokio::task::spawn_blocking(move || {
+            initialization::initialize_original_owners(for_open, sources, verifier, files, mode)
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain);
+        // Recheck the original factory even when initialization returned an
+        // owner error. The completed Prepared operation has already performed
+        // its final source read; no borrowed observation crosses this await.
         factory.require_current().await.map_err(unavailable)?;
+        let initialization::OriginalInitialOwnersV1 {
+            experience,
+            dataset,
+            dataset_cut,
+            training,
+        } = opened??;
         Ok(Arc::new(Self {
             inner: Arc::new(Q24StageState {
                 prepared,

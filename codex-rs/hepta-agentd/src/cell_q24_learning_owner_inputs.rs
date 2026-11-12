@@ -22,6 +22,7 @@ use crate::OriginalCellQ24SourceStageV1;
 use crate::OriginalCellQ24TrainingReceiptOwnerV1;
 use crate::OriginalCellQ24TrainingSigningConfigV1;
 use crate::OriginalCellQ24TrainingStageV1;
+use crate::cell_composed_q24::OriginalPreparedReadV1;
 use crate::cell_q24_learning_owner_error::owner_error;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -53,11 +54,12 @@ pub enum OriginalCellQ24SourceInputsV1 {
 }
 
 impl OriginalCellQ24SourceInputsV1 {
-    pub(crate) fn open_original_source_pair(
+    pub(crate) fn open_original_source_pair_in_operation(
         self,
         prepared: std::sync::Arc<CellQ24PreparedLearningV1>,
         verifier: LearningEvidenceVerifierV1,
         mode: OriginalCellQ24LearningOpenV1,
+        read: &OriginalPreparedReadV1<'_>,
     ) -> Result<
         (
             OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>,
@@ -68,15 +70,14 @@ impl OriginalCellQ24SourceInputsV1 {
         let (experience, dataset) = match self {
             Self::Files(files) => {
                 let files: OriginalCellQ24SourceFilesV1 = files;
-                match mode {
-                    OriginalCellQ24LearningOpenV1::Create => {
-                        files.create(std::sync::Arc::clone(&prepared), verifier)
-                    }
-                    OriginalCellQ24LearningOpenV1::Recover => {
-                        files.recover(std::sync::Arc::clone(&prepared), verifier)
-                    }
-                }
-                .map_err(owner_error)?
+                files
+                    .open_original_source_files_in_operation(
+                        std::sync::Arc::clone(&prepared),
+                        verifier,
+                        mode,
+                        read,
+                    )
+                    .map_err(owner_error)?
             }
             Self::Owners {
                 experience,
@@ -86,10 +87,14 @@ impl OriginalCellQ24SourceInputsV1 {
         let experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> = experience;
         let dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> = dataset;
         experience
-            .require_prepared(&prepared, OriginalCellQ24SourceStageV1::Experience)
+            .require_prepared_in_operation(
+                &prepared,
+                OriginalCellQ24SourceStageV1::Experience,
+                read,
+            )
             .map_err(owner_error)?;
         dataset
-            .require_prepared(&prepared, OriginalCellQ24SourceStageV1::Dataset)
+            .require_prepared_in_operation(&prepared, OriginalCellQ24SourceStageV1::Dataset, read)
             .map_err(owner_error)?;
         Ok((experience, dataset))
     }
@@ -165,11 +170,12 @@ pub enum OriginalCellQ24TrainingInputsV1 {
 }
 
 impl OriginalCellQ24TrainingInputsV1 {
-    pub(crate) fn open_original_training_pair(
+    pub(crate) fn open_original_training_pair_in_operation(
         self,
         prepared: &CellQ24PreparedLearningV1,
         dataset: LearningIterationSnapshotV1,
         mode: OriginalCellQ24LearningOpenV1,
+        read: &OriginalPreparedReadV1<'_>,
     ) -> Result<
         (
             CellQ24TrainingOwnerV1<FileAnchorWitnessStore>,
@@ -178,17 +184,18 @@ impl OriginalCellQ24TrainingInputsV1 {
         Error,
     > {
         prepared
-            .training_material(dataset.clone(), prepared.scope().clone())
+            .training_material_in_operation(dataset.clone(), prepared.scope().clone(), read)
             .map_err(|_| Error::WrongScope)?;
         let (training, receipts) = match self {
-            Self::Files(files) => files.open(prepared, dataset.clone(), mode)?,
+            Self::Files(files) => files.open_in_operation(prepared, dataset.clone(), mode, read)?,
             Self::Owners { training, receipts } => (training, receipts),
         };
-        OriginalCellQ24TrainingStageV1::require_original_pair(
+        OriginalCellQ24TrainingStageV1::require_original_pair_with_source(
             &training,
             &receipts,
             &dataset,
             prepared.scope(),
+            read,
         )
         .map_err(owner_error)?;
         Ok((training, receipts))
@@ -196,11 +203,12 @@ impl OriginalCellQ24TrainingInputsV1 {
 }
 
 impl OriginalCellQ24TrainingFilesV1 {
-    pub(crate) fn open(
+    pub(crate) fn open_in_operation(
         self,
         prepared: &CellQ24PreparedLearningV1,
         dataset: LearningIterationSnapshotV1,
         mode: OriginalCellQ24LearningOpenV1,
+        read: &OriginalPreparedReadV1<'_>,
     ) -> Result<
         (
             CellQ24TrainingOwnerV1<FileAnchorWitnessStore>,
@@ -209,27 +217,29 @@ impl OriginalCellQ24TrainingFilesV1 {
         Error,
     > {
         let material = prepared
-            .training_material(dataset.clone(), prepared.scope().clone())
+            .training_material_in_operation(dataset.clone(), prepared.scope().clone(), read)
             .map_err(|_| Error::WrongScope)?;
         let training: CellQ24TrainingOwnerV1<FileAnchorWitnessStore> = match mode {
-            OriginalCellQ24LearningOpenV1::Create => CellQ24TrainingOwnerV1::create(
+            OriginalCellQ24LearningOpenV1::Create => CellQ24TrainingOwnerV1::create_with_source(
                 self.training,
                 self.training_witness,
                 material.plan,
                 material.batch,
                 material.rule,
+                read,
             ),
-            OriginalCellQ24LearningOpenV1::Recover => CellQ24TrainingOwnerV1::recover(
+            OriginalCellQ24LearningOpenV1::Recover => CellQ24TrainingOwnerV1::recover_with_source(
                 self.training,
                 self.training_witness,
                 material.plan,
                 material.batch,
                 material.rule,
+                read,
             ),
         }
         .map_err(owner_error)?;
         training
-            .require_original_dataset_provenance()
+            .require_original_dataset_source(read)
             .map_err(|_| Error::OwnerUnavailable("original training Dataset capability"))?;
         let signing = OriginalCellQ24TrainingSigningConfigV1 {
             dataset,
