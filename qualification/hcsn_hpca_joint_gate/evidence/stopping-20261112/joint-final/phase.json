@@ -1,0 +1,43 @@
+{
+  "full_hcsn_requalification_performed": false,
+  "rows": [
+    {
+      "original_equal_substep_max_tv": "8/25",
+      "persistent_irregular_max_tv": "0",
+      "source_rows": 8,
+      "substeps": 2
+    },
+    {
+      "original_equal_substep_max_tv": "244/625",
+      "persistent_irregular_max_tv": "0",
+      "source_rows": 8,
+      "substeps": 4
+    },
+    {
+      "original_equal_substep_max_tv": "5217031/12500000",
+      "persistent_irregular_max_tv": "0",
+      "source_rows": 8,
+      "substeps": 8
+    },
+    {
+      "original_equal_substep_max_tv": "17586872970125201701/40960000000000000000",
+      "persistent_irregular_max_tv": "0",
+      "source_rows": 8,
+      "substeps": 16
+    },
+    {
+      "original_equal_substep_max_tv": "25078939287262584895055449492034187710680353062761/57646075230342348800000000000000000000000000000000",
+      "persistent_irregular_max_tv": "0",
+      "source_rows": 8,
+      "substeps": 32
+    }
+  ],
+  "schema": "hcsn-exact-refractory-transport-probe-v1",
+  "scope": "phase-only external uniform/point packets; no active diffusion or training",
+  "source_sha256": {
+    "probe_refractory_transport.py": "06f811e0d2f012b67c6a40488b4d34a8425e2583da13276d819ddc5263d8f2be",
+    "refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "test_phase_delay_oracle.py": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b"
+  },
+  "status": "HOLD_NO_GO"
+}

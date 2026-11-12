@@ -1,5 +1,13 @@
 # One-source HCSN and HPCA research checks
 
+The stopping-accounting successor adds full recorded plateau and strict-best
+selection checks to the C2 controller. Its final one-source execution contains
+95 tests (19 spatial/phase, 46 C2 terminal, and 15 HPCA in each Python mode)
+plus both probes. Its 22-file manifest supersedes the original 20-file manifest
+for this successor only. The original 82-test receipts below remain historical
+and are not transferred to the changed source. See STOPPING-ACCOUNTING.md in
+the C2 successor directory and evidence/stopping-20261112 for complete logs.
+
 This source assembly takes #6107 as its first parent, adds the disjoint phase
 transport files from #6108, selects the complete C2-successor subtree from
 #6106, and the complete HPCA-neuroscience subtree from #6109. Its extra Git

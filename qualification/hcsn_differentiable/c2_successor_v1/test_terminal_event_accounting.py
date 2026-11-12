@@ -16,7 +16,7 @@ class TerminalEventAccountingTests(unittest.TestCase):
         self.parent_dir = self.root / "parents" / "hcsn-s101-lr0.001"
         self.parent_dir.mkdir(parents=True)
         self.prior = {"model_configuration": {"width": 16}, "source_before": {},
-                      "epochs": [{"epoch": 1}], "episodes_train": 4,
+                      "epochs": [{"epoch": 1, "complete": True, "development": {"macro_f1_11_classes": 0.5}}], "episodes_train": 4,
                       "effective_batch_size": 2, "main_updates": 2,
                       "memorization": {"passed": False}}
         prepared = self.root / 'prepared'
@@ -26,7 +26,8 @@ class TerminalEventAccountingTests(unittest.TestCase):
             'episodes': [{'id': name, 'partition': 'train'} for name in 'abcd']}))
         plan_path = self.parent_dir / 'plan.json'
         plan_path.write_text(json.dumps({'prepared': str(prepared),
-            'manifest_sha256': sha(manifest_path), 'batch_size': 2}))
+            'manifest_sha256': sha(manifest_path), 'batch_size': 2,
+            'min_epochs': 2, 'patience': 2, 'plateau_delta': 0.01}))
         self.prior['plan_sha256'] = sha(plan_path)
         parent_result = self.parent_dir / "result.json"
         parent_result.write_text(json.dumps(self.prior), encoding="utf-8")
@@ -50,7 +51,8 @@ class TerminalEventAccountingTests(unittest.TestCase):
             "cumulative_epochs_completed": 2, "retained_main_updates_at_resume": 2,
             "logical_main_updates": 4, "new_main_updates": 2,
             "actual_executed_main_updates_logged_all_phases": 4,
-            "epochs": [{"epoch": 2, "complete": True, "phase_process_wall_seconds": 1.0}],
+            "epochs": [{"epoch": 2, "complete": True, "phase_process_wall_seconds": 1.0,
+                        "development": {"macro_f1_11_classes": 0.5}}], "best_epoch": 1,
             "parent_full_outer_wall_charged": 10.0, "cumulative_active_wall_cap_seconds": 43200,
             "stop_reason": "epoch_cap_not_convergence"}
         # Deliberately opaque synthetic bytes: these tests establish journal
@@ -85,6 +87,11 @@ class TerminalEventAccountingTests(unittest.TestCase):
         self.commit = {'schema': 'hcsn-c2-complete-epoch-commit-v1',
             'epoch': self.result['epochs'][0], 'checkpoint_path': str(checkpoint_path),
             'checkpoint': identity(checkpoint_path), 'logical_main_updates': 4, 'previous_commit': None}
+        self.commit['stopping'] = {'best': 0.5, 'best_epoch': 1, 'plateau_anchor': 0.5, 'stale_epochs': 1}
+        inherited = self.root / 'inherited-best.pt'
+        inherited.write_bytes((self.root / 'best.pt').read_bytes())
+        self.commit['best_path'] = str(inherited)
+        self.commit['best_checkpoint'] = identity(inherited)
         self.commit_path.write_text(json.dumps(self.commit))
         self.result['last_commit'] = {'path': str(self.commit_path), **identity(self.commit_path)}
         self.events.extend([{"kind": "epoch_completed", **self.result["epochs"][0],
