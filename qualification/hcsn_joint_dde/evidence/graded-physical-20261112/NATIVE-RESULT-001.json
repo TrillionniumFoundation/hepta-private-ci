@@ -1,0 +1,178 @@
+{
+  "actual_adam_update_calls": 4,
+  "commands": [
+    {
+      "command": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/continuous",
+        "--steps",
+        "2",
+        "--geometry",
+        "graded"
+      ],
+      "name": "continuous",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/first",
+        "--steps",
+        "1",
+        "--geometry",
+        "graded"
+      ],
+      "name": "first",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/resumed",
+        "--steps",
+        "1",
+        "--geometry",
+        "graded",
+        "--resume",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/first/state.pt"
+      ],
+      "name": "resumed",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/source-mismatch",
+        "--steps",
+        "1",
+        "--geometry",
+        "graded",
+        "--resume",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/source-mismatch.pt"
+      ],
+      "name": "source-mismatch",
+      "returncode": 1
+    },
+    {
+      "command": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/runtime-mismatch",
+        "--steps",
+        "1",
+        "--geometry",
+        "graded",
+        "--resume",
+        "/home/qian-qi/hcsn-graded-physical-20261112-c06d-001/native-result/runtime-mismatch.pt"
+      ],
+      "name": "runtime-mismatch",
+      "returncode": 1
+    }
+  ],
+  "complete_hcsn_training_replay": false,
+  "continuous_vs_fresh_process_full_state_exact": true,
+  "cpu_children_seconds": 23.130865,
+  "cpu_self_seconds": 4.065612251,
+  "geometry": "graded",
+  "gradcheck": true,
+  "parameter_version_guard": true,
+  "production_qualified": false,
+  "records": [
+    {
+      "gradient": [
+        -0.004683762438968493,
+        0.095286548157858,
+        -0.1993416896186353,
+        0.002729454375843825,
+        0.018299032265858137
+      ],
+      "loss": 0.024964350178500173,
+      "parameters": [
+        0.010049999893248443,
+        -0.12004999999475266,
+        0.5000499999974918,
+        1.7159568623680446,
+        0.14995000002732384
+      ],
+      "step": 1,
+      "target": [
+        0.396431622575942,
+        0.356007266941699,
+        0.6430321927164488
+      ]
+    },
+    {
+      "gradient": [
+        -0.004710531692921927,
+        0.09599882136167176,
+        -0.20096914301816235,
+        0.0027451340976143938,
+        0.01745637337640783
+      ],
+      "loss": 0.024485578047544698,
+      "parameters": [
+        0.010100007011223044,
+        -0.12010000934866241,
+        0.5001000101786178,
+        1.715906855290402,
+        0.14990007534868424
+      ],
+      "step": 2,
+      "target": [
+        0.3947580679551277,
+        0.3590865586290012,
+        0.6335766875501535
+      ]
+    }
+  ],
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cu128"
+  },
+  "runtime_mismatch_refused": true,
+  "schema": "hcsn-native-physical-autograd-replay-v1",
+  "scope": "CPU FP64 first-order physical custom VJP with fixed initial probability/content; no network/prior AD",
+  "source_mismatch_refused": true,
+  "source_sha256": {
+    "hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "hcsn_joint_dde/graded_sensitivities.py": "b41d990df579ee0acd8c225f7a7bb313b9a80fae236d5b41f32b7b2545066cec",
+    "hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "hcsn_joint_dde/native_gradient_probe.py": "65f3f0afd5ad4173649160c15798094e8765e6e7ab2d3b122f4b9dd3c2d4f57c",
+    "hcsn_joint_dde/sensitivities.py": "9ae68d383bd4106ecdfc14cd3757539b08ae8a981e6be20ad5a19abfca552262",
+    "hcsn_joint_dde/torch_physical.py": "b6b458a1c9c6d6b4c723829937a72a9747acd5c30890c8766b45195704cd4535"
+  },
+  "sources_unchanged": true,
+  "task_efficacy": false,
+  "trainable_initial_state_refused": true,
+  "unsafe_data_mutation_guard": true,
+  "wall_seconds": 27.397395757958293
+}

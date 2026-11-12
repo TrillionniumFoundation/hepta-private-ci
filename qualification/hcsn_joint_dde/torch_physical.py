@@ -30,7 +30,9 @@ FIELDS = (
 
 class _PhysicalFlow(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, parameters, template, times, active, content, phase, options):
+    def forward(
+        ctx, parameters, template, times, active, content, phase, options, solver
+    ):
         if (
             parameters.device.type != "cpu"
             or parameters.dtype != torch.float64
@@ -52,7 +54,7 @@ class _PhysicalFlow(torch.autograd.Function):
             reset=math.log(reset) - boundary,
             discount=discount,
         )
-        result = solve_partials(
+        result = solver(
             model,
             times,
             active,
@@ -105,11 +107,30 @@ class _PhysicalFlow(torch.autograd.Function):
             None,
             None,
             None,
+            None,
         )
 
 
 def physical_flow(parameters, template, times, active, content, phase=(), **options):
     """Differentiable only with respect to B/mu/sigma/Vr/q, fixed initial law."""
     return _PhysicalFlow.apply(
-        parameters, template, times, active, content, phase, options
+        parameters, template, times, active, content, phase, options, solve_partials
+    )
+
+
+def graded_physical_flow(
+    parameters, template, times, active, content, phase=(), **options
+):
+    """Explicitly selected graded-v2 physical VJP; no uniform admission transfer."""
+    from qualification.hcsn_joint_dde.graded_sensitivities import solve_graded_partials
+
+    return _PhysicalFlow.apply(
+        parameters,
+        template,
+        times,
+        active,
+        content,
+        phase,
+        options,
+        solve_graded_partials,
     )

@@ -1,0 +1,136 @@
+{
+  "all_closed": false,
+  "closed_bounded_engineering_checks": [
+    {
+      "gate": "v2_generator_geometry",
+      "scope": "seven local new tests including moments, actual-node reset, finite BVP refinement, real DDE/serial CTMC and dynamic continuation; counts are separate from v1 tests"
+    },
+    {
+      "gate": "initial_law_mass_and_signed_content",
+      "scope": "nine exact-rational adapter tests; same nonnegative lift; no source normalization; upper escape retained"
+    },
+    {
+      "gate": "actual_v2_migrated_rollout_mechanism",
+      "maximum_content_residual": 4.7e-14,
+      "maximum_mass_residual": 1.5e-14,
+      "scope": "256/512 grids x four disclosed cases, six original gaps; original worst-first-cell posterior includes original signed content; raw arrays retained"
+    }
+  ],
+  "interpretation": "These are exposed development diagnostics. Nothing here grants prospective scientific, security, product or production authority.",
+  "negative_results_preserved": [
+    {
+      "candidate": "v1 uniform nodal backward-function hat interpretation",
+      "gate": "OPEN migration/finite-risk; perpetual success does not close this",
+      "kind": "hypothetical same-hat initial-law migration; actual v1 solve rejects its lower atom",
+      "n128_hypothetical_M": 0.1076080827764328,
+      "n256_hypothetical_M": 0.05862020821774404,
+      "n512_hypothetical_M": 0.03790609631014902,
+      "original_uniform_0_0_3_t_0_001_continuum_M": 0.029637122802850576
+    },
+    {
+      "candidate": "v2 graded plus exact-support initial-law adapter",
+      "continuum_M": 1.2163363499307683e-11,
+      "gate": "OPEN rare-phase relative precision",
+      "kind": "actual isolated initial-phase rollout",
+      "n512_actual_M": 1.455588571525439e-11,
+      "relative_error": 0.19669906404448767,
+      "time": 0.02
+    },
+    {
+      "candidate": "v2 graded plus fold",
+      "gate": "outside observed-domain admission; never claim arbitrary short-time relative precision",
+      "kind": "independent shorter-than-observed-gap exploration",
+      "n256_first_uniform_relative_M_at_1e_8": -0.9306
+    }
+  ],
+  "open_gates": [
+    {
+      "existing_evidence": "independent post-failure graded exploration is informative but is not a prospective new pass gate or full executed DDE trajectory",
+      "gate": "v2_full_recorded_finite_domain",
+      "required": "source-bind actual v2 geometry and actual-node adapter to every one of the 14336 original prior/posterior cases; independent continuum M/H/A and explicit threshold provenance",
+      "state": "OPEN"
+    },
+    {
+      "gate": "v2_retained_continuation_after_actual_migration",
+      "required": "recompute same-law continuation using the actual lower-fold migration and actual graded nodes; do not inherit the v1 backward-function integral certificate",
+      "state": "OPEN"
+    },
+    {
+      "gate": "v2_minimum_gap_admission",
+      "mechanical_solver_accepts_smaller_times": true,
+      "observed_qualified_gap_candidates": [
+        0.001,
+        0.003,
+        0.02,
+        0.04,
+        0.08,
+        0.16
+      ],
+      "required": "explicit admission boundary; fixed finite CTMC cannot match uniform-boundary sqrt(t) first-hit asymptotics relatively as t tends to zero",
+      "smallest_observed_gap": 0.001,
+      "state": "OPEN"
+    },
+    {
+      "gate": "v2_rare_phase_and_tail_relative_accuracy",
+      "required": "separate absolute errors from relative precision and resolve the disclosed phase counterexample",
+      "state": "OPEN"
+    },
+    {
+      "gate": "v2_physical_gradients",
+      "required": "actual-node rate derivatives including mu diagonal, actual reset stencil and knot domain; uniform/native results do not transfer",
+      "state": "OPEN",
+      "uniform_gradient_pr": 6166
+    },
+    {
+      "gate": "old_filter_and_whole_network",
+      "required": "consistent observation filtering on nodal active and retained age/flux laws, full gradient and checkpoint/optimizer replay",
+      "state": "OPEN"
+    },
+    {
+      "gate": "original_C2_complete_independent_replay",
+      "required": "original missing/interrupted producer/controller results and full independent training replay; no credit from these diagnostic runs",
+      "state": "OPEN"
+    },
+    {
+      "gate": "matched_strong_baselines",
+      "required": "same budget/tuning opportunity GRU, SSM, CfC and Transformer comparison on the new final candidate",
+      "state": "OPEN"
+    },
+    {
+      "gate": "real_asynchronous_sources_and_cost",
+      "required": "independent future task sources, useful-output quality, full loading/lift/history/training/serving costs and measured hardware energy",
+      "state": "OPEN"
+    },
+    {
+      "gate": "adoption_and_default_cell",
+      "required": "authenticated owner/NoUpdate/Adopt/next-task/recovery chain; no global HCSN default or production use",
+      "state": "OPEN"
+    }
+  ],
+  "production_adoption": false,
+  "schema": "hcsn-candidate-remaining-gates-v1",
+  "source_lineage": {
+    "v1_joint_core": {
+      "eight_tests": "passed",
+      "pr": 6129,
+      "source_commit": "36aa7bc7c36a56861a5ce70bc143a7dde16c5e49",
+      "targeted_actions": 43163872893
+    },
+    "v1_retained_continuation": {
+      "gate": "passed_same_reconstructed_law_only",
+      "limit_unchanged": true,
+      "n512_maximum_non_cancelling_scaled_error": 4.722555046668075e-05,
+      "original_limit": 0.01,
+      "population": 14336,
+      "pr": 6147,
+      "source_commit": "24d46cdb3c65d8b3cc2f7726b1e88789d45b7375"
+    },
+    "v2_graded": {
+      "actual_eight_case_probe": "actual-graded-migration-attempt001/SUMMARY.json",
+      "initial_lower_atom": "zero; lower hat weight folded to first interior node with disclosed bias",
+      "new_candidate": true,
+      "nodes": "8*expm1(6*i/n)/expm1(6)",
+      "parent_commit": "24d46cdb3c65d8b3cc2f7726b1e88789d45b7375"
+    }
+  }
+}
