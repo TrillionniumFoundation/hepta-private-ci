@@ -45,6 +45,8 @@ mod completed_learning;
 pub(crate) use completed_learning::OriginalCompletedLearningContextV1;
 #[path = "authority_host_completed_record.rs"]
 mod completed_record;
+#[path = "authority_host_completed_signatures.rs"]
+mod completed_signatures;
 pub(crate) use completed_record::RootCompletedLearningAcceptanceDataV1;
 pub(crate) use completed_record::completed_learning_acceptance_owner;
 #[path = "authority_host_historical_learning_trust.rs"]

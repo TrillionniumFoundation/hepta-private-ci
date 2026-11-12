@@ -116,6 +116,18 @@ impl OriginalCompletedLearningContextV1<'_> {
         Ok(())
     }
 
+    pub(super) fn require_current_freeze_signer(
+        &self,
+        signed: &SignedLearningEvidenceV1,
+    ) -> io::Result<()> {
+        if signed.principal_id.as_str() != self.trust.freeze_evaluator.principal_id
+            || signed.role != codex_hepta_learning_ledger::LearningEvidenceRoleV1::Evaluator
+        {
+            return Err(io::Error::other("original fixed freeze signer differs"));
+        }
+        Self::require_current_signer(self, signed)
+    }
+
     fn revalidate_recorded_signers(&self) -> io::Result<()> {
         let signatures = self
             .current_signatures
