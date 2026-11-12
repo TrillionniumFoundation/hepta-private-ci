@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.learn.actual-453-source-method-peer.v1",
+  "status": "ACTUAL SOURCE RESULT REVIEW; no new execution performed",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "evidence_commit": "eb6e39642d0b6530d7d066a522af3572abef41bf",
+  "raw_source": {
+    "git_blob": "2fa396b5b9873076d0b355e13179dee994e88d0f",
+    "bytes": 89701,
+    "sha256": "3e43193067b7f73768968f00835ae8908fea916fed19645c9032051a7baa9f89"
+  },
+  "raw_outer": {
+    "git_blob": "d8e9ab09541053474ddd62468269c7651c45f66a",
+    "bytes": 6228,
+    "sha256": "87e1455f6009e63b0cfa5f73f3a2606621626c2570fd16eb20b58cd9c0ff34e1"
+  },
+  "checks": {
+    "raw_json": "2fa396b5b9873076d0b355e13179dee994e88d0f",
+    "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "expected_methods": 443,
+    "tests_run": 443,
+    "rows": 443,
+    "unique_ids": 443,
+    "modules": 62,
+    "status_counts": {
+      "passed": 443
+    },
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": true,
+    "elapsed_seconds": 297.22826777002774,
+    "sequence_equal_original_a671": true,
+    "multiset_equal_original_a671": true,
+    "sequence_equal_frozen_expected": true,
+    "all_original_methods_preserved": true,
+    "no_native_pass_inferred": true
+  },
+  "source_association": {
+    "outer_source_suite_full_byte_hash_equal": true,
+    "source_suite_actual_exit": 0,
+    "outer_actual_state": "failed",
+    "source_after": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "source_status_after": "",
+    "actual_native_driver_exit": 1
+  },
+  "id_sequence": {
+    "rows": 443,
+    "encoding": "UTF-8 IDs joined with LF, with final LF",
+    "sha256": "882cef9fa4d3172587586a17cb9f991a73d264a3c254914f5e50ba727721f528",
+    "comparison": "Exact array and full multiplicity equality with both saved frozen443 list and the original actuala671 source JSON; no missing, added, reordered or duplicate method."
+  },
+  "limits": [
+    "The actual source suite has443 passes in62 modules, zero failures/errors/skips. This is evidence for source453 only.",
+    "The associated main outer remains failed; the native driver failed in preflight. This audit does not infer native201 or fullcaller success.",
+    "No H, Python, Rust, verifier or tests were invoked by this peer.",
+    "No ordinary A/B/C/cold-restart acceptance follows from a source test result."
+  ]
+}
