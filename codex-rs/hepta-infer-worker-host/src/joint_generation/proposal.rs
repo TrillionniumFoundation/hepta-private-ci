@@ -5,19 +5,18 @@ use std::io::Write;
 use std::time::Instant;
 
 use crate::bridge_state::BridgeState;
-use crate::codec::Packet;
 use crate::codec::Result;
-use crate::codec::sha256;
 use crate::decoder::Prefixes;
 use crate::decoder::commit_chunk;
+use crate::loaded_model::LoadedModel;
 use crate::model::ACTIONS;
-use crate::model::Model;
 use crate::observation::DeliveryObservation;
 use crate::planner;
 use crate::protocol::Command;
 use crate::protocol::MAX_DELTA_BYTES;
 use crate::protocol::MAX_PREFIX_BYTES;
 use crate::protocol::MAX_REQUEST_BYTES;
+use crate::protocol::Request;
 use crate::protocol::Response;
 use crate::protocol::parse;
 
@@ -39,21 +38,22 @@ pub(crate) fn run_stdio() -> Result<()> {
 pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
     let codec_start = Instant::now();
     let request = parse(bytes)?;
-    let weights = canonical_packet(request.weights)?;
-    let model = Model::new(weights)?;
-    if model.width != 32 || model.depth != 1 || model.mode != "dual" || model.boundary != "direct" {
-        return Err("bridge requires selected width32/depth1/dual/direct profile".into());
-    }
+    let loaded = LoadedModel::load(request.weights, request.public)?;
+    propose_loaded(&loaded, request, codec_start)
+}
+
+pub(crate) fn propose_loaded(
+    loaded: &LoadedModel,
+    request: Request<'_>,
+    codec_start: Instant,
+) -> Result<Response> {
+    let model = &loaded.model;
+    let public = &loaded.public;
+    let weights_hash = &loaded.weights_hash;
+    let input_hash = &loaded.input_hash;
     if model.is_observed() != request.owner.is_some() {
         return Err("model/request observation profile mismatch".into());
     }
-    if model.is_observed() {
-        planner::validate_profile(&model)?;
-    }
-    let public = canonical_packet(request.public)?;
-    model.validate_input(&public)?;
-    let weights_hash = sha256(request.weights);
-    let input_hash = sha256(request.public);
     let prior = match request.command {
         Command::Init(_) => {
             if !request.state.is_empty() || !request.prefix.is_empty() {
@@ -63,9 +63,9 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
         }
         _ => Some(BridgeState::read(
             request.state,
-            &model,
-            &weights_hash,
-            &input_hash,
+            model,
+            weights_hash,
+            input_hash,
             request.prefix,
         )?),
     };
@@ -87,12 +87,12 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
             return Err("missing predecessor".into());
         };
         let start = Instant::now();
-        let encoded = model.encode(&public)?;
+        let encoded = loaded.initial_state()?;
         phases[1] = elapsed(start)?;
         BridgeState {
             model: encoded,
             law,
-            prefixes: Prefixes::for_model(&model),
+            prefixes: Prefixes::for_model(model),
             owner: request.owner.clone(),
             planning: None,
         }
@@ -106,11 +106,11 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
             let start = Instant::now();
             let selected = if let Some(owner) = &state.owner {
                 let receipt = planner::choose(
-                    &model,
+                    model,
                     &state.model,
                     &state.prefixes,
                     owner,
-                    &public,
+                    public,
                     state.law,
                 )?;
                 let selected = receipt.action;
@@ -143,7 +143,7 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
         state.model = model.advance(
             &state.model,
             ACTIONS.get(action).ok_or("invalid selected action")?,
-            &public,
+            public,
         )?;
         phases[2] = elapsed(start)?;
     }
@@ -177,7 +177,7 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
         }
         let start = Instant::now();
         let payload = commit_chunk(
-            &model,
+            model,
             &mut state.model,
             modality,
             state.prefixes.cursors[usize::from(modality)],
@@ -202,7 +202,7 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
     if prefix.len() > MAX_PREFIX_BYTES {
         return Err("prefix exceeds bridge bound".into());
     }
-    let successor = state.encode(&weights_hash, &input_hash, &prefix)?;
+    let successor = state.encode(weights_hash, input_hash, &prefix)?;
     phases[0] = phases[0]
         .checked_add(elapsed(start)?)
         .ok_or("codec timer overflow")?;
@@ -213,14 +213,6 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
         state: successor,
         delta,
     })
-}
-
-fn canonical_packet(bytes: &[u8]) -> Result<Packet> {
-    let packet = Packet::decode(bytes)?;
-    if packet.encode()? != bytes {
-        return Err("noncanonical asset packet".into());
-    }
-    Ok(packet)
 }
 
 fn elapsed(start: Instant) -> Result<u64> {
