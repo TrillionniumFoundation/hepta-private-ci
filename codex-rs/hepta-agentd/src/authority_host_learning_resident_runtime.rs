@@ -22,7 +22,7 @@ use super::profile::RootResidentLearningProfileV3;
 use crate::AgentdError;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::LearningIterationStageOwnerPortsV1;
-use crate::OriginalCellQ24NoUpdateStageOwnersV1;
+use super::stages::ResidentOriginalStageOwnersV3;
 use crate::RootResidentLearningEffectGateV3;
 
 pub(super) enum ResidentRequestModeV3 {
@@ -53,12 +53,12 @@ pub struct RootResidentLearningHandleV3 {
 }
 
 enum ResidentStagesV3 {
-    Uninstalled(Option<OriginalCellQ24NoUpdateStageOwnersV1>),
-    Installed(Arc<OriginalCellQ24NoUpdateStageOwnersV1>),
+    Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+    Installed(Arc<ResidentOriginalStageOwnersV3>),
 }
 
 impl ResidentStagesV3 {
-    fn get(&self) -> Result<&OriginalCellQ24NoUpdateStageOwnersV1, Error> {
+    fn get(&self) -> Result<&ResidentOriginalStageOwnersV3, Error> {
         match self {
             Self::Uninstalled(Some(stages)) => Ok(stages),
             Self::Installed(stages) => Ok(stages),
@@ -77,7 +77,7 @@ pub struct RootResidentLearningRuntimeV3 {
 
 pub(super) fn compose(
     owner: Arc<ResidentRegisteredStateV3>,
-    stages: OriginalCellQ24NoUpdateStageOwnersV1,
+    stages: ResidentOriginalStageOwnersV3,
     verifier: LearningEvidenceVerifierV1,
     capacity: usize,
 ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), AgentdError> {
@@ -88,7 +88,7 @@ pub(super) fn compose(
     {
         return Err(AgentdError::Invalid("resident queue or original role trust differs".into()));
     }
-    stages.require_initial(&profile.initial, &profile.scope, &verifier)
+    ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     let authorization_binding = owner.authority.authorization_binding()
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
@@ -201,7 +201,9 @@ impl RootResidentLearningRuntimeV3 {
             return Err(Error::CommitUncertain);
         };
         let mut stages = slot.take().ok_or(Error::CommitUncertain)?;
-        stages.install_fresh_resident_gate(Arc::clone(&continuation.gate))?;
+        ResidentOriginalStageOwnersV3::install_fresh_resident_gate(
+            &mut stages, Arc::clone(&continuation.gate),
+        )?;
         let stages = Arc::new(stages);
         self.stages = ResidentStagesV3::Installed(Arc::clone(&stages));
         let owner = Arc::clone(&self.owner);
@@ -245,7 +247,7 @@ impl RootResidentLearningRuntimeV3 {
 
 async fn continue_original(
     owner: Arc<ResidentRegisteredStateV3>,
-    stages: Arc<OriginalCellQ24NoUpdateStageOwnersV1>,
+    stages: Arc<ResidentOriginalStageOwnersV3>,
     verifier: LearningEvidenceVerifierV1,
     continuation: ResidentContinuationV3,
 ) -> Result<(), Error> {
@@ -253,11 +255,7 @@ async fn continue_original(
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?;
     let gate = &continuation.gate;
     while let Some(stage) = coordinator.next_stage() {
-        if matches!(stage, LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal) {
-            return Err(Error::OwnerUnavailable(
-                "resident Candidate path needs original independent evaluation and Model authority",
-            ));
-        }
+        ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?;
         let predecessor = coordinator.snapshot().clone();
         gate.begin(&predecessor, stage).await?;
         // The durable local intent has been committed. Original role hosts,

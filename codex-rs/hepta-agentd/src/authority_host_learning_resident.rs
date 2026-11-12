@@ -23,6 +23,8 @@ mod authority;
 mod gate;
 pub(crate) use gate::RootResidentLearningEffectGateV3;
 
+#[path = "authority_host_learning_resident_stages.rs"]
+mod stages;
 #[path = "authority_host_learning_resident_runtime.rs"]
 mod runtime;
 pub use runtime::RootResidentLearningHandleV3;
@@ -143,6 +145,26 @@ impl RootResidentLearningRegistrationV3 {
         verifier: codex_hepta_learning_ledger::LearningEvidenceVerifierV1,
         capacity: usize,
     ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), crate::AgentdError> {
-        runtime::compose(self.owner, stages, verifier, capacity)
+        runtime::compose(
+            self.owner, stages::ResidentOriginalStageOwnersV3::NoUpdate(stages), verifier, capacity,
+        )
+    }
+}
+
+impl RootResidentLearningRegistrationV3 {
+    /// Consume the concrete Candidate branch under the same registered Root
+    /// intent, original Registry and schema-3 checkpoint. This does not issue
+    /// an Evaluator, Model, Selector, version-publication or FinalUse capability.
+    /// All original role descriptors were held before D/T existed; Root installs
+    /// its effect gate only after the existing actual fresh admission CAS.
+    pub fn into_candidate_runtime(
+        self,
+        stages: crate::OriginalCellQ24CandidateStageOwnersV1,
+        verifier: codex_hepta_learning_ledger::LearningEvidenceVerifierV1,
+        capacity: usize,
+    ) -> Result<(RootResidentLearningHandleV3, RootResidentLearningRuntimeV3), crate::AgentdError> {
+        runtime::compose(
+            self.owner, stages::ResidentOriginalStageOwnersV3::Candidate(stages), verifier, capacity,
+        )
     }
 }

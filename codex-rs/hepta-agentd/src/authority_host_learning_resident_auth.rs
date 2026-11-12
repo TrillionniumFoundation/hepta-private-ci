@@ -16,11 +16,11 @@ use super::gate::ResidentRegisteredStateV3;
 use super::profile::RootResidentLearningProfileV3;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::LearningIterationStageOwnerPortsV1;
-use crate::OriginalCellQ24NoUpdateStageOwnersV1;
+use super::stages::ResidentOriginalStageOwnersV3;
 
 pub(super) async fn original_attestations(
     owner: &Arc<ResidentRegisteredStateV3>,
-    stages: &OriginalCellQ24NoUpdateStageOwnersV1,
+    stages: &ResidentOriginalStageOwnersV3,
     verifier: &LearningEvidenceVerifierV1,
     snapshot: &LearningIterationSnapshotV1,
     cancellation: &CancellationToken,

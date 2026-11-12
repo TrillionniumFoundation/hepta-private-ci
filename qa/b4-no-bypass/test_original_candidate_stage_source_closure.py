@@ -25,8 +25,8 @@ READBACK = AGENT + "cell_q24_candidate_stage_readback.rs"
 EXPECTED = {
     "learning_original_no_update_stage_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_no_update_stage_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
-    "learning_original_no_update_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
-    "learning_original_no_update_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
+    "learning_original_no_update_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
+    "learning_original_no_update_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
     "learning_original_training_initial_connection_create": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_training_initial_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_material_initial_context_check": ("codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
@@ -35,8 +35,8 @@ EXPECTED = {
     "root_resident_gate_effect_current": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",),
     "learning_original_candidate_stage_create": (),
     "learning_original_candidate_stage_recover": (),
-    "learning_original_candidate_stage_initial": (),
-    "learning_original_candidate_stage_resident_gate": (),
+    "learning_original_candidate_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
+    "learning_original_candidate_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "learning_original_candidate_stage_current_material": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
 }
 
@@ -189,6 +189,7 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
         for marker in ("tokio::time::timeout_at(self.end.into()", "self.require_live_deadline()?"):
             for function in ("fn validate_recovery<'a>", "fn execute_stage<'a>", "fn receipt_attestation<'a>"):
                 self.rejects(CORE, function, marker)
+        self.rejects(CORE, "fn validate_recovery<'a>", "self.common.origin == Origin::Recovered")
         self.rejects(CORE, "fn execute_stage<'a>", "self.common.origin != Origin::Fresh")
         self.rejects(CORE, "fn install_fresh_resident_gate(", "OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(")
 

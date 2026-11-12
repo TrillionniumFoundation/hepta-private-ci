@@ -246,13 +246,13 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
     def test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate(self):
         filename = "authority_host_learning_resident_runtime.rs"
         for function, marker in (
-            ("fn compose(", "stages.require_initial(&profile.initial, &profile.scope, &verifier)"),
+            ("fn compose(", "ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)"),
             ("fn run(", "self.admission_requested = true"),
             ("fn run(", "if result.is_err()"),
             ("fn admit(", "self.owner.admit(cancellation).await?"),
             ("fn admit(", "slot.take().ok_or(Error::CommitUncertain)?"),
-            ("fn admit(", "stages.install_fresh_resident_gate(Arc::clone(&continuation.gate))?"),
-            ("fn continue_original(", "LearningIterationStageV1::Evaluation | LearningIterationStageV1::Proposal"),
+            ("fn admit(", "ResidentOriginalStageOwnersV3::install_fresh_resident_gate("),
+            ("fn continue_original(", "ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?"),
             ("fn continue_original(", "gate.begin(&predecessor, stage).await?"),
             ("fn continue_original(", "watchdog.tick()"),
             ("fn continue_original(", "authentication::original_attestations("),

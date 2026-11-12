@@ -117,7 +117,13 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-                if snapshot.receipts.len() == 3 && coordinator.candidate().is_some() {
+                // Fresh T attestation occurs before Root checkpoints T: its
+                // durable dispatch still names the original Dataset prefix.
+                // Actual Candidate material belongs to the subsequent
+                // Evaluation dispatch, never a fabricated future gate head.
+                if self.common.origin == Origin::Recovered
+                    && snapshot.receipts.len() == 3 && coordinator.candidate().is_some()
+                {
                     OriginalCellQ24CandidateStageOwnersV1::read_original_candidate(
                         self, snapshot,
                     ).await?;
