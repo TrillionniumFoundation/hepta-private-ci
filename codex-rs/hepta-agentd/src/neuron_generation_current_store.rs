@@ -31,6 +31,17 @@ enum Store {
 
 impl CurrentStore {
     #[cfg(target_os = "linux")]
+    pub(super) fn issue_original_prepared_final_use(
+        &self,
+        intent: &super::types::UpdateIntent,
+    ) -> Result<codex_hepta_contracts::SignedFinalUseGrant, AgentdError> {
+        match &self.store {
+            Store::Root(client) => crate::root_generation_current_client::RootGenerationCurrentClient::issue_original_prepared_final_use(client, intent),
+            _ => Err(invalid("C issuance requires the actual Root publication client")),
+        }
+    }
+
+    #[cfg(target_os = "linux")]
     pub(super) fn read_original_root_recovery_intent(
         &self,
         original: &crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1,
