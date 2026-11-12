@@ -165,16 +165,23 @@ impl<'a> OriginalSourceCaptureExchange<'a> {
                 self.handoff = Some(handoff);
                 result?;
                 receipt.require_original_capture_session()?;
+                let retained_root = Arc::clone(&self.slot.root);
+                let retained_target = &self.slot.profile.deployment.target;
                 RootHistoricalSourceHandoffV1::finalize_after_verified_context(
                     self.handoff
                         .as_mut()
                         .ok_or_else(|| io::Error::other("original acknowledged handoff missing"))?,
+                    || {
+                        let pin = RootHistoricalSourcePinV1::open_existing(
+                            retained_root,
+                            retained_target,
+                        )?;
+                        if pin.readback_digest()? != receipt.pin_digest() {
+                            return Err(io::Error::other("finalized source handoff pin changed"));
+                        }
+                        receipt.require_original_capture_session()
+                    },
                 )?;
-                RootHistoricalSourceHandoffV1::open_finalized(
-                    Arc::clone(&self.slot.root),
-                    &self.slot.profile.deployment.target,
-                )?;
-                receipt.require_original_capture_session()?;
                 self.acknowledged = true;
             }
         }

@@ -6,6 +6,8 @@
 //! stages. Finalized records only that the preceding context returned success;
 //! it proves neither delivery of the final reply nor a learning authorization.
 
+use super::data_refusal::RootDataKind;
+use super::data_refusal::RootDataRefusalV1;
 use super::*;
 use crate::RootHistoricalSourceCaptureReceiptV1;
 use historical_source_pin::RootHistoricalSourcePinV1;
@@ -43,6 +45,7 @@ pub(super) struct RootHistoricalSourceHandoffV1 {
     owner: String,
     expected: HandoffRecord,
     poisoned: bool,
+    refusal: RootDataRefusalV1,
 }
 
 impl RootHistoricalSourceHandoffV1 {
@@ -96,17 +99,29 @@ impl RootHistoricalSourceHandoffV1 {
             return Err(io::Error::other("new handoff must remain pending"));
         }
         let owner = owner(&expected.target)?;
-        // No prior record, including an incomplete ACK, can be reused.
-        let store = HostAuthorityFrontierStore::initialize(root, owner.clone(), expected.clone())
-            .map_err(io::Error::other)?;
-        let mut retained = Self {
+        // Marker registration is fresh and Armed before primary initialization.
+        // No previous primary, including an incomplete ACK, can be reused.
+        let (refusal, store) = RootDataRefusalV1::create_fresh(
+            Arc::clone(&root),
+            RootDataKind::SourceHandoff,
+            &expected.target,
+            || {
+                let store =
+                    HostAuthorityFrontierStore::initialize(root, owner.clone(), expected.clone())
+                        .map_err(io::Error::other)?;
+                if store.load(&owner).map_err(io::Error::other)? != expected {
+                    return Err(io::Error::other("original handoff initialization differs"));
+                }
+                Ok(store)
+            },
+        )?;
+        Ok(Self {
             store,
             owner,
             expected,
             poisoned: false,
-        };
-        retained.require_exact()?;
-        Ok(retained)
+            refusal,
+        })
     }
 
     /// Read finalized data only. A peer ACK left by a Root crash is insufficient
@@ -117,10 +132,24 @@ impl RootHistoricalSourceHandoffV1 {
     ) -> io::Result<Self> {
         let mut retained = Self::open_record(Arc::clone(&root), target)?;
         retained.require_finalized()?;
-        let pin = RootHistoricalSourcePinV1::open_existing(root, target)?;
-        if pin.readback_digest()?.to_string() != retained.expected.pin {
+        let result = retained.refusal.inspect(|| {
+            if retained
+                .store
+                .load(&retained.owner)
+                .map_err(io::Error::other)?
+                != retained.expected
+            {
+                return Err(io::Error::other("original handoff record changed"));
+            }
+            let pin = RootHistoricalSourcePinV1::open_existing(root, target)?;
+            if pin.readback_digest()?.to_string() != retained.expected.pin {
+                return Err(io::Error::other("finalized handoff pin changed"));
+            }
+            Ok(())
+        });
+        if let Err(error) = result {
             retained.poisoned = true;
-            return Err(io::Error::other("finalized handoff pin changed"));
+            return Err(error);
         }
         Ok(retained)
     }
@@ -130,19 +159,30 @@ impl RootHistoricalSourceHandoffV1 {
         target: &CellGenerationOwnerBindingV1,
     ) -> io::Result<Self> {
         original_root()?;
+        let refusal = RootDataRefusalV1::open_existing(
+            Arc::clone(&root),
+            RootDataKind::SourceHandoff,
+            target,
+        )?;
         let owner = owner(target)?;
-        let store =
-            HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?;
-        let expected: HandoffRecord = store.load(&owner).map_err(io::Error::other)?;
-        if expected.schema != 1 || expected.purpose != HANDOFF_PURPOSE || &expected.target != target
-        {
-            return Err(io::Error::other("original handoff registration differs"));
-        }
+        let (store, expected) = refusal.inspect(|| {
+            let store =
+                HostAuthorityFrontierStore::open(root, owner.clone()).map_err(io::Error::other)?;
+            let expected: HandoffRecord = store.load(&owner).map_err(io::Error::other)?;
+            if expected.schema != 1
+                || expected.purpose != HANDOFF_PURPOSE
+                || &expected.target != target
+            {
+                return Err(io::Error::other("original handoff registration differs"));
+            }
+            Ok((store, expected))
+        })?;
         Ok(Self {
             store,
             owner,
             expected,
             poisoned: false,
+            refusal,
         })
     }
 
@@ -154,20 +194,16 @@ impl RootHistoricalSourceHandoffV1 {
         }
         let mut next = self.expected.clone();
         next.phase = HandoffPhase::PeerAcknowledged;
-        if let Err(error) = self
-            .store
-            .compare_and_set(&self.owner, &self.expected, &next)
-        {
-            self.poisoned = true;
-            return Err(io::Error::other(error));
-        }
-        self.expected = next;
-        self.require_exact()
+        self.replace(next, || Ok(()))
     }
 
-    /// Called only after the original context, including its postchecks, has
-    /// returned Ok and the same receipt deadline has been checked again.
-    pub(super) fn finalize_after_verified_context(&mut self) -> io::Result<()> {
+    /// The original context has already returned Ok. The actual transport
+    /// supplies its pin readback and original receipt/deadline postcheck; they
+    /// complete inside this arm, after the exact Finalized primary readback.
+    pub(super) fn finalize_after_verified_context(
+        &mut self,
+        postcheck: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
         self.require_exact()?;
         if self.expected.phase != HandoffPhase::PeerAcknowledged {
             self.poisoned = true;
@@ -177,26 +213,52 @@ impl RootHistoricalSourceHandoffV1 {
         }
         let mut next = self.expected.clone();
         next.phase = HandoffPhase::Finalized;
-        if let Err(error) = self
-            .store
-            .compare_and_set(&self.owner, &self.expected, &next)
-        {
+        self.replace(next, postcheck)
+    }
+
+    fn replace(
+        &mut self,
+        next: HandoffRecord,
+        postcheck: impl FnOnce() -> io::Result<()>,
+    ) -> io::Result<()> {
+        if self.poisoned {
+            return Err(io::Error::other("original handoff record changed"));
+        }
+        let result = self.refusal.inspect(|| {
+            if self.store.load(&self.owner).map_err(io::Error::other)? != self.expected {
+                return Err(io::Error::other("original handoff record changed"));
+            }
+            self.store
+                .compare_and_set(&self.owner, &self.expected, &next)
+                .map_err(io::Error::other)?;
+            if self.store.load(&self.owner).map_err(io::Error::other)? != next {
+                return Err(io::Error::other("original handoff replacement differs"));
+            }
+            postcheck()
+        });
+        if let Err(error) = result {
             self.poisoned = true;
-            return Err(io::Error::other(error));
+            return Err(error);
         }
         self.expected = next;
-        self.require_finalized()
+        Ok(())
     }
 
     fn require_exact(&mut self) -> io::Result<()> {
         original_root()?;
-        if self.poisoned
-            || !matches!(self.store.load(&self.owner), Ok(record) if record == self.expected)
-        {
-            self.poisoned = true;
+        if self.poisoned {
             return Err(io::Error::other("original handoff record changed"));
         }
-        Ok(())
+        let result = self.refusal.inspect(|| {
+            if self.store.load(&self.owner).map_err(io::Error::other)? != self.expected {
+                return Err(io::Error::other("original handoff record changed"));
+            }
+            Ok(())
+        });
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
     }
 
     fn require_finalized(&mut self) -> io::Result<()> {
@@ -212,6 +274,7 @@ impl RootHistoricalSourceHandoffV1 {
     pub(super) fn fence(&mut self) -> io::Result<()> {
         original_root()?;
         self.poisoned = true;
+        self.refusal.refuse()?;
         let observed = self.store.load(&self.owner).map_err(io::Error::other)?;
         let mut same_binding = observed.clone();
         same_binding.phase = self.expected.phase;
@@ -225,7 +288,11 @@ impl RootHistoricalSourceHandoffV1 {
         next.phase = HandoffPhase::Fenced;
         self.store
             .compare_and_set(&self.owner, &observed, &next)
-            .map_err(io::Error::other)
+            .map_err(io::Error::other)?;
+        if self.store.load(&self.owner).map_err(io::Error::other)? != next {
+            return Err(io::Error::other("original handoff fence differs"));
+        }
+        Ok(())
     }
 }
 
