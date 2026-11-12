@@ -30,11 +30,25 @@ pub(crate) use post_a::POST_A_PURPOSE;
 pub(crate) use post_a::PostAFrozenLearningResponseV1;
 pub(crate) use post_a::require_post_a_learning_reply;
 
+#[path = "root_completed_learning_protocol.rs"]
+mod completed;
+pub(crate) use completed::ACCEPT_COMPLETED_PURPOSE;
+pub(crate) use completed::CAPTURE_COMPLETED_PURPOSE;
+pub(crate) use completed::CompletedHistoryModeV1;
+pub(crate) use completed::CompletedLearningAcceptanceResponseV1;
+pub(crate) use completed::CompletedLearningHistoryResponseV1;
+pub(crate) use completed::READ_COMPLETED_PURPOSE;
+pub(crate) use completed::require_completed_acceptance_reply;
+pub(crate) use completed::require_completed_history_reply;
+
 #[derive(Clone, Copy)]
 pub(crate) enum HistoricalReadOperationV1 {
     Task,
     LearningTrust,
     PostAFrozenLearning,
+    AcceptCompletedLearning,
+    CaptureCompletedHistory,
+    ReadCompletedHistory,
 }
 
 impl HistoricalReadOperationV1 {
@@ -43,6 +57,9 @@ impl HistoricalReadOperationV1 {
             PURPOSE => Ok(Self::Task),
             TRUST_PURPOSE => Ok(Self::LearningTrust),
             POST_A_PURPOSE => Ok(Self::PostAFrozenLearning),
+            ACCEPT_COMPLETED_PURPOSE => Ok(Self::AcceptCompletedLearning),
+            CAPTURE_COMPLETED_PURPOSE => Ok(Self::CaptureCompletedHistory),
+            READ_COMPLETED_PURPOSE => Ok(Self::ReadCompletedHistory),
             _ => Err(io::Error::other("unknown original historical operation")),
         }
     }
@@ -52,6 +69,9 @@ impl HistoricalReadOperationV1 {
             Self::Task => PURPOSE,
             Self::LearningTrust => TRUST_PURPOSE,
             Self::PostAFrozenLearning => POST_A_PURPOSE,
+            Self::AcceptCompletedLearning => ACCEPT_COMPLETED_PURPOSE,
+            Self::CaptureCompletedHistory => CAPTURE_COMPLETED_PURPOSE,
+            Self::ReadCompletedHistory => READ_COMPLETED_PURPOSE,
         }
     }
 }
