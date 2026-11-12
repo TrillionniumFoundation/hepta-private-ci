@@ -103,6 +103,11 @@ async fn original_root_filesystem_preserves_registry_reads_and_denies_control_wr
     )
     .unwrap();
     assert_eq!(parent, id.layout.agent_root().join("final-use"));
+    let prompt = std::fs::symlink_metadata(id.layout.run_root().join("prompt-runtime")).unwrap();
+    assert_eq!(
+        (prompt.uid(), prompt.gid(), prompt.mode() & 0o7777),
+        (60001, 60001, 0o700)
+    );
     assert_eq!(fixture.registry.load_agent(&id.agent_id).unwrap(), initial);
     run_reader(
         &fixture,
@@ -295,6 +300,12 @@ async fn original_registry_reader_child() {
         b"private local data",
     )
     .unwrap();
+    let prompt = crate::AgentdPromptRuntimeOwner::open_state_dir(
+        &record.layout.run_root().join("prompt-runtime"),
+    )
+    .unwrap();
+    assert_eq!(prompt.staged_count().unwrap(), 0);
+    drop(prompt);
     let store = CognitiveStore::open(&record.layout).await.unwrap();
     assert_eq!(store.recovery_anchor().await.unwrap().owner_agent_id, agent);
     store.close().await;
@@ -310,7 +321,13 @@ async fn original_registry_reader_child() {
 #[tokio::test]
 #[ignore = "explicit actual Root scope-refusal test, no Agent runtime is started"]
 async fn original_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change() {
-    for failure in ["symlink", "hardlink", "workspace", "authority-overlap"] {
+    for failure in [
+        "symlink",
+        "hardlink",
+        "workspace",
+        "authority-overlap",
+        "existing-prompt-runtime",
+    ] {
         let fixture = original_fixture().await;
         let id = &fixture.identity;
         let outside = fixture.authority.join("custody-probe");
@@ -326,6 +343,18 @@ async fn original_root_filesystem_rejects_aliases_and_existing_workspace_before_
                 b"must not recursively chown",
             )
             .unwrap(),
+            "existing-prompt-runtime" => {
+                let path = id.layout.run_root().join("prompt-runtime");
+                std::fs::DirBuilder::new()
+                    .mode(0o700)
+                    .create(&path)
+                    .unwrap();
+                std::fs::write(
+                    path.join("original-state"),
+                    b"must retain original prompt state",
+                )
+                .unwrap();
+            }
             "authority-overlap" => {}
             _ => unreachable!(),
         }
@@ -356,5 +385,15 @@ async fn original_root_filesystem_rejects_aliases_and_existing_workspace_before_
             );
         }
         assert!(!id.layout.agent_root().join("final-use").exists());
+        let prompt = id.layout.run_root().join("prompt-runtime");
+        if failure == "existing-prompt-runtime" {
+            assert_eq!(std::fs::symlink_metadata(&prompt).unwrap().uid(), 0);
+            assert_eq!(
+                std::fs::read(prompt.join("original-state")).unwrap(),
+                b"must retain original prompt state"
+            );
+        } else {
+            assert!(!prompt.exists());
+        }
     }
 }
