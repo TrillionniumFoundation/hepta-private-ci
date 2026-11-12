@@ -215,6 +215,10 @@ pub use root_independent_b_source_client::OriginalBSourceSignedDataV1;
 #[cfg(target_os = "linux")]
 pub use root_independent_b_source_client::submit_original_root_b_source;
 #[cfg(target_os = "linux")]
+mod root_independent_b_source_cli;
+#[cfg(target_os = "linux")]
+pub use root_independent_b_source_cli::run_original_independent_b_source_cli;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::RootIndependentBEvaluationHandoffV1;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootIndependentBSourceHandoffV1;
