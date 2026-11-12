@@ -33,7 +33,7 @@ MODEL_READ = AGENT + "neuron_cell_evaluation_model_read_operation.rs"
 EXPECTED = {
     "learning_original_evaluation_operation_begin": (HOST,),
     "learning_original_evaluation_operation_finish": (HOST, EXPORT),
-    "learning_original_evaluation_operation_member": (MEMBER,),
+    "learning_original_evaluation_operation_member": (MEMBER, EXPORT),
     "learning_original_evaluation_operation_qualification": (SOURCE,),
     "learning_original_evaluation_operation_receipt": (RECEIPT,),
     "learning_original_evaluation_receipt_operation_attest": (OWNER, HOST),
