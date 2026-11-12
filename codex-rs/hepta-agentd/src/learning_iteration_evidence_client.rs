@@ -64,8 +64,12 @@ pub use training_command::OriginalCellQ24TrainingReadbackConnectionV1;
 
 #[path = "circuit_evaluated_selection_readback_owner.rs"]
 mod evaluated_selection_readback;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionCommandClientV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionCommandErrorV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionCommandOwnerV1;
 pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackErrorV1;
 pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackOwnerV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionRemoteReadbackOwnerV1;
 
 #[path = "circuit_selection_command.rs"]
 mod selection_command;
@@ -83,6 +87,12 @@ pub use next_use_command::OriginalCircuitNextUseCommandContextV1;
 pub use next_use_command::OriginalCircuitNextUseCommandErrorV1;
 pub use next_use_command::OriginalCircuitNextUseCommandOwnerV1;
 pub use next_use_command::OriginalCircuitNextUseCommandReceiptV1;
+
+#[path = "circuit_evaluated_next_use_command.rs"]
+mod evaluated_next_use_command;
+pub use evaluated_next_use_command::OriginalCircuitEvaluatedNextUseCommandClientV1;
+pub use evaluated_next_use_command::OriginalCircuitEvaluatedNextUseCommandErrorV1;
+pub use evaluated_next_use_command::OriginalCircuitEvaluatedNextUseCommandOwnerV1;
 
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
@@ -317,6 +327,12 @@ pub(crate) use selection_command::command_test_support as selection_command_test
 
 #[cfg(test)]
 pub(crate) use next_use_command::command_test_support as next_use_command_test_support;
+
+#[cfg(test)]
+pub(crate) use evaluated_selection_readback::command_test_support as evaluated_selection_command_test_support;
+
+#[cfg(test)]
+pub(crate) use evaluated_next_use_command::command_test_support as evaluated_next_use_command_test_support;
 
 #[cfg(test)]
 pub(crate) use ordinary_stage_owners::fresh_material_only;

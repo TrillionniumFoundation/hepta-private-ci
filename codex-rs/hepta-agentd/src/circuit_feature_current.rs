@@ -50,6 +50,7 @@ mod retirement;
 mod retained_publication;
 pub use control::PublishedCircuitFeatureControlV1;
 pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
+pub(crate) use learning_read::OriginalCircuitEvaluatedCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitEvaluatedLearningReadContextV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;
 pub use learning_read::OriginalCircuitLearningReadContextV1;
@@ -58,6 +59,8 @@ pub use learning_read::OriginalCircuitLearningReadOwnerV1;
 pub use learning_read::OriginalCircuitLearningReadbackV1;
 #[cfg(test)]
 pub(crate) use learning_read::check_evaluated_profiles;
+#[cfg(test)]
+pub(crate) use learning_read::evaluated_readiness_fixture;
 #[cfg(test)]
 pub(crate) use learning_read::fixture as original_learning_read_fixture;
 pub use owner::PublishedCircuitCellOwnerV1;
@@ -76,6 +79,9 @@ pub use retained_publication::prepare_original_circuit_evaluated_retention_v1;
 pub use retained_publication::prepare_original_circuit_retained_publication_v1;
 pub use retained_publication::recover_original_circuit_evaluated_retention_v1;
 pub use retained_publication::recover_original_circuit_retained_publication_v1;
+pub use retained_publication::version::OriginalCircuitEvaluatedReadinessChannelV1;
+pub(crate) use retained_publication::version::OriginalCircuitEvaluatedVersionProgressV1;
+pub use retained_publication::version::OriginalCircuitEvaluatedVersionRecoveryV1;
 pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
 pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
 pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;

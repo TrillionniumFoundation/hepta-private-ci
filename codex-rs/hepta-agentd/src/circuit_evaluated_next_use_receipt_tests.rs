@@ -281,6 +281,9 @@ async fn evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion
     f.finish().await
 }
 
+#[path = "circuit_evaluated_next_use_remote_tests.rs"]
+mod remote_tests;
+
 // Each fault retains its own fresh original owners and the original test timeout.
 // The pre-existing test name covers Trainer; the two siblings complete the roster.
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

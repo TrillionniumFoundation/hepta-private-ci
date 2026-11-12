@@ -416,3 +416,9 @@ mod next_use_tests;
 
 #[path = "circuit_evaluated_selection_remote_tests.rs"]
 mod remote_tests;
+
+#[path = "circuit_evaluated_selection_command_tests.rs"]
+mod command_tests;
+
+#[path = "circuit_evaluated_version_support_tests.rs"]
+mod version_tests;

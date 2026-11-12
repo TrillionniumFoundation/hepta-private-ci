@@ -7,6 +7,7 @@ use super::super::auth;
 use super::super::lane::ResidentLane;
 use super::CandidateLane;
 use super::Error;
+use super::EvaluatedLane;
 use super::EvaluationLane;
 use super::ModelLane;
 use super::Origin;
@@ -170,6 +171,7 @@ pub(super) fn bind(
         candidate: ResidentLane::new(CandidateLane::new(candidate)),
         evaluation: ResidentLane::new(EvaluationLane::new(evaluator)),
         model: ResidentLane::new(ModelLane::new(model)),
+        retention: ResidentLane::new(EvaluatedLane::new()),
         end,
     })
 }

@@ -43,6 +43,9 @@ pub(super) struct Continuation {
     pub(super) original_selection: Option<OriginalCircuitSelectionCommandReceiptV1>,
 }
 
+#[path = "cell_q24_candidate_stage_channels.rs"]
+mod evaluated_channels;
+
 impl Continuation {
     pub(super) fn new(
         experience: OriginalCellQ24MaterialCommandClientV1,

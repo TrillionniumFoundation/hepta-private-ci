@@ -74,6 +74,33 @@ impl MaterialCommandFixture {
         })
     }
 
+    pub(crate) fn corrupt_training_artifact(&self) -> anyhow::Result<()> {
+        self.corrupt_training_file("deferred-native")
+    }
+
+    pub(crate) fn corrupt_training_receipt(&self) -> anyhow::Result<()> {
+        self.corrupt_training_file("deferred-receipts")
+    }
+
+    fn corrupt_training_file(&self, name: &str) -> anyhow::Result<()> {
+        use std::io::Read;
+        use std::io::Seek;
+        use std::io::SeekFrom;
+        use std::io::Write;
+        let mut file = std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(self.root.join(name))?;
+        file.seek(SeekFrom::End(-1))?;
+        let mut byte = [0];
+        file.read_exact(&mut byte)?;
+        byte[0] ^= 1;
+        file.seek(SeekFrom::End(-1))?;
+        file.write_all(&byte)?;
+        file.sync_all()?;
+        Ok(())
+    }
+
     pub(crate) fn readonly_training_receipt(&self) -> anyhow::Result<File> {
         Ok(File::open(self.root.join("deferred-receipts"))?)
     }

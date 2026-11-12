@@ -355,7 +355,7 @@ class EvaluatedSelectionClosureTests(unittest.TestCase):
         self.assertEqual(sorted(re.findall(r"\bpub\s+(?:async\s+)?fn\s+(\w+)", code)), sorted((
             "snapshot", "receipt", "attestation", "create_evaluated", "recover_evaluated",
             "attest_original_evaluated_selection", "readback_evaluated_selection",
-            "into_evaluated_readback_owner",
+            "into_evaluated_readback_owner", "into_evaluated_command_owner",
         )))
         for marker in (
             "pub fn from_snapshot(", "SigningKey::generate(", "LearningEvidenceVerifierV1::new(",

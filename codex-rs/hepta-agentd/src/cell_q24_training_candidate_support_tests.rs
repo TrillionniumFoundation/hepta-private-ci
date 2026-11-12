@@ -65,6 +65,11 @@ pub(super) enum Fault {
     WrongTotal,
     CorruptHeads,
     CloseAfterFirst,
+    WrongCurrentNonce,
+    WrongCurrentPurpose,
+    WrongCurrentCompletion,
+    WrongCurrentHeads,
+    HoldCurrent,
 }
 
 pub(super) struct ResponseGate {
@@ -120,10 +125,46 @@ pub(super) fn page_peer(
                         HostIssuerTransportError::InvalidRequest
                     })?;
                 disposition = next;
+                if let Ok(mut current) = serde_json::from_slice::<
+                    super::super::super::super::candidate_current::Response,
+                >(&bytes)
+                {
+                    if matches!(fault, Fault::HoldCurrent)
+                        && let Some(gate) = &gate
+                    {
+                        gate.reached.notify_one();
+                        gate.release
+                            .recv()
+                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                    }
+                    match fault {
+                        Fault::WrongCurrentNonce => current.request.request_id += 1,
+                        Fault::WrongCurrentPurpose => {
+                            current.request.operation = candidate_wire::OPERATION.into()
+                        }
+                        Fault::WrongCurrentCompletion => {
+                            current.request.completion =
+                                Digest32::of_bytes(b"another original T signature").to_string()
+                        }
+                        Fault::WrongCurrentHeads => {
+                            let candidate_wire::MaterialResult::Current { heads, .. } =
+                                &mut current.result
+                            else {
+                                return Err(HostIssuerTransportError::InvalidRequest);
+                            };
+                            *heads = Digest32::of_bytes(b"another Candidate head").to_string();
+                        }
+                        _ => {}
+                    }
+                    return serde_json::to_vec(&current)
+                        .map_err(|_| HostIssuerTransportError::InvalidRequest);
+                }
                 let mut response: candidate_wire::Response = serde_json::from_slice(&bytes)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                 if request_id == 1 {
-                    if let Some(gate) = &gate {
+                    if !matches!(fault, Fault::HoldCurrent)
+                        && let Some(gate) = &gate
+                    {
                         gate.reached.notify_one();
                         gate.release
                             .recv()
@@ -157,7 +198,13 @@ pub(super) fn page_peer(
                                 _ => unreachable!(),
                             }
                         }
-                        Fault::Original | Fault::CloseAfterFirst => {}
+                        Fault::Original
+                        | Fault::CloseAfterFirst
+                        | Fault::WrongCurrentNonce
+                        | Fault::WrongCurrentPurpose
+                        | Fault::WrongCurrentCompletion
+                        | Fault::WrongCurrentHeads
+                        | Fault::HoldCurrent => {}
                     }
                 }
                 serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)

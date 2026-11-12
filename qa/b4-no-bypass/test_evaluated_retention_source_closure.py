@@ -27,11 +27,11 @@ PREPARE = "fn prepare_original_circuit_evaluated_retention_v1<"
 PUBLISH = "fn publish_and_retain_original_evidence("
 RECOVER = "fn recover_original_circuit_evaluated_retention_v1<"
 EXPECTED = {
-    "learning_evaluated_retention_context": (),
-    "learning_evaluated_retention_context_recover": (),
-    "learning_evaluated_retention_prepare": (),
+    "learning_evaluated_retention_context": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_context.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs'),
+    "learning_evaluated_retention_context_recover": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_context.rs', 'codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_auth.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs'),
+    "learning_evaluated_retention_prepare": ('codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs',),
     "learning_evaluated_retention_publish": (),
-    "learning_evaluated_retention_preserve_original_evidence": (),
+    "learning_evaluated_retention_preserve_original_evidence": ('codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs',),
     "learning_evaluated_retention_recover": (),
     "learning_original_training_command_client_readback": (
         AGENT + "cell_q24_no_update_stage_state.rs",
@@ -39,10 +39,7 @@ EXPECTED = {
         AGENT + "circuit_retained_version_state.rs",
         CONTEXT,
     ),
-    "learning_original_evaluation_command_readback": (
-        AGENT + "cell_q24_candidate_stage_evaluation.rs",
-        CONTEXT,
-    ),
+    "learning_original_evaluation_command_readback": ('codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
 }
 
 

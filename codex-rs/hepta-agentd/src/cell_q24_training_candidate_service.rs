@@ -10,6 +10,7 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
 
+use super::super::candidate_current;
 use super::super::candidate_wire;
 use super::super::now;
 use super::super::wire;
@@ -87,9 +88,17 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         session: &mut candidate_wire::Session,
     ) -> Result<(Vec<u8>, candidate_wire::SessionDisposition), Error> {
         let started_at = now()?;
-        let request: candidate_wire::Request = serde_json::from_slice(bytes)?;
-        request.require_context(&self.context, self.binding, request_id)?;
-        session.require_request(&request)?;
+        let request: candidate_current::ReadRequest = serde_json::from_slice(bytes)?;
+        match &request {
+            candidate_current::ReadRequest::Page(request) => {
+                request.require_context(&self.context, self.binding, request_id)?;
+                session.require_request(request)?;
+            }
+            candidate_current::ReadRequest::Current(request) => {
+                request.require_context(&self.context, self.binding, request_id)?;
+                session.require_current(request)?;
+            }
+        }
         // This synchronous method is already on the held bounded host lane.
         // The Stage reads original source, native and Generator CURRENTs on
         // both sides and compares the full unchanged receipt and signature.
@@ -108,7 +117,14 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                     material.attestation().clone(),
                     fresh_now,
                 )?;
-                candidate_wire::original_page(&request, &material)?
+                match &request {
+                    candidate_current::ReadRequest::Page(request) => {
+                        candidate_wire::original_page(request, &material)?
+                    }
+                    candidate_current::ReadRequest::Current(request) => {
+                        candidate_current::original_candidate_current_proof_v1(request, &material)?
+                    }
+                }
             }
             Err(OriginalCellQ24TrainingStageErrorV1::CandidateMaterial(
                 OriginalCellQ24CandidateMaterialErrorV1::NoCandidate,
@@ -120,6 +136,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 _ => candidate_wire::MaterialResult::Uncertain,
             },
         };
-        session.encode_response(request, result)
+        match request {
+            candidate_current::ReadRequest::Page(request) => {
+                session.encode_response(request, result)
+            }
+            candidate_current::ReadRequest::Current(request) => {
+                session.encode_current(request, result)
+            }
+        }
     }
 }

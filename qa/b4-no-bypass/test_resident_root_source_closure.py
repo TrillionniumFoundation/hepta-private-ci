@@ -55,8 +55,8 @@ EXPECTED = {
     "root_resident_final_observation": [
         "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
     ],
-    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"],
-    "root_resident_gate_training_cancel": ["codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"],
+    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs"],
+    "root_resident_gate_training_cancel": ["codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs"],
     "root_resident_original_intent_fence": [
         "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
     ],
@@ -370,7 +370,8 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         filename = "authority_host_learning_resident_auth.rs"
         for function, marker in (
             ("fn original_attestations(", "stages.validate_recovery(snapshot).await?"),
-            ("fn original_attestations(", "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?"),
+            ("fn original_attestations(", "stages\n                    .receipt_attestation(snapshot, receipt, now / 1_000)\n                    .await?"),
+            ("fn original_attestations(", "ResidentOriginalStageOwnersV3::read_original_evaluated_attestations(stages, snapshot)"),
             ("fn original_attestations(", "let (_, fresh) = owner.read(cancellation).await?"),
             ("fn verify_non_model_attestations(", "signatures.len() + proposal_count != snapshot.receipts.len()"),
             ("fn verify_non_model_attestations(", "verifier\n            .verify(role, signature, &payload, now)"),

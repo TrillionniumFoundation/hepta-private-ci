@@ -69,7 +69,24 @@ pub(super) struct PublicationFixture {
 
 impl PublicationFixture {
     pub(super) async fn ready() -> anyhow::Result<Self> {
-        let mut host = Box::pin(HostFixture::before_adoption()).await?;
+        Box::pin(Self::ready_for_publication(
+            PublicationMode::RetainOriginalA,
+        ))
+        .await
+    }
+
+    async fn ready_with_live_artifacts() -> anyhow::Result<Self> {
+        Box::pin(Self::ready_for_publication(
+            PublicationMode::RetainOriginalAWithLiveArtifacts,
+        ))
+        .await
+    }
+
+    async fn ready_for_publication(publication: PublicationMode) -> anyhow::Result<Self> {
+        let mut host = match publication {
+            PublicationMode::RetainOriginalA => Box::pin(HostFixture::before_adoption()).await?,
+            _ => Box::pin(HostFixture::before_publication(publication)).await?,
+        };
         let mut dataset = host.config.training.clone();
         let completed_training = dataset.receipts.pop().context("original native Training")?;
         dataset.head_digest = completed_training.predecessor;
@@ -335,3 +352,6 @@ impl PublicationFixture {
 
 #[path = "circuit_evaluated_retention_receipt_tests.rs"]
 mod receipt_tests;
+
+#[path = "circuit_evaluated_version_material_support_tests.rs"]
+pub(super) mod version_material;

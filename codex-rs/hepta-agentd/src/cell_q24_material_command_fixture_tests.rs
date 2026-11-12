@@ -34,6 +34,10 @@ impl MaterialCommandFixture {
         Self::from_fixture(Fixture::candidate_pages().await?)
     }
 
+    pub(crate) async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+        Self::from_fixture(Fixture::candidate_maximum_pages().await?)
+    }
+
     pub(crate) async fn candidate_pages_for_evaluation_profile(
         profile: Digest32,
     ) -> anyhow::Result<Self> {

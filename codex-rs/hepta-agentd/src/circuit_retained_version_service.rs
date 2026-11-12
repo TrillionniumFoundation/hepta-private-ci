@@ -11,9 +11,14 @@ use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::super::super::context::PublicationAccess;
 use super::super::Error;
+use super::super::evaluated_wire::EvaluatedProgressResult;
+use super::super::evaluated_wire::VersionRequest;
+use super::super::profile::VersionCut;
+use super::super::profile::VersionPurpose;
 use super::super::wire;
 use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionFinalUseOutcomeV1;
+use super::RetainedVersionHostPhaseV1;
 use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCircuitLearningReadOwnerV1;
@@ -105,6 +110,58 @@ impl OriginalCircuitRetainedVersionHostV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<u64, Error> {
+        if self.purpose != VersionPurpose::TrainingNoUpdate {
+            return Err(Error::Binding(
+                "original three-cut Version Selection read purpose",
+            ));
+        }
+        self.serve_selection_readback(
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
+        .await
+    }
+
+    /// The independent four-cut purpose consumes the already-delivered S read
+    /// stream before waiting for this same Version owner's actual C factory.
+    pub async fn serve_original_evaluated_selection_readback(
+        self: Arc<Self>,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<u64, Error> {
+        if self.purpose != VersionPurpose::Evaluated {
+            return Err(Error::Binding(
+                "original four-cut evaluated Version Selection read purpose",
+            ));
+        }
+        self.serve_selection_readback(
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
+        .await
+    }
+
+    async fn serve_selection_readback(
+        self: Arc<Self>,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<u64, Error> {
         if timeout.is_zero() || timeout > Duration::from_millis(500) {
             return Err(Error::Binding("same original published read bound"));
         }
@@ -132,12 +189,18 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 }
             };
             if let Some(reader) = reader {
+                let purpose = self.purpose;
                 return tokio::task::spawn_blocking(move || {
                     let _permit = permit;
-                    OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(
-                        reader.as_ref(),
-                        &mut channel,
-                    )
+                    let served = match purpose {
+                        VersionPurpose::TrainingNoUpdate => OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(
+                            reader.as_ref(), &mut channel,
+                        ),
+                        VersionPurpose::Evaluated => OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_retained_channel(
+                            reader.as_ref(), &mut channel,
+                        ),
+                    };
+                    served
                     .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
                 })
                 .await
@@ -166,26 +229,22 @@ impl OriginalCircuitRetainedVersionHostV1 {
     fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         let started = super::super::now()?;
         self.require_lifetime()?;
-        let request: wire::Request = serde_json::from_slice(bytes)?;
-        if request.schema != 1
-            || request.purpose != wire::OPERATION
-            || request.request_id != request_id
-            || !(1..=128).contains(&request_id)
-            || request.initial_binding != self.initial_binding.to_string()
-            || request.operation_id != self.material.initial.request.operation_id.to_string()
-        {
-            return Err(Error::Binding(
-                "same original Version initial purpose and operation",
-            ));
-        }
-        wire::digest(&request.binding)?;
-        wire::digest(&request.training_head)?;
+        let request = VersionRequest::decode(bytes, self.purpose)?;
+        request.require_initial(
+            self.purpose,
+            request_id,
+            self.initial_binding,
+            &self.material.initial,
+        )?;
         let (current, fresh) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
                 &self.material,
             )?;
         if current != self.initial_binding || fresh < started {
             return Err(Error::Binding("same original Version material clock"));
+        }
+        if request.is_publication_progress() {
+            return self.publication_progress_response(request, request_id, started);
         }
         let (result, pin) = {
             let mut state = match self.state.try_lock() {
@@ -208,7 +267,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 (wire::OriginalResult::Uncertain, None)
             } else {
                 request.require_cut(state.cut.as_ref().ok_or(Error::Unavailable)?, request_id)?;
-                let original = match request.action {
+                let original = match request.action()? {
                     wire::Action::Prepare => self.prepare_original(&mut state),
                     wire::Action::Readback => {
                         self.preparation_requested.store(true, Ordering::Release);
@@ -254,12 +313,93 @@ impl OriginalCircuitRetainedVersionHostV1 {
         self.encode_response(request, result, started, pin)
     }
 
+    fn publication_progress_response(
+        &self,
+        request: VersionRequest,
+        request_id: u64,
+        started: u64,
+    ) -> Result<Vec<u8>, Error> {
+        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {
+            return Err(Error::Binding("evaluated-only Version progress purpose"));
+        }
+        let (result, pin) = {
+            match self.state.try_lock() {
+                Ok(state) => match state.cut.as_ref() {
+                    None => (EvaluatedProgressResult::ReadbackRequired, None),
+                    Some(cut) => {
+                        if !matches!(cut, VersionCut::Evaluated(_)) {
+                            return Err(Error::Binding("original evaluated Version progress cut"));
+                        }
+                        request.require_cut(cut, request_id)?;
+                        cut.require_fresh(started, PublicationAccess::Readback)?;
+                        // This is only the private worker's scheduling state.
+                        // No peer read, owner binding, CURRENT observation or
+                        // phase/issuer mutation is performed by this action.
+                        let result = match (self.original_final_use_outcome(), state.phase.as_ref())
+                        {
+                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => {
+                                EvaluatedProgressResult::FinalUseDenied
+                            }
+                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => {
+                                EvaluatedProgressResult::Uncertain
+                            }
+                            (
+                                RetainedVersionFinalUseOutcomeV1::Awaiting,
+                                Some(RetainedVersionHostPhaseV1::Awaiting { .. }),
+                            ) => {
+                                if self.preparation_requested.load(Ordering::Acquire) {
+                                    // A failed admitted prepare is not a worker
+                                    // still running behind this held mutex.
+                                    EvaluatedProgressResult::Uncertain
+                                } else {
+                                    EvaluatedProgressResult::Pending
+                                }
+                            }
+                            (
+                                RetainedVersionFinalUseOutcomeV1::Awaiting
+                                | RetainedVersionFinalUseOutcomeV1::Requested,
+                                Some(RetainedVersionHostPhaseV1::Prepared { .. }),
+                            ) => EvaluatedProgressResult::Pending,
+                            (
+                                RetainedVersionFinalUseOutcomeV1::Published,
+                                Some(
+                                    RetainedVersionHostPhaseV1::Installed { .. }
+                                    | RetainedVersionHostPhaseV1::Recovered(_),
+                                ),
+                            ) => EvaluatedProgressResult::ReadbackAvailable,
+                            _ => EvaluatedProgressResult::Uncertain,
+                        };
+                        (result, Some(cut.duplicate_response_pin()))
+                    }
+                },
+                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),
+                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
+            }
+        };
+        let (binding, fresh) =
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
+                &self.material,
+            )?;
+        if binding != self.initial_binding || fresh < started {
+            return Err(Error::Binding("original Version progress final clock"));
+        }
+        self.require_lifetime()?;
+        let bytes = request.encode_progress_response(result)?;
+        if bytes.is_empty() || bytes.len() > 16_384 {
+            return Err(Error::Binding("bounded original Version progress response"));
+        }
+        if let Some(pin) = pin {
+            pin.require_fresh(started, PublicationAccess::Readback)?;
+        }
+        Ok(bytes)
+    }
+
     fn encode_response(
         &self,
-        request: wire::Request,
+        request: VersionRequest,
         result: wire::OriginalResult,
         started: u64,
-        pin: Option<super::super::context::OriginalVersionCut>,
+        pin: Option<VersionCut>,
     ) -> Result<Vec<u8>, Error> {
         let (binding, fresh) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
@@ -269,7 +409,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
             return Err(Error::Binding("original Version final clock"));
         }
         self.require_lifetime()?;
-        let bytes = serde_json::to_vec(&wire::Response { request, result })?;
+        let bytes = request.encode_response(result)?;
         if bytes.is_empty() || bytes.len() > 16_384 {
             return Err(Error::Binding("bounded original Version response"));
         }

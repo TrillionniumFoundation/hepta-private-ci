@@ -32,16 +32,14 @@ READINESS = AGENT + "circuit_learning_completion_readiness_service.rs"
 SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 EVALUATED_S = AGENT + "circuit_evaluated_selection_receipt.rs"
 EXPECTED = {
-    "learning_original_evaluated_read_selection_context": (),
-    "learning_original_evaluated_read_next_use_context": (),
+    "learning_original_evaluated_read_selection_context": ('codex-rs/hepta-agentd/src/circuit_retained_version_profile.rs',),
+    "learning_original_evaluated_read_next_use_context": ('codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs'),
     "learning_original_evaluated_read_client_create": (),
-    "learning_original_evaluated_read_owner_create": (),
-    "learning_original_evaluated_read_selection_binding": (REMOTE,),
-    "learning_original_evaluated_selection_remote_attest": (),
-    "learning_original_evaluated_selection_remote_readback": (),
-    "learning_original_published_read_client_current": (
-        SELECTOR, AGENT + "circuit_next_use_receipt_owner.rs", REMOTE,
-    ),
+    "learning_original_evaluated_read_owner_create": ('codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+    "learning_original_evaluated_read_selection_binding": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs'),
+    "learning_original_evaluated_selection_remote_attest": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',),
+    "learning_original_evaluated_selection_remote_readback": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_evidence.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote_readback.rs'),
+    "learning_original_published_read_client_current": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs'),
 }
 DOMAINS = {
     PROFILE: [(None, r"const EVALUATED_OPERATION: &str =", '"runtime.learning.original-circuit.evaluated-current-read.v1"')],
@@ -262,10 +260,13 @@ class EvaluatedPublishedReadClosureTests(unittest.TestCase):
         for path, function in (
             (CLIENT, "require_original_context"), (SERVICE, "serve_original_retained_channel"),
             (READINESS, "serve_completion_readiness"), (READINESS, "readiness_response"),
-            (READINESS, "read_original_readiness"),
         ):
             self.rejects(path, function, "self.context.legacy()?")
             self.rejects_unused_body(path, function)
+        # Both explicit public protocols now call the same private physical
+        # Source/Cell read. Their legacy/evaluated purpose gates stay separate.
+        self.rejects(READINESS, "read_original_readiness", "self.context.decision()?")
+        self.rejects_unused_body(READINESS, "read_original_readiness")
         for marker in ("LearningIterationObservationV1::TrainingNoUpdateV2(_)", "(3, Some(LearningIterationStageV1::Selection), None)", "(4, Some(LearningIterationStageV1::NextUse), Some(_))"):
             self.rejects(WIRE, "mode", marker)
         for function, marker in (

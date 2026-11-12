@@ -27,9 +27,10 @@ SERVICE = AGENT + "cell_q24_training_candidate_service.rs"
 BOOTSTRAP = AGENT + "cell_q24_training_bootstrap_candidate.rs"
 CONNECTION = AGENT + "cell_q24_training_command_connection.rs"
 MODEL = AGENT + "cell_q24_training_model_lane.rs"
+READ_LANE = AGENT + "cell_q24_training_source_read_lane.rs"
 BOUND = AGENT + "cell_q24_source_bound_stage.rs"
 EXPECTED = {
-    "learning_original_candidate_material_native": (MODEL,),
+    "learning_original_candidate_material_native": (READ_LANE,),
     "learning_original_candidate_material_verified": (CLIENT,),
     "learning_original_training_candidate_material": (BOUND,),
     "learning_source_bound_training_candidate_material": (SERVICE,),
@@ -99,9 +100,10 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                     PROOF._verify_boundary(ROOT, row, extra, ())
         for path, function, marker in (
-            (MODEL, "fn read_candidate_material(", "CellQ24TrainingOwnerV1::require_original_source_capture(training)?"),
-            (MODEL, "fn read_candidate_material(", "CellQ24TrainingOwnerV1::readback(training)?"),
-            (MODEL, "fn read_candidate_material(", "completed.attestation.clone()"),
+            (MODEL, "fn read_candidate_material(", "OriginalCellQ24TrainingStageV1::read_original_source_candidate(self)"),
+            (READ_LANE, "fn read_original_source_candidate(", "SourceRequirement::Required"),
+            (READ_LANE, "fn read_original_source_candidate(", "CellQ24TrainingOwnerV1::readback(training)?"),
+            (READ_LANE, "fn read_original_source_candidate(", "completed.attestation.clone()"),
             (MODEL, "fn in_model_lane<", "training.require_live_source_if_captured()?"),
             (MODEL, "fn in_model_lane<", "CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)"),
             (MODEL, "fn in_model_lane<", "current.receipt != original.receipt || current.attestation != original.attestation"),
@@ -171,7 +173,7 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
     def test_readback_cannot_initialize_recover_fit_sign_or_promote_missing(self):
         for path, function, marker in (
             (BOOTSTRAP, "fn candidate_material_response(", "request.require_initial(&self.config.material, request_id)?"),
-            (BOOTSTRAP, "fn candidate_material_response(", "session.require_request(&request)?"),
+            (BOOTSTRAP, "fn candidate_material_response(", "session.require_request(request)?"),
             (BOOTSTRAP, "fn candidate_material_response(", "if let Some(original) = self.ready()?"),
             (BOOTSTRAP, "fn candidate_material_response(", "OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response("),
             (BOOTSTRAP, "fn candidate_material_response(", "candidate_wire::MaterialResult::ReadbackRequired"),

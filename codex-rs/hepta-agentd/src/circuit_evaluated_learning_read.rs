@@ -153,6 +153,21 @@ impl OriginalCircuitEvaluatedLearningReadContextV1 {
         )?)
     }
 
+    pub(super) fn require_original_next_use(
+        &self,
+        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,
+    ) -> Result<(), Error> {
+        let OriginalCut::NextUse(original) = &self.original else {
+            return Err(Error::Binding("evaluated NextUse-only read purpose"));
+        };
+        if original.snapshot() != expected.snapshot()
+            || original.original_receipt_binding() != expected.original_receipt_binding()
+        {
+            return Err(Error::Binding("same original evaluated read T/B/S context"));
+        }
+        Ok(())
+    }
+
     pub(super) fn require_original_selection(
         &self,
         expected: &OriginalCircuitEvaluatedRetentionContextV1,
@@ -190,6 +205,16 @@ impl OriginalCircuitLearningReadClientV1 {
             timeout,
             lifetime,
         )
+    }
+
+    pub(crate) fn require_original_evaluated_next_use(
+        &self,
+        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,
+    ) -> Result<(), Error> {
+        let ReadProfile::Evaluated(original) = &self.context else {
+            return Err(Error::Binding("original evaluated read capability"));
+        };
+        original.require_original_next_use(expected)
     }
 
     pub(crate) fn require_original_evaluated_selection(

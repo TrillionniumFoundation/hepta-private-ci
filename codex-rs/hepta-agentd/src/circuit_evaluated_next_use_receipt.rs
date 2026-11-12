@@ -7,6 +7,10 @@ use crate::OriginalCellEvaluationCommandClientV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 
+#[path = "circuit_evaluated_next_use_remote.rs"]
+mod remote;
+pub use remote::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
+
 pub struct OriginalCircuitEvaluatedNextUseReceiptConfigV1 {
     pub selection: OriginalCircuitEvaluatedSelectionReceiptV1,
     pub signer: TrustedLearningSignerV1,
@@ -35,7 +39,99 @@ pub struct OriginalCircuitEvaluatedNextUseReceiptV1 {
     attestation: SignedLearningEvidenceV1,
 }
 
+impl Clone for OriginalCircuitEvaluatedNextUseReceiptV1 {
+    fn clone(&self) -> Self {
+        Self {
+            selection: self.selection.clone(),
+            snapshot: self.snapshot.clone(),
+            receipt: self.receipt.clone(),
+            attestation: self.attestation.clone(),
+        }
+    }
+}
+
 impl OriginalCircuitEvaluatedNextUseReceiptV1 {
+    /// Only the fixed evaluated C command decoder calls this. Validate the
+    /// complete original T/B/S/C chain; the supplied S retains its cold origin.
+    pub(crate) fn authenticate_original_command_response(
+        selection: OriginalCircuitEvaluatedSelectionReceiptV1,
+        snapshot: LearningIterationSnapshotV1,
+        attestation: SignedLearningEvidenceV1,
+        current: u64,
+    ) -> Result<Self, Error> {
+        let predecessors = selection.original_receipt_predecessors(current)?;
+        let prefix = selection.snapshot();
+        if snapshot.request != prefix.request
+            || snapshot.owners != prefix.owners
+            || snapshot.receipts.len() != 6
+            || !snapshot.receipts.starts_with(&prefix.receipts)
+        {
+            return Err(OwnerError::Binding("one original evaluated C extension").into());
+        }
+        let receipt = snapshot
+            .receipts
+            .last()
+            .ok_or(OwnerError::Binding("original evaluated C receipt"))?
+            .clone();
+        let baseline = prefix
+            .request
+            .selected_bundle
+            .digest()
+            .map_err(LearningIterationError::from)?;
+        if !matches!(&receipt.observation,
+            LearningIterationObservationV1::RetainedModelNextUse {
+                retained_bundle, state_partition, checkpoint_digest, selection_digest,
+                committed_step_receipt, task_owner_publication,
+            } if *retained_bundle == baseline
+                && state_partition.principal_id == prefix.request.principal_id
+                && state_partition.agent_id == prefix.request.agent_id
+                && state_partition.cell_id == prefix.request.cell_id
+                && state_partition.run_id != prefix.request.source_run_id
+                && !checkpoint_digest.is_zero()
+                && !committed_step_receipt.is_zero()
+                && !task_owner_publication.is_zero()
+                && matches!(&selection.receipt().observation,
+                    LearningIterationObservationV1::Selection {
+                        candidate_bundle, selection_digest: original_selection,
+                    } if *candidate_bundle == baseline && original_selection == selection_digest))
+            || receipt.actor_id != prefix.owners.next_use_observer
+            || receipt.observed_unix_seconds > attestation.issued_at
+            || attestation.issued_at > current
+        {
+            return Err(
+                OwnerError::Binding("actual original evaluated C actor and completion").into(),
+            );
+        }
+        let (scope, verifier, _) = selection.original_context().receipt_configuration();
+        let mut original = LearningIterationCoordinatorV1::from_snapshot(prefix.clone())?;
+        original.record(receipt.clone(), receipt.observed_unix_seconds)?;
+        scope.validate_snapshot(&snapshot)?;
+        if original.snapshot() != &snapshot
+            || original.next_stage().is_some()
+            || original.next_task_bundle() != Some(&prefix.request.selected_bundle)
+        {
+            return Err(OwnerError::Binding("exact completed original evaluated C").into());
+        }
+        let observer = verifier.verify(
+            LearningEvidenceRoleV1::Observer,
+            &attestation,
+            &learning_iteration_receipt_signing_bytes_v1(&receipt)?,
+            current,
+        )?;
+        if observer.principal().principal_id != receipt.actor_id {
+            return Err(OwnerError::Binding("original evaluated Observer identity").into());
+        }
+        for predecessor in &predecessors {
+            verify_signed_actor_separation(predecessor, &observer, current)?;
+        }
+        Ok(Self {
+            selection,
+            snapshot,
+            receipt,
+            attestation,
+        })
+    }
+
     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
         &self.snapshot
     }
@@ -50,6 +146,34 @@ impl OriginalCircuitEvaluatedNextUseReceiptV1 {
 
     pub(crate) fn original_selection(&self) -> &OriginalCircuitEvaluatedSelectionReceiptV1 {
         &self.selection
+    }
+}
+
+impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseReceiptOwnerV1<W> {
+    pub(crate) fn original_evaluated_command_selection(
+        &self,
+    ) -> Result<OriginalCircuitEvaluatedSelectionReceiptV1, Error> {
+        let Profile::Evaluated(selection) = &self.profile else {
+            return Err(OwnerError::Binding("original evaluated C command profile").into());
+        };
+        Ok(selection.clone())
+    }
+
+    /// Consume the actual C Observer, original task and original read-only S
+    /// capability. The Observer can attest completed C but cannot execute C.
+    pub fn into_evaluated_command_owner(
+        self,
+        live: OriginalCircuitLearningReadClientV1,
+        trainer: std::sync::Arc<OriginalCellQ24TrainingCommandClientV1>,
+        evaluator: std::sync::Arc<OriginalCellEvaluationCommandClientV1>,
+        selector: LearningIterationEvidenceClientV1,
+    ) -> Result<
+        crate::OriginalCircuitEvaluatedNextUseCommandOwnerV1<W>,
+        crate::OriginalCircuitEvaluatedNextUseCommandErrorV1,
+    > {
+        crate::OriginalCircuitEvaluatedNextUseCommandOwnerV1::from_original_receipt_owner(
+            self, live, trainer, evaluator, selector,
+        )
     }
 }
 

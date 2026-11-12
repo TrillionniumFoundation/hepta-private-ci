@@ -74,12 +74,15 @@ async fn completed_member(
 }
 
 impl PanelFixture {
-    async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
+    fn completed(
+        peer: TrainingPeer,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<Self>>>> {
+        // Construct the child future before polling it. The old async bridge
+        // itself reserved 533,064 stack bytes in the measured debug binary.
         Box::pin(Self::completed_for_publication(
             peer,
             PublicationMode::AdoptCandidate,
         ))
-        .await
     }
 
     async fn completed_for_publication(
@@ -133,10 +136,21 @@ impl PanelFixture {
         })
     }
 
-    async fn read(
+    fn read(
         &mut self,
-    ) -> Result<OriginalCellEvaluationPanelReadbackV1, OriginalCellEvaluationPanelErrorV1> {
-        self.panel.fixture_current(self.at).await
+    ) -> std::pin::Pin<
+        Box<
+            impl std::future::Future<
+                Output = Result<
+                    OriginalCellEvaluationPanelReadbackV1,
+                    OriginalCellEvaluationPanelErrorV1,
+                >,
+            > + '_,
+        >,
+    > {
+        // Keep the large real panel read future out of every enclosing test
+        // frame, including the initial Admission poll before this branch runs.
+        Box::pin(self.panel.fixture_current(self.at))
     }
 
     fn bytes(&mut self) -> anyhow::Result<Vec<Vec<u8>>> {
@@ -148,13 +162,17 @@ impl PanelFixture {
         Ok(bytes)
     }
 
-    async fn finish(self) -> anyhow::Result<[usize; 2]> {
-        drop(self.panel);
-        let counts = [self.primary.finish()?, self.retention.finish()?];
-        drop(self.primary_b);
-        drop(self.retention_b);
-        Box::pin(self.original.finish()).await?;
-        Ok(counts)
+    fn finish(
+        self,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<[usize; 2]>>>> {
+        Box::pin(async move {
+            drop(self.panel);
+            let counts = [self.primary.finish()?, self.retention.finish()?];
+            drop(self.primary_b);
+            drop(self.retention_b);
+            Box::pin(self.original.finish()).await?;
+            Ok(counts)
+        })
     }
 }
 
