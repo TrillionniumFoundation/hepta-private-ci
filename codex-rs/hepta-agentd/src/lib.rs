@@ -1503,3 +1503,7 @@ pub(crate) use root_generation_initial_client::OriginalRootInitialLearningTrustV
 #[cfg(all(test, target_os = "linux"))]
 #[path = "ordinary_q24_cold_snapshot_tests.rs"]
 mod ordinary_q24_cold_snapshot_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "ordinary_q24_process_child_tests.rs"]
+pub(crate) mod ordinary_q24_process_child_tests;
