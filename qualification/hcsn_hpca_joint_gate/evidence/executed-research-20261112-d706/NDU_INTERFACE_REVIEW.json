@@ -1,0 +1,108 @@
+{
+  "schema": "hcsn-hpca-ndu-readonly-interface-review-v1",
+  "status": "NO_EXISTING_SMOLLM2_NDU_2X2_EXECUTION_BRIDGE_CONFIRMED",
+  "scope": "Read-only fixed-source interface review; no model execution, training, mutation of other workspaces, or NDU proxy implementation.",
+  "refs": {
+    "shadow_reference": "1eac6794355fa01a3e051776c5598a13ac612073",
+    "current_main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "native_policy_guard_pr5947": "9f095f4db0cd73a06aac7f87f71dd0d4a511c416",
+    "finite_native_prototype_pr5451": "de9cf9d3eba7ac48706e030ed323ac72da10c1a3",
+    "hpca_pr6172_observed_head": "b0ea141de2d5218869823b2d9e075db6d7b215dd",
+    "common_execution_source": "9f6c7c4dc24510472ca012647ebd1d96c1405c69",
+    "common_evidence_head": "672184fa5f51c5d658167a01b1c9be9668e383bb"
+  },
+  "interfaces": [
+    {
+      "source": "codex-rs/hepta-ndu/src/evaluator.rs",
+      "ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "entrypoint": "evaluate_candidates_with_policy",
+      "actual": true,
+      "inputs": [
+        "ContributionSet",
+        "UtilityProfile",
+        "Option<ScalarizationProfile>",
+        "EvaluationPolicyV1"
+      ],
+      "output": "NduEvaluationReceiptV2 with advisory_recommendation, evaluated/rejected/Pareto candidates and policy/evaluation digests",
+      "gap": "No HPCA adapter creates supported utility/risk/resource/uncertainty axes and owner/objective/generation-scoped candidates from this SmolLM2 output head."
+    },
+    {
+      "source": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "entrypoint": "evaluate_prepared_plan_with_ndu",
+      "actual": true,
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "NduPlanningInputV1",
+        "now_micros"
+      ],
+      "output": "Original NDU evaluation and sealed planning projection",
+      "gap": "Requires exact candidate and observed owner coverage; current Python decoder does not produce or dispatch this contract."
+    },
+    {
+      "source": "codex-rs/hepta-ndu/src/projection_store.rs",
+      "ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "entrypoints": [
+        "select_projection",
+        "backup_bytes",
+        "restore_backup"
+      ],
+      "actual": true,
+      "gap": "Persists projection digests and journal history; it is not a token/action selector, SmolLM2 cache checkpoint, or learned controller checkpoint."
+    },
+    {
+      "source": "scripts/ndu_bimodal/learning.py",
+      "ref": "9f095f4db0cd73a06aac7f87f71dd0d4a511c416",
+      "entrypoints": [
+        "Candidate.choose",
+        "save_candidate",
+        "load_candidate"
+      ],
+      "actual": true,
+      "checkpoint_schema": "hepta.bimodal.uncertain-advantage.v1",
+      "gap": "Checkpoint binds finite.Model identity, finite.py hash, exact supported finite State/action pairs, calibration and 16 numeric features. It does not accept SmolLM2 hidden state/logits/cache; DP-distilled finite continuation is a different state law."
+    },
+    {
+      "source": "scripts/ndu_bimodal/native.py",
+      "ref": "9f095f4db0cd73a06aac7f87f71dd0d4a511c416",
+      "entrypoints": [
+        "load_generator",
+        "NativeSession"
+      ],
+      "actual": true,
+      "gap": "Strict native packet loads only JointGeneratorV4 width32/depth1, dual/direct mode, text bytes and 16x16 image; incompatible with current frozen SmolLM2+two linear output heads."
+    },
+    {
+      "source": "scripts/ndu_bimodal/cli.py",
+      "ref": "9f095f4db0cd73a06aac7f87f71dd0d4a511c416",
+      "entrypoint": "resolve_native_policy",
+      "actual": true,
+      "behavior": "requested dynamic -> effective static-quota; require_exact=True refuses before resource loading",
+      "gap": "No admitted actual native dynamic arm; a fallback run cannot supply NDU-on."
+    },
+    {
+      "source": "qualification/hpca_routed_content_v1/run.py",
+      "ref": "b0ea141de2d5218869823b2d9e075db6d7b215dd",
+      "entrypoint": "generate",
+      "actual": true,
+      "behavior": "frozen model prefill -> first-token Yes/No logits +/- output-head delta -> argmax and greedy cached continuation",
+      "gap": "No NDU selector, frozen policy, action state, paid action dispatch, or NDU checkpoint. PLAN explicitly excludes NDU2x2."
+    }
+  ],
+  "necessary_next_step": [
+    "Choose and bind the actual NDU implementation and treatment definition: deterministic candidate evaluation or dynamic continuation control. These are different factors.",
+    "Implement the minimal real runner bridge: one causal state/action contract with frozen objective/profile/normalization; invoke the original NDU entrypoint, dispatch its returned action, and retain the original evaluation/selection receipts and full actual costs. Evaluation labels cannot manufacture utility or control state.",
+    "For a dynamic continuation arm, supply a SmolLM2-compatible supported state/calibration/checkpoint; the finite-prototype checkpoint and native static fallback do not supply this.",
+    "Only after that bridge and policy are frozen, execute matched content-off/on x NDU-off/on cells. Current content heads and task roster can be reused as declared development assets; no independent-future claim follows."
+  ],
+  "common_gate_material_limits": [
+    "Every retained prior/posterior is an offline initial law; no observation-likelihood bridge or recursive posterior rollout is implemented by this gate.",
+    "All-position finite M/H/A uses gaps 0.001..0.16 below delay0.2. Actual DDE is 30 predetermined integrations/210 records; repeated delay/reset/age recovery is checked on the separate state fixtures, not a full-population long-horizon recovery sweep.",
+    "The common graded kernel/migration/state source has no full end-to-end parameter gradient and training qualification. The separate uniform Torch cascade is not pooled.",
+    "The common run has optimizer_calls=0 and complete_C2_replays=0. Numerical flux/state recovery is not a complete model/optimizer/RNG/autograd training restart.",
+    "Results remain exposed-domain post-failure engineering; permanent upper escape/tail floor assumptions are unchanged. No independent future-task efficacy or production/default-cell adoption is inferred."
+  ],
+  "model_calls_started": 0,
+  "tests_started": 0
+}
