@@ -1,0 +1,66 @@
+{
+  "source": "57861bc757a217686d5974d46529aa5ac91ee812",
+  "tree": "3666bc38a5641c0ea4a2aa4b4252e11d79b23b9c",
+  "command": [
+    "just",
+    "fix",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "elapsed_seconds": 29.329276223998022,
+  "exit_code": 255,
+  "source_unchanged": true,
+  "ordinary_tests": 0,
+  "root_tests": 0,
+  "junit": 0,
+  "profile_overrides": [],
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 2222,
+    "sha256": "8f2b832d3323344a0e6ceb28a91ab26c93f9140df04fb8b63cfaf8e96d5596b9",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "driver.py",
+      "bytes": 2881,
+      "sha256": "ec0e6928968937939736c64df6bda1372e092c77c83db33d56055d9813532da1"
+    },
+    {
+      "path": "fix.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "preflight-attempt1.txt",
+      "bytes": 199,
+      "sha256": "927a242582cfb336ea780cacc48f6fd93ed04dbf81504094f82771115c163871"
+    },
+    {
+      "path": "result.json",
+      "bytes": 1469,
+      "sha256": "9aa37a9c1249334f31ffb4cdaa8e991c627a9a07d25d9a61879e7ce669e9181d"
+    },
+    {
+      "path": "stderr.log",
+      "bytes": 412,
+      "sha256": "c2119bfaea420dcf8a1aa7ae101a374abd369ed0c3f4ae77f69a4a99780a65f3"
+    },
+    {
+      "path": "stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
