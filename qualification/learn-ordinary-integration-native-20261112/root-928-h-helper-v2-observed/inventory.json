@@ -1,0 +1,70 @@
+{
+  "source": {
+    "sha": "92817b2fee9f088a44831ee894d973eff3333853",
+    "tree": "c73fae7021766799925e38d6e4ef9268fc5c61f0",
+    "status": ""
+  },
+  "job_id": "1a1cf357421-2564-19c6",
+  "observed_status": "failed in helper build",
+  "tests_executed": 0,
+  "fresh_junit": 0,
+  "full_compiler_output_retrieved": false,
+  "missing_originals": [
+    "helpers/manifest.json",
+    "helpers/codex-hepta-infer-worker-host.stderr.log",
+    "helpers/codex-hepta-infer-worker-host.jsonl"
+  ],
+  "originals": [
+    {
+      "path": "cloud-incremental-retirement.json",
+      "bytes": 50488,
+      "sha256": "6188ef20f129ca53a2f617dbf4d014c68dbc87ac67b1713e2a82979c271c5570"
+    },
+    {
+      "path": "driver-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "driver-stdout.json",
+      "bytes": 7744,
+      "sha256": "59dc770e7e7ca149e90503367aaf3aeaf12c676cb28769c37544793a6f0932b0"
+    },
+    {
+      "path": "h-terminal-status.json",
+      "bytes": 729,
+      "sha256": "adf14edda25e68169600b63aae3ae88e31cfb3b846433fd346c9ffa926b6a85e"
+    },
+    {
+      "path": "helpers-build-launch.log",
+      "bytes": 1327,
+      "sha256": "401851ecb4d45497390af8220e6811811f2f82e1f75facb701eb96df77d9a9b9"
+    },
+    {
+      "path": "helpers-build/command.log",
+      "bytes": 198,
+      "sha256": "f8574f9fb6e2e04e61654e9395a27469c646128b34e056a7735e38c525e3bf76"
+    },
+    {
+      "path": "helpers-build/run.json",
+      "bytes": 1491,
+      "sha256": "b64b271eda8c532138ed97c30b86934343fdc87fad38102394ffdd1312e67471"
+    },
+    {
+      "path": "root-92817b2f-v2-native-driver.py",
+      "bytes": 14834,
+      "sha256": "9febc6c4d982589486881f83dac0a51c13c37b6935bf4b249a25244050a18774"
+    },
+    {
+      "path": "root-92817b2f-v2-native-request.json",
+      "bytes": 342839,
+      "sha256": "bbb044350f9fe4a117cade93980e7d64525d42b4b6a050917232cbae311dec74"
+    }
+  ],
+  "archive": {
+    "path": "retrieved-originals.tar.gz",
+    "bytes": 258259,
+    "sha256": "27cc8c4b91c2943028196b2df09e92a2e5e4b1ab6a72d51b57fdd07b157ecdbd"
+  },
+  "roundtrip_verified": true
+}
