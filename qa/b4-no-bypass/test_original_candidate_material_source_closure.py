@@ -1,4 +1,4 @@
-"""Keep original Candidate bytes on one read-only SourceBound owner session.
+"""Keep original Candidate bytes on one read-only Begin/Pages/Finish session.
 
 These mutations protect source boundaries. Native cases separately exercise
 actual Source/Material/Training owners; neither suite grants model adoption.
@@ -23,6 +23,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 MATERIAL = AGENT + "cell_q24_candidate_material.rs"
 CLIENT = AGENT + "cell_q24_training_candidate_readback.rs"
 WIRE = AGENT + "cell_q24_training_candidate_wire.rs"
+TRANSFER = AGENT + "cell_q24_training_candidate_transfer.rs"
 SERVICE = AGENT + "cell_q24_training_candidate_service.rs"
 BOOTSTRAP = AGENT + "cell_q24_training_bootstrap_candidate.rs"
 CONNECTION = AGENT + "cell_q24_training_command_connection.rs"
@@ -128,9 +129,9 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
             (CLIENT, "fn from_original_connection(", "context.dataset != *dataset.snapshot()"),
             (CLIENT, "fn readback(", ".take()"),
             (CLIENT, "fn readback(", "for page in 0..pages"),
-            (CLIENT, "fn readback(", "response.request != request"),
+            (CLIENT, "fn exchange(", "&response.request != request"),
             (CLIENT, "fn readback(", "total as usize != length"),
-            (CLIENT, "fn readback(", "heads.len() != expected_offset"),
+            (CLIENT, "fn readback(", "heads.len() != offset_expected"),
             (CLIENT, "fn readback(", "STANDARD_NO_PAD.encode(&part) != encoded_heads"),
             (CLIENT, "fn readback(", "OriginalCellQ24CandidateMaterialV1::from_verified_readback("),
             (CLIENT, "fn verify_original_context(", "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context("),
@@ -140,8 +141,8 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
             (CLIENT, "fn verify_original_context(", "&verified != expected"),
             (WIRE, "fn require_common(", "self.operation != OPERATION"),
             (WIRE, "fn require_common(", "usize::from(self.page) >= MAX_PAGES"),
-            (WIRE, "fn require_request(", "request.page != self.next_page"),
-            (WIRE, "fn require_request(", "pin != &request.completion"),
+            (TRANSFER, "fn check_request(", "request.page == original.next_page"),
+            (TRANSFER, "fn check_request(", "prior != &request.completion"),
             (WIRE, "fn completion_digest(", "&attestation.signing_bytes()"),
             (WIRE, "fn completion_digest(", "&attestation.signature"),
             (WIRE, "fn original_page(", "completion_digest(material.receipt(), material.attestation())?"),
@@ -180,7 +181,7 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
             (SERVICE, "fn candidate_material_response(", "wire::authenticate_receipt("),
             (SERVICE, "fn candidate_material_response(", "wire::CommandResult::Missing => candidate_wire::MaterialResult::Missing"),
             (SERVICE, "fn candidate_material_response(", "wire::CommandResult::Pending => candidate_wire::MaterialResult::Pending"),
-            (WIRE, "fn encode_response(", "SessionDisposition::CloseReadback"),
+            (TRANSFER, "fn encode_response(", "SessionDisposition::CloseReadback"),
             (MATERIAL, "fn authority(", "AuthorityPosture::DENY_ALL"),
         ):
             with self.subTest(path=path, marker=marker):
@@ -201,6 +202,113 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
                 self.verifies(path, source)
                 with self.assertRaises(PROOF.VerificationFailure):
                     self.verifies(path, source + "\n" + declaration + "\n")
+
+
+    def test_begin_and_finish_require_actual_owner_and_complete_current_tail(self):
+        for path, function, marker in (
+            (SERVICE, "fn candidate_material_response(", "session.require_owner(self as *const Self as usize)?"),
+            (SERVICE, "fn candidate_material_response(", "request.phase == candidate_wire::Phase::Page"),
+            (SERVICE, "fn candidate_material_response(", "session.require_current(&self.context, started_at)?"),
+            (SERVICE, "fn candidate_material_response(", "Phase::Begin => session.begin(&request, material, fresh_now)?"),
+            (SERVICE, "fn candidate_material_response(", "Phase::Finish => session.finish(&request, material)?"),
+            (SERVICE, "fn candidate_material_response(", "session.encode_response(request, result)"),
+            (TRANSFER, "fn require_current(", "current < lower || current < original.last_at"),
+            (TRANSFER, "fn require_current(", "super::super::wire::authenticate_receipt("),
+            (TRANSFER, "fn require_current(", "checked.receipt() != original.material.receipt()"),
+            (TRANSFER, "fn require_current(", "checked.attestation() != original.material.attestation()"),
+            (TRANSFER, "fn finish(", "request.phase != Phase::Finish"),
+            (TRANSFER, "fn finish(", "current.heads() != original.heads()"),
+            (TRANSFER, "fn finish(", "current.bundle() != original.bundle()"),
+            (TRANSFER, "fn finish(", "current.model().components() != original.model().components()"),
+            (TRANSFER, "fn finish(", "current.receipt() != original.receipt()"),
+            (TRANSFER, "fn finish(", "current.attestation() != original.attestation()"),
+            (TRANSFER, "fn finish(", "current.authority() != codex_hepta_types::AuthorityPosture::DENY_ALL"),
+            (CLIENT, "fn readback(", "candidate_wire::Request::finish("),
+            (CLIENT, "fn readback(", "exchange(&mut channel, &finish, &cancellation)?"),
+            (CLIENT, "fn readback(", "total as usize == length && digest == heads_digest.to_string()"),
+            (CLIENT, "fn readback(", "if retained_channel.is_some()"),
+            (CLIENT, "fn readback(", "*retained_channel = Some(channel)"),
+        ):
+            with self.subTest(path=path, marker=marker):
+                self.rejects(path, function, marker)
+
+    def test_transfer_nonce_and_next_independent_begin_cannot_reuse_current(self):
+        for path, function, marker in (
+            (WIRE, "fn require_common(", "!(1..=128).contains(&request_id)"),
+            (WIRE, "fn require_common(", "self.transfer == 0 || self.transfer > request_id"),
+            (WIRE, "fn finish(", "request.transfer = transfer"),
+            (WIRE, "fn finish(", "request.phase = Phase::Finish"),
+            (TRANSFER, "fn require_owner(", "self.failed || self.owner.is_some_and(|original| original != owner)"),
+            (TRANSFER, "fn require_request(", "self.check_request(request)"),
+            (TRANSFER, "fn require_request(", "self.fail()"),
+            (TRANSFER, "fn check_request(", "Phase::Begin if self.original.is_none()"),
+            (TRANSFER, "fn check_request(", "request.page == 0 && request.transfer == request.request_id"),
+            (TRANSFER, "fn check_request(", "request.transfer != original.transfer"),
+            (TRANSFER, "fn check_request(", "request.request_id == original.transfer + u64::from(request.page)"),
+            (TRANSFER, "fn check_request(", "usize::from(original.next_page) == pages"),
+            (TRANSFER, "fn check_request(", "request.request_id == original.transfer + pages as u64"),
+            (TRANSFER, "fn begin(", "request.transfer.checked_add(pages as u64).is_none_or(|last| last > 128)"),
+            (TRANSFER, "fn encode_response(", "original.next_page += 1"),
+            (TRANSFER, "fn encode_response(", "self.completion = Some(request.completion.clone())"),
+            (TRANSFER, "fn encode_response(", "self.original = None"),
+            (TRANSFER, "fn fail(", "self.failed = true"),
+            (TRANSFER, "fn fail(", "self.original = None"),
+            (CLIENT, "fn readback(", "transfer.checked_add(pages as u64).is_none_or(|last| last > 128)"),
+            (CLIENT, "fn exchange(", "channel.next_request_id += 1"),
+        ):
+            with self.subTest(path=path, marker=marker):
+                self.rejects(path, function, marker)
+        for declaration in (
+            "impl Clone for Session {}",
+            "use serde::Deserialize;",
+            "fn bypass(stage: SourceBoundCellQ24TrainingStageV1) {}",
+            "fn bypass(permit: OwnedSemaphorePermit) {}",
+            "fn bypass() { owner.fit_or_readback(); }",
+            "fn bypass() { key.sign(); }",
+        ):
+            with self.subTest(declaration=declaration):
+                source = (ROOT / TRANSFER).read_text()
+                self.verifies(TRANSFER, source)
+                with self.assertRaises(PROOF.VerificationFailure):
+                    self.verifies(TRANSFER, source + "\n" + declaration + "\n")
+
+    def test_cancelled_or_unfinished_transfer_consumes_the_original_channel(self):
+        for path, function, marker in (
+            (CLIENT, "fn readback(", "CancelledCandidateRead(Arc::new(AtomicBool::new(false)))"),
+            (CLIENT, "fn readback(", "cancellation.load(Ordering::Acquire)"),
+            (CLIENT, "fn exchange(", "channel.peer.request(&encoded)"),
+            (CLIENT, "fn exchange(", "cancelled.load(Ordering::Acquire)"),
+            (CLIENT, "fn exchange(", "encoded.len() > 16_384"),
+            (CLIENT, "fn exchange(", "bytes.len() > 16_384"),
+            (CLIENT, "fn drop(", "self.0.store(true, Ordering::Release)"),
+            (SERVICE, "fn candidate_material_response(", "if result.is_err() { session.fail(); }"),
+        ):
+            with self.subTest(path=path, marker=marker):
+                self.rejects(path, function, marker)
+        for path in (SERVICE, BOOTSTRAP):
+            for function, marker in (
+                ("fn serve_candidate_material_readback(", "original_owner_command_channel_v1("),
+                ("fn serve_candidate_material_readback(", "let _permit = permit"),
+                ("fn serve_candidate_material_readback(", "channel.check_peer_lifetime()"),
+                ("fn serve_candidate_material_readback(", "cancelled.load(Ordering::Acquire)"),
+                ("fn serve_candidate_material_channel(", "for request_id in 1..=128_u64"),
+                ("fn serve_candidate_material_channel(", "session.unfinished()"),
+                ("fn drop(", "self.0.store(true, Ordering::Release)"),
+            ):
+                with self.subTest(path=path, marker=marker):
+                    self.rejects(path, function, marker)
+        source = (ROOT / CLIENT).read_text()
+        code = self.code(source)
+        start = code.index("fn exchange(")
+        end = PROOF._rust_item_end(code, start)
+        self.assertIsNotNone(end)
+        for marker in ("channel.peer.check_peer_lifetime()", "cancelled.load(Ordering::Acquire)"):
+            with self.subTest(last_actual_exchange_check=marker):
+                # The second check must survive independently of the first.
+                offset = source.rindex(marker, start, end + 1)
+                with self.assertRaises(PROOF.VerificationFailure):
+                    self.verifies(CLIENT, source[:offset] + source[offset + len(marker):])
+
 
 
 if __name__ == "__main__":
