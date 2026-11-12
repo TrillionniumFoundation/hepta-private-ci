@@ -1,6 +1,6 @@
-"""Owner-bound, episodic GRU/diagonal recurrence candidates for Cell research.
+"""Owner-bound, episodic GRU/CfC/diagonal candidates for Cell research.
 
-Reuses the unchanged PRED-1 NumPy BPTT/Adam implementation. This is not the
+Reuses PRED-1 heads/Adam with a separate exact CfC BPTT implementation. This is not the
 HCSN localization formal study or an implementation of S4/Mamba. Whole training
 episodes start with fresh hidden state; a candidate never mutates its parent.
 """
@@ -18,11 +18,14 @@ import numpy as np
 
 from hepta_pred1.models import Model
 
+from .cfc import CfCModel
+
 
 UPSTREAM_COMMIT = "3959aac6829a345ef674b7901cbdd62316305d89"
 HCSN_PROTOCOL = "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5f7f55e015dde7fab0c174081fef090ff45501de/proposals/localization-v2/formal_protocol.json"
 KERNELS = {
     "gru": "implemented; default mature recurrent baseline",
+    "cfc": "implemented equation; default ncps mode, no backbone; last input is dt seconds",
     "diag_ssm": "implemented; simple stable diagonal recurrence, not S4/Mamba",
     "hcsn": "research candidate; separate numerical and formal-study admission required",
 }
@@ -60,7 +63,7 @@ class TemporalConfig:
     def __post_init__(self):
         if self.kind == "hcsn":
             raise ValueError(f"HCSN has no admitted Cell adapter: {HCSN_PROTOCOL}")
-        if self.kind not in ("gru", "diag_ssm"):
+        if self.kind not in ("gru", "diag_ssm", "cfc"):
             raise ValueError("unknown implemented temporal kernel")
         dims = (self.input_dim, self.action_dim, self.output_dim, self.hidden_dim)
         if (
@@ -101,7 +104,8 @@ class TemporalKernel:
         if not isinstance(config, TemporalConfig):
             raise TypeError("config must be TemporalConfig")
         self.cell_id, self.config = cell_id, config
-        self._model = Model(**asdict(config))
+        factory = CfCModel if config.kind == "cfc" else Model
+        self._model = factory(**asdict(config))
         if self._model.parameter_count > 1_000_000:
             raise ValueError("small-kernel parameter budget exceeded")
 
@@ -395,6 +399,6 @@ class TemporalKernel:
                             "invalid checkpoint parameter or optimizer array"
                         )
             state = json.loads(str(data["cell_state"]))
-        kernel._model = Model.load(io.BytesIO(raw))
+        kernel._model = type(kernel._model).load(io.BytesIO(raw))
         kernel._state_arrays(state, state["episode_id"])
         return kernel, state
