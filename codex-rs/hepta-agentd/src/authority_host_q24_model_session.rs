@@ -116,12 +116,56 @@ pub(super) fn serve_optional(
     owner: &OwnedFd,
     original: impl FnOnce() -> io::Result<()>,
 ) -> io::Result<()> {
+    serve_optional_with_end(
+        factory,
+        service,
+        config,
+        registration,
+        owner,
+        /*original_end*/ None,
+        original,
+    )
+}
+
+pub(super) fn serve_optional_until(
+    factory: Option<&BoundFactory>,
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    end: Instant,
+    original: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
+    owner_alive(owner, end)?;
+    let result = serve_optional_with_end(
+        factory,
+        service,
+        config,
+        registration,
+        owner,
+        Some(end),
+        original,
+    );
+    owner_alive(owner, end)?;
+    result
+}
+
+fn serve_optional_with_end(
+    factory: Option<&BoundFactory>,
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    original_end: Option<Instant>,
+    original: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
     let Some(factory) = factory else {
         return original();
     };
     let stopping = AtomicBool::new(false);
     let active = Mutex::new(None::<UnixStream>);
-    let end = Instant::now() + Duration::from_millis(config.lifetime_ms);
+    let end =
+        original_end.unwrap_or_else(|| Instant::now() + Duration::from_millis(config.lifetime_ms));
     std::thread::scope(|scope| {
         let worker = scope.spawn(|| {
             let stream = loop {
@@ -159,14 +203,25 @@ pub(super) fn serve_optional(
                 request_bound: 16 * 1024,
                 response_bound: 16 * 1024,
             };
-            let result = service.serve_q24_model_factory(
-                &factory.factory,
-                config,
-                registration,
-                stream,
-                policy,
-                owner.try_clone()?,
-            );
+            let result = match original_end {
+                Some(end) => service.serve_q24_model_factory_until(
+                    &factory.factory,
+                    config,
+                    registration,
+                    stream,
+                    policy,
+                    owner.try_clone()?,
+                    end,
+                ),
+                None => service.serve_q24_model_factory(
+                    &factory.factory,
+                    config,
+                    registration,
+                    stream,
+                    policy,
+                    owner.try_clone()?,
+                ),
+            };
             if stopping.load(Ordering::Acquire) {
                 Ok(())
             } else {

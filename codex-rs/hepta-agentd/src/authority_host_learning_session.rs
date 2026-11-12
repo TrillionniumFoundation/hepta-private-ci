@@ -135,12 +135,56 @@ pub(super) fn serve_optional(
     owner: &OwnedFd,
     original: impl FnOnce() -> io::Result<()>,
 ) -> io::Result<()> {
+    serve_optional_with_end(
+        learning,
+        service,
+        config,
+        registration,
+        owner,
+        /*original_end*/ None,
+        original,
+    )
+}
+
+pub(super) fn serve_optional_until(
+    learning: Option<&BoundLearning>,
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    end: Instant,
+    original: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
+    owner_alive(owner, end)?;
+    let result = serve_optional_with_end(
+        learning,
+        service,
+        config,
+        registration,
+        owner,
+        Some(end),
+        original,
+    );
+    owner_alive(owner, end)?;
+    result
+}
+
+fn serve_optional_with_end(
+    learning: Option<&BoundLearning>,
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    original_end: Option<Instant>,
+    original: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
     let Some(learning) = learning else {
         return original();
     };
     let stopping = AtomicBool::new(false);
     let active = Mutex::new(None::<UnixStream>);
-    let end = Instant::now() + Duration::from_millis(config.lifetime_ms);
+    let end =
+        original_end.unwrap_or_else(|| Instant::now() + Duration::from_millis(config.lifetime_ms));
     std::thread::scope(|scope| {
         let worker = scope.spawn(|| {
             let stream = loop {
@@ -178,38 +222,68 @@ pub(super) fn serve_optional(
                 request_bound: 16 * 1024,
                 response_bound: 16 * 1024,
             };
-            let result = service
-                .serve_learning_checkpoint(
+            let result = match original_end {
+                Some(end) => service.serve_learning_checkpoint_until(
                     &learning.learning.backend,
                     stream,
                     policy,
                     owner.try_clone()?,
-                )
-                .map_err(io::Error::other);
+                    end,
+                ),
+                None => service.serve_learning_checkpoint(
+                    &learning.learning.backend,
+                    stream,
+                    policy,
+                    owner.try_clone()?,
+                ),
+            }
+            .map_err(io::Error::other);
             if stopping.load(Ordering::Acquire) {
                 Ok(())
             } else {
                 result
             }
         });
-        let result = super::generation_publication::serve_optional(
-            learning.publication.as_ref(),
-            &learning.learning,
-            service,
-            config,
-            registration,
-            owner,
-            || {
-                super::q24_model::serve_optional(
-                    learning.model.as_ref(),
-                    service,
-                    config,
-                    registration,
-                    owner,
-                    original,
-                )
-            },
-        );
+        let run_model = || match original_end {
+            Some(end) => super::q24_model::serve_optional_until(
+                learning.model.as_ref(),
+                service,
+                config,
+                registration,
+                owner,
+                end,
+                original,
+            ),
+            None => super::q24_model::serve_optional(
+                learning.model.as_ref(),
+                service,
+                config,
+                registration,
+                owner,
+                original,
+            ),
+        };
+        let result = match original_end {
+            Some(end) => super::generation_publication::serve_optional_until(
+                learning.publication.as_ref(),
+                &learning.learning,
+                service,
+                config,
+                registration,
+                owner,
+                end,
+                run_model,
+            ),
+            None => super::generation_publication::serve_optional(
+                learning.publication.as_ref(),
+                &learning.learning,
+                service,
+                config,
+                registration,
+                owner,
+                run_model,
+            ),
+        };
         stopping.store(true, Ordering::Release);
         if let Some(stream) = active
             .lock()
