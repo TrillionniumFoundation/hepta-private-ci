@@ -67,7 +67,9 @@ impl RootHistoricalSourcePinV1 {
 impl OriginalHistoricalSourceCellReadV1<'_> {
     pub(super) fn read_original_retired_source_cell(
         &mut self,
-        inputs: RootHistoricalSourceInputsV1,
+        load_original_source: impl FnOnce(
+            &crate::AgentdIdentity,
+        ) -> io::Result<RootHistoricalSourceInputsV1>,
     ) -> io::Result<&OriginalHistoricalSourceCellObservationV1> {
         original_root()?;
         if !matches!(
@@ -93,8 +95,6 @@ impl OriginalHistoricalSourceCellReadV1<'_> {
                     .to_string()
             || pin.spawn_generation != identity.spawn_generation
             || pin.target.scope().agent_id != identity.agent_id.as_str()
-            || inputs.fence.owner_agent_id != identity.agent_id
-            || identity.spawn_generation.checked_add(1) != Some(inputs.fence.generation)
         {
             return Err(io::Error::other(
                 "original retired Source publisher differs",
@@ -102,6 +102,14 @@ impl OriginalHistoricalSourceCellReadV1<'_> {
         }
         let retired =
             RetiredCheckpointPublisher::observe(pin.publisher.clone()).map_err(io::Error::other)?;
+        let inputs = load_original_source(&identity)?;
+        if inputs.fence.owner_agent_id != identity.agent_id
+            || identity.spawn_generation.checked_add(1) != Some(inputs.fence.generation)
+        {
+            return Err(io::Error::other(
+                "original Source fence differs from publisher",
+            ));
+        }
         require_target(&pin.target, &inputs.definition, &inputs.source)?;
         if pin.witness_context
             != Digest32::of_parts(&[
