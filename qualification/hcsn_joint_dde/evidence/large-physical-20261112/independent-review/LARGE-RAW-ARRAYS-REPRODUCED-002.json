@@ -1,0 +1,158 @@
+{
+  "cpu_seconds": 0.435260136,
+  "grids": [
+    {
+      "case_metrics": [
+        {
+          "coordinates": 665,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.466184045515519e-13,
+          "maximum_gate_ratio": 1.2222718588008897e-07,
+          "maximum_stability_ratio": 6.245004513256505e-08,
+          "parameter": "log_boundary",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 613,
+          "undefined_relative_count": 16
+        },
+        {
+          "coordinates": 665,
+          "gate_failures": 0,
+          "maximum_absolute_error": 4.762305133576561e-12,
+          "maximum_gate_ratio": 1.194029577225503e-06,
+          "maximum_stability_ratio": 2.7878108213919215e-07,
+          "parameter": "mu",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 268,
+          "undefined_relative_count": 0
+        },
+        {
+          "coordinates": 665,
+          "gate_failures": 0,
+          "maximum_absolute_error": 9.889176318111925e-10,
+          "maximum_gate_ratio": 0.00033676768850371034,
+          "maximum_stability_ratio": 0.00016167092795962693,
+          "parameter": "sigma",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 181,
+          "undefined_relative_count": 0
+        },
+        {
+          "coordinates": 665,
+          "gate_failures": 0,
+          "maximum_absolute_error": 3.558070721734752e-13,
+          "maximum_gate_ratio": 4.6587501479840135e-07,
+          "maximum_stability_ratio": 2.529876248206797e-07,
+          "parameter": "absolute_reset",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 618,
+          "undefined_relative_count": 13
+        },
+        {
+          "coordinates": 665,
+          "gate_failures": 0,
+          "maximum_absolute_error": 1.2636575813518292e-12,
+          "maximum_gate_ratio": 3.213799331987385e-07,
+          "maximum_stability_ratio": 1.5694592712062994e-07,
+          "parameter": "discount",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 652,
+          "undefined_relative_count": 20
+        }
+      ],
+      "intervals": 128,
+      "parameter_coordinates": 3325,
+      "two_step_comparisons": 6650
+    },
+    {
+      "case_metrics": [
+        {
+          "coordinates": 2585,
+          "gate_failures": 0,
+          "maximum_absolute_error": 2.701657432419206e-13,
+          "maximum_gate_ratio": 9.00552477456405e-08,
+          "maximum_stability_ratio": 6.245004513438504e-08,
+          "parameter": "log_boundary",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 2480,
+          "undefined_relative_count": 64
+        },
+        {
+          "coordinates": 2585,
+          "gate_failures": 0,
+          "maximum_absolute_error": 8.65739858274539e-12,
+          "maximum_gate_ratio": 1.594189724965869e-06,
+          "maximum_stability_ratio": 3.2102615339223976e-07,
+          "parameter": "mu",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 1573,
+          "undefined_relative_count": 0
+        },
+        {
+          "coordinates": 2585,
+          "gate_failures": 0,
+          "maximum_absolute_error": 6.672559484111051e-10,
+          "maximum_gate_ratio": 0.00034569781251432596,
+          "maximum_stability_ratio": 0.00015552922562874348,
+          "parameter": "sigma",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 870,
+          "undefined_relative_count": 0
+        },
+        {
+          "coordinates": 2585,
+          "gate_failures": 0,
+          "maximum_absolute_error": 4.745048146192206e-13,
+          "maximum_gate_ratio": 1.5816827153169176e-07,
+          "maximum_stability_ratio": 7.632783293948394e-08,
+          "parameter": "absolute_reset",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 2510,
+          "undefined_relative_count": 61
+        },
+        {
+          "coordinates": 2585,
+          "gate_failures": 0,
+          "maximum_absolute_error": 1.4335164999490502e-12,
+          "maximum_gate_ratio": 4.6818253526740453e-07,
+          "maximum_stability_ratio": 1.4704130779989152e-07,
+          "parameter": "discount",
+          "stability_failures": 0,
+          "tiny_fine_fd_count": 2572,
+          "undefined_relative_count": 88
+        }
+      ],
+      "intervals": 512,
+      "parameter_coordinates": 12925,
+      "two_step_comparisons": 25850
+    }
+  ],
+  "inspector_source": {
+    "bytes": 9707,
+    "path": "/workspace/scratch/c06d659c1e72/independent-recovery-review/reproduce_large_review.py",
+    "sha256": "5438f1dfffcb526a24bd5a1ef79c2bd7a09ce6f69ff467e874b0570329aad6d4"
+  },
+  "limitations": [
+    "Original-case horizon .02 is below delay .2: first segment and initial phase release only, no second-round reset feedback.",
+    "Historical next gap .16 differs from chosen recorded gap .02; fixed-law candidate probe is not a historical training step replay.",
+    "Mixed gate does not qualify pure relative or rare-tail gradient error. Pure relative maxima reported descriptively, and exact-zero FD derivatives have no defined relative ratio.",
+    "20*(N+5)^2 is a coefficient count estimate, not bytes/hardRSS. Knot-times-state cap does not bound all solve_ivp internal-step dense history.",
+    "Reported nnz is the constructed support upper bound, not actual callback.nnz at a specific time.",
+    "No derivative through initial posterior/filtering/migration/grid or phase law; no full-network AD, production or superiority qualification.",
+    "Previous Killed137 cause remains UNKNOWN; new successful identities do not overwrite it."
+  ],
+  "new_kernel_model_torch_optimizer_calls": 0,
+  "passed": true,
+  "reproduced_review": {
+    "bytes": 37602,
+    "path": "/workspace/scratch/c06d659c1e72/independent-recovery-review/LARGE-RAW-ARRAYS-REVIEW-001.json",
+    "sha256": "b1296a8fa0f66c99c8234941ddfcae0eb6afeec4bde54debe9e6aa41ab08e07f"
+  },
+  "schema": "hcsn-large-array-review-reproducer-v1",
+  "tested_source_archive": {
+    "bytes": 25053,
+    "path": "/workspace/scratch/c06d659c1e72/joint-gradients-large-recovered/qualification/hcsn_joint_dde/evidence/large-physical-20261112/TESTED-SOURCES.tar.gz",
+    "sha256": "8926263199b68456bd6775de5f1c600a959ff75a477469c1e55ef6a65f3c0865"
+  },
+  "tracked_files_unchanged": 51,
+  "wall_seconds": 0.2559096459999637
+}
