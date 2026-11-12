@@ -1,0 +1,116 @@
+{
+  "admission_frozen": true,
+  "maintenance_mode": "consume-external-clean-terminal",
+  "parent": "e403c45570ad313851ca71392625e5572882405f",
+  "prior_maintenance": {
+    "expected_exit_code": 0,
+    "result": {
+      "bytes": 2870,
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/maintenance-a4a1b5eb6cb4-v1/result.json",
+      "sha256": "df3c3c2346180d1cd584a4e579337720b384cecd899fa802131281154122c140"
+    },
+    "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+  },
+  "qa_fast_forward": {
+    "base": "374aa919931e8ee5446b4ccdc49e651b7848cc5d",
+    "base_tree": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+    "files": [
+      {
+        "after": {
+          "blob": "0b645be03768d2c8dcd15e9b94bf75e64fa6c5ea",
+          "bytes": 13482,
+          "sha256": "973c2287d6c8a447c65f4b87a4e0921defb9338a9d62680daa693407e6f46266"
+        },
+        "base": {
+          "blob": "4da0873c757803beb46256d84e27e63b12991347",
+          "bytes": 12997,
+          "sha256": "5a3a115cd814464248a0b00229d79c5bf65b85f8812fae3689a5134863ffd071"
+        },
+        "case_count": 8,
+        "component": "B",
+        "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py"
+      },
+      {
+        "after": {
+          "blob": "efbf08c9dc423254d933669e414301689ab8e352",
+          "bytes": 12700,
+          "sha256": "4afd8ee94af50d88f0e1e0d02cee80e3aa430bf1b5309602016aa545a167b8d1"
+        },
+        "base": {
+          "blob": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+          "bytes": 12634,
+          "sha256": "e61cb68bafc1b9e2d80f60e8c1800dd4e4dec5d10e5b9ee367da98ad31b45cf4"
+        },
+        "case_count": 6,
+        "component": "B",
+        "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py"
+      },
+      {
+        "after": {
+          "blob": "927b7de74c4a84faf3037d40a86c383cf0ac223e",
+          "bytes": 13541,
+          "sha256": "0ed97611cefb69835f6fb6e573a751a169f810fa9c2c9873cf7cabb7d21df96e"
+        },
+        "base": {
+          "blob": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+          "bytes": 12582,
+          "sha256": "1b9f8b9c9bfdc004521f7007efaf228a7fcb8819059679dd040ac060786af578"
+        },
+        "case_count": 15,
+        "component": "C",
+        "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py"
+      },
+      {
+        "after": {
+          "blob": "4203887e7a6b43f6cf8fbbfbe27f46e689e15c46",
+          "bytes": 11022,
+          "sha256": "f09e819bbd565dd83dbcaa725df6e5dc9017d3d60ffb7fca19ae57de907ce218"
+        },
+        "base": {
+          "blob": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+          "bytes": 10167,
+          "sha256": "d06d8d50b02fdb1ae5f5913348e6d9337c0e02515f7ad1e64dbdb1bed03e8039"
+        },
+        "case_count": 6,
+        "component": "C",
+        "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py"
+      }
+    ]
+  },
+  "records_suffix": "diagnostic-eleven-v1",
+  "repo": "/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb",
+  "request_key": "learn-037c-native-a4a1b5eb6cb4-diagnostic-eleven-v1",
+  "required_names": [
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_training_proof_rejects_new_source_reentry_and_incomplete_slots",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_same_call_training_keeps_four_execute_and_three_readback_frames",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_actual_training_failure_never_returns_or_resigns_b",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_training_slot_keeps_the_actual_cohort_tail",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_cancel_keeps_the_held_lane_and_consumed_channel",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::current_slots::published_current_last_original_slot_rejects_actual_withdrawal",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::current_slots::published_current_call_rejects_other_original_incomplete_and_reuse"
+  ],
+  "root_parent_count": 33,
+  "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "source_admission_mode": "prepared-newcheckout",
+  "source_gate": {
+    "execution": {
+      "bytes": 1483,
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/source-a4a1b5eb6cb4-v1/source-closure.json",
+      "sha256": "6d7ca8638ca69aeaf89833681cd672637a09c961d234d9d354b983a903a26c50"
+    },
+    "expected_cases": 504,
+    "repo": "/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb",
+    "result": {
+      "bytes": 1156,
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/source-a4a1b5eb6cb4-v1/result.json",
+      "sha256": "fd283e2847c6dde06ffb6f0a97bfeb2ab250e92f7ff1eb89d8b4dd9471cf3294"
+    }
+  },
+  "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da",
+  "workflow_blob": "0f4dffca6dcf24c197b9211e56af1cf80eb640da"
+}

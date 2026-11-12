@@ -1,0 +1,136 @@
+{
+  "H_calls": 0,
+  "Rust_or_Cargo_invocations": 0,
+  "actual_local_mechanism_tests": {
+    "Cargo_or_Rust_invocations": 0,
+    "H_calls": 0,
+    "actual_returncode": 0,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/tmp/hepta-learn-037c-20261112/recovery-native-eleven-a4a-audit-v1/test_native11_v2.py"
+    ],
+    "finished_at": "2026-11-12T20:58:44.355693+00:00",
+    "native_qualification": false,
+    "observed_tests": 19,
+    "raw_log": {
+      "blob": "44c4a0c967f0cdc79c58f20b047acc3620394060",
+      "bytes": 3719,
+      "sha256": "4ec71dbb021584e782b28a1cf5dbcc1acdc909617b17bdabcb932c0cf841272a"
+    },
+    "started_at": "2026-11-12T20:58:43.354764+00:00",
+    "status": "PASS",
+    "test_scope": "synthetic Python fake-child orchestration and real unchanged collector/parser checks only",
+    "test_source": {
+      "blob": "133c11dab2f5732d792356bd8ff6ff0fe4c12961",
+      "bytes": 19078,
+      "sha256": "352d535f779a28116fe2449d1cb126dec1e745c194cd164b6c866ffb088e6195"
+    }
+  },
+  "artifacts": {
+    "CONFIG.patch": {
+      "blob": "7ad97505e2cf8fc445c1c989191d0f2ca69d7283",
+      "bytes": 852,
+      "sha256": "a8593797e04af4bc9c34ecdec549fff94fb2ce7f6d1096beda48b7076ab2dcdd"
+    },
+    "diagnostic-driver.py": {
+      "blob": "7c706f1c4452d193095b939cd6c21461daa69c4a",
+      "bytes": 17242,
+      "sha256": "90acc3ef56963a9a6a933d814a719e7f65188030a2ce91feb83ccdcbd18173f2"
+    },
+    "diagnostic-driver.py.complete.patch": {
+      "blob": "b1ac7d613ffbdda8fee39663734348e22ca938e6",
+      "bytes": 1127,
+      "sha256": "1a7751248d3b8cc97955c201d6489f5c8138567fe376f0531141096cdc641720"
+    },
+    "list_run_gate.py": {
+      "blob": "139ae1c2e05b858d1a9fe00067eeb169c0565cfe",
+      "bytes": 25288,
+      "sha256": "166dbc2047e0ce57e697da3e68326823aae0376221600fec18881f41f899250f"
+    },
+    "list_run_gate.py.complete.patch": {
+      "blob": "baf928882a6eda1e3bbba9bcedcbec163c106115",
+      "bytes": 23026,
+      "sha256": "9ae6889162943540e15ca3f9a3f18d8016026e6046e30eb10ef7378ed4d0ae2b"
+    },
+    "maintenance-driver.py": {
+      "blob": "436049145abae26d751988fbfd74a6d5e780b06c",
+      "bytes": 12668,
+      "sha256": "6003482e759a36b7d7ed82814071b894900b450653241679762898fddf9d98ca"
+    },
+    "prepare-driver.py": {
+      "blob": "ccea260bb6b9a4a26aa03af429eb4107a4644527",
+      "bytes": 67552,
+      "sha256": "8c09dc4b88cb5758c9b643f33bb2589ca2232b01d1ebed1930f4351b9aa883e6"
+    },
+    "prepare-nonembedded.patch": {
+      "blob": "9bf134bd6a6e15a08507ffc3dbf91e651be5de2b",
+      "bytes": 1731,
+      "sha256": "9b3074825206c4df44b3b8a12d24624ebe7639815a8526ba3b22260ddf1f57ec"
+    }
+  },
+  "connections": 4,
+  "evidence_deadline_ms": 500,
+  "fixed_acceptance_budget_seconds": 7200,
+  "fullcaller_terminal": "Root observed natural exit1; full original result/log collection still pending in this package",
+  "helper_original_budget_seconds": 3600,
+  "maintenance_terminal": {
+    "expected_exit_code": 0,
+    "result": {
+      "bytes": 2870,
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/maintenance-a4a1b5eb6cb4-v1/result.json",
+      "sha256": "df3c3c2346180d1cd584a4e579337720b384cecd899fa802131281154122c140"
+    },
+    "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+  },
+  "native_JUnit_status": "UNRUN",
+  "native_nextest_list_status": "UNRUN",
+  "native_test_status": "UNRUN",
+  "operational_holds": [
+    "Root final review and unique first-start only",
+    "Root confirms no competing own-source/target process or resource pressure before 500ms diagnostic",
+    "Fullcaller actual exit1 must remain separately recorded; this native diagnostic does not promote that gate"
+  ],
+  "original_source_tools_unchanged": true,
+  "parent_signals_or_kills": false,
+  "per_case_seconds": 60,
+  "protocol_frames": 128,
+  "request": {
+    "blob": "8cc75d02e3fc0370fbbb97057babc119940deb05",
+    "bytes": 68777,
+    "sha256": "1ecebf1a3ff084e20c12090b09b7707d2889973cee82c22c575155e356e740d2"
+  },
+  "request_key": "learn-037c-native-a4a1b5eb6cb4-diagnostic-eleven-v2",
+  "retries": 0,
+  "session_seconds": 300,
+  "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "source_gate": {
+    "execution": {
+      "bytes": 1483,
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/source-a4a1b5eb6cb4-v1/source-closure.json",
+      "sha256": "6d7ca8638ca69aeaf89833681cd672637a09c961d234d9d354b983a903a26c50"
+    },
+    "expected_cases": 504,
+    "repo": "/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb",
+    "result": {
+      "bytes": 1156,
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/source-a4a1b5eb6cb4-v1/result.json",
+      "sha256": "fd283e2847c6dde06ffb6f0a97bfeb2ab250e92f7ff1eb89d8b4dd9471cf3294"
+    }
+  },
+  "stack_bytes": 8388608,
+  "status": "READY_FOR_ROOT_REVIEW_NOT_SUBMITTED",
+  "threads": 2,
+  "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da",
+  "unchanged_list_parser_metadata_functions": [
+    "unique_object",
+    "selected_cases",
+    "actual_list_command"
+  ],
+  "v1_request": {
+    "blob": "e43e950b54ca82eb03493eb0ac088e23f3b44d25",
+    "bytes": 66296,
+    "sha256": "c5a0e3068c15a63caec212f6e6fabe808952e27f735359556a4f39ff01c3cd17"
+  },
+  "v1_status": "STATIC_BLOCKER_FOUND_BEFORE_ANY_EXECUTION_NEVER_STARTED"
+}

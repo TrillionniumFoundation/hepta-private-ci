@@ -1,0 +1,356 @@
+--- frozen-v1/list_run_gate.py
++++ candidate-v2/list_run_gate.py
+@@ -1,8 +1,9 @@
+-"""Actual nextest list then the original just test, within one outer 7200s budget.
+-
+-Listing is not test acceptance. This process sets no additional timeout, sends no
+-signals and performs no retry. The existing hepta_ci_exec process tree controller
+-owns the same single outer budget as before.
++"""Actual list and original just test with one fixed 7200s acceptance end.
++
++Each phase is captured by the unchanged original CI controller using only the
++unspent relative timeout. No parent signals, retries, or timeout extensions are
++introduced. Controller setup or cleanup that crosses the fixed end makes the
++whole sequence fail even when an individual original record says passed.
+ """
+ import argparse
+ from collections import Counter
+@@ -15,6 +16,7 @@
+ import re
+ import subprocess
+ import sys
++import time
+ 
+ EXPECTED_NAMES = ['runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures', 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal', 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources', 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources', 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_training_proof_rejects_new_source_reentry_and_incomplete_slots', 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_same_call_training_keeps_four_execute_and_three_readback_frames', 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_actual_training_failure_never_returns_or_resigns_b', 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_training_slot_keeps_the_actual_cohort_tail', 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_cancel_keeps_the_held_lane_and_consumed_channel', 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::current_slots::published_current_last_original_slot_rejects_actual_withdrawal', 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::current_slots::published_current_call_rejects_other_original_incomplete_and_reuse']
+ FILTER = ' | '.join('test(=' + name + ')' for name in EXPECTED_NAMES)
+@@ -154,60 +156,108 @@
+     return command
+ 
+ 
+-def main():
+-    parser = argparse.ArgumentParser(description=__doc__)
+-    parser.add_argument('--repo', type=Path, required=True)
+-    parser.add_argument('--records', type=Path, required=True)
+-    parser.add_argument('--source', required=True)
+-    parser.add_argument('command', nargs=argparse.REMAINDER)
+-    args = parser.parse_args()
+-    command = args.command[1:] if args.command[:1] == ['--'] else args.command
+-    if command != ORIGINAL_TEST_COMMAND:
+-        parser.error('test command differs from the reviewed eleven exact filters and original flags')
+-    if len(EXPECTED_NAMES) != 11 or len(set(EXPECTED_NAMES)) != 11:
+-        parser.error('exactly eleven unique names required')
+-    repo = args.repo.resolve(strict=True)
+-    records = args.records.resolve(strict=True)
+-    if records.is_relative_to(repo) or os.geteuid() == 0:
+-        parser.error('requires ordinary operator and external existing records')
+-    target = Path(os.environ['CARGO_TARGET_DIR']).resolve(strict=True)
+-    if os.environ.get('RUST_MIN_STACK') != '8388608':
+-        parser.error('original 8 MiB stack environment changed')
+-    if os.environ.get('SOURCE_SHA') != args.source or os.environ.get('TESTED_SHA') != args.source:
+-        parser.error('listing and test source environment differ')
++class OriginalBudgetExpired(RuntimeError):
++    pass
++
++
++def source_identity(repo):
++    def git(*values):
++        return subprocess.check_output(['git', '--no-optional-locks', *values], cwd=repo).decode().strip()
++    return {'source': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
++            'status': git('status', '--porcelain=v1', '--untracked-files=all')}
++
++
++def save_json(directory, name, value):
++    with (directory / name).open('x') as stream:
++        json.dump(value, stream, sort_keys=True, indent=2)
++        stream.write('\n')
++
++
++def run_ci_phase(repo, directory, source, deadline, label, execution_path,
++                 command, minimum_tests, result):
++    # The relative timeout is only the unspent part of the original fixed end.
++    # The unchanged controller starts its own command group and performs its
++    # original cleanup. No parent signal or additional process kill is used.
++    remaining = deadline - time.monotonic()
++    if remaining <= 0:
++        result['budget_expired'] = True
++        save_json(directory, label + '-not-started.json', {
++            'reason': 'original-budget-expired', 'absolute_end': deadline,
++            'remaining_seconds': remaining, 'command_started': False})
++        raise OriginalBudgetExpired('original 7200s end reached before ' + label)
++    controller = ['python3', str(repo / 'scripts/hepta_ci_exec.py'),
++                  '--timeout-seconds', format(remaining, '.17g'),
++                  '--minimum-tests', str(minimum_tests), '--output', str(execution_path),
++                  '--', *command]
++    launch = {'command': controller, 'actual_child_command': command,
++              'cwd': str(repo), 'started_at': now(),
++              'absolute_end_monotonic': deadline, 'remaining_seconds_passed': remaining,
++              'parent_signal_or_kill': False}
++    process = subprocess.Popen(controller, cwd=repo, env=os.environ.copy())
++    launch['pid'] = process.pid
++    save_json(directory, label + '-controller-launch.json', launch)
++    print(json.dumps({'phase': label + '-original-ci-controller', 'pid': process.pid,
++                      'remaining_seconds': remaining, 'absolute_end_monotonic': deadline}), flush=True)
++    controller_code = process.wait()
++    completed = time.monotonic()
++    terminal = {**launch, 'finished_at': now(), 'finished_monotonic': completed,
++                'returncode': controller_code, 'actual_process_exit_observed': True,
++                'execution_file_observed': execution_path.is_file()}
++    record = None
++    if execution_path.is_file():
++        terminal['original_execution'] = {'path': str(execution_path), **file_meta(execution_path)}
++        record = json.loads(execution_path.read_text(), object_pairs_hook=unique_object)
++        result[label + '_execution'] = record
++        if label == 'test':
++            result['native_test_child_started'] = type(record.get('command_exit_code')) is int
++    result[label + '_controller'] = terminal
++    save_json(directory, label + '-controller-terminal.json', terminal)
++    # Controller setup/identity I/O is not allowed to extend an acceptable run.
++    # If it used time outside the passed relative command timeout, retain its
++    # natural real record but fail this complete sequence at the fixed end.
++    if completed >= deadline:
++        result['budget_expired'] = True
++        raise OriginalBudgetExpired('original 7200s end reached during ' + label)
++    if controller_code != 0 or record is None:
++        raise RuntimeError(label + ' original CI controller failed or has no terminal record')
++    if (record.get('command') != command or record.get('status') != 'passed'
++            or record.get('exit_code') != 0 or record.get('command_exit_code') != 0
++            or record.get('returncode') != 0 or record.get('timed_out') is not False
++            or record.get('output_limit_exceeded') is not False
++            or record.get('source_sha') != source or record.get('tested_sha') != source
++            or record.get('lane') != 'source-head'
++            or record.get('before') != record.get('after')
++            or record.get('before', {}).get('commit') != source
++            or record.get('before', {}).get('dirty') is not False
++            or record.get('minimum_tests') != minimum_tests):
++        raise RuntimeError(label + ' original CI record did not satisfy its actual command/source gate')
++    return record
++
++
++def list_only(repo, records, source, target):
+     directory = records / 'list-admission'
+-    directory.mkdir(mode=0o700, exist_ok=False)
+-
++    intent = json.loads((directory / 'sequence-intent.json').read_text(), object_pairs_hook=unique_object)
++    if (intent['source'] != source or intent['original_test_command'] != ORIGINAL_TEST_COMMAND
++            or intent['original_total_budget_seconds'] != 7200):
++        raise RuntimeError('list-only child lacks the original sequence identity')
+     def save(name, value):
+-        with (directory / name).open('x') as stream:
+-            json.dump(value, stream, sort_keys=True, indent=2)
+-            stream.write('\n')
+-
+-    def source_identity():
+-        def git(*values):
+-            return subprocess.check_output(['git', '--no-optional-locks', *values], cwd=repo).decode().strip()
+-        return {'source': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
+-                'status': git('status', '--porcelain=v1', '--untracked-files=all')}
+-
+-    result = {'kind': 'actual-list-and-original-test-single-budget', 'source': args.source,
+-              'started_at': now(), 'status': 'listing-not-started',
+-              'ordinary_qualification': False, 'listing_is_test_pass': False,
+-              'native_test_child_started': False, 'additional_timeout_or_retry': False}
++        save_json(directory, name, value)
++    result = {'kind': 'actual-nextest-list-only', 'source': source, 'started_at': now(),
++              'status': 'listing-not-started', 'listing_is_test_pass': False}
+     before = None
+-    binary_inputs = []
+     returncode = 1
+     try:
+-        before = source_identity()
+-        if before['source'] != args.source or before['status']:
++        before = source_identity(repo)
++        if before['source'] != source or before['status']:
+             raise RuntimeError('listing requires the exact clean source')
+-        save('source-before.json', before)
++        save('list-source-before.json', before)
+         env = dict(os.environ)
+         env['NEXTEST_PROFILE'] = 'local'
+         list_command = actual_list_command(repo, directory, env, save)
+         launch = {'command': list_command, 'cwd': str(repo / 'codex-rs'),
+-                  'profile': 'local', 'source': args.source, 'target': str(target),
+-                  'stack_bytes': 8388608, 'outer_budget_owner': 'original hepta_ci_exec 7200s',
+-                  'separate_timeout': None, 'started_at': now()}
++                  'profile': 'local', 'source': source, 'target': str(target),
++                  'stack_bytes': 8388608, 'original_sequence_absolute_end': intent['absolute_end_monotonic'],
++                  'additional_timeout_or_retry': False, 'started_at': now()}
+         stdout_path = directory / 'nextest-list.stdout.json'
+         stderr_path = directory / 'nextest-list.stderr.raw.log'
+         with stdout_path.open('xb') as stdout, stderr_path.open('xb') as stderr:
+@@ -220,53 +270,32 @@
+             list_code = process.wait()
+             stdout.flush(); stderr.flush()
+             os.fsync(stdout.fileno()); os.fsync(stderr.fileno())
+-        list_execution = {**launch, 'finished_at': now(), 'returncode': list_code,
+-                          'actual_process_exit_observed': True, 'controller_kill': False,
+-                          'stdout': file_meta(stdout_path), 'stderr': file_meta(stderr_path)}
+-        save('nextest-list-execution.json', list_execution)
+-        result['list_execution'] = list_execution
++        execution = {**launch, 'finished_at': now(), 'returncode': list_code,
++                     'actual_process_exit_observed': True, 'controller_kill': False,
++                     'stdout': file_meta(stdout_path), 'stderr': file_meta(stderr_path)}
++        save('nextest-list-execution.json', execution)
++        result['nextest_execution'] = execution
+         if list_code:
+-            result['status'] = 'native-list-failed-before-tests'
+             raise RuntimeError('actual nextest listing failed; original stdout/stderr retained')
+         document = json.loads(stdout_path.read_text(), object_pairs_hook=unique_object)
+         coverage = selected_cases(document, EXPECTED_NAMES)
+         save('selected-name-coverage.json', coverage)
++        binaries = []
+         for raw in sorted({row['binary_path'] for row in coverage['cases']}):
+             binary = Path(raw).resolve(strict=True)
+             if not binary.is_relative_to(target) or not binary.is_file():
+                 raise RuntimeError('listed binary is outside the exact owned target')
+-            binary_inputs.append({'path': str(binary), **file_meta(binary)})
+-        save('listed-binary-inputs.json', {'source': args.source, 'binaries': binary_inputs})
+-        if source_identity() != before:
+-            raise RuntimeError('source changed during actual listing')
+-        result.update(status='original-test-starting', listing_exact_selected_names=True)
+-        test_launch = {'command': command, 'cwd': str(repo), 'started_at': now(),
+-                       'test_threads': 2, 'retries': 0, 'stack_bytes': 8388608,
+-                       'outer_budget_owner': 'same original hepta_ci_exec 7200s'}
+-        process = subprocess.Popen(command, cwd=repo, env=os.environ.copy())
+-        test_launch['pid'] = process.pid
+-        result['native_test_child_started'] = True
+-        save('original-just-test-launch.json', test_launch)
+-        print(json.dumps({'phase': 'original-just-test', 'pid': process.pid,
+-                          'started_at': test_launch['started_at']}), flush=True)
+-        test_code = process.wait()
+-        test_execution = {**test_launch, 'finished_at': now(), 'returncode': test_code,
+-                          'actual_process_exit_observed': True, 'controller_kill': False}
+-        save('original-just-test-execution.json', test_execution)
+-        result['test_execution'] = test_execution
+-        for expected in binary_inputs:
+-            if file_meta(Path(expected['path'])) != {k: expected[k] for k in ('bytes', 'sha256')}:
+-                raise RuntimeError('binary changed between listing and the actual test invocation')
+-        returncode = test_code if test_code >= 0 else 128 - test_code
+-        result['status'] = 'original-test-returned-zero' if returncode == 0 else 'original-test-failed'
++            binaries.append({'path': str(binary), **file_meta(binary)})
++        save('listed-binary-inputs.json', {'source': source, 'binaries': binaries})
++        result.update(status='actual-list-exact', listing_exact_selected_names=True)
++        returncode = 0
+     except BaseException as error:
+         result['error'] = type(error).__name__ + ': ' + str(error)
+-        returncode = returncode or 1
+-        print('native list/run admission failed: ' + result['error'], flush=True)
++        print('native listing failed: ' + result['error'], flush=True)
+     finally:
+         try:
+-            after = source_identity()
+-            save('source-after.json', after)
++            after = source_identity(repo)
++            save('list-source-after.json', after)
+             result['source_before'], result['source_after'] = before, after
+             if before is not None and before != after:
+                 result['source_changed'] = True
+@@ -275,10 +304,109 @@
+             result['retention_error'] = type(error).__name__ + ': ' + str(error)
+             returncode = 1
+         result.update(finished_at=now(), exit_code=returncode)
+-        save('result.json', result)
++        save('list-only-result.json', result)
++        print(json.dumps({'actual_list_only_result': result}, sort_keys=True), flush=True)
++    return returncode
++
++
++def sequence(repo, records, source):
++    directory = records / 'list-admission'
++    directory.mkdir(mode=0o700, exist_ok=False)
++    start = time.monotonic()
++    deadline = start + 7200
++    save_json(directory, 'sequence-intent.json', {
++        'source': source, 'started_at': now(), 'started_monotonic': start,
++        'absolute_end_monotonic': deadline, 'original_total_budget_seconds': 7200,
++        'original_test_command': ORIGINAL_TEST_COMMAND, 'parent_signal_or_kill': False,
++        'acceptance_rule': 'every phase starts and completes strictly before the same fixed end',
++        'cleanup_rule': 'wait for the unchanged original controller natural timeout cleanup'})
++    result = {'kind': 'actual-list-and-original-test-fixed-budget', 'source': source,
++              'started_at': now(), 'status': 'listing-not-started',
++              'budget_seconds': 7200, 'absolute_end_monotonic': deadline,
++              'budget_expired': False, 'native_test_child_started': False,
++              'listing_is_test_pass': False, 'ordinary_qualification': False,
++              'additional_timeout_or_retry': False, 'parent_signal_or_kill': False}
++    before = None
++    returncode = 1
++    try:
++        before = source_identity(repo)
++        if before['source'] != source or before['status']:
++            raise RuntimeError('sequence requires the exact clean source')
++        save_json(directory, 'source-before.json', before)
++        list_command = ['python3', str(Path(__file__).resolve()), '--list-only',
++                        '--repo', str(repo), '--records', str(records), '--source', source]
++        run_ci_phase(repo, directory, source, deadline, 'list', records / 'list-execution.json',
++                     list_command, 0, result)
++        listed = json.loads((directory / 'list-only-result.json').read_text(), object_pairs_hook=unique_object)
++        if (listed['status'] != 'actual-list-exact' or listed['exit_code'] != 0
++                or listed['source_before'] != before or listed['source_after'] != before):
++            raise RuntimeError('list-only child did not finish exact and unchanged')
++        inputs = json.loads((directory / 'listed-binary-inputs.json').read_text(), object_pairs_hook=unique_object)
++        if inputs['source'] != source or source_identity(repo) != before:
++            raise RuntimeError('source changed between actual listing and original test')
++        for expected in inputs['binaries']:
++            if file_meta(Path(expected['path'])) != {k: expected[k] for k in ('bytes', 'sha256')}:
++                raise RuntimeError('listed binary changed before the original test')
++        result.update(status='original-test-starting', listing_exact_selected_names=True)
++        run_ci_phase(repo, directory, source, deadline, 'test', records / 'diagnostic-eleven.json',
++                     ORIGINAL_TEST_COMMAND, 1, result)
++        for expected in inputs['binaries']:
++            if file_meta(Path(expected['path'])) != {k: expected[k] for k in ('bytes', 'sha256')}:
++                raise RuntimeError('binary changed between listing and original test completion')
++        result['status'] = 'original-test-returned-zero'
++        returncode = 0
++    except BaseException as error:
++        result['error'] = type(error).__name__ + ': ' + str(error)
++        if isinstance(error, OriginalBudgetExpired):
++            result['status'] = 'original-budget-expired'
++        else:
++            result['status'] = 'list-or-test-failed'
++        print('native list/run admission failed: ' + result['error'], flush=True)
++    finally:
++        try:
++            after = source_identity(repo)
++            save_json(directory, 'source-after.json', after)
++            result['source_before'], result['source_after'] = before, after
++            if before is not None and before != after:
++                result['source_changed'] = True
++                returncode = 1
++        except BaseException as error:
++            result['retention_error'] = type(error).__name__ + ': ' + str(error)
++            returncode = 1
++        completed = time.monotonic()
++        if completed >= deadline:
++            result.update(budget_expired=True, status='original-budget-expired')
++            returncode = 1
++        result.update(finished_at=now(), finished_monotonic=completed,
++                      elapsed_seconds=completed-start, exit_code=returncode)
++        save_json(directory, 'result.json', result)
+         print(json.dumps({'native_list_run_result': result}, sort_keys=True), flush=True)
+     return returncode
+ 
+ 
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--repo', type=Path, required=True)
++    parser.add_argument('--records', type=Path, required=True)
++    parser.add_argument('--source', required=True)
++    parser.add_argument('--list-only', action='store_true')
++    parser.add_argument('command', nargs=argparse.REMAINDER)
++    args = parser.parse_args()
++    command = args.command[1:] if args.command[:1] == ['--'] else args.command
++    if command != ([] if args.list_only else ORIGINAL_TEST_COMMAND):
++        parser.error('command differs from the reviewed mode and eleven exact filters')
++    if len(EXPECTED_NAMES) != 11 or len(set(EXPECTED_NAMES)) != 11:
++        parser.error('exactly eleven unique names required')
++    repo, records = args.repo.resolve(strict=True), args.records.resolve(strict=True)
++    if records.is_relative_to(repo) or os.geteuid() == 0:
++        parser.error('requires ordinary operator and external existing records')
++    target = Path(os.environ['CARGO_TARGET_DIR']).resolve(strict=True)
++    if os.environ.get('RUST_MIN_STACK') != '8388608':
++        parser.error('original 8 MiB stack environment changed')
++    if os.environ.get('SOURCE_SHA') != args.source or os.environ.get('TESTED_SHA') != args.source:
++        parser.error('listing and test source environment differ')
++    return list_only(repo, records, args.source, target) if args.list_only else sequence(repo, records, args.source)
++
++
+ if __name__ == '__main__':
+     raise SystemExit(main())

@@ -1,0 +1,88 @@
+{
+  "Cargo_or_Rust_invocations": 0,
+  "H_requests_submitted": 0,
+  "actual_nextest_list_required": true,
+  "budgets": {
+    "connections": 4,
+    "helper_outer_seconds": 3600,
+    "list_and_test_combined_outer_seconds": 7200,
+    "nextest_case_seconds": 60,
+    "protocol_requests": 128,
+    "request_milliseconds": 500,
+    "retries": 0,
+    "session_seconds": 300,
+    "stack_bytes": 8388608,
+    "test_threads": 2
+  },
+  "derived": {
+    "diagnostic-driver.py": {
+      "blob": "4135a0a186f1f747cf1108f4f479d17ba4c8c19e",
+      "bytes": 17354,
+      "sha256": "a8700807334b313f660f00796f4bf3b0d19f9a7d63c67c0f2ff3bba6e58bef51"
+    },
+    "list_run_gate.py": {
+      "blob": "17f6bb22fe1ee0f8835e428af01bd2b45e29f5ee",
+      "bytes": 17935,
+      "sha256": "7e10a0c2e126d11ccfbb1658aefebf7ffa7df5cec115e723eb982ca8d0cc2e89"
+    },
+    "maintenance-driver.py": {
+      "blob": "436049145abae26d751988fbfd74a6d5e780b06c",
+      "bytes": 12668,
+      "sha256": "6003482e759a36b7d7ed82814071b894900b450653241679762898fddf9d98ca"
+    },
+    "prepare-driver.py": {
+      "blob": "467d5757ee49de8a2e94375e516f78808bfb20da",
+      "bytes": 65077,
+      "sha256": "0670c9b7545a9ea86e33ab12b4cca21f77da5df9a9dced2667c4f4f52e016894"
+    }
+  },
+  "fresh_junit_exact_once_required": true,
+  "maintenance_mode": "consume-external-clean-terminal",
+  "native_status": "UNRUN",
+  "ordinary_qualification": 0,
+  "original_driver_identities": {
+    "diagnostic-driver.py": {
+      "blob": "06c97b05c4a1ab09f16ed09db0a20d869144ad1d",
+      "bytes": 15318,
+      "sha256": "9efc30242651cd4bb0e8e02550c57a794c21b230c16a4f70d63c198ae339fcb0"
+    },
+    "maintenance-driver.py": {
+      "blob": "ee8d0334f490f567868e048a39a7c5130ba57a3a",
+      "bytes": 12659,
+      "sha256": "937222b474fc05fee7748fed5dc2842bc606634b9d31bba2304f3ecb5dad60d5"
+    },
+    "prepare-driver.py": {
+      "blob": "ee8244f36169849ab879b3b48cc4c22ed9acdc9b",
+      "bytes": 41483,
+      "sha256": "8faccca3aa3cc286ef0a0f9c25b9c7a4f7ad8645e1110fd1f3aec12ee4eae342"
+    }
+  },
+  "original_test_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-intelligence-eval"
+  ],
+  "repo": "/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb",
+  "request": {
+    "blob": "e43e950b54ca82eb03493eb0ac088e23f3b44d25",
+    "bytes": 66296,
+    "sha256": "c5a0e3068c15a63caec212f6e6fabe808952e27f735359556a4f39ff01c3cd17"
+  },
+  "root_qualification": 0,
+  "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "source_admission_mode": "prepared-newcheckout",
+  "status": "READY_FOR_ROOT_REVIEW_ONLY_NOT_SUBMITTED",
+  "test_names": [
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_training_proof_rejects_new_source_reentry_and_incomplete_slots",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_same_call_training_keeps_four_execute_and_three_readback_frames",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_actual_training_failure_never_returns_or_resigns_b",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_last_training_slot_keeps_the_actual_cohort_tail",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_cancel_keeps_the_held_lane_and_consumed_channel",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::current_slots::published_current_last_original_slot_rejects_actual_withdrawal",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::current_slots::published_current_call_rejects_other_original_incomplete_and_reuse"
+  ],
+  "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+}

@@ -1,0 +1,37 @@
+{
+  "actual_local_test_exit": 0,
+  "budget_rule": "one absolute end captured before list; each phase receives only remaining time; start or finish at/after end forces overall failure even if child and collector return zero",
+  "case_seconds": 60,
+  "collector_and_execute_logged_unchanged": true,
+  "collector_consumes_actual_just_record": true,
+  "connections": 4,
+  "evidence_deadline_ms": 500,
+  "helper_budget_seconds": 3600,
+  "independent_original_ci_records": [
+    "list-execution.json",
+    "diagnostic-eleven.json"
+  ],
+  "local_mechanism_tests": 19,
+  "native_qualification": false,
+  "natural_original_controller_cleanup": true,
+  "no_rerun_of_actual_clean_maintenance": true,
+  "old_metadata_preserved": "pre-start v2 MANIFEST.final.json and ROOT_REQUEST_REVIEW.json remain original historical snapshots; actual START_ACK is separate and does not establish test phase or outcome",
+  "original_11_names_required_in_actual_list_and_fresh_junit_once_each": true,
+  "parent_added_signals_kills_or_tracing": false,
+  "protocol_frames": 128,
+  "request": {
+    "bytes": 68777,
+    "git_blob": "8cc75d02e3fc0370fbbb97057babc119940deb05",
+    "sha256": "1ecebf1a3ff084e20c12090b09b7707d2889973cee82c22c575155e356e740d2"
+  },
+  "retries": 0,
+  "session_seconds": 300,
+  "shared_acceptance_budget_seconds": 7200,
+  "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "stack_bytes": 8388608,
+  "status": "ROOT_REVIEWED_AND_STARTED_RESULT_NOT_COLLECTED",
+  "test_threads": 2,
+  "timeout_cleanup_is_not_extra_acceptable_time": true,
+  "tool_pin_limit": "native archive, bindings, nextest, rustfmt bytes explicitly pinned; selected rustc/cargo/just paths and observed versions recorded rather than falsely asserted as separately SHA-pinned binaries",
+  "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+}

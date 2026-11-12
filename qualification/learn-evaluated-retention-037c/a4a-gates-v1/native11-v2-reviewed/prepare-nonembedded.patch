@@ -1,0 +1,22 @@
+--- frozen-v1/prepare-driver.py
++++ candidate-v2/prepare-driver.py
+@@ -566,6 +566,11 @@
+                                    and list_result.get('native_test_child_started') is True
+                                    and list_result.get('exit_code') == 0
+                                    and list_result.get('status') == 'original-test-returned-zero'
++                                   and list_result.get('budget_seconds') == 7200
++                                   and list_result.get('budget_expired') is False
++                                   and list_result.get('parent_signal_or_kill') is False
++                                   and list_result['finished_monotonic'] < list_result['absolute_end_monotonic']
++                                   and list_result['test_execution']['command'][:3] == ['just', 'test', '--locked']
+                                    and list_result['list_execution']['returncode'] == 0
+                                    and list_result['test_execution']['returncode'] == 0
+                                    and list_result['source_before'] == list_result['source_after'])
+@@ -585,6 +590,7 @@
+     exit_code = 0 if tested['returncode'] == 0 and driver_result_path.is_file() and list_admission['exact'] and coverage['exact_pass_coverage'] else 1
+     result.update(status='diagnostic-passed' if exit_code == 0 else 'diagnostic-failed', native_process=tested, named_case_coverage=coverage)
+ except BaseException as error:
++    exit_code = 1
+     result.update(status='failed', error=repr(error),
+                   native_result_file_observed=(NATIVE / 'driver-result.json').is_file(),
+                   native_launch_record_observed=(RECORDS / 'native-process-launch.json').is_file())

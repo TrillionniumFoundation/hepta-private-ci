@@ -1,0 +1,17 @@
+--- frozen-v1/diagnostic-driver.py
++++ candidate-v2/diagnostic-driver.py
+@@ -131,11 +131,10 @@
+         original_test_command = ['just', 'test', '--locked', '--offline', *arguments,
+                                  '--retries', '0', '--status-level', 'pass',
+                                  '--success-output', 'final', '--failure-output', 'final']
+-        # Listing and the unchanged test command share the original single 7200s budget.
++        # The sequence gives the original CI controller each real command;
++        # only its actual just-test record is supplied to the unchanged collector.
+         list_gate = Path(__file__).with_name('list_run_gate.py')
+-        command = ['python3', 'scripts/hepta_ci_exec.py', '--timeout-seconds', '7200',
+-                   '--minimum-tests', '1', '--output', str(records / (name + '.json')),
+-                   '--', 'python3', str(list_gate), '--repo', str(repo),
++        command = ['python3', str(list_gate), '--repo', str(repo),
+                    '--records', str(records), '--source', args.source,
+                    '--', *original_test_command]
+         if root:

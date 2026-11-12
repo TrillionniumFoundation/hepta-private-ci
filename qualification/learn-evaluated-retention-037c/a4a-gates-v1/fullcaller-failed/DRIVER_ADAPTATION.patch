@@ -1,0 +1,24 @@
+--- prepared-fullcaller-original-path.py
++++ isolated-fullcaller.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ from datetime import datetime,timezone
+ import ast,fcntl,gzip,hashlib,json,os,subprocess,sys,textwrap
+-repo=Path('/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb')
++repo=Path('/home/qian-qi/hepta-learn-caller-20261112-037c-a4a1b5eb')
+ records=Path('/home/qian-qi/hepta-learn-037c-evidence/fullcaller-a4a1b5eb6cb4-v1')
+ source='a4a1b5eb6cb45fc1182564e6b81026a2a2acf609'
+ tree='e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da'
+@@ -75,6 +75,12 @@
+  save('metadata-before.json',metadata_before)
+  if identity(repo)!={'commit':source,'tree':tree,'dirty':''}: raise RuntimeError('caller checkout is not exact clean source')
+  before=snapshot('source-before')
++ full_rows=json.loads(gzip.decompress((records/'source-before.files.json.gz').read_bytes()))
++ source_rows=[{k:v for k,v in row.items() if k!='blob'} for row in full_rows]
++ source_encoded=json.dumps(source_rows,sort_keys=True,separators=(',',':')).encode()
++ if len(full_rows)!=15230 or hashlib.sha256(source_encoded).hexdigest()!=prepared['after']['inventory_sha256'] or source_encoded!=gzip.decompress((source_records/'source-after.files.json.gz').read_bytes()):
++  raise RuntimeError('separate caller checkout differs from every original passed source byte')
++ save('source-byte-admission.json',{'file_count':len(full_rows),'source_gate_inventory_sha256':hashlib.sha256(source_encoded).hexdigest(),'caller_inventory_sha256':before['inventory_sha256'],'all_original_source_bytes_equal':True})
+  env=dict(os.environ)
+  env.update(GITHUB_WORKSPACE=str(repo),RUNNER_TEMP=str(records),SOURCE_SHA=source,TESTED_SHA=source,HEPTA_CI_LANE='source-head',PYTHONDONTWRITEBYTECODE='1',PYTHONPATH=str(repo/'scripts'))
+  workflow=repo/'.github/workflows/hepta-daemon-learning-native.yml'

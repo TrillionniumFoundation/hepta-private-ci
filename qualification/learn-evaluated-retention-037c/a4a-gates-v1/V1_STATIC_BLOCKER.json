@@ -1,0 +1,18 @@
+{
+  "H_start_submitted": false,
+  "collector_git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+  "collector_path": "scripts/hepta_ci_junit.py",
+  "native_cases_run": 0,
+  "not_an_execution_failure": true,
+  "reason": "v1 actual execution command begins python3 list_run_gate.py; original JUnit collector requires actual command prefix just,test,--locked",
+  "regression_evidence": "native11-v2-reviewed/LOCAL_FINAL_MECHANISM_TESTS.raw.log",
+  "regression_scope": "real unchanged collector with explicit synthetic execution/XML fixtures; no native Rust execution",
+  "request": {
+    "bytes": 66296,
+    "git_blob": "e43e950b54ca82eb03493eb0ac088e23f3b44d25",
+    "sha256": "c5a0e3068c15a63caec212f6e6fabe808952e27f735359556a4f39ff01c3cd17"
+  },
+  "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "status": "STATIC_REJECTED_BEFORE_EXECUTION_NEVER_STARTED",
+  "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+}

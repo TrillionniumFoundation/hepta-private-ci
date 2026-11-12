@@ -1,0 +1,54 @@
+{
+  "all_pass_claim": false,
+  "cross_commit_promotion": false,
+  "fullcaller": {
+    "boundary": "learning_original_owner_command_channel",
+    "self_test_exit": 0,
+    "source_inputs_unchanged": true,
+    "status": "FAIL",
+    "timeout": false,
+    "unexpected_actual_paths": 7,
+    "verify_exit": 1
+  },
+  "inventory_schema_note": "Source gate inventory omits Git blob field; maintenance/caller inventory includes it. Different inventory hashes are not compared as equal. Original drivers compare all source rows after the documented schema conversion.",
+  "maintenance": {
+    "fix_exit": 0,
+    "fmt_exit": 0,
+    "inventory_sha256": "44c3844eb82f19ae3cce36d86fa2d919c8c1a486715b7d4d590e0cb5ecf84638",
+    "patch_bytes": 0,
+    "postimages": 0,
+    "source_inputs": 15230,
+    "status": "CLEAN_ZERO"
+  },
+  "native11_v1": "STATIC_REJECTED_NEVER_STARTED",
+  "native11_v2": {
+    "created_unix_ms": 1794517235454,
+    "junit": "NOT_COLLECTED",
+    "list_result": "NOT_COLLECTED",
+    "request_key": "learn-037c-native-a4a1b5eb6cb4-diagnostic-eleven-v2",
+    "session_id": "dpty-a4314780d949fe302af6ba42ccc8d9dbfbaed85cfdebdf6b35743cd44fe2c295",
+    "status": "ACK_RUNNING_AT_OBSERVATION_RESULT_NOT_COLLECTED",
+    "test_result": "NOT_COLLECTED"
+  },
+  "native_acceptance_claim": false,
+  "original_publication_qualification_counts": {
+    "complete_daemon_and_root_cold_recovery": 0,
+    "complete_ordinary_adopt": 0,
+    "complete_ordinary_no_update": 0
+  },
+  "prepared_at": "2026-11-12T21:04:39.465046+00:00",
+  "qualification": false,
+  "scope_note": "All observations in this checkpoint bind a4a. A later metadata-only branch head does not retroactively change a4a source/caller outcomes.",
+  "source": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "source_gate": {
+    "cases": 504,
+    "exit_code": 0,
+    "failed": 0,
+    "inventory_sha256": "29f9e6135150109dd4b4072b9e8f7851e34b7ab499bfa622e16e698a88468573",
+    "source_inputs": 15230,
+    "status": "PASS",
+    "timeout": false
+  },
+  "status": "PREPARED_FOR_GIT_CHECKPOINT_NOT_PUBLISHED",
+  "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+}

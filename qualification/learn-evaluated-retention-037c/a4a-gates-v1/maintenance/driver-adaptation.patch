@@ -1,0 +1,114 @@
+--- actual/374-preflight-driver.py
++++ candidate/a4a-fmt-fix-only.py
+@@ -18,7 +18,7 @@
+ parser.add_argument("--records", required=True)
+ parser.add_argument("--request-key", required=True)
+ args = parser.parse_args()
+-REPO = Path("/home/qian-qi/hepta-learn-source-20261112-037c-374aa919")
++REPO = Path("/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb")
+ RECORDS = Path(args.records)
+ TARGET = Path("/data/hepta-learn-037c-20261112/target-cold-4ab-v1")
+ EVIDENCE = Path("/home/qian-qi/hepta-learn-037c-evidence")
+@@ -119,20 +119,33 @@
+ exit_code = 1
+ try:
+     # Admit maintenance only after both original jobs have naturally terminated.
+-    source_record = EVIDENCE / "source-374aa919931e-v1/result.json"
++    source_record = EVIDENCE / "source-a4a1b5eb6cb4-v1/result.json"
+     native_record = EVIDENCE / "native-prepare-00378c2e33ed-diagnostic-four-v3/result.json"
+-    if sha(source_record) != '962923db28388b4e22b72f4cd455f28d5f8c27f5df7300793f9e9d293398e5f6':
+-        raise RuntimeError("original complete source failure record changed")
++    if sha(source_record) != 'fd283e2847c6dde06ffb6f0a97bfeb2ab250e92f7ff1eb89d8b4dd9471cf3294':
++        raise RuntimeError("original complete source pass record changed")
+     if sha(native_record) != "76221c2ade6dfbf88de9bd2867351cec63548080696b7c4c97376103e48e9c23":
+         raise RuntimeError("original diagnostic terminal record changed")
+     source_gate = json.loads(source_record.read_text())
+     native_gate = json.loads(native_record.read_text())
+     if (source_gate["source"] != args.source or source_gate["tree"] != args.tree
+             or source_gate["before"] != source_gate["after"]
+-            or source_gate["exit_code"] != 1
+-            or source_gate["status"] != "failed"
++            or source_gate["exit_code"] != 0
++            or source_gate["status"] != "passed"
+             or not source_gate["execution"]["actual_process_exit_observed"]):
+-        raise RuntimeError("complete source failure lacks original terminal custody")
++        raise RuntimeError("complete source pass lacks original terminal custody")
++    source_execution_path = source_record.parent / "source-closure.json"
++    if sha(source_execution_path) != "6d7ca8638ca69aeaf89833681cd672637a09c961d234d9d354b983a903a26c50":
++        raise RuntimeError("original source execution changed")
++    source_execution = json.loads(source_execution_path.read_text())
++    if (source_execution["source_sha"] != args.source or source_execution["tested_sha"] != args.source
++            or source_execution["before"] != source_execution["after"]
++            or source_execution["exit_code"] != 0 or source_execution["returncode"] != 0
++            or source_execution["timed_out"] or source_execution["output_limit_exceeded"]
++            or source_execution["observed_passed_tests"] != 504 or source_execution["observed_failed_tests"] != 0):
++        raise RuntimeError("complete original 504 source cases are not observed passing")
++    source_log = source_execution_path.parent / source_execution["log_file"]
++    if sha(source_log) != source_execution["log_sha256"] or source_log.stat().st_size != source_execution["log_bytes"]:
++        raise RuntimeError("original source raw log changed")
+     if (native_gate["source"] != "00378c2e33ede95f4a93bf96f6d87b3bd415d337"
+             or native_gate["source_ready"] != native_gate["source_after"]
+             or not native_gate["native_process"]["actual_process_exit_observed"]
+@@ -147,24 +160,28 @@
+             or not previous_maintenance["execution"]["actual_process_exit_observed"]):
+         raise RuntimeError("original failed compiler has not naturally terminated")
+     # The latest user-owned target compiler also has an actual natural terminal.
+-    last_maintenance_path = EVIDENCE / "maintenance-d3977d9a1bed-v1/result.json"
+-    if sha(last_maintenance_path) != "231cb54bbfdd20d598f00d81cdd0994f340181c71d8a4098155c98de5ba931f1":
+-        raise RuntimeError("latest d397 maintenance terminal changed")
++    last_maintenance_path = EVIDENCE / "maintenance-374aa919931e-preflight-v1/result.json"
++    if sha(last_maintenance_path) != "cbb21fd1be409b1730c267ad885ebe3cd7a06e14ea47cc7e13da59d5fd2135b5":
++        raise RuntimeError("latest 374 maintenance failure terminal changed")
+     last_maintenance = json.loads(last_maintenance_path.read_text())
+-    if (last_maintenance["source_sha"] != "d3977d9a1bed3e89952c576c45660b04ea674faf"
+-            or last_maintenance["exit_code"] != 0
+-            or last_maintenance["execution"]["returncode"] != 0
++    if (last_maintenance["source_sha"] != "374aa919931e8ee5446b4ccdc49e651b7848cc5d"
++            or last_maintenance["exit_code"] != 101
++            or last_maintenance["execution"]["returncode"] != 101
+             or not last_maintenance["execution"]["actual_process_exit_observed"]
+             or last_maintenance["execution"]["controller_kill"]
+-            or last_maintenance["postimages"]["file_count"] != 1):
+-        raise RuntimeError("latest d397 maintenance has no preserved natural terminal")
+-    result.update(source_gate_status="failed", native_admission_eligible=False,
+-                  scope="maintenance-only preflight; original source closure failed")
+-    save("prior-terminal-observations.json", {"source_failure": source_gate,
+-         "last_d397_dirty_maintenance": last_maintenance,
++            or last_maintenance["before"] != last_maintenance["after"]
++            or last_maintenance["after"]["dirty"] != ""
++            or last_maintenance["postimages"]["file_count"] != 0
++            or last_maintenance["postimages"]["patch_bytes"] != 0):
++        raise RuntimeError("latest 374 failure has no unchanged-source natural terminal")
++    result.update(source_gate_status="passed", native_admission_eligible=False,
++                  scope="actual fmt/fix only after 504 source cases passed; native needs separate admission")
++    save("prior-terminal-observations.json", {"source_pass": source_gate, "source_execution": source_execution,
++         "last_374_compile_failure": last_maintenance,
+          "prior_57b_maintenance_failure": previous_maintenance,
+-         "diagnostic_failure": native_gate, "purpose": "diagnose the exact new source compiler while retaining its failed source gate; no native dispatch"})
+-    roots = (REPO, Path("/home/qian-qi/hepta-learn-source-20261112-037c-d3977d9a"),
++         "diagnostic_failure": native_gate, "purpose": "compile the exact source fix while retaining original 374 exit101; no native dispatch"})
++    roots = (REPO, Path("/home/qian-qi/hepta-learn-source-20261112-037c-374aa919"),
++             Path("/home/qian-qi/hepta-learn-source-20261112-037c-d3977d9a"),
+              Path("/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81"),
+              Path("/home/qian-qi/hepta-learn-common-20261112-037c"), TARGET)
+     active = []
+@@ -255,8 +272,8 @@
+             or gate_encoded != gzip.decompress((source_record.parent / "source-after.files.json.gz").read_bytes())
+             or any(row.get("missing") for row in native_rows)):
+         raise RuntimeError("full current bytes differ from the retained source-gate input")
+-    if git("rev-list", "--parents", "-n", "1", args.source).decode().strip().split() != [args.source, "d3977d9a1bed3e89952c576c45660b04ea674faf"]:
+-        raise RuntimeError("new source is not the exact reviewed d397 child")
++    if git("rev-list", "--parents", "-n", "1", args.source).decode().strip().split() != [args.source, "e403c45570ad313851ca71392625e5572882405f"]:
++        raise RuntimeError("new source is not the exact reviewed e403 child")
+     actual_index = {}
+     for raw in git("ls-files", "--stage", "-z").split(b"\0"):
+         if not raw:
+@@ -282,7 +299,7 @@
+          "source_gate_inventory_sha256_without_blob": hashlib.sha256(gate_encoded).hexdigest(),
+          "native_inventory_sha256_with_blob": before["inventory_sha256"],
+          "file_count": len(native_rows), "exact_tree_and_index": True,
+-         "source_gate_pass": False, "native_admission_eligible": False})
++         "source_gate_pass": True, "native_admission_eligible": False})
+     if args.mode == "fix":
+         rustfmt = subprocess.check_output(["/home/qian-qi/.cargo/bin/rustup", "which", "--toolchain", "1.96.0", "rustfmt"], env=env).decode().strip()
+         if sha(Path(rustfmt)) != "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c":

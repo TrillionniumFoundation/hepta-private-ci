@@ -1,0 +1,77 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "dirty": "",
+    "file_count": 15230,
+    "inventory_sha256": "44c3844eb82f19ae3cce36d86fa2d919c8c1a486715b7d4d590e0cb5ecf84638",
+    "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+  },
+  "after_format": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "dirty": "",
+    "file_count": 15230,
+    "inventory_sha256": "44c3844eb82f19ae3cce36d86fa2d919c8c1a486715b7d4d590e0cb5ecf84638",
+    "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+    "dirty": "",
+    "file_count": 15230,
+    "inventory_sha256": "44c3844eb82f19ae3cce36d86fa2d919c8c1a486715b7d4d590e0cb5ecf84638",
+    "tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb/codex-rs",
+    "finished_at": "2026-11-12T20:12:46.061170+00:00",
+    "log_bytes": 99986,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "0c48924125fcd5f7cbd64b5fd058d72d5bea88cee7445bdbd8a1516bff4e4b93",
+    "returncode": 0,
+    "started_at": "2026-11-12T20:01:12.949294+00:00"
+  },
+  "exit_code": 0,
+  "finished_at": "2026-11-12T20:12:50.221081+00:00",
+  "format_execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-source-20261112-037c-a4a1b5eb/codex-rs",
+    "finished_at": "2026-11-12T20:01:10.530454+00:00",
+    "log_bytes": 73,
+    "log_file": "just-fmt.raw.log",
+    "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "returncode": 0,
+    "started_at": "2026-11-12T20:01:10.297350+00:00"
+  },
+  "kind": "exact-source-fix-only",
+  "native_admission_eligible": false,
+  "postimages": {
+    "file_count": 0,
+    "patch_bytes": 0,
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-maintenance-a4a1b5eb6cb4-v1",
+  "scope": "actual fmt/fix only after 504 source cases passed; native needs separate admission",
+  "source_gate_status": "passed",
+  "source_sha": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "source_tree": "e09e7fb338e5f9a37fccfd4f05a8d5c222d7c0da",
+  "started_at": "2026-11-12T20:01:05.878869+00:00",
+  "status": "passed"
+}
