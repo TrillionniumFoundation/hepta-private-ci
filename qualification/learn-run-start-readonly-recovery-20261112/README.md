@@ -4,7 +4,9 @@ This candidate is rebuilt from the actually available base
 `106f5e41f2ff8421c5aad10eeb746d453ed00563`. The earlier transient workspace's
 unpublished reader and its native results are not reused as evidence for this
 tree. `candidate.json` records every local-to-remote commit mapping, identical
-tree identities, changed blob identities, and retained log hashes.
+tree identities, changed blob identities, and retained log hashes. Raw logs are
+losslessly gzip-compressed with deterministic metadata; both compressed and
+uncompressed hashes are recorded. Their original whitespace is preserved.
 
 ## What this source provides
 
