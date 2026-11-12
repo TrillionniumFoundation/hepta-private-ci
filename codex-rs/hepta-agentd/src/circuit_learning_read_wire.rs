@@ -1,8 +1,10 @@
 //! Private, canonical fixed-mode records. No request uploads an observation.
 
 use codex_hepta_learning_artifacts::CellStatePartitionV1;
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -13,9 +15,9 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::Error;
+use super::OriginalCircuitEvaluatedLearningReadContextV1;
+use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
-use super::ReadContext as Context;
-use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 
 pub(super) const OPERATION: &str = "runtime.learning.original-circuit.current-read.v1";
@@ -39,19 +41,6 @@ impl Mode {
 pub(super) fn mode(context: &Context) -> Result<Mode, Error> {
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(context.prefix.clone())?;
     context.scope.validate_snapshot(&context.prefix)?;
-    if let Some(original) = &context.evaluated {
-        if &context.prefix != original.snapshot()
-            || context.prefix.receipts.len() != 4
-            || context.selection_evidence.is_some()
-            || coordinator.next_stage() != Some(LearningIterationStageV1::Selection)
-            || coordinator.next_task_bundle() != Some(&context.prefix.request.selected_bundle)
-        {
-            return Err(Error::Binding(
-                "exact original evaluated Selection read prefix",
-            ));
-        }
-        return Ok(Mode::Selection);
-    }
     if context.prefix.receipts.len() < 3
         || !matches!(
             context.prefix.receipts[2].observation,
@@ -113,7 +102,7 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
     // full canonical predecessor and full original signature bytes are separate
     // inputs. No new update rule, signature window or role authority is minted.
     let prefix = encode_original_owner_snapshot_v1(snapshot)?;
-    let binding = Digest32::of_parts(&[
+    Ok(Digest32::of_parts(&[
         b"hepta.agentd.original-circuit-current-read.v1\0",
         mode.name(),
         &prefix,
@@ -122,27 +111,7 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
         context.verifier.scope_digest().as_array(),
         context.verifier.objective_digest().as_array(),
         &signatures,
-    ]);
-    if let Some(original) = &context.evaluated {
-        let proof = OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(original, at)
-            .map_err(|_| Error::Binding("original evaluated retention read proof"))?;
-        if proof.scope.binding() != context.scope.binding()
-            || proof.verifier.trust_digest() != context.verifier.trust_digest()
-            || proof.verifier.scope_digest() != context.verifier.scope_digest()
-            || proof.verifier.objective_digest() != context.verifier.objective_digest()
-            || proof.training != &context.training_evidence
-        {
-            return Err(Error::Binding("unchanged original evaluated read context"));
-        }
-        return Ok(Digest32::of_parts(&[
-            b"hepta.agentd.original-circuit-evaluated-current-read.v1\0",
-            binding.as_array(),
-            proof.origin,
-            &proof.evaluation.signing_bytes(),
-            &proof.evaluation.signature,
-        ]));
-    }
-    Ok(binding)
+    ]))
 }
 
 pub(super) fn decision(context: &Context) -> Result<LearningIterationCoordinatorV1, Error> {
@@ -298,16 +267,50 @@ impl OriginalRead {
     }
 
     pub(super) fn decode(self, context: &Context) -> Result<Readback, Error> {
+        self.decode_original(
+            mode(context)?,
+            &context.prefix,
+            &context.scope,
+            context
+                .prefix
+                .receipts
+                .get(3)
+                .map(|receipt| &receipt.observation),
+        )
+    }
+
+    pub(super) fn decode_evaluated(
+        self,
+        context: &OriginalCircuitEvaluatedLearningReadContextV1,
+    ) -> Result<Readback, Error> {
+        self.decode_original(
+            context.mode(),
+            context.prefix(),
+            context.scope(),
+            context
+                .prefix()
+                .receipts
+                .get(4)
+                .map(|receipt| &receipt.observation),
+        )
+    }
+
+    fn decode_original(
+        self,
+        mode: Mode,
+        prefix: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+        expected_selection: Option<&LearningIterationObservationV1>,
+    ) -> Result<Readback, Error> {
         let publication = digest(&self.publication)?;
         let source_input = digest(&self.source_input)?;
         let source_publication = self.source_publication.as_deref().map(digest).transpose()?;
-        let baseline = context
-            .prefix
+        let baseline = prefix
             .request
             .selected_bundle
             .digest()
             .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
-        let observation = match (mode(context)?, self.observation) {
+        let observation = match (mode, self.observation) {
             (Mode::Selection, Observation::Selection { bundle, selection }) => {
                 if digest(&bundle)? != baseline || source_publication.is_some() {
                     return Err(Error::Binding("original retained selection"));
@@ -338,14 +341,15 @@ impl OriginalRead {
                     run_id: id(run)?,
                 };
                 let selection = digest(&selection)?;
-                let expected = &context.prefix.receipts[3].observation;
+                let expected =
+                    expected_selection.ok_or(Error::Binding("original Selector read receipt"))?;
                 if digest(&bundle)? != baseline
                     || digest(&task_publication)? != publication
                     || source_publication.is_none()
-                    || state_partition.principal_id != context.prefix.request.principal_id
-                    || state_partition.agent_id != context.prefix.request.agent_id
-                    || state_partition.cell_id != context.prefix.request.cell_id
-                    || state_partition.run_id == context.prefix.request.source_run_id
+                    || state_partition.principal_id != prefix.request.principal_id
+                    || state_partition.agent_id != prefix.request.agent_id
+                    || state_partition.cell_id != prefix.request.cell_id
+                    || state_partition.run_id == prefix.request.source_run_id
                     || !matches!(expected, LearningIterationObservationV1::Selection {
                         candidate_bundle, selection_digest
                     } if *candidate_bundle == baseline && *selection_digest == selection)
@@ -363,7 +367,7 @@ impl OriginalRead {
             }
             _ => return Err(Error::Binding("original read mode")),
         };
-        context.scope.validate_observation(&observation)?;
+        scope.validate_observation(&observation)?;
         Ok(Readback {
             observation,
             publication,

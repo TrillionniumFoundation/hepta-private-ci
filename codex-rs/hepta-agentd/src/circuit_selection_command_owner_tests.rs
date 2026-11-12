@@ -3,6 +3,7 @@
 //! fixtures; these cases do not claim a native A/B/C deployment.
 
 use super::*;
+use codex_hepta_learning_ledger::SignedEvidenceError;
 use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
 
@@ -91,6 +92,18 @@ fn finish_command(
     Ok(server
         .join()
         .map_err(|_| anyhow::anyhow!("original Selector command thread"))??)
+}
+
+async fn wait_after_original_expiry(expires_at: u64) -> anyhow::Result<()> {
+    // Signed evidence includes the expiry second. Reaching that second plus
+    // 100 ms can still authorize a real claim before a later read expires.
+    let wait_seconds = expires_at
+        .saturating_sub(now()?)
+        .checked_add(1)
+        .context("original signature expiry boundary")?;
+    tokio::time::sleep(Duration::from_secs(wait_seconds)).await;
+    anyhow::ensure!(now()? > expires_at, "original signature window has elapsed");
+    Ok(())
 }
 
 #[tokio::test]
@@ -402,11 +415,13 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
         Err(OriginalCircuitSelectionCommandErrorV1::Missing)
     ));
     let before = f.bytes()?;
-    tokio::time::sleep(
-        Duration::from_secs(expires_at.saturating_sub(now()?)) + Duration::from_millis(100),
-    )
-    .await;
-    assert!(client.execute_selection().await.is_err());
+    wait_after_original_expiry(expires_at).await?;
+    assert!(matches!(
+        client.execute_selection().await,
+        Err(OriginalCircuitSelectionCommandErrorV1::Evidence(
+            SignedEvidenceError::ValidityWindow
+        ))
+    ));
     assert!(matches!(
         client.readback().await,
         Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)

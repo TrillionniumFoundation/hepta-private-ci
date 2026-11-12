@@ -1,0 +1,24 @@
+{
+  "request_key": "learn-037c-cc22-static-panel-prologues-v1",
+  "session_id": "dpty-21d8350d1f56f856a5813fc9c3ab1e8ccb1c7ca1bed9ae9bf2df754c6de97ff8",
+  "status": {
+    "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+    "bytes_seen": 927,
+    "bytes_stored": 927,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794484403531,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 952396,
+    "pid": 952425,
+    "state": "exited"
+  },
+  "bytes": 927,
+  "chunk_sha256": "04ad231d32250d96435bed9d354bae677816f2eb4ceef81b42e4afda758b647b",
+  "output_complete": true,
+  "text": "Traceback (most recent call last):\r\n  File \"<string>\", line 93, in <module>\r\n  File \"/usr/lib/python3.12/pathlib.py\", line 842, in stat\r\n    return os.stat(self, follow_symlinks=follow_symlinks)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nFileNotFoundError: [Errno 2] No such file or directory: '/data/hepta-learn-037c-20261112/target-cache-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd'\r\n{\r\n  \"acceptance_pass\": false,\r\n  \"compiled_or_formatted\": false,\r\n  \"diagnostic_only\": true,\r\n  \"error\": \"FileNotFoundError(2, 'No such file or directory')\",\r\n  \"executed_rust_tests\": false,\r\n  \"exit_code\": 1,\r\n  \"finished_at\": \"2026-11-12T11:53:23.590672+00:00\",\r\n  \"installed_tools\": false,\r\n  \"schema\": 1,\r\n  \"source\": \"cc22a69972d029d3ef28d49096f396eb5214c616\",\r\n  \"started_at\": \"2026-11-12T11:53:23.584904+00:00\",\r\n  \"status\": \"static_diagnostic_error\",\r\n  \"tree\": \"827fb70ed75d30c48d4693cbd0d23ea04f5744da\"\r\n}\r\n",
+  "read_only": true,
+  "rust_execution": false,
+  "no_new_frame_evidence": true
+}

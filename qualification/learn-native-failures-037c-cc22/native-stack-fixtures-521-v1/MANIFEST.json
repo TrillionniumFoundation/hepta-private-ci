@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "base_source": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "failed_execution_source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "status": "UNRUN_DRAFT; 3 async child heap cuts in 2 cfg(test) fixture files only",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "before": {
+        "bytes": 9151,
+        "sha256": "f0d8fb55cd597f686a3f6dc5ba6a0f30f179f83c86cbdf33f9bb438bf8f623e4",
+        "git_blob": "f23a3d8e18fddfd000d9d3deab9f01c44633cf3c"
+      },
+      "after": {
+        "bytes": 9368,
+        "sha256": "8d03478bec93f2410bd6b89bc8befd14948be6ac4d55c081779a4da1272b65b6",
+        "git_blob": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "before": {
+        "bytes": 11410,
+        "sha256": "6001097fb8a403067d9687cf0c6aaf6afbd1bad0c3f0c1ff89e763218f5776d1",
+        "git_blob": "0e7f3c909fcc97742e228eb4ad189bd074727604"
+      },
+      "after": {
+        "bytes": 11581,
+        "sha256": "7d41de1a76a55b8b288a236d0fe570365a957593605e965db5cd493fdc80f480",
+        "git_blob": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 2400,
+    "sha256": "6ab02859b3aeec589cf6084f847146bd610c77e7c6190ad7f3301a9ff72b67af",
+    "git_blob": "4c7fda31121a0c0a6581e8c39d5e1688ee439f41"
+  },
+  "validation": {
+    "rustfmt": "UNRUN",
+    "native": "UNRUN",
+    "gdb": "awaiting recovery owned original-binary diagnostic",
+    "product_changed": false,
+    "assertions_changed": false,
+    "budgets_changed": false
+  }
+}

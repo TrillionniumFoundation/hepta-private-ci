@@ -1,0 +1,380 @@
+{
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "case": "q24_selector_command_keeps_original_expiry_and_external_custody",
+  "assertion_source": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs:414",
+  "raw_log_sha256": "4e0f58f42e4abb056868ddfb2c041d8caa9e543c5694de1de8dad15a36d529e1",
+  "raw_log_line_range": [
+    1896,
+    4571
+  ],
+  "left": "actual f.bytes()",
+  "right": "saved before bytes",
+  "parsed_tuple_components": 2,
+  "components": [
+    {
+      "component_index": 0,
+      "left_bytes": 2220,
+      "right_bytes": 72,
+      "left_sha256": "70232fa3b01f184486dc982aec12135f4f03f55381fad9181eb606ebe7a89649",
+      "right_sha256": "c7dad6a0c209ed5a3a69fbd3f0de34540ff79b2cd33f4a216629511e704b41da",
+      "common_prefix_bytes": 72,
+      "differing_offsets_count": 2148,
+      "difference_ranges_half_open": [
+        [
+          72,
+          2220
+        ]
+      ],
+      "first_32_changes": [
+        {
+          "offset": 72,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 73,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 74,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 75,
+          "left": 116,
+          "right": null
+        },
+        {
+          "offset": 76,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 77,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 78,
+          "left": 81,
+          "right": null
+        },
+        {
+          "offset": 79,
+          "left": 99,
+          "right": null
+        },
+        {
+          "offset": 80,
+          "left": 105,
+          "right": null
+        },
+        {
+          "offset": 81,
+          "left": 114,
+          "right": null
+        },
+        {
+          "offset": 82,
+          "left": 99,
+          "right": null
+        },
+        {
+          "offset": 83,
+          "left": 117,
+          "right": null
+        },
+        {
+          "offset": 84,
+          "left": 105,
+          "right": null
+        },
+        {
+          "offset": 85,
+          "left": 116,
+          "right": null
+        },
+        {
+          "offset": 86,
+          "left": 46,
+          "right": null
+        },
+        {
+          "offset": 87,
+          "left": 108,
+          "right": null
+        },
+        {
+          "offset": 88,
+          "left": 101,
+          "right": null
+        },
+        {
+          "offset": 89,
+          "left": 97,
+          "right": null
+        },
+        {
+          "offset": 90,
+          "left": 114,
+          "right": null
+        },
+        {
+          "offset": 91,
+          "left": 110,
+          "right": null
+        },
+        {
+          "offset": 92,
+          "left": 105,
+          "right": null
+        },
+        {
+          "offset": 93,
+          "left": 110,
+          "right": null
+        },
+        {
+          "offset": 94,
+          "left": 103,
+          "right": null
+        },
+        {
+          "offset": 95,
+          "left": 46,
+          "right": null
+        },
+        {
+          "offset": 96,
+          "left": 57,
+          "right": null
+        },
+        {
+          "offset": 97,
+          "left": 98,
+          "right": null
+        },
+        {
+          "offset": 98,
+          "left": 50,
+          "right": null
+        },
+        {
+          "offset": 99,
+          "left": 50,
+          "right": null
+        },
+        {
+          "offset": 100,
+          "left": 102,
+          "right": null
+        },
+        {
+          "offset": 101,
+          "left": 54,
+          "right": null
+        },
+        {
+          "offset": 102,
+          "left": 50,
+          "right": null
+        },
+        {
+          "offset": 103,
+          "left": 102,
+          "right": null
+        }
+      ],
+      "left_ascii_prefix": "HEPTEX01\ufffd [*\u0014\u000e\ufffd\ufffd\u001ae!a'\ufffd\ufffd\u001d\ufffd\ufffd8EI\ufffd\ufffd\u001fm\ufffdW\ufffd(\ufffd\ufffd\ufffd,\ufffd\ufffd\ufffd\ufffd\ufffd\ufffda\ufffd\ufffd\ufffd'Q\ufffdaw\ufffdf^\ufffdGL\ufffd!\ufffd\ufffd.\ufffd\ufffd:\u0000\u0000\u0000t\u0000\u0000Qcircuit.learning.9b22f62fea40acbd4b5154cb",
+      "right_ascii_prefix": "HEPTEX01\ufffd [*\u0014\u000e\ufffd\ufffd\u001ae!a'\ufffd\ufffd\u001d\ufffd\ufffd8EI\ufffd\ufffd\u001fm\ufffdW\ufffd(\ufffd\ufffd\ufffd,\ufffd\ufffd\ufffd\ufffd\ufffd\ufffda\ufffd\ufffd\ufffd'Q\ufffdaw\ufffdf^\ufffdGL\ufffd!\ufffd\ufffd.\ufffd\ufffd:",
+      "left_is_exact_right_plus_tail": true,
+      "appended_bytes": 2148,
+      "appended_tail_preview_utf8": "\u0000\u0000\u0000t\u0000\u0000Qcircuit.learning.9b22f62fea40acbd4b5154cbf3bfc07faea51d02aac156305fb1c0a7e352ded5\ufffd [*\u0014\u000e\ufffd\ufffd\u001ae!a'\ufffd\ufffd\u001d\ufffd\ufffd8EI\ufffd\ufffd\u001fm\ufffdW\ufffd(\ufffd\ufffd\ufffd\ufffdh\ufffdH<\u0012\ufffd\ufffd\ufffd\ufffd\ufffdS\u001cB\ufffd\ufffd_\ufffdqb\ufffd\ufffd\ufffd=b\u0019}\ufffd\ufffd\ufffd\u0000\u0000\u0007\ufffd\u0001\u0000Qcircuit.learning.9b22f62fea40acbd4b5154cbf3bfc07faea51d02aac156305fb1c0a7e352ded5\ufffd [*\u0014\u000e\ufffd\ufffd\u001ae!a'\ufffd\ufffd\u001d\ufffd\ufffd8EI\ufffd\ufffd\u001fm\ufffdW\ufffd(\ufffd\ufffd{\"schema\":1,\"payload\":[104,101,112,116,97,46,108,101,97,114,110,105,110,103,46,105,116,101,114,97,116,105,111,110,45,111,98,115,101,114,118,97,116,105,111,110,46,118,49,0,0,0,0,81,99,105,114,99,117,105,116,46,108,101,97,114,110,105,110,103,46,57,98,50,50,102,54,50,102,101,97,52,48,97,99,98,100,52,98,53,49,53,52,99,98,102,51,98,102,99,48,55,102,97,101,97,53,49,100,48,50,97,97,99,49,53,54,51,48,53,102,98,49,99,48,97,55,101,51,53,50,100,101,100,53,75,77,213,234,147,194,106,113,170,0,186,117,32,143,238,225,208,76,48,233,138,221,116,55,200,33,196,193,33,158,30,69,0,0,0,26,101,120,112,108,105,99,105,116,45,111,98,115,101,114,118,101,114,45,115,101,108,101,99,116,111,114,132,62,143,106,67,134,67,57,121,67,103,164,78,61,133,113,39,29,22,176,107,56,141,95,200,141,179,200,56,141,50,140,0,0,0,0,106,245,159,108,5,130,76,133,137,255,97,9,181,74,20,22,220,35,142,243,225,91,16,81,97,21,242,225,61,45,105,29,231,149,134,163,34,108,84,254,61,50,182,71,193,147,129,224,148,254,158,117,10,142,45,196,107,196,39,43,14,209,154,22,186,27,132,114,117],\"evidence_id\":\"original-circuit-selection:f7205b2a140ec2d51a65216127e2e51de683fc384549d9e01f6ddc57b82891a9\",\"principal_id\":\"explicit-observer-selector\",\"role\":3,\"trust_digest\":\"0962cefe5768c2a38b939b337031aa6264ff32a1ffb490c84d7c340d7d5b6e68\",\"scope_digest\":\"fa79962fc3e7d0010dcee502298956b760846e92a996569b8a6230274ad98f1d\",\"objective_digest\":\"9fb6f63d1c020f4098c901bf31fc39fd318f4dba4d255795351ca4d57a458096\",\"authority_epoch\":1,\"issued_at\":1794482028,\"expires_at\":1794482328,\"payload_digest\":\"09e0991e81f6ac35205d2300112e1488a2f989e5c0f6bb7118d2cbfdd9bb8355\",\"signature\":[61,141,97,33,172,58,194,104,6,148,223,169,35,69,221,235,139,2,53,91,215,102,109,255,190,210,105,209,181,198,139,226,18,65,0,23,52,35,140,155,108,34,150,69,108,147,65,15,81,210,245,213,183,54,159,108,156,140,41,102,22,64,146,8]}V\ufffd\u037b\ufffd$\ufffd\ufffd${\ufffd'N\ufffd\ufffdPw&\ufffd\ufffdN6\ufffd\ufffd\ufffdA\ufffd\ufffd\ufffd\ufffd"
+    },
+    {
+      "component_index": 1,
+      "left_bytes": 448,
+      "right_bytes": 224,
+      "left_sha256": "ba9efe110df738fb592e99556a27229a8cc593efa22e85e7dde196202ed2ea87",
+      "right_sha256": "a54686b62364aaf30e8ddcfafb705d7c5406be34d0df75974655d9c46a022c50",
+      "common_prefix_bytes": 224,
+      "differing_offsets_count": 224,
+      "difference_ranges_half_open": [
+        [
+          224,
+          448
+        ]
+      ],
+      "first_32_changes": [
+        {
+          "offset": 224,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 225,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 226,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 227,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 228,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 229,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 230,
+          "left": 0,
+          "right": null
+        },
+        {
+          "offset": 231,
+          "left": 1,
+          "right": null
+        },
+        {
+          "offset": 232,
+          "left": 199,
+          "right": null
+        },
+        {
+          "offset": 233,
+          "left": 218,
+          "right": null
+        },
+        {
+          "offset": 234,
+          "left": 214,
+          "right": null
+        },
+        {
+          "offset": 235,
+          "left": 160,
+          "right": null
+        },
+        {
+          "offset": 236,
+          "left": 194,
+          "right": null
+        },
+        {
+          "offset": 237,
+          "left": 9,
+          "right": null
+        },
+        {
+          "offset": 238,
+          "left": 237,
+          "right": null
+        },
+        {
+          "offset": 239,
+          "left": 90,
+          "right": null
+        },
+        {
+          "offset": 240,
+          "left": 58,
+          "right": null
+        },
+        {
+          "offset": 241,
+          "left": 105,
+          "right": null
+        },
+        {
+          "offset": 242,
+          "left": 251,
+          "right": null
+        },
+        {
+          "offset": 243,
+          "left": 211,
+          "right": null
+        },
+        {
+          "offset": 244,
+          "left": 240,
+          "right": null
+        },
+        {
+          "offset": 245,
+          "left": 222,
+          "right": null
+        },
+        {
+          "offset": 246,
+          "left": 52,
+          "right": null
+        },
+        {
+          "offset": 247,
+          "left": 84,
+          "right": null
+        },
+        {
+          "offset": 248,
+          "left": 15,
+          "right": null
+        },
+        {
+          "offset": 249,
+          "left": 247,
+          "right": null
+        },
+        {
+          "offset": 250,
+          "left": 155,
+          "right": null
+        },
+        {
+          "offset": 251,
+          "left": 44,
+          "right": null
+        },
+        {
+          "offset": 252,
+          "left": 211,
+          "right": null
+        },
+        {
+          "offset": 253,
+          "left": 63,
+          "right": null
+        },
+        {
+          "offset": 254,
+          "left": 74,
+          "right": null
+        },
+        {
+          "offset": 255,
+          "left": 33,
+          "right": null
+        }
+      ],
+      "left_ascii_prefix": "HPTNWA01H\u000e8\ufffd\u0013\ufffde\ufffd\ufffd;2\ufffd\ufffd\ufffd)5\ufffd,\ufffd8\ufffd8\u0017\ufffd8\ufffd\u0374\ufffd\ufffd2\ufffd\ufffd\ufffd\ufffd=\u001c\u0002\u000f@\ufffd\ufffd\u0001\ufffd1\ufffd9\ufffd1\ufffdM\ufffdM%W\ufffd5\u001c\ufffd\ufffdzE\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001g\ufffdtU\u0006\ufffd\ufffd\ufffd6\ufffd#\ufffd\ufffdj\u2cc2\ufffd\ufffd\n\ufffd\ufffd \ufffd\ufffd\u0003\ufffd\ufffdO\ufffd\ufffdh\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+      "right_ascii_prefix": "HPTNWA01H\u000e8\ufffd\u0013\ufffde\ufffd\ufffd;2\ufffd\ufffd\ufffd)5\ufffd,\ufffd8\ufffd8\u0017\ufffd8\ufffd\u0374\ufffd\ufffd2\ufffd\ufffd\ufffd\ufffd=\u001c\u0002\u000f@\ufffd\ufffd\u0001\ufffd1\ufffd9\ufffd1\ufffdM\ufffdM%W\ufffd5\u001c\ufffd\ufffdzE\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001g\ufffdtU\u0006\ufffd\ufffd\ufffd6\ufffd#\ufffd\ufffdj\u2cc2\ufffd\ufffd\n\ufffd\ufffd \ufffd\ufffd\u0003\ufffd\ufffdO\ufffd\ufffdh\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+      "left_is_exact_right_plus_tail": true,
+      "appended_bytes": 224,
+      "appended_tail_preview_utf8": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\ufffd\ufffd\u05a0\ufffd\t\ufffdZ:i\ufffd\ufffd\ufffd\ufffd4T\u000f\ufffd\ufffd,\ufffd?J!f)Q\u001epKA\ufffd\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\ufffd\ufffdh\ufffdH<\u0012\ufffd\ufffd\ufffd\ufffd\ufffdS\u001cB\ufffd\ufffd_\ufffdqb\ufffd\ufffd\ufffd=b\u0019}\ufffd\ufffd\ufffdbF\ufffd>n\ufffd\ufffd\u0676H(t\u0415\ufffd#\ufffd-\ufffd\ufffd2t*\ufffdz&\ufffd\ufffdN\u001b\u00163\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\ufffd\ufffdh\ufffdH<\u0012\ufffd\ufffd\ufffd\ufffd\ufffdS\u001cB\ufffd\ufffd_\ufffdqb\ufffd\ufffd\ufffd=b\u0019}\ufffd\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0003V\ufffd\u037b\ufffd$\ufffd\ufffd${\ufffd'N\ufffd\ufffdPw&\ufffd\ufffdN6\ufffd\ufffd\ufffdA\ufffd\ufffd\ufffd\ufffdU\u0007\ufffd\u0005k\t\ufffdk\ufffd35\ufffd`\ufffdf\u07f6X\ufffd\ufffdMvl\u0000\ufffd\ufffd\ufffd\ufffd \ufffd\ufffd"
+    }
+  ],
+  "derivation": "Original pretty_assertions tuple diff reconstructed independently for left/right from complete numbered raw-log ranges; no missing lines."
+}

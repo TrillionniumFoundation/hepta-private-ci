@@ -29,11 +29,12 @@ JOURNAL = AGENT + "circuit_task_source_journal.rs"
 SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 OBSERVER = AGENT + "circuit_next_use_receipt_owner.rs"
 EXPECTED = {
-    "learning_evaluated_current_read_client": (),
-    "learning_evaluated_current_read_owner": (),
-    "learning_evaluated_retention_read_proof": (MAIN, WIRE),
+    "learning_original_evaluated_read_selection_context": (),
+    "learning_original_evaluated_read_next_use_context": (),
+    "learning_original_evaluated_read_client_create": (),
+    "learning_original_evaluated_read_owner_create": (),
     "learning_original_published_read_client_create": (),
-    "learning_original_published_read_client_current": (SELECTOR, OBSERVER),
+    "learning_original_published_read_client_current": (SELECTOR, OBSERVER, AGENT + "circuit_evaluated_selection_remote.rs"),
     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"),
     "learning_original_published_read_owner_create": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',),
     "learning_original_published_read_owner_serve": (),
@@ -117,34 +118,51 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         )
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
-    def test_evaluated_current_read_keeps_opaque_four_cut_proof_and_cold_origin(self):
+    def test_evaluated_current_read_keeps_opaque_receipts_and_read_only_attenuation(self):
         context = AGENT + "circuit_evaluated_retention_context.rs"
+        cut = AGENT + "circuit_evaluated_learning_read.rs"
         for path, function, markers in (
-            (context, "fn original_read_proof(", (
+            (context, "fn original_receipt_predecessors(", (
                 "self.authenticate(at, PublicationAccess::Readback)?",
-                "training: self.training.attestation()",
-                "evaluation: self.evaluation.attestation()",
-                "origin: match self.origin",
-                "Origin::Fresh =>",
-                "Origin::Readback =>",
+                "self.verify_original_predecessors(at)",
             )),
-            (MAIN, "fn from_evaluated(", (
-                "OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(&original, now()?)",
-                "prefix: original.snapshot().clone()",
-                "evaluated: Some(original)",
+            (context, "fn clone_for_original_receipt(", (
+                "scope: self.scope.clone()",
+                "verifier: self.verifier.clone()",
+                "training: self.training.clone()",
+                "evaluation: self.evaluation.clone()",
+                "origin: self.origin",
             )),
-            (MAIN, "fn require_original_context(", ("self.context.evaluated.is_some()",)),
-            (WIRE, "fn mode(", (
-                "&context.prefix != original.snapshot()",
-                "context.prefix.receipts.len() != 4",
-                "context.selection_evidence.is_some()",
+            (context, "fn into_original_receipt_readback(", (
+                "self.origin = Origin::Readback",
             )),
-            (WIRE, "fn context_binding(", (
-                "OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(original, at)",
-                "proof.training != &context.training_evidence",
-                "proof.origin",
-                "&proof.evaluation.signing_bytes()",
-                "&proof.evaluation.signature",
+            (cut, "fn for_original_selection(", (
+                "context.into_original_receipt_readback()",
+                "OriginalCut::Selection(context)",
+                "profile.binding(now()?)?",
+            )),
+            (cut, "fn for_original_next_use(", (
+                "selection.into_original_receipt_readback()",
+                "OriginalCut::NextUse(selection)",
+                "profile.binding(now()?)?",
+            )),
+            (MAIN, "fn require_original_context(", ("self.context.legacy()?",)),
+            (cut, "fn binding(", (
+                ".original_receipt_predecessors(at)",
+                "LearningIterationStageV1::Selection",
+                "context.receipt_context_binding()",
+                "prefix.receipts.len() != length",
+                "coordinator.next_stage() != Some(stage)",
+                "prefix.training_no_update_v2().is_some()",
+                "self.scope.validate_snapshot(prefix)?",
+                "&encode_original_owner_snapshot_v1(prefix)?",
+                "self.scope.binding().as_array()",
+            )),
+            (context, "fn receipt_context_binding(", (
+                "&self.training.attestation().signing_bytes()",
+                "&self.training.attestation().signature",
+                "&self.evaluation.attestation().signing_bytes()",
+                "&self.evaluation.attestation().signature",
             )),
         ):
             for marker in markers:
@@ -199,8 +217,8 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "channel.next_request_id > 128",
             "channel.peer.request(&bytes)?",
             "response.require_request(&request)?",
-            "response.read.decode(&self.context)?",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.decode(response.read)?",
+            "self.context.binding(fresh)? != self.binding",
             "retained.as_ref().is_some_and(|prior| prior != &current)",
             "channel.peer.check_peer_lifetime()?",
         ):
@@ -231,9 +249,9 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
         for marker in (
-            "request.require_context(&self.context, self.binding, request_id)?",
+            "self.context\n            .require_request(&request, self.binding, request_id)?",
             "let read = self.read_original()?;",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.binding(fresh)? != self.binding",
             "wire::OriginalRead::from_original(read)?",
             "bytes.is_empty() || bytes.len() > 16_384",
         ):
@@ -294,11 +312,11 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         for marker in (
             "digest(&bundle)? != baseline",
             "source_publication.is_none()",
-            "state_partition.run_id == context.prefix.request.source_run_id",
+            "state_partition.run_id == prefix.request.source_run_id",
             "*candidate_bundle == baseline && *selection_digest == selection",
-            "context.scope.validate_observation(&observation)?",
+            "scope.validate_observation(&observation)?",
         ):
-            self.rejects(WIRE, "fn decode(", marker)
+            self.rejects(WIRE, "fn decode_original(", marker)
         self.rejects(WIRE, "fn digest(", "digest.is_zero() || digest.to_string() != text")
         for path in (MAIN, SERVICE, WIRE):
             source = (ROOT / path).read_text()

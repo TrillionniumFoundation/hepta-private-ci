@@ -41,16 +41,6 @@ enum Origin {
     Readback,
 }
 
-/// Borrowed authenticated facts for a read purpose; no publication or signing
-/// capability is returned, and the original fresh/cold origin remains bound.
-pub(crate) struct EvaluatedRetentionReadProofV1<'a> {
-    pub(crate) scope: &'a FrozenLearningScopeV2,
-    pub(crate) verifier: &'a LearningEvidenceVerifierV1,
-    pub(crate) training: &'a SignedLearningEvidenceV1,
-    pub(crate) evaluation: &'a SignedLearningEvidenceV1,
-    pub(crate) origin: &'static [u8],
-}
-
 impl OriginalCircuitEvaluatedRetentionContextV1 {
     pub fn from_original_evaluation(
         scope: FrozenLearningScopeV2,
@@ -92,23 +82,6 @@ impl OriginalCircuitEvaluatedRetentionContextV1 {
     /// Selector, CURRENT, FinalUse or task-execution capability.
     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
         self.evaluation.snapshot()
-    }
-
-    pub(crate) fn original_read_proof(
-        &self,
-        at: u64,
-    ) -> Result<EvaluatedRetentionReadProofV1<'_>, Error> {
-        self.authenticate(at, PublicationAccess::Readback)?;
-        Ok(EvaluatedRetentionReadProofV1 {
-            scope: &self.scope,
-            verifier: &self.verifier,
-            training: self.training.attestation(),
-            evaluation: self.evaluation.attestation(),
-            origin: match self.origin {
-                Origin::Fresh => b"fresh",
-                Origin::Readback => b"readback",
-            },
-        })
     }
 
     pub(super) fn authenticate(

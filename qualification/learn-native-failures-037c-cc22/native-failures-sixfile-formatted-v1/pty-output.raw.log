@@ -1,0 +1,48 @@
+{
+  "records": "/home/qian-qi/hepta-learn-037c-evidence/format-native-failures-six-v1",
+  "returncode": 0,
+  "error": null,
+  "files": 6,
+  "format_changed": [
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs"
+  ],
+  "manifest": {
+    "bytes": 8193,
+    "sha256": "4f89bca7f635cd7730a0c13bb6deae6c3b5fc27f2ef9295025cf4aa22842ea6c",
+    "blob": "0b4fd47c416b6510fed8e18362d7d60a568032d3"
+  },
+  "raw_log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "artifacts": [
+    {
+      "path": "six-file-prefmt.patch",
+      "bytes": 20396,
+      "sha256": "131d800cfffae9cd99827f860f32e95c1c7f9d777590a4168f71839fce40ccb6",
+      "blob": "0bf3f355a96c0633e3e458434f0bfe9cf4978182"
+    },
+    {
+      "path": "combined-native-failure-fixes.patch",
+      "bytes": 20314,
+      "sha256": "e5547d83668ac237116741a6b80adbdea8e626396c06530b8aedbc1bea5f33f4",
+      "blob": "eb0c63fe9f800cb0102ed4cf25f94d706c28f709"
+    },
+    {
+      "path": "format-only.patch",
+      "bytes": 2148,
+      "sha256": "2539b885ae131e95f9a731b112a59c28ff3f94be09ed24bf4d35052d4b94fb46",
+      "blob": "d5b41d3e328bb45a3c6a10d990d0e9090b2e4a42"
+    },
+    {
+      "path": "complete-postimages.json.gz",
+      "bytes": 25965,
+      "sha256": "e6eeb8f8d6cfed0f491ee6db5889fd7700730e7877d126e6ed9b2cbd8f2d9bd8",
+      "blob": "bfcf03314956d6f8035ba282aeedf7c6503cf821"
+    }
+  ],
+  "complete_postimages_root": "/home/qian-qi/hepta-learn-037c-evidence/format-native-failures-six-v1/postimages",
+  "checkout_access": false,
+  "target_access": false
+}

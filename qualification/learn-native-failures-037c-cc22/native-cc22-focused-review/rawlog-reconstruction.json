@@ -1,0 +1,43 @@
+{
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "raw_file": "/workspace/scratch/037c0371c195/native-cc22-focused-review/focused.raw.log",
+  "bytes": 183732,
+  "sha256": "4e0f58f42e4abb056868ddfb2c041d8caa9e543c5694de1de8dad15a36d529e1",
+  "complete_raw_log_verified": true,
+  "line_count": 4575,
+  "receipts": [
+    {
+      "path": "raw-prefix-p1.readback.json",
+      "sha256": "5d317b863fa3ea42c719e373612cc5195b96eb969219388586a6ae7854206f09"
+    },
+    {
+      "path": "raw-prefix-p2.readback.json",
+      "sha256": "67b9572edf9bbb957a0135816d43185b99fab023ff666f96f16e1d3524df2e65"
+    },
+    {
+      "path": "raw-prefix-p3.readback.json",
+      "sha256": "317ae8bb1e707d4b2c2babaa34f7a0190b50757719ef82b55262dbdd3c0d9976"
+    },
+    {
+      "path": "failure-provider-timeout.readback.json",
+      "sha256": "a19e9832a99b460096f8ba26b2981624016ddb8109349a6fc7da3133c0d4e6cd"
+    },
+    {
+      "path": "failure-next-use.readback.json",
+      "sha256": "2014faf8212cdfc92687fe53e5839a21fa7f490095abc8a015bf13e793a2c0c3"
+    },
+    {
+      "path": "failure-excerpts-readback.json",
+      "sha256": "b3bfa1011cdb96536f4dd2a13f418e17f85a214b65022a411fde5f2cb50328b2"
+    },
+    {
+      "path": "selector-byte-diff-a.readback.json",
+      "sha256": "0488bf966314429bd5a2bd2f2a5562a5e40eabf1814e5c0edbc513e7656b2cbd"
+    },
+    {
+      "path": "selector-byte-diff-b.readback.json",
+      "sha256": "ed9ddba8ce292697f6b2dcaf5c4612fc5b775869504b35b566ef46e4fa205a06"
+    }
+  ],
+  "method": "Complete original h.view numbered lines, checked every duplicate and absence of gaps; reconstructed exact bytes independently match original hepta_ci_exec log_bytes and log_sha256."
+}

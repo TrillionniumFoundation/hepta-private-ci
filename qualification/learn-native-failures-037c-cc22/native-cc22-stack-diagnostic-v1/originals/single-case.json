@@ -1,0 +1,66 @@
+{
+  "after": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "-E",
+    "test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures)",
+    "--test-threads",
+    "1",
+    "--retries",
+    "0",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 9.118500136071816,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-12T11:39:23.656937+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 76214,
+  "log_file": "single-case.json.0fd16f8dc39e47c19eb7cfc802d68ff0.log",
+  "log_sha256": "98db02b319fc806d1177d0428a51dfc0631a69f8512fb6ee5a7ec46ae6c2e57e",
+  "minimum_tests": 1,
+  "observed_failed_tests": 1,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "started_at": "2026-11-12T11:39:14.521590+00:00",
+  "status": "failed",
+  "tested_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-common-20261112-037c"
+}

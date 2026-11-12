@@ -1,0 +1,21 @@
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -2771,7 +2771,7 @@
+ receiver_type = "SourceBoundCellQ24TrainingStageV1"
+ definition_path = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
+ definition_markers = ["pub async fn readback("]
+-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs"]
+ caller_markers = []
+ 
+ [[boundary]]
+--- a/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py
++++ b/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py
+@@ -40,6 +40,7 @@
+     "learning_source_bound_training_stage_readback": (
+         AGENT + "cell_q24_training_command_service.rs",
+         AGENT + "cell_q24_model_command_lane.rs",
++        AGENT + "cell_q24_training_command_readback_service.rs",
+     ),
+     "learning_source_bound_training_stage_model_readback": (AGENT + "circuit_model_selection_receipt_sources.rs",),
+     "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),

@@ -1,0 +1,610 @@
+{
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "raw_log_path": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/focused.json.1c762950bd3f4f64a8ef1957346020c3.log",
+  "raw_log_bytes": 183732,
+  "raw_log_sha256": "4e0f58f42e4abb056868ddfb2c041d8caa9e543c5694de1de8dad15a36d529e1",
+  "derivation": "Original h.view line excerpts; original raw log hash from independently read focused.json; full raw log not yet transferred to primary. No line content rewritten.",
+  "case_count": 24,
+  "cases": [
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "process_id": 817670,
+      "stderr_source_line": 1584,
+      "original_log_lines": [
+        {
+          "line": 1584,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c' (817670) has overflowed its stack"
+        },
+        {
+          "line": 1585,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1586,
+          "text": ""
+        },
+        {
+          "line": 1587,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "process_id": 817785,
+      "stderr_source_line": 1595,
+      "original_log_lines": [
+        {
+          "line": 1595,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant' (817785) has overflowed its stack"
+        },
+        {
+          "line": 1596,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1597,
+          "text": ""
+        },
+        {
+          "line": 1598,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "process_id": 817815,
+      "stderr_source_line": 1606,
+      "original_log_lines": [
+        {
+          "line": 1606,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication' (817815) has overflowed its stack"
+        },
+        {
+          "line": 1607,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1608,
+          "text": ""
+        },
+        {
+          "line": 1609,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "process_id": 817846,
+      "stderr_source_line": 1617,
+      "original_log_lines": [
+        {
+          "line": 1617,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b' (817846) has overflowed its stack"
+        },
+        {
+          "line": 1618,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1619,
+          "text": ""
+        },
+        {
+          "line": 1620,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "process_id": 817875,
+      "stderr_source_line": 1628,
+      "original_log_lines": [
+        {
+          "line": 1628,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners' (817875) has overflowed its stack"
+        },
+        {
+          "line": 1629,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1630,
+          "text": ""
+        },
+        {
+          "line": 1631,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "process_id": 817933,
+      "stderr_source_line": 1639,
+      "original_log_lines": [
+        {
+          "line": 1639,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch' (817933) has overflowed its stack"
+        },
+        {
+          "line": 1640,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1641,
+          "text": ""
+        },
+        {
+          "line": 1642,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "process_id": 817961,
+      "stderr_source_line": 1650,
+      "original_log_lines": [
+        {
+          "line": 1650,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed' (817961) has overflowed its stack"
+        },
+        {
+          "line": 1651,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1652,
+          "text": ""
+        },
+        {
+          "line": 1653,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "process_id": 817988,
+      "stderr_source_line": 1661,
+      "original_log_lines": [
+        {
+          "line": 1661,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion' (817988) has overflowed its stack"
+        },
+        {
+          "line": 1662,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1663,
+          "text": ""
+        },
+        {
+          "line": 1664,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "process_id": 818012,
+      "stderr_source_line": 1672,
+      "original_log_lines": [
+        {
+          "line": 1672,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut' (818012) has overflowed its stack"
+        },
+        {
+          "line": 1673,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1674,
+          "text": ""
+        },
+        {
+          "line": 1675,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "process_id": 818035,
+      "stderr_source_line": 1683,
+      "original_log_lines": [
+        {
+          "line": 1683,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion' (818035) has overflowed its stack"
+        },
+        {
+          "line": 1684,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1685,
+          "text": ""
+        },
+        {
+          "line": 1686,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "process_id": 818095,
+      "stderr_source_line": 1694,
+      "original_log_lines": [
+        {
+          "line": 1694,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs' (818095) has overflowed its stack"
+        },
+        {
+          "line": 1695,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1696,
+          "text": ""
+        },
+        {
+          "line": 1697,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "process_id": 818132,
+      "stderr_source_line": 1705,
+      "original_log_lines": [
+        {
+          "line": 1705,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim' (818132) has overflowed its stack"
+        },
+        {
+          "line": 1706,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1707,
+          "text": ""
+        },
+        {
+          "line": 1708,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "process_id": 818156,
+      "stderr_source_line": 1716,
+      "original_log_lines": [
+        {
+          "line": 1716,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response' (818156) has overflowed its stack"
+        },
+        {
+          "line": 1717,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1718,
+          "text": ""
+        },
+        {
+          "line": 1719,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "process_id": 818181,
+      "stderr_source_line": 1727,
+      "original_log_lines": [
+        {
+          "line": 1727,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut' (818181) has overflowed its stack"
+        },
+        {
+          "line": 1728,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1729,
+          "text": ""
+        },
+        {
+          "line": 1730,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "process_id": 818211,
+      "stderr_source_line": 1738,
+      "original_log_lines": [
+        {
+          "line": 1738,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature' (818211) has overflowed its stack"
+        },
+        {
+          "line": 1739,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1740,
+          "text": ""
+        },
+        {
+          "line": 1741,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "process_id": 818269,
+      "stderr_source_line": 1749,
+      "original_log_lines": [
+        {
+          "line": 1749,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (818269) has overflowed its stack"
+        },
+        {
+          "line": 1750,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1751,
+          "text": ""
+        },
+        {
+          "line": 1752,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "process_id": 818330,
+      "stderr_source_line": 1760,
+      "original_log_lines": [
+        {
+          "line": 1760,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (818330) has overflowed its stack"
+        },
+        {
+          "line": 1761,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1762,
+          "text": ""
+        },
+        {
+          "line": 1763,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "process_id": 818335,
+      "stderr_source_line": 1771,
+      "original_log_lines": [
+        {
+          "line": 1771,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (818335) has overflowed its stack"
+        },
+        {
+          "line": 1772,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1773,
+          "text": ""
+        },
+        {
+          "line": 1774,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "process_id": 818385,
+      "stderr_source_line": 1782,
+      "original_log_lines": [
+        {
+          "line": 1782,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (818385) has overflowed its stack"
+        },
+        {
+          "line": 1783,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1784,
+          "text": ""
+        },
+        {
+          "line": 1785,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "process_id": 818412,
+      "stderr_source_line": 1793,
+      "original_log_lines": [
+        {
+          "line": 1793,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (818412) has overflowed its stack"
+        },
+        {
+          "line": 1794,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1795,
+          "text": ""
+        },
+        {
+          "line": 1796,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "process_id": 818436,
+      "stderr_source_line": 1804,
+      "original_log_lines": [
+        {
+          "line": 1804,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (818436) has overflowed its stack"
+        },
+        {
+          "line": 1805,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1806,
+          "text": ""
+        },
+        {
+          "line": 1807,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "process_id": 818499,
+      "stderr_source_line": 1815,
+      "original_log_lines": [
+        {
+          "line": 1815,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (818499) has overflowed its stack"
+        },
+        {
+          "line": 1816,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1817,
+          "text": ""
+        },
+        {
+          "line": 1818,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "process_id": 818523,
+      "stderr_source_line": 1826,
+      "original_log_lines": [
+        {
+          "line": 1826,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (818523) has overflowed its stack"
+        },
+        {
+          "line": 1827,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1828,
+          "text": ""
+        },
+        {
+          "line": 1829,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "process_id": 818540,
+      "stderr_source_line": 1837,
+      "original_log_lines": [
+        {
+          "line": 1837,
+          "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (818540) has overflowed its stack"
+        },
+        {
+          "line": 1838,
+          "text": "    fatal runtime error: stack overflow, aborting"
+        },
+        {
+          "line": 1839,
+          "text": ""
+        },
+        {
+          "line": 1840,
+          "text": "    (test aborted with signal 6: SIGABRT)"
+        }
+      ],
+      "reason": "actual stderr: stack overflow, aborting",
+      "signal": 6
+    }
+  ]
+}

@@ -17,10 +17,12 @@ use codex_hepta_neuron::AnchorWitnessStore;
 
 use super::Channel;
 use super::Error;
+use super::OriginalCircuitEvaluatedLearningReadContextV1;
 use super::OriginalCircuitLearningReadClientV1;
 use super::OriginalCircuitLearningReadContextV1;
 use super::OriginalCircuitLearningReadOwnerV1;
 use super::now;
+use super::profile::ReadProfile;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
 
@@ -75,26 +77,26 @@ pub(crate) fn client(
     OriginalCircuitLearningReadClientV1,
     HostAuthorityPeerChannel,
 )> {
-    bound_client(context.into())
+    profile_client(ReadProfile::TrainingNoUpdate(context))
 }
 
 pub(crate) fn evaluated_client(
-    context: crate::OriginalCircuitEvaluatedRetentionContextV1,
+    context: OriginalCircuitEvaluatedLearningReadContextV1,
 ) -> anyhow::Result<(
     OriginalCircuitLearningReadClientV1,
     HostAuthorityPeerChannel,
 )> {
-    bound_client(super::ReadContext::from_evaluated(context)?)
+    profile_client(ReadProfile::Evaluated(context))
 }
 
-fn bound_client(
-    context: super::ReadContext,
+fn profile_client(
+    context: ReadProfile,
 ) -> anyhow::Result<(
     OriginalCircuitLearningReadClientV1,
     HostAuthorityPeerChannel,
 )> {
     let (stream, server) = UnixStream::pair()?;
-    let binding = wire::context_binding(&context, now()?)?;
+    let binding = context.binding(now()?)?;
     Ok((
         OriginalCircuitLearningReadClientV1 {
             context,
@@ -182,7 +184,6 @@ pub(crate) fn reject_wrong_context<C: AnchorWitnessStore, S: AnchorWitnessStore>
     owner: &OriginalCircuitLearningReadOwnerV1<C, S>,
     context: &OriginalCircuitLearningReadContextV1,
 ) -> anyhow::Result<()> {
-    let context = &context.clone().into();
     let binding = wire::context_binding(context, now()?)?;
     let mut request = wire::Request::new(context, binding, 1)?;
     request.operation_id.push_str("-changed");
@@ -199,4 +200,109 @@ pub(crate) fn reject_wrong_context<C: AnchorWitnessStore, S: AnchorWitnessStore>
         );
     anyhow::ensure!(owner.response(&serde_json::to_vec(&value)?, 1).is_err());
     Ok(())
+}
+
+pub(crate) fn reject_evaluated_request_substitutions<
+    C: AnchorWitnessStore,
+    S: AnchorWitnessStore,
+>(
+    owner: &OriginalCircuitLearningReadOwnerV1<C, S>,
+    context: &OriginalCircuitEvaluatedLearningReadContextV1,
+) -> anyhow::Result<()> {
+    let profile = ReadProfile::Evaluated(context.clone());
+    let binding = profile.binding(now()?)?;
+    let request = profile.request(binding, 1)?;
+    let original = serde_json::to_value(&request)?;
+    let wrong_mode = match profile.mode()? {
+        wire::Mode::Selection => "next_use",
+        wire::Mode::NextUse => "selection",
+    };
+    for (field, replacement) in [
+        ("schema", serde_json::json!(2)),
+        ("operation", serde_json::json!(wire::OPERATION)),
+        ("request_id", serde_json::json!(2)),
+        (
+            "binding",
+            serde_json::json!(codex_hepta_types::Digest32::of_bytes(b"other").to_string()),
+        ),
+        (
+            "prefix_head",
+            serde_json::json!(codex_hepta_types::Digest32::of_bytes(b"head").to_string()),
+        ),
+        (
+            "operation_id",
+            serde_json::json!("other-original-operation"),
+        ),
+        ("mode", serde_json::json!(wrong_mode)),
+    ] {
+        let mut changed = original.clone();
+        changed[field] = replacement;
+        anyhow::ensure!(
+            matches!(
+                owner.response(&serde_json::to_vec(&changed)?, 1),
+                Err(Error::Binding("original fixed evaluated read request"))
+            ),
+            "changed evaluated read field: {field}"
+        );
+    }
+    let mut uploaded = original;
+    uploaded["observation"] = serde_json::json!({"selected": "caller supplied"});
+    anyhow::ensure!(matches!(
+        owner.response(&serde_json::to_vec(&uploaded)?, 1),
+        Err(Error::Encoding(_))
+    ));
+    // Both legacy protocols must reject before accepting a new transport.
+    let (stream, _unused) = UnixStream::pair()?;
+    anyhow::ensure!(matches!(
+        owner.serve_completion_readiness(
+            stream,
+            identity()?,
+            // SAFETY: observe fixture credentials, never switch a process role.
+            unsafe { libc::geteuid() },
+            pidfd()?,
+            Duration::from_millis(500),
+            Duration::from_secs(300),
+        ),
+        Err(Error::Binding("legacy TrainingNoUpdate read purpose"))
+    ));
+    let (stream, _unused) = UnixStream::pair()?;
+    let mut retained = channel(stream)?;
+    anyhow::ensure!(matches!(
+        owner.serve_original_retained_channel(&mut retained),
+        Err(Error::Binding("legacy TrainingNoUpdate read purpose"))
+    ));
+    Ok(())
+}
+
+pub(crate) fn withdraw_source_before_final_selection_read<
+    C: AnchorWitnessStore + Send + 'static,
+    S: AnchorWitnessStore + Send + 'static,
+>(
+    owner: Arc<OriginalCircuitLearningReadOwnerV1<C, S>>,
+    mut channel: HostAuthorityPeerChannel,
+    source_file: std::fs::File,
+) -> std::thread::JoinHandle<anyhow::Result<u64>> {
+    std::thread::spawn(move || {
+        for request_id in 1..=3 {
+            // Two actual reads reached the same Source/Cell. The final read
+            // must reject this physical withdrawal after the S journal commit.
+            if request_id == 3 {
+                source_file.set_len(0)?;
+            }
+            let mut failure = None;
+            let exchanged = channel.exchange(|bytes| {
+                owner.response(bytes, request_id).map_err(|error| {
+                    failure = Some(error);
+                    HostIssuerTransportError::InvalidRequest
+                })
+            });
+            if request_id == 3 {
+                anyhow::ensure!(matches!(failure, Some(Error::Source(_))));
+                anyhow::ensure!(exchanged.is_err());
+                return Ok(request_id);
+            }
+            anyhow::ensure!(matches!(exchanged, Ok(true)));
+        }
+        anyhow::bail!("actual final Selection read was not attempted")
+    })
 }

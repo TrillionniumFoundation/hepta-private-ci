@@ -1,61 +1,105 @@
-//! Exercises the private read wire using actual opaque Evaluator results from
-//! the host fixture. This is mechanism evidence, not deployed qualification.
+//! The canonical evaluated read profile consumes actual opaque T/B results.
+//! Fresh/cold publication origins remain distinct before explicit read-only
+//! conversion. This private fixture neither exports fields nor grants work.
 
 use pretty_assertions::assert_eq;
-use pretty_assertions::assert_ne;
 
 use super::*;
+use crate::OriginalCircuitLearningReadContextV1;
+use crate::OriginalCircuitRetainedPublicationErrorV1;
 
 pub(crate) fn check_evaluated_profiles(
     fresh: OriginalCircuitEvaluatedRetentionContextV1,
     cold: OriginalCircuitEvaluatedRetentionContextV1,
+    evaluation_expires_at: u64,
 ) -> anyhow::Result<()> {
-    let mut fresh = ReadContext::from_evaluated(fresh)?;
-    let cold = ReadContext::from_evaluated(cold)?;
     let at = now()?;
-    let binding = wire::context_binding(&fresh, at)?;
-    let cold_binding = wire::context_binding(&cold, at)?;
-    assert_ne!(binding, cold_binding);
-    assert_eq!(wire::mode(&fresh)?, wire::Mode::Selection);
-    assert_eq!(wire::mode(&cold)?, wire::Mode::Selection);
-    assert_eq!(wire::decision(&fresh)?.snapshot(), &fresh.prefix);
-    assert_eq!(fresh.prefix, cold.prefix);
+    // The original publication distinction is preserved before conversion.
+    fresh.require_new_original_receipt(at)?;
+    assert!(matches!(
+        cold.require_new_original_receipt(at),
+        Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
+            "recovered evaluated retention is read-only"
+        ))
+    ));
+    let (scope, verifier, training_evidence) = fresh.receipt_configuration();
+    let expired = training_evidence
+        .expires_at
+        .max(evaluation_expires_at)
+        .saturating_add(1);
+    let mut legacy = OriginalCircuitLearningReadContextV1 {
+        prefix: fresh.snapshot().clone(),
+        scope,
+        verifier,
+        training_evidence,
+        selection_evidence: None,
+    };
+    let fresh = OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(fresh)?;
+    let cold = OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(cold)?;
+    for profile in [&fresh, &cold] {
+        let OriginalCut::Selection(original) = &profile.original else {
+            anyhow::bail!("Selection input became a NextUse capability");
+        };
+        assert!(matches!(
+            original.require_new_original_receipt(at),
+            Err(OriginalCircuitRetainedPublicationErrorV1::Binding(
+                "recovered evaluated retention is read-only"
+            ))
+        ));
+    }
+    let fresh = ReadProfile::Evaluated(fresh);
+    let cold = ReadProfile::Evaluated(cold);
+    let binding = fresh.binding(at)?;
+    // The public Selection read factory attenuates both origins to the same
+    // read-only purpose; neither retains fresh publication or receipt authority.
+    assert_eq!(binding, cold.binding(at)?);
+    assert_eq!(fresh.mode()?, wire::Mode::Selection);
+    assert_eq!(cold.mode()?, wire::Mode::Selection);
+    assert_eq!(fresh.decision()?.snapshot(), fresh.prefix());
+    assert_eq!(fresh.prefix(), cold.prefix());
+    assert!(fresh.legacy().is_err());
+    assert!(cold.legacy().is_err());
 
-    let request = wire::Request::new(&fresh, binding, /*request_id*/ 1)?;
-    request.require_context(&fresh, binding, /*request_id*/ 1)?;
-    assert!(
-        request
-            .require_context(&cold, cold_binding, /*request_id*/ 1)
-            .is_err()
-    );
-    let mut injected = serde_json::to_value(&request)?;
+    let request = fresh.request(binding, /*request_id*/ 1)?;
+    fresh.require_request(&request, binding, /*request_id*/ 1)?;
+    cold.require_request(&request, binding, /*request_id*/ 1)?;
+    let value = serde_json::to_value(&request)?;
+    for (field, replacement) in [
+        ("schema", serde_json::json!(2)),
+        ("operation", serde_json::json!(wire::OPERATION)),
+        ("request_id", serde_json::json!(2)),
+        (
+            "binding",
+            serde_json::json!(Digest32::of_bytes(b"other-proof").to_string()),
+        ),
+        (
+            "prefix_head",
+            serde_json::json!(Digest32::of_bytes(b"other-cut").to_string()),
+        ),
+        (
+            "operation_id",
+            serde_json::json!("other-source-operation"),
+        ),
+        ("mode", serde_json::json!("next_use")),
+    ] {
+        let mut changed = value.clone();
+        changed[field] = replacement;
+        let changed: wire::Request = serde_json::from_value(changed)?;
+        assert!(matches!(
+            fresh.require_request(&changed, binding, /*request_id*/ 1),
+            Err(Error::Binding("original fixed evaluated read request"))
+        ));
+    }
+    let mut injected = value;
     injected["execute"] = serde_json::json!(true);
     assert!(serde_json::from_value::<wire::Request>(injected).is_err());
 
-    let legacy: ReadContext = OriginalCircuitLearningReadContextV1 {
-        prefix: fresh.prefix.clone(),
-        scope: fresh.scope.clone(),
-        verifier: fresh.verifier.clone(),
-        training_evidence: fresh.training_evidence.clone(),
-        selection_evidence: None,
-    }
-    .into();
+    // The public legacy DTO cannot relabel CandidateTraining/Evaluation as
+    // TrainingNoUpdate, including a fabricated extra Selector hint.
     assert!(wire::context_binding(&legacy, at).is_err());
-    // Neither a fifth-cut hint nor a Selector signature opens NextUse here.
-    fresh.selection_evidence = Some(fresh.training_evidence.clone());
-    assert!(wire::context_binding(&fresh, at).is_err());
-    fresh.selection_evidence = None;
-    fresh.prefix.request.source_run_id = codex_hepta_types::StableId::new("other-source-run")?;
-    assert!(wire::context_binding(&fresh, at).is_err());
-    fresh.prefix = cold.prefix.clone();
-    fresh.training_evidence.expires_at -= 1;
-    assert!(wire::context_binding(&fresh, at).is_err());
-    let proof = cold.evaluated.as_ref().unwrap().original_read_proof(at)?;
-    let expired = proof
-        .training
-        .expires_at
-        .max(proof.evaluation.expires_at)
-        .saturating_add(1);
-    assert!(wire::context_binding(&cold, expired).is_err());
+    legacy.selection_evidence = Some(legacy.training_evidence.clone());
+    assert!(wire::context_binding(&legacy, at).is_err());
+    assert!(fresh.binding(expired).is_err());
+    assert!(cold.binding(expired).is_err());
     Ok(())
 }

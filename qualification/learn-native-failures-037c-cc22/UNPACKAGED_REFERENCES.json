@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "scope": "Omissions are not passing evidence and are not represented by summaries as if full originals had been recovered.",
+  "unrecovered_or_remote_only": [
+    {
+      "id": "helper-jsonl",
+      "status": "REMOTE_METADATA_ONLY_NOT_RECOVERED_OR_PACKAGED",
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1037121,
+      "sha256": "a67334c7cbeaf7909fc2742c242cab99d28827b69985b063c5245fd3a93a3e26",
+      "version": "2050:2166353:1037121:1794480979571224672:1794480979571224672",
+      "reason": "Original is over the per-blob limit; complete helper stderr and build/verify results are packaged. No content is invented."
+    },
+    {
+      "id": "helper-executable",
+      "status": "REMOTE_METADATA_ONLY_NOT_PACKAGED",
+      "path": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/helpers/bin/hepta-joint-propose",
+      "bytes": 1439936,
+      "sha256": "0a144016bc0f95c570b8fefcfb3eaa2f87171aa0ef2c888c971990f348813c4f",
+      "reason": "Binary is not copied into the evidence repository."
+    },
+    {
+      "id": "gdb-admitted-native-binary",
+      "status": "ORIGINAL_HASHED_AT_GDB_RUN_BINARY_NOT_PACKAGED",
+      "bytes": 282306816,
+      "mtime_ns": 1794481578996358532,
+      "path": "/data/hepta-learn-037c-20261112/target-cache-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+      "sha256": "670f90e41e4313efdf00d5452e23ea1b0359c9942b0d7c6092b332416136ba04",
+      "reason": "Original admission was verified during GDB. The later static attempt could not stat this path; no current availability claim."
+    },
+    {
+      "id": "gdb-single-case-junit",
+      "status": "ORIGINAL_METADATA_AND_CASES_RETAINED_XML_NOT_RECOVERED",
+      "sha256": "41da9a7705234c7f62bd90c3ff429d5cb5ea29cb1e9e815a91cb48ad5f1dfb19",
+      "case_count": 1,
+      "reason": "GDB result retains the XML hash and failed testcase. Complete original runner and GDB logs are packaged."
+    },
+    {
+      "id": "six-file-six-file-prefmt.patch",
+      "status": "REMOTE_ORIGINAL_NOT_RECOVERED",
+      "remote_directory": "/home/qian-qi/hepta-learn-037c-evidence/format-native-failures-six-v1",
+      "path": "six-file-prefmt.patch",
+      "bytes": 20396,
+      "sha256": "131d800cfffae9cd99827f860f32e95c1c7f9d777590a4168f71839fce40ccb6",
+      "blob": "0bf3f355a96c0633e3e458434f0bfe9cf4978182",
+      "reason": "The original VERIFIED_MANIFEST explicitly records non-download. The different local draft patch is not used as a replacement."
+    },
+    {
+      "id": "six-file-complete-postimages.json.gz",
+      "status": "REMOTE_ORIGINAL_NOT_RECOVERED",
+      "remote_directory": "/home/qian-qi/hepta-learn-037c-evidence/format-native-failures-six-v1",
+      "path": "complete-postimages.json.gz",
+      "bytes": 25965,
+      "sha256": "e6eeb8f8d6cfed0f491ee6db5889fd7700730e7877d126e6ed9b2cbd8f2d9bd8",
+      "blob": "bfcf03314956d6f8035ba282aeedf7c6503cf821",
+      "reason": "The original VERIFIED_MANIFEST explicitly records non-download. The different local draft patch is not used as a replacement."
+    },
+    {
+      "id": "deep-complete-postimages.json.gz",
+      "status": "REMOTE_ORIGINAL_NOT_PACKAGED",
+      "remote_directory": "/home/qian-qi/hepta-learn-037c-evidence/format-deep-stage-markers-v1",
+      "path": "complete-postimages.json.gz",
+      "bytes": 5881,
+      "sha256": "23486951da9de173b942af53c69d5617ab18f373e04de3001fa140ab1cc573fb",
+      "blob": "b637c4832c08ef1a615f872bedb516b7492f0786",
+      "reason": "Full Rust source is intentionally excluded; original manifest and both exact patches are retained."
+    }
+  ],
+  "intentional_local_exclusions": [
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-failures-sixfile-formatted-v1/readback/group-0.tool-result.json",
+      "bytes": 42683,
+      "sha256": "c1a466a33ec0a99724d3a3ee9d124fbf9049de15e9fffaa49b0498dccf2b371c",
+      "git_blob": "6d0175a96c992f3c2d806d9a8b1fefd3bbda4531",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-failures-sixfile-formatted-v1/readback/group-1.tool-result.json",
+      "bytes": 45583,
+      "sha256": "f0cbde3b8bfbff5ee067d113fbe52164795cff755dac999ff440c4ede52d703a",
+      "git_blob": "6a3592a1699c415854aa36d49a8c9dbbccf84278",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-failures-sixfile-formatted-v1/readback/group-2.tool-result.json",
+      "bytes": 43226,
+      "sha256": "04ecdb6b9e86ab6e47d4207edaeb4e315038a55ab88f17790d70c01840e5733d",
+      "git_blob": "8f2b40a0e26d8e91cc5a57dba4fc837c72c3ab25",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-deep-stage-markers-521-v1/actual-format/originals-readback.json",
+      "bytes": 44244,
+      "sha256": "a72d3ae5e0ac642b38bbe7e671a5390677fcb39225e6a7aee7a82128bcd24985",
+      "git_blob": "c4de5032e5a5f47bc90e1c50bb24c66ee5bc9d9f",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-failures-integration-v1/checks/provider-three-way.stdout",
+      "bytes": 18765,
+      "sha256": "653c2143cf100a951c3fbf34fd20a995e69a772af928e6d222190ccf94a8136b",
+      "git_blob": "85e74f31a7eef4d7021b41e9477ba25c2e3d64b6",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-failures-sixfile-prefmt-v1/input-payload.json",
+      "bytes": 216423,
+      "sha256": "455b6b51a8625b0b84dd055f32ad43262699d9e5993a46d8cd87b71153b0c342",
+      "git_blob": "00644bd60b0cf6fc935d39d200a50be4586697cd",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-failures-sixfile-prefmt-v1/input-payload.json.gz",
+      "bytes": 37421,
+      "sha256": "e91c376a69dcc19b9eb444224cc54cc8265be5f15aa77d4b967167f2efc1c6fb",
+      "git_blob": "1bb4e9212993ee1d69ede88e1b8e60c1bcb758f1",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-deep-stage-markers-521-v1/input-payload.json",
+      "bytes": 40450,
+      "sha256": "bd7658e8171d0d0072d2332cb7eaf4191ceab549c1f4ad4a4cd59f49bd21558b",
+      "git_blob": "7826f72c95fcea612d6b6f00c8252b8ea7f529cb",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "RECOVERED_OR_AUTHORED_INTENTIONALLY_NOT_PACKAGED",
+      "path": "native-deep-stage-markers-521-v1/input-payload.json.gz",
+      "bytes": 9711,
+      "sha256": "1b74653a568b7334cb981a66fd75e08365a08446dc823287acad295fc887315a",
+      "git_blob": "83176d34c2236d6269f61e0c54494e8304e9254c",
+      "reason": "Source-bearing envelope or complete Rust source/input; exact manifests and patches are preserved."
+    },
+    {
+      "status": "INTENTIONALLY_NOT_PACKAGED",
+      "paths": [
+        "*/base/**/*.rs",
+        "*/work/**/*.rs",
+        "*/postimages/**/*.rs",
+        "*/checks/**/*.rs",
+        "*/source/**/*.rs",
+        "*/diagnostic-work/**/*.rs",
+        "candidate-provider-native-failures-521-v1/provider-scenario-split.fragment.rs"
+      ],
+      "reason": "No standalone Rust source copies. Original baseline and published postimage Git blobs remain in manifests."
+    }
+  ],
+  "duplicate_preview_text_excluded": [
+    "native-cc22-focused-review/failure-provider-timeout.h-view.txt",
+    "native-cc22-focused-review/failure-next-use.h-view.txt",
+    "native-cc22-focused-review/failure-excerpts.h-view.txt"
+  ],
+  "duplicate_sdk_wrapper_excluded": {
+    "path": "candidate-sourcebound-caller-cc22-v1/execution-readback/original-sdk-payload.json",
+    "reason": "This local wrapper has an extra trailing LF; exact 13885-byte payload is separately packaged."
+  }
+}

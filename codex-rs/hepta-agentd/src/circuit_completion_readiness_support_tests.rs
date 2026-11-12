@@ -15,12 +15,12 @@ use super::super::fixture;
 use super::*;
 
 pub(crate) fn client(
-    context: super::super::OriginalCircuitLearningReadContextV1,
+    context: Context,
 ) -> anyhow::Result<(
     OriginalCircuitCompletionReadinessClientV1,
     HostAuthorityPeerChannel,
 )> {
-    anyhow::ensure!(original::mode(&context.clone().into())? == original::Mode::NextUse);
+    anyhow::ensure!(original::mode(&context)? == original::Mode::NextUse);
     let (original, server) = fixture::client(context)?;
     let OriginalCircuitLearningReadClientV1 {
         context,
@@ -109,9 +109,8 @@ pub(crate) fn changed_reply<
 
 pub(crate) fn reject_unknown_request_fields<C: AnchorWitnessStore, S: AnchorWitnessStore>(
     owner: &OriginalCircuitLearningReadOwnerV1<C, S>,
-    context: &super::super::OriginalCircuitLearningReadContextV1,
+    context: &Context,
 ) -> anyhow::Result<()> {
-    let context = &context.clone().into();
     let binding = original::context_binding(context, now()?)?;
     let request = Request::new(context, binding, 1)?;
     for field in ["snapshot", "observation", "signature", "ready", "execute"] {

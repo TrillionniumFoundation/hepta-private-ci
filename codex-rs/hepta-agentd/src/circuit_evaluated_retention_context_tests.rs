@@ -64,7 +64,11 @@ async fn evaluated_retention_preserves_actual_ineligible_candidate_and_four_stag
         &training,
         &evaluation,
     )?;
-    crate::circuit_feature_current::check_evaluated_profiles(context, cold)?;
+    crate::circuit_feature_current::check_evaluated_profiles(
+        context,
+        cold,
+        evaluation.attestation().expires_at,
+    )?;
     // The fixture's actual changed-model C cannot satisfy retained baseline CURRENT.
     let fresh = OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
         fixture.config.scope.clone(),
@@ -76,7 +80,8 @@ async fn evaluated_retention_preserves_actual_ineligible_candidate_and_four_stag
         crate::OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(
             fixture.original.session.cell.clone(),
             fixture.original.session.source.as_ref().clone(),
-            fixture.original.session.runtime.identity.clone(), fresh,
+            fixture.original.session.runtime.identity.clone(),
+            crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(fresh)?,
         ),
         Err(crate::OriginalCircuitLearningReadErrorV1::Owner(crate::AgentdError::Invalid(detail)))
             if detail == "learning decision differs from the original published task owner"

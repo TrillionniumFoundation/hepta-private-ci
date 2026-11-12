@@ -1,0 +1,47 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
+index 85e74f31a7eef4d7021b41e9477ba25c2e3d64b6..a5fadf41d93333097f9b3613e07f9ca705f36223 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs
+@@ -145,10 +145,7 @@
+ // Each branch keeps its own actual B owners, bytes and permanent-fence checks.
+ // Partition the six complete native cohorts across bounded test cases; none of
+ // their physical reads or assertions is replaced by a cached result.
+-async fn current_refusal_cases(
+-    mutations: &[&str],
+-    modes: &[&str],
+-) -> anyhow::Result<()> {
++async fn current_refusal_cases(mutations: &[&str], modes: &[&str]) -> anyhow::Result<()> {
+     let (original, primary, _retention, registration) = preregistered().await?;
+     let trust_time = primary.at - 124;
+     let objective = primary.rule.objective_digest;
+@@ -260,7 +257,6 @@
+     original.finish().await
+ }
+ 
+-
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ async fn original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows()
+ -> anyhow::Result<()> {
+@@ -280,8 +276,8 @@
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+-async fn original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes()
+--> anyhow::Result<()> {
++async fn original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes() -> anyhow::Result<()>
++{
+     let (original, primary, _retention, registration) = Box::pin(preregistered()).await?;
+     let trust_time = primary.at - 124;
+     let objective = primary.rule.objective_digest;
+@@ -396,7 +392,10 @@
+         cohort.current(),
+         Err(OriginalCircuitEvaluationProviderErrorV1::Indeterminate)
+     ));
+-    assert_eq!(cohort.original_config().training_evidence, original_signature);
++    assert_eq!(
++        cohort.original_config().training_evidence,
++        original_signature
++    );
+     assert_eq!(cohort.bytes()?, before);
+     original.finish().await
+ }

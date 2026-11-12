@@ -1,0 +1,31 @@
+{
+  "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+  "base_git_blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+  "post_sha256": "f496e048b8c8aad98c9107a9db6987ddbd796d14712fb006f8e81169e1100c1e",
+  "post_git_blob": "8f00ea53be2371683bdcc5afbadc7b552a920363",
+  "patch_sha256": "982a7a32bb2b44292b34fe799c0442bef8dd052371174a2e7fc4d35fb8856d17",
+  "patch_bytes": 2386,
+  "test_case_partition": [
+    [
+      "withdraw",
+      "source-bytes"
+    ],
+    [
+      "ledger-bytes",
+      "rollback"
+    ],
+    [
+      "unreleased",
+      "cold-readonly"
+    ]
+  ],
+  "all_original_branch_bodies_byte_identical_except_loop_parameterization": true,
+  "all_original_assertions_preserved": true,
+  "original_test_name_preserved": true,
+  "new_test_count": 2,
+  "production_changes": false,
+  "timeout_or_stack_threshold_changes": false,
+  "rustfmt_status": "pending actual Rust 1.96",
+  "runtime_status": "not yet validated; draft only"
+}

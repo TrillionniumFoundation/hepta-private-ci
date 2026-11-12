@@ -1,0 +1,51 @@
+{
+  "base_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "base_tree": "778a2c1c1f77fd1ea3d3cd0c203cef6c38db2ec0",
+  "original_failed_execution_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "source_unchanged_between_refs": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "baseline_sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+      "baseline_blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+      "draft_sha256": "65f50cc9ef24031860fce7aa99e3c0275a8b81586b9ca52143b77435ce2f9ce0",
+      "draft_blob": "d0e3d045c8607575adb632a2a949df60ca410529",
+      "lines": 444
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "baseline_sha256": "ce45610fd49fdb898e7144adb502c1b7f1d9a1e5ed46ff9fee863c2531ba93b4",
+      "baseline_blob": "bcb42c2d31f06a306d0cb3c4032494621b45e69a",
+      "draft_sha256": "563d82440c91f580e49dfcc55569900b7777fbd88ac8cfc83eff856540704647",
+      "draft_blob": "5a462fab5c7b93038596953957434c52e62a00ee",
+      "lines": 113
+    }
+  ],
+  "patch_sha256": "d71a003818363272a382759e7afed37cdd26755dfe191285ba3c6b623d104b32",
+  "production_changed": false,
+  "timeout_changed": false,
+  "native": "UNRUN",
+  "rustfmt": "UNRUN",
+  "qualification": false,
+  "shared_file_scope": "Only replaces old refuses_missing_outcomes_renewal_and_zero_support body with four cases; withdrawal/corruption function unchanged for recovery agent",
+  "scenario_mapping": {
+    "MissingLast": "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+    "WrongUnitLast": "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+    "freeze-renewal": "original_evaluation_provider_refuses_renewed_original_signatures",
+    "training-renewal": "original_evaluation_provider_refuses_renewed_original_signatures",
+    "expired-window": "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+    "zero-support": "original_evaluation_provider_zero_support_consumes_holdout_once",
+    "NonCanonicalOrder": "original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes"
+  },
+  "version": 2,
+  "supersedes": "v1 expiry diagnosis and test hunk withdrawn before integration; expiry is inclusive in original verifier",
+  "signed_evidence_verifier_blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+  "expiry_semantics": "original expires_at validates; expires_at+1 while work window still live returns exact Evidence(ValidityWindow), then permanent Indeterminate; original signature and ledger unchanged",
+  "report_sha256": "40f75254e0fdd359c00a56b512736556b28060a18875495859fc647d3c35a83f",
+  "static_review": {
+    "preceding_recovery_agent_function_unchanged": true,
+    "existing_unsorted_test_body_unchanged": true,
+    "scenario_mapping_count": 7,
+    "native_and_rustfmt_unrun": true
+  }
+}
