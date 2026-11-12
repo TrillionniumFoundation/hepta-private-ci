@@ -132,7 +132,7 @@ impl RootHistoricalSourceHandoffV1 {
     ) -> io::Result<Self> {
         let mut retained = Self::open_record(Arc::clone(&root), target)?;
         retained.require_finalized()?;
-        let result = retained.refusal.inspect(|| {
+        let result = RootDataRefusalV1::inspect(&retained.refusal, || {
             if retained
                 .store
                 .load(&retained.owner)
