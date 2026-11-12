@@ -13,25 +13,21 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
 
-use serde::Deserialize;
-
 use super::OriginalFiles;
 use super::post_a_remaining;
 use super::refused;
 use crate::AgentdError;
 
-#[derive(Clone, Copy, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[derive(Clone, Copy)]
 enum MaterialMode {
     Create,
     Recover,
 }
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub(super) struct MaterialData {
+struct MaterialData {
     path: PathBuf,
     mode: MaterialMode,
+    expected: Pin,
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -60,7 +56,7 @@ pub(super) struct OriginalMaterialReadback {
 }
 
 impl MaterialData {
-    pub(super) fn open_original(
+    fn open_original(
         self,
         files: &mut OriginalFiles,
         end: Instant,
@@ -71,7 +67,7 @@ impl MaterialData {
         let pin = Pin::read(&file.metadata()?)?;
         // SAFETY: both calls only read this process's actual kernel credentials.
         let actual_owner = unsafe { (libc::geteuid(), libc::getegid()) };
-        if actual_owner.0 == 0 || (pin.uid, pin.gid) != actual_owner {
+        if actual_owner.0 == 0 || (pin.uid, pin.gid) != actual_owner || pin != self.expected {
             return Err(refused(
                 "original material belongs to another process owner",
             ));
@@ -96,6 +92,32 @@ impl MaterialData {
 }
 
 impl OriginalMaterialWriter {
+    /// The actual sealed Root route chooses the path, mode and full physical
+    /// pin. The ordinary deployment cannot redirect this data writer.
+    pub(super) fn open_from_original_root(
+        route: &crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute,
+        files: &mut OriginalFiles,
+        end: Instant,
+    ) -> Result<Self, AgentdError> {
+        crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute::with_original_data(route, |fixed| {
+            let expected = &fixed.material;
+            MaterialData {
+                path: expected.path.clone(),
+                mode: match fixed.inputs.mode {
+                    crate::authority_host_runtime::publication_data::Mode::Reserve => MaterialMode::Create,
+                    crate::authority_host_runtime::publication_data::Mode::Recover => MaterialMode::Recover,
+                },
+                expected: Pin {
+                    device: expected.device,
+                    inode: expected.inode,
+                    uid: expected.uid,
+                    gid: expected.gid,
+                    mode: expected.mode,
+                },
+            }.open_original(files, end)
+        })
+    }
+
     fn require_original(&self) -> Result<(), AgentdError> {
         post_a_remaining(self.end)?;
         self.pin.require_file(&self.file, &self.data.path)?;

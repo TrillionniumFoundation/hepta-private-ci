@@ -29,11 +29,7 @@ pub(super) struct OriginalPostAContinuationV1 {
     _receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
     _handle: crate::LearningIterationHandleV1,
     _successor: crate::OriginalQ24SuccessorHandoffV1,
-    _publication: (
-        crate::RootGenerationPublicationHandoffV1,
-        crate::RootGenerationPublicationConnectionV1,
-        Instant,
-    ),
+    _publication: crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute,
 }
 
 impl AgentdProductionLaunch {
@@ -175,11 +171,12 @@ impl AgentdProductionLaunch {
             _receipt: receipt,
             _handle: handle,
             _successor: successor,
-            _publication: (
+            _publication: crate::RootGenerationPublicationHandoffV1::retain_original_preparation(
                 self.take_generation_publication_handoff()?,
                 self.take_generation_publication_connection()?,
+                &prepared,
                 self.session_end,
-            ),
+            )?,
         });
         drop(files);
         Ok((self, config))
