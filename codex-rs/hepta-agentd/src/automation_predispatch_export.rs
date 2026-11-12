@@ -46,12 +46,17 @@ pub(crate) async fn observe(
     fence: &TaskFlowFence,
     caller_time_ms: u64,
 ) {
+    use std::io::Write;
+
     let outcome = capture(store, intent, fence, caller_time_ms).await;
     let status = match outcome {
         Ok(status) => status,
         Err(()) => "unavailable",
     };
-    eprintln!(
+    // A failed diagnostic sink must not interrupt the original authorization
+    // and provider path after best-effort shadow retention.
+    let _ = writeln!(
+        std::io::stderr().lock(),
         "{{\"event\":\"predispatch_shadow_retention\",\"status\":\"{status}\",\"authority\":false}}"
     );
 }

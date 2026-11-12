@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - codex/pred-native-producer-20261112-86e9
+      - codex/pred-native-ci-20261112-16db
   workflow_dispatch:
 
 permissions:
@@ -27,6 +28,10 @@ jobs:
     name: Native predispatch producer (source-head)
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -42,6 +47,11 @@ jobs:
           mkdir -p "$RUNNER_TEMP/pred-native-feedback"
           git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/pred-native-feedback/source.txt"
           python3 scripts/hepta_workspace.py
+      - name: Test workflow identity propagation
+        run: |
+          python3 -B scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/pred-native-feedback/workflow-tests.json" \
+            -- python3 -B -m unittest -v scripts.test_hepta_pred_native_workflow
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
         with:
@@ -83,7 +93,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --timeout-seconds 5400 --minimum-tests 1 \
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 5400 --minimum-tests 8 \
             --output "$RUNNER_TEMP/pred-native-feedback/tests.json" \
             -- just test --locked -p codex-hepta-agentd --lib \
             -E 'test(automation_predispatch_export) | test(automation_effect_host::tests)' \
