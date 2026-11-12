@@ -1,0 +1,45 @@
+{
+  "schema": "current-history-checkpoint.v1",
+  "head": "4c302c415e8214aece1f39b023030dff82be5de9",
+  "tree": "b3accfdf3b2fb30ca3203b9a52125f3bd6d49bac",
+  "prerequisite": "49d26d3055d05a1a1381188aeef8e7ae1bbba672",
+  "source_clean": true,
+  "native_executed": false,
+  "whole_positive": 0,
+  "whole_evaluated_no_update": 0,
+  "whole_cold_restart": 0,
+  "evidence_files": 23,
+  "artifacts": {
+    "current-4c302c41.bundle": {
+      "bytes": 252117,
+      "sha256": "916dc2389446c1e16893b9e038bf48dca9e0c68cca497b6ffd82afacec621464"
+    },
+    "current-history-originals.tar.xz": {
+      "bytes": 17328,
+      "sha256": "f14f5af632a468f2eb45b3de406e0a72a08b4b4e80c0f45a5d238b315f6f1445"
+    },
+    "evidence-manifest.json": {
+      "bytes": 4798,
+      "sha256": "9d76c987269fc771dee3cfde4304acc417c415701790b06cdf052c947965ec07"
+    }
+  },
+  "selected_closure": {
+    "schema": "current-history-selected-closure.v1",
+    "scope": "selected boundaries over full Rust source index, not the full caller CLI and not native",
+    "head": "4c302c415e8214aece1f39b023030dff82be5de9",
+    "tree": "b3accfdf3b2fb30ca3203b9a52125f3bd6d49bac",
+    "rust_files": 6879,
+    "selected_boundaries": 30,
+    "passed_boundaries": 30,
+    "failures": [],
+    "protected_rows": 10,
+    "source_before": "e1c07cf4a1e021e8c5b60bccfa8c75f2b6b651abef7da2d04a62e28079a62008",
+    "source_after": "e1c07cf4a1e021e8c5b60bccfa8c75f2b6b651abef7da2d04a62e28079a62008",
+    "source_unchanged": true,
+    "duration_seconds": 47.60041117668152,
+    "address_space_limit_bytes": 1073741824,
+    "authority_granted": false,
+    "exit_code": 0
+  },
+  "qualification": "Only 30 selected boundaries across the full 6879 Rust-file index and 10 associated protected rows. The full caller CLI and native tests were not run for this source. All earlier failure outputs are retained in the archive."
+}
