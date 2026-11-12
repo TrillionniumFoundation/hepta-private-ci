@@ -54,7 +54,7 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
         material: OriginalCellQ24MaterialReceiptConfigV1, registration: OriginalCellEvaluationPanelRegistrationV1,
         timeout: Duration, lifetime: Duration, origin: Origin,
     ) -> Result<Self, Error> {
-        let (initial_binding, started) = material.require_original_command_initial()?;
+        let (initial_binding, started) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         if peer.actor_id != material.initial.owners.proposal
             || material.initial.request.evaluation_profile != registration.evaluation_profile()
         { return Err(Error::Binding("original Model actor and pre-registered panel")); }
@@ -62,7 +62,7 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
             AgentdRootAuthorityPeer { pid: peer.pid, boot_id: peer.boot_id, process_start_ticks: peer.process_start_ticks },
             peer.uid, original_owner_pidfd, timeout, lifetime)?;
         channel.check_peer_lifetime()?;
-        let (current_binding, observed_at) = material.require_original_command_initial()?;
+        let (current_binding, observed_at) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         require_clock(started, observed_at)?;
         if current_binding != initial_binding { return Err(Error::Binding("same original Model initial context")); }
         Ok(Self { peer: channel, material, registration, initial_binding, observed_at, origin })
@@ -78,7 +78,7 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
         self.peer.check_peer_lifetime()?;
         let current = context.authenticate(started)?;
         require_clock(self.observed_at, current)?;
-        let (initial, verified) = context.material.require_original_command_initial()?;
+        let (initial, verified) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&context.material)?;
         require_clock(current, verified)?;
         if initial != self.initial_binding { return Err(Error::Binding("same original Model initial connection")); }
         let (execution_requested, retained) = match self.origin {

@@ -45,13 +45,13 @@ impl OriginalCellQ24ModelCommandHostV1 {
                     state.execution_requested = true;
                     if self.bootstrap.cancellation.load(Ordering::Acquire) { return Err(Error::Cancelled); }
                     let (file, witness) = state.custody.take().ok_or(Error::ReadbackRequired)?;
-                    state.model = Some(original.create_original_model(file, witness, &context, &before)?);
+                    state.model = Some(OriginalCellQ24TrainingCommandOwnerV1::create_original_model(original.as_ref(), file, witness, &context, &before)?);
                     let model = state.model.as_mut().ok_or(Error::CommitUncertain)?;
-                    observe(original.commit_original_model(model, &context, &before))?
+                    observe(OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(original.as_ref(), model, &context, &before))?
                 }
                 wire::Action::Readback => {
                     let model = state.model.as_mut().ok_or(Error::ReadbackRequired)?;
-                    observe(original.read_original_model(model, &context, &before))?
+                    observe(OriginalCellQ24TrainingCommandOwnerV1::read_original_model(original.as_ref(), model, &context, &before))?
                 }
             };
             let (after, material, fresh) = self.current_after(&mut state, &original, &context, &before)?;
@@ -86,7 +86,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
         // The Evaluator callback has returned. Re-enter only the original lane
         // to read the exact T and Model; never call recover or commit here.
         let model = state.model.as_mut().ok_or(Error::ReadbackRequired)?;
-        let observed = observe(original.read_original_model(model, context, &after))?;
+        let observed = observe(OriginalCellQ24TrainingCommandOwnerV1::read_original_model(original, model, context, &after))?;
         let fresh = context.authenticate(started)?;
         require_clock(started, fresh)?;
         before.authenticate_current(fresh)?;

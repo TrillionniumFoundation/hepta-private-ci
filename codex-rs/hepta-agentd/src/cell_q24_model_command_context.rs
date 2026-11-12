@@ -37,7 +37,7 @@ impl Context {
         training: OriginalCellQ24TrainingCommandReceiptV1,
         evaluation: OriginalCellEvaluationCommandReceiptV1,
     ) -> Result<Self, Error> {
-        let (initial_binding, started) = material.require_original_command_initial()?;
+        let (initial_binding, started) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())?;
         if dataset.snapshot().receipts.len() != 2 || coordinator.next_stage() != Some(LearningIterationStageV1::Training) {
             return Err(Error::Binding("actual original Dataset cut"));
@@ -50,8 +50,8 @@ impl Context {
     }
 
     pub(in super::super) fn authenticate(&self, lower: u64) -> Result<u64, Error> {
-        let (binding, at) = self.material.require_original_command_initial()?;
-        let dataset_at = self.dataset.require_original_dataset_context(&self.material)?;
+        let (binding, at) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;
+        let dataset_at = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(&self.dataset, &self.material)?;
         let current = now()?;
         require_clock(lower, at)?;
         require_clock(at, dataset_at)?;

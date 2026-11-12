@@ -82,7 +82,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
         registration: OriginalCellEvaluationPanelRegistrationV1, origin: Origin,
     ) -> Result<Self, Error> {
         let config = &bootstrap.config.material;
-        config.require_original_command_initial()?;
+        crate::OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(config)?;
         material.require_initial(&config.initial, &config.scope, &registration, &config.verifier)?;
         if config.initial.request.evaluation_profile != registration.evaluation_profile() {
             return Err(Error::Binding("same original pre-registered Model panel"));
@@ -103,7 +103,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
         let started = now()?;
         let original = self.bootstrap.ready()?.ok_or(Error::Unavailable)?;
         let dataset = self.runtime.block_on(OriginalCellQ24DatasetCommandReadbackV1::readback(&self.bootstrap.dataset))?;
-        let training = self.runtime.block_on(original.read_original_model_training(&dataset))?;
+        let training = self.runtime.block_on(OriginalCellQ24TrainingCommandOwnerV1::read_original_model_training(original.as_ref(), &dataset))?;
         if state.material.is_none() {
             let connection = state.material_connection.take().ok_or(Error::Unavailable)?;
             state.material = Some(connection.bind_original_training(dataset.snapshot().clone(), &training)?);
@@ -130,7 +130,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
         let (file, witness) = state.custody.take().ok_or(Error::ReadbackRequired)?;
         // The shared once was consumed by bind before recovery could mutate a
         // minimum anchor. Missing or failed recovery never creates a new owner.
-        state.model = Some(original.recover_original_model(file, witness, &context, &before)?);
+        state.model = Some(OriginalCellQ24TrainingCommandOwnerV1::recover_original_model(original.as_ref(), file, witness, &context, &before)?);
         let (observed, material, fresh) = self.current_after(&mut state, &original, &context, &before)?;
         if let effect::Observed::Completed(receipt) = observed {
             use super::super::model_command::wire;
