@@ -51,6 +51,10 @@ mod service;
 #[path = "circuit_retained_version_issuer.rs"]
 mod issuer;
 
+#[cfg(test)]
+#[path = "circuit_retained_version_issuer_host_tests.rs"]
+mod issuer_fixture;
+
 type RetainedVersionPreparedV1 = PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 type RetainedVersionInputsV1 = OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 

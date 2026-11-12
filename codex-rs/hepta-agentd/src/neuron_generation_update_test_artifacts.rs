@@ -29,6 +29,7 @@ pub(super) struct ArtifactFiles {
     selected: SignedArtifactSelectionV1,
     verifier: ArtifactSelectionVerifierV1,
     times: ArtifactTimes,
+    original_publication_intent: Digest32,
 }
 
 #[derive(Clone, Copy)]
@@ -129,7 +130,8 @@ impl ArtifactFiles {
             storage_binding: Digest32::of_bytes(b"test-artifact-storage"),
             now: times.observed,
         })?;
-        let candidate = publish_candidate(&mut owner, manifest, &key, "selected-candidate", times)?;
+        let (candidate, original_publication_intent) =
+            publish_candidate_with_intent(&mut owner, manifest, &key, "selected-candidate", times)?;
         let current = owner.current_registry_view(times.observed)?;
         let verifier = ArtifactSelectionVerifierV1::new(
             ArtifactSelectionTrustV1 {
@@ -181,6 +183,16 @@ impl ArtifactFiles {
             selected,
             verifier,
             times,
+            original_publication_intent,
+        })
+    }
+
+    pub(super) fn retained_artifact_checkpoint(
+        &self,
+    ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {
+        Ok(crate::OriginalCircuitRetainedArtifactCheckpointV1 {
+            operation_id: id("selected-candidate")?,
+            intent_digest: self.original_publication_intent,
         })
     }
 
@@ -375,6 +387,16 @@ fn publish_candidate(
     name: &str,
     times: ArtifactTimes,
 ) -> anyhow::Result<ArtifactManifest> {
+    publish_candidate_with_intent(owner, cell, key, name, times).map(|(candidate, _)| candidate)
+}
+
+fn publish_candidate_with_intent(
+    owner: &mut LearningArtifactOwnerService,
+    cell: &CellBackendManifestV2,
+    key: &SigningKey,
+    name: &str,
+    times: ArtifactTimes,
+) -> anyhow::Result<(ArtifactManifest, Digest32)> {
     let payload = serde_json::to_vec(cell)?;
     let manifest = LearningArtifactManifestV2 {
         artifact_id: id(name)?,
@@ -464,7 +486,7 @@ fn publish_candidate(
         receipt.registry_head_digest == staged.snapshot().head_digest,
         "actual publication differs from signed preview"
     );
-    Ok(candidate)
+    Ok((candidate, transaction.intent().intent_digest))
 }
 
 fn id(value: &str) -> anyhow::Result<StableId> {

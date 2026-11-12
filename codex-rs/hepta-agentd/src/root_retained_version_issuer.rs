@@ -6,6 +6,8 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use super::AgentdFinalUseIssuerError;
 use super::AgentdUnixFinalUseGrantProvider;
 
+const ORIGINAL_RETAINED_VERSION_DESTINATION: &str = "agentd.cell-generation.next-task-same-model";
+
 enum OriginalVersionIssuerAccessV1 { Available, ReadbackOnly }
 
 pub(crate) struct OriginalRootRetainedVersionIssuerV1 {
@@ -43,7 +45,7 @@ impl OriginalRootRetainedVersionIssuerV1 {
         &mut self,
         binding: &FinalUseBinding,
     ) -> Result<SignedFinalUseGrant, AgentdFinalUseIssuerError> {
-        if binding.destination_id != "agentd.cell-generation.next-task-same-model"
+        if binding.destination_id != ORIGINAL_RETAINED_VERSION_DESTINATION
             || binding.subject_id.is_empty()
             || binding.request_sha256 == [0; 32]
             || binding.scope_sha256 == [0; 32]
