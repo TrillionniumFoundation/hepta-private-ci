@@ -1,0 +1,55 @@
+{
+  "after": {
+    "commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "dirty": false,
+    "parents": [
+      "9700ee930c123ba58f7ee4b1241c136ac8a84ba9"
+    ],
+    "tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+    "dirty": false,
+    "parents": [
+      "9700ee930c123ba58f7ee4b1241c136ac8a84ba9"
+    ],
+    "tree": "8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c"
+  },
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "command_exit_code": 1,
+  "elapsed_seconds": 17.359522866783664,
+  "error": "required tests were not observed passing",
+  "exit_code": 1,
+  "finished_at": "2026-11-12T16:17:34.226600+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 104108,
+  "log_file": "qa-b4-no-bypass.execution.json.e33bfd3b292f4c60865ace1fa1ab6d3c.log",
+  "log_sha256": "8646fa2ddca0e6001a3e9e742115a7f5cd947120ef3b522595931aea271b31de",
+  "minimum_tests": 1,
+  "observed_failed_tests": 38,
+  "observed_passed_tests": 183,
+  "output_limit_exceeded": false,
+  "returncode": 1,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "started_at": "2026-11-12T16:17:16.865608+00:00",
+  "status": "failed",
+  "tested_sha": "53ed651d9bbaac6b6c0500d390b730f5910a2fa2",
+  "timed_out": false,
+  "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source"
+}

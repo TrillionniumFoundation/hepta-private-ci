@@ -1,0 +1,11 @@
+# V40 original component qualification: QA failure, source clean
+
+Fixed source `53ed651d9bbaac6b6c0500d390b730f5910a2fa2`, tree `8b3769abd84c13ed24ef7d2d7ceeb7bd77e5481c`; actual attempt `ordinary-53ed651-seven-final-v15`.
+
+The original idle preflight, isolated fetch/checkout, toolchain, formatter-before, seven-package fix, formatter-after and binary check completed successfully. The unchanged `qa/b4-no-bypass` entrance then failed: **221 tests, 13 failures, 25 errors**; the original recorder reports **183 passed / 38 failed**, command and executor exit 1. Remaining QA, caller verification, ordinary native tests and Root17 were not reached. All five reached cleanup checks passed; final source identity stayed clean and the maintenance patch is empty.
+
+Every reached launcher log and actual execution record is retained in full. The six original child stdout streams are recovered byte-for-byte from their original complete launcher tee; each prefix matches its original byte count and SHA256 and the remaining footer equals the separately acquired original execution JSON. The separate child stdout files were not directly reread, and that acquisition distinction is preserved.
+
+The PTY start interface timed out on the original submission and two byte-identical same-key reconciliation submissions. No successful start receipt/session ID or complete terminal output was recovered. This is a receipt limitation, not three declared native retries. Native retry configuration remains zero and the target records show one observed attempt. Repeated direct progress acquisition has identical bytes/version; all original child terminal records and final cleanup are complete. The fixed original harness can only print/exit after this state, because its sole pending-command append also sets the absent timeout/unknown flags. See COMPLETION_RECONCILIATION.json for the evidence and limits; Python supervisor terminal exit remains unobserved.
+
+The QA repair is separate, and this failed source receives no inherited pass. Ordinary complete / positive adoption / genuine NoUpdate-or-rollback counts remain **0 / 0 / 0**. Independent C and actual daemon+Root OS stop/restart remain unaccepted. No main merge.

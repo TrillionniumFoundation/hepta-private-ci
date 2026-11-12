@@ -1,0 +1,1183 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking rama-crypto v0.3.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/third_party/rama-crypto-0.3.0-time-backport)
+    Checking codex-utils-absolute-path v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/rustls-provider)
+    Checking codex-http-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/http-client)
+    Checking rama-tls v0.3.0
+   Compiling starlark v0.14.2 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/third_party/starlark-0.14.2-blake3-backport)
+    Checking codex-utils-home-dir v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/home-dir)
+    Checking rama-http-types v0.3.0
+    Checking rama-http-headers v0.3.0
+    Checking rama-http v0.3.0
+    Checking rama-tls-rustls v0.3.0
+    Checking codex-utils-cache v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/cache)
+    Checking codex-execpolicy v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/execpolicy)
+    Checking codex-utils-image v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/image)
+    Checking codex-utils-path-uri v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/path-uri)
+    Checking codex-extension-items v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/redacted-string)
+    Checking codex-utils-string v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/string)
+    Checking codex-async-utils v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/async-utils)
+    Checking codex-utils-pty v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/pty)
+    Checking codex-websocket-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/websocket-client)
+    Checking codex-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/codex-client)
+    Checking codex-hepta-contracts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-contracts)
+    Checking rama-http-core v0.3.0
+    Checking rama-http-backend v0.3.0
+    Checking codex-network-proxy v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/network-proxy)
+    Checking codex-utils-path v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/path-utils)
+   Compiling i18n-config v0.4.8 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/third_party/i18n-config-0.4.8)
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo clippy --fix --lib -p i18n-config -- --no-deps` to apply 2 suggestions)
+   Compiling i18n-embed-impl v0.8.4
+    Checking secret-service v6.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/third_party/secret-service-6.0.0)
+   Compiling codex-windows-sandbox v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/windows-sandbox-rs)
+    Checking zbus-secret-service-keyring-store v1.0.1 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1)
+   Compiling i18n-embed v0.15.4
+    Checking codex-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/protocol)
+   Compiling i18n-embed-fl v0.9.4
+    Checking keyring v4.2.0
+    Checking age v0.11.5
+   Compiling sqlx-sqlite v0.9.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/third_party/sqlx-sqlite-0.9.0)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+    Checking codex-keyring-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/keyring-store)
+   Compiling sqlx-macros-core v0.9.0
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling sqlx-macros v0.9.0
+    Checking sqlx v0.9.0
+    Checking codex-hepta-types v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-types)
+    Checking codex-utils-template v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/template)
+    Checking codex-workload-identity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/workload-identity)
+    Checking codex-terminal-detection v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/terminal-detection)
+    Checking codex-install-context v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/install-context)
+    Checking aws-config v1.12.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/code-mode-protocol)
+    Checking codex-collaboration-mode-templates v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/collaboration-mode-templates)
+    Checking codex-aws-auth v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/aws-auth)
+    Checking codex-utils-cargo-bin v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/cargo-bin)
+    Checking codex-diagnostics v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/diagnostics)
+    Checking codex-file-search v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/file-search)
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/app-server-protocol-noop-macros)
+   Compiling codex-skills v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/skills)
+    Checking codex-utils-stream-parser v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/stream-parser)
+    Checking codex-hepta-cognitive-types v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-cognitive-types)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-memory-retrieval)
+    Checking codex-file-system v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/file-system)
+    Checking codex-api v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/codex-api)
+    Checking codex-git-utils v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/git-utils)
+    Checking codex-shell-command v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/shell-command)
+    Checking codex-exec-server-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/exec-server-protocol)
+    Checking codex-otel v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/otel)
+    Checking codex-model-provider-info v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/model-provider-info)
+    Checking codex-secrets v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/secrets)
+    Checking codex-history v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/history)
+    Checking codex-state v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/state)
+    Checking codex-features v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/features)
+    Checking codex-config v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/config)
+    Checking codex-sandboxing v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/sandboxing)
+    Checking codex-agent-identity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/agent-identity)
+    Checking codex-utils-output-truncation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/output-truncation)
+    Checking codex-response-debug-context v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/response-debug-context)
+    Checking codex-code-mode v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/code-mode)
+    Checking codex-exec-server v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/exec-server)
+    Checking codex-login v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/login)
+    Checking codex-models-manager v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/feedback)
+    Checking codex-model-provider v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/model-provider)
+    Checking codex-context-fragments v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/context-fragments)
+    Checking codex-rollout v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/rollout)
+    Checking codex-utils-plugins v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/plugins)
+    Checking codex-plugin v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/plugin)
+    Checking codex-exec-server-test-support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/exec-server/tests/support)
+    Checking codex-rmcp-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/rmcp-client)
+    Checking codex-connectors v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/connectors)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+    Checking codex-tools v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/tools)
+    Checking codex-app-server-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/app-server-protocol)
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+    Checking codex-mcp v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/codex-mcp)
+    Checking codex-extension-api v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/extension-api)
+    Checking codex-hooks v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hooks)
+    Checking codex-apply-patch v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/shell-escalation)
+    Checking codex-prompts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/memories/read)
+    Checking codex-utils-audio v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/audio)
+    Checking codex-hepta-paths v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-paths)
+    Checking codex-hepta-prompt-registry v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-kg v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-kg)
+    Checking codex-hepta-operations v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-operations)
+    Checking codex-hepta-cognitive-read v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-cognitive-read)
+    Checking codex-hepta-intuition v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-intuition)
+    Checking codex-backend-openapi-models v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/codex-backend-openapi-models)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/linux-sandbox)
+    Checking codex-backend-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/backend-client)
+    Checking codex-hepta-memory-federation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-memory-federation)
+    Checking codex-process-hardening v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/process-hardening)
+    Checking codex-hepta-memory v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-memory)
+    Checking codex-analytics v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/analytics)
+    Checking codex-core-plugins v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/core-plugins)
+    Checking codex-skills-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/skills)
+    Checking codex-thread-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/thread-store)
+    Checking codex-hepta-learning-ledger v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-learning-ledger)
+    Checking codex-arg0 v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/arg0)
+    Checking codex-home v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/codex-home)
+    Checking codex-hepta-authbus v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-authbus)
+    Checking codex-core v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/core)
+    Checking codex-uds v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/uds)
+    Checking codex-hepta-evidence v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-evidence)
+    Checking codex-connectors-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/connectors)
+    Checking codex-hepta-fleet v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-fleet)
+    Checking codex-utils-cli v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/cli)
+    Checking codex-hepta-governance v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/hepta-governance)
+    Checking codex-hepta-memory-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/hepta-memory)
+    Checking codex-file-watcher v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/file-watcher)
+    Checking codex-git-attribution v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/git-attribution)
+    Checking codex-hepta-prompt-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/hepta-prompt)
+    Checking codex-hepta-wire v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-wire)
+    Checking codex-hepta-infer-core v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-infer-core)
+    Checking codex-hepta-ndu v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-ndu)
+    Checking codex-utils-json-to-toml v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/utils/json-to-toml)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-automation v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-automation)
+    Checking codex-hepta-agent-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-agent-protocol)
+    Checking codex-hepta-control-plane v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-control-plane)
+    Checking codex-hepta-neuron v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-neuron)
+    Checking codex-hepta-context-compiler v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-objective v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-objective)
+    Checking codex-hepta-plasticity v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-plasticity)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-matrix-protocol v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-matrix-protocol)
+    Checking codex-hepta-supervisor v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-supervisor)
+    Checking codex-memories-write v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/memories/write)
+    Checking codex-memories-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/memories)
+    Checking codex-mcp-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/mcp)
+    Checking codex-external-agent-migration v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/external-agent-migration)
+    Checking codex-app-server-transport v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/app-server-transport)
+    Checking codex-image-generation-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/image-generation)
+    Checking codex-queue-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/queue)
+    Checking codex-agent-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/agent)
+    Checking codex-web-search-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/web-search)
+    Checking codex-chatgpt v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/chatgpt)
+    Checking codex-history-notes-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/history-notes)
+    Checking codex-guardian-v2 v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/guardian-v2)
+    Checking codex-goal-extension v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/ext/goal)
+    Checking codex-cloud-config v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/cloud-config)
+    Checking codex-hepta-intelligence v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-intelligence)
+    Checking codex-app-server v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/app-server)
+    Checking codex-hepta-bellman-operator v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-bellman-operator)
+    Checking codex-hepta-cognitive-store v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-cognitive-store)
+    Checking core_test_support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/core/tests/common)
+    Checking app_test_support v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/app-server/tests/common)
+    Checking codex-app-server-client v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/app-server-client)
+    Checking codex-hepta-codex-adapter v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-codex-adapter)
+    Checking codex-hepta-agentd v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-agentd)
+warning: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/authority_lease_observation_tests.rs:20:31
+   |
+20 |         if let Some(sender) = self.calls.lock().unwrap().as_ref() {
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+   = note: requested on the command line with `-D clippy::unwrap-used`
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/authority_lease_observation_tests.rs:21:13
+   |
+21 |             sender.send(()).unwrap();
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/authority_lease_observation_tests.rs:46:21
+   |
+46 |     let directory = tempfile::tempdir().unwrap();
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/authority_lease_observation_tests.rs:47:5
+   |
+47 |     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/authority_lease_observation_tests.rs:52:20
+   |
+52 |       let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
+   |  ____________________^
+53 | |         directory.path(),
+54 | |         "original-observation-owner".into(),
+55 | |         AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+...  |
+58 | |     .unwrap();
+   | |_____________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/authority_lease_observation_tests.rs:55:9
+   |
+55 |         AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-contracts/src/authority_lease_observation_tests.rs:59:5
+   |
+59 |     registry.put_lease(lease(), 0).unwrap();
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-contracts/src/authority_lease_observation_tests.rs:299:13
+    |
+299 |         Ok(*self.head.lock().unwrap())
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-contracts/src/authority_lease_observation_tests.rs:311:27
+    |
+311 |         let mut current = self.head.lock().unwrap();
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used
+
+warning: `codex-hepta-contracts` (lib test) generated 9 warnings
+warning: field `notes` is never read
+   --> hepta-agentd/src/root_production_same_actor_phase_inputs.rs:121:5
+    |
+112 | pub(crate) struct OriginalSameActorRootContext {
+    |                   ---------------------------- field in this struct
+...
+121 |     notes: FinalUseAuthority,
+    |     ^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `notes` is never used
+   --> hepta-agentd/src/root_production_same_actor_phase_inputs.rs:174:19
+    |
+135 | impl OriginalSameActorRootContext {
+    | --------------------------------- method in this implementation
+...
+174 |     pub(crate) fn notes(&self) -> FinalUseAuthority {
+    |                   ^^^^^
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/authority_host_same_actor_q24_phase_worker.rs:203:1
+    |
+203 | / fn run_original_scoped_phase(
+204 | |     original: &PreparedHostAuthoritySession,
+205 | |     gate: &Arc<SameActorPhaseGate>,
+206 | |     mut record: OriginalPhaseRecord,
+...   |
+214 | |     >,
+215 | | ) -> io::Result<()> {
+    | |___________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_same_actor_q24_host.rs:27:1
+   |
+27 | / pub enum RootSameActorHostCommandV1 {
+28 | |     Initial(crate::RootGenerationInitialEnrollmentV1),
+   | |     ------------------------------------------------- the second-largest variant contains at least 2560 bytes
+29 | |     Scoped(crate::HostAuthorityLearningProfileV1),
+30 | |     Current(crate::RootGenerationPublicationEnrollmentV1),
+   | |     ----------------------------------------------------- the largest variant contains at least 3664 bytes
+31 | | }
+   | |_^ the entire enum is at least 3664 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+   = note: `#[warn(clippy::large_enum_variant)]` on by default
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+30 -     Current(crate::RootGenerationPublicationEnrollmentV1),
+30 +     Current(Box<crate::RootGenerationPublicationEnrollmentV1>),
+   |
+
+warning: this function has too many arguments (10/7)
+   --> hepta-agentd/src/authority_host_same_actor_q24_phase_join.rs:111:1
+    |
+111 | / pub(crate) fn accept_original_phase_join(
+112 | |     service: &HostAuthorityService,
+113 | |     config: &crate::HostAuthorityServiceConfig,
+114 | |     registration: &crate::HostAuthorityRegistration,
+...   |
+121 | |     gate: &Arc<SameActorPhaseGate>,
+122 | | ) -> io::Result<OriginalPhaseJoined> {
+    | |____________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/authority_host_generation_initial_phase.rs:39:5
+   |
+39 | /     pub(crate) fn claim_same_actor_phase_after_original_a(
+40 | |         &self,
+41 | |         config: &HostAuthorityServiceConfig,
+42 | |         registration: &HostAuthorityRegistration,
+...  |
+47 | |         gate: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+48 | |     ) -> io::Result<OriginalSameActorPhaseClaim> {
+   | |________________________________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_generation_initial_transport.rs:22:1
+   |
+22 | /   pub(crate) enum Command {
+23 | |       Observe,
+24 | | /     Prepare {
+25 | | |         expected: String,
+26 | | |         intent: String,
+27 | | |     },
+   | | |_____- the second-largest variant contains at least 48 bytes
+28 | | /     Publish {
+29 | | |         expected: String,
+30 | | |         intent: String,
+31 | | |         signed: SignedFinalUseGrant,
+32 | | |         witness: VerifiedUseTokenWitnessV1,
+33 | | |     },
+   | | |_____- the largest variant contains at least 448 bytes
+34 | |   }
+   | |___^ the entire enum is at least 448 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+31 -         signed: SignedFinalUseGrant,
+31 +         signed: Box<SignedFinalUseGrant>,
+   |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/authority_host_generation_initial_transport.rs:72:5
+   |
+72 | /     pub(crate) fn serve_generation_initial_until(
+73 | |         &self,
+74 | |         slot: &RegisteredGenerationInitial,
+75 | |         config: &HostAuthorityServiceConfig,
+...  |
+80 | |         phase: &Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+81 | |     ) -> io::Result<()> {
+   | |_______________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/authority_host_generation_initial_transport.rs:108:5
+    |
+108 | /     fn serve_initial_original_channel(
+109 | |         &self,
+110 | |         slot: &RegisteredGenerationInitial,
+111 | |         config: &HostAuthorityServiceConfig,
+...   |
+116 | |         phase: Option<&Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
+117 | |     ) -> io::Result<()> {
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/authority_host_generation_publication_transport.rs:24:1
+   |
+24 | /   pub(crate) enum Command {
+25 | |       Observe,
+26 | | /     Prepare {
+27 | | |         expected: String,
+28 | | |         intent: String,
+29 | | |     },
+   | | |_____- the second-largest variant contains at least 48 bytes
+30 | | /     Publish {
+31 | | |         expected: String,
+32 | | |         intent: String,
+33 | | |         signed: SignedFinalUseGrant,
+34 | | |         witness: VerifiedUseTokenWitnessV1,
+35 | | |     },
+   | | |_____- the largest variant contains at least 448 bytes
+36 | |   }
+   | |___^ the entire enum is at least 448 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+33 -         signed: SignedFinalUseGrant,
+33 +         signed: Box<SignedFinalUseGrant>,
+   |
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/authority_host_generation_publication_transport.rs:49:5
+   |
+49 | /     pub(crate) fn serve_generation_publication(
+50 | |         &self,
+51 | |         slot: &RegisteredGenerationPublication,
+52 | |         learning: &RegisteredHostLearningCheckpointV1,
+...  |
+57 | |         owner: OwnedFd,
+58 | |     ) -> io::Result<()> {
+   | |_______________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+  --> hepta-agentd/src/authority_host_generation_publication_transport.rs:75:5
+   |
+75 | /     pub(crate) fn serve_generation_publication_until(
+76 | |         &self,
+77 | |         slot: &RegisteredGenerationPublication,
+78 | |         learning: &RegisteredHostLearningCheckpointV1,
+...  |
+84 | |         phase: &crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>,
+85 | |     ) -> io::Result<()> {
+   | |_______________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/authority_host_generation_publication_transport.rs:112:5
+    |
+112 | /     fn serve_original_publication_channel(
+113 | |         &self,
+114 | |         slot: &RegisteredGenerationPublication,
+115 | |         learning: &RegisteredHostLearningCheckpointV1,
+...   |
+121 | |         phase: Option<&crate::authority_host_same_actor_q24_phase_publication::OriginalPhasePublicationContext<'_>>,
+122 | |     ) -> io::Result<()> {
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/authority_host_q24_model_profile.rs:93:5
+    |
+ 93 | /     pub(super) fn new(
+ 94 | |         identity: &AgentdIdentity,
+ 95 | |         writer_proof: &str,
+ 96 | |         initial: &LearningIterationSnapshotV1,
+...   |
+101 | |         local_policy: Digest32,
+102 | |     ) -> io::Result<Self> {
+    | |_________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/authority_host_q24_model_transport.rs:85:5
+   |
+85 | /     pub(crate) fn serve_q24_model_factory_until(
+86 | |         &self,
+87 | |         factory: &RegisteredQ24ModelFactory,
+88 | |         config: &HostAuthorityServiceConfig,
+...  |
+93 | |         phase: &std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>,
+94 | |     ) -> io::Result<()> {
+   | |_______________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/authority_host_q24_model_transport.rs:119:5
+    |
+119 | /     fn serve_original_q24_model_channel(
+120 | |         &self,
+121 | |         factory: &RegisteredQ24ModelFactory,
+122 | |         config: &HostAuthorityServiceConfig,
+...   |
+127 | |         phase: Option<&std::sync::Arc<crate::same_actor_q24_phase_gate::SameActorPhaseGate>>,
+128 | |     ) -> io::Result<()> {
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+  --> hepta-agentd/src/same_actor_q24_phase_a.rs:47:1
+   |
+47 | / enum OriginalAExit {
+48 | |     Prepared(Result<PreparedOriginalA, AgentdError>),
+   | |     ------------------------------------------------ the largest variant contains at least 8048 bytes
+49 | |     Owner(Result<(), AgentdError>),
+   | |     ------------------------------ the second-largest variant contains at least 56 bytes
+50 | |     Cancelled,
+51 | |     Closed,
+52 | | }
+   | |_^ the entire enum is at least 8048 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+48 -     Prepared(Result<PreparedOriginalA, AgentdError>),
+48 +     Prepared(Box<Result<PreparedOriginalA, AgentdError>>),
+   |
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/same_actor_q24_phase_learning_work.rs:354:13
+    |
+354 |         let mut state = self.state.lock().await;
+    |             ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+    = note: requested on the command line with `-D clippy::await-holding-invalid-type`
+
+warning: holding a disallowed type across an await point `tokio::sync::MutexGuard`
+   --> hepta-agentd/src/same_actor_q24_phase_learning_work.rs:380:17
+    |
+380 |             let mut state = self.state.lock().await;
+    |                 ^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> hepta-agentd/src/same_actor_q24_phase_learning.rs:161:10
+    |
+161 |       ) -> Result<
+    |  __________^
+162 | |         (
+163 | |             LearningIterationHandleV1,
+164 | |             Arc<OriginalCellQ24LearningStageOwnersV1>,
+...   |
+170 | |         AgentdError,
+171 | |     > {
+    | |_____^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#type_complexity
+    = note: `#[warn(clippy::type_complexity)]` on by default
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> hepta-agentd/src/root_production_same_actor_scoped_inputs.rs:106:10
+    |
+106 |       ) -> Result<
+    |  __________^
+107 | |         (
+108 | |             Arc<OriginalSameActorRootContext>,
+109 | |             AgentdRootLearningInputsV1,
+...   |
+115 | |         AgentdError,
+116 | |     > {
+    | |_____^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#type_complexity
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_task_ledger.rs:97:1
+    |
+ 97 | /   pub enum OriginalCellQ24TaskLedgerStatusV1 {
+ 98 | | /     AwaitingOutcome {
+ 99 | | |         decision: LedgerRecord,
+100 | | |     },
+    | | |_____- the second-largest variant contains at least 568 bytes
+101 | | /     Complete {
+102 | | |         decision: LedgerRecord,
+103 | | |         outcome: LedgerRecord,
+104 | | |     },
+    | | |_____- the largest variant contains at least 1136 bytes
+105 | |   }
+    | |___^ the entire enum is at least 1136 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+103 -         outcome: LedgerRecord,
+103 +         outcome: Box<LedgerRecord>,
+    |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/circuit_feature_current.rs:95:1
+    |
+ 95 | /  enum Publication {
+ 96 | |      Initial(PublishedNeuronGenerationInitialV1),
+    | |      ------------------------------------------- the second-largest variant contains at least 40 bytes
+ 97 | |/     Update {
+ 98 | ||         original: PublishedNeuronGenerationUpdateV1,
+ 99 | ||         previous: PublishedCircuitFeatureCompletionV1,
+100 | ||     },
+    | ||_____- the largest variant contains at least 2744 bytes
+101 | |  }
+    | |__^ the entire enum is at least 2744 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+ 99 -         previous: PublishedCircuitFeatureCompletionV1,
+ 99 +         previous: Box<PublishedCircuitFeatureCompletionV1>,
+    |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_q24_successor_execution.rs:14:1
+   |
+14 | / pub enum OriginalQ24SuccessorFeedbackV1 {
+15 | |     NonLearning,
+   | |     ----------- the second-largest variant carries no data at all
+16 | |     OriginalLedger(OriginalCellQ24TaskLedgerInputsV1),
+   | |     ------------------------------------------------- the largest variant contains at least 1096 bytes
+17 | | }
+   | |_^ the entire enum is at least 1096 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+16 -     OriginalLedger(OriginalCellQ24TaskLedgerInputsV1),
+16 +     OriginalLedger(Box<OriginalCellQ24TaskLedgerInputsV1>),
+   |
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+  --> hepta-agentd/src/circuit_q24_task_ledger_install.rs:38:10
+   |
+38 |       ) -> Result<
+   |  __________^
+39 | |         (
+40 | |             CircuitTaskRuntimeBootstrapV1,
+41 | |             Arc<dyn AgentdCircuitTaskInvocationProviderV1>,
+...  |
+46 | |         AgentdError,
+47 | |     > {
+   | |_____^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#type_complexity
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> hepta-agentd/src/circuit_task_same_actor_phase.rs:151:10
+    |
+151 |       ) -> Result<
+    |  __________^
+152 | |         (
+153 | |             CircuitTaskRuntimeBootstrapV1,
+154 | |             Arc<crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,
+...   |
+158 | |         AgentdError,
+159 | |     > {
+    | |_____^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#type_complexity
+
+warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+   --> hepta-agentd/src/circuit_task_source_codec.rs:508:36
+    |
+508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+    |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+    = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+
+warning: large size difference between variants
+  --> hepta-agentd/src/circuit_task_learning.rs:30:1
+   |
+30 | / pub enum CircuitTaskLearningReadinessV1 {
+31 | |     NonLearning,
+32 | |     Pending(CircuitTaskLearningPendingV1),
+33 | |     #[cfg(target_os = "linux")]
+34 | |     Ready(crate::OriginalCellQ24TaskLearningReadyV1),
+   | |     ------------------------------------------------ the largest variant contains at least 2000 bytes
+35 | |     #[cfg(target_os = "linux")]
+36 | |     Retained(crate::OriginalCellQ24RetainedLearningReadyV1),
+   | |     ------------------------------------------------------- the second-largest variant contains at least 48 bytes
+37 | | }
+   | |_^ the entire enum is at least 2000 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+34 -     Ready(crate::OriginalCellQ24TaskLearningReadyV1),
+34 +     Ready(Box<crate::OriginalCellQ24TaskLearningReadyV1>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_evaluation_stage.rs:32:1
+   |
+32 | /  pub enum OriginalCellQ24EvaluationTimingV1 {
+33 | |      Qualification,
+   | |      ------------- the second-largest variant carries no data at all
+34 | |/     SystemLongitudinal {
+35 | ||         timing: LongitudinalTimeEvidenceV1,
+36 | ||         minimum_window_micros: u64,
+37 | ||     },
+   | ||_____- the largest variant contains at least 312 bytes
+38 | |  }
+   | |__^ the entire enum is at least 312 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+35 -         timing: LongitudinalTimeEvidenceV1,
+35 +         timing: Box<LongitudinalTimeEvidenceV1>,
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:47:1
+   |
+47 | /  pub enum OriginalCellQ24SourceInputsV1 {
+48 | |      Files(OriginalCellQ24SourceFilesV1),
+   | |      ----------------------------------- the second-largest variant contains at least 1104 bytes
+49 | |/     Owners {
+50 | ||         experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>,
+51 | ||         dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>,
+52 | ||     },
+   | ||_____- the largest variant contains at least 1664 bytes
+53 | |  }
+   | |__^ the entire enum is at least 1664 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+51 -         dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>,
+51 +         dataset: Box<OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>>,
+   |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:159:1
+    |
+159 | /  pub enum OriginalCellQ24TrainingInputsV1 {
+160 | |      Files(OriginalCellQ24TrainingFilesV1),
+    | |      ------------------------------------- the second-largest variant contains at least 752 bytes
+161 | |/     Owners {
+162 | ||         training: CellQ24TrainingOwnerV1<FileAnchorWitnessStore>,
+163 | ||         receipts: OriginalCellQ24TrainingReceiptOwnerV1<FileAnchorWitnessStore>,
+164 | ||     },
+    | ||_____- the largest variant contains at least 4824 bytes
+165 | |  }
+    | |__^ the entire enum is at least 4824 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+162 ~         training: Box<CellQ24TrainingOwnerV1<FileAnchorWitnessStore>>,
+163 ~         receipts: Box<OriginalCellQ24TrainingReceiptOwnerV1<FileAnchorWitnessStore>>,
+    |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/neuron_generation_receipt_owner.rs:80:1
+   |
+80 | / enum OriginalLearningReceiptSourceV1 {
+81 | |     Generation(OriginalGenerationLearningReceiptSourcesV1),
+   | |     ------------------------------------------------------ the second-largest variant contains at least 1072 bytes
+82 | |     Feature(OriginalCircuitFeatureLearningSourcesV1),
+   | |     ------------------------------------------------ the largest variant contains at least 1888 bytes
+83 | | }
+   | |_^ the entire enum is at least 1888 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+82 -     Feature(OriginalCircuitFeatureLearningSourcesV1),
+82 +     Feature(Box<OriginalCircuitFeatureLearningSourcesV1>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/neuron_cell_evaluation_training_source.rs:21:1
+   |
+21 | / pub enum OriginalCellEvaluationTrainerV1 {
+22 | |     External(LearningIterationEvidenceClientV1),
+   | |     ------------------------------------------- the second-largest variant contains at least 1600 bytes
+23 | |     OriginalQ24(OriginalCellQ24TrainingReadbackV1),
+   | |     ---------------------------------------------- the largest variant contains at least 2632 bytes
+24 | | }
+   | |_^ the entire enum is at least 2632 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+23 -     OriginalQ24(OriginalCellQ24TrainingReadbackV1),
+23 +     OriginalQ24(Box<OriginalCellQ24TrainingReadbackV1>),
+   |
+
+warning: large size difference between variants
+  --> hepta-agentd/src/neuron_generation_current_store.rs:20:1
+   |
+20 | / enum Store {
+21 | |     #[cfg(target_os = "linux")]
+22 | |     RootInitial(crate::root_generation_initial_client::RootGenerationInitialClient),
+   | |     ------------------------------------------------------------------------------- the largest variant contains at least 5880 bytes
+23 | |     #[cfg(target_os = "linux")]
+24 | |     Root(crate::root_generation_current_client::RootGenerationCurrentClient),
+   | |     ------------------------------------------------------------------------ the second-largest variant contains at least 3992 bytes
+...  |
+29 | |     },
+30 | | }
+   | |_^ the entire enum is at least 5880 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+22 -     RootInitial(crate::root_generation_initial_client::RootGenerationInitialClient),
+22 +     RootInitial(Box<crate::root_generation_initial_client::RootGenerationInitialClient>),
+   |
+
+warning: `codex-hepta-agentd` (lib) generated 34 warnings
+    Checking codex-hepta-infer-worker-host v0.0.0 (/home/qq/af52-learning-local-decision-20261111/ordinary-53ed651-seven-final-v15/source/codex-rs/hepta-infer-worker-host)
+warning: file is loaded as a module multiple times: `hepta-agentd/src/authority_host_generation_publication_root_support_tests.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+  = note: `#[warn(clippy::duplicate_mod)]` on by default
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/authority_host_learning_service_root_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/neuron_generation_runtime_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+   --> hepta-agentd/src/root_authority_session_tests.rs:693:34
+    |
+693 |     let root = Arc::new(AsyncFd::new(pidfd).unwrap());
+    |                                  ^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: associated function `from_research_store` is never used
+   --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+    |
+133 | impl LearningIterationCheckpointOwnerV1 {
+    | --------------------------------------- associated function in this implementation
+...
+141 |     pub(crate) fn from_research_store(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib test) generated 39 warnings (34 duplicates)
+    Finished `dev` profile [unoptimized] target(s) in 2m 06s
