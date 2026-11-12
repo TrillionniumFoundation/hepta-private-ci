@@ -164,3 +164,78 @@ fn pinned_client_rejects_truncated_oversized_and_late_replies_without_retry() {
         Err(HostIssuerTransportError::Closed)
     );
 }
+
+#[test]
+fn original_absolute_end_expiry_closes_before_any_frame() -> std::io::Result<()> {
+    let (mut server, mut peer) = channel(/*bound*/ 32);
+    assert_eq!(
+        server.limit_original_end(Instant::now()),
+        Err(HostIssuerTransportError::DeadlineElapsed)
+    );
+    assert_eq!(
+        server.limit_original_end(Instant::now() + Duration::from_secs(10)),
+        Err(HostIssuerTransportError::Closed)
+    );
+    assert_eq!(
+        server.request(b"late"),
+        Err(HostIssuerTransportError::Closed)
+    );
+    let mut bytes = Vec::new();
+    peer.read_to_end(&mut bytes)?;
+    assert!(bytes.is_empty());
+    Ok(())
+}
+
+#[test]
+fn original_absolute_end_can_only_shorten() -> Result<(), HostIssuerTransportError> {
+    let (mut server, _peer) = channel(/*bound*/ 32);
+    let original = server.owner.end();
+    server.limit_original_end(original + Duration::from_secs(10))?;
+    assert_eq!(server.owner.end(), original);
+    let shortened = original - Duration::from_secs(1);
+    server.limit_original_end(shortened)?;
+    server.limit_original_end(original)?;
+    assert_eq!(server.owner.end(), shortened);
+    Ok(())
+}
+
+#[test]
+fn original_absolute_end_limits_the_idle_socket_wait() -> Result<(), HostIssuerTransportError> {
+    let (mut server, _silent_peer) = channel(/*bound*/ 32);
+    let start = Instant::now();
+    server.limit_original_end(start + Duration::from_millis(80))?;
+    let called = AtomicBool::new(false);
+    assert_eq!(
+        server.exchange(|_| {
+            called.store(true, Ordering::SeqCst);
+            Ok(b"unused".to_vec())
+        }),
+        Err(HostIssuerTransportError::DeadlineElapsed)
+    );
+    assert!(!called.load(Ordering::SeqCst));
+    assert!(start.elapsed() < Duration::from_secs(2));
+    assert_eq!(
+        server.exchange(|_| unreachable!()),
+        Err(HostIssuerTransportError::Closed)
+    );
+    Ok(())
+}
+
+#[test]
+fn original_absolute_end_crossed_by_handler_emits_no_reply()
+-> Result<(), Box<dyn std::error::Error>> {
+    let (mut server, mut peer) = channel(/*bound*/ 32);
+    send(&mut peer, b"request");
+    server.limit_original_end(Instant::now() + Duration::from_millis(40))?;
+    assert_eq!(
+        server.exchange(|_| {
+            std::thread::sleep(Duration::from_millis(70));
+            Ok(b"late".to_vec())
+        }),
+        Err(HostIssuerTransportError::DeadlineElapsed)
+    );
+    let mut bytes = Vec::new();
+    peer.read_to_end(&mut bytes)?;
+    assert!(bytes.is_empty());
+    Ok(())
+}
