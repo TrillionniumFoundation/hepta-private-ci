@@ -40,7 +40,7 @@ impl<'a> OriginalRunStartRetentionExchange<'a> {
 
     pub(crate) fn handles(&self, request: &Request) -> bool {
         request.purpose == RUN_START_RETENTION_PURPOSE
-            || matches!(request.command, Command::RetainRunStart { .. })
+            || matches!(&request.command, Command::RetainRunStart { .. })
     }
 
     pub(crate) fn exchange(
