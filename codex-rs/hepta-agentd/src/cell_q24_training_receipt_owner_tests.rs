@@ -28,6 +28,9 @@ mod snapshot_readback;
 #[path = "cell_q24_training_receipt_second_key_tests.rs"]
 mod second_original_key;
 
+#[path = "cell_q24_training_work_tests.rs"]
+mod original_work;
+
 fn clock() -> anyhow::Result<u64> {
     Ok(std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?
