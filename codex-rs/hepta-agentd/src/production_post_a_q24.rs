@@ -13,6 +13,8 @@ use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
 
 #[path = "production_post_a_artifacts.rs"]
 mod artifacts;
+#[path = "production_post_a_c_task.rs"]
+mod c_task;
 #[path = "production_post_a_q24_deployment.rs"]
 mod deployment;
 #[path = "production_post_a_generation.rs"]
