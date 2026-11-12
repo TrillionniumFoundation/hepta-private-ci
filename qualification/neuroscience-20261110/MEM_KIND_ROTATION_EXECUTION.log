@@ -1,0 +1,59 @@
+HEPTA HPCA MEM seed-rotated stratified replay, 2026-11-11
+Original GitHub parent: 622b2ad92f79beb072db62cf7905f435b81df5fc
+Original Git tree: 2d862eefa136a37a1d9d374515b219c93bad0dba
+Host: HeptaRuntime ai395 (SSH operator)
+Model/training/inference: none (shadow pure selector; synthetic four-kind records)
+Seed set: fixed-owner-seed:0..63 (deterministic strings, NOT owner-attested)
+Config: now_sequence=2, max_items=1, query_key=shared, policy=stratified;
+        verification uses budgets 3/4 and exact-key reference plus tombstone.
+New source/test SHA256:
+6d5f5ce9299687297378ecf1bcf00dfcdc80226c6893a10adf60af49e13a757f  study.py
+9f93f595a46b09bf128b286791040c8c62503d47c41a52248bc96fcd0387c106  test_seeded_stratified_rotation.py
+
+---- RED on unchanged parent implementation (one expected failure) ----
+test_full_budget_and_exact_key_unchanged (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_full_budget_and_exact_key_unchanged) ... ok
+test_narrow_budget_seed_changes_the_starting_kind (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_narrow_budget_seed_changes_the_starting_kind) ... FAIL
+test_stable_under_input_reordering_and_repeat_reads (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_stable_under_input_reordering_and_repeat_reads) ... ok
+test_tombstoned_kind_does_not_reappear_through_rotation (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_tombstoned_kind_does_not_reappear_through_rotation) ... ok
+
+======================================================================
+FAIL: test_narrow_budget_seed_changes_the_starting_kind (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_narrow_budget_seed_changes_the_starting_kind)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-mem-kind-rotation-20261111-turn5/qualification/neuroscience-20261110/test_seeded_stratified_rotation.py", line 26, in test_narrow_budget_seed_changes_the_starting_kind
+    self.assertEqual(chosen, {"id:" + kind for kind in MEMORY_KINDS})
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the second set but not the first:
+'id:skill'
+'id:recovery'
+'id:episode'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+FAILED (failures=1)
+Command exited with non-zero status 1
+red_wall_s=0.03 red_cpu_user_s=0.03 red_cpu_sys_s=0.00 red_peak_rss_kib=22924 red_exit=1
+
+---- GREEN on changed implementation ----
+test_corrected_logical_revision_never_replays_prior_version (test_study.ReplayTests.test_corrected_logical_revision_never_replays_prior_version) ... ok
+test_deletion_and_future_cutoff_cover_all_replay_policies (test_study.ReplayTests.test_deletion_and_future_cutoff_cover_all_replay_policies) ... ok
+test_explicit_identity_cannot_tombstone_unrelated_implicit_event (test_study.ReplayTests.test_explicit_identity_cannot_tombstone_unrelated_implicit_event) ... ok
+test_revocation_is_sticky_and_ambiguous_revision_is_rejected (test_study.ReplayTests.test_revocation_is_sticky_and_ambiguous_revision_is_rejected) ... ok
+test_stratified_replay_gives_old_episode_coverage (test_study.ReplayTests.test_stratified_replay_gives_old_episode_coverage) ... ok
+test_tombstone_blocks_old_and_later_versions_without_owner_regrant (test_study.ReplayTests.test_tombstone_blocks_old_and_later_versions_without_owner_regrant) ... ok
+test_full_budget_and_exact_key_unchanged (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_full_budget_and_exact_key_unchanged) ... ok
+test_narrow_budget_seed_changes_the_starting_kind (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_narrow_budget_seed_changes_the_starting_kind) ... ok
+test_stable_under_input_reordering_and_repeat_reads (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_stable_under_input_reordering_and_repeat_reads) ... ok
+test_tombstoned_kind_does_not_reappear_through_rotation (test_seeded_stratified_rotation.SeededStratifiedRotationTests.test_tombstoned_kind_does_not_reappear_through_rotation) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.002s
+
+OK
+green_wall_s=0.03 green_cpu_user_s=0.03 green_cpu_sys_s=0.00 green_peak_rss_kib=23276 green_exit=0
+
+---- CODE CHECKS ----
+python3 -m py_compile study.py test_seeded_stratified_rotation.py : PASS
+git diff --check : PASS
+No owner authority; no prospective evaluation; no native-model effect or adoption.

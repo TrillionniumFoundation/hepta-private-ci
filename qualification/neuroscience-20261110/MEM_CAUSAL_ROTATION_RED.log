@@ -1,0 +1,35 @@
+test_all_four_kinds_reachable_without_fact_first_starvation (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_all_four_kinds_reachable_without_fact_first_starvation) ... FAIL
+test_full_budget_and_exact_control_do_not_change (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_full_budget_and_exact_control_do_not_change) ... ok
+test_future_bad_event_cannot_change_frozen_seeded_choice (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_future_bad_event_cannot_change_frozen_seeded_choice) ... ok
+test_visible_tombstone_cannot_resurrect_fact_in_seeded_prefix (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_visible_tombstone_cannot_resurrect_fact_in_seeded_prefix) ... FAIL
+
+======================================================================
+FAIL: test_all_four_kinds_reachable_without_fact_first_starvation (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_all_four_kinds_reachable_without_fact_first_starvation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-mem-convergence-red-run6-20261111/test_frozen_seeded_mem_convergence.py", line 41, in test_all_four_kinds_reachable_without_fact_first_starvation
+    self.assertEqual(outcomes, {"f", "e", "s", "r"})
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the second set but not the first:
+'r'
+'e'
+'s'
+
+======================================================================
+FAIL: test_visible_tombstone_cannot_resurrect_fact_in_seeded_prefix (test_frozen_seeded_mem_convergence.FrozenSeededMemConvergenceTests.test_visible_tombstone_cannot_resurrect_fact_in_seeded_prefix)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/neuro4-mem-convergence-red-run6-20261111/test_frozen_seeded_mem_convergence.py", line 63, in test_visible_tombstone_cannot_resurrect_fact_in_seeded_prefix
+    self.assertEqual(before, {"f", "e", "s", "r"})
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Items in the second set but not the first:
+'r'
+'e'
+'s'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.008s
+
+FAILED (failures=2)
+Command exited with non-zero status 1
+red_wall=0.04 red_cpu_user=0.03 red_cpu_sys=0.00 red_peak_rss_kib=23456 red_exit=1
