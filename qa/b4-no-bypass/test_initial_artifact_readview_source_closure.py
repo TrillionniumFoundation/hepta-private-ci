@@ -31,11 +31,13 @@ CALLERS = {
         "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs"
     ],
     "root_initial_artifact_store_client": [
-        "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs"
+        "codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs",
+        AGENT + "neuron_generation_current_initial_learning_trust.rs"
     ],
     "root_initial_artifact_same_session": [
         "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs",
-        "codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs"
+        "codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs",
+        AGENT + "root_generation_initial_learning_trust.rs"
     ],
     "root_initial_artifact_full_pin": [
         "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs"

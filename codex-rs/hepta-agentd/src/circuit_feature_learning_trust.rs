@@ -13,7 +13,7 @@ impl PublishedCircuitFeatureTaskV1 {
         let trust = self
             .0
             .current
-            .read_original_initial_learning_trust(session, identity)?;
+            .read_initial_learning_trust(session, identity)?;
         self.require_current()?;
         Ok(trust)
     }

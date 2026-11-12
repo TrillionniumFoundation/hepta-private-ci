@@ -31,7 +31,7 @@ class OrdinaryInitialQ24SourceTests(unittest.TestCase):
 
     def test_actual_root_session_and_grant_surround_initial_effects(self):
         function = "fn assemble_original_initial_q24("
-        for occurrence in range(5):
+        for occurrence in range(6):
             self.reject_removal("production_initial_q24.rs", function,
                                 "self.require_original_initial_q24_session(config.identity())?",
                                 occurrence)
