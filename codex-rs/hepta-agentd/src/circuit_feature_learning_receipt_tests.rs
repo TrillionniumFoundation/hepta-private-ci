@@ -280,8 +280,10 @@ impl FeatureFixture {
 
     async fn finish(mut self) -> anyhow::Result<()> {
         self.cancellation.cancel();
-        self.server.await??;
-        self.session.stop().await
+        let server = self.server.await?;
+        let stopped = self.session.stop().await;
+        server?;
+        stopped
     }
 }
 
