@@ -249,8 +249,13 @@ impl PendingOriginalLedgerHistoryV1<'_> {
             },
         };
         let mut held = self.files.open_original_terminal(&context, mode)?;
-        let observed =
-            held.observe_original_terminal(&context, source.publication(), cell, now / 1_000)?;
+        let observed = OriginalLedgerReadGuard::observe_original_terminal(
+            &mut held,
+            &context,
+            source.publication(),
+            cell,
+            now / 1_000,
+        )?;
         if CapturedLedgerCut::from_original(&observed, source.publication(), cell, source_pin)?
             != **cut
         {
