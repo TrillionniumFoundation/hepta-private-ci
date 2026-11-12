@@ -20,6 +20,8 @@ use crate::cell_q24_dataset_run_snapshot_digest_v1;
 mod freeze_owner;
 #[path = "cell_q24_learning_preparation_tests.rs"]
 mod preparation;
+#[path = "cell_q24_dataset_projection_tests.rs"]
+mod pure_projection;
 
 #[path = "cell_q24_source_receipt_owner_tests.rs"]
 mod source_receipts;

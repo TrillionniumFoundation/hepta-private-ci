@@ -3,17 +3,14 @@
 //! batch, bind SGD(batch) into the row rule, and finally freeze the Root scope.
 //! This reader grants no source, signing, training or publication authority.
 
-use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;
 use codex_hepta_learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerSnapshot;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
@@ -25,7 +22,6 @@ use codex_hepta_learning_ledger::freeze_dataset_from_ledger;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellDecisionReceiptV1;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::ProbabilityQ32;
 #[cfg(target_os = "linux")]
 use codex_hepta_types::StableId;
 
@@ -51,6 +47,10 @@ pub enum CellQ24DatasetErrorV1 {
 }
 
 type Error = CellQ24DatasetErrorV1;
+
+#[path = "cell_q24_dataset_projection.rs"]
+mod projection;
+pub(crate) use projection::project_original_q24_dataset_v1;
 
 /// A new combined policy, never a replacement for the inherited inclusion rule.
 /// V1 includes every selected decision in ledger order exactly once, requires
@@ -317,114 +317,23 @@ impl OriginalDataset {
         }
         let records = ledger.read_dataset_records(&self.receipt, observed_at)?;
         let selected: Vec<_> = records.iter().map(|r| r.event_digest).collect();
-        let mut decisions = Vec::new();
-        let mut outcomes = BTreeMap::new();
-        for record in records {
-            match &record.event {
-                LedgerEvent::AuthenticatedDecisionV2(value) => decisions.push((record, value)),
-                LedgerEvent::AuthenticatedOutcomeV2(value) => {
-                    if outcomes
-                        .insert(&value.episode_id, (record, value))
-                        .is_some()
-                    {
-                        return Err(Error::Binding("ambiguous outcome per decision"));
-                    }
-                }
-                _ => return Err(Error::Binding("unsupported Dataset event")),
-            }
-        }
-        if decisions.len() != self.tasks.len() || outcomes.len() != decisions.len() {
-            return Err(Error::Binding("one source and outcome per decision"));
-        }
-        let mut tasks = BTreeMap::new();
-        for task in &self.tasks {
-            task.require_current()?;
-            if tasks
-                .insert(&task.publication.input().scope.run_id, task)
-                .is_some()
-            {
-                return Err(Error::Binding("duplicate original task"));
-            }
-        }
-        let mut samples = Vec::with_capacity(decisions.len());
-        let mut transcript = profile.as_array().to_vec();
-        for (record, decision) in decisions {
-            let task = tasks
-                .remove(&decision.record_id)
-                .ok_or(Error::Binding("original decision run"))?;
-            let (outcome_record, outcome) = outcomes
-                .remove(&decision.episode_id)
-                .ok_or(Error::Binding("original Terminal outcome"))?;
-            let publication = &task.publication;
-            let original = &task.decision;
-            // The ledger canonicalizes candidate IDs; the source output still
-            // binds the original policy order and its exact one-hot weights.
-            let mut original_candidates = original
-                .policy
-                .iter()
-                .map(|entry| entry.candidate_id.clone())
-                .collect::<Vec<_>>();
-            original_candidates.sort();
-            if decision.run_snapshot_digest != cell_q24_dataset_run_snapshot_digest_v1(publication)
-                || decision.objective_digest != publication.input().objective_digest
-                || decision.objective_digest != self.receipt.snapshot.objective_digest
-                || decision.policy_digest != Digest32::of_bytes(publication.output())
-                || decision.support_digest != publication.publication_digest()
-                || outcome.support_digest != publication.publication_digest()
-                || publication.bundle_digest() != self.projection.baseline_bundle
-                || decision.selected_candidate_id != original.selected_candidate
-                || decision.selected_propensity != ProbabilityQ32::ONE
-                || original.policy.iter().any(|p| {
-                    p.probability_ppm
-                        != if p.candidate_id == original.selected_candidate {
-                            1_000_000
-                        } else {
-                            0
-                        }
-                })
-                || !original
-                    .policy
-                    .iter()
-                    .any(|p| p.candidate_id == original.selected_candidate && p.allowed)
-                || decision.candidate_ids != original_candidates
-                || outcome.terminality != AuthenticatedOutcomeTerminality::Terminal
-                || outcome.correction_predecessor.is_some()
-                || outcome.unit_profile_digest != self.projection.unit_profile_digest
-                || outcome_record.sequence <= record.sequence
-            {
-                return Err(Error::Binding(
-                    "exact task, model, decision, unit and outcome",
-                ));
-            }
-            let raw = outcome.value.ok_or(Error::Binding("missing target"))?.raw();
-            if !(-(8_i64 << 32)..=(8_i64 << 32)).contains(&raw) {
-                return Err(Error::Binding("target range before conversion"));
-            }
-            let input = codec::input(
-                &publication.input().observation,
-                usize::from(self.projection.input_width),
-            )
-            .map_err(|_| Error::Binding("original HQ24I001 input"))?;
-            samples.push(CellQ24TrainingSampleV1 {
-                input,
-                target: raw / 256,
-            });
-            for digest in [
-                record.event_digest,
-                outcome_record.event_digest,
-                publication.publication_digest(),
-            ] {
-                transcript.extend_from_slice(digest.as_array());
-            }
-        }
-        let mut batch = CellQ24TrainingBatchV1::new(self.receipt.snapshot.dataset_digest, samples)
-            .map_err(|_| Error::Binding("bounded native samples"))?;
-        batch.encoded[..8].copy_from_slice(b"HQ24T002");
-        batch.encoded.extend_from_slice(profile.as_array());
-        batch
-            .encoded
-            .extend_from_slice(Digest32::of_bytes(&transcript).as_array());
-        batch.digest = Digest32::of_bytes(&batch.encoded);
+        let records: Vec<_> = records.into_iter().cloned().collect();
+        let tasks = self
+            .tasks
+            .iter()
+            .map(|task| {
+                task.require_current()?;
+                Ok((task.publication.clone(), task.decision.clone()))
+            })
+            .collect::<Result<Vec<_>, Error>>()?;
+        let batch = project_original_q24_dataset_v1(
+            &self.frozen,
+            &self.receipt,
+            &self.projection,
+            &records,
+            &tasks,
+            observed_at,
+        )?;
         // Re-enter both original owners after projection. The process mutex
         // does not replace their independent currentness/witness contracts.
         for task in &self.tasks {

@@ -36,6 +36,7 @@ pub use training::CellQ24TrainingMetricsV1;
 pub use training::CellQ24TrainingOutcomeV1;
 pub use training::CellQ24TrainingSampleV1;
 pub use training::cell_q24_dataset_run_snapshot_digest_v1;
+pub(crate) use training::project_original_q24_dataset_v1;
 
 #[cfg(target_os = "linux")]
 pub use training::CellQ24DatasetFreezePreparationV1;

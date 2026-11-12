@@ -561,6 +561,7 @@ pub use cell_composed_q24::OriginalCellQ24DatasetFreezeOwnerV1;
 pub use cell_composed_q24::OriginalCellQ24DatasetFreezeSigningConfigV1;
 pub use cell_composed_q24::cell_q24_dataset_run_snapshot_digest_v1;
 pub use cell_composed_q24::cell_q24_single_head_update_rule_v1;
+pub(crate) use cell_composed_q24::project_original_q24_dataset_v1;
 pub use cell_q24_backend::CellQ24BackendFilesV1;
 pub use cell_q24_backend::load_cell_q24_backend_v1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalErrorV1;
