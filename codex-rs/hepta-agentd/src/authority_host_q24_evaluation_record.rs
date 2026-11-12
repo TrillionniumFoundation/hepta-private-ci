@@ -8,6 +8,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
+use std::time::Instant;
 
 use codex_hepta_contracts::AuthorityFrontierStore;
 use codex_hepta_contracts::HostAuthorityFrontierStore;
@@ -36,6 +37,7 @@ pub(super) struct OriginalBEnrollment {
     pub(super) protocol: [u8; 32],
     pub(super) trust: [u8; 32],
     pub(super) deployment: [u8; 32],
+    pub(super) protocol_statement: [u8; 32],
     pub(super) files: Vec<OriginalBFileIdentity>,
     pub(super) registered_at_seconds: u64,
     pub(super) expires_at_seconds: u64,
@@ -83,6 +85,7 @@ impl OriginalBRecord {
     pub(super) fn register<T>(
         root: Arc<RootAuthorityDirectory>,
         initial: &LearningIterationSnapshotV1,
+        end: Instant,
         action: impl FnOnce() -> io::Result<(OriginalBEnrollment, T)>,
     ) -> io::Result<(Self, T)> {
         crate::authority_host_service::generation_initial::original_root()?;
@@ -105,9 +108,11 @@ impl OriginalBRecord {
             poisoned: AtomicBool::new(false),
         };
         let (enrollment, result) = action()?;
-        if enrollment.initial_head != armed.initial_head
+        if Instant::now() >= end
+            || enrollment.initial_head != armed.initial_head
             || enrollment.protocol != initial.request.evaluation_profile.into_array()
             || enrollment.trust != initial.owners.evidence_trust_digest.into_array()
+            || enrollment.protocol_statement == [0; 32]
             || enrollment.registered_at_seconds == 0
             || enrollment.registered_at_seconds >= enrollment.expires_at_seconds
             || enrollment.expires_at_seconds != initial.request.envelope.expiry_unix_seconds
@@ -166,6 +171,7 @@ impl OriginalBRecord {
     /// Immutable preregistration identity cannot be replaced by an action.
     pub(super) fn inspect<T>(
         &self,
+        end: Instant,
         action: impl FnOnce(&mut OriginalBEnrollment) -> io::Result<T>,
     ) -> io::Result<T> {
         crate::authority_host_service::generation_initial::original_root()?;
@@ -203,7 +209,10 @@ impl OriginalBRecord {
             immutable.realized_plan_statement = original.realized_plan_statement;
             immutable.original_training_attestation =
                 original.original_training_attestation.clone();
-            if &immutable != original || self.poisoned.load(Ordering::Acquire) {
+            if &immutable != original
+                || self.poisoned.load(Ordering::Acquire)
+                || Instant::now() >= end
+            {
                 return Err(io::Error::other("original B registration was changed"));
             }
             let mut ready = armed.clone();

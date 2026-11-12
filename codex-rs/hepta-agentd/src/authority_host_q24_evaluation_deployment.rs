@@ -88,6 +88,7 @@ pub(super) struct OriginalBInputs {
     trust_file: OriginalBFile,
     trust_digest: Digest32,
     protocol_statement: OriginalBFile,
+    protocol_statement_digest: Digest32,
     pub(super) source: OriginalBFile,
     pub(super) observed_statement: OriginalBFile,
     pub(super) policy_statement: OriginalBFile,
@@ -124,6 +125,10 @@ impl OriginalBInputs {
         let protocol_digest = Digest32::of_bytes(&protocol_file.read_stable(65_536)?);
         let trust_file = tracker.open(&data.trust, OriginalBFileAccess::ReadOnly)?;
         let trust_digest = Digest32::of_bytes(&trust_file.read_stable(65_536)?);
+        let protocol_statement =
+            tracker.open(&data.protocol_statement, OriginalBFileAccess::ReadOnly)?;
+        let protocol_statement_digest =
+            Digest32::of_bytes(&protocol_statement.read_stable(65_536)?);
         let inputs = Self {
             deployment,
             deployment_digest: Digest32::of_bytes(&bytes),
@@ -131,8 +136,8 @@ impl OriginalBInputs {
             protocol_digest,
             trust_file,
             trust_digest,
-            protocol_statement: tracker
-                .open(&data.protocol_statement, OriginalBFileAccess::ReadOnly)?,
+            protocol_statement,
+            protocol_statement_digest,
             source: tracker.open(&data.source, OriginalBFileAccess::ReadOnly)?,
             observed_statement: tracker
                 .open(&data.observed_statement, OriginalBFileAccess::ReadOnly)?,
@@ -210,6 +215,10 @@ impl OriginalBInputs {
         self.deployment_digest
     }
 
+    pub(super) fn protocol_statement_digest(&self) -> Digest32 {
+        self.protocol_statement_digest
+    }
+
     pub(super) fn file_identities(&self) -> Vec<OriginalBFileIdentity> {
         self.all_files()
             .into_iter()
@@ -226,6 +235,8 @@ impl OriginalBInputs {
         self.protocol_file
             .require_digest(self.protocol_digest, 65_536)?;
         self.trust_file.require_digest(self.trust_digest, 65_536)?;
+        self.protocol_statement
+            .require_digest(self.protocol_statement_digest, 65_536)?;
         Ok(())
     }
 
@@ -279,6 +290,16 @@ impl CellFilesData {
 }
 
 impl OriginalBCellFiles {
+    pub(super) fn lock_original(&self) -> io::Result<OriginalBCellReadGuard> {
+        let journal = self.journal.original_readonly()?;
+        journal.try_lock_shared().map_err(io::Error::other)?;
+        let witness = self.witness.original_readonly()?;
+        witness.try_lock_shared().map_err(io::Error::other)?;
+        self.journal.require_original()?;
+        self.witness.require_original()?;
+        Ok(OriginalBCellReadGuard { journal, witness })
+    }
+
     pub(super) fn observer(&self) -> io::Result<CellGenerationJournalObserverV1> {
         CellGenerationJournalObserverV1::from_original_files(
             self.journal.original_readonly()?,
@@ -289,6 +310,18 @@ impl OriginalBCellFiles {
     }
     pub(super) fn manifest(&self) -> &codex_hepta_neuron::CellBackendManifestV2 {
         &self.config.generation.manifest
+    }
+}
+
+pub(super) struct OriginalBCellReadGuard {
+    journal: std::fs::File,
+    witness: std::fs::File,
+}
+
+impl Drop for OriginalBCellReadGuard {
+    fn drop(&mut self) {
+        let _ = self.witness.unlock();
+        let _ = self.journal.unlock();
     }
 }
 
