@@ -1,0 +1,30 @@
+{
+  "source": "a43bcfff9f778a558587235afe829965bf1082be",
+  "actual_compile_exit": 0,
+  "native_tests_executed": false,
+  "raw_log_bytes": 69687,
+  "raw_log_sha256": "d1d279718265e059841ecf1e11fa76be337752dbbaf88262723c2a92b8e54a7b",
+  "followup_warnings": [
+    "warning: unused import: `model_material::OriginalCellEvaluationModelInputV1`\n   --> hepta-agentd/src/neuron_cell_evaluation_host.rs:293:16\n    |\n293 | pub(crate) use model_material::OriginalCellEvaluationModelInputV1;\n    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    |\n    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\n",
+    "warning: redundant field names in struct initialization\n   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:424:9\n    |\n424 |         initial: initial,\n    |         ^^^^^^^^^^^^^^^^ help: replace it with: `initial`\n    |\n    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names\n    = note: `#[warn(clippy::redundant_field_names)]` on by default\n\n",
+    "warning: redundant field names in struct initialization\n   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:425:9\n    |\n425 |         scope: scope,\n    |         ^^^^^^^^^^^^ help: replace it with: `scope`\n    |\n    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names\n\n",
+    "warning: redundant field names in struct initialization\n   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:427:9\n    |\n427 |         freeze_plan: freeze_plan,\n    |         ^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `freeze_plan`\n    |\n    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names\n\n",
+    "warning: redundant field names in struct initialization\n   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:428:9\n    |\n428 |         freeze_evidence: freeze_evidence,\n    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `freeze_evidence`\n    |\n    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#redundant_field_names\n\n"
+  ],
+  "scope": "raw 19 automatic postimages retained; these five follow-up lint changes require separate reviewed delta",
+  "recovery": {
+    "version": "2050:8588724:69687:1794474209071778197:1794474209071778197",
+    "chunks": [
+      {
+        "offset": 0,
+        "next_offset": 65536,
+        "sha256": "55b9e18597d2be76a0f1b9ca5184962889315b4de2f0f7b4ea2f9a0f04c8cb74"
+      },
+      {
+        "offset": 65536,
+        "next_offset": 69687,
+        "sha256": "9bf60688db9019197804bdcff187635469f7eeb3bd440078fa7723cbbec909be"
+      }
+    ]
+  }
+}

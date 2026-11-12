@@ -1,0 +1,741 @@
+{
+  "schema_version": 1,
+  "status": "IN_PROGRESS",
+  "package": "learn-evaluated-retention-037c",
+  "recorded_at": "2026-11-12T10:00:19.560216+00:00",
+  "purpose": "Preserve actual original executions, local evidence, failures and audit limits; no qualification publication.",
+  "qualification_counts": {
+    "complete_ordinary_adopt": 0,
+    "complete_ordinary_no_update": 0,
+    "complete_daemon_root_cold_recovery": 0,
+    "multi_generation_improver": 0
+  },
+  "ordinary_qualification_added": 0,
+  "frozen_publication": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "61e429dabf21d24af4e28700bc57a3e8ea2a6a7a",
+    "path": "qualification/learn-cold-refusal-34f833/PUBLICATION.json",
+    "modified": false,
+    "superseded": false,
+    "copied_or_rehashed_in_this_packaging_step": false
+  },
+  "latest_source": {
+    "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+    "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+    "branch": "codex/learn-common-profile-20261112-037c",
+    "status": "PUBLISHED_SOURCE_GATES_AND_NATIVE_ACCEPTANCE_PENDING",
+    "qualification": false,
+    "evidence": "complete-integration-source-preflight/COMPLETE_SOURCE_POSTIMAGES.json",
+    "binding_limit": "36 individually verified replacement files over exact 094; earlier executions retain their own identities. The partial local directory is not claimed to be a complete materialized Git tree."
+  },
+  "evidence": [
+    {
+      "id": "source_726_complete_source_closure",
+      "kind": "original complete source gate",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "source-726af8f4/driver.raw.log",
+        "source-726af8f4/invocation.json",
+        "source-726af8f4/result.json",
+        "source-726af8f4/source-after.json",
+        "source-726af8f4/source-before.json",
+        "source-726af8f4/source-closure.json",
+        "source-726af8f4/source-closure.json.2f66f61f9dd84303a2bc8904c1641737.log"
+      ],
+      "execution_commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "execution_tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+      "source_before": {
+        "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+        "dirty": "",
+        "inventory_sha256": "61a36abd803b241276d3ce1be446c7a30a5315347c0d5ea7966fca5e9c796dc3",
+        "file_count": 14739
+      },
+      "source_after": {
+        "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+        "dirty": "",
+        "inventory_sha256": "61a36abd803b241276d3ce1be446c7a30a5315347c0d5ea7966fca5e9c796dc3",
+        "file_count": 14739
+      },
+      "original_status": "passed",
+      "interpreted_status": "SOURCE_357_PASS_AT_EXACT_726_ONLY",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "passed_tests": 357,
+      "failed_tests": 0,
+      "timed_out": false
+    },
+    {
+      "id": "maintenance_8b4_failure",
+      "kind": "original just fix",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "maintenance-8b4d162c/just-fix.json",
+        "maintenance-8b4d162c/just-fix.raw.log",
+        "maintenance-8b4d162c/native-environment.json",
+        "maintenance-8b4d162c/postimages.json",
+        "maintenance-8b4d162c/result.json",
+        "maintenance-8b4d162c/source-after.json",
+        "maintenance-8b4d162c/source-before.json"
+      ],
+      "execution_commit": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+      "execution_tree": "f6eba04ce6afa681046326157fdbfe12d9af0093",
+      "source_before": {
+        "commit": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+        "tree": "f6eba04ce6afa681046326157fdbfe12d9af0093",
+        "dirty": "",
+        "inventory_sha256": "5eaa360bcf5aa6d9fbec4a59d351b1e7e9c50da1df7b3a4c64e9cfdd65ef8192",
+        "file_count": 14739
+      },
+      "source_after": {
+        "commit": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+        "tree": "f6eba04ce6afa681046326157fdbfe12d9af0093",
+        "dirty": "",
+        "inventory_sha256": "5eaa360bcf5aa6d9fbec4a59d351b1e7e9c50da1df7b3a4c64e9cfdd65ef8192",
+        "file_count": 14739
+      },
+      "original_status": "failed",
+      "interpreted_status": "FAILED_EXIT_101",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline"
+      ],
+      "returncode": 101,
+      "actual_process_exit_observed": true,
+      "controller_kill": false,
+      "dirty_file_count": 0,
+      "clean_gate_pass": false,
+      "postimage_scope": "Original automatic postimages and failure records; no native test execution."
+    },
+    {
+      "id": "maintenance_726_failure",
+      "kind": "original just fix",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "maintenance-726af8f4/RECOVERY.json",
+        "maintenance-726af8f4/just-fix.raw.log",
+        "maintenance-726af8f4/maintenance.patch",
+        "maintenance-726af8f4/postimages.json",
+        "maintenance-726af8f4/result.json"
+      ],
+      "execution_commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "execution_tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+      "source_before": {
+        "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+        "dirty": "",
+        "inventory_sha256": "234525c929f11210c3d9c8560218cf707b8d5e7572264ca471a73acca5e49170",
+        "file_count": 14739
+      },
+      "source_after": {
+        "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+        "dirty": " M codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs\n M codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_stage.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs\n",
+        "inventory_sha256": "c5d9f748d564751e691b8210406ab03a6e5f054ec437743b68e034b3711e0b4f",
+        "file_count": 14739
+      },
+      "original_status": "failed",
+      "interpreted_status": "FAILED_EXIT_101_WITH_10_AUTOMATIC_POSTIMAGES",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline"
+      ],
+      "returncode": 101,
+      "actual_process_exit_observed": true,
+      "controller_kill": false,
+      "dirty_file_count": 10,
+      "clean_gate_pass": false,
+      "postimage_scope": "Original automatic postimages and failure records; no native test execution.",
+      "recovery_attribution": "Original RECOVERY.json distinguishes nine postimages read from original files from lib.rs reconstructed using its exact Git blob and original maintenance patch. All ten physical postimages and four complete log chunks matched original fingerprints."
+    },
+    {
+      "id": "maintenance_a43_dirty_success",
+      "kind": "original just fix",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "maintenance-a43bcfff/followup-lints.json",
+        "maintenance-a43bcfff/just-fix.raw.log",
+        "maintenance-a43bcfff/maintenance.patch",
+        "maintenance-a43bcfff/native-environment.json",
+        "maintenance-a43bcfff/postimages.json",
+        "maintenance-a43bcfff/result.json",
+        "maintenance-a43bcfff/source-after.json",
+        "maintenance-a43bcfff/source-before.json"
+      ],
+      "execution_commit": "a43bcfff9f778a558587235afe829965bf1082be",
+      "execution_tree": "9ef5b1d968e278690e53df121e8608881895a61a",
+      "source_before": {
+        "commit": "a43bcfff9f778a558587235afe829965bf1082be",
+        "tree": "9ef5b1d968e278690e53df121e8608881895a61a",
+        "dirty": "",
+        "inventory_sha256": "b836073837a7ca0215be806d63e169058bdf6a1990d1104a2dd8beb9c63c80c9",
+        "file_count": 14739
+      },
+      "source_after": {
+        "commit": "a43bcfff9f778a558587235afe829965bf1082be",
+        "tree": "9ef5b1d968e278690e53df121e8608881895a61a",
+        "dirty": " M codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_task_source_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs\n",
+        "inventory_sha256": "2c53fb4ea2f4d33999d120f58b900f365f3cb8d1e5bcd24c669e4b68e53191a5",
+        "file_count": 14739
+      },
+      "original_status": "passed",
+      "interpreted_status": "COMMAND_EXIT_0_WITH_19_DIRTY_FILES_NOT_CLEAN_PASS",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline"
+      ],
+      "returncode": 0,
+      "actual_process_exit_observed": true,
+      "controller_kill": false,
+      "dirty_file_count": 19,
+      "clean_gate_pass": false,
+      "postimage_scope": "Original automatic postimages and failure records; no native test execution.",
+      "status_explanation": "Original status=passed denotes only just fix exit 0. Nineteen tracked files changed and before/after inventory hashes differ; it is not an unchanged-source gate or native PASS."
+    },
+    {
+      "id": "fullcaller_726_failure",
+      "kind": "original complete caller proof",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "fullcaller-726af8f4/daemon-learning-caller-proof/self-test.json",
+        "fullcaller-726af8f4/daemon-learning-caller-proof/self-test.log",
+        "fullcaller-726af8f4/daemon-learning-caller-proof/verify.json",
+        "fullcaller-726af8f4/daemon-learning-caller-proof/verify.log",
+        "fullcaller-726af8f4/result.json",
+        "fullcaller-726af8f4/source-after.json",
+        "fullcaller-726af8f4/source-before.json"
+      ],
+      "execution_commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+      "execution_tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+      "source_before": {
+        "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+        "dirty": "",
+        "inventory_sha256": "aebeb4950da1efc8a8ad2c491a5c539dd8bba42eb50adbc8ebcc364e7c5e1906",
+        "file_count": 14739
+      },
+      "source_after": {
+        "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+        "dirty": "",
+        "inventory_sha256": "aebeb4950da1efc8a8ad2c491a5c539dd8bba42eb50adbc8ebcc364e7c5e1906",
+        "file_count": 14739
+      },
+      "original_status": "failed",
+      "interpreted_status": "FAILED_NOT_TIMEOUT",
+      "returncode": 1,
+      "self_test_returncode": 0,
+      "verify_returncode": 1,
+      "timed_out": false,
+      "failure": "FAIL_HEPTA_CALLER_PROOF: cell_q24_model_material_owner_readback: codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs: unresolved possible CellQ24ModelProposalOwnerV1::readback receiver"
+    },
+    {
+      "id": "selection_preflight",
+      "kind": "local materialized source preflight",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "selection-source-preflight/SELECTION_POSTIMAGES.json",
+        "selection-source-preflight/selection-integration-source-qa-v2.json",
+        "selection-source-preflight/selection-integration-source-qa-v2.log"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "source_state": "Exact postimage manifest; original run record has no execution commit/tree or before/after complete-source inventory.",
+      "interpreted_status": "LOCAL_SOURCE_TESTS_PASS",
+      "passed_tests": 45,
+      "returncode": 0,
+      "published_head_gate": false
+    },
+    {
+      "id": "intake_preflight",
+      "kind": "local materialized source preflight",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "intake-source-preflight/INTAKE_POSTIMAGES.json",
+        "intake-source-preflight/intake-integration-source-qa-v2.json",
+        "intake-source-preflight/intake-integration-source-qa-v2.log"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "source_state": "Exact postimage manifest; original run record has no execution commit/tree or before/after complete-source inventory.",
+      "interpreted_status": "LOCAL_SOURCE_TESTS_PASS",
+      "passed_tests": 50,
+      "returncode": 0,
+      "published_head_gate": false
+    },
+    {
+      "id": "complete_integration_preflight_v2",
+      "kind": "local materialized source preflight",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "complete-integration-source-preflight/COMPLETE_SOURCE_POSTIMAGES.json",
+        "complete-integration-source-preflight/C_POSTIMAGES_NO_LIB.json",
+        "complete-integration-source-preflight/LOCAL_MATERIALIZED_POSTIMAGES.json",
+        "complete-integration-source-preflight/MAINTENANCE_FOLLOWUP_POSTIMAGES.json",
+        "complete-integration-source-preflight/MATERIALIZED_QA_INPUTS.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v2.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v2.log",
+        "complete-integration-source-preflight/complete-integration-source-qa-v3.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v3.log"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "source_state": "Original v2 execution had no source commit/tree binding; it is not attributed to a later published commit.",
+      "interpreted_status": "LOCAL_SOURCE_72_PASS",
+      "passed_tests": 72,
+      "failed_tests": 0,
+      "returncode": 0,
+      "log_sha256": "1b1dcfa3c937a224041395af154fef58113c149b52bba4961ee44682142c80d1",
+      "primary_records": [
+        "complete-integration-source-preflight/complete-integration-source-qa-v2.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v2.log"
+      ],
+      "before_after_execution_inventory_present": false,
+      "complete_git_tree_verified": false
+    },
+    {
+      "id": "complete_integration_preflight_v3",
+      "kind": "local exact replacement-blob source preflight",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "complete-integration-source-preflight/COMPLETE_SOURCE_POSTIMAGES.json",
+        "complete-integration-source-preflight/C_POSTIMAGES_NO_LIB.json",
+        "complete-integration-source-preflight/LOCAL_MATERIALIZED_POSTIMAGES.json",
+        "complete-integration-source-preflight/MAINTENANCE_FOLLOWUP_POSTIMAGES.json",
+        "complete-integration-source-preflight/MATERIALIZED_QA_INPUTS.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v2.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v2.log",
+        "complete-integration-source-preflight/complete-integration-source-qa-v3.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v3.log"
+      ],
+      "execution_commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+      "execution_tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+      "local_git_head_observed": null,
+      "source_binding": "Individually verified replacement blobs over exact parent 094958b83a8fd19e3bc6d01a092793c0f420bb75; not a locally materialized full Git-tree check.",
+      "binding_kind": "individual replacement blobs over exact 094 parent; partial materialization",
+      "interpreted_status": "LOCAL_SOURCE_72_PASS_WITH_36_FILE_BINDING",
+      "passed_tests": 72,
+      "failed_tests": 0,
+      "returncode": 0,
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py"
+      ],
+      "started_at": "2026-11-12T09:54:10.702331+00:00",
+      "finished_at": "2026-11-12T09:54:29.028295+00:00",
+      "log_sha256": "71ea07ac9153b8aec00d040c083f8a1f8005f614ea58a436a5899efdfbb72034",
+      "verified_replacement_files": 36,
+      "complete_git_tree_verified": false,
+      "clean_checkout_gate": false,
+      "primary_records": [
+        "complete-integration-source-preflight/complete-integration-source-qa-v3.json",
+        "complete-integration-source-preflight/complete-integration-source-qa-v3.log",
+        "complete-integration-source-preflight/COMPLETE_SOURCE_POSTIMAGES.json"
+      ],
+      "packaging_inventory_note": "LOCAL_MATERIALIZED_POSTIMAGES.json is a later physical inventory, not an original execution before/after snapshot."
+    },
+    {
+      "id": "format_a43_followup",
+      "kind": "actual Rust 1.96 formatting only",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "format-a43-followup-v1/LOCAL_RECOVERY.json",
+        "format-a43-followup-v1/before-format-manifest.json",
+        "format-a43-followup-v1/circuit_model_selection_material_support_tests.rs.merge.stderr",
+        "format-a43-followup-v1/circuit_model_selection_owner_support_tests.rs.merge.stderr",
+        "format-a43-followup-v1/five-reviewed-lints.patch",
+        "format-a43-followup-v1/format-only.patch",
+        "format-a43-followup-v1/format-terminal.json",
+        "format-a43-followup-v1/input-manifest.json",
+        "format-a43-followup-v1/integration.patch",
+        "format-a43-followup-v1/manifest.json",
+        "format-a43-followup-v1/rustfmt.raw.log",
+        "format-a43-followup-v1/three-way-merges.json"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "source_state": "Twenty independently materialized derived files, not a complete Git tree.",
+      "source_contexts": [
+        {
+          "commit": "a43bcfff9f778a558587235afe829965bf1082be",
+          "tree": "9ef5b1d968e278690e53df121e8608881895a61a",
+          "role": "original a43 nineteen automatic postimages"
+        },
+        {
+          "commit": "a9d4821869ab4ad42ffd7df33be36a9f63804a13",
+          "tree": null,
+          "role": "two exact published S fixture merge inputs"
+        }
+      ],
+      "original_native_checkout_before": {
+        "head": "a43bcfff9f778a558587235afe829965bf1082be",
+        "tree": "9ef5b1d968e278690e53df121e8608881895a61a",
+        "status": " M codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_task_source_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs\n",
+        "diff_sha256": "4da6bf9215f49a18b80d3dfe8ac282a1d538feff7caa3d213f06d3facb7d33e9",
+        "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      "original_native_checkout_after": {
+        "head": "a43bcfff9f778a558587235afe829965bf1082be",
+        "tree": "9ef5b1d968e278690e53df121e8608881895a61a",
+        "status": " M codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_task_source_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs\n",
+        "diff_sha256": "4da6bf9215f49a18b80d3dfe8ac282a1d538feff7caa3d213f06d3facb7d33e9",
+        "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      "interpreted_status": "FORMAT_ONLY_EXIT_0",
+      "command": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-a43-followup-v1/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs"
+      ],
+      "returncode": 0,
+      "formatted_files": 20,
+      "three_way_merges": 2,
+      "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\n"
+    },
+    {
+      "id": "final_lib_format",
+      "kind": "actual isolated final lib formatting",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "format-final-lib-v1/result.from-pty.json",
+        "format-final-lib-v1/root-terminal-receipt.json",
+        "format-final-lib-v1/rustfmt-terminal.raw.log"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "source_state": "Isolated exact input file; no checkout-level gate.",
+      "interpreted_status": "FORMAT_ONLY_EXIT_0_UNCHANGED",
+      "command": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "/home/qian-qi/hepta-learn-037c-evidence/format-final-lib-v1/lib.rs"
+      ],
+      "returncode": 0,
+      "before": {
+        "bytes": 70644,
+        "git_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+        "sha256": "df0331bb909b10cd6edf7db3108cac71b67ed05c81bcfe444682b6afd0e7fa95"
+      },
+      "after": {
+        "bytes": 70644,
+        "git_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+        "sha256": "df0331bb909b10cd6edf7db3108cac71b67ed05c81bcfe444682b6afd0e7fa95"
+      },
+      "changed": false,
+      "published_file_commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+      "published_file": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "id": "ufcs_original_boundary_overlay",
+      "kind": "single original boundary proof",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "caller-ufcs-fix-v1/caller-ufcs.patch",
+        "caller-ufcs-fix-v1/launch-receipt.json",
+        "caller-ufcs-fix-v1/manifest.json",
+        "caller-ufcs-fix-v1/original-result-readback.json",
+        "caller-ufcs-fix-v1/result.from-pty.json",
+        "caller-ufcs-fix-v1/result.json",
+        "caller-ufcs-fix-v1/rustfmt.raw.log",
+        "caller-ufcs-fix-v1/source-after.json",
+        "caller-ufcs-fix-v1/source-before.json",
+        "caller-ufcs-fix-v1/terminal-receipt.json"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "source_state": "Complete frozen 726 product source index with exact-a43 one-file overlay, then reviewed UFCS overlay; not a complete common candidate tree.",
+      "base_index": {
+        "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+        "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d",
+        "dirty": "",
+        "inventory_sha256": null,
+        "file_count": 14739
+      },
+      "overlay_base_commit": "a43bcfff9f778a558587235afe829965bf1082be",
+      "overlay_before": {
+        "bytes": 6754,
+        "git_blob": "f73ef8dfc9abedabf47c94e3bc582aec2e96d1f1",
+        "sha256": "58481d6fac3d30a5b36131149577d278f1e2615b9e152a4c51b45b38171674d7"
+      },
+      "overlay_after": {
+        "bytes": 7004,
+        "git_blob": "d32eb1681ce8e51b823ed483955d69257a25d981",
+        "sha256": "282e58e8a39c29939c1515c54711a08a858d71ebc9b8d6be1b9164deeb1d0e6e"
+      },
+      "source_index_rust_files": 6588,
+      "boundary": "cell_q24_model_material_owner_readback",
+      "original_before": {
+        "accepted": false,
+        "error": "cell_q24_model_material_owner_readback: codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs: unresolved possible CellQ24ModelProposalOwnerV1::readback receiver"
+      },
+      "a43_overlay_before": {
+        "accepted": false,
+        "error": "cell_q24_model_material_owner_readback: codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs: unresolved possible CellQ24ModelProposalOwnerV1::readback receiver"
+      },
+      "ufcs_overlay_after": {
+        "accepted": true,
+        "result": {
+          "callPattern": null,
+          "id": "cell_q24_model_material_owner_readback",
+          "productCallers": [
+            "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+          ],
+          "receiverMethods": [],
+          "receiverType": "CellQ24ModelProposalOwnerV1",
+          "symbol": "CellQ24ModelProposalOwnerV1::readback"
+        }
+      },
+      "unregistered_real_caller_attack": {
+        "accepted": false,
+        "error": "cell_q24_model_material_owner_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/unregistered_model_readback_probe.rs']"
+      },
+      "interpreted_status": "SINGLE_BOUNDARY_PASS_AND_REAL_UNREGISTERED_CALLER_REJECTION",
+      "complete_common_head_fullcaller_pass": false,
+      "terminal_exit_code": 0,
+      "terminal_output_complete": true,
+      "result_attribution": "result.from-pty.json retains its original derivation: complete original PTY bytes_hex decoded as UTF-8 and CRLF normalized to LF. Subsequently independently disk-read result.json is byte-for-byte equal, and source-after.json equals source-before.json; original-result-readback.json preserves that separate readback.",
+      "rustfmt": {
+        "changed": false,
+        "command": [
+          "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2024",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "/home/qian-qi/hepta-learn-037c-evidence/caller-ufcs-fix-v1/postimages/codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs"
+        ],
+        "exit_code": 0,
+        "version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)"
+      }
+    },
+    {
+      "id": "native_filter_audit",
+      "kind": "static case/filter and actual module-mount audit",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "native-filter-audit/REPORT.json",
+        "native-filter-audit/optional-nine-case-command.txt",
+        "native-filter-audit/ordinary-nine-cases.txt",
+        "native-filter-audit/root-four-cases.txt"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "source_state": "Exact 094 unchanged module parents/workflow plus recorded local integrated postimages.",
+      "audited_parent_commit": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "interpreted_status": "STATIC_COVERAGE_ONLY",
+      "S_cases": 3,
+      "C_cases": 4,
+      "intake_cases": 2,
+      "ordinary_selected": 9,
+      "root_cases": 4,
+      "existing_exact_root_parents": 32,
+      "minimum_additional_filters": [],
+      "minimum_additional_root_parents": [],
+      "packages": [
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      "acceptance_limit": "This is declared filter coverage only. Fresh JUnit is still required. Focused has minimum_tests=1; ignored Root cases run only in existing UID0 root/all suite with exact 32-parent assertion."
+    },
+    {
+      "id": "ordinary_producer_audit_094",
+      "kind": "source identity and implementation feasibility audit",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "ordinary-producer-audit-094/MANIFEST.json",
+        "ordinary-producer-audit-094/PACKAGING_NOTE.md",
+        "ordinary-producer-audit-094/REPORT.md",
+        "ordinary-producer-audit-094/SOURCE_MANIFEST.json",
+        "ordinary-producer-audit-094/VERIFICATION.json",
+        "ordinary-producer-audit-094/verify_sources.py"
+      ],
+      "execution_commit": null,
+      "execution_tree": null,
+      "audited_source_commit": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "audited_source_tree": null,
+      "source_state": "47 exact source Git blobs and 22 exact boundary rows, no product execution.",
+      "interpreted_status": "BLOCKED_BY_MISSING_ORIGINAL_PRODUCERS",
+      "source_files_verified": 47,
+      "boundary_rows_verified": 22,
+      "production_changes": 0,
+      "ordinary_qualification_added": 0,
+      "blockers": [
+        "Ordinary launcher cannot obtain the actual Q24 PublishedCircuitFeatureTask and real A profile from the existing Joint bootstrap.",
+        "The final Root session lacks a producer of the ten original role streams and exact deployment-purpose authorization.",
+        "Library assembly and local S/C receipts do not by themselves wire ordinary Candidate effects or establish daemon/Root cold recovery."
+      ],
+      "packaging_note": "ordinary-producer-audit-094/PACKAGING_NOTE.md"
+    },
+    {
+      "id": "native_8faf_preparation_and_failed_maintenance_v1",
+      "kind": "original exact-source format and failed maintenance preparation",
+      "qualification": false,
+      "native_tests_executed": false,
+      "artifacts": [
+        "native-8faf-attempt-v1/observations.from-pty.json",
+        "native-8faf-attempt-v1/terminal-receipt.json",
+        "native-8faf-attempt-v1/terminal.raw.log"
+      ],
+      "execution_commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+      "execution_tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+      "interpreted_status": "EXACT_FMT_EXIT_0_THEN_MAINTENANCE_PRECONDITION_FAILED",
+      "format_command": [
+        "just",
+        "fmt"
+      ],
+      "format_returncode": 0,
+      "format_postimages": [],
+      "format_inventory_before": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+      "format_inventory_after": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+      "source_ready": {
+        "head": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "status": "",
+        "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+        "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+        "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b"
+      },
+      "maintenance_result": {
+        "after": {
+          "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+          "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+          "dirty": "",
+          "file_count": 14749,
+          "inventory_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+          "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"
+        },
+        "before": null,
+        "error": "FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-c6a61dfb57cb-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz'",
+        "exit_code": 1,
+        "finished_at": "2026-11-12T09:54:55.517006+00:00",
+        "kind": "exact-source-fix-only",
+        "postimages": {
+          "file_count": 0,
+          "patch_bytes": 0,
+          "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "qualification": false,
+        "request_key": "learn-037c-native-maintenance-8faf92e260e1-v1",
+        "source_sha": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "source_tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "started_at": "2026-11-12T09:54:52.329919+00:00",
+        "status": "failed"
+      },
+      "original_terminal_exit_code": 1,
+      "terminal_output_complete": true,
+      "failure_classification": "FileNotFoundError for the prior ce434 V8 archive, before cargo launch; not a Rust compile failure.",
+      "maintenance_original_before_snapshot": null,
+      "maintenance_source_after": {
+        "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+        "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+        "dirty": "",
+        "inventory_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+        "file_count": 14749
+      },
+      "native_test_pass": false,
+      "later_retry": "Own-pin dependency recovery/new attempt pending; no later result is implied by this preserved failed attempt.",
+      "tracked_path_inventory_count": 14749,
+      "all_tracked_paths_materialized_claimed": false
+    }
+  ],
+  "pending_acceptance": [
+    "Complete source and complete caller gates on exact clean 8faf common source; no new complete-gate pass is included here.",
+    "Resolve the original V8 input precondition and retain a separate actual new maintenance/native attempt; no Rust compile or native pass is inferred from format or source checks.",
+    "Original scoped native acceptance remains the original five crates and original 32 Root parents, with fresh exact-name JUnit coverage.",
+    "Deliver and consume actual ordinary A published-task and final Root ten-role/exact-purpose authority capabilities, then prove ordinary NoUpdate plus daemon/Root cold recovery.",
+    "Positive ordinary Adopt and multi-generation experiments remain after the complete negative path and recovery evidence."
+  ],
+  "artifact_policy": {
+    "original_records_unchanged": true,
+    "initial_index_archived": "history/ARTIFACTS.initial.json",
+    "source_file_copies_added": 0,
+    "physical_index": "ARTIFACTS.json",
+    "index_self_excluded": true,
+    "scope": "Complete raw logs, original patches/manifests and receipts; no source directory copies, full source-index/cache or duplicate source payloads."
+  },
+  "packaging_activity": {
+    "h_calls": 0,
+    "rust_native_runs": 0,
+    "published": false,
+    "writes_limited_to_this_package": true
+  }
+}
