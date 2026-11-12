@@ -3,7 +3,7 @@
 from dataclasses import replace
 import unittest
 
-from .cost_ledger import CostItem, CostReceipt, summarize_costs
+from .cost_ledger import CostItem, CostReceipt, snapshot_cost_inputs, summarize_costs
 
 
 RATES = dict(
@@ -155,3 +155,34 @@ class CostLedgerTests(unittest.TestCase):
         self.assertFalse(report["full_physical_cost_complete"])
         with self.assertRaises(ValueError):
             receipt(first, status="not_run")
+
+    def test_mutated_frozen_receipts_cannot_change_cost_or_bypass_validation(self):
+        for name, value in (
+            ("process_cpu_seconds", -1000.0),
+            ("external_charge", float("nan")),
+            ("started_ns", 2 * 10**9),
+            ("status", "not_run"),
+            ("energy_joules", None),
+            ("published", 1),
+            ("item", object()),
+        ):
+            with self.subTest(field=name):
+                row = receipt()
+                object.__setattr__(row, name, value)
+                with self.assertRaises(ValueError):
+                    summarize_costs([item()], [row], RATES)
+        spec = item()
+        object.__setattr__(spec, "resource_id", "x" * 257)
+        with self.assertRaises(ValueError):
+            summarize_costs([spec], [], RATES)
+
+    def test_cost_snapshot_detaches_nested_item_and_gap_aliases(self):
+        row = receipt()
+        gaps = ["declared measurement limit"]
+        object.__setattr__(row, "measurement_gaps", gaps)
+        roster, rows = snapshot_cost_inputs([row.item], [row])
+        expected = summarize_costs(roster, rows, RATES)
+        gaps.append("changed later")
+        object.__setattr__(row.item, "stage", "changed later")
+        object.__setattr__(row, "process_cpu_seconds", -1000.0)
+        self.assertEqual(summarize_costs(roster, rows, RATES), expected)

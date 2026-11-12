@@ -5,7 +5,7 @@ same parent/child CPU twice under different IDs. Hashes bind supplied receipts,
 not their truth. Peak RSS is a maximum, never an additive resource cost.
 """
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 import math
 
 from .contracts import _require, _sha, _text, digest
@@ -111,6 +111,40 @@ class CostReceipt:
         return (self.finished_ns - self.started_ns) / 1e9
 
 
+def snapshot_cost_inputs(roster, receipts):
+    """Revalidate and detach bounded input records before reading their charges.
+
+    A frozen dataclass prevents ordinary assignment; it does not authenticate
+    objects supplied by another caller. Reconstruct exact fields through the
+    original constructors without invoking arbitrary deep-copy callbacks.
+    """
+    _require(
+        type(roster) in (tuple, list) and 0 < len(roster) <= 10000,
+        "bounded cost roster required",
+    )
+    _require(all(type(row) is CostItem for row in roster), "invalid cost roster")
+    copied_roster = tuple(
+        CostItem(**{field.name: getattr(row, field.name) for field in fields(CostItem)})
+        for row in roster
+    )
+    _require(
+        type(receipts) in (tuple, list) and len(receipts) <= len(copied_roster),
+        "invalid receipt array",
+    )
+    copied_receipts = []
+    for row in receipts:
+        _require(
+            type(row) is CostReceipt and type(row.item) is CostItem,
+            "invalid cost receipt",
+        )
+        values = {field.name: getattr(row, field.name) for field in fields(CostReceipt)}
+        values["item"] = CostItem(
+            **{field.name: getattr(row.item, field.name) for field in fields(CostItem)}
+        )
+        copied_receipts.append(CostReceipt(**values))
+    return copied_roster, tuple(copied_receipts)
+
+
 def summarize_costs(roster, receipts, rates=None):
     """Validate frozen item bindings and aggregate declared exclusive charges.
 
@@ -121,18 +155,9 @@ def summarize_costs(roster, receipts, rates=None):
     Rates, when supplied, must name all four metrics in one declared utility unit.
     A zero rate is an explicit pricing assumption, not evidence of free work.
     """
-    _require(
-        type(roster) in (tuple, list) and 0 < len(roster) <= 10000,
-        "bounded cost roster required",
-    )
-    _require(all(type(row) is CostItem for row in roster), "invalid cost roster")
+    roster, receipts = snapshot_cost_inputs(roster, receipts)
     planned = {row.operation_id: row for row in roster}
     _require(len(planned) == len(roster), "duplicate planned cost item")
-    _require(
-        type(receipts) in (tuple, list) and len(receipts) <= len(roster),
-        "invalid receipt array",
-    )
-    _require(all(type(row) is CostReceipt for row in receipts), "invalid cost receipt")
     observed = {row.item.operation_id: row for row in receipts}
     _require(len(observed) == len(receipts), "duplicate cost receipt")
     _require(
