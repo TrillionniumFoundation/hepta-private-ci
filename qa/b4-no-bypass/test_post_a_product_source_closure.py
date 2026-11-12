@@ -191,7 +191,7 @@ class PostAProductSourceTests(unittest.TestCase):
             "runtime.post_a_submitter.get_mut()", "let plan = self.service.with_learning_profile(",
             "HistoricalTaskReadProfileV1::require_original_context(", "expected != initial",
             "post_a::PostALearningRuntime::retain_original_plan(", "self.config.peer_uid",
-            "self.config.peer_gid", "post_a_worker::prepare(learning_handoff, model_handoff, root_pidfd, publication.map(|(_, handoff)| handoff))?",
+            "self.config.peer_gid", "post_a_worker::prepare(learning_handoff, model_handoff, root_pidfd, publication.map(|(_, handoff)| handoff),)?",
             "runtime.post_a = Some(plan)", "runtime.post_a_worker = Some(worker)"))
         for marker in ("runtime.metadata.require_metadata_unchanged()?", "RootHistoricalLearningTrustV1::revalidate("):
             for occurrence in (0, 1):

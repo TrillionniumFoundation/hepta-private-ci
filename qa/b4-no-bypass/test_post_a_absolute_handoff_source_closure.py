@@ -43,7 +43,7 @@ class PostAAbsoluteHandoffSourceTests(unittest.TestCase):
     def test_model_consumer_keeps_actual_files_context_peer_and_exact_end(self):
         self.check_markers(AGENT + "root_production_q24_model_inputs.rs", "fn connect_until(", (
             "remaining(end)? > Duration::from_secs(300)", "bundle.root != original.root",
-            "learning.q24_model_scope(identity)?", "bundle.profile.require_context(",
+            "learning.q24_model_scope(identity)?", "LiveFactoryProfile::require_context(",
             "bundle.profile.require_files(", "validate_lane_paths(", "UnixStream::connect(",
             "RootObservationStream::from_stream_until(", "AgentdRootQ24ModelFactoryV1::from_original_handoff("))
 
