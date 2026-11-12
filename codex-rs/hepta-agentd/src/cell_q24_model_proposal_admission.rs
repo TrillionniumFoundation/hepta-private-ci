@@ -1,16 +1,19 @@
 //! Sealed material admission; original stage signatures are checked afresh.
 
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
-use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
-use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_artifacts::LearningProposalDispositionV1;
-use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 
 use super::*;
+
+#[path = "cell_q24_model_projection.rs"]
+mod projection;
+#[cfg(target_os = "linux")]
+pub(crate) use projection::RootQ24ModelProjectionDataV1;
+#[cfg(target_os = "linux")]
+pub(crate) use projection::project_original_root_model;
 
 pub(super) fn owner_binding<T: AnchorWitnessStore>(
     trainer: &mut CellQ24TrainingOwnerV1<T>,
@@ -33,11 +36,19 @@ fn original_binding(
     dataset_cut: &LearningIterationSnapshotV1,
     original: &crate::CellQ24TrainingObservationV2,
 ) -> Digest32 {
+    model_owner_binding(
+        dataset_cut.head_digest,
+        original.scope_binding(),
+        original.evidence_digest(),
+    )
+}
+
+fn model_owner_binding(dataset_head: Digest32, scope: Digest32, training: Digest32) -> Digest32 {
     Digest32::of_parts(&[
         b"hepta.cell.q24.model-proposal-owner.v1\0",
-        dataset_cut.head_digest.as_array(),
-        original.scope_binding().as_array(),
-        original.evidence_digest().as_array(),
+        dataset_head.as_array(),
+        scope.as_array(),
+        training.as_array(),
     ])
 }
 
@@ -55,8 +66,7 @@ pub(super) fn validate<T: AnchorWitnessStore, S: FinalHoldoutCasStoreV1>(
     inputs: &CellQ24ModelProposalInputsV1<'_, S>,
     now: u64,
 ) -> Result<Admission, Error> {
-    let mut coordinator =
-        LearningIterationCoordinatorV1::from_snapshot(inputs.training_cut.clone())?;
+    let coordinator = LearningIterationCoordinatorV1::from_snapshot(inputs.training_cut.clone())?;
     let cut = coordinator.snapshot();
     let original = CellQ24TrainingOwnerV1::read_learning_observation(trainer, dataset_cut)?;
     let training = cut
@@ -76,93 +86,7 @@ pub(super) fn validate<T: AnchorWitnessStore, S: FinalHoldoutCasStoreV1>(
     {
         return Err(Error::Binding("exact original Training extension"));
     }
-    let verified = inputs.request.verifier.verify(
-        LearningEvidenceRoleV1::Generator,
-        inputs.training_attestation,
-        &learning_iteration_receipt_signing_bytes_v1(training)?,
-        now,
-    )?;
-    if verified.principal().principal_id != cut.owners.trainer
-        || verified.principal() != &inputs.qualification.product().generator
-        || verified.trust_digest() != cut.owners.evidence_trust_digest
-        || verified.objective_digest() != cut.request.envelope.objective_digest
-    {
-        return Err(Error::Binding("original Training signer"));
-    }
-    let candidate = coordinator
-        .candidate()
-        .ok_or(Error::Binding("trained candidate"))?;
-    let comparison = inputs.evaluation.plan().record();
-    for (bundle, manifest) in [
-        (candidate, &comparison.candidate.manifest),
-        (
-            &cut.request.selected_bundle,
-            &comparison.fixed_expert.manifest,
-        ),
-    ] {
-        crate::cell_composed_q24::validate_manifest(bundle, manifest)
-            .map_err(|_| Error::Binding("complete Q24 generation manifest"))?;
-    }
-    let candidate = candidate.digest().map_err(LearningIterationError::from)?;
-    let timing = match &inputs.request.timing {
-        ProductTimingEvidenceV1::Qualification => ProductTimingEvidenceV1::Qualification,
-        ProductTimingEvidenceV1::SystemLongitudinal {
-            timing,
-            minimum_window_micros,
-        } => ProductTimingEvidenceV1::SystemLongitudinal {
-            timing,
-            minimum_window_micros: *minimum_window_micros,
-        },
-    };
-    let request = CellEvaluationQualificationRequestV1 {
-        context: inputs.request.context,
-        evidence: inputs.request.evidence,
-        timing,
-        verifier: inputs.request.verifier,
-        now,
-    };
-    let evaluation = crate::prepare_cell_learning_evaluation_v1(
-        inputs.runner,
-        cut,
-        inputs.evaluation,
-        inputs.qualification,
-        &request,
-    )?;
-    if !matches!(
-        evaluation.observation,
-        LearningIterationObservationV1::Evaluation {
-            disposition: LearningEvaluationDispositionV1::Qualified,
-            ..
-        }
-    ) {
-        return Err(Error::Binding("NoUpdate has no model proposal"));
-    }
-    // Complete canonical manifest payloads, both evaluated journals and the
-    // original training observation enter this record, not only a model name.
-    let material = Digest32::of_parts(&[
-        b"hepta.cell.q24.model-proposal-material.v1\0",
-        original.evidence_digest().as_array(),
-        &serde_json::to_vec(&comparison.candidate.manifest)
-            .map_err(|_| Error::Binding("candidate manifest encoding"))?,
-        &serde_json::to_vec(&comparison.fixed_expert.manifest)
-            .map_err(|_| Error::Binding("fixed manifest encoding"))?,
-        comparison.candidate.journal_cut.as_array(),
-        comparison.fixed_expert.journal_cut.as_array(),
-        inputs
-            .evaluation
-            .plan()
-            .product_plan()
-            .frozen_plan
-            .plan_digest
-            .as_array(),
-        inputs.qualification.product().evidence_digest.as_array(),
-    ]);
-    coordinator.record(evaluation.clone(), evaluation.observed_unix_seconds)?;
-    Ok(Admission {
-        cut: coordinator.snapshot().clone(),
-        candidate,
-        material,
-    })
+    projection::project_original_qualified_model(inputs, now)
 }
 
 impl Admission {

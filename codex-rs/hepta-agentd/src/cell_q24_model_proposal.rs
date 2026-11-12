@@ -39,6 +39,10 @@ use crate::CellQ24TrainingOwnerV1;
 #[path = "cell_q24_model_proposal_admission.rs"]
 mod admission;
 use admission::Admission;
+#[cfg(target_os = "linux")]
+pub(crate) use admission::RootQ24ModelProjectionDataV1;
+#[cfg(target_os = "linux")]
+pub(crate) use admission::project_original_root_model;
 
 /// Derive the factory's one-time material from the original owners, including
 /// full manifests and qualified Evaluation. This is data, never a Root permit.
