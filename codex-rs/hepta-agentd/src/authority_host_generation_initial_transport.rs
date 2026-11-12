@@ -22,11 +22,13 @@ pub(crate) struct Request {
     pub(crate) command: Command,
 }
 
+// Empty structs enforce unknown-field rejection for zero-payload capture
+// commands; internally tagged Serde unit variants ignore extra fields.
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum Command {
-    CaptureSource,
-    CaptureAck,
+    CaptureSource {},
+    CaptureAck {},
     Observe,
     Prepare {
         expected: String,
@@ -125,7 +127,7 @@ impl HostAuthorityService {
                         let before = read_current(slot, current.as_ref())?;
                         let mut after = before.clone();
                         match &request.command {
-                            Command::CaptureSource | Command::CaptureAck => {
+                            Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
                                 ));
@@ -191,7 +193,7 @@ impl HostAuthorityService {
                         // are known. The original initializer itself rejects any
                         // existing CURRENT; absence is never inferred from an error.
                         match &request.command {
-                            Command::CaptureSource | Command::CaptureAck => {
+                            Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
                                 ));
@@ -267,7 +269,7 @@ impl HostAuthorityService {
                             .observed_unix_ms;
                         slot.require_selection(after_time)?;
                         match &request.command {
-                            Command::CaptureSource | Command::CaptureAck => {
+                            Command::CaptureSource {} | Command::CaptureAck {} => {
                                 return Err(io::Error::other(
                                     "source capture requires its dedicated terminal purpose",
                                 ));

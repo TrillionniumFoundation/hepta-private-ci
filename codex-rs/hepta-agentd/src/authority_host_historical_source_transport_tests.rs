@@ -25,10 +25,16 @@ fn original_source_capture_commands_reject_peer_chosen_material() -> anyhow::Res
         ] {
             let mut changed = request.clone();
             changed["command"][name] = value.clone();
-            assert!(serde_json::from_value::<Request>(changed).is_err());
+            assert!(
+                serde_json::from_value::<Request>(changed).is_err(),
+                "command {kind} accepted unexpected field {name}"
+            );
             let mut changed = request.clone();
             changed[name] = value;
-            assert!(serde_json::from_value::<Request>(changed).is_err());
+            assert!(
+                serde_json::from_value::<Request>(changed).is_err(),
+                "request for {kind} accepted unexpected field {name}"
+            );
         }
     }
     Ok(())

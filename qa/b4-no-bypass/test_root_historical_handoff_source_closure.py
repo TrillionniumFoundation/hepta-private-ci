@@ -117,14 +117,14 @@ class RootHistoricalHandoffClosureTests(unittest.TestCase):
         for variant in ("CaptureSource", "CaptureAck"):
             with self.subTest(variant=variant):
                 self.check_mutation(INITIAL, lambda source: source.replace(
-                    "    " + variant + ",", "    " + variant + " { pin: String },", 1
+                    "    " + variant + " {},", "    " + variant + " { pin: String },", 1
                 ))
         self.rejects_removal(TRANSPORT, "exchange", (
             "self.begun = true", "if self.acknowledged", "request.schema != 1",
             "request.purpose != SOURCE_CAPTURE_PURPOSE", "request.profile != self.slot.profile.binding",
             "request.request_id != *sequence", ".checked_add(1)", ".try_lock()", ".take()",
-            "Command::CaptureSource if self.receipt.is_none()",
-            "Command::CaptureAck if self.receipt.is_some()",
+            "Command::CaptureSource {} if self.receipt.is_none()",
+            "Command::CaptureAck {} if self.receipt.is_some()",
         ))
 
     def test_capture_wait_occurs_after_original_context_has_returned(self):
