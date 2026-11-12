@@ -1,0 +1,76 @@
+name: HCSN continuous-adjoint Torch gate
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_adjoint_torch/**
+      - qualification/hcsn_initial_adjoint/solver.py
+      - qualification/hcsn_joint_dde/model.py
+      - qualification/hcsn_boundary_audit/refractory_transport.py
+      - qualification/hcsn_boundary_audit/spatial_generator.py
+      - qualification/hcsn_graded/model.py
+      - qualification/hcsn_graded/spatial.py
+      - .github/workflows/hcsn-continuous-adjoint-torch.yml
+permissions:
+  contents: read
+jobs:
+  first-order-adjoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - run: python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+      - name: Bind exact precommitted probe source
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          request = json.loads(Path('qualification/hcsn_adjoint_torch/TORCH-REQUEST.json').read_text())
+          head = subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          assert head == os.environ['CANDIDATE_COMMIT']
+          source = dict(source_commit=head,request_identity=request['identity'],source_sha256={name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in request['source_paths']},prefrozen_inventory_sha256=hashlib.sha256(Path('qualification/hcsn_adjoint_torch/TORCH-SOURCE.json').read_bytes()).hexdigest())
+          assert source['source_sha256'] == json.loads(Path('qualification/hcsn_adjoint_torch/TORCH-SOURCE.json').read_text())['source_sha256']
+          Path(os.environ['RUNNER_TEMP'],'adjoint-torch-source.json').write_text(json.dumps(source,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(source,sort_keys=True))
+          PY
+      - name: Run one bounded real Torch probe with complete process cost
+        run: |
+          python - <<'PY'
+          import json, os, resource, subprocess, sys, time
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'adjoint-torch'
+          root.mkdir()
+          command=[sys.executable,'-B','-m','qualification.hcsn_adjoint_torch.native_probe','--source-manifest',str(Path(os.environ['RUNNER_TEMP'])/'adjoint-torch-source.json'),'--baseline-archive','qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz','--output',str(root/'native')]
+          wall,cpu=time.perf_counter(),time.process_time()
+          before=resource.getrusage(resource.RUSAGE_CHILDREN)
+          with (root/'native.stdout').open('wb') as stdout,(root/'native.stderr').open('wb') as stderr:
+              result=subprocess.run(command,stdout=stdout,stderr=stderr)
+          after=resource.getrusage(resource.RUSAGE_CHILDREN)
+          cost=dict(source_commit=os.environ['CANDIDATE_COMMIT'],exit_code=result.returncode,full_child_process_wall_seconds=time.perf_counter()-wall,full_child_process_cpu_seconds=(after.ru_utime+after.ru_stime)-(before.ru_utime+before.ru_stime),wrapper_cpu_seconds=time.process_time()-cpu,child_process_peak_rss_kib=after.ru_maxrss,includes_python_torch_import_and_source_admission=True,optimizer_updates=0)
+          (root/'WRAPPER-COST.json').write_text(json.dumps(cost,indent=2,sort_keys=True)+'\n')
+          print((root/'native.stdout').read_text())
+          print((root/'native.stderr').read_text(),file=sys.stderr)
+          print(json.dumps(cost,sort_keys=True))
+          raise SystemExit(result.returncode)
+          PY
+      - run: git diff --exit-code && git diff --cached --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: continuous-adjoint-torch-originals
+          path: |
+            ${{ runner.temp }}/adjoint-torch
+            ${{ runner.temp }}/adjoint-torch-source.json
+          if-no-files-found: error
