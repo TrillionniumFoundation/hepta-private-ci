@@ -27,6 +27,7 @@ def analyze(
 
     This never executes actors, fits weights, releases sealed roles or fills
     missing outcomes. The source-equal arithmetic describes this finite cohort.
+    A complete collection still does not perform an owner evaluation.
     """
     rows, blocked = [], None
     try:
@@ -63,7 +64,9 @@ def analyze(
         "full_physical_cost_observed": False,
         "new_source_qualification": False,
         "policy_efficacy_proved": False,
-        "decision": "NoUpdate",
+        "decision": "HOLD",
+        "owner_evaluation": "not_evaluated",
+        "owner_decision": None,
         "scope": "matched collection of forced macros on registered research sources; not prospective six-policy efficacy",
     }
     if blocked:

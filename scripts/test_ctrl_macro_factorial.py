@@ -5,6 +5,7 @@ from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
 from types import SimpleNamespace
+import runpy
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -236,7 +237,51 @@ class FactorialContracts(unittest.TestCase):
             report["cohort"]["factorial"]["quality"]["source_equal_interaction"]
         )
         self.assertFalse(report["recursive_ndu_qualified"])
-        self.assertEqual(report["decision"], "NoUpdate")
+        for state in (report, report["cohort"]):
+            self.assertEqual(
+                (
+                    state["decision"],
+                    state["owner_evaluation"],
+                    state["owner_decision"],
+                ),
+                ("HOLD", "not_evaluated", None),
+            )
+
+    def test_summary_keeps_declared_owner_results_unevaluated(self):
+        self.freeze()
+        self.prepare_unstarted_executions()
+        factorial.reconcile(self.args)
+        report = study.read(Path(self.args.output) / "REPORT.json")
+        summarize = runpy.run_path(
+            str(
+                Path(self.repository)
+                / "qualification/ctrl-real-comparison-20261112/analysis"
+                / "summarize_ctrl_factorial.py"
+            )
+        )["summarize"]
+        for declared in (None, "NoUpdate", "Adopt"):
+            supplied = deepcopy(report)
+            for state in (supplied, supplied["cohort"]):
+                state["decision"] = declared or "NoUpdate"
+                if declared is None:
+                    del state["owner_evaluation"]
+                    del state["owner_decision"]
+                else:
+                    state.update(owner_evaluation="completed", owner_decision=declared)
+            original = deepcopy(supplied)
+            with self.subTest(declared=declared):
+                summary = summarize(supplied)
+                self.assertEqual(
+                    (
+                        summary["limits"]["decision"],
+                        summary["limits"]["owner_evaluation"],
+                        summary["limits"]["owner_decision"],
+                    ),
+                    ("HOLD", "not_evaluated", None),
+                )
+                self.assertTrue(summary["stored_mean_audit"]["all_match"])
+                self.assertEqual(summary["denominators"]["statuses"]["NOT_STARTED"], 24)
+                self.assertEqual(supplied, original)
 
     def test_receipt_rejects_aliases_nonparameters_and_false_optimizer_steps(self):
         loaded = self.loaded()

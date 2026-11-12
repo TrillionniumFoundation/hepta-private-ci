@@ -80,6 +80,7 @@ def equivalent(a, b):
 
 
 def summarize(report, *, allow_fixtures=False):
+    """Audit arithmetic; declared decisions never grant owner authority."""
     if report.get("schema") != "ctrl.content-control-factorial-report.v1":
         raise ValueError("Expected the retained factorial REPORT.json")
     plan, stored = report["plan"], report["cohort"]
@@ -474,7 +475,9 @@ def summarize(report, *, allow_fixtures=False):
             "recursive_ndu_qualified": False,
             "production_admission": False,
             "fixture_rows": fixture_rows,
-            "decision": "NoUpdate",
+            "decision": "HOLD",
+            "owner_evaluation": "not_evaluated",
+            "owner_decision": None,
         },
     }
 
