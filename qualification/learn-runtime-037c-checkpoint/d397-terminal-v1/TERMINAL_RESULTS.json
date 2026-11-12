@@ -1,0 +1,35 @@
+{
+  "source": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "tree": "57558558841da4a3209164d0033b903a553205d6",
+  "parent": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "source_gate": {
+    "passed": 482,
+    "failed": 0,
+    "errors": 0,
+    "mutations_rejected": 681,
+    "actual_exit": 0,
+    "tests_seconds": 316.646,
+    "inputs": 15218,
+    "all_inputs_unchanged": true,
+    "log_sha256": "fc9122bc4c3b0f4047a10245ddcaa0d9f944d1ae7cef0e738e785707cc845cf8"
+  },
+  "maintenance": {
+    "just_fmt_exit": 0,
+    "fmt_changes": 0,
+    "just_fix_exit": 0,
+    "compiler_errors": 0,
+    "postimages": 1,
+    "postimage_detail": "Remove exactly one unused pretty_assertions::assert_ne import from a test support file; every other byte is unchanged",
+    "exact_source_clean_pass": false,
+    "log_sha256": "7da59d108bcabb0fc565b92edf025552ac625a57227661c15d0a4f073d0480b2"
+  },
+  "qualification": {
+    "ordinary_evaluated_no_update": 0,
+    "ordinary_adopt": 0,
+    "whole_daemon_root_cold_recovery": 0,
+    "multigeneration": 0
+  },
+  "native_tests_on_d397": "not run",
+  "next": "Include the actual one-line clippy postimage in the next reviewed source identity; combine independently reviewed B/C components before exact source/native/caller verification.",
+  "retention": "All previous pending/failed records remain unchanged in parent evidence commits."
+}

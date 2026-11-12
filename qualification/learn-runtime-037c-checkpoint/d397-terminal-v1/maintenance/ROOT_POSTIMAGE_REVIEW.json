@@ -1,0 +1,38 @@
+{
+  "source": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "parent_git_blob": "453053d54e8934c58f37a1b93a2523250fbc1457",
+  "change": "Remove exactly one unused pretty_assertions::assert_ne import from a test support file; every other byte is unchanged",
+  "production_changed": false,
+  "test_names_or_assertions_changed": false,
+  "budgets_or_guards_changed": false,
+  "strict_replay": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/root-maintenance-d397-v1/originals/maintenance.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/tmp/hepta-learn-037c-20261112/root-maintenance-d397-v1/originals/maintenance.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "after_sha256": "2664a6cf45deaca049b58eff50a369c8e122c4d50ba22b010ceb65d4e48664c2",
+  "after_git_blob": "e0bd5f09589c8487fb59b207609a7e7b5f86dc70",
+  "actual_maintenance_exit": 0,
+  "clean_exact_source_maintenance": false,
+  "native_tests_run": false
+}

@@ -1,0 +1,88 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs
+index 92ef6051b12e18aa0ba4125bfeb7c8f4cf663ef0..fcf8819ba26b451c0d5dd978c375dec9b2312838 100644
+--- a/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs
+@@ -17,8 +17,7 @@
+ pub(crate) fn retained_publication_intent(
+     task: &crate::PublishedCircuitFeatureTaskV1,
+ ) -> anyhow::Result<Digest32> {
+-    let crate::circuit_feature_current::Publication::Update { original, .. } =
+-        &task.0.publication
++    let crate::circuit_feature_current::Publication::Update { original, .. } = &task.0.publication
+     else {
+         anyhow::bail!("actual retained Control publication");
+     };
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs
+index dab84eb3ccf9cecd0a9247b7eb3eb532318a81a9..b7525a0ebac3c670a3738a82a4fd6392732e38b3 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs
+@@ -1,11 +1,11 @@
+ //! The same real D/T/B drives Version preparation, one original Root issuer
+ //! request, and the existing C factory. UID-0 signing remains an explicit test.
+ use super::*;
+-use pretty_assertions::assert_eq;
+-use pretty_assertions::assert_ne;
+ use crate::AgentdUnixFinalUseGrantProvider;
+ use codex_hepta_contracts::FinalUseBinding;
+ use codex_hepta_contracts::SignedFinalUseGrant;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
+ use std::io::Read;
+ use std::io::Write;
+ use std::os::unix::net::UnixStream;
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_material_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_material_support_tests.rs
+index 0a94b93076ec426eaa1d7413fa0f40d3b0d6a166..5572760ab93912eb42c8f82a9368d3f0ab1b0923 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_material_support_tests.rs
+@@ -2,7 +2,6 @@
+ //! same-process transport are supplied; no receipt or command reply is made.
+ 
+ use super::*;
+-use pretty_assertions::assert_eq;
+ use crate::OriginalCellQ24DatasetCommandReadbackV1;
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+ use crate::OriginalCellQ24MaterialEvidenceRoleV1;
+@@ -11,6 +10,7 @@
+ use crate::OriginalCellQ24MaterialReceiptOwnersV1;
+ use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
+ use ed25519_dalek::SigningKey;
++use pretty_assertions::assert_eq;
+ 
+ pub(super) struct OriginalDataset {
+     pub(super) config: OriginalCellQ24MaterialReceiptConfigV1,
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
+index 5cc8329b284e0814a47416ee38a8deb71950f071..9e39b7bcb6781a40752ba07c8676faa7ee8ff7f5 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
+@@ -1,10 +1,10 @@
+ //! Cold Version retains the actual four-cut and held C owners. A Fresh input
+ //! context cannot restore execution or produce another FinalUse request.
+ use super::*;
+-use pretty_assertions::assert_eq;
+ use crate::OriginalCircuitEvaluatedVersionRecoveryV1;
+ use crate::circuit_feature_current::original_learning_read_fixture as reads;
+ use crate::circuit_feature_current::original_readiness_fixture;
++use pretty_assertions::assert_eq;
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ async fn evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness()
+diff --git a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_command_tests.rs b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_command_tests.rs
+index e2d2ce614aa8c17ef7109a905aff228ea7b48874..c88492e7a2418f5db670b5e78c3eb69b8a42d58c 100644
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_command_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_command_tests.rs
+@@ -1,13 +1,13 @@
+ //! Actual installed C and sealed S/C command owners share Version's fourth
+ //! original Trainer session. Nothing returns or reconstructs T/B clients.
+ use super::*;
+-use pretty_assertions::assert_eq;
+-use pretty_assertions::assert_ne;
+ use crate::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
+ use crate::OriginalCircuitNextUseReceiptOwnerV1;
+ use crate::circuit_feature_current::original_learning_read_fixture as reads;
+ use crate::learning_iteration_evidence_client::evaluated_next_use_command_test_support as observers;
+ use crate::learning_iteration_evidence_client::evaluated_selection_command_test_support as selectors;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
+ 
+ pub(super) async fn run_shared_s_c(
+     f: &PublicationFixture,

@@ -1,0 +1,24 @@
+import pathlib,json,hashlib,gzip,base64,os
+root=pathlib.Path('/home/qian-qi/hepta-learn-037c-evidence/maintenance-d3977d9a1bed-v1')
+def read(name):
+ p=root/name
+ assert p.is_file() and not p.is_symlink()
+ x=p.read_bytes()
+ assert p.read_bytes()==x
+ return x
+rraw=read('result.json')
+assert len(rraw)==2776 and hashlib.sha256(rraw).hexdigest()=='231cb54bbfdd20d598f00d81cdd0994f340181c71d8a4098155c98de5ba931f1'
+r=json.loads(rraw)
+assert r['source_sha']=='d3977d9a1bed3e89952c576c45660b04ea674faf' and r['exit_code']==0
+assert r['execution']['actual_process_exit_observed'] and r['execution']['returncode']==0
+assert r['postimages']['file_count']==1
+jraw=read('postimages.json');j=json.loads(jraw)
+assert len(j['files'])==1 and j['patch_bytes']==763 and j['patch_sha256']=='c3f8c662c4bb3249aa4033f91a4b2e8f37de7d1fca14c9e59f9747c8e8338064'
+item=j['files'][0]
+assert item['path']=='codex-rs/hepta-agentd/src/circuit_evaluated_version_support_tests.rs'
+specs=[('result.json',len(rraw),hashlib.sha256(rraw).hexdigest()),('just-fix.raw.log',98016,'7da59d108bcabb0fc565b92edf025552ac625a57227661c15d0a4f073d0480b2'),('just-fmt.raw.log',73,'b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752'),('maintenance.patch',763,'c3f8c662c4bb3249aa4033f91a4b2e8f37de7d1fca14c9e59f9747c8e8338064'),('postimages.json',len(jraw),hashlib.sha256(jraw).hexdigest()),('postimages/'+item['path'],item['bytes'],item['sha256'])]
+for name,n,h in specs:
+ x=read(name);assert len(x)==n and hashlib.sha256(x).hexdigest()==h
+ z=gzip.compress(x,mtime=0)
+ assert read(name)==x
+ print(json.dumps({'name':name,'path':str(root/name),'original_bytes':len(x),'original_sha256':h,'gzip_bytes':len(z),'gzip_sha256':hashlib.sha256(z).hexdigest(),'data_base64':base64.b64encode(z).decode(),'original_unchanged':True}),flush=True)

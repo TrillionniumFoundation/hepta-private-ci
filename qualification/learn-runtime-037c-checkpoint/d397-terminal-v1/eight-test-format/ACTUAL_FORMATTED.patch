@@ -1,0 +1,123 @@
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs
+@@ -384,7 +384,14 @@
+                 error,
+                 CandidateError::Command(CommandError::Transport(_))
+             )),
+-            Fault::Original => unreachable!(),
++            Fault::Original
++            | Fault::WrongCurrentNonce
++            | Fault::WrongCurrentPurpose
++            | Fault::WrongCurrentCompletion
++            | Fault::WrongCurrentHeads
++            | Fault::HoldCurrent => {
++                unreachable!("only the six original page faults are exercised in this loop")
++            }
+         }
+         assert!(matches!(
+             client.readback().await,
+--- a/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs
+@@ -13,6 +13,16 @@
+ use super::super::OriginalCircuitLearningReadOwnerV1;
+ use super::super::fixture;
+ use super::*;
++
++pub(crate) fn retained_publication_intent(
++    task: &crate::PublishedCircuitFeatureTaskV1,
++) -> anyhow::Result<Digest32> {
++    let crate::circuit_feature_current::Publication::Update { original, .. } = &task.0.publication
++    else {
++        anyhow::bail!("actual retained Control publication");
++    };
++    Ok(original.intent_digest())
++}
+ 
+ pub(crate) fn client(
+     context: Context,
+@@ -30,7 +40,7 @@
+     } = original;
+     Ok((
+         OriginalCircuitCompletionReadinessClientV1 {
+-            context,
++            context: context.legacy()?.clone(),
+             binding,
+             channel,
+             retained,
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_tests.rs
+@@ -1,5 +1,7 @@
+ //! The actual C owner distinguishes unresolved work from irreversible failure.
+ use super::*;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ async fn evaluated_readiness_waits_for_actual_c_and_preserves_original_selection()
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_capacity_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_capacity_tests.rs
+@@ -2,6 +2,7 @@
+ //! same Trainer semaphore. This is an explicit same-process transport fixture,
+ //! not a fifth permit, second Trainer, or ordinary deployment proof.
+ use super::*;
++use pretty_assertions::assert_eq;
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ async fn evaluated_version_mixed_trainer_purposes_share_four_sessions_and_refuse_fifth()
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs
+@@ -4,6 +4,8 @@
+ use crate::AgentdUnixFinalUseGrantProvider;
+ use codex_hepta_contracts::FinalUseBinding;
+ use codex_hepta_contracts::SignedFinalUseGrant;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
+ use std::io::Read;
+ use std::io::Write;
+ use std::os::unix::net::UnixStream;
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_material_support_tests.rs
+@@ -10,6 +10,7 @@
+ use crate::OriginalCellQ24MaterialReceiptOwnersV1;
+ use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
+ use ed25519_dalek::SigningKey;
++use pretty_assertions::assert_eq;
+ 
+ pub(super) struct OriginalDataset {
+     pub(super) config: OriginalCellQ24MaterialReceiptConfigV1,
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
+@@ -3,6 +3,8 @@
+ use super::*;
+ use crate::OriginalCircuitEvaluatedVersionRecoveryV1;
+ use crate::circuit_feature_current::original_learning_read_fixture as reads;
++use crate::circuit_feature_current::original_readiness_fixture;
++use pretty_assertions::assert_eq;
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+ async fn evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness()
+@@ -19,12 +21,7 @@
+     let (training_connection, evaluation_connection, peers) =
+         initial_version_connections(&f, &config)?;
+     let (mut c, files, selected) = Box::pin(published_and_selected(&mut f)).await?;
+-    let crate::circuit_feature_current::Publication::Update { original, .. } =
+-        &c.retirement.0.publication
+-    else {
+-        anyhow::bail!("actual retained Control publication");
+-    };
+-    let intent = original.intent_digest();
++    let intent = original_readiness_fixture::retained_publication_intent(&c.retirement)?;
+     let version = &f.host.original.version;
+     let artifact_selection = version.retained_publication_selection()?;
+     let host = Arc::new(VersionHost::recover_from_original_evaluated_owners(
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_command_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_command_tests.rs
+@@ -6,6 +6,8 @@
+ use crate::circuit_feature_current::original_learning_read_fixture as reads;
+ use crate::learning_iteration_evidence_client::evaluated_next_use_command_test_support as observers;
+ use crate::learning_iteration_evidence_client::evaluated_selection_command_test_support as selectors;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
+ 
+ pub(super) async fn run_shared_s_c(
+     f: &PublicationFixture,

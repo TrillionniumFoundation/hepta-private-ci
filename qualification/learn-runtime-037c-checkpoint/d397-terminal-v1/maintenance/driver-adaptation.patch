@@ -1,0 +1,58 @@
+--- maintenance57
++++ maintenance-d397
+@@ -18,7 +18,7 @@
+ parser.add_argument("--records", required=True)
+ parser.add_argument("--request-key", required=True)
+ args = parser.parse_args()
+-REPO = Path("/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81")
++REPO = Path("/home/qian-qi/hepta-learn-source-20261112-037c-d3977d9a")
+ RECORDS = Path(args.records)
+ TARGET = Path("/data/hepta-learn-037c-20261112/target-cold-4ab-v1")
+ EVIDENCE = Path("/home/qian-qi/hepta-learn-037c-evidence")
+@@ -119,27 +119,38 @@
+ exit_code = 1
+ try:
+     # Admit maintenance only after both original jobs have naturally terminated.
+-    source_record = EVIDENCE / "source-57b27c81d0d5-v1/result.json"
++    source_record = EVIDENCE / "source-d3977d9a1bed-v1/result.json"
+     native_record = EVIDENCE / "native-prepare-00378c2e33ed-diagnostic-four-v3/result.json"
+-    if sha(source_record) != "5ae067312751f7acdd4be47c2c338a3074a7fce7fffeca69883790c164c2f790":
+-        raise RuntimeError("original complete source failure record changed")
++    if sha(source_record) != "1b7595f0f5fef3f4054eb76817f05d876cd71a69f62a316d69ec152dd8e06a95":
++        raise RuntimeError("original complete source pass record changed")
+     if sha(native_record) != "76221c2ade6dfbf88de9bd2867351cec63548080696b7c4c97376103e48e9c23":
+         raise RuntimeError("original diagnostic terminal record changed")
+     source_gate = json.loads(source_record.read_text())
+     native_gate = json.loads(native_record.read_text())
+     if (source_gate["source"] != args.source or source_gate["tree"] != args.tree
+             or source_gate["before"] != source_gate["after"]
+-            or source_gate["exit_code"] != 1
++            or source_gate["exit_code"] != 0
++            or source_gate["status"] != "passed"
+             or not source_gate["execution"]["actual_process_exit_observed"]):
+-        raise RuntimeError("complete source failure lacks original terminal custody")
++        raise RuntimeError("complete source pass lacks original terminal custody")
+     if (native_gate["source"] != "00378c2e33ede95f4a93bf96f6d87b3bd415d337"
+             or native_gate["source_ready"] != native_gate["source_after"]
+             or not native_gate["native_process"]["actual_process_exit_observed"]
+             or native_gate["named_case_coverage"]["observed_count"] != 4):
+         raise RuntimeError("diagnostic has no complete original terminal observation")
+-    save("prior-terminal-observations.json", {"source_failure": source_gate,
+-         "diagnostic_failure": native_gate, "purpose": "compile current products while source QA repairs remain separate"})
+-    roots = (REPO, Path("/home/qian-qi/hepta-learn-common-20261112-037c"), TARGET)
++    previous_maintenance_path = EVIDENCE / "maintenance-57b27c81d0d5-v1/result.json"
++    if sha(previous_maintenance_path) != "b954a8ba9b66b5a349d5a09b8ba729efd275844c69baca3228683e6bc012af3d":
++        raise RuntimeError("original 57b compilation failure record changed")
++    previous_maintenance = json.loads(previous_maintenance_path.read_text())
++    if (previous_maintenance["exit_code"] != 101
++            or previous_maintenance["before"] != previous_maintenance["after"]
++            or not previous_maintenance["execution"]["actual_process_exit_observed"]):
++        raise RuntimeError("original failed compiler has not naturally terminated")
++    save("prior-terminal-observations.json", {"source_pass": source_gate,
++         "prior_57b_maintenance_failure": previous_maintenance,
++         "diagnostic_failure": native_gate, "purpose": "compile the exact repaired source after its complete source gate passed"})
++    roots = (REPO, Path("/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81"),
++             Path("/home/qian-qi/hepta-learn-common-20261112-037c"), TARGET)
+     active = []
+     commands = {"cargo", "rustc", "rustdoc", "rustfmt", "cargo-clippy", "clippy-driver", "just", "cargo-nextest", "sccache"}
+     for entry in Path("/proc").iterdir():

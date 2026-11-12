@@ -1,0 +1,74 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "dirty": " M codex-rs/hepta-agentd/src/circuit_evaluated_version_support_tests.rs\n",
+    "file_count": 15218,
+    "inventory_sha256": "4d28c8b3592f1eb49f806331538ba701e89901264a833b542074152732118a06",
+    "tree": "57558558841da4a3209164d0033b903a553205d6"
+  },
+  "after_format": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "dirty": "",
+    "file_count": 15218,
+    "inventory_sha256": "724723c4217daf822c0db3a393b192c536ce29d1705d0c5d0dba4102a7be14fa",
+    "tree": "57558558841da4a3209164d0033b903a553205d6"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "dirty": "",
+    "file_count": 15218,
+    "inventory_sha256": "724723c4217daf822c0db3a393b192c536ce29d1705d0c5d0dba4102a7be14fa",
+    "tree": "57558558841da4a3209164d0033b903a553205d6"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-source-20261112-037c-d3977d9a/codex-rs",
+    "finished_at": "2026-11-12T18:31:23.713221+00:00",
+    "log_bytes": 98016,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "7da59d108bcabb0fc565b92edf025552ac625a57227661c15d0a4f073d0480b2",
+    "returncode": 0,
+    "started_at": "2026-11-12T18:24:14.377992+00:00"
+  },
+  "exit_code": 0,
+  "finished_at": "2026-11-12T18:31:26.201989+00:00",
+  "format_execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-source-20261112-037c-d3977d9a/codex-rs",
+    "finished_at": "2026-11-12T18:24:11.970873+00:00",
+    "log_bytes": 73,
+    "log_file": "just-fmt.raw.log",
+    "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "returncode": 0,
+    "started_at": "2026-11-12T18:24:11.742860+00:00"
+  },
+  "kind": "exact-source-fix-only",
+  "postimages": {
+    "file_count": 1,
+    "patch_bytes": 763,
+    "patch_sha256": "c3f8c662c4bb3249aa4033f91a4b2e8f37de7d1fca14c9e59f9747c8e8338064"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-maintenance-d3977d9a1bed-v1",
+  "source_sha": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+  "source_tree": "57558558841da4a3209164d0033b903a553205d6",
+  "started_at": "2026-11-12T18:24:08.487403+00:00",
+  "status": "passed"
+}

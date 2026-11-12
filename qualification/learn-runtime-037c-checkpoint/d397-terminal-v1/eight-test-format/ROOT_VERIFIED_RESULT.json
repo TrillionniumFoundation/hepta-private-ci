@@ -1,0 +1,38 @@
+{
+  "files": 8,
+  "formatter_actual_exit": 0,
+  "format_changed": 5,
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "manifest_sha256": "972a3ea14497201a72b82de7df21c4308712b23107bb1e213b8cda1081515407",
+  "postimages_archive_sha256": "a6d530e5e95cd3891170ea62b706a4eb8ea27f7ef21bf2348fc0b604e6bdd81a",
+  "strict_replay": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "--check",
+        "/tmp/hepta-learn-037c-20261112/root-eight-test-format-v1/ACTUAL_FORMATTED.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "--apply",
+        "/tmp/hepta-learn-037c-20261112/root-eight-test-format-v1/ACTUAL_FORMATTED.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_postimages_exact": true,
+  "native": false,
+  "ordinary_qualification": 0
+}

@@ -1,0 +1,48 @@
+--- B14-template
++++ eight-test-template
+@@ -10,11 +10,11 @@
+ import traceback
+ 
+ 
+-RECORDS = pathlib.Path("/home/qian-qi/hepta-learn-037c-evidence/format-panel-training-proof-v1")
++RECORDS = pathlib.Path("/home/qian-qi/hepta-learn-037c-evidence/format-eight-test-compilation-v1")
+ EXPECTED_SOURCE = "57b27c81d0d5321b873ee751fd0e58e1d905b988"
+ EXPECTED_TREE = "3db894ee96d358c583bbf4ea15163a0d2bd96258"
+ EXPECTED_RUSTFMT_SHA256 = "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c"
+-EXPECTED_PATHS = {'codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs', 'codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs', 'codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs', 'codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs', 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs'}
++EXPECTED_PATHS = {'codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_command_tests.rs', 'codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_material_support_tests.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_tests.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_capacity_tests.rs'}
+ 
+ 
+ def meta(data):
+@@ -55,7 +55,7 @@
+ payload = json.loads(payload_bytes)
+ assert payload["source_commit"] == EXPECTED_SOURCE
+ assert payload["source_tree"] == EXPECTED_TREE
+-assert len(payload["files"]) == 14
++assert len(payload["files"]) == 8
+ assert {row["path"] for row in payload["files"]} == EXPECTED_PATHS
+ 
+ # Create only: an unknown acknowledgement must be reconciled by the same h key.
+@@ -151,8 +151,8 @@
+         add_patch(before_patch, path, item["base"], item["before"])
+     assert {str(path.relative_to(RECORDS / "postimages"))
+             for path in (RECORDS / "postimages").rglob("*.rs")} == EXPECTED_PATHS
+-    write_bytes("panel-training-prefmt.patch", "".join(before_patch).encode())
+-    write_bytes("panel-training-formatted.patch", "".join(combined).encode())
++    write_bytes("test-compilation-prefmt.patch", "".join(before_patch).encode())
++    write_bytes("test-compilation-formatted.patch", "".join(combined).encode())
+     write_bytes("format-only.patch", "".join(formatted).encode())
+     postimage_payload = (json.dumps(complete_postimages, separators=(",", ":")) + "\n").encode()
+     write_bytes("complete-postimages.json.gz", gzip.compress(postimage_payload, mtime=0))
+@@ -168,9 +168,9 @@
+         "input_files_preserved": True,
+         "checkout_access": False, "target_access": False,
+         "native_tests_run": False, "native_stack_fix_proven": False,
+-        "qualification": "isolated same-call B panel Training proof formatting only; no native or ordinary qualification",
++        "qualification": "isolated eight test compilation repairs formatting only; no native or ordinary qualification",
+         "artifacts": [{"path": name, **meta((RECORDS / name).read_bytes())} for name in
+-                      ["panel-training-prefmt.patch", "panel-training-formatted.patch",
++                      ["test-compilation-prefmt.patch", "test-compilation-formatted.patch",
+                        "format-only.patch", "complete-postimages.json.gz"]],
+     }
+     write_json("manifest.json", manifest)
