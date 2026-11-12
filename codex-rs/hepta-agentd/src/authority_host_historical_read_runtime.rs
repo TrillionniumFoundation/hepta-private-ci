@@ -94,113 +94,132 @@ pub(in super::super) fn serve_optional(
     let Some(bound) = bound else {
         return original();
     };
-    let stopping = AtomicBool::new(false);
-    let active = Mutex::new(None::<UnixStream>);
-    std::thread::scope(|scope| {
-        let worker = scope.spawn(|| {
-            let result = (|| {
-                let stream = loop {
-                    if stopping.load(Ordering::Acquire) {
-                        return Ok(());
-                    }
-                    owner_alive(owner, session_end)?;
-                    match bound.listener.accept() {
-                        Ok((stream, _)) => break stream,
-                        Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
-                            std::thread::sleep(Duration::from_millis(5));
-                        }
-                        Err(error) => return Err(error),
-                    }
-                };
-                verify_pinned_process(
-                    registration,
-                    config.peer_uid,
-                    config.peer_gid,
-                    owner,
-                    session_end,
-                )?;
-                {
-                    let mut held = active
-                        .lock()
-                        .map_err(|_| io::Error::other("historical stream slot poisoned"))?;
-                    if stopping.load(Ordering::Acquire) {
-                        return Ok(());
-                    }
-                    *held = Some(stream.try_clone()?);
-                }
-                let policy = HostAuthorityPeerPolicy {
-                    peer: HostIssuerPeer {
-                        uid: config.peer_uid,
-                        pid: registration.peer_pid,
-                    },
-                    timeout: Duration::from_millis(config.timeout_ms),
-                    lifetime: session_end
-                        .checked_duration_since(Instant::now())
-                        .ok_or_else(|| io::Error::other("original historical session expired"))?,
-                    request_bound: WIRE_BOUND,
-                    response_bound: WIRE_BOUND,
-                };
-                let mut channel =
-                    HostAuthorityPeerChannel::from_stream(stream, policy, owner.try_clone()?)
-                        .map_err(io::Error::other)?;
-                let mut sequence = 1_u64;
-                while channel
-                    .exchange(|bytes| {
-                        let request: HistoricalTaskReadRequestV1 = serde_json::from_slice(bytes)
-                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
-                        let operation = HistoricalReadOperationV1::from_purpose(&request.purpose)
-                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
-                        if request.schema != 1
-                            || request.profile != bound.runtime.profile.binding
-                            || request.request_id != sequence
-                            || !(1..=MAX_READS).contains(&sequence)
-                            || stopping.load(Ordering::Acquire)
+    post_a_worker::serve_optional(
+        bound.runtime.post_a_worker.as_ref(),
+        service,
+        config,
+        registration,
+        owner,
+        session_end,
+        || {
+            let stopping = AtomicBool::new(false);
+            let active = Mutex::new(None::<UnixStream>);
+            std::thread::scope(|scope| {
+                let worker = scope.spawn(|| {
+                    let result = (|| {
+                        let stream = loop {
+                            if stopping.load(Ordering::Acquire) {
+                                return Ok(());
+                            }
+                            owner_alive(owner, session_end)?;
+                            match bound.listener.accept() {
+                                Ok((stream, _)) => break stream,
+                                Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                                    std::thread::sleep(Duration::from_millis(5));
+                                }
+                                Err(error) => return Err(error),
+                            }
+                        };
+                        verify_pinned_process(
+                            registration,
+                            config.peer_uid,
+                            config.peer_gid,
+                            owner,
+                            session_end,
+                        )?;
                         {
-                            return Err(HostIssuerTransportError::Unavailable);
+                            let mut held = active
+                                .lock()
+                                .map_err(|_| io::Error::other("historical stream slot poisoned"))?;
+                            if stopping.load(Ordering::Acquire) {
+                                return Ok(());
+                            }
+                            *held = Some(stream.try_clone()?);
                         }
-                        sequence = sequence
-                            .checked_add(1)
-                            .ok_or(HostIssuerTransportError::Unavailable)?;
-                        let request_end = session_end
-                            .min(Instant::now() + Duration::from_millis(config.timeout_ms));
-                        bound
-                            .runtime
-                            .observe_complete_task(
-                                service,
-                                config,
-                                registration,
-                                owner,
-                                operation,
-                                request.request_id,
-                                request_end,
-                            )
-                            .map_err(|_| HostIssuerTransportError::Unavailable)
-                    })
-                    .map_err(io::Error::other)?
+                        let policy = HostAuthorityPeerPolicy {
+                            peer: HostIssuerPeer {
+                                uid: config.peer_uid,
+                                pid: registration.peer_pid,
+                            },
+                            timeout: Duration::from_millis(config.timeout_ms),
+                            lifetime: session_end
+                                .checked_duration_since(Instant::now())
+                                .ok_or_else(|| {
+                                    io::Error::other("original historical session expired")
+                                })?,
+                            request_bound: WIRE_BOUND,
+                            response_bound: WIRE_BOUND,
+                        };
+                        let mut channel = HostAuthorityPeerChannel::from_stream(
+                            stream,
+                            policy,
+                            owner.try_clone()?,
+                        )
+                        .map_err(io::Error::other)?;
+                        HostAuthorityPeerChannel::limit_original_end(&mut channel, session_end)
+                            .map_err(io::Error::other)?;
+                        let mut sequence = 1_u64;
+                        while channel
+                            .exchange(|bytes| {
+                                let request: HistoricalTaskReadRequestV1 =
+                                    serde_json::from_slice(bytes)
+                                        .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                                let operation =
+                                    HistoricalReadOperationV1::from_purpose(&request.purpose)
+                                        .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                                if request.schema != 1
+                                    || request.profile != bound.runtime.profile.binding
+                                    || request.request_id != sequence
+                                    || !(1..=MAX_READS).contains(&sequence)
+                                    || stopping.load(Ordering::Acquire)
+                                {
+                                    return Err(HostIssuerTransportError::Unavailable);
+                                }
+                                sequence = sequence
+                                    .checked_add(1)
+                                    .ok_or(HostIssuerTransportError::Unavailable)?;
+                                let request_end = session_end
+                                    .min(Instant::now() + Duration::from_millis(config.timeout_ms));
+                                bound
+                                    .runtime
+                                    .observe_complete_task(
+                                        service,
+                                        config,
+                                        registration,
+                                        owner,
+                                        operation,
+                                        request.request_id,
+                                        request_end,
+                                    )
+                                    .map_err(|_| HostIssuerTransportError::Unavailable)
+                            })
+                            .map_err(io::Error::other)?
+                        {
+                            require_end(session_end)?;
+                        }
+                        Ok(())
+                    })();
+                    bound.runtime.phase.store(STOPPED, Ordering::Release);
+                    if stopping.load(Ordering::Acquire) {
+                        Ok(())
+                    } else {
+                        result
+                    }
+                });
+                let result = original();
+                stopping.store(true, Ordering::Release);
+                if let Some(stream) = active
+                    .lock()
+                    .map_err(|_| io::Error::other("historical stream slot poisoned"))?
+                    .take()
                 {
-                    require_end(session_end)?;
+                    let _ = stream.shutdown(Shutdown::Both);
                 }
-                Ok(())
-            })();
-            bound.runtime.phase.store(STOPPED, Ordering::Release);
-            if stopping.load(Ordering::Acquire) {
-                Ok(())
-            } else {
-                result
-            }
-        });
-        let result = original();
-        stopping.store(true, Ordering::Release);
-        if let Some(stream) = active
-            .lock()
-            .map_err(|_| io::Error::other("historical stream slot poisoned"))?
-            .take()
-        {
-            let _ = stream.shutdown(Shutdown::Both);
-        }
-        let historical = worker
-            .join()
-            .map_err(|_| io::Error::other("historical read worker panicked"))?;
-        result.and(historical)
-    })
+                let historical = worker
+                    .join()
+                    .map_err(|_| io::Error::other("historical read worker panicked"))?;
+                result.and(historical)
+            })
+        },
+    )
 }
