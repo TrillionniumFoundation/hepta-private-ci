@@ -2,6 +2,7 @@
 //! These phases own no placeholder CURRENT and cannot prepare or publish one.
 
 use std::time::Duration;
+use std::time::Instant;
 
 use super::*;
 
@@ -211,10 +212,32 @@ impl OriginalCellQ24SelectedArtifactForRootV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<OriginalCellQ24RootPublicationDriverV1, Error> {
+        if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
+            return Err(Error::Binding("bounded original publication lifetime"));
+        }
+        self.connect_current_until(handoff, connection, timeout, Instant::now() + lifetime)
+            .await
+    }
+
+    /// The ordinary post-A path retains the original Root session end from
+    /// startup. Waiting for Decision, Artifact and Selector never renews it.
+    pub async fn connect_current_until(
+        self,
+        handoff: crate::RootGenerationPublicationHandoffV1,
+        connection: crate::RootGenerationPublicationConnectionV1,
+        timeout: Duration,
+        original_end: Instant,
+    ) -> Result<OriginalCellQ24RootPublicationDriverV1, Error> {
         OriginalDecision::require_current(&self.original).await?;
         let handoff: crate::RootGenerationPublicationHandoffV1 = handoff;
         let current: Arc<NeuronGenerationCurrentOwnerV1> =
-            handoff.connect(connection, timeout, lifetime).await?;
+            crate::RootGenerationPublicationHandoffV1::connect_until(
+                handoff,
+                connection,
+                timeout,
+                original_end,
+            )
+            .await?;
         current.require_original_root_selection(
             &self.original.decision.snapshot,
             &self.original.decision.operation,
