@@ -142,6 +142,13 @@ class InitialPeerReadySourceTests(unittest.TestCase):
                     with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                         PROOF._verify_boundary(ROOT, replace(row, product_callers=()), self.sources, ())
 
+    def test_narrow_profile_wrappers_cannot_skip_or_expose_private_checks(self):
+        path = A + "authority_host_generation_initial.rs"
+        self.reject(path, "require_original_enrollment_profile", "self.require_profile()")
+        self.reject(path, "refuse_original_enrollment", "self.fence()")
+        self.mutate(path, lambda s: s.replace("    fn require_profile(", "    pub(crate) fn require_profile(", 1))
+        self.mutate(path, lambda s: s.replace("    fn fence(", "    pub(crate) fn fence(", 1))
+
     def test_root_attachment_requires_same_private_cap_and_context(self):
         self.check(DEPLOYMENT, "enable_original_initial_peer_ready", (
             "original_root()?", "initial.peer_deployment.is_some()",
