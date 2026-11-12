@@ -1,0 +1,448 @@
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+@@ -5,6 +5,7 @@
+ use super::super::super::context::PublicationAccess;
+ use super::super::Error;
+ use super::super::RetainedVersionPurposeV1;
++use super::super::RetainedVersionOriginV1;
+ use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellEvaluationCommandConnectionV1};
+ use super::super::OriginalCircuitRetainedVersionReadbackV1;
+ use super::super::context::OriginalVersionCut;
+@@ -76,8 +77,35 @@
+         state.trainer = Some(trainer);
+         state.evaluator = evaluator;
+         state.cut = Some(cut);
+-        state.install_original_selection_reader()?;
+         Ok(())
++    }
++
++    /// A recovered publication is not a ready reader until the actual original
++    /// predecessors, Artifact/CURRENT and held C owners agree across its read.
++    /// A failed observation leaves no reader available to a new connection.
++    pub(super) fn read_original_recovery(
++        &self,
++        state: &mut RetainedVersionHostStateV1,
++    ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
++        if self.origin != RetainedVersionOriginV1::Recovered {
++            return self.read_original(state);
++        }
++        let retained_reader = state.selection_reader.take();
++        let before = self.read_original(state)?;
++        let reader = match retained_reader {
++            Some(reader) => reader,
++            None => state.build_original_selection_reader()?.ok_or(Error::ReadbackRequired)?,
++        };
++        let after = self.read_original(state)?;
++        if before != after || after.publication().is_none() {
++            return Err(Error::CommitUncertain);
++        }
++        state.cut.as_ref().ok_or(Error::Unavailable)?
++            .require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++        self.require_lifetime()?;
++        state.selection_reader = Some(reader);
++        self.installed.notify_waiters();
++        Ok(after)
+     }
+ 
+     pub(super) fn read_original(
+@@ -113,12 +141,22 @@
+         if self.selection_reader.is_some() {
+             return Ok(());
+         }
++        self.selection_reader = self.build_original_selection_reader()?;
++        Ok(())
++    }
++
++    fn build_original_selection_reader(&self) -> Result<Option<std::sync::Arc<
++        crate::OriginalCircuitLearningReadOwnerV1<
++            codex_hepta_neuron::FileAnchorWitnessStore,
++            codex_hepta_neuron::FileAnchorWitnessStore,
++        >,
++    >>, Error> {
+         let original = match self.phase.as_ref() {
+             Some(
+                 RetainedVersionHostPhaseV1::Installed { original, .. }
+                 | RetainedVersionHostPhaseV1::Recovered(original),
+             ) => original,
+-            _ => return Ok(()),
++            _ => return Ok(None),
+         };
+         let cut = self.cut.as_ref().ok_or(Error::Unavailable)?;
+         let reader = match &cut.evaluated {
+@@ -138,8 +176,7 @@
+                     original.cell.clone(), original.source.as_ref().clone(), original.identity.clone(), context)
+             }
+         }.map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
+-        self.selection_reader = Some(std::sync::Arc::new(reader));
+-        Ok(())
++        Ok(Some(std::sync::Arc::new(reader)))
+     }
+ 
+     fn original_trainer(&self) -> Result<&OriginalCellQ24TrainingCommandClientV1, Error> {
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
+@@ -11,6 +11,7 @@
+ 
+ use super::super::super::context::PublicationAccess;
+ use super::super::Error;
++use super::super::RetainedVersionPurposeV1;
+ use super::super::wire;
+ use super::OriginalCircuitRetainedVersionHostV1;
+ use super::RetainedVersionFinalUseOutcomeV1;
+@@ -112,7 +113,7 @@
+             .try_acquire_owned()
+             .map_err(|_| Error::Busy)?;
+         let lifetime = self.remaining_lifetime(lifetime)?;
+-        let mut channel = original_owner_command_channel_v1(
++        let channel = original_owner_command_channel_v1(
+             stream,
+             consumer,
+             consumer_uid,
+@@ -120,6 +121,14 @@
+             timeout,
+             lifetime,
+         )?;
++        self.serve_original_selection_channel(channel, permit).await
++    }
++
++    async fn serve_original_selection_channel(
++        self: Arc<Self>,
++        mut channel: codex_hepta_contracts::HostAuthorityPeerChannel,
++        permit: tokio::sync::OwnedSemaphorePermit,
++    ) -> Result<u64, Error> {
+         loop {
+             let changed = self.installed.notified();
+             self.require_lifetime()?;
+@@ -217,7 +226,7 @@
+                     wire::Action::Prepare => self.prepare_original(&mut state),
+                     wire::Action::Readback => {
+                         self.preparation_requested.store(true, Ordering::Release);
+-                        self.read_original(&state)
++                        self.read_original_recovery(&mut state)
+                     }
+                 };
+                 state
+@@ -288,3 +297,7 @@
+ #[cfg(test)]
+ #[path = "circuit_retained_version_issuer_host_tests.rs"]
+ mod issuer_fixture;
++
++#[cfg(test)]
++#[path = "circuit_evaluated_version_readiness_support_tests.rs"]
++mod evaluated_reader_fixture;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs
+@@ -0,0 +1,22 @@
++//! Test transport access to the actual Version selection-serving loop.
++//! No phase, reader, outcome, grant or original-owner result is constructed.
++
++use super::*;
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    pub(crate) fn fixture_original_selection_reader_installed(&self) -> Result<bool, Error> {
++        let state = self.state.try_lock().map_err(|_| Error::Busy)?;
++        Ok(state.selection_reader.is_some())
++    }
++
++    pub(crate) async fn fixture_serve_original_selection_channel(
++        self: Arc<Self>,
++        channel: HostAuthorityPeerChannel,
++    ) -> Result<u64, Error> {
++        self.require_lifetime()?;
++        let permit = Arc::clone(&self.connections)
++            .try_acquire_owned().map_err(|_| Error::Busy)?;
++        self.serve_original_selection_channel(channel, permit).await
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs
+@@ -0,0 +1,123 @@
++//! Version cold readback uses the same real Material journals, Source/Ledger,
++//! native T and completed Ineligible B. Only same-process sockets and enrolled
++//! fixture keys differ from deployment. No receipt is supplied as a response.
++
++use super::*;
++use anyhow::Context as _;
++use pretty_assertions::assert_eq;
++use std::time::Duration;
++use crate::OriginalCellEvaluationCommandConnectionV1;
++use crate::OriginalCellQ24DatasetCommandReadbackV1;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24MaterialEvidenceRoleV1;
++use crate::OriginalCellQ24MaterialReceiptFilesV1;
++use crate::OriginalCellQ24MaterialReceiptOwnersV1;
++use crate::OriginalCellQ24TrainingCommandConnectionV1;
++use crate::OriginalCircuitRetainedVersionHostV1 as Version;
++use crate::OriginalCircuitRetainedVersionRecoveryV1;
++use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;
++use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
++
++struct HeldPredecessors {
++    dataset: OriginalCellQ24DatasetCommandReadbackV1,
++    dataset_receipt: OriginalCellQ24MaterialCommandReceiptV1,
++    trainer: OriginalCellQ24TrainingCommandConnectionV1,
++    evaluator: OriginalCellEvaluationCommandConnectionV1,
++}
++
++struct HeldPeers {
++    dataset: material_ports::Peer,
++    trainer: TrainerPeer,
++    evaluator: std::thread::JoinHandle<anyhow::Result<u64>>,
++}
++
++impl HeldPeers {
++    fn finish(self) -> anyhow::Result<[u64; 3]> {
++        Ok([
++            material_ports::finish(self.dataset)?,
++            self.trainer.join().expect("same original T readback")?,
++            self.evaluator.join().expect("same original E readback")?,
++        ])
++    }
++}
++
++async fn held_predecessors(f: &PublicationFixture) -> anyhow::Result<(HeldPredecessors, HeldPeers)> {
++    let original = &f.host.original;
++    let material = &original.command_config;
++    let objective = material.initial.request.envelope.objective_digest;
++    // The original fixture dropped these initialized Material owners after
++    // completing the exact same pair. Recovery is permanently command-readonly;
++    // the original files, freeze, keys, Source and Ledger are reused.
++    let owners = OriginalCellQ24MaterialReceiptOwnersV1::recover(
++        OriginalCellQ24MaterialReceiptFilesV1 {
++            experience: opened(&original.root, "positive-experience", false)?,
++            experience_witness: original_witness(&original.root, "positive-experience-witness", &material.scope, objective, false)?,
++            dataset: opened(&original.root, "positive-dataset", false)?,
++            dataset_witness: original_witness(&original.root, "positive-dataset-witness", &material.scope, objective, false)?,
++        },
++        material.clone(), SigningKey::from_bytes(&[44; 32]), SigningKey::from_bytes(&[45; 32]),
++    )?;
++    let host = Arc::new(owners.into_command_owner(
++        f.original_source.as_ref().clone(), f.identity_a.clone(),
++        Arc::clone(&original.ledger), Arc::clone(&original.baseline),
++    )?);
++    let (dataset, dataset_peer) = material_ports::commands_for_original(
++        host, material.clone(), OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
++    )?;
++    let dataset = dataset.into_original_dataset_readback(material)?;
++    let dataset_receipt = dataset.readback().await?;
++    assert_eq!(dataset_receipt.snapshot(), &f.trainer_context.dataset);
++    assert_eq!(dataset_receipt.attestations(), &original.material_evidence);
++    let (trainer, channel) = training_ports::recovered_peer(
++        material.clone(), Some((f.training.receipt().clone(), f.training.attestation().clone())), Duration::from_secs(300),
++    )?;
++    let trainer_peer = commands::serve(Arc::clone(&f.trainer), channel);
++    let (evaluator, evaluator_peer) = f.host.host.as_ref().context("same original E host")?
++        .fixture_original_readback_connection()?;
++    Ok((HeldPredecessors { dataset, dataset_receipt, trainer, evaluator },
++        HeldPeers { dataset: dataset_peer, trainer: trainer_peer, evaluator: evaluator_peer }))
++}
++
++async fn publish_for_recovery(
++    f: &mut PublicationFixture,
++    original_dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++) -> anyhow::Result<(support::Session, OriginalCircuitRetainedVersionRecoveryV1)> {
++    let (trainer, evaluator, peers) = f.clients()?;
++    let inputs = f.inputs()?;
++    let current = Arc::clone(&inputs.current);
++    let artifacts = Arc::clone(&inputs.authorities.artifacts);
++    let artifact_selection = inputs.selection.signed.clone();
++    let artifact_verifier = inputs.selection.verifier.clone();
++    let checkpoint = f.host.original.version.retained_artifact_checkpoint()?;
++    let prepared = crate::prepare_original_circuit_evaluated_retention_v1(f.context()?, trainer, evaluator, inputs).await?;
++    let intent = prepared.intent_digest();
++    let grant = f.host.original.version.sign(prepared.final_use_binding())?;
++    let (task, trainer, evaluator) = prepared.publish_and_retain_original_evidence(grant).await?;
++    let c = f.start_c(task).await?;
++    drop(trainer);
++    drop(evaluator);
++    peers.finish()?;
++    let mut attestations = original_dataset.attestations().to_vec();
++    attestations.push(f.training.attestation().clone());
++    attestations.push(f.evaluation.attestation().clone());
++    let recovery = OriginalCircuitRetainedVersionRecoveryV1 {
++        training: f.evaluation.snapshot().clone(), attestations, intent_digest: intent,
++        cell: c.cell.clone(), source: Arc::clone(&c.source), identity: c.runtime.identity.clone(),
++        current, artifacts, artifact_checkpoint: checkpoint, artifact_selection, artifact_verifier,
++    };
++    Ok((c, recovery))
++}
++
++fn cold_version(
++    f: &PublicationFixture,
++    held: HeldPredecessors,
++    recovery: OriginalCircuitRetainedVersionRecoveryV1,
++) -> Result<Arc<Version>, crate::OriginalCircuitRetainedVersionErrorV1> {
++    Ok(Arc::new(Version::recover_from_original_evaluated_owners(
++        f.host.original.command_config.clone(), held.dataset, held.trainer, held.evaluator,
++        recovery, Duration::from_secs(300),
++    )?))
++}
++
++#[path = "circuit_evaluated_version_recovery_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
+@@ -0,0 +1,108 @@
++//! Actual original Version cold reads over complete NoUpdate evidence.
++//! These mechanisms do not install startup owners or authorize real C work.
++
++use super::*;
++use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;
++use pretty_assertions::assert_eq;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_reads_exact_four_cut_without_publication_or_retry() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let intent = recovery.intent_digest;
++    let before = f.publication_bytes()?;
++    let upstream = (f.host.original.predecessor_bytes()?, f.host.upstream_files()?, f.host.original_files()?);
++    let host = cold_version(&f, held, recovery)?;
++    let read = Version::read_original_version_fixture(Arc::clone(&host)).await?;
++    let published = read.publication().expect("actual original published retained C");
++    assert_eq!(published.intent_digest(), intent);
++    assert_eq!(published.bundle_digest(), f.bundle.digest()?);
++    assert_eq!(published.run_id(), &f.source_c.scope.run_id);
++    assert_eq!(published.authority(), codex_hepta_types::AuthorityPosture::DENY_ALL);
++    assert!(matches!(Version::prepare_original_version_fixture(Arc::clone(&host)).await, Err(VersionError::ReadbackRequired)));
++    assert!(matches!(Version::run_original_issuer_fixture(Arc::clone(&host)).await, Err(VersionError::ReadbackRequired)));
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!((f.host.original.predecessor_bytes()?, f.host.upstream_files()?, f.host.original_files()?), upstream);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_requires_current_original_evaluation() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    let host = cold_version(&f, held, recovery)?;
++    f.host.retention_b.withdraw_target()?;
++    assert!(matches!(Version::read_original_version_fixture(Arc::clone(&host)).await,
++        Err(VersionError::Evaluation(crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain))));
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    assert!(Version::prepare_original_version_fixture(Arc::clone(&host)).await.is_err());
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_artifact_failure_never_admits_selection_reader() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    let host = cold_version(&f, held, recovery)?;
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    // Original D/T/B remain valid; the actual Artifact owner changes after
++    // recovery construction, before its first complete publication read.
++    f.host.original.version.advance_artifact_current()?;
++    assert!(matches!(Version::read_original_version_fixture(Arc::clone(&host)).await,
++        Err(VersionError::CommitUncertain)));
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    let context = crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(f.readback_context()?)?;
++    let (reader, channel) = crate::circuit_feature_current::original_learning_read_fixture::evaluated_client(context)?;
++    let server = tokio::spawn(Version::fixture_serve_original_selection_channel(Arc::clone(&host), channel));
++    // The real serving loop has no admitted reader. Its original client
++    // timeout consumes the connection; the test then cancels the waiting lane.
++    assert!(reader.read_current().await.is_err());
++    server.abort();
++    assert!(server.await.expect_err("unready serving lane cancelled").is_cancelled());
++    drop(reader);
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_rejects_original_training_prefix_without_b() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, mut recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    // The actual signed three-cut T is intact, but does not contain original B.
++    // This edits untrusted recovery metadata, never an opaque receipt or key.
++    recovery.training = f.host.config.training.clone();
++    recovery.attestations.pop();
++    assert!(matches!(cold_version(&f, held, recovery), Err(VersionError::Binding("original retained recovery cut"))));
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    assert_eq!(peers.finish()?, [1, 0, 0]);
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_initial_connection_support_tests.rs
+@@ -0,0 +1,30 @@
++//! An unbound read-only connection to the same actual original E host.
++//! Only same-process transport admission is a fixture; binding later consumes
++//! the production Connection and its original monotonic channel lifetime.
++
++use super::*;
++use super::super::OriginalCellEvaluationCommandConnectionV1;
++use super::super::Origin;
++
++impl OriginalCellEvaluationHostV1 {
++    pub(crate) fn fixture_original_readback_connection(
++        self: &Arc<Self>,
++    ) -> anyhow::Result<(OriginalCellEvaluationCommandConnectionV1, Thread)> {
++        let (client, server) = UnixStream::pair()?;
++        let connection = OriginalCellEvaluationCommandConnectionV1 {
++            channel: channel(client)?,
++            initial: self.context.initial()?,
++            scope: self.context.scope.clone(),
++            registration: self.context.registration.clone(),
++            verifier: self.context.verifier.clone(),
++            origin: Origin::ReadbackOnly,
++            observed_at: now()?,
++        };
++        let owner = Arc::clone(self);
++        let mut peer = channel(server)?;
++        let thread = std::thread::spawn(move || -> anyhow::Result<u64> {
++            Ok(owner.fixture_serve_channel(&mut peer)?)
++        });
++        Ok((connection, thread))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs
+@@ -1,6 +1,9 @@
+ //! Explicit same-UID transport and synthetic B time for original host tests.
+ //! Public production factories still require independent original processes.
+ //! Every successful response comes from the actual original host and journals.
++#[path = "neuron_cell_evaluation_initial_connection_support_tests.rs"]
++mod initial_connection;
++
+ use std::os::fd::FromRawFd;
+ use std::os::fd::OwnedFd;
+ use std::os::unix::net::UnixStream;
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs
+@@ -335,3 +335,6 @@
+ 
+ #[path = "circuit_evaluated_retention_receipt_tests.rs"]
+ mod receipt_tests;
++
++#[path = "circuit_evaluated_version_recovery_support_tests.rs"]
++mod version_recovery_tests;

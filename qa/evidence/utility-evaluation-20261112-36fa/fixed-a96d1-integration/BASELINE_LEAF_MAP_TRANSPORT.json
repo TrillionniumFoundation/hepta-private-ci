@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.baseline-leaf-map-transport.v1",
+  "parts": [
+    [
+      "fixed-a96d1-integration/baseline-leaf-map.json.gz.b64.part0000",
+      "c4627e5d32c5fccfaddb70c1ad7e307e1231e86d"
+    ],
+    [
+      "fixed-a96d1-integration/baseline-leaf-map.json.gz.b64.part0001",
+      "94733441964db02df0200c7d1e3baade80d5a9a0"
+    ],
+    [
+      "fixed-a96d1-integration/baseline-leaf-map.json.gz.b64.part0002",
+      "49975904c17e96c388cb8af59d76f019d1ee9bdd"
+    ],
+    [
+      "fixed-a96d1-integration/baseline-leaf-map.json.gz.b64.part0003",
+      "092e5da370fb5e9c827342a2ea667ef81bff259c"
+    ]
+  ],
+  "raw": {
+    "bytes": 2373449,
+    "sha256": "424565278393f4e533bec99eafe3dc81193a0d6279a099eee0f098dfb8a2cdc3"
+  },
+  "base64_bytes": 682449,
+  "reconstruction": "Concatenate part0000..part0003 as base64 text; decode and gunzip; validate raw size and SHA256. All 15170 leaf entries form unformatted baseline tree 7d26396020a11227914948be902fb3721084630c.",
+  "tree": "7d26396020a11227914948be902fb3721084630c",
+  "files": 15170,
+  "status": "unformatted_preparation_not_published_not_tested"
+}

@@ -1,0 +1,393 @@
+{
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "old_source_sha": "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+  "old_junit_blob": "5bf99b42559ae02bd2da7ef067e87098dd247482",
+  "current_junit_blob": "96d5b747e0579ff70730a89f70eb7ae3b70dd479",
+  "old_count": 100,
+  "current_count": 109,
+  "counts": {
+    "passed": 81,
+    "timeout_60s": 2,
+    "Error: InvalidBinding": 1,
+    "stack_overflow_SIGABRT": 24,
+    "Error: OwnerUnavailable(\"original learning evidence owner\")": 1
+  },
+  "added": [
+    {
+      "name": "circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution",
+      "status": "passed"
+    },
+    {
+      "name": "circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1",
+      "status": "passed"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "status": "stack_overflow_SIGABRT"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "status": "stack_overflow_SIGABRT"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "status": "stack_overflow_SIGABRT"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "status": "stack_overflow_SIGABRT"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "status": "stack_overflow_SIGABRT"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "status": "stack_overflow_SIGABRT"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "status": "stack_overflow_SIGABRT"
+    }
+  ],
+  "removed": [],
+  "changed": [
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "old": "Error: Circuit task Cell: Cell(IncompleteCandidates)",
+      "new": "Error: InvalidBinding"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "old": "timeout_60s",
+      "new": "passed"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody",
+      "old": "Error: original C Observer transport: InvalidRequest",
+      "new": "passed"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody",
+      "old": "thread 'runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody' (607772) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:409:5",
+      "new": "passed"
+    }
+  ],
+  "failures": [
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "status": "timeout_60s",
+      "timestamp": "2026-11-12T09:30:48.139-05:00",
+      "time": "60.014",
+      "failure": {
+        "type": "test timeout"
+      },
+      "stderr": ""
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "status": "Error: InvalidBinding",
+      "timestamp": "2026-11-12T09:31:48.156-05:00",
+      "time": "12.044",
+      "failure": {
+        "message": "Error: InvalidBinding",
+        "type": "test failure with exit code 101"
+      },
+      "stderr": "Error: InvalidBinding\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "status": "timeout_60s",
+      "timestamp": "2026-11-12T09:32:00.203-05:00",
+      "time": "60.017",
+      "failure": {
+        "type": "test timeout"
+      },
+      "stderr": ""
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:04.417-05:00",
+      "time": "1.215",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c' (1484080) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:05.632-05:00",
+      "time": "1.222",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant' (1484118) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:06.854-05:00",
+      "time": "1.198",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication' (1484161) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:08.052-05:00",
+      "time": "1.212",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b' (1484187) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:09.264-05:00",
+      "time": "1.213",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners' (1484214) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:10.477-05:00",
+      "time": "1.210",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch' (1484263) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:11.687-05:00",
+      "time": "1.210",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed' (1484371) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:12.898-05:00",
+      "time": "1.213",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion' (1484395) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:14.111-05:00",
+      "time": "1.212",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut' (1484504) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:15.323-05:00",
+      "time": "1.216",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion' (1484532) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:16.540-05:00",
+      "time": "1.210",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs' (1484605) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:17.750-05:00",
+      "time": "1.212",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim' (1484634) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:18.962-05:00",
+      "time": "1.214",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response' (1484656) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:20.177-05:00",
+      "time": "1.905",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut' (1484728) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:22.082-05:00",
+      "time": "2.409",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature' (1484860) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:24.491-05:00",
+      "time": "1.206",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (1485017) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:25.697-05:00",
+      "time": "1.266",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (1485054) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:26.333-05:00",
+      "time": "1.661",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (1485088) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:26.963-05:00",
+      "time": "2.061",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (1485109) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:27.995-05:00",
+      "time": "2.064",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (1485128) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:29.025-05:00",
+      "time": "2.061",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (1485150) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:30.059-05:00",
+      "time": "2.192",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (1485196) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:31.087-05:00",
+      "time": "2.193",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (1485216) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "status": "stack_overflow_SIGABRT",
+      "timestamp": "2026-11-12T09:33:32.251-05:00",
+      "time": "2.152",
+      "failure": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "stderr": "\nthread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (1485262) has overflowed its stack\nfatal runtime error: stack overflow, aborting\n"
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "status": "Error: OwnerUnavailable(\"original learning evidence owner\")",
+      "timestamp": "2026-11-12T09:35:23.589-05:00",
+      "time": "8.949",
+      "failure": {
+        "message": "Error: OwnerUnavailable(\"original learning evidence owner\")",
+        "type": "test failure with exit code 101"
+      },
+      "stderr": "Error: OwnerUnavailable(\"original learning evidence owner\")\n"
+    }
+  ],
+  "mixed_evidence": {
+    "attributes": {
+      "name": "neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut",
+      "classname": "codex-hepta-agentd",
+      "timestamp": "2026-11-12T09:30:36.257-05:00",
+      "time": "3.017"
+    },
+    "children": []
+  }
+}

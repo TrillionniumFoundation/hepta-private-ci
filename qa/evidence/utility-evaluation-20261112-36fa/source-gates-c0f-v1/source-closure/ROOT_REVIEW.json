@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.c0f-source-closure-timeout-raw-review.v1",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "raw_bytes": 81881,
+  "raw_sha256": "24752b16e2aedb79868e3e3c8363667b090f10e230efcff5d67cb75b22732834",
+  "raw_git_blob": "e1846e0161dfffb713b51983d9740ce67d0e107e",
+  "fail_lines": [
+    "test_each_source_role_and_clock_constraint_remains_present_in_order (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order) ... FAIL",
+    "test_new_attestation_deadline_and_readback_window_are_distinct (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_new_attestation_deadline_and_readback_window_are_distinct) ... FAIL",
+    "  test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='config.training_evidence.clone()') ... FAIL",
+    "  test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='config.selection_evidence.clone()') ... FAIL",
+    "  test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.training_evidence.signing_bytes()') ... FAIL",
+    "  test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.training_evidence.signature') ... FAIL",
+    "  test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.selection_evidence.signing_bytes()') ... FAIL",
+    "  test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) (marker='&config.selection_evidence.signature') ... FAIL",
+    "test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed) ... FAIL",
+    "  test_real_read_edges_are_registered_and_owner_constructors_remain_closed (test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed) (boundary='circuit_feature_original_next_use_observation') ... FAIL",
+    "  test_only_concrete_original_edges_and_resident_installation_are_registered (test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='circuit_feature_original_selection_observation') ... FAIL"
+  ],
+  "error_lines": [
+    "test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides (test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides) ... ERROR"
+  ],
+  "last_started_method": "test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller (test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller) ... ",
+  "unittest_terminal_summary_present": false,
+  "timed_out": true,
+  "runner_exit_code": 124,
+  "command_returncode": -9,
+  "runner_elapsed_seconds": 602.9540957880672,
+  "wrapper_elapsed_seconds": 615.1520628309809,
+  "source_unchanged": true,
+  "interpretation": "Original 600s gate timed out. Counts are partial observed output, not a complete suite result. Last in-flight method is not by itself a measured bottleneck. Compiler overlap is timing evidence, not causation. Test methods are deduplicated by fully qualified name; repeated outer FAIL lines and subtest lines are not new test methods.",
+  "raw_test_status_lines": 353,
+  "top_level_start_lines": 345,
+  "actual_distinct_test_methods_observed": 344,
+  "explicit_unique_method_ok": 337,
+  "explicit_unique_failure_methods": [
+    "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_each_source_role_and_clock_constraint_remains_present_in_order",
+    "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_new_attestation_deadline_and_readback_window_are_distinct",
+    "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed",
+    "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_real_read_edges_are_registered_and_owner_constructors_remain_closed",
+    "test_original_no_update_stage_source_closure.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered"
+  ],
+  "explicit_unique_error_methods": [
+    "test_original_published_read_source_closure.OriginalPublishedReadClosureTests.test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides"
+  ],
+  "unique_methods_without_explicit_terminal_ok_fail_error": [
+    "test_original_training_readback_source_closure.OriginalTrainingReadbackClosureTests.test_exact_read_only_edges_do_not_admit_another_typed_or_qualified_caller"
+  ],
+  "duplicate_top_level_start_methods": {
+    "test_original_circuit_observer_source_closure.OriginalCircuitObserverSourceClosureTests.test_pinned_predecessor_bytes_and_original_journal_binding_cannot_be_renewed": [
+      {
+        "line": 124,
+        "suffix": " ... ",
+        "indented": false
+      },
+      {
+        "line": 125,
+        "suffix": " (marker='config.training_evidence.clone()') ... FAIL",
+        "indented": true
+      },
+      {
+        "line": 126,
+        "suffix": " (marker='config.selection_evidence.clone()') ... FAIL",
+        "indented": true
+      },
+      {
+        "line": 127,
+        "suffix": " (marker='&config.training_evidence.signing_bytes()') ... FAIL",
+        "indented": true
+      },
+      {
+        "line": 128,
+        "suffix": " (marker='&config.training_evidence.signature') ... FAIL",
+        "indented": true
+      },
+      {
+        "line": 129,
+        "suffix": " (marker='&config.selection_evidence.signing_bytes()') ... FAIL",
+        "indented": true
+      },
+      {
+        "line": 130,
+        "suffix": " (marker='&config.selection_evidence.signature') ... FAIL",
+        "indented": true
+      },
+      {
+        "line": 131,
+        "suffix": " ... FAIL",
+        "indented": false
+      }
+    ]
+  }
+}

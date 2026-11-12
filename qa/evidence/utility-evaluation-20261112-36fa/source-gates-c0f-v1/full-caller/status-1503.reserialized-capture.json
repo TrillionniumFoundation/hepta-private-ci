@@ -1,0 +1,21 @@
+{
+  "capture_kind": "complete_direct_tool_result_object_reserialized_for_preservation",
+  "native_response_text_is_preserved_exactly": true,
+  "invocation_local_utc_minute": "2026-11-12T15:03Z",
+  "exact_instant_not_claimed": true,
+  "tool": "h_process_status",
+  "arguments": {
+    "host": "desktop",
+    "job_id": "1a1d01a6652-2564-1b2d"
+  },
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"backend\": \"systemd\",\n  \"job_id\": \"1a1d01a6652-2564-1b2d\",\n  \"state\": \"running\",\n  \"systemd\": {\n    \"ActiveState\": \"active\",\n    \"Description\": \"Hepta Runtime job 1a1d01a6652-2564-1b2d 328bdbb4544811f0ea5e33bc6c320303\",\n    \"ExecMainCode\": \"0\",\n    \"ExecMainPID\": \"1438119\",\n    \"ExecMainStatus\": \"0\",\n    \"InvocationID\": \"97992c6612eb48d6b053bd909b335e11\",\n    \"LoadState\": \"loaded\",\n    \"Result\": \"success\",\n    \"SubState\": \"running\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

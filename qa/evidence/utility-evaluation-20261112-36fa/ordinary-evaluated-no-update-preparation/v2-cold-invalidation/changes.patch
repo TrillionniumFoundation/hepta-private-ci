@@ -1,0 +1,105 @@
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
+@@ -11,6 +11,7 @@
+ 
+ use super::super::super::context::PublicationAccess;
+ use super::super::Error;
++use super::super::RetainedVersionOriginV1;
+ use super::super::RetainedVersionPurposeV1;
+ use super::super::wire;
+ use super::OriginalCircuitRetainedVersionHostV1;
+@@ -215,6 +216,12 @@
+                 Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
+             };
+             if self.bind_original_predecessor(&mut state).is_err() {
++                if self.origin == RetainedVersionOriginV1::Recovered {
++                    // A formerly admitted cold reader cannot admit another
++                    // connection after its held original cut fails a live read.
++                    // Already handed-out read-only connections are not revoked.
++                    state.selection_reader = None;
++                }
+                 // No complete original predecessor was authenticated. This
+                 // is readback uncertainty, not an accepted prepare dispatch.
+                 // In particular, a wrong external cut cannot spend another
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs
+@@ -5,6 +5,27 @@
+ use codex_hepta_contracts::HostAuthorityPeerChannel;
+ 
+ impl OriginalCircuitRetainedVersionHostV1 {
++    /// The caller has already completed a real cold read. Construct its next
++    /// original wire request from that held pin, without a fixture-side current
++    /// read that could hide the production command's failure branch.
++    pub(crate) async fn fixture_read_bound_original_version(
++        self: Arc<Self>,
++    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
++        tokio::task::spawn_blocking(move || {
++            let (request, pin) = {
++                let state = self.state.try_lock().map_err(|_| Error::Busy)?;
++                let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
++                (wire::Request::new(cut, 1, wire::Action::Readback), cut.duplicate_response_pin())
++            };
++            let response = self.command_response(&serde_json::to_vec(&request)?, 1)?;
++            let response: wire::Response = serde_json::from_slice(&response)?;
++            if response.request != request {
++                return Err(Error::CommitUncertain);
++            }
++            response.result.decode(&pin)
++        }).await.map_err(|_| Error::CommitUncertain)?
++    }
++
+     pub(crate) fn fixture_original_selection_reader_installed(&self) -> Result<bool, Error> {
+         let state = self.state.try_lock().map_err(|_| Error::Busy)?;
+         Ok(state.selection_reader.is_some())
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs
+@@ -4,6 +4,7 @@
+ 
+ use super::*;
+ use anyhow::Context as _;
++use ed25519_dalek::SigningKey;
+ use pretty_assertions::assert_eq;
+ use std::time::Duration;
+ use crate::OriginalCellEvaluationCommandConnectionV1;
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
+@@ -45,6 +45,39 @@
+         Err(VersionError::Evaluation(crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain))));
+     assert!(!host.fixture_original_selection_reader_installed()?);
+     assert!(Version::prepare_original_version_fixture(Arc::clone(&host)).await.is_err());
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_later_b_withdrawal_removes_reader_for_new_connections() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    let host = cold_version(&f, held, recovery)?;
++    let read = Version::read_original_version_fixture(Arc::clone(&host)).await?;
++    assert!(read.publication().is_some());
++    assert!(host.fixture_original_selection_reader_installed()?);
++    f.host.retention_b.withdraw_target()?;
++    // This helper constructs the next actual request from the already bound
++    // cut. The production command, not a fixture pre-read, observes B's loss.
++    assert!(matches!(Version::fixture_read_bound_original_version(Arc::clone(&host)).await,
++        Err(VersionError::CommitUncertain)));
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    let context = crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(f.readback_context()?)?;
++    let (reader, channel) = crate::circuit_feature_current::original_learning_read_fixture::evaluated_client(context)?;
++    let server = tokio::spawn(Version::fixture_serve_original_selection_channel(Arc::clone(&host), channel));
++    assert!(reader.read_current().await.is_err());
++    server.abort();
++    assert!(server.await.expect_err("unready serving lane cancelled").is_cancelled());
++    drop(reader);
+     assert_eq!(f.publication_bytes()?, before);
+     assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
+     drop(host);

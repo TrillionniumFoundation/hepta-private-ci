@@ -1,0 +1,82 @@
+{
+  "actual_execution": "not_run",
+  "base_review_manifest": "fdf28020b25d864df834a55bb2e1ce90d4e6b6e4",
+  "claim": "A failed production bind/current read removes a previously admitted Recovered reader before releasing the original state lock.",
+  "files": [
+    {
+      "after": {
+        "bytes": 13033,
+        "git_blob": "6f25178e3710607ccb0d5d163bea19d6304fbfd0",
+        "sha256": "888679a5c0b1871d74ccd9a3bf563cf563463c3272e8c085a6073f6c69df5448"
+      },
+      "before": {
+        "bytes": 12612,
+        "git_blob": "dd03da3456b00de3f4dece276aec42f1acba3de5",
+        "sha256": "237f79dfda212938d381815a1c5b303b5bc037dc4a0ee8a3711cd3a1e415d450"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+    },
+    {
+      "after": {
+        "bytes": 1990,
+        "git_blob": "b16a4c539ba0fafb0fef485ea6c8f0b1ef790314",
+        "sha256": "befcd0d44232148fbe45932d43cfe5d497efa012102d60ae987605cc82940e8b"
+      },
+      "before": {
+        "bytes": 864,
+        "git_blob": "e45bd14802a998dfef0d1c1e2f9eeeaa6e3deb8b",
+        "sha256": "b4bd3dbb7a1017195f60a06a67fd7f87bc02025d9f924ba21b5aa506faae3b74"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 6172,
+        "git_blob": "dbcc6c62666b17a7cf5094ef7893679817ad690b",
+        "sha256": "4a2cd320de4a2a249c1e375e4dac42944a4ed4d8fa32ea11363ddd2120e9dedb"
+      },
+      "before": {
+        "bytes": 6141,
+        "git_blob": "04624395ce058e3bbdd7e509a56b97be6773f68f",
+        "sha256": "bfc49de1e840be4237b1ec5286680f9290897b124b883b6be3e6c9a4a9d46cfb"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 7893,
+        "git_blob": "cc7ac948679ab4081c726dc5cc3998f18158ab88",
+        "sha256": "781491dea1832524d4ee19467d0405b7d49fa254333c0ea0a4cdf37faf715ce5"
+      },
+      "before": {
+        "bytes": 6015,
+        "git_blob": "0679e166f81b9efa54c96ff8916efd731f08592e",
+        "sha256": "804cae3e6bef11a59489ee5da670abc446238a63fb6ac5f05601a5b04ae60371"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs"
+    }
+  ],
+  "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "format": "hepta-evaluated-version-cold-invalidation-review-v1",
+  "gzip_base64_packet": {
+    "bytes": 16337,
+    "git_blob": "4e49eaa5c5cf8ebe8523ebc26f7685d748889404",
+    "sha256": "a21daeea48a54800c6d319dae68d3c7a4b3ac6d8dae83b35a22a6f07f959e2c0"
+  },
+  "limits": [
+    "No formatting, compilation or Rust execution.",
+    "The new sequential test prepares the real original wire request from the already bound cut and calls command_response; it does not fixture-prebind after the withdrawal.",
+    "Previously handed-out read-only reader Arcs are not revoked; original S still requires live original T/B.",
+    "Fresh late-FinalUse failure runtime coverage remains separate and unexecuted."
+  ],
+  "packet": {
+    "bytes": 41160,
+    "git_blob": "9e63414b9a9fb10f1df798ed90d4a4ddb9b8fa10",
+    "sha256": "9adb81ceb21c5d27831669c31ead3868fc5b9425f0cb1326822ed8fd0ccc90fa"
+  },
+  "patch": {
+    "bytes": 5717,
+    "git_blob": "f5a07a1ff5e6e341cdd21595e311ba894095de50",
+    "sha256": "285ca63ef891315c6f04f808324e734525d2dd7c01c40de4aefdd0216df3cba1"
+  }
+}

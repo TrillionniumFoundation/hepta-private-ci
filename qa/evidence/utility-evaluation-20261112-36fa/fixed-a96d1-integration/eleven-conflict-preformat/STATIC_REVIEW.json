@@ -1,0 +1,77 @@
+{
+  "status": "static_review_of_unformatted_preparation_only",
+  "source_gates_inherited": false,
+  "source_gates_for_this_projection": "not_run",
+  "rustfmt": "not_run",
+  "nextuse_owner": "Exact upstream baseline retains typed trainer plus original source.trainer().ok_or refusal and explicit original UFCS; separate private profile hunk is owned by evaluation.",
+  "provider_case_mapping": {
+    "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows": {
+      "original_scenarios": [
+        "withdraw",
+        "source-bytes",
+        "ledger-bytes",
+        "rollback",
+        "unreleased",
+        "cold-readonly"
+      ],
+      "new_cases": {
+        "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows": [
+          "withdraw",
+          "source-bytes"
+        ],
+        "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows": [
+          "ledger-bytes",
+          "rollback"
+        ],
+        "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows": [
+          "unreleased",
+          "cold-readonly"
+        ]
+      },
+      "original_branch_bodies": "retained in current_refusal_cases; each scenario still allocates/populates its actual B and checks bytes/permanent fence",
+      "topology_change": "three independent original preregistration setups instead of one; no setup cost equivalence or timeout causality claimed"
+    },
+    "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support": {
+      "new_cases": {
+        "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes": [
+          "Missing",
+          "WrongUnit"
+        ],
+        "original_evaluation_provider_refuses_renewed_original_signatures": [
+          "freeze-renewal",
+          "training-renewal"
+        ],
+        "original_evaluation_provider_expired_training_signature_permanently_fences_readback": [
+          "expired-window"
+        ],
+        "original_evaluation_provider_zero_support_consumes_holdout_once": [
+          "zero-support"
+        ]
+      },
+      "expiry": "Original signature is checked at inclusive expires_at, then checked_add(1) with explicit Result error; original envelope remains live; exact ValidityWindow, permanent fence, original signature and source-byte equality are checked.",
+      "material_change": "expiry and zero-support use the actual preregistered primary B instead of allocating a replacement labelled original-B. Both still populate and bind the actual owners; this is a fixture topology change, not byte-identical setup."
+    }
+  },
+  "provider_tokio_test_count": {
+    "c0f": 4,
+    "fixed_a96_and_candidate": 9
+  },
+  "forbidden_rules": {
+    "removed_from_upstream_changed_read_rows": [],
+    "added": [
+      "public/crate-public from_original_profile blocked in read capability/service",
+      "public/crate-public decode_evaluated/decode_original blocked in read wire"
+    ]
+  },
+  "panel_future": "Keep c0f completed_for_publication Box::pin(async move) plus direct completed forwarding; add fixed-upstream Box::pin around unchanged PanelMemberFixture::complete. No owner/input/retention order/assertion changes.",
+  "task_candidates": "Exact source order before freeze; count equality, unique definition ID count, remove one complete original candidate per source mask, empty leftovers, unchanged activation/kind and selected ID; actual published policy order now asserted.",
+  "qa": "All three files retain the fixed a96 original function ASTs (12+9+7); only EXPECTED values merge c0f additions. Comparators remain exact equality and original negative attacks remain. Future Rust profile changes and final actual fmt still require exact marker synchronization.",
+  "known_c0f_qa_issue": "Row244 already has 6 members but c0f no-update QA EXPECTED has 5. The fixed-upstream sixth member is retained in this candidate. This static finding does not stand in for c0f timeout raw.",
+  "pending": [
+    "evaluation stable Rust candidate",
+    "unified actual isolated Rust fmt",
+    "final marker alignment against exact formatted bytes",
+    "final exact CALLERS allowlist entry",
+    "complete frozen-head qualification gates"
+  ]
+}

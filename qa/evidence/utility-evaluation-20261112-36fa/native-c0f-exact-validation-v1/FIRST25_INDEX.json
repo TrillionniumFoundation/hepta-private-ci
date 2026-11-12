@@ -1,0 +1,224 @@
+{
+  "schema": "hepta.utility.native.exact-partial-evidence-index.v1",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "job_id": "1a1d0137095-2564-1b21",
+  "records": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1",
+  "observed": {
+    "maintenance": {
+      "fix_exit_code": 0,
+      "fmt_exit_code": 0,
+      "source_change": false
+    },
+    "full_eval_lib": {
+      "run_exit_code": 0,
+      "collection_exit_code": 0,
+      "actual_testcase_count": 163,
+      "unique_testcase_names": 163,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "required_four": [
+        "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+        "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+        "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+        "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+      ],
+      "actual_junit_timestamp": "2026-11-12T09:08:28.074-05:00"
+    },
+    "focused": {
+      "helper_build_exit_code": 0,
+      "helper_build_seconds": 745.7373389019631,
+      "helper_build_finished_at": "2026-11-12T14:21:05.715613+00:00",
+      "testcase_conclusion": "not_observed"
+    },
+    "native_process": {
+      "state": "running",
+      "provenance_blob": "7b2c345b74cdf7645b5d8fe1f22aaf455da6281b"
+    },
+    "ordinary_and_root_conclusion": "not_observed"
+  },
+  "scope": "Only actual retained per-stage native evidence. No complete ordinary A/B/C iteration qualification. This is an intermediate evidence index, not pipeline completion.",
+  "artifacts": [
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/STATE.json",
+      "bytes": 1073,
+      "sha256": "6e2be56640a5b05b7d9cb6b8b3f87c8f4c32435469d35d65ec7fe1e1d4c76f2b",
+      "blob": "69093a50d7065232598f44af9b974bf8b69bfe7d"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/fix.json",
+      "bytes": 1537,
+      "sha256": "0f9bfb03a099deead8c84be0a4b46ad4201715aa3aac434d26d70e88af902e2b",
+      "blob": "46965c733c4e53c4d04a6ac2a00130518f491158"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/fmt.json",
+      "bytes": 1512,
+      "sha256": "a2b29465b53f022396cd4ce612756a37e1036b6892ba218394f436655245dc7c",
+      "blob": "b6f1998f4e03601c0786ec9ad5cf7875cb011013"
+    },
+    {
+      "name": "eval-lib.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/eval-lib.json",
+      "bytes": 1719,
+      "sha256": "329777dd2d5fbd1163ce0f478b298b6ad7bd9b055041a632b05886f949d30492",
+      "blob": "f49dddd0796c3d976fc40273be49d2b9659a9af5",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib-coverage.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/eval-lib-coverage.json",
+      "bytes": 15931,
+      "sha256": "2d05ce5f91b6c877c556ebeb8c0017b97d3b1a2e774775824b7b385fc054888a",
+      "blob": "47849391c33cb882a0f7919f157672ab8abde336",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib-archive.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/eval-lib-archive.json",
+      "bytes": 1865,
+      "sha256": "0ab374fde2d695b05402f9fadc2e5ff85be6e7bc9b9bdd04523565784864b4d9",
+      "blob": "b614dbf7479720ccb7a1ab3b1f9f426317ad2986",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "fix-archive.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/fix-archive.json",
+      "bytes": 982,
+      "sha256": "9e3c0af39e0109f927baf4ed8005e4fbec87226de175fc83be52470f848e6c72",
+      "blob": "792874f4146e627063fb67185651bc79659644fb",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "fmt-archive.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/fmt-archive.json",
+      "bytes": 976,
+      "sha256": "a6e3fd550f26882ec04142c91073ec04f3f103c9e4b49ac51a0f68e04d00aa41",
+      "blob": "84fce1056788c60a90b2761a1197c22c508fd5f6",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-and-maintenance-archives.original-sdk.json",
+      "bytes": 25803,
+      "sha256": "54e5d14b1d537ba3aa5e56d1cd7010b1bfbfc59dab74be8834a159adbdb176d7",
+      "blob": "78478eaa621faee6ffc5e818db869f708f64981b",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib.xml",
+      "bytes": 37367,
+      "sha256": "ec45bcd7bf05143a76803e0e56bfd5e714da4f0f98457fd9806ca8ce4d462f1b",
+      "blob": "9d400148f14ac8a4a93426b6704482c330873b9a",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib.xml.gz.base64",
+      "bytes": 7357,
+      "sha256": "43ab499ec4d2281f9471e1a6ca7630d3cb0e8a622163b5c3e8024c9312140587",
+      "blob": "8074fdf4c606b211540f7e15372bec2f192a8250",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-xml-read.original-sdk.json",
+      "bytes": 7769,
+      "sha256": "df66152960235112e87c3b11937e4f770696df850f9aa54a21738f1ebd283a90",
+      "blob": "b6c49189e38bead036b8e81483e711d7a1b0be77",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "process-status-2.original-sdk.json",
+      "bytes": 618,
+      "sha256": "5a3c16cc3d9b54d31daab10bb84655135b31e8e1706d42e609f00d386065fc9f",
+      "blob": "7b2c345b74cdf7645b5d8fe1f22aaf455da6281b",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "fix.full.log",
+      "bytes": 70022,
+      "sha256": "7789ba89d087c8965f906377cb06842615a1e0c45d4ba4caa13c6f132adef403",
+      "blob": "de1125f2531b8f01085b9b631c5c69ba5709a163",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "fix.full.log.gz.base64",
+      "bytes": 12685,
+      "sha256": "81c9ad37d735da0bed5912608513ca96f72abca5322cc4fbad8f6205bc594d60",
+      "blob": "a6d0d6aa8f0a51ef048ae937d7d2fafd16cb7a1a",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "fix-raw-read.original-sdk.json",
+      "bytes": 13130,
+      "sha256": "fefa87b62d3dc633a1fef5912bf8e19aa5db2ba84b2f97dfd319d6abf913a207",
+      "blob": "22e8837c6964c99a7137791b16f743955f74aec8",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib.full.log",
+      "bytes": 89152,
+      "sha256": "25f0c931569d0a877cb7c8ca2c6755d76c40882e174ed485176982cc8448e2e4",
+      "blob": "621f176ca1a6fb6646f5a91c60549b9c3bb36ab6",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib.full.log.gz.base64",
+      "bytes": 13461,
+      "sha256": "147986bb985e574fd53e6150c71a592e7a1c04dafdfa0aff93a04075410801c6",
+      "blob": "5970f08f586009f7343ab51c25f413ca7632ebd7",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib-raw-read.original-sdk.json",
+      "bytes": 13914,
+      "sha256": "2b00f5e23b5a29c0b1307fa0cf3e7c4072094375f79eeee0b43f8000d62b2abd",
+      "blob": "65a9aefa643998cb188a54b281bfb3e19accd4cb",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "focused/helper-build.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helper-build.json",
+      "bytes": 1643,
+      "sha256": "9eff1cf76f157b46187c80adcdbad971ee26817af25e84a81856b4eea1ac14fd",
+      "blob": "f4c385753dd372a3458db971e372fa3ba8d883ba",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "focused/driver-input.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/driver-input.json",
+      "bytes": 6719,
+      "sha256": "8f4d32ec3cf42725346cde4d8e851733096cdd23760c79c362b6ae29aefb41c0",
+      "blob": "fbd293bf609fd1d95ecdbdf63ec10fa42a42409e",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "focused-helper-observation.original-sdk.json",
+      "bytes": 10305,
+      "sha256": "70fe73ce772f215283f2233d35aa0960885552a08d953ac72d1304987321327e",
+      "blob": "b580a36c5f7aac394bc02998f53815ad90ee9628",
+      "full_text_readback": "equal"
+    },
+    {
+      "name": "eval-lib.xml.gz",
+      "bytes": 5515,
+      "sha256": "8155361ef2dadf8552e98682d3fcbea1063d9f53c1a1f1428fb1eb348a852eb3",
+      "git_blob": "f6ac1c638888621fd2f11d45eae38829a2d83cd2",
+      "blob": "f6ac1c638888621fd2f11d45eae38829a2d83cd2",
+      "base64_blob": "8074fdf4c606b211540f7e15372bec2f192a8250"
+    },
+    {
+      "name": "fix.full.log.gz",
+      "bytes": 9511,
+      "sha256": "a3892cb54b771117a81679fe09e8b125d8694c508b519823dcb0a03d7bb1b46f",
+      "blob": "3c8f63356a12dc2b2a9cc41fad0614a2bf74848c",
+      "base64_blob": "a6d0d6aa8f0a51ef048ae937d7d2fafd16cb7a1a"
+    },
+    {
+      "name": "eval-lib.full.log.gz",
+      "bytes": 10093,
+      "sha256": "d1f8d3c0d1f2bda3452d29601b941cacbb32c2202d1bb03c410ce660d71b07eb",
+      "blob": "05e5443455f54dbf404137efa6b334ee18615024",
+      "base64_blob": "5970f08f586009f7343ab51c25f413ca7632ebd7"
+    }
+  ]
+}

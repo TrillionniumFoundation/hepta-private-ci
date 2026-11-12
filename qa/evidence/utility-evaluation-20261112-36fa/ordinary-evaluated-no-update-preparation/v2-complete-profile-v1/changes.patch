@@ -1,0 +1,4016 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs
+@@ -75,9 +75,7 @@
+                 if matches!(self, Self::Candidate(_))
+                     && snapshot.training_no_update_v2().is_none() =>
+             {
+-                Err(Error::OwnerUnavailable(
+-                    "original Candidate selection and adoption route is absent",
+-                ))
++                OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(snapshot, stage)
+             }
+             Stage::Experience
+             | Stage::Dataset
+--- a/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs
+@@ -10,6 +10,7 @@
+ use super::Error;
+ use super::EvaluationLane;
+ use super::ModelLane;
++use super::EvaluatedContinuation;
+ use super::Origin;
+ use super::OriginalCellQ24CandidateStageOwnersV1;
+ use super::OriginalCellQ24CandidateStageStreamsV1;
+@@ -171,6 +172,7 @@
+         candidate: Mutex::new(CandidateLane::new(candidate)),
+         evaluation: Mutex::new(EvaluationLane::new(evaluator)),
+         model: Mutex::new(ModelLane::new(model)),
++        retained: Mutex::new(EvaluatedContinuation::new()),
+         end,
+     })
+ }
+--- a/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs
+@@ -43,6 +43,9 @@
+ #[path = "cell_q24_candidate_stage_model.rs"]
+ mod model;
+ use model::ModelLane;
++#[path = "cell_q24_candidate_stage_retained.rs"]
++mod retained;
++use retained::EvaluatedContinuation;
+ 
+ /// All endpoints are original connected streams delivered at the same initial
+ /// handoff. There is no future Training receipt, B result, panel or model DTO.
+@@ -62,6 +65,7 @@
+     candidate: Mutex<CandidateLane>,
+     evaluation: Mutex<EvaluationLane>,
+     model: Mutex<ModelLane>,
++    retained: Mutex<EvaluatedContinuation>,
+     end: Instant,
+ }
+ 
+@@ -129,7 +133,9 @@
+             tokio::time::timeout_at(self.end.into(), async {
+                 self.require_live_deadline()?;
+                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+-                if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
++                if retained::is_evaluated_no_update(snapshot) {
++                    self.read_evaluated_retained_prefix(snapshot).await
++                } else if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
+                     OriginalCellQ24CandidateStageOwnersV1::read_original_model(self, snapshot).await?;
+                     Ok(())
+                 } else if coordinator.candidate().is_some() && snapshot.receipts.len() >= 4 {
+@@ -176,8 +182,13 @@
+                 if stage == Stage::Proposal {
+                     return self.execute_original_model(snapshot).await;
+                 }
+-                // A real NoUpdate follows the same existing Selector/C route.
+-                // Candidate must not reach those retained-baseline commands.
++                if matches!(stage, Stage::Selection | Stage::NextUse)
++                    && retained::is_evaluated_no_update(snapshot)
++                {
++                    return self.execute_evaluated_retained_stage(snapshot, stage).await;
++                }
++                // Legacy TrainingNoUpdate keeps its strict three-cut protocol.
++                // Candidate Adopt still requires its absent original owners.
+                 if matches!(stage, Stage::Selection | Stage::NextUse)
+                     && snapshot.training_no_update_v2().is_none()
+                 {
+@@ -211,6 +222,11 @@
+             tokio::time::timeout_at(self.end.into(), async {
+                 self.require_live_deadline()?;
+                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
++                if retained::is_evaluated_no_update(snapshot)
++                    && matches!(receipt.observation.stage(), Stage::Selection | Stage::NextUse)
++                {
++                    return self.retained_attestation(snapshot, receipt).await;
++                }
+                 if coordinator.candidate().is_some() && snapshot.receipts.len() >= 3 {
+                     let training = self.training_prefix(snapshot)?;
+                     if receipt.observation.stage() == Stage::Evaluation {
+@@ -254,6 +270,7 @@
+         candidate: Mutex::new(CandidateLane::new(initial)),
+         evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
+         model: Mutex::new(ModelLane::fixture_unavailable()),
++        retained: Mutex::new(EvaluatedContinuation::new()),
+         end,
+     };
+     owners.require_initial(
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs
+@@ -0,0 +1,178 @@
++//! The complete evaluated NoUpdate continuation is distinct from the legacy
++//! TrainingNoUpdate lane. Its only channels were admitted at initial handoff.
++//! A four-cut result selects this protocol; actual original owners admit work.
++
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
++use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
++use codex_hepta_learning_artifacts::LearningIterationObservationV1;
++use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
++use codex_hepta_learning_artifacts::LearningIterationStageV1 as Stage;
++
++use super::super::auth;
++use super::Error;
++use super::Origin;
++use super::OriginalCellQ24CandidateStageOwnersV1 as Owners;
++use crate::OriginalCellEvaluationCommandReceiptV1;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::OriginalCircuitCompletionReadinessClientV1;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
++use crate::OriginalCircuitNextUseCommandClientV1;
++use crate::OriginalCircuitNextUseCommandReceiptV1;
++use crate::OriginalCircuitRetainedVersionClientV1;
++use crate::OriginalCircuitSelectionCommandClientV1;
++use crate::OriginalCircuitSelectionCommandReceiptV1;
++
++#[path = "cell_q24_candidate_stage_retained_readback.rs"]
++mod readback;
++#[path = "cell_q24_candidate_stage_retained_execute.rs"]
++mod execution;
++
++struct OriginalPins {
++    dataset: OriginalCellQ24MaterialCommandReceiptV1,
++    training: OriginalCellQ24TrainingCommandReceiptV1,
++    evaluation: OriginalCellEvaluationCommandReceiptV1,
++    context: OriginalCircuitEvaluatedRetentionContextV1,
++}
++
++pub(super) struct EvaluatedContinuation {
++    pins: Option<OriginalPins>,
++    version: Option<OriginalCircuitRetainedVersionClientV1>,
++    selector_initial: Option<HostAuthorityPeerChannel>,
++    selector: Option<OriginalCircuitSelectionCommandClientV1>,
++    next_use_initial: Option<HostAuthorityPeerChannel>,
++    next_use: Option<OriginalCircuitNextUseCommandClientV1>,
++    readiness_initial: Option<HostAuthorityPeerChannel>,
++    readiness: Option<OriginalCircuitCompletionReadinessClientV1>,
++    selection: Option<OriginalCircuitSelectionCommandReceiptV1>,
++    completion: Option<OriginalCircuitNextUseCommandReceiptV1>,
++    failed: bool,
++}
++
++impl EvaluatedContinuation {
++    pub(super) fn new() -> Self {
++        Self {
++            pins: None, version: None, selector_initial: None, selector: None,
++            next_use_initial: None, next_use: None, readiness_initial: None,
++            readiness: None, selection: None, completion: None, failed: false,
++        }
++    }
++
++    async fn refresh(&mut self, owners: &Owners, snapshot: &LearningIterationSnapshotV1) -> Result<(), Error> {
++        let expected = evaluated_prefix(snapshot)?;
++        let started = auth::now()?;
++        let evaluation = owners.read_original_evaluation(snapshot).await?;
++        if evaluation.snapshot() != &expected {
++            return Err(Error::WrongScope);
++        }
++        let (dataset, training) = {
++            let common = owners.common.continuation.try_lock().map_err(|_| Error::QueueFull)?;
++            (common.original_dataset.as_ref().ok_or(Error::CommitUncertain)?.clone(),
++             common.original_training.as_ref().ok_or(Error::CommitUncertain)?.clone())
++        };
++        // Only the first fresh handoff can establish new-work eligibility.
++        // Later equality checks use the read-only constructor and leave the
++        // original stored capability and all execution checks unchanged.
++        let context = match (owners.common.origin, self.pins.is_some()) {
++            (Origin::Fresh, false) => OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
++                owners.common.material.scope.clone(), owners.common.material.verifier.clone(), &training, &evaluation),
++            _ => OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
++                owners.common.material.scope.clone(), owners.common.material.verifier.clone(), &training, &evaluation),
++        }.map_err(|_| Error::OwnerUnavailable("complete original evaluated NoUpdate predecessors"))?;
++        let fresh = auth::require_material(&owners.common.material, owners.common.initial_binding)?;
++        auth::require_clock(started, fresh)?;
++        owners.require_live_deadline()?;
++        if let Some(prior) = &self.pins {
++            if prior.dataset != dataset || prior.training != training || prior.evaluation != evaluation
++                || prior.context.receipt_context_binding() != context.receipt_context_binding() {
++                return Err(Error::CommitUncertain);
++            }
++        } else {
++            let channels = owners.common.continuation.try_lock().map_err(|_| Error::QueueFull)?
++                .take_evaluated_retained_channels(&owners.common, &context)?;
++            let version = match owners.common.origin {
++                Origin::Fresh => OriginalCircuitRetainedVersionClientV1::bind_original_evaluated_stage_channel(
++                    channels.version, &owners.common.material, &dataset, &training, &evaluation),
++                Origin::Recovered => OriginalCircuitRetainedVersionClientV1::recover_original_evaluated_stage_channel(
++                    channels.version, &owners.common.material, &dataset, &training, &evaluation),
++            }.map_err(|_| Error::OwnerUnavailable("same original evaluated Version channel"))?;
++            self.version = Some(version);
++            self.selector_initial = Some(channels.selector);
++            self.next_use_initial = Some(channels.next_use);
++            self.readiness_initial = Some(channels.readiness);
++            self.pins = Some(OriginalPins { dataset, training, evaluation, context });
++        }
++        Ok(())
++    }
++
++    fn bind_selector(&mut self, owners: &Owners) -> Result<(), Error> {
++        if self.selector.is_none() {
++            let pins = self.pins.as_ref().ok_or(Error::CommitUncertain)?;
++            self.selector = Some(OriginalCircuitSelectionCommandClientV1::bind_original_evaluated_stage_channel(
++                self.selector_initial.take().ok_or(Error::CommitUncertain)?, &owners.common.material,
++                &pins.dataset, &pins.training, &pins.evaluation, owners.common.origin,
++            ).map_err(auth::selector_failure)?);
++        }
++        Ok(())
++    }
++
++    fn bind_next_use(&mut self, owners: &Owners) -> Result<(), Error> {
++        let pins = self.pins.as_ref().ok_or(Error::CommitUncertain)?;
++        let selection = self.selection.as_ref().ok_or(Error::CommitUncertain)?;
++        if self.next_use.is_none() {
++            self.next_use = Some(OriginalCircuitNextUseCommandClientV1::bind_original_evaluated_stage_channel(
++                self.next_use_initial.take().ok_or(Error::CommitUncertain)?, &owners.common.material,
++                &pins.dataset, selection, owners.common.origin,
++            ).map_err(auth::next_use_failure)?);
++        }
++        if self.readiness.is_none() {
++            let original = selection.evaluated_receipt().map_err(auth::selector_failure)?;
++            self.readiness = Some(OriginalCircuitCompletionReadinessClientV1::bind_original_evaluated_stage_channel(
++                self.readiness_initial.take().ok_or(Error::CommitUncertain)?, &owners.common.material,
++                &pins.dataset, &original,
++            ).map_err(|_| Error::OwnerUnavailable("same original evaluated C readiness channel"))?);
++        }
++        Ok(())
++    }
++}
++
++pub(super) fn is_evaluated_no_update(snapshot: &LearningIterationSnapshotV1) -> bool {
++    matches!(snapshot.receipts.get(3).map(|receipt| &receipt.observation),
++        Some(LearningIterationObservationV1::Evaluation { disposition: LearningEvaluationDispositionV1::NoUpdate, .. }))
++}
++
++fn evaluated_prefix(snapshot: &LearningIterationSnapshotV1) -> Result<LearningIterationSnapshotV1, Error> {
++    let complete = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
++    if !is_evaluated_no_update(snapshot) || !(4..=6).contains(&snapshot.receipts.len())
++        || snapshot.training_no_update_v2().is_some() {
++        return Err(Error::WrongScope);
++    }
++    let mut original = LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
++    for receipt in &snapshot.receipts[..4] {
++        original.record(receipt.clone(), receipt.observed_unix_seconds)?;
++    }
++    if original.next_stage() != Some(Stage::Selection) || original.candidate() != complete.candidate()
++        || original.next_task_bundle() != Some(&snapshot.request.selected_bundle)
++        || original.candidate().is_none_or(|candidate| candidate == &snapshot.request.selected_bundle) {
++        return Err(Error::WrongScope);
++    }
++    let expected = match snapshot.receipts.len() { 4 => Some(Stage::Selection), 5 => Some(Stage::NextUse), _ => None };
++    if complete.next_stage() != expected || complete.next_task_bundle() != Some(&snapshot.request.selected_bundle) {
++        return Err(Error::WrongScope);
++    }
++    Ok(original.snapshot().clone())
++}
++
++impl Owners {
++    /// Protocol selection only; all authority/current-owner checks occur at the
++    /// actual effect edge. No Candidate Adopt path is admitted by this method.
++    pub(crate) fn require_evaluated_retained_stage(snapshot: &LearningIterationSnapshotV1, stage: Stage) -> Result<(), Error> {
++        evaluated_prefix(snapshot)?;
++        if !matches!(stage, Stage::Selection | Stage::NextUse)
++            || LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage() != Some(stage) {
++            return Err(Error::WrongScope);
++        }
++        Ok(())
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs
+@@ -0,0 +1,126 @@
++//! Fresh evaluated retention effects stay behind the same actual Root gate.
++//! Waiting only reads the original Version or C; it never renews a deadline,
++//! resends a consumed Prepare, creates a grant, or starts C from a receipt.
++
++use std::time::Duration;
++
++use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
++use crate::OriginalCircuitRetainedVersionErrorV1;
++use crate::RootResidentLearningEffectGateV3;
++
++use super::*;
++
++impl Owners {
++    pub(in super::super) async fn execute_evaluated_retained_stage(
++        &self, snapshot: &LearningIterationSnapshotV1, stage: Stage,
++    ) -> Result<LearningIterationReceiptV1, Error> {
++        Self::require_evaluated_retained_stage(snapshot, stage)?;
++        if self.common.origin != Origin::Fresh { return Err(Error::WrongScope); }
++        let started = auth::now()?;
++        let gate = self.common.root.as_ref()
++            .ok_or(Error::OwnerUnavailable("fresh resident evaluated retention continuation"))?;
++        RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.common.material.scope).await?;
++        let mut lane = self.retained.try_lock().map_err(|_| Error::QueueFull)?;
++        if lane.failed { return Err(Error::CommitUncertain); }
++        lane.failed = true;
++        lane.refresh(self, snapshot).await?;
++        lane.pins.as_ref().ok_or(Error::CommitUncertain)?.context.require_new_original_receipt(auth::now()?)
++            .map_err(|_| Error::OwnerUnavailable("fresh original evaluated retention context"))?;
++        let ready = match stage {
++            Stage::Selection => {
++                lane.prepare_retained_version(self, snapshot, gate).await?;
++                lane.bind_selector(self)?;
++                None
++            },
++            Stage::NextUse => {
++                lane.read_selection(self, snapshot).await?;
++                lane.bind_next_use(self)?;
++                Some(lane.await_completed_c(self, snapshot, gate).await?)
++            },
++            _ => return Err(Error::WrongScope),
++        };
++        RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.common.material.scope).await?;
++        lane.refresh(self, snapshot).await?;
++        let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
++        auth::require_clock(started, fresh)?;
++        let result = match stage {
++            Stage::Selection => OriginalCircuitSelectionCommandClientV1::execute_selection(
++                lane.selector.as_ref().ok_or(Error::CommitUncertain)?,
++            ).await.map_err(auth::selector_failure).and_then(|original| {
++                lane.pin_selection(self, snapshot, &original)?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
++            }),
++            Stage::NextUse => OriginalCircuitNextUseCommandClientV1::attest_completed_task(
++                lane.next_use.as_ref().ok_or(Error::CommitUncertain)?,
++            ).await.map_err(auth::next_use_failure).and_then(|original| {
++                if ready.as_ref() != Some(&original.receipt().observation) { return Err(Error::CommitUncertain); }
++                lane.pin_completion(self, snapshot, &original)?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
++            }),
++            _ => return Err(Error::WrongScope),
++        };
++        if RootResidentLearningEffectGateV3::require_current(gate, snapshot, &self.common.material.scope).await.is_err() {
++            return Err(Error::CommitUncertain);
++        }
++        lane.require_published().await?;
++        if stage == Stage::NextUse { lane.read_selection(self, snapshot).await?; }
++        lane.refresh(self, snapshot).await?;
++        let (receipt, signature) = result?;
++        let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
++        auth::require_clock(started, fresh)?;
++        auth::verify_receipt(&self.common.material, &receipt, &signature, fresh)?;
++        self.require_live_deadline()?;
++        lane.failed = false;
++        Ok(receipt)
++    }
++}
++
++impl EvaluatedContinuation {
++    async fn prepare_retained_version(&mut self, owners: &Owners, snapshot: &LearningIterationSnapshotV1,
++        gate: &RootResidentLearningEffectGateV3) -> Result<(), Error> {
++        RootResidentLearningEffectGateV3::require_current(gate, snapshot, &owners.common.material.scope).await?;
++        let client = self.version.as_ref().ok_or(Error::CommitUncertain)?;
++        let cancellation = RootResidentLearningEffectGateV3::training_cancellation(gate);
++        let dispatched = OriginalCircuitRetainedVersionClientV1::prepare_original_version(client, cancellation).await;
++        if RootResidentLearningEffectGateV3::require_current(gate, snapshot, &owners.common.material.scope).await.is_err() {
++            return Err(Error::CommitUncertain);
++        }
++        let mut actual = match dispatched {
++            Ok(observed) => Some(observed),
++            Err(OriginalCircuitRetainedVersionErrorV1::Busy
++                | OriginalCircuitRetainedVersionErrorV1::ReadbackRequired
++                | OriginalCircuitRetainedVersionErrorV1::CommitUncertain) => None,
++            Err(_) => return Err(Error::CommitUncertain),
++        };
++        for _ in 0..128 {
++            if actual.as_ref().is_some_and(|read| read.publication().is_some()) {
++                self.refresh(owners, snapshot).await?;
++                RootResidentLearningEffectGateV3::require_current(gate, snapshot, &owners.common.material.scope).await?;
++                return Ok(());
++            }
++            tokio::time::sleep(Duration::from_secs(2)).await;
++            RootResidentLearningEffectGateV3::require_current(gate, snapshot, &owners.common.material.scope).await?;
++            actual = Some(OriginalCircuitRetainedVersionClientV1::readback(
++                self.version.as_ref().ok_or(Error::CommitUncertain)?,
++            ).await.map_err(|_| Error::CommitUncertain)?);
++        }
++        Err(Error::OwnerUnavailable("original evaluated Version readback frame budget"))
++    }
++
++    async fn await_completed_c(&mut self, owners: &Owners, snapshot: &LearningIterationSnapshotV1,
++        gate: &RootResidentLearningEffectGateV3) -> Result<LearningIterationObservationV1, Error> {
++        for _ in 0..128 {
++            RootResidentLearningEffectGateV3::require_current(gate, snapshot, &owners.common.material.scope).await?;
++            let current = OriginalCircuitCompletionReadinessClientV1::read_current(
++                self.readiness.as_ref().ok_or(Error::CommitUncertain)?,
++            ).await.map_err(|_| Error::OwnerUnavailable("actual original evaluated C readiness"))?;
++            if let Some(ready) = current {
++                self.read_selection(owners, snapshot).await?;
++                self.refresh(owners, snapshot).await?;
++                return Ok(ready.observation().clone());
++            }
++            tokio::time::sleep(Duration::from_secs(2)).await;
++        }
++        Err(Error::OwnerUnavailable("original evaluated C readiness frame budget"))
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs
+@@ -0,0 +1,139 @@
++//! Actual original readback for evaluated S/C. Pins establish equality only;
++//! Version, B, retained material and C readiness are observed again each time.
++
++use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
++use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
++
++use super::*;
++
++impl EvaluatedContinuation {
++    pub(super) async fn require_published(&self) -> Result<(), Error> {
++        let current = OriginalCircuitRetainedVersionClientV1::readback(
++            self.version.as_ref().ok_or(Error::CommitUncertain)?,
++        ).await.map_err(|_| Error::CommitUncertain)?;
++        if current.publication().is_none() {
++            return Err(Error::OwnerUnavailable("original evaluated Version awaits FinalUse"));
++        }
++        Ok(())
++    }
++
++    pub(super) fn pin_selection(&mut self, owners: &Owners, supplied: &LearningIterationSnapshotV1,
++        original: &OriginalCircuitSelectionCommandReceiptV1) -> Result<(), Error> {
++        let pins = self.pins.as_ref().ok_or(Error::CommitUncertain)?;
++        let context = original.evaluated_context().ok_or(Error::WrongScope)?;
++        if context.receipt_context_binding() != pins.context.receipt_context_binding()
++            || original.snapshot().receipts.len() != 5
++            || !original.snapshot().receipts.starts_with(&pins.context.snapshot().receipts)
++            || original.training_attestation() != pins.training.attestation()
++            || supplied.receipts.get(4).is_some_and(|receipt| receipt != original.receipt())
++            || self.selection.as_ref().is_some_and(|previous| previous != original) {
++            return Err(Error::WrongScope);
++        }
++        owners.common.material.scope.validate_snapshot(original.snapshot())?;
++        let sealed = original.evaluated_receipt().map_err(auth::selector_failure)?;
++        sealed.original_receipt_predecessors(auth::now()?).map_err(|_| Error::WrongScope)?;
++        self.selection = Some(original.clone());
++        Ok(())
++    }
++
++    pub(super) fn pin_completion(&mut self, owners: &Owners, supplied: &LearningIterationSnapshotV1,
++        original: &OriginalCircuitNextUseCommandReceiptV1) -> Result<(), Error> {
++        let selection = self.selection.as_ref().ok_or(Error::CommitUncertain)?;
++        let expected = selection.evaluated_receipt().map_err(auth::selector_failure)?;
++        let actual = original.evaluated_selection().ok_or(Error::WrongScope)?;
++        if actual.original_receipt_binding() != expected.original_receipt_binding()
++            || original.snapshot().receipts.len() != 6
++            || !original.snapshot().receipts.starts_with(&selection.snapshot().receipts)
++            || original.training_attestation() != selection.training_attestation()
++            || original.selection_attestation() != selection.attestation()
++            || supplied.receipts.get(5).is_some_and(|receipt| receipt != original.receipt())
++            || self.completion.as_ref().is_some_and(|previous| previous != original) {
++            return Err(Error::WrongScope);
++        }
++        owners.common.material.scope.validate_snapshot(original.snapshot())?;
++        auth::verify_receipt(&owners.common.material, original.receipt(), original.attestation(), auth::now()?)?;
++        self.completion = Some(original.clone());
++        Ok(())
++    }
++
++    pub(super) async fn read_selection(&mut self, owners: &Owners, snapshot: &LearningIterationSnapshotV1)
++        -> Result<OriginalCircuitSelectionCommandReceiptV1, Error> {
++        self.require_published().await?;
++        self.bind_selector(owners)?;
++        let original = OriginalCircuitSelectionCommandClientV1::readback(
++            self.selector.as_ref().ok_or(Error::CommitUncertain)?,
++        ).await.map_err(auth::selector_failure)?;
++        self.pin_selection(owners, snapshot, &original)?;
++        Ok(original)
++    }
++
++    pub(super) async fn read_completion(&mut self, owners: &Owners, snapshot: &LearningIterationSnapshotV1)
++        -> Result<OriginalCircuitNextUseCommandReceiptV1, Error> {
++        self.read_selection(owners, snapshot).await?;
++        self.bind_next_use(owners)?;
++        let ready = OriginalCircuitCompletionReadinessClientV1::read_current(
++            self.readiness.as_ref().ok_or(Error::CommitUncertain)?,
++        ).await.map_err(|_| Error::OwnerUnavailable("actual original evaluated C completion"))?
++            .ok_or(Error::CommitUncertain)?;
++        let original = OriginalCircuitNextUseCommandClientV1::readback(
++            self.next_use.as_ref().ok_or(Error::CommitUncertain)?,
++        ).await.map_err(auth::next_use_failure)?;
++        if ready.observation() != &original.receipt().observation {
++            return Err(Error::CommitUncertain);
++        }
++        self.pin_completion(owners, snapshot, &original)?;
++        self.read_selection(owners, snapshot).await?;
++        self.require_published().await?;
++        Ok(original)
++    }
++}
++
++impl Owners {
++    pub(in super::super) async fn read_evaluated_retained_prefix(&self, snapshot: &LearningIterationSnapshotV1)
++        -> Result<(), Error> {
++        evaluated_prefix(snapshot)?;
++        let mut lane = self.retained.try_lock().map_err(|_| Error::QueueFull)?;
++        if lane.failed { return Err(Error::CommitUncertain); }
++        lane.failed = true;
++        lane.refresh(self, snapshot).await?;
++        // A four-cut checkpoint is evidence of completed B only. It does not
++        // claim that publication or Selection has already occurred.
++        match snapshot.receipts.len() {
++            4 => {},
++            5 => { lane.read_selection(self, snapshot).await?; },
++            6 => { lane.read_completion(self, snapshot).await?; },
++            _ => return Err(Error::WrongScope),
++        }
++        lane.refresh(self, snapshot).await?;
++        self.require_live_deadline()?;
++        lane.failed = false;
++        Ok(())
++    }
++
++    pub(in super::super) async fn retained_attestation(&self, snapshot: &LearningIterationSnapshotV1,
++        receipt: &LearningIterationReceiptV1) -> Result<SignedLearningEvidenceV1, Error> {
++        evaluated_prefix(snapshot)?;
++        let mut lane = self.retained.try_lock().map_err(|_| Error::QueueFull)?;
++        if lane.failed { return Err(Error::CommitUncertain); }
++        lane.failed = true;
++        lane.refresh(self, snapshot).await?;
++        let (actual, signed) = match receipt.observation.stage() {
++            Stage::Selection => {
++                let original = lane.read_selection(self, snapshot).await?;
++                (original.receipt().clone(), original.attestation().clone())
++            },
++            Stage::NextUse if snapshot.receipts.len() >= 5 => {
++                let original = lane.read_completion(self, snapshot).await?;
++                (original.receipt().clone(), original.attestation().clone())
++            },
++            _ => return Err(Error::WrongScope),
++        };
++        if actual != *receipt { return Err(Error::WrongScope); }
++        lane.refresh(self, snapshot).await?;
++        let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
++        auth::verify_receipt(&self.common.material, &actual, &signed, fresh)?;
++        self.require_live_deadline()?;
++        lane.failed = false;
++        Ok(signed)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs
+@@ -43,7 +43,46 @@
+     pub(super) original_selection: Option<OriginalCircuitSelectionCommandReceiptV1>,
+ }
+ 
++/// The original initially admitted channels move once into the separate
++/// evaluated continuation. No peer, lifetime or execution bit is recreated.
++pub(super) struct EvaluatedRetainedChannels {
++    pub(super) version: HostAuthorityPeerChannel,
++    pub(super) selector: HostAuthorityPeerChannel,
++    pub(super) next_use: HostAuthorityPeerChannel,
++    pub(super) readiness: HostAuthorityPeerChannel,
++}
++
+ impl Continuation {
++    pub(super) fn take_evaluated_retained_channels(
++        &mut self,
++        owners: &Owners,
++        original: &crate::OriginalCircuitEvaluatedRetentionContextV1,
++    ) -> Result<EvaluatedRetainedChannels, Error> {
++        original.original_receipt_predecessors(auth::now()?)
++            .map_err(|_| Error::WrongScope)?;
++        let snapshot = original.snapshot();
++        let (scope, verifier, training_signature) = original.receipt_configuration();
++        if snapshot.request != owners.material.initial.request
++            || snapshot.owners != owners.material.initial.owners
++            || scope != owners.material.scope
++            || verifier.trust_digest() != owners.material.verifier.trust_digest()
++            || verifier.scope_digest() != owners.material.verifier.scope_digest()
++            || verifier.objective_digest() != owners.material.verifier.objective_digest()
++            || self.records.len() != 3
++            || self.records.iter().zip(&snapshot.receipts).any(|(actual, expected)| &actual.0 != expected)
++            || self.records[2].1 != training_signature
++            || self.version.is_some() || self.selector.is_some()
++            || self.next_use.is_some() || self.readiness.is_some() {
++            return Err(Error::WrongScope);
++        }
++        Ok(EvaluatedRetainedChannels {
++            version: self.version_initial.take().ok_or(Error::CommitUncertain)?,
++            selector: self.selector_initial.take().ok_or(Error::CommitUncertain)?,
++            next_use: self.next_use_initial.take().ok_or(Error::CommitUncertain)?,
++            readiness: self.readiness_initial.take().ok_or(Error::CommitUncertain)?,
++        })
++    }
++
+     pub(super) fn new(
+         experience: OriginalCellQ24MaterialCommandClientV1,
+         dataset: OriginalCellQ24MaterialCommandClientV1,
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs
+@@ -0,0 +1,144 @@
++//! Existing actual A/T/Ineligible B and original S/C owners over the command
++//! codecs. Only same-process transport admission and enrolled keys are fixture
++//! inputs; no response, opaque cut, ordinary deployment or new grant is made.
++
++use super::*;
++use anyhow::Context as _;
++use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;
++use crate::OriginalCircuitLearningReadClientV1;
++use crate::OriginalCircuitLearningReadErrorV1;
++use crate::OriginalCircuitLearningReadOwnerV1;
++use crate::OriginalCircuitNextUseCommandContextV1 as CContext;
++use crate::OriginalCircuitNextUseCommandErrorV1 as CError;
++use crate::OriginalCircuitSelectionCommandContextV1 as SContext;
++use crate::OriginalCircuitSelectionCommandErrorV1 as SError;
++use crate::circuit_feature_current::original_learning_read_fixture as reads;
++use crate::learning_iteration_evidence_client::next_use_command_test_support as c_commands;
++use crate::learning_iteration_evidence_client::selection_command_test_support as s_commands;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
++
++fn published_reader(
++    c: &support::Session,
++    context: ReadContext,
++) -> anyhow::Result<(
++    OriginalCircuitLearningReadClientV1,
++    std::thread::JoinHandle<Result<u64, OriginalCircuitLearningReadErrorV1>>,
++)> {
++    let owner = Arc::new(OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(
++        c.cell.clone(), c.source.as_ref().clone(), c.runtime.identity.clone(), context.clone(),
++    )?);
++    let (client, channel) = reads::evaluated_client(context)?;
++    Ok((client, reads::serve(owner, channel)))
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_s_c_commands_keep_original_owners_full_cuts_and_cold_read_only()
++-> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (mut c, trainer, evaluator, s_predecessor_peers) = Box::pin(published(&mut f)).await?;
++    let (s_live, s_live_peer) = published_reader(&c, ReadContext::for_original_selection(f.readback_context()?)?)?;
++    let s_files = SelectorFiles::new()?;
++    let selector = s_files.owner(&f, OpenReceipt::Fresh)?;
++    let empty_s = s_files.bytes()?;
++    let s_context = SContext::from_original_evaluation(
++        f.host.config.scope.clone(), f.host.config.signing.verifier.clone(), &f.training, &f.evaluation,
++    )?;
++    // The actual changed Candidate T cannot enter the legacy three-cut path.
++    assert!(matches!(SContext::from_original_training(
++        f.trainer_context.dataset.clone(), f.host.config.scope.clone(),
++        f.host.config.signing.verifier.clone(), &f.training,
++    ), Err(SError::Binding("strict original TrainingNoUpdate command profile"))));
++    let s_host = Arc::new(selector.into_evaluated_command_owner(s_live, trainer, evaluator)?);
++    s_commands::reject_wrong_context(&s_host)?;
++    let (s_client, s_channel) = s_commands::client(s_context.clone(), false, None)?;
++    let s_peer = s_commands::serve(Arc::clone(&s_host), s_channel);
++    let selected = s_client.execute_selection().await?;
++    assert_eq!(selected.snapshot().receipts.len(), 5);
++    assert_eq!(&selected.snapshot().receipts[..4], &f.evaluation.snapshot().receipts);
++    assert_eq!(selected.training_attestation(), f.training.attestation());
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    let committed_s = s_files.bytes()?;
++    assert_ne!(committed_s, empty_s);
++    assert_eq!(s_client.readback().await?, selected);
++    assert!(matches!(s_client.execute_selection().await, Err(SError::ReadbackRequired)));
++    assert_eq!(s_files.bytes()?, committed_s);
++    // The original authenticated command receipt alone carries the opaque S.
++    let sealed_s = selected.evaluated_receipt()?;
++    assert_eq!(sealed_s.snapshot(), selected.snapshot());
++    assert_eq!(sealed_s.attestation(), selected.attestation());
++    assert!(matches!(CContext::from_original_selection(
++        f.host.config.scope.clone(), f.host.config.signing.verifier.clone(), &selected,
++    ), Err(CError::Binding("strict original TrainingNoUpdate C profile"))));
++
++    let publication = execute(&c, 1).await?;
++    let actual = read_receipt(&c, &f.definition, &publication)?;
++    assert_eq!(actual.bundle_digest, f.bundle.digest()?);
++    assert_ne!(actual.bundle_digest, f.host.original.candidate.digest()?);
++    let (c_trainer, c_evaluator, c_predecessor_peers) = f.clients()?;
++    let (s_evidence, s_evidence_channel) = s_commands::evidence_client(&s_context)?;
++    let s_evidence_peer = s_commands::serve_evidence(Arc::clone(&s_host), s_evidence_channel);
++    let (c_live, c_live_peer) = published_reader(&c, ReadContext::for_original_next_use(sealed_s.clone())?)?;
++    let c_files = SelectorFiles::new()?;
++    let original_observer = observer(&c_files, &f, &sealed_s, OpenReceipt::Fresh)?;
++    let empty_c = c_files.bytes()?;
++    let c_host = Arc::new(original_observer.into_evaluated_command_owner(c_live, c_trainer, c_evaluator, s_evidence)?);
++    c_commands::reject_wrong_context(&c_host)?;
++    let c_context = CContext::from_original_evaluated_selection(&sealed_s)?;
++    let (c_client, c_channel) = c_commands::client(c_context, false, None)?;
++    let c_peer = c_commands::serve(Arc::clone(&c_host), c_channel);
++    let completed = c_client.attest_completed_task().await?;
++    assert_eq!(completed.snapshot().receipts.len(), 6);
++    assert_eq!(&completed.snapshot().receipts[..5], &selected.snapshot().receipts);
++    assert_eq!(completed.training_attestation(), f.training.attestation());
++    assert_eq!(completed.selection_attestation(), selected.attestation());
++    assert!(matches!(&completed.receipt().observation,
++        LearningIterationObservationV1::RetainedModelNextUse { retained_bundle, .. }
++        if *retained_bundle == f.bundle.digest()?));
++    let committed_c = c_files.bytes()?;
++    assert_ne!(committed_c, empty_c);
++    assert_eq!(c_client.readback().await?, completed);
++    assert!(matches!(c_client.attest_completed_task().await, Err(CError::ReadbackRequired)));
++    assert_eq!(c_files.bytes()?, committed_c);
++    drop(c_client);
++    assert_eq!(c_peer.join().expect("original evaluated C command")?, 2);
++    drop(c_host);
++    assert!(c_live_peer.join().expect("same original C current reader")? > 0);
++    assert!(s_evidence_peer.join().expect("same original S evidence")? > 0);
++    assert!(c_predecessor_peers.finish()?.iter().all(|count| *count > 0));
++
++    // Reopen only the same initialized original C journal. The fresh-shaped
++    // fixture request deliberately probes the recovered server's once bit;
++    // its opaque context has already been attenuated to read-only.
++    let cold_s = sealed_s.clone().into_original_receipt_readback();
++    let recovered_observer = observer(&c_files, &f, &sealed_s, OpenReceipt::Readback)?;
++    let (cold_trainer, cold_evaluator, cold_predecessor_peers) = f.clients()?;
++    let (cold_s_evidence, cold_s_channel) = s_commands::evidence_client(&s_context)?;
++    let cold_s_peer = s_commands::serve_evidence(Arc::clone(&s_host), cold_s_channel);
++    let (cold_live, cold_live_peer) = published_reader(&c, ReadContext::for_original_next_use(cold_s.clone())?)?;
++    let cold_host = Arc::new(recovered_observer.into_evaluated_command_owner(cold_live, cold_trainer, cold_evaluator, cold_s_evidence)?);
++    let (cold_client, cold_channel) = c_commands::client(CContext::from_original_evaluated_selection(&cold_s)?, false, None)?;
++    let cold_peer = c_commands::serve(Arc::clone(&cold_host), cold_channel);
++    assert!(matches!(cold_client.attest_completed_task().await, Err(CError::ReadbackRequired)));
++    let read = cold_client.readback().await?;
++    assert_eq!(read, completed);
++    assert!(matches!(read.evaluated_selection().context("same cold S")?
++        .original_context().require_new_original_receipt(now()?),
++        Err(PublicationError::Binding("recovered evaluated retention is read-only"))));
++    assert_eq!(c_files.bytes()?, committed_c);
++    assert_eq!(s_files.bytes()?, committed_s);
++    drop(cold_client);
++    assert_eq!(cold_peer.join().expect("cold original C command")?, 2);
++    drop(cold_host);
++    assert!(cold_live_peer.join().expect("cold original task reader")? > 0);
++    assert!(cold_s_peer.join().expect("cold original S evidence")? > 0);
++    assert!(cold_predecessor_peers.finish()?.iter().all(|count| *count > 0));
++    drop(s_client);
++    assert_eq!(s_peer.join().expect("original evaluated S command")?, 2);
++    drop(s_host);
++    assert!(s_live_peer.join().expect("same original published task")? > 0);
++    assert!(s_predecessor_peers.finish()?.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs
+@@ -0,0 +1,31 @@
++//! Same-process adapter to the actual evaluated completion-readiness owner.
++//! It changes transport custody only; every response uses original Source/Cell.
++
++use super::*;
++use codex_hepta_neuron::AnchorWitnessStore;
++use super::super::OriginalCircuitLearningReadClientV1;
++use super::super::OriginalCircuitLearningReadOwnerV1;
++use super::super::fixture as reads;
++
++pub(crate) fn client(
++    context: OriginalCircuitEvaluatedLearningReadContextV1,
++) -> anyhow::Result<(OriginalCircuitCompletionReadinessClientV1, HostAuthorityPeerChannel)> {
++    anyhow::ensure!(context.mode() == original::Mode::NextUse);
++    let (original, server) = reads::evaluated_client(context)?;
++    let OriginalCircuitLearningReadClientV1 { context, binding, channel, retained } = original;
++    Ok((OriginalCircuitCompletionReadinessClientV1 { context, binding, channel, retained }, server))
++}
++
++pub(crate) fn reject_legacy_purpose<C: AnchorWitnessStore, S: AnchorWitnessStore>(
++    owner: &OriginalCircuitLearningReadOwnerV1<C, S>,
++    context: OriginalCircuitEvaluatedLearningReadContextV1,
++) -> anyhow::Result<()> {
++    let profile = ReadProfile::Evaluated(context);
++    let mut request = Request::from_profile(&profile, profile.binding(now()?)?, 1)?;
++    request.purpose = PURPOSE.into();
++    anyhow::ensure!(matches!(
++        owner.readiness_response(&serde_json::to_vec(&request)?, 1),
++        Err(Error::Binding("fixed evaluated completion-readiness purpose"))
++    ));
++    Ok(())
++}
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs
+@@ -167,6 +167,20 @@
+         }
+         Ok(())
+     }
++    pub(super) fn require_original_next_use(
++        &self,
++        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<(), Error> {
++        let OriginalCut::NextUse(original) = &self.original else {
++            return Err(Error::Binding("evaluated NextUse-only read purpose"));
++        };
++        if original.snapshot() != expected.snapshot()
++            || original.original_receipt_binding() != expected.original_receipt_binding()
++        {
++            return Err(Error::Binding("same original evaluated read T/B/S context"));
++        }
++        Ok(())
++    }
+ }
+ 
+ impl OriginalCircuitLearningReadClientV1 {
+@@ -201,6 +215,15 @@
+         };
+         original.require_original_selection(expected)
+     }
++    pub(crate) fn require_original_evaluated_next_use(
++        &self,
++        expected: &OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<(), Error> {
++        let ReadProfile::Evaluated(original) = &self.context else {
++            return Err(Error::Binding("original evaluated read capability"));
++        };
++        original.require_original_next_use(expected)
++    }
+ }
+ 
+ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S> {
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs
+@@ -0,0 +1,89 @@
++//! The separate evaluated C command retains the actual opaque five-cut S and
++//! all original T/B/S pins. It cannot execute C or create a missing predecessor.
++
++use super::*;
++
++impl OriginalCircuitNextUseCommandContextV1 {
++    pub fn from_original_evaluated_selection(
++        selection: &OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<Self, Error> {
++        Self::from_evaluated_selection(selection)
++    }
++
++    pub(super) fn from_evaluated_selection(selection: &OriginalCircuitEvaluatedSelectionReceiptV1) -> Result<Self, Error> {
++        let (scope, verifier, training_evidence) = selection.original_context().receipt_configuration();
++        let context = Self {
++            selection: selection.snapshot().clone(), scope, verifier, training_evidence,
++            selection_evidence: selection.attestation().clone(), evaluated: Some(selection.clone()),
++        };
++        context.authenticate(now()?)?;
++        Ok(context)
++    }
++
++    pub(super) fn authenticate_evaluated(
++        &self, original: &OriginalCircuitEvaluatedSelectionReceiptV1, current: u64,
++    ) -> Result<[VerifiedLearningEvidenceV1; 2], Error> {
++        let (scope, verifier, training) = original.original_context().receipt_configuration();
++        if original.snapshot() != &self.selection || scope != self.scope
++            || verifier.trust_digest() != self.verifier.trust_digest()
++            || verifier.scope_digest() != self.verifier.scope_digest()
++            || verifier.objective_digest() != self.verifier.objective_digest()
++            || training != self.training_evidence || original.attestation() != &self.selection_evidence {
++            return Err(Error::Binding("same complete original evaluated C predecessors"));
++        }
++        let [training, _evaluation, selection] = original.original_receipt_predecessors(current)
++            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
++        Ok([training, selection])
++    }
++
++    pub(super) fn operation(&self) -> &'static str {
++        match &self.evaluated {
++            None => wire::OPERATION,
++            Some(_) => "runtime.learning.original-circuit-evaluated-next-use.command.v1",
++        }
++    }
++}
++
++impl PartialEq for OriginalCircuitNextUseCommandReceiptV1 {
++    fn eq(&self, other: &Self) -> bool {
++        self.snapshot == other.snapshot && self.receipt == other.receipt && self.attestation == other.attestation
++            && self.training_evidence == other.training_evidence && self.selection_evidence == other.selection_evidence
++            && self.evaluated.as_ref().map(OriginalCircuitEvaluatedSelectionReceiptV1::original_receipt_binding)
++                == other.evaluated.as_ref().map(OriginalCircuitEvaluatedSelectionReceiptV1::original_receipt_binding)
++    }
++}
++impl Eq for OriginalCircuitNextUseCommandReceiptV1 {}
++impl std::fmt::Debug for OriginalCircuitNextUseCommandReceiptV1 {
++    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        formatter.debug_struct("OriginalCircuitNextUseCommandReceiptV1")
++            .field("snapshot", &self.snapshot).field("receipt", &self.receipt)
++            .field("attestation", &self.attestation).field("training_evidence", &self.training_evidence)
++            .field("selection_evidence", &self.selection_evidence)
++            .field("evaluated_binding", &self.evaluated.as_ref().map(OriginalCircuitEvaluatedSelectionReceiptV1::original_receipt_binding)).finish()
++    }
++}
++
++impl OriginalCircuitNextUseCommandReceiptV1 {
++    pub(crate) fn evaluated_selection(&self) -> Option<&OriginalCircuitEvaluatedSelectionReceiptV1> {
++        self.evaluated.as_ref()
++    }
++}
++
++impl OriginalCircuitNextUseCommandClientV1 {
++    pub fn recover_from_original_evaluated_stream(
++        stream: UnixStream,
++        peer: LearningIterationEvidencePeerV1,
++        original_owner_pidfd: OwnedFd,
++        original: OriginalCircuitEvaluatedSelectionReceiptV1,
++        expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(
++            &original.into_original_receipt_readback())?;
++        let retained = expected.map(|(snapshot, signed)|
++            wire::authenticate_completed(&context, snapshot, signed, now()?)).transpose()?;
++        Self::bind_original_stream(stream, peer, original_owner_pidfd, context, timeout, lifetime,
++            /*execution_requested*/ true, retained)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs
+@@ -0,0 +1,83 @@
++//! The actual original Observer owner retains each fixed command profile and
++//! its original T/B/S clients. No cached receipt substitutes for those reads.
++
++use super::*;
++use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellQ24TrainingCommandClientV1};
++use crate::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
++use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
++use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
++
++pub(super) enum OriginalPredecessors {
++    Legacy(LearningIterationEvidenceClientV1),
++    Evaluated {
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++    },
++}
++
++impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W> {
++    pub(crate) fn from_original_evaluated_receipt_owner(
++        owner: OriginalCircuitNextUseReceiptOwnerV1<W>,
++        live: OriginalCircuitLearningReadClientV1,
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++        selector: LearningIterationEvidenceClientV1,
++    ) -> Result<Self, Error> {
++        let original = owner.original_evaluated_command_selection()
++            .ok_or(Error::Binding("original evaluated Observer custody"))?;
++        let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(original)?;
++        live.require_original_evaluated_next_use(original)
++            .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
++        let (_, readback_only) = owner.original_command_profile();
++        let initial = context.initial()?;
++        if selector.initial != initial || selector.actor_id != context.selection.owners.selector
++            || selector.verifier.trust_digest() != context.verifier.trust_digest()
++            || selector.verifier.scope_digest() != context.verifier.scope_digest()
++            || selector.verifier.objective_digest() != context.verifier.objective_digest() {
++            return Err(Error::Binding("same original evaluated Selector readback client"));
++        }
++        let binding = context.binding(now()?)?;
++        Ok(Self {
++            owner: Mutex::new(owner), live,
++            predecessors: OriginalPredecessors::Evaluated { trainer, evaluator }, selector,
++            context, initial_head: initial.head_digest, binding,
++            execution_requested: AtomicBool::new(readback_only),
++            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
++            connections: Arc::new(Semaphore::new(4)),
++        })
++    }
++
++    pub(super) fn observe_original(
++        &self,
++        owner: &mut OriginalCircuitNextUseReceiptOwnerV1<W>,
++        action: wire::Action,
++    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), OriginalCircuitNextUseReceiptErrorV1> {
++        match &self.predecessors {
++            OriginalPredecessors::Legacy(trainer) => {
++                let source = OriginalCircuitNextUseRemoteSourcesV1 {
++                    snapshot: &self.context.selection, live: &self.live, trainer, selector: &self.selector,
++                };
++                match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::readback_remote(owner, source)),
++                }
++            }
++            OriginalPredecessors::Evaluated { trainer, evaluator } => {
++                let selection = self.context.evaluated.as_ref().ok_or(
++                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding("original evaluated Observer command profile"))?;
++                let source = OriginalCircuitEvaluatedNextUseRemoteSourcesV1 {
++                    snapshot: &self.context.selection, selection, live: &self.live, trainer, evaluator, selector: &self.selector,
++                };
++                let original = match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion(owner, source)),
++                }?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
++            }
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs
+@@ -3,6 +3,9 @@
+ //! carry actual Cell/TaskSource owners and read-only predecessor capabilities.
+ 
+ use super::*;
++#[path = "circuit_evaluated_next_use_remote.rs"]
++mod remote;
++pub use remote::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
+ use crate::OriginalCellEvaluationCommandClientV1;
+ use crate::OriginalCellQ24TrainingCommandClientV1;
+ use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs
+@@ -529,3 +529,9 @@
+     drop(c);
+     f.finish().await
+ }
++
++#[path = "circuit_evaluated_next_use_remote_tests.rs"]
++mod remote_tests;
++
++#[path = "circuit_evaluated_command_roundtrip_tests.rs"]
++mod command_roundtrip_tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs
+@@ -0,0 +1,84 @@
++//! Original evaluated C attestation over the same remote published-task owner.
++//! Read-only T/B/S capabilities do not grant task execution or a new signature.
++
++use super::*;
++
++pub struct OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'a> {
++    pub snapshot: &'a LearningIterationSnapshotV1,
++    pub selection: &'a OriginalCircuitEvaluatedSelectionReceiptV1,
++    pub live: &'a OriginalCircuitLearningReadClientV1,
++    pub trainer: &'a OriginalCellQ24TrainingCommandClientV1,
++    pub evaluator: &'a OriginalCellEvaluationCommandClientV1,
++    pub selector: &'a LearningIterationEvidenceClientV1,
++}
++
++impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_> {
++    fn snapshot(&self) -> &LearningIterationSnapshotV1 { self.snapshot }
++    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> { None }
++    fn selector(&self) -> &LearningIterationEvidenceClientV1 { self.selector }
++    fn evaluated_owners(&self) -> Option<(&OriginalCellQ24TrainingCommandClientV1, &OriginalCellEvaluationCommandClientV1)> {
++        Some((self.trainer, self.evaluator))
++    }
++    fn location(&self) -> ObservationLocation {
++        // Match the original evaluated owner ordering: final live Source/Cell
++        // read follows every awaited T/B/S predecessor read.
++        ObservationLocation::EvaluatedOwner
++    }
++
++    fn require_profile(&self, profile: &Profile) -> Result<(), Error> {
++        let Profile::Evaluated(original) = profile else {
++            return Err(OwnerError::Binding("original evaluated remote NextUse profile").into());
++        };
++        if self.selection.snapshot() != original.snapshot()
++            || self.selection.original_receipt_binding() != original.original_receipt_binding()
++        {
++            return Err(OwnerError::Binding("same original evaluated remote Selection").into());
++        }
++        self.live.require_original_evaluated_next_use(original)?;
++        Ok(())
++    }
++
++    async fn observe(&self, _config: &OriginalCircuitNextUseReceiptConfigV1) -> Result<LearningIterationObservationV1, Error> {
++        let original = OriginalCircuitLearningReadClientV1::read_current(self.live).await?;
++        Ok(original.observation().clone())
++    }
++}
++
++impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
++    pub(crate) fn original_evaluated_command_selection(&self) -> Option<&OriginalCircuitEvaluatedSelectionReceiptV1> {
++        match &self.profile {
++            Profile::Legacy => None,
++            Profile::Evaluated(selection) => Some(selection),
++        }
++    }
++
++    pub async fn attest_original_evaluated_remote_completion(
++        &mut self, source: OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>,
++    ) -> Result<OriginalCircuitEvaluatedNextUseReceiptV1, Error> {
++        let completed = match self.command_origin {
++            CommandOrigin::FreshCreate => self.attest_source(source).await?,
++            CommandOrigin::Recovered => self.readback_source(source).await?,
++        };
++        self.completed_evaluated_next_use(completed)
++    }
++
++    pub async fn readback_evaluated_remote_completion(
++        &mut self, source: OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>,
++    ) -> Result<OriginalCircuitEvaluatedNextUseReceiptV1, Error> {
++        let completed = self.readback_source(source).await?;
++        self.completed_evaluated_next_use(completed)
++    }
++
++    pub fn into_evaluated_command_owner(
++        self,
++        live: OriginalCircuitLearningReadClientV1,
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++        selector: LearningIterationEvidenceClientV1,
++    ) -> Result<crate::OriginalCircuitNextUseCommandOwnerV1<W>, crate::OriginalCircuitNextUseCommandErrorV1>
++    where W: Send + 'static,
++    {
++        crate::OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_receipt_owner(
++            self, live, trainer, evaluator, selector)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote_tests.rs
+@@ -0,0 +1,181 @@
++//! Actual A/T/Ineligible B, published baseline C, original S and remote C.
++//! Same-process transports and enrolled test keys are explicit fixtures; these
++//! cases do not qualify the ordinary startup or independent real task inputs.
++
++use super::*;
++use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;
++use crate::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
++use crate::OriginalCircuitLearningReadClientV1;
++use crate::OriginalCircuitLearningReadOwnerV1;
++use crate::circuit_feature_current::original_evaluated_readiness_fixture as evaluated_ready;
++use crate::circuit_feature_current::original_learning_read_fixture as reads;
++use crate::circuit_feature_current::original_readiness_fixture as readiness;
++use pretty_assertions::assert_eq;
++use pretty_assertions::assert_ne;
++
++type ReadOwner = OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
++
++fn actual_reader(c: &support::Session, selection: &OriginalCircuitEvaluatedSelectionReceiptV1)
++    -> anyhow::Result<(Arc<ReadOwner>, ReadContext)> {
++    let context = ReadContext::for_original_next_use(selection.clone())?;
++    let owner = ReadOwner::from_original_evaluated_owners(
++        c.cell.clone(), c.source.as_ref().clone(), c.runtime.identity.clone(), context.clone(),
++    )?;
++    Ok((Arc::new(owner), context))
++}
++
++fn remote<'a>(
++    snapshot: &'a LearningIterationSnapshotV1,
++    selection: &'a OriginalCircuitEvaluatedSelectionReceiptV1,
++    live: &'a OriginalCircuitLearningReadClientV1,
++    trainer: &'a OriginalCellQ24TrainingCommandClientV1,
++    evaluator: &'a OriginalCellEvaluationCommandClientV1,
++    selector: &'a crate::LearningIterationEvidenceClientV1,
++) -> OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'a> {
++    OriginalCircuitEvaluatedNextUseRemoteSourcesV1 {
++        snapshot, selection, live, trainer, evaluator, selector,
++    }
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_remote_c_requires_actual_completion_and_recovers_six_cut() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
++    let trainer = Arc::new(trainer);
++    let evaluator = Arc::new(evaluator);
++    let s_files = SelectorFiles::new()?;
++    let mut original_s = s_files.owner(&f, OpenReceipt::Fresh)?;
++    let selected = original_s.attest_original_evaluated_selection(sources(
++        f.evaluation.snapshot(), &c, &trainer, &evaluator,
++    )).await?;
++    let s_bytes = s_files.bytes()?;
++    let (s_host, selector, s_peer) = selector_peer(original_s, &selected, &c, &trainer, &evaluator, None)?;
++    let (host, context) = actual_reader(&c, &selected)?;
++    evaluated_ready::reject_legacy_purpose(&host, context.clone())?;
++    let (ready, ready_channel) = evaluated_ready::client(context.clone())?;
++    let ready_peer = readiness::serve(Arc::clone(&host), ready_channel);
++    let files = SelectorFiles::new()?;
++    let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
++    let empty = files.bytes()?;
++    assert!(ready.read_current().await?.is_none());
++    assert_eq!(files.bytes()?, empty);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++
++    let publication = execute(&c, 1).await?;
++    let actual = read_receipt(&c, &f.definition, &publication)?;
++    assert_eq!(actual.bundle_digest, f.bundle.digest()?);
++    assert_ne!(actual.bundle_digest, f.host.original.candidate.digest()?);
++    let observed = ready.read_current().await?.expect("actual original C completed");
++    let (live, channel) = reads::evaluated_client(context)?;
++    let peer = reads::serve(Arc::clone(&host), channel);
++    let completed = owner.attest_original_evaluated_remote_completion(remote(
++        selected.snapshot(), &selected, &live, &trainer, &evaluator, &selector,
++    )).await?;
++    assert_eq!(completed.snapshot().receipts.len(), 6);
++    assert_eq!(&completed.snapshot().receipts[..5], &selected.snapshot().receipts);
++    assert_eq!(&completed.receipt().observation, observed.observation());
++    assert_eq!(LearningIterationCoordinatorV1::from_snapshot(completed.snapshot().clone())?.next_stage(), None);
++    assert!(matches!(completed.receipt().observation,
++        LearningIterationObservationV1::RetainedModelNextUse { retained_bundle, .. }
++        if retained_bundle == f.bundle.digest()?));
++    let committed = files.bytes()?;
++    assert_ne!(committed, empty);
++    drop(owner);
++    let mut cold = observer(&files, &f, &selected, OpenReceipt::Readback)?;
++    let read = cold.attest_original_evaluated_remote_completion(remote(
++        completed.snapshot(), &selected, &live, &trainer, &evaluator, &selector,
++    )).await?;
++    assert_eq!((read.snapshot(), read.receipt(), read.attestation()),
++        (completed.snapshot(), completed.receipt(), completed.attestation()));
++    assert!(matches!(read.original_selection().original_context().require_new_original_receipt(now()?),
++        Err(PublicationError::Binding("recovered evaluated retention is read-only"))));
++    assert_eq!(files.bytes()?, committed);
++    assert_eq!(s_files.bytes()?, s_bytes);
++    drop(cold);
++    drop(live);
++    assert!(peer.join().expect("original remote C source")? > 0);
++    drop(ready);
++    assert_eq!(ready_peer.join().expect("original C readiness")?, 2);
++    drop(host);
++    drop(selector);
++    assert!(s_peer.join().expect("same original S")? > 0);
++    drop(s_host);
++    drop(trainer);
++    drop(evaluator);
++    let counts = peers.finish()?;
++    assert!(counts[0] > 0 && counts[1] > 0);
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_remote_c_refuses_actual_evaluator_withdrawal_without_claim() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
++    let trainer = Arc::new(trainer);
++    let evaluator = Arc::new(evaluator);
++    let s_files = SelectorFiles::new()?;
++    let mut original_s = s_files.owner(&f, OpenReceipt::Fresh)?;
++    let selected = original_s.attest_original_evaluated_selection(sources(
++        f.evaluation.snapshot(), &c, &trainer, &evaluator,
++    )).await?;
++    let (s_host, selector, s_peer) = selector_peer(original_s, &selected, &c, &trainer, &evaluator, None)?;
++    execute(&c, 1).await?;
++    let (host, context) = actual_reader(&c, &selected)?;
++    let (live, channel) = reads::evaluated_client(context)?;
++    let peer = reads::serve(Arc::clone(&host), channel);
++    let files = SelectorFiles::new()?;
++    let mut owner = observer(&files, &f, &selected, OpenReceipt::Fresh)?;
++    let before = files.bytes()?;
++    let publication = f.publication_bytes()?;
++    f.host.retention_b.withdraw_target()?;
++    assert!(matches!(owner.attest_original_evaluated_remote_completion(remote(
++        selected.snapshot(), &selected, &live, &trainer, &evaluator, &selector,
++    )).await, Err(NextUseError::Evaluated(PublicationError::Evaluation(
++        crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain)))));
++    assert_eq!(files.bytes()?, before);
++    assert_eq!(f.publication_bytes()?, publication);
++    drop(owner);
++    drop(live);
++    let _ = peer.join().expect("original C source")?;
++    drop(host);
++    drop(selector);
++    assert_eq!(s_peer.join().expect("S not used after original B refusal")?, 0);
++    drop(s_host);
++    drop(trainer);
++    drop(evaluator);
++    peers.finish()?;
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_readiness_consumes_channel_if_original_completed_becomes_pending() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (mut c, trainer, evaluator, peers) = Box::pin(published(&mut f)).await?;
++    let files = SelectorFiles::new()?;
++    let mut selector = files.owner(&f, OpenReceipt::Fresh)?;
++    let selected = selector.attest_original_evaluated_selection(sources(
++        f.evaluation.snapshot(), &c, &trainer, &evaluator,
++    )).await?;
++    execute(&c, 1).await?;
++    let (host, context) = actual_reader(&c, &selected)?;
++    let (ready, channel) = evaluated_ready::client(context)?;
++    let peer = readiness::changed_reply(Arc::clone(&host), channel, readiness::Change::PendingAfterReady);
++    assert!(ready.read_current().await?.is_some());
++    assert!(matches!(ready.read_current().await,
++        Err(crate::OriginalCircuitLearningReadErrorV1::Binding("completed original C cannot change or become pending"))));
++    assert!(matches!(ready.read_current().await, Err(crate::OriginalCircuitLearningReadErrorV1::Unavailable)));
++    drop(ready);
++    assert_eq!(peer.join().expect("actual C response before named mutation")?, 2);
++    drop(host);
++    drop(selector);
++    drop(trainer);
++    drop(evaluator);
++    peers.finish()?;
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs
+@@ -217,6 +217,10 @@
+         )
+     }
+ 
++    pub(super) fn evaluation_attestation(&self) -> &SignedLearningEvidenceV1 {
++        self.evaluation.attestation()
++    }
++
+     pub(crate) fn receipt_context_binding(&self) -> Digest32 {
+         Digest32::of_parts(&[
+             b"hepta.agentd.original-evaluated-retention-receipt-context.v1\0",
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs
+@@ -35,12 +35,12 @@
+     New: AnchorWitnessStore,
+ > {
+     context: OriginalCircuitEvaluatedRetentionContextV1,
+-    trainer: OriginalCellQ24TrainingCommandClientV1,
+-    evaluator: OriginalCellEvaluationCommandClientV1,
++    pub(super) trainer: OriginalCellQ24TrainingCommandClientV1,
++    pub(super) evaluator: OriginalCellEvaluationCommandClientV1,
+     prepared: PreparedAgentdGenerationUpdateV1<Old, New>,
+     definition: CellDefinitionV1,
+     source: CircuitTaskSourceInputV1,
+-    completed: PublishedCircuitFeatureCompletionV1,
++    pub(super) completed: PublishedCircuitFeatureCompletionV1,
+ }
+ 
+ /// Consume original owner capabilities only after actual Trainer and Evaluator
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs
+@@ -335,3 +335,6 @@
+ 
+ #[path = "circuit_evaluated_retention_receipt_tests.rs"]
+ mod receipt_tests;
++
++#[path = "circuit_evaluated_version_recovery_support_tests.rs"]
++mod version_recovery_tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs
+@@ -0,0 +1,120 @@
++//! Complete original evaluated NoUpdate pins in the existing Selector command
++//! machinery. Legacy constructors keep their original three-cut refusal.
++
++use super::*;
++use crate::OriginalCellEvaluationCommandReceiptV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
++
++impl Clone for OriginalCircuitSelectionCommandContextV1 {
++    fn clone(&self) -> Self {
++        Self {
++            training: self.training.clone(), scope: self.scope.clone(), verifier: self.verifier.clone(),
++            training_evidence: self.training_evidence.clone(),
++            evaluated: self.evaluated.as_ref().map(OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
++        }
++    }
++}
++
++impl OriginalCircuitSelectionCommandContextV1 {
++    pub fn from_original_evaluation(
++        scope: FrozenLearningScopeV2,
++        verifier: LearningEvidenceVerifierV1,
++        training: &OriginalCellQ24TrainingCommandReceiptV1,
++        evaluation: &OriginalCellEvaluationCommandReceiptV1,
++    ) -> Result<Self, Error> {
++        let original = OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
++            scope, verifier, training, evaluation).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        Self::from_evaluated_context(&original)
++    }
++
++    pub(super) fn from_evaluated_context(original: &OriginalCircuitEvaluatedRetentionContextV1) -> Result<Self, Error> {
++        let (scope, verifier, training_evidence) = original.receipt_configuration();
++        let context = Self {
++            training: original.snapshot().clone(), scope, verifier, training_evidence,
++            evaluated: Some(original.clone_for_original_receipt()),
++        };
++        context.authenticate(now()?)?;
++        Ok(context)
++    }
++
++    pub(super) fn authenticate_evaluated(
++        &self, original: &OriginalCircuitEvaluatedRetentionContextV1, current: u64,
++    ) -> Result<VerifiedLearningEvidenceV1, Error> {
++        let (scope, verifier, training) = original.receipt_configuration();
++        if original.snapshot() != &self.training || scope != self.scope
++            || verifier.trust_digest() != self.verifier.trust_digest()
++            || verifier.scope_digest() != self.verifier.scope_digest()
++            || verifier.objective_digest() != self.verifier.objective_digest()
++            || training != self.training_evidence {
++            return Err(Error::Binding("same full original evaluated Selector pins"));
++        }
++        let [training, _evaluation] = original.original_receipt_predecessors(current)
++            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        Ok(training)
++    }
++
++    pub(super) fn operation(&self) -> &'static str {
++        match &self.evaluated {
++            None => wire::OPERATION,
++            Some(_) => "runtime.learning.original-circuit-evaluated-selection.command.v1",
++        }
++    }
++}
++
++impl Clone for OriginalCircuitSelectionCommandReceiptV1 {
++    fn clone(&self) -> Self {
++        Self {
++            snapshot: self.snapshot.clone(), receipt: self.receipt.clone(), attestation: self.attestation.clone(),
++            training_evidence: self.training_evidence.clone(),
++            evaluated: self.evaluated.as_ref().map(OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
++        }
++    }
++}
++impl PartialEq for OriginalCircuitSelectionCommandReceiptV1 {
++    fn eq(&self, other: &Self) -> bool {
++        self.snapshot == other.snapshot && self.receipt == other.receipt && self.attestation == other.attestation
++            && self.training_evidence == other.training_evidence
++            && self.evaluated.as_ref().map(OriginalCircuitEvaluatedRetentionContextV1::receipt_context_binding)
++                == other.evaluated.as_ref().map(OriginalCircuitEvaluatedRetentionContextV1::receipt_context_binding)
++    }
++}
++impl Eq for OriginalCircuitSelectionCommandReceiptV1 {}
++impl std::fmt::Debug for OriginalCircuitSelectionCommandReceiptV1 {
++    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        formatter.debug_struct("OriginalCircuitSelectionCommandReceiptV1")
++            .field("snapshot", &self.snapshot).field("receipt", &self.receipt)
++            .field("attestation", &self.attestation).field("training_evidence", &self.training_evidence)
++            .field("evaluated_binding", &self.evaluated.as_ref().map(OriginalCircuitEvaluatedRetentionContextV1::receipt_context_binding)).finish()
++    }
++}
++
++impl OriginalCircuitSelectionCommandReceiptV1 {
++    pub(crate) fn evaluated_context(&self) -> Option<&OriginalCircuitEvaluatedRetentionContextV1> {
++        self.evaluated.as_ref()
++    }
++
++    pub(crate) fn evaluated_receipt(&self) -> Result<OriginalCircuitEvaluatedSelectionReceiptV1, Error> {
++        OriginalCircuitEvaluatedSelectionReceiptV1::from_original_command_response(self).map_err(Error::Owner)
++    }
++}
++
++impl OriginalCircuitSelectionCommandClientV1 {
++    /// This fresh/cold-independent method restores reads only. Actual opaque
++    /// predecessor pins are attenuated before touching the original channel.
++    pub fn recover_from_original_evaluated_stream(
++        stream: UnixStream,
++        peer: LearningIterationEvidencePeerV1,
++        original_owner_pidfd: OwnedFd,
++        original: OriginalCircuitEvaluatedRetentionContextV1,
++        expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(
++            &original.into_original_receipt_readback())?;
++        let retained = expected.map(|(snapshot, signed)|
++            wire::authenticate_completed(&context, snapshot, signed, now()?)).transpose()?;
++        Self::bind_original_stream(stream, peer, original_owner_pidfd, context, timeout, lifetime,
++            /*execution_requested*/ true, retained)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs
+@@ -0,0 +1,42 @@
++//! Consuming adapter from the existing evaluated Selector to its command host.
++//! Source reads use the upstream evaluated read protocol and original T/B.
++
++use super::*;
++
++impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
++    pub(crate) fn original_evaluated_command_context(&self) -> Option<&OriginalCircuitEvaluatedRetentionContextV1> {
++        match &self.profile {
++            Profile::TrainingNoUpdate => None,
++            Profile::Evaluated(context) => Some(context),
++        }
++    }
++
++    pub fn into_evaluated_command_owner(
++        self,
++        live: OriginalCircuitLearningReadClientV1,
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++    ) -> Result<crate::OriginalCircuitSelectionCommandOwnerV1<W>, crate::OriginalCircuitSelectionCommandErrorV1>
++    where W: Send + 'static,
++    {
++        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_receipt_owner(
++            self, live, trainer, evaluator)
++    }
++}
++
++impl OriginalCircuitEvaluatedSelectionReceiptV1 {
++    /// Only a verified response from the original Selector command constructs
++    /// this transport continuation. Raw snapshot/signature data are not inputs.
++    pub(crate) fn from_original_command_response(
++        original: &crate::OriginalCircuitSelectionCommandReceiptV1,
++    ) -> Result<Self, Error> {
++        let context = original.evaluated_context()
++            .ok_or(OwnerError::Binding("original evaluated Selector command receipt"))?;
++        let value = Self {
++            context: context.clone_for_original_receipt(), snapshot: original.snapshot().clone(),
++            receipt: original.receipt().clone(), attestation: original.attestation().clone(),
++        };
++        value.original_receipt_predecessors(now()?)?;
++        Ok(value)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs
+@@ -0,0 +1,76 @@
++//! Original Selector custody and explicit predecessor clients for each fixed
++//! command purpose. No client is cloned, reopened, signed or discovered here.
++
++use super::*;
++use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellQ24TrainingCommandClientV1};
++use crate::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
++use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
++use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
++
++pub(super) enum OriginalPredecessors {
++    Legacy(LearningIterationEvidenceClientV1),
++    Evaluated {
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++    },
++}
++
++impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W> {
++    pub(crate) fn from_original_evaluated_receipt_owner(
++        owner: OriginalCircuitSelectionReceiptOwnerV1<W>,
++        live: OriginalCircuitLearningReadClientV1,
++        trainer: OriginalCellQ24TrainingCommandClientV1,
++        evaluator: OriginalCellEvaluationCommandClientV1,
++    ) -> Result<Self, Error> {
++        let original = owner.original_evaluated_command_context()
++            .ok_or(Error::Binding("original evaluated Selector custody"))?;
++        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(original)?;
++        live.require_original_evaluated_selection(original)
++            .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let (_, readback_only) = owner.original_command_profile();
++        let initial = context.initial()?;
++        let binding = context.binding(now()?)?;
++        Ok(Self {
++            owner: Mutex::new(owner), live,
++            predecessors: OriginalPredecessors::Evaluated { trainer, evaluator },
++            context, initial_head: initial.head_digest, binding,
++            execution_requested: AtomicBool::new(readback_only),
++            runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
++            connections: Arc::new(Semaphore::new(4)),
++        })
++    }
++
++    pub(super) fn observe_original(
++        &self,
++        owner: &mut OriginalCircuitSelectionReceiptOwnerV1<W>,
++        action: wire::Action,
++    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), OriginalCircuitSelectionReceiptErrorV1> {
++        match &self.predecessors {
++            OriginalPredecessors::Legacy(trainer) => {
++                let source = OriginalCircuitSelectionRemoteSourcesV1 {
++                    snapshot: &self.context.training, live: &self.live, trainer,
++                };
++                match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::readback_remote(owner, source)),
++                }
++            }
++            OriginalPredecessors::Evaluated { trainer, evaluator } => {
++                self.context.evaluated.as_ref().ok_or(
++                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding("original evaluated Selector command profile"))?;
++                let source = OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {
++                    snapshot: &self.context.training, live: &self.live, trainer, evaluator,
++                };
++                let original = match action {
++                    wire::Action::Execute => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection(owner, source)),
++                    wire::Action::Readback => self.runtime.block_on(
++                        OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection(owner, source)),
++                }?;
++                Ok((original.receipt().clone(), original.attestation().clone()))
++            }
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs
+@@ -9,6 +9,8 @@
+ 
+ #[path = "circuit_evaluated_selection_remote.rs"]
+ mod remote;
++#[path = "circuit_evaluated_selection_command_owner_adapter.rs"]
++mod command_owner_adapter;
+ pub use remote::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
+ 
+ pub struct OriginalCircuitEvaluatedSelectionReceiptConfigV1 {
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs
+@@ -0,0 +1,158 @@
++//! Actual UID-0 FinalUse issuer mechanism. Original T/B and publication are
++//! real fixture owners; Root credentials and same-process transport are test
++//! inputs. This ignored suite is not part of a default non-root PASS.
++
++use super::*;
++use anyhow::Context as _;
++use crate::AgentdUnixFinalUseGrantProvider;
++use crate::NeuronGenerationCurrentOwnerV1;
++use crate::NeuronGenerationUpdateReadbackV1;
++use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;
++use codex_hepta_contracts::FinalUseBinding;
++use codex_hepta_contracts::SignedFinalUseGrant;
++use pretty_assertions::assert_eq;
++use std::io::Read;
++use std::io::Write;
++use std::os::unix::net::UnixStream;
++use std::sync::Mutex;
++
++fn original_root_reply(
++    mut stream: UnixStream,
++    binding: FinalUseBinding,
++    grant: SignedFinalUseGrant,
++) -> std::thread::JoinHandle<anyhow::Result<()>> {
++    std::thread::spawn(move || {
++        stream.set_read_timeout(Some(Duration::from_secs(30)))?;
++        let mut length = [0; 4];
++        stream.read_exact(&mut length)?;
++        let length = u32::from_be_bytes(length) as usize;
++        anyhow::ensure!((1..=4096).contains(&length), "original Root request bound");
++        let mut bytes = vec![0; length];
++        stream.read_exact(&mut bytes)?;
++        let request: serde_json::Value = serde_json::from_slice(&bytes)?;
++        assert_eq!(request, serde_json::json!({
++            "schema_version": 1,
++            "operation": "runtime.agentd.production_operation",
++            "binding": binding,
++        }));
++        let response = serde_json::to_vec(&serde_json::json!({
++            "schema_version": 1,
++            "revocations": { "authority_epoch": 1, "revision": 1, "revoked_grant_ids": [] },
++            "grant": grant,
++            "denial_reason": null,
++        }))?;
++        stream.write_all(&(response.len() as u32).to_be_bytes())?;
++        stream.write_all(&response)?;
++        let mut extra = [0; 1];
++        assert_eq!(stream.read(&mut extra)?, 0, "one original issuer request");
++        Ok(())
++    })
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++#[ignore = "requires the original UID-0 issuer fixture"]
++async fn evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c()
++-> anyhow::Result<()> {
++    // SAFETY: this is the existing explicitly selected UID-0 issuer suite.
++    anyhow::ensure!(unsafe { libc::geteuid() } == 0, "actual UID-0 issuer fixture required");
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let inputs = f.inputs()?;
++    let control = Arc::clone(&inputs.current);
++    let operation = crate::learning_retained_task_operation_id_v1(
++        &LearningIterationCoordinatorV1::from_snapshot(f.evaluation.snapshot().clone())?,
++    )?;
++    let arm = Arc::new(Mutex::new(None::<Digest32>));
++    let (reached_tx, reached_rx) = tokio::sync::oneshot::channel();
++    let (release_tx, release_rx) = std::sync::mpsc::channel();
++    let watched = Arc::clone(&control);
++    let armed = Arc::clone(&arm);
++    let watched_operation = operation.clone();
++    let mut reached_tx = Some(reached_tx);
++    let mut published_e_reads = 0_u64;
++    let (evaluator, evaluator_peer) = f.host.host.as_ref().context("same original E host")?
++        .fixture_original_readback_connection_before_response(move || {
++            let expected = *armed.lock().map_err(|_| anyhow::anyhow!("fixture intent arm"))?;
++            let Some(intent) = expected else { return Ok(()); };
++            let prepared = NeuronGenerationCurrentOwnerV1::recover_operation(
++                &watched, watched_operation.as_str(), intent,
++            )?;
++            if matches!(NeuronGenerationCurrentOwnerV1::read_operation(&watched, &prepared)?,
++                NeuronGenerationUpdateReadbackV1::Published(_))
++            {
++                published_e_reads += 1;
++                // The first post-publication E read belongs to the consumed
++                // publication. Its second read is Version's final read after
++                // actual C install and reader construction. No response is
++                // replaced; pause before calling the real E dispatch.
++                if published_e_reads == 2 {
++                    reached_tx.take().context("one original late E boundary")?
++                        .send(()).map_err(|_| anyhow::anyhow!("fixture observer dropped"))?;
++                    release_rx.recv_timeout(Duration::from_secs(30))?;
++                }
++            }
++            Ok(())
++        })?;
++    let (held, peers) = Box::pin(held_predecessors_with_evaluator(&f, evaluator, evaluator_peer)).await?;
++    let (task, c_runtime) = support::retained_version_task_inputs(
++        f.c.take().context("one actual separate C admission")?,
++        f.definition.clone(), f.source_c.clone(), Arc::clone(&f.host.original.baseline),
++        f.bundle.clone(), f.original_source.as_ref().clone(), f.identity_a.clone(),
++    )?;
++    let (root_stream, root_peer) = UnixStream::pair()?;
++    let issuer = AgentdUnixFinalUseGrantProvider::from_root_stream(
++        root_stream, std::process::id(), commands::pidfd()?,
++        Duration::from_secs(30), Duration::from_secs(300),
++    )?;
++    let host = Arc::new(Version::from_original_evaluated_owners(
++        f.host.original.command_config.clone(), held.dataset, held.trainer, held.evaluator,
++        inputs, task, f.host.original.version.retained_artifact_checkpoint()?, issuer,
++        Duration::from_secs(300),
++    )?);
++    let prepared = Version::prepare_original_version_fixture(Arc::clone(&host)).await?;
++    assert!(prepared.publication().is_none());
++    let intent = prepared.intent_digest();
++    *arm.lock().map_err(|_| anyhow::anyhow!("fixture intent arm"))? = Some(intent);
++    let binding = Version::read_original_final_use_binding(Arc::clone(&host)).await?;
++    let nonces = f.host.original.version.authority.capacity()?.used_nonces;
++    let grant = f.host.original.version.sign(&binding)?;
++    let root = original_root_reply(root_peer, binding, grant);
++    let worker = tokio::spawn(Version::run_original_issuer_fixture(Arc::clone(&host)));
++    tokio::time::timeout(Duration::from_secs(30), reached_rx).await??;
++    let original_operation = NeuronGenerationCurrentOwnerV1::recover_operation(
++        &control, operation.as_str(), intent,
++    )?;
++    assert!(matches!(NeuronGenerationCurrentOwnerV1::read_operation(&control, &original_operation)?,
++        NeuronGenerationUpdateReadbackV1::Published(_)));
++    f.host.retention_b.withdraw_target()?;
++    release_tx.send(())?;
++    worker.await??;
++    root.join().expect("actual original Root frame")?;
++    assert!(host.fixture_original_final_use_uncertain());
++    assert!(host.fixture_original_selection_reader_installed()?,
++        "the actual reader was installed before the final failed E read");
++    let published_bytes = f.publication_bytes()?;
++    let c_journal = c_runtime.identity.home_root.join("q24-cell.journal");
++    let installed_c = std::fs::read(&c_journal)?;
++    assert_eq!(f.host.original.version.authority.capacity()?.used_nonces, nonces + 1);
++    assert!(matches!(Version::fixture_read_bound_original_version(Arc::clone(&host)).await,
++        Err(VersionError::CommitUncertain)));
++    let context = crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(f.readback_context()?)?;
++    let (reader, channel) = crate::circuit_feature_current::original_learning_read_fixture::evaluated_client(context)?;
++    let server = tokio::spawn(Version::fixture_serve_original_selection_channel(Arc::clone(&host), channel));
++    assert!(reader.read_current().await.is_err());
++    server.abort();
++    assert!(server.await.expect_err("unready serving lane cancelled").is_cancelled());
++    drop(reader);
++    assert!(Version::run_original_c(Arc::clone(&host), codex_arg0::Arg0DispatchPaths::default()).await.is_err());
++    assert!(Version::prepare_original_version_fixture(Arc::clone(&host)).await.is_err());
++    assert!(matches!(Version::run_original_issuer_fixture(Arc::clone(&host)).await,
++        Err(VersionError::ReadbackRequired)));
++    assert_eq!(f.publication_bytes()?, published_bytes);
++    assert_eq!(std::fs::read(c_journal)?, installed_c);
++    assert_eq!(f.host.original.version.authority.capacity()?.used_nonces, nonces + 1);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    drop(c_runtime);
++    f.finish().await
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs
+@@ -0,0 +1,47 @@
++//! Test transport access to the actual Version selection-serving loop.
++//! No phase, reader, outcome, grant or original-owner result is constructed.
++
++use super::*;
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    pub(crate) fn fixture_original_final_use_uncertain(&self) -> bool {
++        self.original_final_use_outcome() == RetainedVersionFinalUseOutcomeV1::Uncertain
++    }
++
++    /// The caller has already completed a real cold read. Construct its next
++    /// original wire request from that held pin, without a fixture-side current
++    /// read that could hide the production command's failure branch.
++    pub(crate) async fn fixture_read_bound_original_version(
++        self: Arc<Self>,
++    ) -> Result<super::super::super::OriginalCircuitRetainedVersionReadbackV1, Error> {
++        tokio::task::spawn_blocking(move || {
++            let (request, pin) = {
++                let state = self.state.try_lock().map_err(|_| Error::Busy)?;
++                let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
++                (wire::Request::new(cut, 1, wire::Action::Readback), cut.duplicate_response_pin())
++            };
++            let response = self.command_response(&serde_json::to_vec(&request)?, 1)?;
++            let response: wire::Response = serde_json::from_slice(&response)?;
++            if response.request != request {
++                return Err(Error::CommitUncertain);
++            }
++            response.result.decode(&pin)
++        }).await.map_err(|_| Error::CommitUncertain)?
++    }
++
++    pub(crate) fn fixture_original_selection_reader_installed(&self) -> Result<bool, Error> {
++        let state = self.state.try_lock().map_err(|_| Error::Busy)?;
++        Ok(state.selection_reader.is_some())
++    }
++
++    pub(crate) async fn fixture_serve_original_selection_channel(
++        self: Arc<Self>,
++        channel: HostAuthorityPeerChannel,
++    ) -> Result<u64, Error> {
++        self.require_lifetime()?;
++        let permit = Arc::clone(&self.connections)
++            .try_acquire_owned().map_err(|_| Error::Busy)?;
++        self.serve_original_selection_channel(channel, permit).await
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs
+@@ -0,0 +1,135 @@
++//! Version cold readback uses the same real Material journals, Source/Ledger,
++//! native T and completed Ineligible B. Only same-process sockets and enrolled
++//! fixture keys differ from deployment. No receipt is supplied as a response.
++
++use super::*;
++use anyhow::Context as _;
++use ed25519_dalek::SigningKey;
++use pretty_assertions::assert_eq;
++use std::time::Duration;
++use crate::OriginalCellEvaluationCommandConnectionV1;
++use crate::OriginalCellQ24DatasetCommandReadbackV1;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24MaterialEvidenceRoleV1;
++use crate::OriginalCellQ24MaterialReceiptFilesV1;
++use crate::OriginalCellQ24MaterialReceiptOwnersV1;
++use crate::OriginalCellQ24TrainingCommandConnectionV1;
++use crate::OriginalCircuitRetainedVersionHostV1 as Version;
++use crate::OriginalCircuitRetainedVersionRecoveryV1;
++use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;
++use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
++
++struct HeldPredecessors {
++    dataset: OriginalCellQ24DatasetCommandReadbackV1,
++    dataset_receipt: OriginalCellQ24MaterialCommandReceiptV1,
++    trainer: OriginalCellQ24TrainingCommandConnectionV1,
++    evaluator: OriginalCellEvaluationCommandConnectionV1,
++}
++
++struct HeldPeers {
++    dataset: material_ports::Peer,
++    trainer: TrainerPeer,
++    evaluator: std::thread::JoinHandle<anyhow::Result<u64>>,
++}
++
++impl HeldPeers {
++    fn finish(self) -> anyhow::Result<[u64; 3]> {
++        Ok([
++            material_ports::finish(self.dataset)?,
++            self.trainer.join().expect("same original T readback")?,
++            self.evaluator.join().expect("same original E readback")?,
++        ])
++    }
++}
++
++async fn held_predecessors(f: &PublicationFixture) -> anyhow::Result<(HeldPredecessors, HeldPeers)> {
++    let (evaluator, evaluator_peer) = f.host.host.as_ref().context("same original E host")?
++        .fixture_original_readback_connection()?;
++    held_predecessors_with_evaluator(f, evaluator, evaluator_peer).await
++}
++
++async fn held_predecessors_with_evaluator(
++    f: &PublicationFixture,
++    evaluator: OriginalCellEvaluationCommandConnectionV1,
++    evaluator_peer: std::thread::JoinHandle<anyhow::Result<u64>>,
++) -> anyhow::Result<(HeldPredecessors, HeldPeers)> {
++    let original = &f.host.original;
++    let material = &original.command_config;
++    let objective = material.initial.request.envelope.objective_digest;
++    // The original fixture dropped these initialized Material owners after
++    // completing the exact same pair. Recovery is permanently command-readonly;
++    // the original files, freeze, keys, Source and Ledger are reused.
++    let owners = OriginalCellQ24MaterialReceiptOwnersV1::recover(
++        OriginalCellQ24MaterialReceiptFilesV1 {
++            experience: opened(&original.root, "positive-experience", false)?,
++            experience_witness: original_witness(&original.root, "positive-experience-witness", &material.scope, objective, false)?,
++            dataset: opened(&original.root, "positive-dataset", false)?,
++            dataset_witness: original_witness(&original.root, "positive-dataset-witness", &material.scope, objective, false)?,
++        },
++        material.clone(), SigningKey::from_bytes(&[44; 32]), SigningKey::from_bytes(&[45; 32]),
++    )?;
++    let host = Arc::new(owners.into_command_owner(
++        f.original_source.as_ref().clone(), f.identity_a.clone(),
++        Arc::clone(&original.ledger), Arc::clone(&original.baseline),
++    )?);
++    let (dataset, dataset_peer) = material_ports::commands_for_original(
++        host, material.clone(), OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
++    )?;
++    let dataset = dataset.into_original_dataset_readback(material)?;
++    let dataset_receipt = dataset.readback().await?;
++    assert_eq!(dataset_receipt.snapshot(), &f.trainer_context.dataset);
++    assert_eq!(dataset_receipt.attestations(), &original.material_evidence);
++    let (trainer, channel) = training_ports::recovered_peer(
++        material.clone(), Some((f.training.receipt().clone(), f.training.attestation().clone())), Duration::from_secs(300),
++    )?;
++    let trainer_peer = commands::serve(Arc::clone(&f.trainer), channel);
++    Ok((HeldPredecessors { dataset, dataset_receipt, trainer, evaluator },
++        HeldPeers { dataset: dataset_peer, trainer: trainer_peer, evaluator: evaluator_peer }))
++}
++
++async fn publish_for_recovery(
++    f: &mut PublicationFixture,
++    original_dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++) -> anyhow::Result<(support::Session, OriginalCircuitRetainedVersionRecoveryV1)> {
++    let (trainer, evaluator, peers) = f.clients()?;
++    let inputs = f.inputs()?;
++    let current = Arc::clone(&inputs.current);
++    let artifacts = Arc::clone(&inputs.authorities.artifacts);
++    let artifact_selection = inputs.selection.signed.clone();
++    let artifact_verifier = inputs.selection.verifier.clone();
++    let checkpoint = f.host.original.version.retained_artifact_checkpoint()?;
++    let prepared = crate::prepare_original_circuit_evaluated_retention_v1(f.context()?, trainer, evaluator, inputs).await?;
++    let intent = prepared.intent_digest();
++    let grant = f.host.original.version.sign(prepared.final_use_binding())?;
++    let (task, trainer, evaluator) = prepared.publish_and_retain_original_evidence(grant).await?;
++    let c = f.start_c(task).await?;
++    drop(trainer);
++    drop(evaluator);
++    peers.finish()?;
++    let mut attestations = original_dataset.attestations().to_vec();
++    attestations.push(f.training.attestation().clone());
++    attestations.push(f.evaluation.attestation().clone());
++    let recovery = OriginalCircuitRetainedVersionRecoveryV1 {
++        training: f.evaluation.snapshot().clone(), attestations, intent_digest: intent,
++        cell: c.cell.clone(), source: Arc::clone(&c.source), identity: c.runtime.identity.clone(),
++        current, artifacts, artifact_checkpoint: checkpoint, artifact_selection, artifact_verifier,
++    };
++    Ok((c, recovery))
++}
++
++fn cold_version(
++    f: &PublicationFixture,
++    held: HeldPredecessors,
++    recovery: OriginalCircuitRetainedVersionRecoveryV1,
++) -> Result<Arc<Version>, crate::OriginalCircuitRetainedVersionErrorV1> {
++    Ok(Arc::new(Version::recover_from_original_evaluated_owners(
++        f.host.original.command_config.clone(), held.dataset, held.trainer, held.evaluator,
++        recovery, Duration::from_secs(300),
++    )?))
++}
++
++#[path = "circuit_evaluated_version_recovery_tests.rs"]
++mod tests;
++
++#[path = "circuit_evaluated_version_final_use_tests.rs"]
++mod final_use_tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
+@@ -0,0 +1,141 @@
++//! Actual original Version cold reads over complete NoUpdate evidence.
++//! These mechanisms do not install startup owners or authorize real C work.
++
++use super::*;
++use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;
++use pretty_assertions::assert_eq;
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_reads_exact_four_cut_without_publication_or_retry() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let intent = recovery.intent_digest;
++    let before = f.publication_bytes()?;
++    let upstream = (f.host.original.predecessor_bytes()?, f.host.upstream_files()?, f.host.original_files()?);
++    let host = cold_version(&f, held, recovery)?;
++    let read = Version::read_original_version_fixture(Arc::clone(&host)).await?;
++    let published = read.publication().expect("actual original published retained C");
++    assert_eq!(published.intent_digest(), intent);
++    assert_eq!(published.bundle_digest(), f.bundle.digest()?);
++    assert_eq!(published.run_id(), &f.source_c.scope.run_id);
++    assert_eq!(published.authority(), codex_hepta_types::AuthorityPosture::DENY_ALL);
++    assert!(matches!(Version::prepare_original_version_fixture(Arc::clone(&host)).await, Err(VersionError::ReadbackRequired)));
++    assert!(matches!(Version::run_original_issuer_fixture(Arc::clone(&host)).await, Err(VersionError::ReadbackRequired)));
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!((f.host.original.predecessor_bytes()?, f.host.upstream_files()?, f.host.original_files()?), upstream);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_requires_current_original_evaluation() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    let host = cold_version(&f, held, recovery)?;
++    f.host.retention_b.withdraw_target()?;
++    assert!(matches!(Version::read_original_version_fixture(Arc::clone(&host)).await,
++        Err(VersionError::Evaluation(crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain))));
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    assert!(Version::prepare_original_version_fixture(Arc::clone(&host)).await.is_err());
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_later_b_withdrawal_removes_reader_for_new_connections() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    let host = cold_version(&f, held, recovery)?;
++    let read = Version::read_original_version_fixture(Arc::clone(&host)).await?;
++    assert!(read.publication().is_some());
++    assert!(host.fixture_original_selection_reader_installed()?);
++    f.host.retention_b.withdraw_target()?;
++    // This helper constructs the next actual request from the already bound
++    // cut. The production command, not a fixture pre-read, observes B's loss.
++    assert!(matches!(Version::fixture_read_bound_original_version(Arc::clone(&host)).await,
++        Err(VersionError::CommitUncertain)));
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    let context = crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(f.readback_context()?)?;
++    let (reader, channel) = crate::circuit_feature_current::original_learning_read_fixture::evaluated_client(context)?;
++    let server = tokio::spawn(Version::fixture_serve_original_selection_channel(Arc::clone(&host), channel));
++    assert!(reader.read_current().await.is_err());
++    server.abort();
++    assert!(server.await.expect_err("unready serving lane cancelled").is_cancelled());
++    drop(reader);
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_artifact_failure_never_admits_selection_reader() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    let host = cold_version(&f, held, recovery)?;
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    // Original D/T/B remain valid; the actual Artifact owner changes after
++    // recovery construction, before its first complete publication read.
++    f.host.original.version.advance_artifact_current()?;
++    assert!(matches!(Version::read_original_version_fixture(Arc::clone(&host)).await,
++        Err(VersionError::CommitUncertain)));
++    assert!(!host.fixture_original_selection_reader_installed()?);
++    let context = crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(f.readback_context()?)?;
++    let (reader, channel) = crate::circuit_feature_current::original_learning_read_fixture::evaluated_client(context)?;
++    let server = tokio::spawn(Version::fixture_serve_original_selection_channel(Arc::clone(&host), channel));
++    // The real serving loop has no admitted reader. Its original client
++    // timeout consumes the connection; the test then cancels the waiting lane.
++    assert!(reader.read_current().await.is_err());
++    server.abort();
++    assert!(server.await.expect_err("unready serving lane cancelled").is_cancelled());
++    drop(reader);
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    drop(host);
++    let reads = peers.finish()?;
++    assert!(reads.iter().all(|count| *count > 0));
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn evaluated_version_cold_rejects_original_training_prefix_without_b() -> anyhow::Result<()> {
++    let mut f = Box::pin(PublicationFixture::ready()).await?;
++    let (held, peers) = Box::pin(held_predecessors(&f)).await?;
++    let (mut c, mut recovery) = Box::pin(publish_for_recovery(&mut f, &held.dataset_receipt)).await?;
++    let before = f.publication_bytes()?;
++    // The actual signed three-cut T is intact, but does not contain original B.
++    // This edits untrusted recovery metadata, never an opaque receipt or key.
++    recovery.training = f.host.config.training.clone();
++    recovery.attestations.pop();
++    assert!(matches!(cold_version(&f, held, recovery), Err(VersionError::Binding("original retained recovery cut"))));
++    assert_eq!(f.publication_bytes()?, before);
++    assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
++    assert_eq!(peers.finish()?, [1, 0, 0]);
++    c.stop().await?;
++    drop(c);
++    f.finish().await
++}
+--- a/codex-rs/hepta-agentd/src/circuit_feature_current.rs
++++ b/codex-rs/hepta-agentd/src/circuit_feature_current.rs
+@@ -392,3 +392,6 @@
+ 
+ #[cfg(test)]
+ pub(crate) use learning_read::readiness_fixture as original_readiness_fixture;
++
++#[cfg(test)]
++pub(crate) use learning_read::evaluated_readiness_fixture as original_evaluated_readiness_fixture;
+--- a/codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs
+@@ -14,12 +14,16 @@
+ use super::OriginalCircuitLearningReadContextV1 as Context;
+ use super::OriginalCircuitLearningReadbackV1 as Readback;
+ use super::now;
++use super::profile::ReadProfile;
++use super::OriginalCircuitEvaluatedLearningReadContextV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
+ use super::wire as original;
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+ use crate::OriginalCellQ24MaterialReceiptConfigV1;
+ use crate::OriginalCircuitSelectionCommandReceiptV1;
+ 
+ const PURPOSE: &str = "runtime.learning.original-circuit.completion-readiness.v1";
++const EVALUATED_PURPOSE: &str = "runtime.learning.original-circuit.evaluated-completion-readiness.v1";
+ 
+ #[derive(Deserialize, Serialize)]
+ #[serde(deny_unknown_fields)]
+@@ -54,6 +58,42 @@
+         }
+         self.original.require_context(context, binding, request_id)
+     }
++
++    pub(super) fn from_profile(
++        context: &ReadProfile,
++        binding: Digest32,
++        request_id: u64,
++    ) -> Result<Self, Error> {
++        match context {
++            ReadProfile::TrainingNoUpdate(legacy) => Self::new(legacy, binding, request_id),
++            ReadProfile::Evaluated(_) => {
++                if context.mode()? != original::Mode::NextUse {
++                    return Err(Error::Binding("evaluated readiness requires original Selection"));
++                }
++                Ok(Self {
++                    purpose: EVALUATED_PURPOSE.into(),
++                    original: context.request(binding, request_id)?,
++                })
++            }
++        }
++    }
++
++    pub(super) fn require_profile(
++        &self,
++        context: &ReadProfile,
++        binding: Digest32,
++        request_id: u64,
++    ) -> Result<(), Error> {
++        match context {
++            ReadProfile::TrainingNoUpdate(legacy) => self.require_context(legacy, binding, request_id),
++            ReadProfile::Evaluated(_) => {
++                if self.purpose != EVALUATED_PURPOSE || context.mode()? != original::Mode::NextUse {
++                    return Err(Error::Binding("fixed evaluated completion-readiness purpose"));
++                }
++                context.require_request(&self.original, binding, request_id)
++            }
++        }
++    }
+ }
+ 
+ #[derive(Deserialize, Serialize)]
+@@ -73,7 +113,7 @@
+ /// Only the concrete ordinary assembly receives this read-only capability.
+ /// Its already-held channel is moved here after actual opaque D and S arrive.
+ pub(crate) struct OriginalCircuitCompletionReadinessClientV1 {
+-    context: Context,
++    context: ReadProfile,
+     binding: Digest32,
+     channel: Mutex<Option<Channel>>,
+     retained: Mutex<Option<Readback>>,
+@@ -86,7 +126,6 @@
+         dataset: &OriginalCellQ24MaterialCommandReceiptV1,
+         selection: &OriginalCircuitSelectionCommandReceiptV1,
+     ) -> Result<Self, Error> {
+-        let started_at = now()?;
+         let context = Context {
+             prefix: selection.snapshot().clone(),
+             scope: material.scope.clone(),
+@@ -94,12 +133,43 @@
+             training_evidence: selection.training_attestation().clone(),
+             selection_evidence: Some(selection.attestation().clone()),
+         };
+-        let binding = original::context_binding(&context, started_at)?;
++        Self::bind_profile(peer, material, dataset, ReadProfile::TrainingNoUpdate(context))
++    }
++
++    pub(crate) fn bind_original_evaluated_stage_channel(
++        peer: HostAuthorityPeerChannel,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        selection: &OriginalCircuitEvaluatedSelectionReceiptV1,
++    ) -> Result<Self, Error> {
++        let (scope, verifier, _) = selection.original_context().receipt_configuration();
++        if scope != material.scope
++            || verifier.trust_digest() != material.verifier.trust_digest()
++            || verifier.scope_digest() != material.verifier.scope_digest()
++            || verifier.objective_digest() != material.verifier.objective_digest()
++        {
++            return Err(Error::Binding("same original evaluated Material readiness context"));
++        }
++        let context = OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection.clone())?;
++        Self::bind_profile(peer, material, dataset, ReadProfile::Evaluated(context))
++    }
++
++    fn bind_profile(
++        peer: HostAuthorityPeerChannel,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        context: ReadProfile,
++    ) -> Result<Self, Error> {
++        let started_at = now()?;
++        let binding = context.binding(started_at)?;
++        if context.mode()? != original::Mode::NextUse {
++            return Err(Error::Binding("completion readiness requires original Selection"));
++        }
+         let initial = LearningIterationCoordinatorV1::new(
+-            context.prefix.request.clone(),
+-            context.prefix.owners.clone(),
++            context.prefix().request.clone(),
++            context.prefix().owners.clone(),
+         )?;
+-        let mut original_dataset = context.prefix.clone();
++        let mut original_dataset = context.prefix().clone();
+         original_dataset.head_digest = original_dataset.receipts[2].predecessor;
+         original_dataset.receipts.truncate(2);
+         if initial.snapshot() != &material.initial || &original_dataset != dataset.snapshot() {
+@@ -112,7 +182,7 @@
+             dataset, material,
+         )
+         .map_err(|_| Error::Binding("same original Material readiness context"))?;
+-        if fresh < started_at || original::context_binding(&context, fresh)? != binding {
++        if fresh < started_at || context.binding(fresh)? != binding {
+             return Err(Error::Binding("original readiness binding and clock"));
+         }
+         Ok(Self {
+@@ -136,13 +206,13 @@
+             .take()
+             .ok_or(Error::Unavailable)?;
+         let started_at = now()?;
+-        if original::context_binding(&self.context, started_at)? != self.binding
++        if self.context.binding(started_at)? != self.binding
+             || !(1..=128).contains(&channel.next_request_id)
+         {
+             return Err(Error::Binding("same bounded readiness connection"));
+         }
+         let request_id = channel.next_request_id;
+-        let request = Request::new(&self.context, self.binding, request_id)?;
++        let request = Request::from_profile(&self.context, self.binding, request_id)?;
+         channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;
+         let bytes = serde_json::to_vec(&request)?;
+         let (channel, response) = tokio::task::spawn_blocking(move || {
+@@ -154,14 +224,14 @@
+         let response: Response = serde_json::from_slice(&response)?;
+         response
+             .request
+-            .require_context(&self.context, self.binding, request_id)?;
++            .require_profile(&self.context, self.binding, request_id)?;
+         let current = match response.result {
+             Readiness::NotReady => None,
+-            Readiness::Ready { read } => Some(read.decode(&self.context)?),
++            Readiness::Ready { read } => Some(self.context.decode(read)?),
+         };
+         channel.peer.check_peer_lifetime()?;
+         let fresh = now()?;
+-        if fresh < started_at || original::context_binding(&self.context, fresh)? != self.binding {
++        if fresh < started_at || self.context.binding(fresh)? != self.binding {
+             return Err(Error::Binding("readiness clock after original peer I/O"));
+         }
+         {
+@@ -186,3 +256,7 @@
+ #[cfg(test)]
+ #[path = "circuit_completion_readiness_support_tests.rs"]
+ pub(crate) mod fixture;
++
++#[cfg(test)]
++#[path = "circuit_evaluated_completion_readiness_support_tests.rs"]
++pub(crate) mod evaluated_fixture;
+--- a/codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs
+@@ -14,6 +14,7 @@
+ use super::OriginalCircuitLearningReadOwnerV1;
+ use super::Readback;
+ use super::now;
++use super::ReadProfile;
+ use super::require_timing;
+ use super::wire;
+ use crate::AgentdRootAuthorityPeer;
+@@ -39,6 +40,38 @@
+         if wire::mode(self.context.legacy()?)? != wire::Mode::NextUse {
+             return Err(Error::Binding("only original C completion readiness"));
+         }
++        self.serve_completion_profile(stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime)
++    }
++
++    /// A separate evaluated five-cut purpose over the existing original C.
++    /// It cannot enter the strict legacy completion-readiness entry point.
++    pub fn serve_evaluated_completion_readiness(
++        &self,
++        stream: UnixStream,
++        consumer: AgentdRootAuthorityPeer,
++        consumer_uid: u32,
++        original_consumer_pidfd: OwnedFd,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<u64, Error> {
++        require_timing(timeout, lifetime)?;
++        if !matches!(&self.context, ReadProfile::Evaluated(_))
++            || self.context.mode()? != wire::Mode::NextUse
++        {
++            return Err(Error::Binding("only original evaluated C completion readiness"));
++        }
++        self.serve_completion_profile(stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime)
++    }
++
++    fn serve_completion_profile(
++        &self,
++        stream: UnixStream,
++        consumer: AgentdRootAuthorityPeer,
++        consumer_uid: u32,
++        original_consumer_pidfd: OwnedFd,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<u64, Error> {
+         let _permit = self
+             .connections
+             .try_acquire()
+@@ -82,14 +115,14 @@
+     ) -> Result<Vec<u8>, Error> {
+         let started_at = now()?;
+         let request: readiness::Request = serde_json::from_slice(bytes)?;
+-        request.require_context(self.context.legacy()?, self.binding, request_id)?;
+-        if wire::context_binding(self.context.legacy()?, started_at)? != self.binding {
++        request.require_profile(&self.context, self.binding, request_id)?;
++        if self.context.binding(started_at)? != self.binding {
+             return Err(Error::Binding("same original readiness context"));
+         }
+         let current = self.read_original_readiness()?;
+         let fresh = now()?;
+         if fresh < started_at
+-            || wire::context_binding(self.context.legacy()?, fresh)? != self.binding
++            || self.context.binding(fresh)? != self.binding
+         {
+             return Err(Error::Binding("readiness window after original owner I/O"));
+         }
+@@ -108,7 +141,7 @@
+ 
+     fn read_original_readiness(&self) -> Result<Option<Readback>, Error> {
+         self.require_task_input_current()?;
+-        let coordinator = wire::decision(self.context.legacy()?)?;
++        let coordinator = self.context.decision()?;
+         let selection =
+             PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
+         self.require_original_selection(&selection)?;
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs
+@@ -266,3 +266,6 @@
+ 
+ #[cfg(test)]
+ pub(crate) use readiness::fixture as readiness_fixture;
++
++#[cfg(test)]
++pub(crate) use readiness::evaluated_fixture as evaluated_readiness_fixture;
+--- a/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs
+@@ -121,6 +121,20 @@
+             return Err(Error::Binding(
+                 "retained Version Selection-only read purpose",
+             ));
++        }
++        self.serve_channel(channel)
++    }
++
++    /// The evaluated Version host may only serve its actual four-cut profile.
++    /// The pre-held original channel is retained; no stream is reconnected.
++    pub(crate) fn serve_original_evaluated_retained_channel(
++        &self,
++        channel: &mut HostAuthorityPeerChannel,
++    ) -> Result<u64, Error> {
++        if !matches!(&self.context, ReadProfile::Evaluated(_))
++            || self.context.mode()? != wire::Mode::Selection
++        {
++            return Err(Error::Binding("evaluated retained Version Selection-only read purpose"));
+         }
+         self.serve_channel(channel)
+     }
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command.rs
+@@ -35,9 +35,13 @@
+ use crate::LearningIterationCheckpointErrorV1;
+ use crate::OriginalCircuitNextUseReceiptErrorV1;
+ use crate::OriginalCircuitSelectionCommandReceiptV1;
++use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
+ use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ use codex_hepta_learning_ledger::verify_signed_actor_separation;
++
++#[path = "circuit_evaluated_next_use_command.rs"]
++mod evaluated;
+ 
+ #[path = "circuit_next_use_command_stage_binding.rs"]
+ mod stage_binding;
+@@ -91,6 +95,7 @@
+     verifier: LearningEvidenceVerifierV1,
+     training_evidence: SignedLearningEvidenceV1,
+     selection_evidence: SignedLearningEvidenceV1,
++    evaluated: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
+ }
+ 
+ impl OriginalCircuitNextUseCommandContextV1 {
+@@ -99,6 +104,9 @@
+         verifier: LearningEvidenceVerifierV1,
+         original: &OriginalCircuitSelectionCommandReceiptV1,
+     ) -> Result<Self, Error> {
++        if original.evaluated_context().is_some() {
++            return Err(Error::Binding("strict original TrainingNoUpdate C profile"));
++        }
+         Self::from_checkpoint(
+             original.snapshot().clone(),
+             scope,
+@@ -121,12 +129,16 @@
+             verifier,
+             training_evidence,
+             selection_evidence,
++            evaluated: None,
+         };
+         context.authenticate(now()?)?;
+         Ok(context)
+     }
+ 
+     fn authenticate(&self, current: u64) -> Result<[VerifiedLearningEvidenceV1; 2], Error> {
++        if let Some(selection) = &self.evaluated {
++            return self.authenticate_evaluated(selection, current);
++        }
+         let coordinator = LearningIterationCoordinatorV1::from_snapshot(self.selection.clone())?;
+         self.scope.validate_snapshot(&self.selection)?;
+         if self.selection.receipts.len() != 4
+@@ -194,6 +206,12 @@
+ 
+     fn binding(&self, current: u64) -> Result<Digest32, Error> {
+         self.authenticate(current)?;
++        if let Some(selection) = &self.evaluated {
++            return Ok(Digest32::of_parts(&[
++                b"hepta.agentd.original-circuit-evaluated-next-use-command.v1\0",
++                selection.original_receipt_binding().as_array(),
++            ]));
++        }
+         Ok(Digest32::of_parts(&[
+             b"hepta.agentd.original-circuit-next-use-command.v1\0",
+             &encode_original_owner_snapshot_v1(&self.selection)?,
+@@ -212,13 +230,14 @@
+ /// The original Observer's verified receipt for actually completed ordinary C.
+ /// A subsequent read always calls the original owner again. Keeping this value
+ /// neither starts C nor supplies a replacement for physical CURRENT.
+-#[derive(Clone, Debug, Eq, PartialEq)]
++#[derive(Clone)]
+ pub struct OriginalCircuitNextUseCommandReceiptV1 {
+     snapshot: LearningIterationSnapshotV1,
+     receipt: LearningIterationReceiptV1,
+     attestation: SignedLearningEvidenceV1,
+     training_evidence: SignedLearningEvidenceV1,
+     selection_evidence: SignedLearningEvidenceV1,
++    evaluated: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
+ }
+ impl OriginalCircuitNextUseCommandReceiptV1 {
+     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+@@ -383,8 +402,13 @@
+     pub async fn attest_completed_task(
+         &self,
+     ) -> Result<OriginalCircuitNextUseCommandReceiptV1, Error> {
+-        if now()? >= self.context.selection.request.envelope.expiry_unix_seconds {
++        let current = now()?;
++        if current >= self.context.selection.request.envelope.expiry_unix_seconds {
+             return Err(Error::DeadlineExceeded);
++        }
++        if let Some(selection) = &self.context.evaluated {
++            selection.original_context().require_new_original_receipt(current)
++                .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
+         }
+         self.exchange(wire::Action::Execute).await
+     }
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs
+@@ -13,7 +13,6 @@
+ use super::require_clock;
+ use super::wire;
+ use crate::OriginalCircuitNextUseReceiptOwnerV1;
+-use crate::OriginalCircuitNextUseRemoteSourcesV1;
+ 
+ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W> {
+     pub(super) fn serve_evidence_channel(
+@@ -55,16 +54,7 @@
+         let (receipt, signed) = {
+             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
+             let original: &mut OriginalCircuitNextUseReceiptOwnerV1<W> = &mut owner;
+-            self.runtime
+-                .block_on(OriginalCircuitNextUseReceiptOwnerV1::readback_remote(
+-                    original,
+-                    OriginalCircuitNextUseRemoteSourcesV1 {
+-                        snapshot: &self.context.selection,
+-                        live: &self.live,
+-                        trainer: &self.trainer,
+-                        selector: &self.selector,
+-                    },
+-                ))?
++            self.observe_original(original, wire::Action::Readback)?
+         };
+         let current = now()?;
+         require_clock(started_at, current)?;
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs
+@@ -32,13 +32,17 @@
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
+ 
++#[path = "circuit_evaluated_next_use_command_service.rs"]
++mod evaluated;
++use evaluated::OriginalPredecessors;
++
+ #[path = "circuit_next_use_command_evidence.rs"]
+ mod evidence;
+ 
+ pub struct OriginalCircuitNextUseCommandOwnerV1<W: AnchorWitnessStore> {
+     owner: Mutex<OriginalCircuitNextUseReceiptOwnerV1<W>>,
+     live: OriginalCircuitLearningReadClientV1,
+-    trainer: LearningIterationEvidenceClientV1,
++    predecessors: OriginalPredecessors,
+     selector: LearningIterationEvidenceClientV1,
+     context: OriginalCircuitNextUseCommandContextV1,
+     initial_head: Digest32,
+@@ -98,7 +102,7 @@
+         Ok(Self {
+             owner: Mutex::new(owner),
+             live,
+-            trainer,
++            predecessors: OriginalPredecessors::Legacy(trainer),
+             selector,
+             context,
+             initial_head: initial.head_digest,
+@@ -220,24 +224,7 @@
+                 Err(_) => return Ok(wire::CommandResult::Busy),
+             };
+             let original: &mut OriginalCircuitNextUseReceiptOwnerV1<W> = &mut owner;
+-            let source = OriginalCircuitNextUseRemoteSourcesV1 {
+-                snapshot: &self.context.selection,
+-                live: &self.live,
+-                trainer: &self.trainer,
+-                selector: &self.selector,
+-            };
+-            if execute {
+-                self.runtime.block_on(
+-                    OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion(
+-                        original, source,
+-                    ),
+-                )
+-            } else {
+-                self.runtime
+-                    .block_on(OriginalCircuitNextUseReceiptOwnerV1::readback_remote(
+-                        original, source,
+-                    ))
+-            }
++            self.observe_original(original, if execute { wire::Action::Execute } else { wire::Action::Readback })
+         };
+         match completed {
+             Ok((receipt, signed)) => wire::encode_completed(&self.context, receipt, signed, now()?),
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs
+@@ -17,6 +17,46 @@
+ use crate::OriginalCircuitSelectionCommandReceiptV1;
+ 
+ impl OriginalCircuitNextUseCommandClientV1 {
++    pub(in super::super) fn bind_original_evaluated_stage_channel(
++        peer: HostAuthorityPeerChannel,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        selection: &OriginalCircuitSelectionCommandReceiptV1,
++        origin: Origin,
++    ) -> Result<Self, Error> {
++        let started_at = now()?;
++        let original = selection.evaluated_receipt()
++            .map_err(|_| Error::Binding("actual original evaluated Selector response"))?;
++        let original = match origin {
++            Origin::Fresh => original,
++            Origin::Recovered => original.into_original_receipt_readback(),
++        };
++        let context = OriginalCircuitNextUseCommandContextV1::from_evaluated_selection(&original)?;
++        let mut actual_dataset = context.selection.clone();
++        actual_dataset.head_digest = actual_dataset.receipts[2].predecessor;
++        actual_dataset.receipts.truncate(2);
++        if context.initial()? != material.initial || &actual_dataset != dataset.snapshot()
++            || context.scope != material.scope
++            || context.verifier.trust_digest() != material.verifier.trust_digest()
++            || context.verifier.scope_digest() != material.verifier.scope_digest()
++            || context.verifier.objective_digest() != material.verifier.objective_digest() {
++            return Err(Error::Binding("same original evaluated Dataset before NextUse"));
++        }
++        let binding = context.binding(started_at)?;
++        peer.check_peer_lifetime()?;
++        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(dataset, material)
++            .map_err(|_| Error::Binding("same original evaluated Material before NextUse"))?;
++        require_clock(started_at, fresh)?;
++        if context.binding(fresh)? != binding {
++            return Err(Error::Binding("unchanged full original evaluated C predecessors"));
++        }
++        Ok(Self {
++            channel: Mutex::new(Some(Channel { peer, next_request_id: 1,
++                execution_requested: origin == Origin::Recovered })),
++            context, binding, retained: Mutex::new(None),
++        })
++    }
++
+     pub(in super::super) fn bind_original_stage_channel(
+         peer: HostAuthorityPeerChannel,
+         material: &OriginalCellQ24MaterialReceiptConfigV1,
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs
+@@ -53,7 +53,7 @@
+     ) -> Self {
+         Self {
+             schema: 1,
+-            operation: OPERATION.into(),
++            operation: context.operation().into(),
+             request_id,
+             binding: binding.to_string(),
+             operation_id: context.selection.request.operation_id.to_string(),
+@@ -71,7 +71,7 @@
+         next_request_id: u64,
+     ) -> Result<(), Error> {
+         if self.schema != 1
+-            || self.operation != OPERATION
++            || self.operation != context.operation()
+             || self.request_id != next_request_id
+             || !(1..=128).contains(&self.request_id)
+             || self.binding != binding.to_string()
+@@ -221,7 +221,7 @@
+         .selected_bundle
+         .digest()
+         .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
+-    let selected = &context.selection.receipts[3].observation;
++    let selected = &context.selection.receipts.last().ok_or(Error::Binding("original Selection predecessor"))?.observation;
+     if !matches!(&receipt.observation,
+         LearningIterationObservationV1::RetainedModelNextUse {
+             retained_bundle, state_partition, checkpoint_digest, selection_digest,
+@@ -267,11 +267,18 @@
+     for predecessor in &predecessors {
+         verify_signed_actor_separation(predecessor, &observer, current)?;
+     }
++    if let Some(selection) = &context.evaluated {
++        for predecessor in selection.original_receipt_predecessors(current)
++            .map_err(crate::OriginalCircuitNextUseReceiptErrorV1::from)? {
++            verify_signed_actor_separation(&predecessor, &observer, current)?;
++        }
++    }
+     Ok(OriginalCircuitNextUseCommandReceiptV1 {
+         snapshot: coordinator.snapshot().clone(),
+         receipt,
+         attestation: signed,
+         training_evidence: context.training_evidence.clone(),
+         selection_evidence: context.selection_evidence.clone(),
++        evaluated: context.evaluated.clone(),
+     })
+ }
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs
+@@ -83,6 +83,7 @@
+ pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
+ pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
+ pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptV1;
++pub use evaluated::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
+ use evaluated::Profile;
+ 
+ /// Fixed original Selection cut and host-enrolled Observer. An immutable trust
+@@ -134,13 +135,16 @@
+         None
+     }
+     fn location(&self) -> ObservationLocation;
++    fn require_profile(&self, _profile: &Profile) -> Result<(), Error> {
++        Ok(())
++    }
+     async fn observe(
+         &self,
+         config: &OriginalCircuitNextUseReceiptConfigV1,
+     ) -> Result<LearningIterationObservationV1, Error>;
+ }
+ 
+-// Only the two concrete source implementations choose this private location.
++// Only the concrete source implementations choose this private location.
+ // The remote path brackets this Observer's journal with both live predecessor
+ // owners. The existing local-owner protocol keeps its original read count.
+ enum ObservationLocation {
+@@ -465,6 +469,7 @@
+         {
+             return Err(OwnerError::Binding("original Selection prefix").into());
+         }
++        source.require_profile(&self.profile)?;
+         let observation = source.observe(&self.config).await?;
+         self.config.scope.validate_observation(&observation)?;
+         Ok(observation)
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version.rs
+@@ -1,5 +1,6 @@
+ //! The original retained-version host and an attenuated ordinary LEARN client.
+-//! This purpose prepares only strict TrainingNoUpdate. Separate original
++//! Separate fixed profiles prepare strict TrainingNoUpdate or complete evaluated
++//! NoUpdate. Separate original
+ //! Artifact selection, Control CURRENT and FinalUse custody remain in the host.
+ //! Root receives neither a grant nor files, keys or a task-execution capability.
+ 
+@@ -55,6 +56,8 @@
+     Material(#[from] crate::OriginalCellQ24MaterialCommandErrorV1),
+     #[error("original Trainer: {0}")]
+     Training(#[from] crate::OriginalCellQ24TrainingCommandErrorV1),
++    #[error("original Evaluator: {0}")]
++    Evaluation(#[from] crate::OriginalCellEvaluationCommandErrorV1),
+     #[error("original Trainer connection: {0}")]
+     Connection(#[from] crate::OriginalCellQ24TrainingCommandConnectionErrorV1),
+     #[error("original task source: {0}")]
+@@ -127,6 +130,21 @@
+ }
+ 
+ #[derive(Clone, Copy, Eq, PartialEq)]
++enum RetainedVersionPurposeV1 {
++    TrainingNoUpdate,
++    EvaluatedNoUpdate,
++}
++
++impl RetainedVersionPurposeV1 {
++    fn operation(self) -> &'static str {
++        match self {
++            Self::TrainingNoUpdate => wire::OPERATION,
++            Self::EvaluatedNoUpdate => "runtime.learning.original-evaluated-retained-version.command.v1",
++        }
++    }
++}
++
++#[derive(Clone, Copy, Eq, PartialEq)]
+ enum RetainedVersionOriginV1 {
+     Fresh,
+     Recovered,
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs
+@@ -140,9 +140,7 @@
+         &self,
+         cut: &OriginalVersionCut,
+     ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
+-        let coordinator = cut
+-            .training
+-            .authenticate(super::now()?, PublicationAccess::Readback)?;
++        let coordinator = cut.coordinator(super::now()?, PublicationAccess::Readback)?;
+         let task = &self.cell.task;
+         task.require_current()?;
+         CircuitTaskSourceReadbackV1::require_original_input(
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs
+@@ -19,6 +19,7 @@
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+ use crate::OriginalCellQ24MaterialReceiptConfigV1;
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::OriginalCellEvaluationCommandReceiptV1;
+ 
+ struct OriginalVersionChannel {
+     peer: HostAuthorityPeerChannel,
+@@ -91,6 +92,32 @@
+         )
+     }
+ 
++    pub(crate) fn bind_original_evaluated_stage_channel(
++        peer: HostAuthorityPeerChannel,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        training: &OriginalCellQ24TrainingCommandReceiptV1,
++        evaluation: &OriginalCellEvaluationCommandReceiptV1,
++    ) -> Result<Self, Error> {
++        let started = now()?;
++        let cut = OriginalVersionCut::from_original_evaluated(material.clone(), dataset.clone(),
++            training, evaluation, RetainedVersionOriginV1::Fresh)?;
++        Self::bind_cut(peer, cut, RetainedVersionOriginV1::Fresh, started)
++    }
++
++    pub(crate) fn recover_original_evaluated_stage_channel(
++        peer: HostAuthorityPeerChannel,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        training: &OriginalCellQ24TrainingCommandReceiptV1,
++        evaluation: &OriginalCellEvaluationCommandReceiptV1,
++    ) -> Result<Self, Error> {
++        let started = now()?;
++        let cut = OriginalVersionCut::from_original_evaluated(material.clone(), dataset.clone(),
++            training, evaluation, RetainedVersionOriginV1::Recovered)?;
++        Self::bind_cut(peer, cut, RetainedVersionOriginV1::Recovered, started)
++    }
++
+     fn bind(
+         peer: HostAuthorityPeerChannel,
+         material: &OriginalCellQ24MaterialReceiptConfigV1,
+@@ -101,6 +128,15 @@
+         let started = now()?;
+         let cut =
+             OriginalVersionCut::from_original(material.clone(), dataset.clone(), training, origin)?;
++        Self::bind_cut(peer, cut, origin, started)
++    }
++
++    fn bind_cut(
++        peer: HostAuthorityPeerChannel,
++        cut: OriginalVersionCut,
++        origin: RetainedVersionOriginV1,
++        started: u64,
++    ) -> Result<Self, Error> {
+         peer.check_peer_lifetime()?;
+         cut.require_fresh(started, PublicationAccess::Readback)?;
+         Ok(Self {
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_context.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_context.rs
+@@ -6,6 +6,9 @@
+ use super::super::context::PublicationAccess;
+ use super::Error;
+ use super::RetainedVersionOriginV1;
++use super::RetainedVersionPurposeV1;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
++use crate::OriginalCellEvaluationCommandReceiptV1;
+ use super::now;
+ use super::require_clock;
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+@@ -17,6 +20,7 @@
+     pub(super) material: OriginalCellQ24MaterialReceiptConfigV1,
+     pub(super) dataset: OriginalCellQ24MaterialCommandReceiptV1,
+     pub(super) training: OriginalCircuitRetainedPublicationContextV1,
++    pub(super) evaluated: Option<OriginalCircuitEvaluatedRetentionContextV1>,
+     pub(super) binding: Digest32,
+     pub(super) initial_binding: Digest32,
+ }
+@@ -68,11 +72,75 @@
+             material,
+             dataset,
+             training,
++            evaluated: None,
+             binding: Digest32::ZERO,
+             initial_binding,
+         };
+         cut.binding = cut.authenticate(fresh, PublicationAccess::Readback)?;
+         Ok(cut)
++    }
++
++    pub(super) fn from_original_evaluated(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: OriginalCellQ24MaterialCommandReceiptV1,
++        training: &OriginalCellQ24TrainingCommandReceiptV1,
++        evaluation: &OriginalCellEvaluationCommandReceiptV1,
++        origin: RetainedVersionOriginV1,
++    ) -> Result<Self, Error> {
++        let started = now()?;
++        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(&dataset, &material)?;
++        let context = match origin {
++            RetainedVersionOriginV1::Fresh => OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
++                material.scope.clone(), material.verifier.clone(), training, evaluation)?,
++            RetainedVersionOriginV1::Recovered => OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
++                material.scope.clone(), material.verifier.clone(), training, evaluation)?,
++        };
++        let (initial_binding, fresh) =
++            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
++        require_clock(started, fresh)?;
++        let mut cut = Self {
++            training: OriginalCircuitRetainedPublicationContextV1 {
++                training: context.snapshot().clone(),
++                scope: material.scope.clone(),
++                verifier: material.verifier.clone(),
++                training_evidence: training.attestation().clone(),
++            },
++            material,
++            dataset,
++            evaluated: Some(context),
++            binding: Digest32::ZERO,
++            initial_binding,
++        };
++        cut.binding = cut.authenticate(fresh, PublicationAccess::Readback)?;
++        Ok(cut)
++    }
++
++    pub(super) fn purpose(&self) -> RetainedVersionPurposeV1 {
++        match &self.evaluated {
++            Some(_) => RetainedVersionPurposeV1::EvaluatedNoUpdate,
++            None => RetainedVersionPurposeV1::TrainingNoUpdate,
++        }
++    }
++
++    pub(super) fn coordinator(
++        &self, at: u64, access: PublicationAccess,
++    ) -> Result<LearningIterationCoordinatorV1, Error> {
++        match &self.evaluated {
++            Some(context) => {
++                let (scope, verifier, training) = context.receipt_configuration();
++                if context.snapshot() != &self.training.training
++                    || scope != self.training.scope
++                    || verifier.trust_digest() != self.training.verifier.trust_digest()
++                    || verifier.scope_digest() != self.training.verifier.scope_digest()
++                    || verifier.objective_digest() != self.training.verifier.objective_digest()
++                    || training != self.training.training_evidence
++                {
++                    return Err(Error::Binding("same original evaluated Version pins"));
++                }
++                Ok(context.authenticate(at, access)?)
++            }
++            None => Ok(self.training.authenticate(at, access)?),
++        }
+     }
+ 
+     pub(super) fn authenticate(
+@@ -80,7 +148,7 @@
+         at: u64,
+         access: PublicationAccess,
+     ) -> Result<Digest32, Error> {
+-        let prefix = self.training.authenticate(at, access)?;
++        let prefix = self.coordinator(at, access)?;
+         let initial = LearningIterationCoordinatorV1::new(
+             prefix.snapshot().request.clone(),
+             prefix.snapshot().owners.clone(),
+@@ -101,8 +169,16 @@
+         }
+         signatures.extend_from_slice(&self.training.training_evidence.signing_bytes());
+         signatures.extend_from_slice(&self.training.training_evidence.signature);
++        if let Some(context) = &self.evaluated {
++            signatures.extend_from_slice(&context.evaluation_attestation().signing_bytes());
++            signatures.extend_from_slice(&context.evaluation_attestation().signature);
++        }
++        let domain: &[u8] = match self.purpose() {
++            RetainedVersionPurposeV1::TrainingNoUpdate => b"hepta.agentd.original-retained-version.command.v1\0",
++            RetainedVersionPurposeV1::EvaluatedNoUpdate => b"hepta.agentd.original-evaluated-retained-version.command.v1\0",
++        };
+         Ok(Digest32::of_parts(&[
+-            b"hepta.agentd.original-retained-version.command.v1\0",
++            domain,
+             self.initial_binding.as_array(),
+             &encode_original_owner_snapshot_v1(prefix.snapshot())?,
+             self.training.scope.binding().as_array(),
+@@ -145,6 +221,7 @@
+             material: self.material.clone(),
+             dataset: self.dataset.clone(),
+             training: self.original_context(),
++            evaluated: self.evaluated.as_ref().map(OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
+             binding: self.binding,
+             initial_binding: self.initial_binding,
+         }
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs
+@@ -16,7 +16,7 @@
+ use super::RetainedVersionFinalUseOutcomeV1;
+ use super::RetainedVersionHostPhaseV1;
+ use super::RetainedVersionHostStateV1;
+-use crate::PreparedOriginalCircuitRetainedPublicationV1;
++use super::RetainedVersionPreparedV1;
+ 
+ impl OriginalCircuitRetainedVersionHostV1 {
+     pub(super) fn prepare_original(
+@@ -38,14 +38,18 @@
+         task.require_completed_a(&inputs.completed)?;
+         cut.require_fresh(super::super::now()?, PublicationAccess::NewWork)?;
+         let trainer = state.trainer.take().ok_or(Error::CommitUncertain)?;
+-        let prepared = self
+-            .runtime
+-            .block_on(crate::prepare_original_circuit_retained_publication_v1(
+-                cut.original_context(),
+-                trainer,
+-                *inputs,
+-            ))
+-            .map_err(|_| Error::CommitUncertain)?;
++        let prepared = match &cut.evaluated {
++            None => RetainedVersionPreparedV1::TrainingNoUpdate(self.runtime.block_on(
++                crate::prepare_original_circuit_retained_publication_v1(
++                    cut.original_context(), trainer, *inputs)).map_err(|_| Error::CommitUncertain)?),
++            Some(context) => {
++                let evaluator = state.evaluator.take().ok_or(Error::CommitUncertain)?;
++                RetainedVersionPreparedV1::EvaluatedNoUpdate(self.runtime.block_on(
++                    crate::prepare_original_circuit_evaluated_retention_v1(
++                        context.clone_for_original_receipt(), trainer, evaluator, *inputs))
++                    .map_err(|_| Error::CommitUncertain)?)
++            }
++        };
+         state.phase = Some(RetainedVersionHostPhaseV1::Prepared {
+             original: Box::new(prepared),
+             task,
+@@ -146,12 +150,10 @@
+             else {
+                 return Err(Error::CommitUncertain);
+             };
+-            task.require_completed_a(&original.completed)?;
++            task.require_completed_a(original.completed())?;
+             require_not_cancelled(&cancellation)?;
+-            let (published, trainer) = self.runtime.block_on(
+-                PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(
+-                    *original, signed,
+-                ),
++            let (published, trainer, evaluator) = self.runtime.block_on(
++                (*original).publish(signed),
+             ).map_err(|_| Error::CommitUncertain)?;
+             let cut = state.cut.as_ref().ok_or(Error::CommitUncertain)?;
+             let intent = match &published.0.publication {
+@@ -167,6 +169,7 @@
+                 .install_original(published, cut, intent)
+                 .map_err(|_| Error::CommitUncertain)?;
+             state.trainer = Some(trainer);
++            state.evaluator = evaluator;
+             state.phase = Some(RetainedVersionHostPhaseV1::Installed {
+                 original: installed,
+                 config: Some(config),
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs
+@@ -21,7 +21,9 @@
+ use tokio::sync::Semaphore;
+ 
+ use super::super::OriginalCircuitRetainedPublicationInputsV1;
+-use super::super::PreparedOriginalCircuitRetainedPublicationV1;
++use super::RetainedVersionPurposeV1;
++use crate::OriginalCellEvaluationCommandConnectionV1;
++use crate::OriginalCellEvaluationCommandClientV1;
+ use super::Error;
+ use super::OriginalCircuitRetainedTaskInputsV1;
+ use super::RetainedVersionOriginV1;
+@@ -51,8 +53,28 @@
+ #[path = "circuit_retained_version_state.rs"]
+ mod state;
+ 
+-type RetainedVersionPreparedV1 =
+-    PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
++#[path = "circuit_retained_version_prepared.rs"]
++mod prepared_custody;
++use prepared_custody::RetainedVersionPreparedV1;
++
++enum InitialVersionEvidence {
++    TrainingNoUpdate,
++    EvaluatedNoUpdate(OriginalCellEvaluationCommandConnectionV1),
++}
++impl InitialVersionEvidence {
++    fn purpose(&self) -> RetainedVersionPurposeV1 {
++        match self {
++            Self::TrainingNoUpdate => RetainedVersionPurposeV1::TrainingNoUpdate,
++            Self::EvaluatedNoUpdate(_) => RetainedVersionPurposeV1::EvaluatedNoUpdate,
++        }
++    }
++    fn into_evaluator(self) -> Option<OriginalCellEvaluationCommandConnectionV1> {
++        match self {
++            Self::TrainingNoUpdate => None,
++            Self::EvaluatedNoUpdate(evaluator) => Some(evaluator),
++        }
++    }
++}
+ type RetainedVersionInputsV1 =
+     OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+ 
+@@ -120,6 +142,8 @@
+     dataset: OriginalCellQ24DatasetCommandReadbackV1,
+     initial_trainer: Option<OriginalCellQ24TrainingCommandConnectionV1>,
+     trainer: Option<OriginalCellQ24TrainingCommandClientV1>,
++    initial_evaluator: Option<OriginalCellEvaluationCommandConnectionV1>,
++    evaluator: Option<OriginalCellEvaluationCommandClientV1>,
+     cut: Option<OriginalVersionCut>,
+     expected: Option<RetainedVersionColdCutV1>,
+     control: Arc<NeuronGenerationCurrentOwnerV1>,
+@@ -136,6 +160,7 @@
+     material: OriginalCellQ24MaterialReceiptConfigV1,
+     initial_binding: Digest32,
+     origin: RetainedVersionOriginV1,
++    purpose: RetainedVersionPurposeV1,
+     state: Mutex<RetainedVersionHostStateV1>,
+     preparation_requested: AtomicBool,
+     publication_requested: AtomicBool,
+@@ -163,6 +188,40 @@
+         final_use_issuer: AgentdUnixFinalUseGrantProvider,
+         lifetime: Duration,
+     ) -> Result<Self, Error> {
++        Self::from_original_profile(material, dataset, trainer, InitialVersionEvidence::TrainingNoUpdate,
++            inputs, task, artifact_checkpoint, final_use_issuer, lifetime)
++    }
++
++    /// The separate evaluated purpose requires an original E connection held
++    /// before the future T/B cut. The Version host only reads that E owner.
++    pub fn from_original_evaluated_owners(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: OriginalCellQ24DatasetCommandReadbackV1,
++        trainer: OriginalCellQ24TrainingCommandConnectionV1,
++        evaluator: OriginalCellEvaluationCommandConnectionV1,
++        inputs: RetainedVersionInputsV1,
++        task: OriginalCircuitRetainedTaskInputsV1,
++        artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,
++        final_use_issuer: AgentdUnixFinalUseGrantProvider,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        Self::from_original_profile(material, dataset, trainer,
++            InitialVersionEvidence::EvaluatedNoUpdate(evaluator), inputs, task,
++            artifact_checkpoint, final_use_issuer, lifetime)
++    }
++
++    fn from_original_profile(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: OriginalCellQ24DatasetCommandReadbackV1,
++        trainer: OriginalCellQ24TrainingCommandConnectionV1,
++        evidence: InitialVersionEvidence,
++        inputs: RetainedVersionInputsV1,
++        task: OriginalCircuitRetainedTaskInputsV1,
++        artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,
++        final_use_issuer: AgentdUnixFinalUseGrantProvider,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        let purpose = evidence.purpose();
+         let started = super::now()?;
+         let (initial_binding, at) =
+             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
+@@ -188,10 +247,13 @@
+             material,
+             initial_binding,
+             RetainedVersionOriginV1::Fresh,
++            purpose,
+             RetainedVersionHostStateV1 {
+                 dataset,
+                 initial_trainer: Some(trainer),
+                 trainer: None,
++                initial_evaluator: evidence.into_evaluator(),
++                evaluator: None,
+                 cut: None,
+                 expected: None,
+                 control,
+@@ -213,12 +275,43 @@
+         original: OriginalCircuitRetainedVersionRecoveryV1,
+         lifetime: Duration,
+     ) -> Result<Self, Error> {
++        Self::recover_original_profile(material, dataset, trainer,
++            InitialVersionEvidence::TrainingNoUpdate, original, lifetime)
++    }
++
++    /// Read-only cold recovery of a complete four-cut evaluated NoUpdate.
++    /// The original E connection and already-held C owners remain mandatory.
++    pub fn recover_from_original_evaluated_owners(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: OriginalCellQ24DatasetCommandReadbackV1,
++        trainer: OriginalCellQ24TrainingCommandConnectionV1,
++        evaluator: OriginalCellEvaluationCommandConnectionV1,
++        original: OriginalCircuitRetainedVersionRecoveryV1,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        Self::recover_original_profile(material, dataset, trainer,
++            InitialVersionEvidence::EvaluatedNoUpdate(evaluator), original, lifetime)
++    }
++
++    fn recover_original_profile(
++        material: OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: OriginalCellQ24DatasetCommandReadbackV1,
++        trainer: OriginalCellQ24TrainingCommandConnectionV1,
++        evidence: InitialVersionEvidence,
++        original: OriginalCircuitRetainedVersionRecoveryV1,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        let purpose = evidence.purpose();
++        let count = match purpose {
++            RetainedVersionPurposeV1::TrainingNoUpdate => 3,
++            RetainedVersionPurposeV1::EvaluatedNoUpdate => 4,
++        };
+         let (initial_binding, _) =
+             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
+         OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &material)?;
+         if original.intent_digest.is_zero()
+-            || original.training.receipts.len() != 3
+-            || original.attestations.len() != 3
++            || original.training.receipts.len() != count
++            || original.attestations.len() != count
+         {
+             return Err(Error::Binding("original retained recovery cut"));
+         }
+@@ -238,10 +331,13 @@
+             material,
+             initial_binding,
+             RetainedVersionOriginV1::Recovered,
++            purpose,
+             RetainedVersionHostStateV1 {
+                 dataset,
+                 initial_trainer: Some(trainer),
+                 trainer: None,
++                initial_evaluator: evidence.into_evaluator(),
++                evaluator: None,
+                 cut: None,
+                 expected: Some(RetainedVersionColdCutV1 {
+                     training: original.training,
+@@ -261,6 +357,7 @@
+         material: OriginalCellQ24MaterialReceiptConfigV1,
+         initial_binding: Digest32,
+         origin: RetainedVersionOriginV1,
++        purpose: RetainedVersionPurposeV1,
+         state: RetainedVersionHostStateV1,
+         lifetime: Duration,
+     ) -> Result<Self, Error> {
+@@ -272,6 +369,7 @@
+             material,
+             initial_binding,
+             origin,
++            purpose,
+             state: Mutex::new(state),
+             preparation_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),
+             publication_requested: AtomicBool::new(origin == RetainedVersionOriginV1::Recovered),
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs
+@@ -1,6 +1,6 @@
+ //! Private fixture access to the actual command and one issuer worker.
+ //! No fixture constructs a host phase or bypasses its original current reads.
+-use super::super::super::wire;
++use super::wire;
+ use super::*;
+ 
+ impl OriginalCircuitRetainedVersionHostV1 {
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs
+@@ -0,0 +1,70 @@
++//! Private custody of the original publication preparation. Every variant is
++//! consumed once, retaining the same original finite predecessor connections.
++
++use codex_hepta_contracts::{FinalUseBinding, SignedFinalUseGrant};
++use codex_hepta_neuron::FileAnchorWitnessStore;
++use codex_hepta_types::Digest32;
++
++use super::super::Error;
++use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellQ24TrainingCommandClientV1};
++use crate::{PreparedOriginalCircuitEvaluatedRetentionV1, PreparedOriginalCircuitRetainedPublicationV1};
++use crate::PublishedCircuitFeatureTaskV1;
++
++pub(super) enum RetainedVersionPreparedV1 {
++    TrainingNoUpdate(PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>),
++    EvaluatedNoUpdate(PreparedOriginalCircuitEvaluatedRetentionV1<FileAnchorWitnessStore, FileAnchorWitnessStore>),
++}
++
++impl RetainedVersionPreparedV1 {
++    pub(super) fn final_use_binding(&self) -> &FinalUseBinding {
++        match self {
++            Self::TrainingNoUpdate(original) => original.final_use_binding(),
++            Self::EvaluatedNoUpdate(original) => original.final_use_binding(),
++        }
++    }
++
++    pub(super) fn intent_digest(&self) -> Digest32 {
++        match self {
++            Self::TrainingNoUpdate(original) => original.intent_digest(),
++            Self::EvaluatedNoUpdate(original) => original.intent_digest(),
++        }
++    }
++
++    pub(super) fn completed(&self) -> &crate::PublishedCircuitFeatureCompletionV1 {
++        match self {
++            Self::TrainingNoUpdate(original) => &original.completed,
++            Self::EvaluatedNoUpdate(original) => &original.completed,
++        }
++    }
++
++    pub(super) fn trainer(&self) -> &OriginalCellQ24TrainingCommandClientV1 {
++        match self {
++            Self::TrainingNoUpdate(original) => &original.trainer,
++            Self::EvaluatedNoUpdate(original) => &original.trainer,
++        }
++    }
++
++    pub(super) fn evaluator(&self) -> Option<&OriginalCellEvaluationCommandClientV1> {
++        match self {
++            Self::TrainingNoUpdate(_) => None,
++            Self::EvaluatedNoUpdate(original) => Some(&original.evaluator),
++        }
++    }
++
++    pub(super) async fn publish(
++        self,
++        signed: SignedFinalUseGrant,
++    ) -> Result<(PublishedCircuitFeatureTaskV1, OriginalCellQ24TrainingCommandClientV1,
++        Option<OriginalCellEvaluationCommandClientV1>), Error> {
++        match self {
++            Self::TrainingNoUpdate(original) => {
++                let (task, trainer) = original.publish_and_retain_original_trainer(signed).await?;
++                Ok((task, trainer, None))
++            }
++            Self::EvaluatedNoUpdate(original) => {
++                let (task, trainer, evaluator) = original.publish_and_retain_original_evidence(signed).await?;
++                Ok((task, trainer, Some(evaluator)))
++            }
++        }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
+@@ -11,6 +11,8 @@
+ 
+ use super::super::super::context::PublicationAccess;
+ use super::super::Error;
++use super::super::RetainedVersionOriginV1;
++use super::super::RetainedVersionPurposeV1;
+ use super::super::wire;
+ use super::OriginalCircuitRetainedVersionHostV1;
+ use super::RetainedVersionFinalUseOutcomeV1;
+@@ -112,7 +114,7 @@
+             .try_acquire_owned()
+             .map_err(|_| Error::Busy)?;
+         let lifetime = self.remaining_lifetime(lifetime)?;
+-        let mut channel = original_owner_command_channel_v1(
++        let channel = original_owner_command_channel_v1(
+             stream,
+             consumer,
+             consumer_uid,
+@@ -120,24 +122,47 @@
+             timeout,
+             lifetime,
+         )?;
++        self.serve_original_selection_channel(channel, permit).await
++    }
++
++    async fn serve_original_selection_channel(
++        self: Arc<Self>,
++        mut channel: codex_hepta_contracts::HostAuthorityPeerChannel,
++        permit: tokio::sync::OwnedSemaphorePermit,
++    ) -> Result<u64, Error> {
+         loop {
+             let changed = self.installed.notified();
+             self.require_lifetime()?;
+             channel.check_peer_lifetime()?;
+             let reader = {
+                 match self.state.try_lock() {
+-                    Ok(state) => state.selection_reader.as_ref().map(Arc::clone),
++                    Ok(state) if self.original_final_use_outcome() == RetainedVersionFinalUseOutcomeV1::Published => {
++                        if let Some(reader) = state.selection_reader.as_ref() {
++                            // Admission of this connection still requires the
++                            // held full Material/D/T/B windows. A task reader's
++                            // own T/B pins do not replace the Material freeze.
++                            state.cut.as_ref().ok_or(Error::Unavailable)?
++                                .require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++                            Some(Arc::clone(reader))
++                        } else {
++                            None
++                        }
++                    },
++                    Ok(_) => None,
+                     Err(std::sync::TryLockError::WouldBlock) => None,
+                     Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
+                 }
+             };
+             if let Some(reader) = reader {
++                let purpose = self.purpose;
+                 return tokio::task::spawn_blocking(move || {
+                     let _permit = permit;
+-                    OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(
+-                        reader.as_ref(),
+-                        &mut channel,
+-                    )
++                    match purpose {
++                        RetainedVersionPurposeV1::TrainingNoUpdate =>
++                            OriginalCircuitLearningReadOwnerV1::serve_original_retained_channel(reader.as_ref(), &mut channel),
++                        RetainedVersionPurposeV1::EvaluatedNoUpdate =>
++                            OriginalCircuitLearningReadOwnerV1::serve_original_evaluated_retained_channel(reader.as_ref(), &mut channel),
++                    }
+                     .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))
+                 })
+                 .await
+@@ -168,7 +193,7 @@
+         self.require_lifetime()?;
+         let request: wire::Request = serde_json::from_slice(bytes)?;
+         if request.schema != 1
+-            || request.purpose != wire::OPERATION
++            || request.purpose != self.purpose.operation()
+             || request.request_id != request_id
+             || !(1..=128).contains(&request_id)
+             || request.initial_binding != self.initial_binding.to_string()
+@@ -201,6 +226,12 @@
+                 Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
+             };
+             if self.bind_original_predecessor(&mut state).is_err() {
++                if self.origin == RetainedVersionOriginV1::Recovered {
++                    // A formerly admitted cold reader cannot admit another
++                    // connection after its held original cut fails a live read.
++                    // Already handed-out read-only connections are not revoked.
++                    state.selection_reader = None;
++                }
+                 // No complete original predecessor was authenticated. This
+                 // is readback uncertainty, not an accepted prepare dispatch.
+                 // In particular, a wrong external cut cannot spend another
+@@ -212,7 +243,7 @@
+                     wire::Action::Prepare => self.prepare_original(&mut state),
+                     wire::Action::Readback => {
+                         self.preparation_requested.store(true, Ordering::Release);
+-                        self.read_original(&state)
++                        self.read_original_recovery(&mut state)
+                     }
+                 };
+                 state
+@@ -283,3 +314,7 @@
+ #[cfg(test)]
+ #[path = "circuit_retained_version_issuer_host_tests.rs"]
+ mod issuer_fixture;
++
++#[cfg(test)]
++#[path = "circuit_evaluated_version_readiness_support_tests.rs"]
++mod evaluated_reader_fixture;
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+@@ -4,6 +4,9 @@
+ 
+ use super::super::super::context::PublicationAccess;
+ use super::super::Error;
++use super::super::RetainedVersionPurposeV1;
++use super::super::RetainedVersionOriginV1;
++use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellEvaluationCommandConnectionV1};
+ use super::super::OriginalCircuitRetainedVersionReadbackV1;
+ use super::super::context::OriginalVersionCut;
+ use super::OriginalCircuitRetainedVersionHostV1;
+@@ -42,15 +45,28 @@
+         let training = self
+             .runtime
+             .block_on(OriginalCellQ24TrainingCommandClientV1::readback(&trainer))?;
+-        let cut = OriginalVersionCut::from_original(
+-            self.material.clone(),
+-            dataset,
+-            &training,
+-            self.origin,
+-        )?;
++        let (cut, evaluator) = match self.purpose {
++            RetainedVersionPurposeV1::TrainingNoUpdate => (
++                OriginalVersionCut::from_original(self.material.clone(), dataset, &training, self.origin)?,
++                None,
++            ),
++            RetainedVersionPurposeV1::EvaluatedNoUpdate => {
++                let initial = state.initial_evaluator.take().ok_or(Error::ReadbackRequired)?;
++                let evaluator = OriginalCellEvaluationCommandConnectionV1::bind_original_training(
++                    initial, dataset.snapshot().clone(), &training)?;
++                let evaluation = self.runtime.block_on(
++                    OriginalCellEvaluationCommandClientV1::readback(&evaluator))?;
++                let cut = OriginalVersionCut::from_original_evaluated(
++                    self.material.clone(), dataset, &training, &evaluation, self.origin)?;
++                (cut, Some(evaluator))
++            }
++        };
+         if let Some(expected) = &state.expected {
+             let mut signatures = cut.dataset.attestations().to_vec();
+             signatures.push(cut.training.training_evidence.clone());
++            if let Some(context) = &cut.evaluated {
++                signatures.push(context.evaluation_attestation().clone());
++            }
+             if expected.training != cut.training.training || expected.attestations != signatures {
+                 return Err(Error::Binding(
+                     "same original complete cold E/D/T checkpoint",
+@@ -59,9 +75,38 @@
+         }
+         cut.require_fresh(super::super::now()?, PublicationAccess::Readback)?;
+         state.trainer = Some(trainer);
++        state.evaluator = evaluator;
+         state.cut = Some(cut);
+-        state.install_original_selection_reader()?;
+         Ok(())
++    }
++
++    /// A recovered publication is not a ready reader until the actual original
++    /// predecessors, Artifact/CURRENT and held C owners agree across its read.
++    /// A failed predecessor/publication read removes admission for new
++    /// connections. Existing read-only connections keep their own checks.
++    pub(super) fn read_original_recovery(
++        &self,
++        state: &mut RetainedVersionHostStateV1,
++    ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
++        if self.origin != RetainedVersionOriginV1::Recovered {
++            return self.read_original(state);
++        }
++        let retained_reader = state.selection_reader.take();
++        let before = self.read_original(state)?;
++        let reader = match retained_reader {
++            Some(reader) => reader,
++            None => state.build_original_selection_reader()?.ok_or(Error::ReadbackRequired)?,
++        };
++        let after = self.read_original(state)?;
++        if before != after || after.publication().is_none() {
++            return Err(Error::CommitUncertain);
++        }
++        state.cut.as_ref().ok_or(Error::Unavailable)?
++            .require_fresh(super::super::now()?, PublicationAccess::Readback)?;
++        self.require_lifetime()?;
++        state.selection_reader = Some(reader);
++        self.installed.notify_waiters();
++        Ok(after)
+     }
+ 
+     pub(super) fn read_original(
+@@ -97,36 +142,55 @@
+         if self.selection_reader.is_some() {
+             return Ok(());
+         }
++        self.selection_reader = self.build_original_selection_reader()?;
++        Ok(())
++    }
++
++    fn build_original_selection_reader(&self) -> Result<Option<std::sync::Arc<
++        crate::OriginalCircuitLearningReadOwnerV1<
++            codex_hepta_neuron::FileAnchorWitnessStore,
++            codex_hepta_neuron::FileAnchorWitnessStore,
++        >,
++    >>, Error> {
+         let original = match self.phase.as_ref() {
+             Some(
+                 RetainedVersionHostPhaseV1::Installed { original, .. }
+                 | RetainedVersionHostPhaseV1::Recovered(original),
+             ) => original,
+-            _ => return Ok(()),
++            _ => return Ok(None),
+         };
+         let cut = self.cut.as_ref().ok_or(Error::Unavailable)?;
+-        let context = crate::OriginalCircuitLearningReadContextV1 {
+-            prefix: cut.training.training.clone(),
+-            scope: cut.training.scope.clone(),
+-            verifier: cut.training.verifier.clone(),
+-            training_evidence: cut.training.training_evidence.clone(),
+-            selection_evidence: None,
+-        };
+-        let reader = crate::OriginalCircuitLearningReadOwnerV1::from_original_owners(
+-            original.cell.clone(),
+-            original.source.as_ref().clone(),
+-            original.identity.clone(),
+-            context,
+-        )
+-        .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
+-        self.selection_reader = Some(std::sync::Arc::new(reader));
+-        Ok(())
++        let reader = match &cut.evaluated {
++            None => {
++                let context = crate::OriginalCircuitLearningReadContextV1 {
++                    prefix: cut.training.training.clone(), scope: cut.training.scope.clone(),
++                    verifier: cut.training.verifier.clone(),
++                    training_evidence: cut.training.training_evidence.clone(), selection_evidence: None,
++                };
++                crate::OriginalCircuitLearningReadOwnerV1::from_original_owners(
++                    original.cell.clone(), original.source.as_ref().clone(), original.identity.clone(), context)
++            }
++            Some(evaluated) => {
++                let context = crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(evaluated.clone_for_original_receipt())
++                    .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++                crate::OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(
++                    original.cell.clone(), original.source.as_ref().clone(), original.identity.clone(), context)
++            }
++        }.map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
++        Ok(Some(std::sync::Arc::new(reader)))
+     }
+ 
+     fn original_trainer(&self) -> Result<&OriginalCellQ24TrainingCommandClientV1, Error> {
+         match self.phase.as_ref().ok_or(Error::CommitUncertain)? {
+-            RetainedVersionHostPhaseV1::Prepared { original, .. } => Ok(&original.trainer),
++            RetainedVersionHostPhaseV1::Prepared { original, .. } => Ok(original.trainer()),
+             _ => self.trainer.as_ref().ok_or(Error::Unavailable),
++        }
++    }
++
++    fn original_evaluator(&self) -> Result<&OriginalCellEvaluationCommandClientV1, Error> {
++        match self.phase.as_ref().ok_or(Error::CommitUncertain)? {
++            RetainedVersionHostPhaseV1::Prepared { original, .. } => original.evaluator().ok_or(Error::Unavailable),
++            _ => self.evaluator.as_ref().ok_or(Error::Unavailable),
+         }
+     }
+ 
+@@ -145,10 +209,12 @@
+                 "same actual original E/D receipt and signatures",
+             ));
+         }
+-        runtime.block_on(
+-            cut.training
+-                .require_training_current(self.original_trainer()?, PublicationAccess::Readback),
+-        )?;
++        match &cut.evaluated {
++            None => runtime.block_on(cut.training.require_training_current(
++                self.original_trainer()?, PublicationAccess::Readback))?,
++            Some(context) => runtime.block_on(context.require_current(
++                self.original_trainer()?, self.original_evaluator()?, PublicationAccess::Readback))?,
++        }
+         cut.require_fresh(started, PublicationAccess::Readback)
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs
+@@ -34,7 +34,7 @@
+     pub(super) fn new(cut: &OriginalVersionCut, request_id: u64, action: Action) -> Self {
+         Self {
+             schema: 1,
+-            purpose: OPERATION.into(),
++            purpose: cut.purpose().operation().into(),
+             request_id,
+             initial_binding: cut.initial_binding.to_string(),
+             binding: cut.binding.to_string(),
+--- a/codex-rs/hepta-agentd/src/circuit_selection_command.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_command.rs
+@@ -34,9 +34,13 @@
+ use crate::AgentdRootAuthorityPeer;
+ use crate::LearningIterationCheckpointErrorV1;
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
+ use crate::OriginalCircuitSelectionReceiptErrorV1;
+ use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
++
++#[path = "circuit_evaluated_selection_command.rs"]
++mod evaluated;
+ 
+ #[path = "circuit_selection_command_stage_binding.rs"]
+ mod stage_binding;
+@@ -86,12 +90,12 @@
+ 
+ /// Fresh dispatch can only be configured from an actual opaque Trainer result.
+ /// This is a point-in-time predecessor, not a lease or a prefilled future cut.
+-#[derive(Clone)]
+ pub struct OriginalCircuitSelectionCommandContextV1 {
+     training: LearningIterationSnapshotV1,
+     scope: FrozenLearningScopeV2,
+     verifier: LearningEvidenceVerifierV1,
+     training_evidence: SignedLearningEvidenceV1,
++    evaluated: Option<OriginalCircuitEvaluatedRetentionContextV1>,
+ }
+ 
+ impl OriginalCircuitSelectionCommandContextV1 {
+@@ -130,12 +134,16 @@
+             scope,
+             verifier,
+             training_evidence,
++            evaluated: None,
+         };
+         context.authenticate(now()?)?;
+         Ok(context)
+     }
+ 
+     fn authenticate(&self, current: u64) -> Result<VerifiedLearningEvidenceV1, Error> {
++        if let Some(context) = &self.evaluated {
++            return self.authenticate_evaluated(context, current);
++        }
+         let coordinator = LearningIterationCoordinatorV1::from_snapshot(self.training.clone())?;
+         self.scope.validate_snapshot(&self.training)?;
+         let receipt = self
+@@ -182,6 +190,12 @@
+ 
+     fn binding(&self, current: u64) -> Result<Digest32, Error> {
+         self.authenticate(current)?;
++        if let Some(context) = &self.evaluated {
++            return Ok(Digest32::of_parts(&[
++                b"hepta.agentd.original-circuit-evaluated-selection-command.v1\0",
++                context.receipt_context_binding().as_array(),
++            ]));
++        }
+         Ok(Digest32::of_parts(&[
+             b"hepta.agentd.original-circuit-selection-command.v1\0",
+             &encode_original_owner_snapshot_v1(&self.training)?,
+@@ -197,12 +211,12 @@
+ 
+ /// Verified actual Selection output. C may use this exact cut and both original
+ /// signatures; a cached value never substitutes for a subsequent CURRENT read.
+-#[derive(Clone, Debug, Eq, PartialEq)]
+ pub struct OriginalCircuitSelectionCommandReceiptV1 {
+     snapshot: LearningIterationSnapshotV1,
+     receipt: LearningIterationReceiptV1,
+     attestation: SignedLearningEvidenceV1,
+     training_evidence: SignedLearningEvidenceV1,
++    evaluated: Option<OriginalCircuitEvaluatedRetentionContextV1>,
+ }
+ impl OriginalCircuitSelectionCommandReceiptV1 {
+     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+@@ -361,8 +375,12 @@
+     pub async fn execute_selection(
+         &self,
+     ) -> Result<OriginalCircuitSelectionCommandReceiptV1, Error> {
+-        if now()? >= self.context.training.request.envelope.expiry_unix_seconds {
++        let current = now()?;
++        if current >= self.context.training.request.envelope.expiry_unix_seconds {
+             return Err(Error::DeadlineExceeded);
++        }
++        if let Some(context) = &self.context.evaluated {
++            context.require_new_original_receipt(current).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+         }
+         self.exchange(wire::Action::Execute).await
+     }
+--- a/codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs
+@@ -12,7 +12,6 @@
+ use super::now;
+ use super::wire;
+ use crate::OriginalCircuitSelectionReceiptOwnerV1;
+-use crate::OriginalCircuitSelectionRemoteSourcesV1;
+ 
+ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W> {
+     pub(super) fn serve_evidence_channel(
+@@ -53,15 +52,7 @@
+         let (receipt, signed) = {
+             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
+             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
+-            self.runtime
+-                .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
+-                    original,
+-                    OriginalCircuitSelectionRemoteSourcesV1 {
+-                        snapshot: &self.context.training,
+-                        live: &self.live,
+-                        trainer: &self.trainer,
+-                    },
+-                ))?
++            self.observe_original(original, wire::Action::Readback)?
+         };
+         let original = wire::authenticate_receipt(&self.context, receipt, signed, now()?)?;
+         if request.receipt_digest != original.attestation.payload_digest.to_string() {
+--- a/codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs
+@@ -22,6 +22,8 @@
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+ use crate::OriginalCellQ24MaterialReceiptConfigV1;
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::OriginalCellEvaluationCommandReceiptV1;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
+ use crate::learning_iteration_evidence_client::command_evidence::OriginalCommandEvidenceV1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ 
+@@ -96,6 +98,33 @@
+             self.material.verifier.clone(),
+             training,
+         )?;
++        self.finish_binding(dataset, selection, context, started_at)
++    }
++
++    /// Explicit four-cut read-only binding of the same initially held Selector
++    /// peer. The original T/E/S responses remain complete immutable pins.
++    pub fn bind_original_evaluated_selection(
++        self,
++        dataset: OriginalCellQ24MaterialCommandReceiptV1,
++        training: &OriginalCellQ24TrainingCommandReceiptV1,
++        evaluation: &OriginalCellEvaluationCommandReceiptV1,
++        selection: OriginalCircuitSelectionCommandReceiptV1,
++    ) -> Result<LearningIterationEvidenceClientV1, Error> {
++        let started_at = now()?;
++        let original = OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
++            self.material.scope.clone(), self.material.verifier.clone(), training, evaluation,
++        ).map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(&original)?;
++        self.finish_binding(dataset, selection, context, started_at)
++    }
++
++    fn finish_binding(
++        self,
++        dataset: OriginalCellQ24MaterialCommandReceiptV1,
++        selection: OriginalCircuitSelectionCommandReceiptV1,
++        context: OriginalCircuitSelectionCommandContextV1,
++        started_at: u64,
++    ) -> Result<LearningIterationEvidenceClientV1, Error> {
+         if context.initial()? != self.material.initial {
+             return Err(Error::Binding(
+                 "same original Selector readback initial cut",
+@@ -238,7 +267,7 @@
+     request_id: u64,
+ ) -> wire::Request {
+     let mut request = wire::Request::new(context, binding, request_id, wire::Action::Readback);
+-    request.operation = OPERATION.into();
++    request.operation = operation(context).into();
+     request
+ }
+ 
+@@ -250,7 +279,7 @@
+ ) -> Result<(), Error> {
+     let expected = request(context, context_binding(context, current)?, request_id);
+     if observed.schema != expected.schema
+-        || observed.operation != OPERATION
++        || observed.operation != operation(context)
+         || observed.request_id != request_id
+         || !(1..=128).contains(&request_id)
+         || observed.binding != expected.binding
+@@ -266,3 +295,11 @@
+     }
+     Ok(())
+ }
++
++fn operation(context: &OriginalCircuitSelectionCommandContextV1) -> &'static str {
++    if context.evaluated.is_some() {
++        "runtime.learning.original-circuit-evaluated-selection.readback.v1"
++    } else {
++        OPERATION
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs
+@@ -18,7 +18,6 @@
+ use super::original_state;
+ use crate::AgentdRootAuthorityPeer;
+ use crate::OriginalCircuitSelectionReceiptOwnerV1;
+-use crate::OriginalCircuitSelectionRemoteSourcesV1;
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ 
+ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W> {
+@@ -75,15 +74,7 @@
+         let completed = {
+             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
+             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
+-            self.runtime
+-                .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
+-                    original,
+-                    OriginalCircuitSelectionRemoteSourcesV1 {
+-                        snapshot: &self.context.training,
+-                        live: &self.live,
+-                        trainer: &self.trainer,
+-                    },
+-                ))
++            self.observe_original(original, wire::Action::Readback)
+         };
+         // All Cell/Trainer/Selector owner locks are released before encoding
+         // or writing a response. No branch can attest or publish a selection.
+--- a/codex-rs/hepta-agentd/src/circuit_selection_command_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_command_service.rs
+@@ -31,6 +31,10 @@
+ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
+ 
++#[path = "circuit_evaluated_selection_command_service.rs"]
++mod evaluated;
++use evaluated::OriginalPredecessors;
++
+ #[path = "circuit_selection_command_evidence.rs"]
+ mod evidence;
+ 
+@@ -40,7 +44,7 @@
+ pub struct OriginalCircuitSelectionCommandOwnerV1<W: AnchorWitnessStore> {
+     owner: Mutex<OriginalCircuitSelectionReceiptOwnerV1<W>>,
+     live: OriginalCircuitLearningReadClientV1,
+-    trainer: LearningIterationEvidenceClientV1,
++    predecessors: OriginalPredecessors,
+     context: OriginalCircuitSelectionCommandContextV1,
+     initial_head: Digest32,
+     binding: Digest32,
+@@ -89,7 +93,7 @@
+         Ok(Self {
+             owner: Mutex::new(owner),
+             live,
+-            trainer,
++            predecessors: OriginalPredecessors::Legacy(trainer),
+             context,
+             initial_head: initial.head_digest,
+             binding,
+@@ -205,23 +209,7 @@
+                 Err(_) => return Ok(wire::CommandResult::Busy),
+             };
+             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
+-            let source = OriginalCircuitSelectionRemoteSourcesV1 {
+-                snapshot: &self.context.training,
+-                live: &self.live,
+-                trainer: &self.trainer,
+-            };
+-            if execute {
+-                self.runtime.block_on(
+-                    OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(
+-                        original, source,
+-                    ),
+-                )
+-            } else {
+-                self.runtime
+-                    .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
+-                        original, source,
+-                    ))
+-            }
++            self.observe_original(original, if execute { wire::Action::Execute } else { wire::Action::Readback })
+         };
+         match completed {
+             Ok((receipt, signed)) => wire::encode_completed(&self.context, receipt, signed, now()?),
+--- a/codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs
+@@ -15,8 +15,47 @@
+ use crate::OriginalCellQ24MaterialCommandReceiptV1;
+ use crate::OriginalCellQ24MaterialReceiptConfigV1;
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::OriginalCellEvaluationCommandReceiptV1;
++use crate::OriginalCircuitEvaluatedRetentionContextV1;
+ 
+ impl OriginalCircuitSelectionCommandClientV1 {
++    pub(in super::super) fn bind_original_evaluated_stage_channel(
++        peer: HostAuthorityPeerChannel,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        training: &OriginalCellQ24TrainingCommandReceiptV1,
++        evaluation: &OriginalCellEvaluationCommandReceiptV1,
++        origin: Origin,
++    ) -> Result<Self, Error> {
++        let started_at = now()?;
++        let original = match origin {
++            Origin::Fresh => OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
++                material.scope.clone(), material.verifier.clone(), training, evaluation),
++            Origin::Recovered => OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
++                material.scope.clone(), material.verifier.clone(), training, evaluation),
++        }.map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)?;
++        let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(&original)?;
++        let mut actual_dataset = context.training.clone();
++        actual_dataset.head_digest = actual_dataset.receipts[2].predecessor;
++        actual_dataset.receipts.truncate(2);
++        if context.initial()? != material.initial || &actual_dataset != dataset.snapshot() {
++            return Err(Error::Binding("same original evaluated Dataset before Selection"));
++        }
++        let binding = context.binding(started_at)?;
++        peer.check_peer_lifetime()?;
++        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(dataset, material)
++            .map_err(|_| Error::Binding("same original evaluated Material before Selection"))?;
++        require_clock(started_at, fresh)?;
++        if context.binding(fresh)? != binding {
++            return Err(Error::Binding("unchanged full original evaluated predecessors"));
++        }
++        Ok(Self {
++            channel: Mutex::new(Some(Channel { peer, next_request_id: 1,
++                execution_requested: origin == Origin::Recovered })),
++            context, binding, retained: Mutex::new(None),
++        })
++    }
++
+     pub(in super::super) fn bind_original_stage_channel(
+         peer: HostAuthorityPeerChannel,
+         material: &OriginalCellQ24MaterialReceiptConfigV1,
+--- a/codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs
++++ b/codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs
+@@ -53,7 +53,7 @@
+     ) -> Self {
+         Self {
+             schema: 1,
+-            operation: OPERATION.into(),
++            operation: context.operation().into(),
+             request_id,
+             binding: binding.to_string(),
+             operation_id: context.training.request.operation_id.to_string(),
+@@ -71,7 +71,7 @@
+         next_request_id: u64,
+     ) -> Result<(), Error> {
+         if self.schema != 1
+-            || self.operation != OPERATION
++            || self.operation != context.operation()
+             || self.request_id != next_request_id
+             || !(1..=128).contains(&self.request_id)
+             || self.binding != binding.to_string()
+@@ -250,10 +250,17 @@
+         return Err(Error::Binding("original enrolled Selector"));
+     }
+     verify_signed_actor_separation(&training, &selector, current)?;
++    if let Some(original) = &context.evaluated {
++        for predecessor in original.original_receipt_predecessors(current)
++            .map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)? {
++            verify_signed_actor_separation(&predecessor, &selector, current)?;
++        }
++    }
+     Ok(OriginalCircuitSelectionCommandReceiptV1 {
+         snapshot: coordinator.snapshot().clone(),
+         receipt,
+         attestation: signed,
+         training_evidence: context.training_evidence.clone(),
++        evaluated: context.evaluated.as_ref().map(crate::OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
+     })
+ }
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -605,6 +605,8 @@
+ pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
++#[cfg(target_os = "linux")]
++pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptV1;
+ #[cfg(target_os = "linux")]
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs
+@@ -1,6 +1,9 @@
+ //! Explicit same-UID transport and synthetic B time for original host tests.
+ //! Public production factories still require independent original processes.
+ //! Every successful response comes from the actual original host and journals.
++#[path = "neuron_cell_evaluation_initial_connection_support_tests.rs"]
++mod initial_connection;
++
+ use std::os::fd::FromRawFd;
+ use std::os::fd::OwnedFd;
+ use std::os::unix::net::UnixStream;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_initial_connection_support_tests.rs
+@@ -0,0 +1,57 @@
++//! An unbound read-only connection to the same actual original E host.
++//! Only same-process transport admission is a fixture; binding later consumes
++//! the production Connection and its original monotonic channel lifetime.
++
++use super::*;
++use super::super::OriginalCellEvaluationCommandConnectionV1;
++use super::super::Origin;
++
++impl OriginalCellEvaluationHostV1 {
++    pub(crate) fn fixture_original_readback_connection(
++        self: &Arc<Self>,
++    ) -> anyhow::Result<(OriginalCellEvaluationCommandConnectionV1, Thread)> {
++        self.fixture_original_readback_connection_before_response(|| Ok(()))
++    }
++
++    /// Fault scheduling only: the hook receives no wire payload and cannot
++    /// return a receipt. Every response is still the actual original dispatch.
++    pub(crate) fn fixture_original_readback_connection_before_response(
++        self: &Arc<Self>,
++        mut before_response: impl FnMut() -> anyhow::Result<()> + Send + 'static,
++    ) -> anyhow::Result<(OriginalCellEvaluationCommandConnectionV1, Thread)> {
++        let (client, server) = UnixStream::pair()?;
++        let connection = OriginalCellEvaluationCommandConnectionV1 {
++            channel: channel(client)?,
++            initial: self.context.initial()?,
++            scope: self.context.scope.clone(),
++            registration: self.context.registration.clone(),
++            verifier: self.context.verifier.clone(),
++            origin: Origin::ReadbackOnly,
++            observed_at: now()?,
++        };
++        let owner = Arc::clone(self);
++        let mut peer = channel(server)?;
++        let thread = std::thread::spawn(move || -> anyhow::Result<u64> {
++            for request_id in 1..=128_u64 {
++                let mut original_error = None;
++                let exchanged = peer.exchange(|bytes| {
++                    before_response().map_err(|error| {
++                        original_error = Some(error);
++                        HostIssuerTransportError::InvalidRequest
++                    })?;
++                    owner.fixture_command_response(bytes, request_id).map_err(|error| {
++                        original_error = Some(error.into());
++                        HostIssuerTransportError::InvalidRequest
++                    })
++                });
++                match exchanged {
++                    Ok(true) => {},
++                    Ok(false) => return Ok(request_id - 1),
++                    Err(error) => return Err(original_error.unwrap_or_else(|| error.into())),
++                }
++            }
++            anyhow::bail!("bounded original E fixture");
++        });
++        Ok((connection, thread))
++    }
++}

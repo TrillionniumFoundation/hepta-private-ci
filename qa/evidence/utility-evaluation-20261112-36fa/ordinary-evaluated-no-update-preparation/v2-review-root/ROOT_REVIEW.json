@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.next-preparation-root-review.v1",
+  "current_source": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "version_readiness_cold_packet_chain": [
+    {
+      "manifest": "cc642219dc21ea222ccfcdbdfbd311cfd4a10e48",
+      "packet": "6b91e0080634a3aadaf63e6fc973d7fa21a4d612",
+      "paths": 22,
+      "all_preimages_and_postimages_verified": true,
+      "scope": "isolated source preparation only; no formatting, compilation or runtime execution"
+    },
+    {
+      "manifest": "fdf28020b25d864df834a55bb2e1ce90d4e6b6e4",
+      "packet": "67ffcf35df8d00ec28c00d584c796b70d506dd35",
+      "paths": 8,
+      "all_preimages_and_postimages_verified": true,
+      "scope": "isolated source preparation only; no formatting, compilation or runtime execution"
+    },
+    {
+      "manifest": "8eab6c9b427e29980175dcde23ff84af19445000",
+      "packet": "4e49eaa5c5cf8ebe8523ebc26f7685d748889404",
+      "paths": 4,
+      "all_preimages_and_postimages_verified": true,
+      "scope": "isolated source preparation only; no formatting, compilation or runtime execution"
+    }
+  ],
+  "dual_modified_paths": 11,
+  "dual_modified_parent_blob_checks": 33,
+  "dual_modified_postimages_verified": true,
+  "qa_functions_identical_to_fixed_upstream_ast": {
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py": 12,
+    "qa/b4-no-bypass/test_original_published_read_source_closure.py": 9,
+    "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py": 7
+  },
+  "callers_toml_parsed": true,
+  "scope": "Content identity and static review only. Full current c0f gates are not inherited by these preparations. Final unified formatting, source markers, caller protection, original runtime tests and real ordinary A/B/C/Root qualification are not established.",
+  "cold_reader_findings": [
+    {
+      "finding": "Recovered Version used to expose a selection reader before its full original recovery read completed.",
+      "prepared_fix": "Build locally and install only after two matching original reads, original cut freshness and lifetime checks.",
+      "runtime_counterexample": "not_run"
+    },
+    {
+      "finding": "After a successful cold read, subsequent failed bind/current validation could bypass reader invalidation.",
+      "prepared_fix": "The actual command_response bind failure clears only Recovered reader under the original state lock; original wire request helper avoids fixture prebinding.",
+      "runtime_counterexample": "not_run"
+    }
+  ],
+  "limits": [
+    "This is not the complete next source projection.",
+    "Already handed-out read-only Arcs are not claimed revoked.",
+    "Initial material clock and final response failures remain under source review; no blanket closure claim.",
+    "Fresh late FinalUse failure requires original UID 0 issuer fixture and has not run.",
+    "Provider scenario partition and setup topology change are explicit; no timeout cause or behavior pass inferred."
+  ]
+}

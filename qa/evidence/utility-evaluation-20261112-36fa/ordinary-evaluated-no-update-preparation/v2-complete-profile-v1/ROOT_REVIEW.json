@@ -1,0 +1,389 @@
+{
+  "schema": "hepta.complete-evaluated-profile-root-preformat-review.v1",
+  "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "baseline_tree": "7d26396020a11227914948be902fb3721084630c",
+  "combined_unformatted_tree": "8a3e1ad32948453205c2e91507dcbe97752cad19",
+  "combined_files": 15188,
+  "packet_paths": 59,
+  "actual_overlay_paths": 58,
+  "modified_preimages": 41,
+  "new_paths": 18,
+  "packet_raw_bytes": 1460787,
+  "packet_raw_sha256": "b4c09fd22ceda4f82220f89aef2d2853a5974ec8185a5da4e932826f10aa4626",
+  "manifest_blob": "0fd55e0acf06ca52e7302950bb54e98a21c6c6ef",
+  "all_packet_postimages_and_parent_identities_verified": true,
+  "paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "799af3b9beb9cd12abdad82e7bd7f8aea6cab93c",
+      "after": "9128be835dbb0ca724591499ab0a7a34c9a9f3f2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "ad931c4e8245dd2526a15407d20a319d8119ddb6",
+      "after": "dd33ee5fae36cac16f6543d4becb80b695b04da5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "a64c659ff63cf38d6704050e633fa65a30848d62",
+      "after": "3c534c5aef813fe1e43eba0cc5e3978721e82167"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "6cb5e7fc0f274cbdbae9fe57140b48cca4983677"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "e34473c5c2cfa7e783aa7787994f0c6383ae0444"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "3caae9286796ae6d40579812d6c725904e1926ab"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "1a38afd714122263eeab14e0e55756aa8f546e4b",
+      "after": "cd5dbe4c394c7416c0b81ad9065af82ae08da4da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "d0e72874ecc92302fbdf6262be1e0e2a67f148e5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "152419a1b3d99d5a9f9ac1f7b97f3895dd3a22e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "b4ad6a28ee6f7bf839bc8d029440e4c1b86be33a",
+      "after": "749a448516c46079683536ffdbc1714432bf3023"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "6dac672a00b5116148f9c931b7f7c9fbb81d293f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "d44ab21c8e2d8cf46225214f6a16e116e2dc7939"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "2bda6cb47bd4777636373e36a7faf9124b433d49",
+      "after": "fdf5e0b5e93c16ed312aa09e8d249e13b0b22520"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "after": "4d0cfdd696dc92d00b5a47e07775e8d180bc6537"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "4c5c98eca6126fe808ba6f01365525deeb14d816"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "53bf5fd6d5952390aa447bf28471869a2fe277c0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "ffd7af2ce29ea5fe489c45a61a21b13ab45a61ac",
+      "after": "023d44d19df5ae7eb6b566ba03d6b323d9e6eaef"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "3e4b82d31a39681d85df560004e2d1d704953cd3",
+      "after": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+      "after": "8d94ddd4a3ed4ea9552a6e58caaf4f6100fdc4d5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "c64626eb19dae7b01dd6c77e8d931abe36272e41"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "37275599142dce61221b02f1ecbd69139f32a21b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "473ff552c0aece25492f3fe5a0c20c346bd873c3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "51bdd87145c538078ad8f343ad455bb370fa4f32",
+      "after": "185310b62f39e6fe2b789566145057f634a2bd6a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "df615ba69e4ed6f46eedb47b68ed0ad8c81188b1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "4b358a041e93e541cbe5f31999e0e02023734174"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "254f838f8030b2560047f26a3961dfacda80386a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "cc7ac948679ab4081c726dc5cc3998f18158ab88"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "ab97ea7713fe060932345c5f8a30810ff92df7e0",
+      "after": "542e4e532443ac2082bd0b8fa7649fcdb25deca9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "5f13b084585c882cf016dc1d7e8e3afaa4b89d89",
+      "after": "7bc9d61e1d069b8801d86a4bea0fcbcc2e478beb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "fa21f8466e7de1bd2e273f2c5a941f9d5dd29f6e",
+      "after": "aebe684c36cab0a89c13e4f702e18e1b37a27f10"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "4615bd9040ea5522dbbda5ac3a9da698a63f87cd",
+      "after": "4db1399444a01432f056f71e7322990750f3ce0f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "facfbd75b7a94c7d40f1ddea9d1cfd207f2357cc",
+      "after": "74be1cee263699d8e5ab793387290417f9444ad7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "f3e2359b83e9b88d8a4cd2751629bda29d7ca7fa",
+      "after": "516dbb946cc04d920f1671bb2df336e8b49d3b32"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "b3aaf6c65e0cc9f84a2c076aca6bc22f04c5225c",
+      "after": "988542fea74e3c077929ab9313a2c9bc0ae40d52"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "01b1f7d02600b16eba09c581e1dab831b7c9e248",
+      "after": "2f4867ac61d636c323cb8cfd36b0363e5c490b38"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "a28e5d407a0645e70613495cb9135a203416972c",
+      "after": "9c0dd4ce4576120fd4835ed785c566cdc0dffa69"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "b3666b09a69ee50a466c540c935950098591ce0d",
+      "after": "6aefc9c12e05fe7b052346bcff14f0c05fae664d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "23e8989ebd2644947b15c80ab9c641a70767de99",
+      "after": "d2512ef649afa6e5a723de54ecf5f579b82c150c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "138e41dca8d3dbdc656bcd20c21abbecca755e57",
+      "after": "ae1efbd3b0ffecbd925d67e98b85fee801d4766a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "629d650530d64c042687032e4f84d6720ec8ef8e",
+      "after": "38be926458be8a3b1db0e5c22e1336dc1c8737f8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "c35bf9363300868c7ca2ac4bc6f2b0bdbbe41e01",
+      "after": "1f28eee14dc754e17445ddaa11cc092913a804a6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "a0afe798571bd01683785236201ea2dca52fedca",
+      "after": "8e2157b1c5f4ac24fd601e2a7221cdb239ca324c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "10e7f4e97a954901bd565c48a41bf1b959a0de6e",
+      "after": "ebc02be6cff65a205b1fa1fc171307a0e8a4c05c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "a285e5277c9ab7077183bf6cd77b2dd26112e1a8",
+      "after": "6ac9d7f3ac8412391804d9fdb9a9626663132d33"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "disposition": "already_identical_to_c0f_baseline",
+      "before": "2db768378a7fca74daf64367e32756452cc9e894",
+      "after": "2db768378a7fca74daf64367e32756452cc9e894"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "371d951092f71575d81a49cc6737adcd535bf0e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "771a33453238653a587632c04bf62b988421fb1b",
+      "after": "34dc709c958cca632bb21189c78be2bb19c08fb7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "facc9b9e18de3b2b2371d1259ee9f73a0241436c",
+      "after": "d5c9cac9bb551376adce36d04b167f6fa978791d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "c6ed4a3dd9a8d7772af1c64477e0bd3eaa6433cf",
+      "after": "02f8f03d1d4f52db6d476e0f84bb3d353d91769d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "15e500215e19d8ee1603535418a1be5cfbb0f353",
+      "after": "d4f5618ba50678f6dea3d5af731492d8679f9f03"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "8ef7dbaad9bd465c99692f798b9ef6d8a32183e6",
+      "after": "edb6b381246d2fd927772ed33607bf0e8e4ac8dc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f",
+      "after": "3ab1c8a5e7ac5192300c231b1b42d1ac67446871"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "6e849c4d06337f809bab785a8b934aca8f85e019",
+      "after": "768febf4707ae5114bdedd61820630f30d63d0a2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "b31049c9f9eea5cdd6242c765aedf4db85b253ac",
+      "after": "e71678cfe13ed276dd7c5ec7692959e6a448c12f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "81f29631779054a59c4cd71ec6a56eba5f4c55e7",
+      "after": "2cc7863be53975b17f661bc19b3d098c2e43a352"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "5d7c468f0d9c4ae0f1b72b34e5b8b3f373150cb3",
+      "after": "70b9f0751f3a66ec3ece56e052ff297ab2ce2708"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a",
+      "after": "9f8ebe25c68ce396305ad0b6d3eb8bcc74770000"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": "0305590b9eb910a10f43379c5efea6ea03ea5a0f",
+      "after": "097d946261519c8e41aa524d97def813e002ec0f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_initial_connection_support_tests.rs",
+      "disposition": "exact_preimage_overlay",
+      "before": null,
+      "after": "cbd907cf662ba797c5f7fd1c963462c1dbf81ab3"
+    }
+  ],
+  "static_scope": [
+    "Complete four-cut evaluated NoUpdate is distinct from legacy TrainingNoUpdate; original opaque evaluated context and original owner streams remain required.",
+    "Candidate evaluated Selection/NextUse execution stays Fresh-only and checks the actual Root effect gate before and after original effects.",
+    "Original channels move once; metadata cannot construct missing Model/Selector/Version/FinalUse custody.",
+    "Cold reader is installed after complete original reads; subsequent failed original predecessor bind clears the state-held Recovered reader.",
+    "Serving checks Published and original cut freshness immediately before cloning a present reader under the original state lock.",
+    "Readonly recovery cannot mint execution eligibility; already returned readonly Arcs are not claimed globally revoked."
+  ],
+  "execution": "No formatting, compilation, source/caller qualification or runtime execution of this preparation.",
+  "coverage_limits": [
+    "No prior execution is inherited.",
+    "Actual independently authorized deployment, startup streams, Model custody and issuer remain external prerequisites.",
+    "Adopt is not enabled.",
+    "Cost/objective/threshold/independence/propensity/critic contracts unchanged.",
+    "No previously handed-out Arc revocation claim.",
+    "Specific Material freeze timing race remains behaviorally uncovered."
+  ],
+  "non_rust_integration": "CALLERS, protected-source QA, Root inventory and exact post-format allowance remain pending; this complete Rust projection is not a final source candidate."
+}

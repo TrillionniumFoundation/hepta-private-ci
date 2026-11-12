@@ -1,0 +1,178 @@
+{
+  "schema": "hepta.utility.exact-original-inventory-byte-recovery.v1",
+  "status": "verified_exact_same_original_bytes",
+  "method": "Deterministic reconstruction using the independently hash-verified c0f complete native five-field map, the immutable original driver inventory canonical encoding, original source identities, and observed read-only modes. This is recovery of original bytes, not a new full filesystem observation or a new gate.",
+  "original_inventory_sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+  "metadata_input": {
+    "path": "/tmp/hepta-36fa-final-formatted-source/expected-physical-inventory.json",
+    "bytes": 3440077,
+    "sha256": "c7f8f0a34ef5e5c7ed7bac0ea3cc2b70a06af9e4bc974204a841db1a03eaa49f",
+    "git_blob_sha": "a016348231816d0a0ce88030e679d73920422eff"
+  },
+  "original_driver": {
+    "git_blob_sha": "51181866cbbb6e0176aab04117efffa8b6792b31",
+    "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+  },
+  "original_manifest": {
+    "git_blob_sha": "c79715995c67ce239e205f428b2af915e2c2810d"
+  },
+  "checks": {
+    "raw_bytes_equal": true,
+    "raw_sha256_equal": true,
+    "part_count_equal": true,
+    "part_checks": [
+      {
+        "index": 0,
+        "bytes": 262144,
+        "sha256": "c52c2efc57ee1221f1dfbac717b4f118531420ee51bd42e4f0ba84b861110930",
+        "git_blob_sha": "15f437648057ec384eeff4f01334ea39ed5474db",
+        "all_expected_equal": true
+      },
+      {
+        "index": 1,
+        "bytes": 262144,
+        "sha256": "564e56570e2eeb4dbabfac044e6cab10901610dbfb43891e7d78f820b863494b",
+        "git_blob_sha": "24e975826d14044b0c6d4bb40c37629d6b4a09a6",
+        "all_expected_equal": true
+      },
+      {
+        "index": 2,
+        "bytes": 262144,
+        "sha256": "728e0bdb1806465f95db84721d85cf13aad92f4300b0bfb87516d30eb808e72a",
+        "git_blob_sha": "ffe3e04977f548b8c6a131d42e6cf0fd2b62ad06",
+        "all_expected_equal": true
+      },
+      {
+        "index": 3,
+        "bytes": 262144,
+        "sha256": "ddf3be807b1e6bd3c97e57b23c8e831c1490ad2a5c42a97007dccfaf21e8073f",
+        "git_blob_sha": "fabcbf9d28037353a9f8af215494684284abfb9e",
+        "all_expected_equal": true
+      },
+      {
+        "index": 4,
+        "bytes": 184643,
+        "sha256": "f24a1f6924ce89fa382e4c00e8772fd9fcbb42243607841a1f8c0723cb9d137c",
+        "git_blob_sha": "0ed5ee3a6414aa9eafbf9ccd399d9c524d6c9eb4",
+        "all_expected_equal": true
+      }
+    ],
+    "observed_chunk_checks": [
+      {
+        "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/observed-chunks/part0000-offset000000.json",
+        "original_native_response_sha256": "d75228de756230a749e313f43855e96456961808b8b021872f2adabf0549dd09",
+        "part": 0,
+        "offset": 0,
+        "bytes": 65536,
+        "chunk_sha256": "d43f6788892ab7fdd987e28cc4077118975b12e03a081a2dfa973122954f14bb",
+        "version": "2050:50138322:262144:1794493381393270629:1794493381395557219",
+        "matches_recovered_part": true
+      },
+      {
+        "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/observed-chunks/part0000-offset065536.json",
+        "original_native_response_sha256": "dc2d8a1396ed7428c39790a8df2d76cd172880ca64ebd9898b7b39cec23f81fe",
+        "part": 0,
+        "offset": 65536,
+        "bytes": 65536,
+        "chunk_sha256": "0f4eeaa1bea3544b64025350e255c1d9d8a3c3200b16b0c56cc1e0ccd96a595f",
+        "version": "2050:50138322:262144:1794493381393270629:1794493381395557219",
+        "matches_recovered_part": true
+      },
+      {
+        "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/observed-chunks/part0001-offset000000.json",
+        "original_native_response_sha256": "83721d55cc5148bd448a6c09e12ebae38f3e18c48b608a0a60793b4d877e9fa8",
+        "part": 1,
+        "offset": 0,
+        "bytes": 65536,
+        "chunk_sha256": "4782a6794dc49c2a6b8c06eb5e1f12d8180b848d5ea126ea6749445a547adba0",
+        "version": "2050:50138323:262144:1794493381397813201:1794493381399557100",
+        "matches_recovered_part": true
+      },
+      {
+        "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/observed-chunks/part0002-offset000000.json",
+        "original_native_response_sha256": "d45494866466322e76ffc85a30a9053d446e3d87938dfb053fdf29616a4f3c7c",
+        "part": 2,
+        "offset": 0,
+        "bytes": 65536,
+        "chunk_sha256": "de8c1db3fe70fac663b69eebbb86ffcac1bc0dae441e0abc6c283e309a5355be",
+        "version": "2050:50138324:262144:1794493381401205111:1794493381402557011",
+        "matches_recovered_part": true
+      }
+    ]
+  },
+  "gates_reexecuted": false,
+  "runner_results_modified": false,
+  "auxiliary_native_metadata_encoding": "canonical compact JSON without final LF, as observed in the original 3440077-byte native map",
+  "roundtrip_native_map_bytes_equal": true,
+  "recovered_inventory_git_blob_sha": "5ed18452e2e967281ac368f934b9e4358627b9d3",
+  "reconstructed_gzip_bytes": 1233219,
+  "reconstructed_gzip_sha256": "252bad761830614fd7fdc4b15cff0eba477c1bb5fd7955fb7ded18840c2fb20f",
+  "recovered_files": [
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json",
+      "bytes": 5474911,
+      "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+      "git_blob_sha": "5ed18452e2e967281ac368f934b9e4358627b9d3"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0000",
+      "bytes": 262144,
+      "sha256": "c52c2efc57ee1221f1dfbac717b4f118531420ee51bd42e4f0ba84b861110930",
+      "git_blob_sha": "15f437648057ec384eeff4f01334ea39ed5474db"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0000.base64.txt",
+      "bytes": 349529,
+      "sha256": "4b3e9cff81007e8f428a503d0121f2e2b9e555fe7c9ce4750c4c807492156b3b",
+      "git_blob_sha": "d59c2b3a0ae27cdb4d99b8164d839a73fcd300d2"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0001",
+      "bytes": 262144,
+      "sha256": "564e56570e2eeb4dbabfac044e6cab10901610dbfb43891e7d78f820b863494b",
+      "git_blob_sha": "24e975826d14044b0c6d4bb40c37629d6b4a09a6"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0001.base64.txt",
+      "bytes": 349529,
+      "sha256": "0bafda954533b2f7d131c29eef25b54a48e8cefbcb1fdfef4c06b3ace7377abd",
+      "git_blob_sha": "127b3bc930148ad5e94431cb5d4a25e5375f56f8"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0002",
+      "bytes": 262144,
+      "sha256": "728e0bdb1806465f95db84721d85cf13aad92f4300b0bfb87516d30eb808e72a",
+      "git_blob_sha": "ffe3e04977f548b8c6a131d42e6cf0fd2b62ad06"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0002.base64.txt",
+      "bytes": 349529,
+      "sha256": "fbad3f6103b35f095b5935721e0407948aa0d41de1d65e2124fbb40a0abd39e2",
+      "git_blob_sha": "bcc06e174710cf6baa78abc1907209777cc1d82e"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0003",
+      "bytes": 262144,
+      "sha256": "ddf3be807b1e6bd3c97e57b23c8e831c1490ad2a5c42a97007dccfaf21e8073f",
+      "git_blob_sha": "fabcbf9d28037353a9f8af215494684284abfb9e"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0003.base64.txt",
+      "bytes": 349529,
+      "sha256": "d3c6dd9d7281d568594865c6c146235beae3af57a1ad54ef3ddecd1f70a2f352",
+      "git_blob_sha": "9639745bbca96c048a5b1512628d4a246aad9fde"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0004",
+      "bytes": 184643,
+      "sha256": "f24a1f6924ce89fa382e4c00e8772fd9fcbb42243607841a1f8c0723cb9d137c",
+      "git_blob_sha": "0ed5ee3a6414aa9eafbf9ccd399d9c524d6c9eb4"
+    },
+    {
+      "path": "/tmp/hepta-c0f-source-gates-preservation-36fa/recovered-original-inventory/inventory.json.part0004.base64.txt",
+      "bytes": 246193,
+      "sha256": "e076acb6d532c533965cc582908bae6cdc697fa6f05608d0b3716f6e1a7ed2ee",
+      "git_blob_sha": "d589674dc5abca770834ee008a67b9bb26911e94"
+    }
+  ]
+}

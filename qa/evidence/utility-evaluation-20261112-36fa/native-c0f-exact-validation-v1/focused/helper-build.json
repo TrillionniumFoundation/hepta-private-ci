@@ -1,0 +1,52 @@
+{
+  "after": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "dirty": false,
+    "parents": [
+      "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "b29869e856d08db1bfb066116a9c443376ccc57d"
+    ],
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "dirty": false,
+    "parents": [
+      "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "b29869e856d08db1bfb066116a9c443376ccc57d"
+    ],
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "command": [
+    "python3",
+    "scripts/hepta_cell_test_helpers.py",
+    "--package",
+    "codex-hepta-infer-worker-host",
+    "--output-dir",
+    "/home/qian-qi/hepta-utility-36fa-evidence/native-c0f78493-v1/focused/helpers"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 745.7373389019631,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T14:21:05.715613+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 194,
+  "log_file": "helper-build.json.9770d0a5b4a841a596a14a9ef2ddcef5.log",
+  "log_sha256": "3cdc3ba4b66b48bb870622c239a7504872e7012b4561c02f3ee23e787357767c",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "started_at": "2026-11-12T14:08:39.875577+00:00",
+  "status": "passed",
+  "tested_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-utility-36fa-review-19aa"
+}

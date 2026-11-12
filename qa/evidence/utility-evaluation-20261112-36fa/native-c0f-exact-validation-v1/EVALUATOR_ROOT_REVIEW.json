@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.c0f-exact-evaluator-junit-review.v1",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "xml_bytes": 37367,
+  "xml_sha256": "ec45bcd7bf05143a76803e0e56bfd5e714da4f0f98457fd9806ca8ce4d462f1b",
+  "xml_git_blob": "9d400148f14ac8a4a93426b6704482c330873b9a",
+  "gzip_bytes": 5515,
+  "gzip_sha256": "8155361ef2dadf8552e98682d3fcbea1063d9f53c1a1f1428fb1eb348a852eb3",
+  "gzip_git_blob": "f6ac1c638888621fd2f11d45eae38829a2d83cd2",
+  "cases": 163,
+  "unique_cases": 163,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "required_four": [
+    "closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning",
+    "closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes",
+    "closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence",
+    "tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible"
+  ],
+  "suite_attributes": [
+    {
+      "name": "codex-hepta-intelligence-eval",
+      "tests": "163",
+      "disabled": "0",
+      "errors": "0",
+      "failures": "0"
+    }
+  ],
+  "root_attributes": {
+    "name": "nextest-run",
+    "tests": "163",
+    "failures": "0",
+    "errors": "0",
+    "uuid": "6fb1f9de-f2e7-47f5-88d1-bfb3c1cd3efe",
+    "timestamp": "2026-11-12T09:08:28.074-05:00",
+    "time": "6.350"
+  },
+  "scope": "fresh original evaluator only; native focused/all/source/caller/ordinary not implied"
+}

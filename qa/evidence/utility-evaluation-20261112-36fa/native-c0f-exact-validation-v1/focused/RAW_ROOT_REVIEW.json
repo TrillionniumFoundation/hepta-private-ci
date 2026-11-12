@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.c0f-focused-original-raw-byte-review.v1",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "raw_blob": "d833e7724371e4626ac5860c356c5ac2f07e9934",
+  "raw_bytes": 135424,
+  "raw_sha256": "0a66330b21fee14ed42d276eac31fc2be6214de378ce42ff192f382cbeac27c5",
+  "gzip_bytes": 12643,
+  "gzip_sha256": "9d8a6fa42bf0b6d2bd1fd5961452b0a1249fc3bf5e2e218296c42554514dc5cb",
+  "gzip_git_blob": "dc83a0e013f5da82c8a61f04be074129f9122d34",
+  "gzip_base64_blob": "d31299ac5cf237cf7a1ea516bf338dd77ff401cb",
+  "direct_fixed_version": "2050:54922998:135424:1794494226672444812:1794494226672444812",
+  "direct_chunk_ranges": [
+    [
+      0,
+      65536
+    ],
+    [
+      131072,
+      135424
+    ]
+  ],
+  "all_direct_chunk_bytes_match": true,
+  "direct_observer_limit": "Direct offset 65536 promise rejected; its Error had no serializable fields in that observer result. No new read or execution is retried. The full original raw is recovered independently from the retained native gzip, with first/tail direct chunks available for equality checks.",
+  "scope": "Original retained focused raw, independently checked against the original command record and original gzip. No additional tests."
+}

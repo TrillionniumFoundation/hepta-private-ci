@@ -1,0 +1,1711 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling typenum v1.20.1
+   Compiling zeroize v1.9.1
+   Compiling serde_core v1.0.229
+   Compiling const-oid v0.9.6
+   Compiling der v0.7.10
+   Compiling generic-array v0.14.7
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling syn v3.0.9
+   Compiling serde_json v1.0.154
+   Compiling serde v1.0.229
+   Compiling serde_derive v1.0.229
+   Compiling codex-hepta-types v0.0.0 (/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-types)
+   Compiling spki v0.7.3
+   Compiling syn v2.0.119
+   Compiling memchr v2.8.3
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling pkcs8 v0.10.2
+   Compiling signature v2.2.0
+   Compiling curve25519-dalek v4.1.3
+   Compiling ed25519 v2.2.3
+   Compiling codex-hepta-cognitive-types v0.0.0 (/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-memory-retrieval)
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-intuition v0.0.0 (/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-intuition)
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-learning-ledger)
+   Compiling pretty_assertions v1.4.1
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs/hepta-intelligence-eval)
+    Finished `test` profile [unoptimized] target(s) in 25.93s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 6fb1f9de-f2e7-47f5-88d1-bfb3c1cd3efe with nextest profile: local
+    Starting 163 tests across 1 binary
+        PASS [   0.007s] codex-hepta-intelligence-eval closure::tests::eval_04_rejects_role_collision_and_missing_future_windows
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::eval_03_intersects_superiority_safety_retention_and_unlearning
+        PASS [   0.006s] codex-hepta-intelligence-eval closure::tests::eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout
+        PASS [   0.007s] codex-hepta-intelligence-eval closure::tests::evaluation_fails_candidate_when_interval_or_floor_does_not_pass
+        PASS [   0.007s] codex-hepta-intelligence-eval closure::tests::final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::freezing_rejects_vacuous_or_invalid_metric_roles
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning
+        PASS [   0.006s] codex-hepta-intelligence-eval closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence
+        PASS [   0.011s] codex-hepta-intelligence-eval closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::independent_decision_consumes_bound_holdout_receipt
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::evaluator_and_observer_cannot_share_identity_key_credential_or_controller
+        PASS [   0.010s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::signed_observed_windows_pass_only_with_full_statistical_bundle
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::time_policy_observer_and_future_collection_cannot_be_substituted
+        PASS [   0.010s] codex-hepta-intelligence-eval closure::tests::noninferiority_uses_direction_and_includes_the_registered_margin
+        PASS [   0.010s] codex-hepta-intelligence-eval closure::tests::preregistered_roles_allow_unchanged_safety_and_cost_within_budget
+        PASS [   0.026s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::valid_signatures_do_not_hide_unobserved_overlapping_or_wrong_source_windows
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::primary_superiority_has_strict_margins_without_q32_subtraction_overflow
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::signed_evaluation_binds_metrics_roles_and_host_identities
+        PASS [   0.176s] codex-hepta-intelligence-eval durable_holdout::tests::ambiguous_write_fences_the_handle
+        PASS [   0.200s] codex-hepta-intelligence-eval durable_holdout::tests::consumption_survives_a_distinct_process
+        PASS [   0.131s] codex-hepta-intelligence-eval durable_holdout::tests::durable_reopen_prevents_holdout_reuse
+        PASS [   0.074s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_anchor_error_after_commit_poisoned_without_local_append
+        PASS [   0.067s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_capacity_rejects_before_external_reservation
+        PASS [   0.257s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_anchor_cas_rejects_stale_replicas_without_mutation
+        PASS [   0.122s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_reservation_with_failed_local_write_is_fail_closed
+        PASS [   0.145s] codex-hepta-intelligence-eval durable_holdout::tests::idempotent_retry_does_not_append_and_byte_corruption_rejects
+        PASS [   0.154s] codex-hepta-intelligence-eval durable_holdout::tests::independent_anchor_rejects_old_backup_and_partial_tail
+        PASS [   0.116s] codex-hepta-intelligence-eval durable_holdout::tests::lock_binding_cas_and_invalid_plan_do_not_mutate_storage
+        PASS [   0.007s] codex-hepta-intelligence-eval fenced_holdout::tests::indeterminate_write_poison_requires_recovery_and_preserves_history
+        PASS [   0.007s] codex-hepta-intelligence-eval fenced_holdout::tests::newer_generation_fences_out_the_old_writer
+        PASS [   0.005s] codex-hepta-intelligence-eval fenced_holdout::tests::stale_or_same_generation_different_fence_cannot_take_over
+        PASS [   0.007s] codex-hepta-intelligence-eval fenced_holdout::tests::state_digest_changes_on_fence_takeover_without_rewriting_journal_head
+        PASS [   0.020s] codex-hepta-intelligence-eval fenced_holdout_file::tests::failed_constructors_release_acquired_locks_with_retained_open_descriptions
+        PASS [   0.179s] codex-hepta-intelligence-eval fenced_holdout_file::tests::child_process_observes_lock_then_recovers_after_owner_exit
+        PASS [   0.287s] codex-hepta-intelligence-eval fenced_holdout_file::tests::locked_file_store_replays_takeover_and_rejects_backup_rollback
+        PASS [   0.399s] codex-hepta-intelligence-eval fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix
+        PASS [   0.275s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes
+        PASS [   0.063s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors
+        PASS [   0.292s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier
+        PASS [   0.099s] codex-hepta-intelligence-eval fenced_holdout_file::tests::retired_store_releases_its_lock_with_a_retained_open_description
+        PASS [   0.008s] codex-hepta-intelligence-eval holdout_journal::tests::capacity_failure_does_not_consume_holdout_or_break_full_journal_retry
+        PASS [   0.007s] codex-hepta-intelligence-eval holdout_journal::tests::eval_05_holdout_journal_rejects_stale_head_and_keeps_retry_idempotent
+        PASS [   0.006s] codex-hepta-intelligence-eval holdout_journal::tests::eval_05_holdout_journal_reopens_exactly
+        PASS [   0.006s] codex-hepta-intelligence-eval ndu_convergence::tests::independent_signed_evidence_can_issue_accepted_deny_all_certificate
+        PASS [   0.010s] codex-hepta-intelligence-eval ndu_convergence::tests::spectral_or_residual_failure_rejects_but_missing_support_is_unavailable
+        PASS [   0.007s] codex-hepta-intelligence-eval ndu_convergence::tests::tampered_evaluator_payload_cannot_self_certify
+        PASS [   0.006s] codex-hepta-intelligence-eval ndu_well_posedness::tests::complete_signed_independent_evidence_is_accepted_without_authority
+        PASS [   0.007s] codex-hepta-intelligence-eval ndu_well_posedness::tests::conditional_mean_threshold_and_expiry_fail_closed
+        PASS [   0.394s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore
+        PASS [   0.008s] codex-hepta-intelligence-eval ndu_well_posedness::tests::missing_support_is_unavailable_and_failed_assumption_rejects
+        PASS [   0.008s] codex-hepta-intelligence-eval ope::confidence::tests::confidence_plan_requires_prespecified_assumptions_and_budget
+        PASS [   0.015s] codex-hepta-intelligence-eval ope::confidence::tests::independent_constant_rows_have_nonzero_uncertainty
+        PASS [   0.023s] codex-hepta-intelligence-eval ope::confidence::tests::merging_dependent_rows_widens_intervals
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::confidence::tests::outward_integer_radius_has_an_exact_scalar_oracle
+        PASS [   0.022s] codex-hepta-intelligence-eval ope::confidence::tests::multiplicity_and_stricter_alpha_never_narrow_bounds
+        PASS [   0.010s] codex-hepta-intelligence-eval ope::confidence::tests::point_estimate_failures_cannot_be_hidden_by_intervals
+        PASS [   0.025s] codex-hepta-intelligence-eval ope::confidence::tests::rejects_missing_duplicate_unknown_and_single_cluster_assignments
+        PASS [   0.029s] codex-hepta-intelligence-eval ope::confidence::tests::repeating_rows_within_clusters_does_not_manufacture_precision
+        PASS [   0.013s] codex-hepta-intelligence-eval ope::confidence::tests::unchosen_actions_also_have_to_respect_the_weight_ceiling
+        PASS [   0.023s] codex-hepta-intelligence-eval ope::confidence::tests::row_and_assignment_order_are_canonical
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::distribution_and_weight_gates_are_enforced
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::documented_ope_golden_vector_is_exact
+        PASS [   0.014s] codex-hepta-intelligence-eval ope::confidence::tests::unresolved_weight_denominator_returns_full_reward_interval
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::duplicate_observations_cannot_inflate_sample_count
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::effective_sample_size_cannot_be_replaced_by_raw_row_count
+        PASS [   0.007s] codex-hepta-intelligence-eval ope::tests::exact_weight_ceiling_cannot_be_weakened_by_q32_rounding
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::incomplete_candidates_and_unknown_choice_are_rejected
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::missing_evidence_and_out_of_range_outcomes_are_rejected
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::nonzero_outcome_model_uses_residual_correction
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::outcome_after_frozen_watermark_is_rejected
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::pending_outcome_is_not_zero_reward
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::row_and_candidate_permutations_preserve_every_receipt_field
+        PASS [   0.045s] codex-hepta-intelligence-eval ope::tests::exact_ess_floor_cannot_be_weakened_by_q32_rounding
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::scaled_ratio_preserves_exact_floor_and_ties_even_at_wide_bounds
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::signed_rounding_is_ties_to_even
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::tiny_supported_weights_retain_exact_ess
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::unsupported_unchosen_action_is_also_rejected
+        PASS [   0.104s] codex-hepta-intelligence-eval product_execution_file::tests::a_torn_suffix_is_preserved_and_blocks_recovery
+        PASS [   0.321s] codex-hepta-intelligence-eval product_execution_file::tests::completed_bytes_and_pending_claim_survive_an_abrupt_child_exit
+        PASS [   0.432s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement
+        PASS [   0.278s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed
+        PASS [   1.218s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_refuses_length_changes_without_repair
+        PASS [   0.398s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner
+        PASS [   0.233s] codex-hepta-intelligence-eval product_execution_file::tests::external_length_change_poisoning_cannot_be_cleared_by_restoring_length
+        PASS [   0.224s] codex-hepta-intelligence-eval product_execution_file::tests::failed_constructor_releases_lock_even_with_a_duplicate_description
+        PASS [   0.607s] codex-hepta-intelligence-eval product_execution_file::tests::external_minimum_rejects_an_older_or_divergent_valid_journal
+        PASS [   0.268s] codex-hepta-intelligence-eval product_execution_file::tests::oversized_completion_keeps_the_durable_pending_record
+        PASS [   0.045s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::bounded_codec_rejects_truncation_trailing_bytes_and_historical_binding_changes
+        PASS [   0.050s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::changed_plan_and_changed_evaluator_do_not_consume_or_reuse
+        PASS [   0.041s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::consumed_holdout_without_execution_is_not_released_again
+        PASS [   0.252s] codex-hepta-intelligence-eval product_execution_file::tests::plan_binding_and_completed_payload_are_immutable
+        PASS [   0.331s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay
+        PASS [   0.456s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original
+        PASS [   0.022s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim
+        PASS [   0.051s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence
+        PASS [   0.048s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads
+        PASS [   0.066s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal
+        PASS [   0.081s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::process_tests::signed_execution_and_original_holdout_survive_an_abrupt_process_exit
+        PASS [   0.049s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::provider_and_attestor_failures_leave_pending_without_second_release
+        PASS [   0.013s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::read_only_pending_execution_never_reissues_work
+        PASS [   0.015s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::read_only_missing_execution_never_creates_a_claim
+        PASS [   0.045s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::restored_execution_qualifies_only_with_its_original_evaluator
+        PASS [   0.048s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::readback_requires_current_evaluator_trust_and_original_validity
+        PASS [   0.044s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::self_rehashed_execution_bytes_cannot_replace_original_signature
+        PASS [   0.061s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::signed_completion_lost_ack_reopens_without_release_or_resigning
+        PASS [   0.040s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::stale_holdout_owner_cannot_read_a_valid_execution
+        PASS [   0.012s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::uncertain_claim_never_starts_holdout_work
+        PASS [   0.043s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::takeover_during_completed_readback_refuses_the_cached_execution
+        PASS [   0.013s] codex-hepta-intelligence-eval product_runner::tests::product_runner_never_releases_holdout_before_fenced_consumption
+        PASS [   0.046s] codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+        PASS [   0.005s] codex-hepta-intelligence-eval qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error
+        PASS [   0.008s] codex-hepta-intelligence-eval qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor
+        PASS [   0.189s] codex-hepta-intelligence-eval product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout
+        PASS [   0.246s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::sealed_longitudinal_qualification_reaches_public_preparation_and_independent_selector
+        PASS [   0.510s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::public_preparation_retains_observed_time_and_authoritative_dataset_checks
+        PASS [   0.505s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::selector_signature_commits_the_exact_qualification_publication
+        PASS [   0.007s] codex-hepta-intelligence-eval self_evolution_selection::tests::receipt_rejects_generation_rewind_and_baseline_drift
+        PASS [   0.009s] codex-hepta-intelligence-eval self_evolution_selection::tests::selector_and_rollback_are_opaque_independent_admissions
+        PASS [   0.006s] codex-hepta-intelligence-eval self_evolution_selection::tests::signing_payload_binds_predecessor_candidate_and_longitudinal_policy
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor
+        PASS [   0.484s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy
+        PASS [   0.014s] codex-hepta-intelligence-eval sequential::tests::full_pilot_horizon_preserves_the_undiscounted_terminal_return
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::horizon_and_cumulative_limits_are_enforced
+        PASS [   0.008s] codex-hepta-intelligence-eval sequential::tests::incomplete_or_unobserved_trajectories_are_insufficient_not_zero_reward
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::ordering_is_canonical_but_history_and_cluster_binding_are_not_erased
+        PASS [   0.006s] codex-hepta-intelligence-eval sequential::tests::support_is_checked_at_each_depth_not_only_episode_entry
+        PASS [   0.005s] codex-hepta-intelligence-eval sequential::tests::terminal_convention_prevents_counting_terminal_value_twice
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::tiny_cumulative_weights_keep_q64_ess_and_underflow_is_explicit
+        PASS [   0.006s] codex-hepta-intelligence-eval sequential::tests::two_step_backward_dr_matches_nine_tenths_and_reports_depth_support
+        PASS [   0.005s] codex-hepta-intelligence-eval sequential::tests::zero_support_and_tiny_behavior_probability_reject_before_overflow
+        PASS [   0.008s] codex-hepta-intelligence-eval signed_qualification_e2e_tests::signed_qualification_e2e_binds_plan_holdout_roles_and_trust
+        PASS [   0.024s] codex-hepta-intelligence-eval temporal_evaluation::tests::actual_fitted_predictions_feed_the_doubly_robust_estimator
+        PASS [   0.033s] codex-hepta-intelligence-eval temporal_evaluation::tests::all_input_orderings_preserve_the_complete_receipt
+        PASS [   0.034s] codex-hepta-intelligence-eval temporal_evaluation::tests::caller_prediction_fields_cannot_override_the_training_model
+        PASS [   0.236s] codex-hepta-intelligence-eval sequential::tests::exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding
+        PASS [   0.011s] codex-hepta-intelligence-eval temporal_evaluation::tests::composite_digest_matches_canonical_golden_vector
+        PASS [   0.015s] codex-hepta-intelligence-eval temporal_evaluation::tests::dependent_episodes_cannot_be_split_between_clusters
+        PASS [   0.014s] codex-hepta-intelligence-eval temporal_evaluation::tests::dependent_principals_cannot_be_split_between_clusters
+        PASS [   0.065s] codex-hepta-intelligence-eval temporal_evaluation::tests::composite_digest_binds_every_plan_scope
+        PASS [   0.025s] codex-hepta-intelligence-eval temporal_evaluation::tests::independently_revised_subplan_can_be_resealed_without_aliasing_other_digests
+        PASS [   0.014s] codex-hepta-intelligence-eval temporal_evaluation::tests::observed_outcomes_must_follow_the_held_out_decision
+        PASS [   0.013s] codex-hepta-intelligence-eval temporal_evaluation::tests::rejects_changed_legal_action_sets
+        PASS [   0.014s] codex-hepta-intelligence-eval temporal_evaluation::tests::rejects_nonbijective_cohort_joins
+        PASS [   0.010s] codex-hepta-intelligence-eval temporal_evaluation::tests::validation_principals_cannot_enter_training
+        PASS [   0.006s] codex-hepta-intelligence-eval temporal_fold::tests::fits_training_mean_without_validation_labels
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::mean_rounding_uses_ties_to_even
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::model_identity_does_not_depend_on_validation_features
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::ordering_does_not_change_receipts
+        PASS [   0.006s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_all_training_validation_lineage_overlaps
+        PASS [   0.005s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_duplicates_missing_evidence_and_invalid_rewards
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_late_training_outcomes_and_early_validation
+        PASS [   0.006s] codex-hepta-intelligence-eval temporal_fold::tests::unsupported_actions_and_insufficient_samples_are_not_imputed
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::eligible_is_not_promotion
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::every_registered_threshold_is_enforced
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::hard_regression_is_rejected
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::missing_support_is_insufficient
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::receipt_digest_binds_threshold_metadata_in_canonical_order
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::registered_hard_regression_allowance_is_enforced_exactly
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::self_evaluation_is_rejected
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::unrepresentable_metric_deltas_fail_closed
+────────────
+     Summary [   6.350s] 163 tests run: 163 passed, 0 skipped
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::eval_03_intersects_superiority_safety_retention_and_unlearning
+  stdout ───
+
+    running 1 test
+    test closure::tests::eval_03_intersects_superiority_safety_retention_and_unlearning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval closure::tests::eval_04_rejects_role_collision_and_missing_future_windows
+  stdout ───
+
+    running 1 test
+    test closure::tests::eval_04_rejects_role_collision_and_missing_future_windows ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval closure::tests::eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout
+  stdout ───
+
+    running 1 test
+    test closure::tests::eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval closure::tests::evaluation_fails_candidate_when_interval_or_floor_does_not_pass
+  stdout ───
+
+    running 1 test
+    test closure::tests::evaluation_fails_candidate_when_interval_or_floor_does_not_pass ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse
+  stdout ───
+
+    running 1 test
+    test closure::tests::final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval closure::tests::final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth
+  stdout ───
+
+    running 1 test
+    test closure::tests::final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::freezing_rejects_vacuous_or_invalid_metric_roles
+  stdout ───
+
+    running 1 test
+    test closure::tests::freezing_rejects_vacuous_or_invalid_metric_roles ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning
+  stdout ───
+
+    running 1 test
+    test closure::tests::incomplete_evidence::known_failure_does_not_replace_longitudinal_retention_or_unlearning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.011s] codex-hepta-intelligence-eval closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes
+  stdout ───
+
+    running 1 test
+    test closure::tests::incomplete_evidence::known_failure_keeps_missing_evidence_unknown_under_both_claim_scopes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence
+  stdout ───
+
+    running 1 test
+    test closure::tests::incomplete_evidence::legacy_negative_evaluation_also_requires_complete_evidence ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::independent_decision_consumes_bound_holdout_receipt
+  stdout ───
+
+    running 1 test
+    test closure::tests::independent_decision_consumes_bound_holdout_receipt ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::evaluator_and_observer_cannot_share_identity_key_credential_or_controller
+  stdout ───
+
+    running 1 test
+    test closure::tests::longitudinal_time_tests::evaluator_and_observer_cannot_share_identity_key_credential_or_controller ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.010s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::signed_observed_windows_pass_only_with_full_statistical_bundle
+  stdout ───
+
+    running 1 test
+    test closure::tests::longitudinal_time_tests::signed_observed_windows_pass_only_with_full_statistical_bundle ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::time_policy_observer_and_future_collection_cannot_be_substituted
+  stdout ───
+
+    running 1 test
+    test closure::tests::longitudinal_time_tests::time_policy_observer_and_future_collection_cannot_be_substituted ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.026s] codex-hepta-intelligence-eval closure::tests::longitudinal_time_tests::valid_signatures_do_not_hide_unobserved_overlapping_or_wrong_source_windows
+  stdout ───
+
+    running 1 test
+    test closure::tests::longitudinal_time_tests::valid_signatures_do_not_hide_unobserved_overlapping_or_wrong_source_windows ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.010s] codex-hepta-intelligence-eval closure::tests::noninferiority_uses_direction_and_includes_the_registered_margin
+  stdout ───
+
+    running 1 test
+    test closure::tests::noninferiority_uses_direction_and_includes_the_registered_margin ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.010s] codex-hepta-intelligence-eval closure::tests::preregistered_roles_allow_unchanged_safety_and_cost_within_budget
+  stdout ───
+
+    running 1 test
+    test closure::tests::preregistered_roles_allow_unchanged_safety_and_cost_within_budget ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::primary_superiority_has_strict_margins_without_q32_subtraction_overflow
+  stdout ───
+
+    running 1 test
+    test closure::tests::primary_superiority_has_strict_margins_without_q32_subtraction_overflow ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval closure::tests::role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout
+  stdout ───
+
+    running 1 test
+    test closure::tests::role_contracts_cannot_be_changed_reordered_away_or_reused_on_holdout ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.009s] codex-hepta-intelligence-eval closure::tests::signed_evaluation_binds_metrics_roles_and_host_identities
+  stdout ───
+
+    running 1 test
+    test closure::tests::signed_evaluation_binds_metrics_roles_and_host_identities ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.176s] codex-hepta-intelligence-eval durable_holdout::tests::ambiguous_write_fences_the_handle
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::ambiguous_write_fences_the_handle ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.17s
+
+
+        PASS [   0.200s] codex-hepta-intelligence-eval durable_holdout::tests::consumption_survives_a_distinct_process
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::consumption_survives_a_distinct_process ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.20s
+
+
+        PASS [   0.131s] codex-hepta-intelligence-eval durable_holdout::tests::durable_reopen_prevents_holdout_reuse
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::durable_reopen_prevents_holdout_reuse ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.12s
+
+
+        PASS [   0.257s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_anchor_cas_rejects_stale_replicas_without_mutation
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::fenced_anchor_cas_rejects_stale_replicas_without_mutation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.25s
+
+
+        PASS [   0.074s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_anchor_error_after_commit_poisoned_without_local_append
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::fenced_anchor_error_after_commit_poisoned_without_local_append ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.07s
+
+
+        PASS [   0.067s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_capacity_rejects_before_external_reservation
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::fenced_capacity_rejects_before_external_reservation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.06s
+
+
+        PASS [   0.122s] codex-hepta-intelligence-eval durable_holdout::tests::fenced_reservation_with_failed_local_write_is_fail_closed
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::fenced_reservation_with_failed_local_write_is_fail_closed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.12s
+
+
+        PASS [   0.145s] codex-hepta-intelligence-eval durable_holdout::tests::idempotent_retry_does_not_append_and_byte_corruption_rejects
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::idempotent_retry_does_not_append_and_byte_corruption_rejects ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.14s
+
+
+        PASS [   0.154s] codex-hepta-intelligence-eval durable_holdout::tests::independent_anchor_rejects_old_backup_and_partial_tail
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::independent_anchor_rejects_old_backup_and_partial_tail ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.15s
+
+
+        PASS [   0.116s] codex-hepta-intelligence-eval durable_holdout::tests::lock_binding_cas_and_invalid_plan_do_not_mutate_storage
+  stdout ───
+
+    running 1 test
+    test durable_holdout::tests::lock_binding_cas_and_invalid_plan_do_not_mutate_storage ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.11s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval fenced_holdout::tests::indeterminate_write_poison_requires_recovery_and_preserves_history
+  stdout ───
+
+    running 1 test
+    test fenced_holdout::tests::indeterminate_write_poison_requires_recovery_and_preserves_history ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval fenced_holdout::tests::newer_generation_fences_out_the_old_writer
+  stdout ───
+
+    running 1 test
+    test fenced_holdout::tests::newer_generation_fences_out_the_old_writer ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval fenced_holdout::tests::stale_or_same_generation_different_fence_cannot_take_over
+  stdout ───
+
+    running 1 test
+    test fenced_holdout::tests::stale_or_same_generation_different_fence_cannot_take_over ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval fenced_holdout::tests::state_digest_changes_on_fence_takeover_without_rewriting_journal_head
+  stdout ───
+
+    running 1 test
+    test fenced_holdout::tests::state_digest_changes_on_fence_takeover_without_rewriting_journal_head ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.179s] codex-hepta-intelligence-eval fenced_holdout_file::tests::child_process_observes_lock_then_recovers_after_owner_exit
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+    test fenced_holdout_file::tests::child_process_observes_lock_then_recovers_after_owner_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+    running 1 test
+    test fenced_holdout_file::tests::child_process_observes_lock_then_recovers_after_owner_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.08s
+
+    test fenced_holdout_file::tests::child_process_observes_lock_then_recovers_after_owner_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.17s
+
+
+        PASS [   0.020s] codex-hepta-intelligence-eval fenced_holdout_file::tests::failed_constructors_release_acquired_locks_with_retained_open_descriptions
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::failed_constructors_release_acquired_locks_with_retained_open_descriptions ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.287s] codex-hepta-intelligence-eval fenced_holdout_file::tests::locked_file_store_replays_takeover_and_rejects_backup_rollback
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::locked_file_store_replays_takeover_and_rejects_backup_rollback ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.28s
+
+
+        PASS [   0.399s] codex-hepta-intelligence-eval fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.39s
+
+
+        PASS [   0.275s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.27s
+
+
+        PASS [   0.063s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.05s
+
+
+        PASS [   0.292s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.29s
+
+
+        PASS [   0.394s] codex-hepta-intelligence-eval fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.39s
+
+
+        PASS [   0.099s] codex-hepta-intelligence-eval fenced_holdout_file::tests::retired_store_releases_its_lock_with_a_retained_open_description
+  stdout ───
+
+    running 1 test
+    test fenced_holdout_file::tests::retired_store_releases_its_lock_with_a_retained_open_description ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.09s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval holdout_journal::tests::capacity_failure_does_not_consume_holdout_or_break_full_journal_retry
+  stdout ───
+
+    running 1 test
+    test holdout_journal::tests::capacity_failure_does_not_consume_holdout_or_break_full_journal_retry ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval holdout_journal::tests::eval_05_holdout_journal_rejects_stale_head_and_keeps_retry_idempotent
+  stdout ───
+
+    running 1 test
+    test holdout_journal::tests::eval_05_holdout_journal_rejects_stale_head_and_keeps_retry_idempotent ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval holdout_journal::tests::eval_05_holdout_journal_reopens_exactly
+  stdout ───
+
+    running 1 test
+    test holdout_journal::tests::eval_05_holdout_journal_reopens_exactly ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval ndu_convergence::tests::independent_signed_evidence_can_issue_accepted_deny_all_certificate
+  stdout ───
+
+    running 1 test
+    test ndu_convergence::tests::independent_signed_evidence_can_issue_accepted_deny_all_certificate ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.010s] codex-hepta-intelligence-eval ndu_convergence::tests::spectral_or_residual_failure_rejects_but_missing_support_is_unavailable
+  stdout ───
+
+    running 1 test
+    test ndu_convergence::tests::spectral_or_residual_failure_rejects_but_missing_support_is_unavailable ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval ndu_convergence::tests::tampered_evaluator_payload_cannot_self_certify
+  stdout ───
+
+    running 1 test
+    test ndu_convergence::tests::tampered_evaluator_payload_cannot_self_certify ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval ndu_well_posedness::tests::complete_signed_independent_evidence_is_accepted_without_authority
+  stdout ───
+
+    running 1 test
+    test ndu_well_posedness::tests::complete_signed_independent_evidence_is_accepted_without_authority ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval ndu_well_posedness::tests::conditional_mean_threshold_and_expiry_fail_closed
+  stdout ───
+
+    running 1 test
+    test ndu_well_posedness::tests::conditional_mean_threshold_and_expiry_fail_closed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval ndu_well_posedness::tests::missing_support_is_unavailable_and_failed_assumption_rejects
+  stdout ───
+
+    running 1 test
+    test ndu_well_posedness::tests::missing_support_is_unavailable_and_failed_assumption_rejects ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval ope::confidence::tests::confidence_plan_requires_prespecified_assumptions_and_budget
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::confidence_plan_requires_prespecified_assumptions_and_budget ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.015s] codex-hepta-intelligence-eval ope::confidence::tests::independent_constant_rows_have_nonzero_uncertainty
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::independent_constant_rows_have_nonzero_uncertainty ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.023s] codex-hepta-intelligence-eval ope::confidence::tests::merging_dependent_rows_widens_intervals
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::merging_dependent_rows_widens_intervals ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.022s] codex-hepta-intelligence-eval ope::confidence::tests::multiplicity_and_stricter_alpha_never_narrow_bounds
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::multiplicity_and_stricter_alpha_never_narrow_bounds ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::confidence::tests::outward_integer_radius_has_an_exact_scalar_oracle
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::outward_integer_radius_has_an_exact_scalar_oracle ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.010s] codex-hepta-intelligence-eval ope::confidence::tests::point_estimate_failures_cannot_be_hidden_by_intervals
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::point_estimate_failures_cannot_be_hidden_by_intervals ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.025s] codex-hepta-intelligence-eval ope::confidence::tests::rejects_missing_duplicate_unknown_and_single_cluster_assignments
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::rejects_missing_duplicate_unknown_and_single_cluster_assignments ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.029s] codex-hepta-intelligence-eval ope::confidence::tests::repeating_rows_within_clusters_does_not_manufacture_precision
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::repeating_rows_within_clusters_does_not_manufacture_precision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.023s] codex-hepta-intelligence-eval ope::confidence::tests::row_and_assignment_order_are_canonical
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::row_and_assignment_order_are_canonical ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.013s] codex-hepta-intelligence-eval ope::confidence::tests::unchosen_actions_also_have_to_respect_the_weight_ceiling
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::unchosen_actions_also_have_to_respect_the_weight_ceiling ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.014s] codex-hepta-intelligence-eval ope::confidence::tests::unresolved_weight_denominator_returns_full_reward_interval
+  stdout ───
+
+    running 1 test
+    test ope::confidence::tests::unresolved_weight_denominator_returns_full_reward_interval ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::distribution_and_weight_gates_are_enforced
+  stdout ───
+
+    running 1 test
+    test ope::tests::distribution_and_weight_gates_are_enforced ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::documented_ope_golden_vector_is_exact
+  stdout ───
+
+    running 1 test
+    test ope::tests::documented_ope_golden_vector_is_exact ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::duplicate_observations_cannot_inflate_sample_count
+  stdout ───
+
+    running 1 test
+    test ope::tests::duplicate_observations_cannot_inflate_sample_count ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::effective_sample_size_cannot_be_replaced_by_raw_row_count
+  stdout ───
+
+    running 1 test
+    test ope::tests::effective_sample_size_cannot_be_replaced_by_raw_row_count ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.045s] codex-hepta-intelligence-eval ope::tests::exact_ess_floor_cannot_be_weakened_by_q32_rounding
+  stdout ───
+
+    running 1 test
+    test ope::tests::exact_ess_floor_cannot_be_weakened_by_q32_rounding ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval ope::tests::exact_weight_ceiling_cannot_be_weakened_by_q32_rounding
+  stdout ───
+
+    running 1 test
+    test ope::tests::exact_weight_ceiling_cannot_be_weakened_by_q32_rounding ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::incomplete_candidates_and_unknown_choice_are_rejected
+  stdout ───
+
+    running 1 test
+    test ope::tests::incomplete_candidates_and_unknown_choice_are_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::missing_evidence_and_out_of_range_outcomes_are_rejected
+  stdout ───
+
+    running 1 test
+    test ope::tests::missing_evidence_and_out_of_range_outcomes_are_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::nonzero_outcome_model_uses_residual_correction
+  stdout ───
+
+    running 1 test
+    test ope::tests::nonzero_outcome_model_uses_residual_correction ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::outcome_after_frozen_watermark_is_rejected
+  stdout ───
+
+    running 1 test
+    test ope::tests::outcome_after_frozen_watermark_is_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::pending_outcome_is_not_zero_reward
+  stdout ───
+
+    running 1 test
+    test ope::tests::pending_outcome_is_not_zero_reward ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::row_and_candidate_permutations_preserve_every_receipt_field
+  stdout ───
+
+    running 1 test
+    test ope::tests::row_and_candidate_permutations_preserve_every_receipt_field ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval ope::tests::scaled_ratio_preserves_exact_floor_and_ties_even_at_wide_bounds
+  stdout ───
+
+    running 1 test
+    test ope::tests::scaled_ratio_preserves_exact_floor_and_ties_even_at_wide_bounds ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::signed_rounding_is_ties_to_even
+  stdout ───
+
+    running 1 test
+    test ope::tests::signed_rounding_is_ties_to_even ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::tiny_supported_weights_retain_exact_ess
+  stdout ───
+
+    running 1 test
+    test ope::tests::tiny_supported_weights_retain_exact_ess ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval ope::tests::unsupported_unchosen_action_is_also_rejected
+  stdout ───
+
+    running 1 test
+    test ope::tests::unsupported_unchosen_action_is_also_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.104s] codex-hepta-intelligence-eval product_execution_file::tests::a_torn_suffix_is_preserved_and_blocks_recovery
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::a_torn_suffix_is_preserved_and_blocks_recovery ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.10s
+
+
+        PASS [   0.321s] codex-hepta-intelligence-eval product_execution_file::tests::completed_bytes_and_pending_claim_survive_an_abrupt_child_exit
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+    test product_execution_file::tests::completed_bytes_and_pending_claim_survive_an_abrupt_child_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+    running 1 test
+
+    running 1 test
+    test product_execution_file::tests::completed_bytes_and_pending_claim_survive_an_abrupt_child_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.05s
+
+    test product_execution_file::tests::completed_bytes_and_pending_claim_survive_an_abrupt_child_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.32s
+
+
+        PASS [   1.218s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_refuses_length_changes_without_repair
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::current::current_refuses_length_changes_without_repair ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 1.21s
+
+
+        PASS [   0.432s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.42s
+
+
+        PASS [   0.278s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.27s
+
+
+        PASS [   0.398s] codex-hepta-intelligence-eval product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.39s
+
+
+        PASS [   0.233s] codex-hepta-intelligence-eval product_execution_file::tests::external_length_change_poisoning_cannot_be_cleared_by_restoring_length
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::external_length_change_poisoning_cannot_be_cleared_by_restoring_length ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.23s
+
+
+        PASS [   0.607s] codex-hepta-intelligence-eval product_execution_file::tests::external_minimum_rejects_an_older_or_divergent_valid_journal
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::external_minimum_rejects_an_older_or_divergent_valid_journal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.60s
+
+
+        PASS [   0.224s] codex-hepta-intelligence-eval product_execution_file::tests::failed_constructor_releases_lock_even_with_a_duplicate_description
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::failed_constructor_releases_lock_even_with_a_duplicate_description ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.22s
+
+
+        PASS [   0.268s] codex-hepta-intelligence-eval product_execution_file::tests::oversized_completion_keeps_the_durable_pending_record
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::oversized_completion_keeps_the_durable_pending_record ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.26s
+
+
+        PASS [   0.252s] codex-hepta-intelligence-eval product_execution_file::tests::plan_binding_and_completed_payload_are_immutable
+  stdout ───
+
+    running 1 test
+    test product_execution_file::tests::plan_binding_and_completed_payload_are_immutable ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.24s
+
+
+        PASS [   0.045s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::bounded_codec_rejects_truncation_trailing_bytes_and_historical_binding_changes
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::bounded_codec_rejects_truncation_trailing_bytes_and_historical_binding_changes ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.050s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::changed_plan_and_changed_evaluator_do_not_consume_or_reuse
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::changed_plan_and_changed_evaluator_do_not_consume_or_reuse ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.041s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::consumed_holdout_without_execution_is_not_released_again
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::consumed_holdout_without_execution_is_not_released_again ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.03s
+
+
+        PASS [   0.456s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.45s
+
+
+        PASS [   0.331s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.32s
+
+
+        PASS [   0.051s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.022s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.048s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.066s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.06s
+
+
+        PASS [   0.081s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::process_tests::signed_execution_and_original_holdout_survive_an_abrupt_process_exit
+  stdout ───
+
+    running 1 test
+
+    running 1 test
+
+    running 1 test
+    test product_runner::tests::execution_tests::process_tests::signed_execution_and_original_holdout_survive_an_abrupt_process_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+    test product_runner::tests::execution_tests::process_tests::signed_execution_and_original_holdout_survive_an_abrupt_process_exit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.08s
+
+
+        PASS [   0.049s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::provider_and_attestor_failures_leave_pending_without_second_release
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::provider_and_attestor_failures_leave_pending_without_second_release ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.015s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::read_only_missing_execution_never_creates_a_claim
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::read_only_missing_execution_never_creates_a_claim ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.013s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::read_only_pending_execution_never_reissues_work
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::read_only_pending_execution_never_reissues_work ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.048s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::readback_requires_current_evaluator_trust_and_original_validity
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::readback_requires_current_evaluator_trust_and_original_validity ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.045s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::restored_execution_qualifies_only_with_its_original_evaluator
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::restored_execution_qualifies_only_with_its_original_evaluator ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.044s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::self_rehashed_execution_bytes_cannot_replace_original_signature
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::self_rehashed_execution_bytes_cannot_replace_original_signature ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.061s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::signed_completion_lost_ack_reopens_without_release_or_resigning
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::signed_completion_lost_ack_reopens_without_release_or_resigning ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.06s
+
+
+        PASS [   0.040s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::stale_holdout_owner_cannot_read_a_valid_execution
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::stale_holdout_owner_cannot_read_a_valid_execution ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.03s
+
+
+        PASS [   0.043s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::takeover_during_completed_readback_refuses_the_cached_execution
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::takeover_during_completed_readback_refuses_the_cached_execution ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.012s] codex-hepta-intelligence-eval product_runner::tests::execution_tests::uncertain_claim_never_starts_holdout_work
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::execution_tests::uncertain_claim_never_starts_holdout_work ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.046s] codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.04s
+
+
+        PASS [   0.013s] codex-hepta-intelligence-eval product_runner::tests::product_runner_never_releases_holdout_before_fenced_consumption
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::product_runner_never_releases_holdout_before_fenced_consumption ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.189s] codex-hepta-intelligence-eval product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.18s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error
+  stdout ───
+
+    running 1 test
+    test qualification_file_observation::tests::bounded_original_handle_reads_restore_cursor_after_io_error ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor
+  stdout ───
+
+    running 1 test
+    test qualification_file_observation::tests::original_handle_bytes_detect_equal_length_changes_and_retain_lock_and_cursor ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.510s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::public_preparation_retains_observed_time_and_authoritative_dataset_checks
+  stdout ───
+
+    running 1 test
+    test self_evolution_selection::ingress_tests::public_preparation_retains_observed_time_and_authoritative_dataset_checks ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.50s
+
+
+        PASS [   0.246s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::sealed_longitudinal_qualification_reaches_public_preparation_and_independent_selector
+  stdout ───
+
+    running 1 test
+    test self_evolution_selection::ingress_tests::sealed_longitudinal_qualification_reaches_public_preparation_and_independent_selector ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.24s
+
+
+        PASS [   0.505s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::selector_signature_commits_the_exact_qualification_publication
+  stdout ───
+
+    running 1 test
+    test self_evolution_selection::ingress_tests::selector_signature_commits_the_exact_qualification_publication ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.50s
+
+
+        PASS [   0.484s] codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy
+  stdout ───
+
+    running 1 test
+    test self_evolution_selection::ingress_tests::valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.48s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval self_evolution_selection::tests::receipt_rejects_generation_rewind_and_baseline_drift
+  stdout ───
+
+    running 1 test
+    test self_evolution_selection::tests::receipt_rejects_generation_rewind_and_baseline_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.009s] codex-hepta-intelligence-eval self_evolution_selection::tests::selector_and_rollback_are_opaque_independent_admissions
+  stdout ───
+
+    running 1 test
+    test self_evolution_selection::tests::selector_and_rollback_are_opaque_independent_admissions ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval self_evolution_selection::tests::signing_payload_binds_predecessor_candidate_and_longitudinal_policy
+  stdout ───
+
+    running 1 test
+    test self_evolution_selection::tests::signing_payload_binds_predecessor_candidate_and_longitudinal_policy ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor
+  stdout ───
+
+    running 1 test
+    test sequential::tests::deep_ess_and_joint_scope_cannot_inherit_a_weaker_local_floor ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.236s] codex-hepta-intelligence-eval sequential::tests::exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding
+  stdout ───
+
+    running 1 test
+    test sequential::tests::exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.23s
+
+
+        PASS [   0.014s] codex-hepta-intelligence-eval sequential::tests::full_pilot_horizon_preserves_the_undiscounted_terminal_return
+  stdout ───
+
+    running 1 test
+    test sequential::tests::full_pilot_horizon_preserves_the_undiscounted_terminal_return ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::horizon_and_cumulative_limits_are_enforced
+  stdout ───
+
+    running 1 test
+    test sequential::tests::horizon_and_cumulative_limits_are_enforced ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval sequential::tests::incomplete_or_unobserved_trajectories_are_insufficient_not_zero_reward
+  stdout ───
+
+    running 1 test
+    test sequential::tests::incomplete_or_unobserved_trajectories_are_insufficient_not_zero_reward ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::ordering_is_canonical_but_history_and_cluster_binding_are_not_erased
+  stdout ───
+
+    running 1 test
+    test sequential::tests::ordering_is_canonical_but_history_and_cluster_binding_are_not_erased ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval sequential::tests::support_is_checked_at_each_depth_not_only_episode_entry
+  stdout ───
+
+    running 1 test
+    test sequential::tests::support_is_checked_at_each_depth_not_only_episode_entry ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval sequential::tests::terminal_convention_prevents_counting_terminal_value_twice
+  stdout ───
+
+    running 1 test
+    test sequential::tests::terminal_convention_prevents_counting_terminal_value_twice ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval sequential::tests::tiny_cumulative_weights_keep_q64_ess_and_underflow_is_explicit
+  stdout ───
+
+    running 1 test
+    test sequential::tests::tiny_cumulative_weights_keep_q64_ess_and_underflow_is_explicit ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval sequential::tests::two_step_backward_dr_matches_nine_tenths_and_reports_depth_support
+  stdout ───
+
+    running 1 test
+    test sequential::tests::two_step_backward_dr_matches_nine_tenths_and_reports_depth_support ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval sequential::tests::zero_support_and_tiny_behavior_probability_reject_before_overflow
+  stdout ───
+
+    running 1 test
+    test sequential::tests::zero_support_and_tiny_behavior_probability_reject_before_overflow ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-intelligence-eval signed_qualification_e2e_tests::signed_qualification_e2e_binds_plan_holdout_roles_and_trust
+  stdout ───
+
+    running 1 test
+    test signed_qualification_e2e_tests::signed_qualification_e2e_binds_plan_holdout_roles_and_trust ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.024s] codex-hepta-intelligence-eval temporal_evaluation::tests::actual_fitted_predictions_feed_the_doubly_robust_estimator
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::actual_fitted_predictions_feed_the_doubly_robust_estimator ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.033s] codex-hepta-intelligence-eval temporal_evaluation::tests::all_input_orderings_preserve_the_complete_receipt
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::all_input_orderings_preserve_the_complete_receipt ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.03s
+
+
+        PASS [   0.034s] codex-hepta-intelligence-eval temporal_evaluation::tests::caller_prediction_fields_cannot_override_the_training_model
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::caller_prediction_fields_cannot_override_the_training_model ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.03s
+
+
+        PASS [   0.065s] codex-hepta-intelligence-eval temporal_evaluation::tests::composite_digest_binds_every_plan_scope
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::composite_digest_binds_every_plan_scope ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.06s
+
+
+        PASS [   0.011s] codex-hepta-intelligence-eval temporal_evaluation::tests::composite_digest_matches_canonical_golden_vector
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::composite_digest_matches_canonical_golden_vector ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.015s] codex-hepta-intelligence-eval temporal_evaluation::tests::dependent_episodes_cannot_be_split_between_clusters
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::dependent_episodes_cannot_be_split_between_clusters ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.014s] codex-hepta-intelligence-eval temporal_evaluation::tests::dependent_principals_cannot_be_split_between_clusters
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::dependent_principals_cannot_be_split_between_clusters ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.025s] codex-hepta-intelligence-eval temporal_evaluation::tests::independently_revised_subplan_can_be_resealed_without_aliasing_other_digests
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::independently_revised_subplan_can_be_resealed_without_aliasing_other_digests ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.02s
+
+
+        PASS [   0.014s] codex-hepta-intelligence-eval temporal_evaluation::tests::observed_outcomes_must_follow_the_held_out_decision
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::observed_outcomes_must_follow_the_held_out_decision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.013s] codex-hepta-intelligence-eval temporal_evaluation::tests::rejects_changed_legal_action_sets
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::rejects_changed_legal_action_sets ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.014s] codex-hepta-intelligence-eval temporal_evaluation::tests::rejects_nonbijective_cohort_joins
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::rejects_nonbijective_cohort_joins ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.01s
+
+
+        PASS [   0.010s] codex-hepta-intelligence-eval temporal_evaluation::tests::validation_principals_cannot_enter_training
+  stdout ───
+
+    running 1 test
+    test temporal_evaluation::tests::validation_principals_cannot_enter_training ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval temporal_fold::tests::fits_training_mean_without_validation_labels
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::fits_training_mean_without_validation_labels ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::mean_rounding_uses_ties_to_even
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::mean_rounding_uses_ties_to_even ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::model_identity_does_not_depend_on_validation_features
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::model_identity_does_not_depend_on_validation_features ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::ordering_does_not_change_receipts
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::ordering_does_not_change_receipts ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_all_training_validation_lineage_overlaps
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::rejects_all_training_validation_lineage_overlaps ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_duplicates_missing_evidence_and_invalid_rewards
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::rejects_duplicates_missing_evidence_and_invalid_rewards ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.007s] codex-hepta-intelligence-eval temporal_fold::tests::rejects_late_training_outcomes_and_early_validation
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::rejects_late_training_outcomes_and_early_validation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval temporal_fold::tests::unsupported_actions_and_insufficient_samples_are_not_imputed
+  stdout ───
+
+    running 1 test
+    test temporal_fold::tests::unsupported_actions_and_insufficient_samples_are_not_imputed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::eligible_is_not_promotion
+  stdout ───
+
+    running 1 test
+    test tests::eligible_is_not_promotion ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::every_registered_threshold_is_enforced
+  stdout ───
+
+    running 1 test
+    test tests::every_registered_threshold_is_enforced ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::hard_regression_is_rejected
+  stdout ───
+
+    running 1 test
+    test tests::hard_regression_is_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible
+  stdout ───
+
+    running 1 test
+    test tests::incomplete_evidence::known_regression_with_unknown_metric_support_is_not_complete_ineligible ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::missing_support_is_insufficient
+  stdout ───
+
+    running 1 test
+    test tests::missing_support_is_insufficient ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::receipt_digest_binds_threshold_metadata_in_canonical_order
+  stdout ───
+
+    running 1 test
+    test tests::receipt_digest_binds_threshold_metadata_in_canonical_order ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::registered_hard_regression_allowance_is_enforced_exactly
+  stdout ───
+
+    running 1 test
+    test tests::registered_hard_regression_allowance_is_enforced_exactly ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-intelligence-eval tests::self_evaluation_is_rejected
+  stdout ───
+
+    running 1 test
+    test tests::self_evaluation_is_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-intelligence-eval tests::unrepresentable_metric_deltas_fail_closed
+  stdout ───
+
+    running 1 test
+    test tests::unrepresentable_metric_deltas_fail_closed ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 162 filtered out; finished in 0.00s
+
+

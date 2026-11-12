@@ -1,0 +1,52 @@
+{
+  "after": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "dirty": false,
+    "parents": [
+      "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "b29869e856d08db1bfb066116a9c443376ccc57d"
+    ],
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "dirty": false,
+    "parents": [
+      "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+      "b29869e856d08db1bfb066116a9c443376ccc57d"
+    ],
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "command": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-agentd"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 169.23661496303976,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T14:07:56.244850+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 70022,
+  "log_file": "fix.json.17f79b79cc07458d898487ebc9c4c067.log",
+  "log_sha256": "7789ba89d087c8965f906377cb06842615a1e0c45d4ba4caa13c6f132adef403",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "started_at": "2026-11-12T14:05:07.003134+00:00",
+  "status": "passed",
+  "tested_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-utility-36fa-review-19aa/codex-rs"
+}

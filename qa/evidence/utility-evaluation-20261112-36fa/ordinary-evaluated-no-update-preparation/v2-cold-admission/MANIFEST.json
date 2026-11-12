@@ -1,0 +1,126 @@
+{
+  "actual_execution": "not_run",
+  "base_review_manifest": "cc642219dc21ea222ccfcdbdfbd311cfd4a10e48",
+  "claim": "source_reachable_cold_reader_ordering_fixed_in_isolated_preparation_only",
+  "files": [
+    {
+      "after": {
+        "bytes": 11635,
+        "git_blob": "fda184d76f6dd38503d3604c3dd323366f20ed41",
+        "sha256": "2a46fb33794210146775c7a4c65043c08b1bd5c0a88059d0c7ab4e80a3daa4f1"
+      },
+      "before": {
+        "bytes": 10040,
+        "git_blob": "9187d87edc8d3220eaee952000c0afb4e26e4e10",
+        "sha256": "03b657e63f315124c04a707669e0ae505895ddf8518f68f7ba52f1b31768a09b"
+      },
+      "before_origin": "review-version-readiness-v1",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+    },
+    {
+      "after": {
+        "bytes": 12612,
+        "git_blob": "dd03da3456b00de3f4dece276aec42f1acba3de5",
+        "sha256": "237f79dfda212938d381815a1c5b303b5bc037dc4a0ee8a3711cd3a1e415d450"
+      },
+      "before": {
+        "bytes": 12151,
+        "git_blob": "56345fd902cb778fb2350213486ec86f037a306f",
+        "sha256": "0cbd548926e3654b21d327fa0d2e1e85b83c4a559ef691619790e425c9efa203"
+      },
+      "before_origin": "review-version-readiness-v1",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+    },
+    {
+      "after": {
+        "bytes": 864,
+        "git_blob": "e45bd14802a998dfef0d1c1e2f9eeeaa6e3deb8b",
+        "sha256": "b4bd3dbb7a1017195f60a06a67fd7f87bc02025d9f924ba21b5aa506faae3b74"
+      },
+      "before": null,
+      "before_origin": "absent",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_readiness_support_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 6141,
+        "git_blob": "04624395ce058e3bbdd7e509a56b97be6773f68f",
+        "sha256": "bfc49de1e840be4237b1ec5286680f9290897b124b883b6be3e6c9a4a9d46cfb"
+      },
+      "before": null,
+      "before_origin": "absent",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 6015,
+        "git_blob": "0679e166f81b9efa54c96ff8916efd731f08592e",
+        "sha256": "804cae3e6bef11a59489ee5da670abc446238a63fb6ac5f05601a5b04ae60371"
+      },
+      "before": null,
+      "before_origin": "absent",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 1240,
+        "git_blob": "0c1d16def1b539cc10ae5527675798f4ef79785e",
+        "sha256": "a436205dc0588254d76ad1deed38515e199260cac5d57faf848c2d19208792dc"
+      },
+      "before": null,
+      "before_origin": "absent",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_initial_connection_support_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 10238,
+        "git_blob": "097d946261519c8e41aa524d97def813e002ec0f",
+        "sha256": "bd0fea8a5e98e56baa5ed8602d3ac75f76103274190ef237da717b08e0431410"
+      },
+      "before": {
+        "bytes": 10142,
+        "git_blob": "0305590b9eb910a10f43379c5efea6ea03ea5a0f",
+        "sha256": "225185c2dfc09993cb3ab22b823db40a42b6299c0ab1dcc8e2d73380534359a8"
+      },
+      "before_origin": "a96d1",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 12838,
+        "git_blob": "8d94ddd4a3ed4ea9552a6e58caaf4f6100fdc4d5",
+        "sha256": "7402eb757296f0657b747b396245647cfcdf35b409b09949d68001d9d8bfb49c"
+      },
+      "before": {
+        "bytes": 12745,
+        "git_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+        "sha256": "d7ee7f0dc75ac86fcbf39e3cdc2d6fcd69d521832a786b7cbb3df7bd84e77175"
+      },
+      "before_origin": "a96d1",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs"
+    }
+  ],
+  "fixed_upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "format": "hepta-evaluated-version-cold-admission-review-v1",
+  "gzip_base64_packet": {
+    "bytes": 31305,
+    "git_blob": "67ffcf35df8d00ec28c00d584c796b70d506dd35",
+    "sha256": "8d02c2153efcf4e44d33ce8047d0f415ae5c6bdf10d14d4733f25ab652d7c497"
+  },
+  "limitations": [
+    "No Rust compile, formatting or test execution.",
+    "The fresh FinalUse late-failure path still requires the actual UID-0 issuer fixture; no signing/phase bypass was introduced.",
+    "New cold Artifact-current mutation case reaches the actual original D/T/B, Version command response and selection-serving loop; expected outcome remains unexecuted.",
+    "Same-process transport adapter bypasses deployment process admission only, not reader admission/current checks."
+  ],
+  "packet": {
+    "bytes": 86797,
+    "git_blob": "787ddeb21637df1db3005093e80635564f68b907",
+    "sha256": "ea1afbaff14b5392ba760e782a7f75677dcec791b1cbc17cfa79bca3d8ceeb89"
+  },
+  "patch": {
+    "bytes": 21314,
+    "git_blob": "c127a23934a862ba03b097a0965538598b5f9791",
+    "sha256": "400a70509f0219bb95abf4a4b9b9a21158461a6df06b219882a3ef8c8e8cf12f"
+  }
+}

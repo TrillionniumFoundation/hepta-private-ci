@@ -1,0 +1,360 @@
+{
+  "schema": "hepta.c0f-focused-fresh-junit-root-review.v1",
+  "source_sha": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+  "xml_blob": "96d5b747e0579ff70730a89f70eb7ae3b70dd479",
+  "xml_bytes": 49808,
+  "xml_sha256": "e1e7901986fef0bb4a682156d87eef31b93a54f7e8759e564966dac136e198e7",
+  "xml_root": {
+    "name": "nextest-run",
+    "tests": "109",
+    "failures": "28",
+    "errors": "0",
+    "uuid": "726ffb7b-8434-4929-a757-074a182e1fe0",
+    "timestamp": "2026-11-12T09:30:17.411-05:00",
+    "time": "409.228"
+  },
+  "actual_unique_cases": 109,
+  "classification": {
+    "pass": 81,
+    "timeout": 2,
+    "InvalidBinding": 1,
+    "stack_overflow_SIGABRT": 24,
+    "OwnerUnavailable": 1
+  },
+  "failures": [
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "time": "60.014",
+      "failure_attributes": {
+        "type": "test timeout"
+      },
+      "category": "timeout"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "time": "12.044",
+      "failure_attributes": {
+        "message": "Error: InvalidBinding",
+        "type": "test failure with exit code 101"
+      },
+      "category": "InvalidBinding"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "time": "60.017",
+      "failure_attributes": {
+        "type": "test timeout"
+      },
+      "category": "timeout"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "time": "1.215",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "time": "1.222",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "time": "1.198",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "time": "1.212",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "time": "1.213",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "time": "1.210",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "time": "1.210",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "time": "1.213",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "time": "1.212",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "time": "1.216",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "time": "1.210",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "time": "1.212",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "time": "1.214",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "time": "1.905",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "time": "2.409",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "time": "1.206",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "time": "1.266",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "time": "1.661",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "time": "2.061",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "time": "2.064",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "time": "2.061",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "time": "2.192",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "time": "2.193",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "time": "2.152",
+      "failure_attributes": {
+        "message": "process aborted with signal 6 (SIGABRT)",
+        "type": "test abort"
+      },
+      "category": "stack_overflow_SIGABRT"
+    },
+    {
+      "classname": "codex-hepta-agentd",
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "time": "8.949",
+      "failure_attributes": {
+        "message": "Error: OwnerUnavailable(\"original learning evidence owner\")",
+        "type": "test failure with exit code 101"
+      },
+      "category": "OwnerUnavailable"
+    }
+  ],
+  "previous_e8_xml_blob": "5bf99b42559ae02bd2da7ef067e87098dd247482",
+  "added_case_names": [
+    [
+      "codex-hepta-agentd",
+      "circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1"
+    ],
+    [
+      "codex-hepta-agentd",
+      "circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response"
+    ]
+  ],
+  "removed_case_names": [],
+  "old_failed_now_passing_names": [
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody"
+    ],
+    [
+      "codex-hepta-agentd",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody"
+    ]
+  ],
+  "scope": "Exact fresh c0f focused gate only. This failed gate does not start all/ordinary/Root and says nothing about uncompiled next preparation."
+}

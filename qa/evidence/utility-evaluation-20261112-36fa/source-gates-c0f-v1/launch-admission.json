@@ -1,0 +1,38 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "/home/qian-qi/hepta-utility-36fa-source-gates-e8b6fe2a-records-v1/driver.py",
+      "--config",
+      "/home/qian-qi/hepta-utility-36fa-evidence/source-gates-c0f78493-input-v1.json"
+    ],
+    "created_unix_ms": 1794492753490,
+    "cwd": "/home/qian-qi",
+    "env_keys": [
+      "GIT_OPTIONAL_LOCKS",
+      "PYTHONDONTWRITEBYTECODE"
+    ],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1d01a6652-2564-1b2d",
+    "idempotency_key": "hepta-utility-36fa-source-gates-c0f78493-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1d01a6652-2564-1b2d",
+    "request_digest": "6a23671b567a45deb91b60ae415660f3fd6e41fe47bb7e9f94aed6676f47947a",
+    "request_fingerprint": 7648069959317865950,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1d01a6652-2564-1b2d"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1d01a6652-2564-1b2d"
+  },
+  "local_record_pending": false,
+  "reused": false
+}
