@@ -284,6 +284,49 @@ impl OriginalBFile {
         }
         Ok(bytes)
     }
+
+    /// Only the private Root caller that has verified the original Generator
+    /// plan uses this once-only input. An existing statement is never rewritten.
+    pub(super) fn write_original_plan_once(&self, bytes: &[u8]) -> io::Result<()> {
+        self.require_original()?;
+        if !matches!(self.access, OriginalBFileAccess::OwnerWriter)
+            || bytes.is_empty()
+            || bytes.len() > 65_536
+        {
+            return Err(io::Error::other(
+                "original bounded plan input writer required",
+            ));
+        }
+        self.file.try_lock().map_err(io::Error::other)?;
+        let result = (|| {
+            let length = self.file.metadata()?.len();
+            if length == 0 {
+                self.file.write_all_at(bytes, /*offset*/ 0)?;
+                self.file.sync_all()?;
+            } else if length != bytes.len() as u64 {
+                return Err(io::Error::other("original plan input length changed"));
+            }
+            for _ in 0..2 {
+                let before = self.file.metadata()?;
+                let mut observed = vec![0; bytes.len()];
+                self.file.read_exact_at(&mut observed, /*offset*/ 0)?;
+                if observed != bytes
+                    || before.len() != bytes.len() as u64
+                    || stamp(&before) != stamp(&self.file.metadata()?)
+                {
+                    return Err(io::Error::other("original plan input bytes changed"));
+                }
+                self.require_original()?;
+            }
+            Ok(())
+        })();
+        let unlocked = self.file.unlock();
+        if result.is_err() || unlocked.is_err() {
+            self.poisoned.store(true, Ordering::Release);
+        }
+        result?;
+        unlocked
+    }
 }
 
 fn stamp(metadata: &Metadata) -> (u64, i64, i64, i64, i64) {
