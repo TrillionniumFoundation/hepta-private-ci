@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.clang-resource-preparation.root-review.v1",
+  "observed_at_utc": "2026-11-12 13:39:23 UTC",
+  "request_blob": "f6da7091be04dea432b041d5767059e685103806",
+  "driver_blob": "7bceff5386db6ac15f75d90426e3bf2bf87f3491",
+  "result_blob": "ac4539714f95897fb03b741331e211ebe39555b3",
+  "result_bytes": 8469,
+  "result_sha256": "ac0719292405bf2548fcccb0aee050c1b5fea0bc0eb2da047b9bb11cae140b4c",
+  "job": "1a1cfde1d88-2564-1ad1",
+  "library": {
+    "bytes": 32691984,
+    "clang_getClangVersion": "Ubuntu clang version 21.1.8 (6ubuntu1)",
+    "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+    "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+    "version": "66306:82190690:32691984:1773841930000000000:1791032247408329160"
+  },
+  "package": {
+    "bytes": 769884,
+    "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/libclang-common-21-dev_21.1.8-6ubuntu1_amd64.deb",
+    "sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+    "version": "66306:76984705:769884:1794488808435652542:1794488808436872993"
+  },
+  "resource_manifest": {
+    "bytes": 83900,
+    "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/evidence/RESOURCE_MANIFEST.json",
+    "sha256": "f09262fe0207c56977993927e64e52a39c548385c92de79e086f6d029f2b3957",
+    "version": "66306:76987834:83900:1794488808533034314:1794488808533034314"
+  },
+  "resource_dir": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21",
+  "header_pins": [
+    {
+      "bytes": 5053,
+      "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stddef.h",
+      "sha256": "b3e62a046ddf28d09eedebe6eb9461cb7060e47cad2c69964b222c4eea10347e",
+      "version": "66306:76987796:5053:1732612390000000000:1794488808511870094"
+    },
+    {
+      "bytes": 2497,
+      "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdarg.h",
+      "sha256": "ce6e43d79dc89b50208ecf259b1ffd519f5a78cd3a2c7fcaac6386f376b89fef",
+      "version": "66306:76987791:2497:1732612390000000000:1794488808511870094"
+    },
+    {
+      "bytes": 27519,
+      "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdint.h",
+      "sha256": "f43783466c93f77a6464274ebf18f9e4cc46f0d90770ddee2993c6cf39f7514f",
+      "version": "66306:76987797:27519:1751269732000000000:1794488808511870094"
+    }
+  ],
+  "baseline": "parse_result0 but fatal missing-stddef diagnostic severity4; not a valid translation.",
+  "positive": "parse_result0, no diagnostics, actual expected isolated stddef/stdarg/stdint included.",
+  "source_library_resource_unchanged_enforced_by_reviewed_driver": true,
+  "full_resource_manifest_root_readback": {
+    "status": "COMPLETE_ORIGINAL_READ_BACK",
+    "blob": "da9cd28806dc45c715db19cb63bdbf8a16dc4271",
+    "bytes": 83900,
+    "sha256": "f09262fe0207c56977993927e64e52a39c548385c92de79e086f6d029f2b3957",
+    "entries": 288,
+    "files": 282,
+    "symlinks": 6
+  },
+  "native_build_proved": false,
+  "native_tests_proved": 0,
+  "owner_decision": null,
+  "download_original_root_readback": {
+    "blob": "56d48f4d5c949a4b63f122b6d5b1b391224ba1bd",
+    "bytes": 659,
+    "sha256": "8dc0e2fcfca86448f55235711aacde76f5cfd5c838802b69c4a1f59c031fe30b",
+    "official_url_unchanged": true,
+    "http_status": 200,
+    "package_size_and_sha256_match": true
+  },
+  "capi_original_root_readback": {
+    "blob": "85434c659ca170f30d9003bcede09dbb288adc40",
+    "bytes": 6405,
+    "sha256": "436091217b888572a40eba9c78acf783f14c6274125374d55421be62f22c3035",
+    "baseline_fatal_diagnostic": true,
+    "positive_parse_zero_no_diagnostics": true,
+    "three_expected_actual_inclusions": true
+  },
+  "supervisor_original_readback": {
+    "manifest_blob": "a58d926ce6ce0e51c109bc1d0ac0c361d42935b7",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "stdout_bytes": 301,
+    "stderr_bytes": 0,
+    "all_four_originals_root_hash_verified": true
+  }
+}

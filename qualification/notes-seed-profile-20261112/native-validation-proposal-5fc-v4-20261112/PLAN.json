@@ -1,0 +1,253 @@
+{
+  "schema": "hepta.act6243.native-validation-proposal.v1",
+  "status": "NOT_DISPATCHED_REQUIRES_ROOT_REVIEW",
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "format_base": "9db98207bdb1ec36e2ba9ac0cf0356bf243821ab",
+  "output_root": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v4",
+  "existing_source_repository": "/home/qq/ctrl-macro-20261112-736c",
+  "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+  "workflow_path": ".github/workflows/hepta-act2-notes-seed-product.yml",
+  "workflow_git_blob": "e63844c19ae4c258829f7f8ca933efc888b0935e",
+  "workflow_sha256": "eff2224a930b5387c4909874628bf9740d0510b7f9621b18eab5de97bf53b273",
+  "minimum_available_memory_bytes": 53687091200,
+  "minimum_available_disk_bytes": 68719476736,
+  "tools": {
+    "just": {
+      "path": "/home/qq/neuro-owner-tools-862531d11598/v1/bin/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "version_fragment": "just 1.51.0"
+    },
+    "nextest": {
+      "path": "/home/qq/neuro-owner-tools-862531d11598/v1/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+      "version_fragment": "0.9.103"
+    },
+    "protoc": {
+      "path": "/home/qq/neuro-owner-tools-862531d11598/protoc-33.5-v2/bin/protoc",
+      "sha256": "e8d496f7dacade5bf42a11f4fbeb61e9bdfddd494fd292f5f1881ddc169e69cf",
+      "version_fragment": "libprotoc 33.5"
+    },
+    "dotslash": {
+      "path": "/home/qq/neuro-owner-tools-862531d11598/dotslash-0.5.9-v1/bin/dotslash",
+      "sha256": "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936",
+      "version_fragment": "DotSlash 0.5.9"
+    },
+    "rustc": {
+      "path": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": null,
+      "version_fragment": "rustc 1.96.0"
+    },
+    "cargo": {
+      "path": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": null,
+      "version_fragment": "cargo 1.96.0"
+    },
+    "rustfmt": {
+      "path": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": null,
+      "version_fragment": "rustfmt 1.9.0"
+    },
+    "rustup": {
+      "path": "/home/qq/.cargo/bin/rustup",
+      "sha256": null,
+      "version_fragment": "rustup "
+    }
+  },
+  "environment": {
+    "PATH": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin:/home/qq/neuro-owner-tools-862531d11598/v1/bin:/home/qq/neuro-owner-tools-862531d11598/protoc-33.5-v2/bin:/home/qq/neuro-owner-tools-862531d11598/dotslash-0.5.9-v1/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_TOOLCHAIN": "1.96.0-x86_64-unknown-linux-gnu",
+    "PROTOC": "/home/qq/neuro-owner-tools-862531d11598/protoc-33.5-v2/bin/protoc",
+    "PROTOC_INCLUDE": "/home/qq/neuro-owner-tools-862531d11598/protoc-33.5-v2/include",
+    "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "NEXTEST_TEST_THREADS": "1",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21"
+  },
+  "native_method_count": 6,
+  "retries": 0,
+  "shared_cache_scope": "existing Cargo/Git downloads only; no target/helper/worktree reuse",
+  "hosted_runs_preserved": [
+    43200801767,
+    43201926673,
+    43217423865
+  ],
+  "owner_decision": null,
+  "proposal_revision": 4,
+  "original_workflow_order": [
+    "v8-prepare",
+    "rustc-version",
+    "caller-proof",
+    "build",
+    "seed",
+    "seed-regressions",
+    "named-case-receipts",
+    "format"
+  ],
+  "caller_helper": {
+    "kind": "same-tree pure Python import",
+    "source_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "native_helper_required": false,
+    "external_helper_reused": false
+  },
+  "junit": {
+    "profile": "local",
+    "configured_path": "junit.xml",
+    "expected_output": "source/codex-rs/target/nextest/local/junit.xml",
+    "preserve_each_suite_before_next_test": true,
+    "authority": "auxiliary raw artifact; original workflow PASS-name receipt remains the qualification gate"
+  },
+  "reviewed_source_inputs": {
+    "scripts/hepta_typed_callers.py": {
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+      "bytes": 7672
+    },
+    "scripts/verify_hepta_callers.py": {
+      "git_blob": "d7a6981ee7775c7254a9c596ac47bb1bb5e43171",
+      "sha256": "43f048d1b33ec7e00dcf7cadd953dca2b0893a5cc8df0123a2321e1eb9b39368",
+      "bytes": 29947
+    },
+    "scripts/hepta_ci_exec.py": {
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+      "bytes": 12863
+    },
+    "scripts/run-nextest.py": {
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "bytes": 10206
+    },
+    "justfile": {
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "bytes": 7838
+    },
+    "codex-rs/.config/nextest.toml": {
+      "git_blob": "dca0517372a138081305648933c16a1a9f2ea634",
+      "sha256": "aa761a26dac0d0ba9eebacbff5fc4650285b6ff6d9bee045293f20f2dec52226",
+      "bytes": 7189
+    },
+    "scripts/hepta_ci_v8.py": {
+      "git_blob": "088b737c0cca7386161e06b254c794bf972380ad",
+      "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c",
+      "bytes": 3153
+    }
+  },
+  "clang_resources": {
+    "target": "x86_64-unknown-linux-gnu",
+    "sysroot": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot",
+    "resource_dir": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21",
+    "package_sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+    "official_package_url": "https://archive.ubuntu.com/ubuntu/pool/universe/l/llvm-toolchain-21/libclang-common-21-dev_21.1.8-6ubuntu1_amd64.deb",
+    "package_identity": {
+      "package": "libclang-common-21-dev",
+      "version": "1:21.1.8-6ubuntu1",
+      "architecture": "amd64"
+    },
+    "actual_preparation_job_id": "1a1cfde1d88-2564-1ad1",
+    "preparation_request_git_blob": "f6da7091be04dea432b041d5767059e685103806",
+    "preparation_source_git_blob": "7bceff5386db6ac15f75d90426e3bf2bf87f3491",
+    "actual_preparation_evidence_role": "dependency precondition only; physical C API input, no native build or actor",
+    "inherited_target_specific_policy": "record inherited value hashes, remove all BINDGEN_EXTRA_CLANG_ARGS_* only in this process environment, reject other unregistered nonempty selection variables",
+    "files": {
+      "library": {
+        "path": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+        "bytes": 32691984,
+        "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+        "version": "66306:82190690:32691984:1773841930000000000:1791032247408329160"
+      },
+      "package": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/libclang-common-21-dev_21.1.8-6ubuntu1_amd64.deb",
+        "bytes": 769884,
+        "sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+        "version": "66306:76984705:769884:1794488808435652542:1794488808436872993"
+      },
+      "manifest": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/evidence/RESOURCE_MANIFEST.json",
+        "bytes": 83900,
+        "sha256": "f09262fe0207c56977993927e64e52a39c548385c92de79e086f6d029f2b3957",
+        "version": "66306:76987834:83900:1794488808533034314:1794488808533034314"
+      },
+      "preparation_result": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/evidence/RESULT.json",
+        "bytes": 8469,
+        "sha256": "ac0719292405bf2548fcccb0aee050c1b5fea0bc0eb2da047b9bb11cae140b4c",
+        "version": "66306:76987837:8469:1794488808586779472:1794488808586779472"
+      },
+      "capi_result": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/evidence/C_API_PARSE.json",
+        "bytes": 6405,
+        "sha256": "436091217b888572a40eba9c78acf783f14c6274125374d55421be62f22c3035",
+        "version": "66306:76987836:6405:1794488808542912239:1794488808542912239"
+      },
+      "download": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/evidence/DOWNLOAD.json",
+        "bytes": 659,
+        "sha256": "8dc0e2fcfca86448f55235711aacde76f5cfd5c838802b69c4a1f59c031fe30b",
+        "version": "66306:76984676:659:1794488808391003038:1794488808391003038"
+      },
+      "probe": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/header_probe.c",
+        "bytes": 123,
+        "sha256": "9a051ec558aae0d2081943703325511ce66f7c3e9f9080cc53b35310180324eb",
+        "version": "66306:76987835:123:1794488808534068924:1794488808534792497"
+      },
+      "bindgen_selection_source": {
+        "path": "/home/qq/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bindgen-0.73.2/lib.rs",
+        "bytes": 46016,
+        "sha256": "bd1715d40656416337d54a14e1d26c687484858e1578607d6d5ee6ea84cc78ef",
+        "version": "66306:65293968:46016:1153704088000000000:1793863961139173955"
+      },
+      "clang_common_selection_source": {
+        "path": "/home/qq/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.9.1/build/common.rs",
+        "bytes": 13907,
+        "sha256": "0f2b27eb4891c3ec693e20af7efcac63ec66315ba476ec8af8be552264123e7f",
+        "version": "66306:65289993:13907:1153704088000000000:1793863959546131648"
+      },
+      "clang_dynamic_selection_source": {
+        "path": "/home/qq/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.9.1/build/dynamic.rs",
+        "bytes": 9912,
+        "sha256": "d1c96b612a3123971702a64460ef6f5f5e9e3660c774a985168e3f0d955897d0",
+        "version": "66306:65289994:9912:1153704088000000000:1793863959546238534"
+      },
+      "clang_driver_selection_source": {
+        "path": "/home/qq/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.9.1/src/support.rs",
+        "bytes": 8345,
+        "sha256": "944a20ba026ae545e77e215a705f64de1e57dfb0fb7758ed5865bc16ff7b0dc8",
+        "version": "66306:65290002:8345:1153704088000000000:1793863959546981768"
+      },
+      "header_stddef": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stddef.h",
+        "bytes": 5053,
+        "sha256": "b3e62a046ddf28d09eedebe6eb9461cb7060e47cad2c69964b222c4eea10347e",
+        "version": "66306:76987796:5053:1732612390000000000:1794488808511870094"
+      },
+      "header_stdarg": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdarg.h",
+        "bytes": 2497,
+        "sha256": "ce6e43d79dc89b50208ecf259b1ffd519f5a78cd3a2c7fcaac6386f376b89fef",
+        "version": "66306:76987791:2497:1732612390000000000:1794488808511870094"
+      },
+      "header_stdint": {
+        "path": "/home/qq/neuro-owner-tools-862531d11598/clang-resource-21.1.8-6ubuntu1-v1/sysroot/usr/lib/llvm-21/lib/clang/21/include/stdint.h",
+        "bytes": 27519,
+        "sha256": "f43783466c93f77a6464274ebf18f9e4cc46f0d90770ddee2993c6cf39f7514f",
+        "version": "66306:76987797:27519:1751269732000000000:1794488808511870094"
+      }
+    }
+  },
+  "predecessor_attempt": {
+    "job_id": "1a1cfbdbae4-2564-1a9a",
+    "status": "FAILED",
+    "caller_proof": "PASSED",
+    "build_exit_code": 101,
+    "cause": "same libclang21 lacked matching built-in resource headers",
+    "native_six_methods": "NOT_RUN",
+    "source_unchanged": true
+  }
+}

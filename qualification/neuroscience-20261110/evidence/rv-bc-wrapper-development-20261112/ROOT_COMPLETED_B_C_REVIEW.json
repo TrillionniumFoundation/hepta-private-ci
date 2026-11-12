@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.rv.completed-development-bc.root-readback.v1",
+  "observed_at_utc": "2026-11-12 13:39:23 UTC",
+  "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "freeze_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+  "B_job": "1a1cfb71a25-2564-1a94",
+  "C_job": "1a1cfd835b7-2564-1ac5",
+  "C_status_original_verified": "succeeded,exit0,complete/durable,stdout11889B/stderr0,no timeout/truncation",
+  "C_report_original_verified": {
+    "bytes": 8609,
+    "raw_sha256": "6b4f2a96c867448c847de5b3f3a8341b075d785e7cfcef1ef43c18a331e26905",
+    "canonical_sha256": "e4c769b8134d0594ecf3ccbd70ba84b2fa2e937f605e0cca75f085f506090464",
+    "equals_complete_original_stdout": true
+  },
+  "effects": [
+    {
+      "phase": "B",
+      "arm": "tuned-fixed",
+      "operation_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+      "status": "COMPLETED",
+      "macro": "STOP",
+      "read_executed": false,
+      "quality": 0,
+      "task_cost": 0.014269793331623077,
+      "full_cost_observed": false
+    },
+    {
+      "phase": "B",
+      "arm": "conditional",
+      "operation_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+      "status": "COMPLETED",
+      "macro": "STOP",
+      "read_executed": false,
+      "quality": 0,
+      "task_cost": 0.013473927038721741,
+      "full_cost_observed": false
+    },
+    {
+      "phase": "C",
+      "arm": "tuned-fixed",
+      "operation_id": "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+      "macro": "STOP",
+      "read_executed": false,
+      "status": "COMPLETED",
+      "quality": 0,
+      "task_cost": 0.018314381488598885,
+      "full_cost_observed": false
+    },
+    {
+      "phase": "C",
+      "arm": "conditional",
+      "operation_id": "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+      "macro": "STOP",
+      "read_executed": false,
+      "status": "COMPLETED",
+      "quality": 0,
+      "task_cost": 0.018052525010425598,
+      "full_cost_observed": false
+    }
+  ],
+  "planned": 4,
+  "completed": 4,
+  "failed": 0,
+  "unknown": 0,
+  "incomplete": 0,
+  "READ": 0,
+  "STOP": 4,
+  "original_inputs_unchanged_in_both_controllers": true,
+  "independent_new_sources": 0,
+  "efficacy_qualified": false,
+  "full_cost_observed": false,
+  "owner_decision": null,
+  "qualification_status": "HOLD_NOT_EVALUATED",
+  "production_admission": false,
+  "limits": "Exposed development sources; fixed original arm order. All four quality scores zero. Descriptive timing differences do not establish information or learning benefit. No actor redispatch.",
+  "final_source_snapshot_readback": {
+    "status": "CLOSED_FOR_SIX_SNAPSHOT_FILES",
+    "full_original_snapshot_blob": "df266a985b186083129d42629a9c6828b5c121c7",
+    "bytes": 40017,
+    "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+    "reader_job": "1a1cfecfddc-2564-1ae8",
+    "reader_exit_code": 0,
+    "reader_output_complete": true,
+    "new_three_path_versions": [
+      {
+        "bytes": 40017,
+        "gid": 1000,
+        "link_count": 1,
+        "matches_frozen_snapshot": true,
+        "mode": 384,
+        "path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/B-source-after.json",
+        "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+        "stat_before_after_equal": true,
+        "uid": 1000,
+        "version": "66306:77118034:40017:1794486250653835224:1794486250653835224"
+      },
+      {
+        "bytes": 40017,
+        "gid": 1000,
+        "link_count": 1,
+        "matches_frozen_snapshot": true,
+        "mode": 384,
+        "path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-before.json",
+        "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+        "stat_before_after_equal": true,
+        "uid": 1000,
+        "version": "66306:77084106:40017:1794488417565938467:1794488417565938467"
+      },
+      {
+        "bytes": 40017,
+        "gid": 1000,
+        "link_count": 1,
+        "matches_frozen_snapshot": true,
+        "mode": 384,
+        "path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/C-source-after.json",
+        "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+        "stat_before_after_equal": true,
+        "uid": 1000,
+        "version": "66306:77099892:40017:1794488421514423853:1794488421514423853"
+      }
+    ],
+    "scope": "Six original snapshot files have equal full-file SHA256/size. Original controllers checked their source inventories before and after. This final readback re-reads snapshot files; it is not a new live traversal of the 96 original source inputs and is not an owner attestation."
+  },
+  "final_original_increment": {
+    "manifest_blob": "397cf4fd7ee23fb48b94bf16a7859b46d7afe3c9",
+    "manifest_sha256": "4b1e97c7c8d63fca02246211c396577313a8c2633089f18d11affd11c33671eb",
+    "root_checked_files": 31,
+    "all_size_sha256_git_blob_checks_passed": true,
+    "controller_wrapper_terminal_equal": true
+  }
+}

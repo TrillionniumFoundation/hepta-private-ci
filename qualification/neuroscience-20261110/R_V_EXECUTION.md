@@ -1,8 +1,8 @@
-# R/V 实际执行入口与资产缺口（2026-11-12 13:02:08 UTC）
+# R/V 实际执行入口与资产缺口（2026-11-12 13:49:21 UTC）
 
-`replay_perception_native.py` 将既有真实 CTRL macro 执行器接到事前冻结的 B/C 开发面板；不复制 OCR、模型、隔离器或最终评分器。当前资格是 **DEVELOPMENT_ONLY / HOLD_NOT_EVALUATED**；`adoption=NOT_REQUESTED`、`owner_decision=null`，不冒充原 owner 的 NoUpdate 或采用决定。本文记录 wrapper 入口与当前上游实际结果；wrapper的正式freeze已完成，B两次原执行均COMPLETED且实际STOP；C两个固定请求已受理，原终态待读。最新状态以 [TERMINAL_EVIDENCE.json](TERMINAL_EVIDENCE.json) 和 [BLOCKER_CLOSURE_NEXT.md](BLOCKER_CLOSURE_NEXT.md) 为准。
+`replay_perception_native.py` 将既有真实 CTRL macro 执行器接到事前冻结的 B/C 开发面板；不复制 OCR、模型、隔离器或最终评分器。当前资格是 **DEVELOPMENT_ONLY / HOLD_NOT_EVALUATED**；`adoption=NOT_REQUESTED`、`owner_decision=null`，不冒充原 owner 的 NoUpdate 或采用决定。本文记录 wrapper 入口与当前上游实际结果；wrapper的正式freeze和B/C四个固定宏执行均已完成；四次都COMPLETED且实际STOP，无READ、质量0，完整原件及六份来源快照已核验。最新状态以 [TERMINAL_EVIDENCE.json](TERMINAL_EVIDENCE.json) 和 [BLOCKER_CLOSURE_NEXT.md](BLOCKER_CLOSURE_NEXT.md) 为准。
 
-## 真实 run-v2 入口与冻结已验证，B 两次完成、C 已受理
+## 真实 run-v2 入口、冻结与 B/C 四次执行均已回读
 
 只读原job1a1cf673fde...先完成固定wrapper的load_native/validate_partitions六项检查，验证83项原source pins（82源码＋1receipt）、driver/analysis和16项真实输入。该探针没有写文件、actor或新cold-load，也没有重跑原288项collection。
 
@@ -12,9 +12,9 @@ root完整核验12份原文件：FROZEN、EFFECT_ROSTER、freeze START/TERMINAL�
 
 B exact request原job `1a1cfb71a25-2564-1a94`、key `neuro4-rv-bc-phase-b-862531d-v1` 实际succeeded/exit0。root已核完整stdout、status、磁盘NATIVE_REPORT、两份TERMINAL/REALIZATION、wrapper/controller终态：2/2 COMPLETED、0 incomplete，两次均STOP、read_executed=false、quality0；已观察任务成本分别0.014269793331623077与0.013473927038721741。完整原report canonical SHA为`bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b`，各原报告与终态一致，原输入未变。两次STOP之间的计时差不构成检查收益，full_cost=false。
 
-C请求经root独立核验，只改变阶段和对应key，保留原driver/所有固定输入及600秒预算；driver在C START前重新读取完整B、检查RECORDED/输入未变及报告digest。原job `1a1cfd835b7-2564-1ac5` 已受理两次固定ID，key `neuro4-rv-bc-phase-c-862531d-v1`；当前C完成数未知。UNKNOWN只按同key对账。freeze的actor=0、B实际2完成、C尚未读回分别记录。见[root B完成与C请求审计](evidence/rv-bc-wrapper-development-20261112/ROOT_B_COMPLETION_C_REQUEST_REVIEW.json)。
+C请求经root独立核验，只改变阶段和对应key，保留原driver/所有固定输入及600秒预算；driver在C START前重新读取完整B。原job `1a1cfd835b7-2564-1ac5`、key `neuro4-rv-bc-phase-c-862531d-v1` 实际succeeded/exit0、stdout11889B/stderr0且完整持久。C两次均COMPLETED/STOP、无READ、quality0；任务成本0.018314381488598885与0.018052525010425598。原REPORT canonical SHA `e4c769b8134d0594ecf3ccbd70ba84b2fa2e937f605e0cca75f085f506090464` 与完整stdout及wrapper/controller一致。freeze、B、C的六份来源快照均40017B，完整SHA `d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da` 相同；最后三份的原路径/版本由只读job1a1cfecfddc-2564-1ae8逐项确认，未新增actor或重新遍历全部96个实时输入。见[root完整B/C核验](evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json)。原controller的actor_calls_this_request=null保留；四个完成宏效果不被改写成总模型/工具调用数。
 
-完整入口：[root冻结核验](evidence/rv-bc-wrapper-development-20261112/ROOT_FREEZE_CORE_REVIEW.json)、[12原文件路径映射](evidence/rv-bc-wrapper-development-20261112/actual-freeze/ROOT_PATH_MAPPING.json)、[B请求](evidence/rv-bc-wrapper-development-20261112/phase-B/PROCESS_REQUEST.json)。[a7b38全文](evidence/history-20261112/R_V_EXECUTION-a7b38.md)保留此前尚未freeze的观察。calibration.complete=false、full_cost_observed=false、owner_decision=null始终保留。
+完整入口：[root冻结核验](evidence/rv-bc-wrapper-development-20261112/ROOT_FREEZE_CORE_REVIEW.json)、[12原文件路径映射](evidence/rv-bc-wrapper-development-20261112/actual-freeze/ROOT_PATH_MAPPING.json)、[B请求](evidence/rv-bc-wrapper-development-20261112/phase-B/PROCESS_REQUEST.json)。[1b44全文](evidence/history-20261112/R_V_EXECUTION-1b44.md)保留C当时尚未读回的观察，[a7b38全文](evidence/history-20261112/R_V_EXECUTION-a7b38.md)保留更早尚未freeze的观察。calibration.complete=false、full_cost_observed=false、owner_decision=null始终保留。
 
 ## 已核实可复用资产
 
@@ -55,7 +55,7 @@ PERC 私有包名 `perc-real-observation-20261112-evidence.zip`，39,224,877 byt
 | `phases` | `B`、`C` 两个非空 registered-case 数组；每项保留原 `source_id/case_id/seed/read_condition/case`；`read_condition=original`，`case.role=development` |
 | `minimum_observed_gain` | 运行前固定的有限非负描述性阈值；不是统计资格门 |
 
-本轮已按已核真实case/seed冻结上述4调用development流程，B两次完成、C已受理。以下命令仅为接口说明；不得对已有freeze/B输出或不确定身份重新运行。原run-v2 campaign保持原key/session，不另派替代采集。该流程不新增来源资格，也不提供有效功效。
+本轮已按已核真实case/seed冻结上述4个宏执行development流程，B/C各两次均已完成并全量回读。以下命令仅为接口说明；不得对已有freeze/B输出或不确定身份重新运行。原run-v2 campaign保持原key/session，不另派替代采集。该流程不新增来源资格，也不提供有效功效。
 
 ```sh
 python3 replay_perception_native.py freeze --request "$RV_REQUEST" --expected-sha256 "$RV_REQUEST_SHA256" --output "$RV_NEW_OUTPUT"
@@ -69,7 +69,7 @@ python3 replay_perception_native.py reconcile-B --expected-sha256 "$RV_FREEZE_SH
 
 ## 未闭合项与本地机械验证
 
-- **wrapper真实freeze与B两次已完成，C终态待读：** 两阶段计划/四部署/原checkpoint/96项freeze输入已核验。B两份原终态均COMPLETED且实际STOP，C两个原ID已受理；不把未知C结果计作成功。calibration.complete=false、full_cost_observed=false保持。
+- **wrapper执行及回读已闭合：** 两阶段计划、四部署、四个固定宏效果均完成并回读；四次实际STOP、无READ、质量0。六份原来源快照完整SHA相同；calibration.complete=false、full_cost_observed=false和独立来源门仍未闭合。
 - **R 2×2 仍 OPEN：** 尚无同一真实任务上的 episodic／skill replay 可用执行适配器，不能把 ACT controlled probe 与 MEM 单次未评分生成拼成配对效果；MEM registry/其他旧请求的UNKNOWN分别保留。
 - **同信息循环与 VERIFY 付费检查仍 OPEN：** 当前 native 宏只有 STOP／真实 READ，不提供任意同输入循环或独立 checker 的等预算接口；没有伪造“同信息”对照。
 - **新来源 B/C 与原 owner 仍 OPEN：** 需要原来源登记／暴露证据和原有授权链，不接受自签名替代；现有 development 不重标 confirmation。
@@ -99,6 +99,6 @@ conditional的96次均STOP：94校准不完整、2 evaluation特征域越界；�
 
 原bootstrap结尾错误读取run-v1/COMPLETED.json，导致外层exit1；实际run-v2 COMPLETED和12个成功stage原件已核验。保留FAILED原件，不据该收尾错误重跑actor。未来启动器才可在新明确版本统一campaign_output与completion路径。
 
-MEM v3的生成终态已按#6201原7文件hash闭合，执行源fa3b624不能归给后来的#6136组合源码。ACT #6113的受控GRU恢复不是回放效益；#6127原native seed case实际因effective Core profile不符失败。新增[#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243)给出显式finite-v2 seed启动修复，当前5fc版本已纠正本轮新增caller预算120→4800秒且新v3完整caller已实际通过；随后原build因Clang21.1.8缺少stddef.h而失败，原native positive和5回归未执行。旧7d的V8断连、caller超时及旧8514 hosted同类超时原件均保留，正在隔离补齐匹配资源后再验证。没有改写其旧失败或授予Root身份。
+MEM v3的生成终态已按#6201原7文件hash闭合，执行源fa3b624不能归给后来的#6136组合源码。ACT #6113的受控GRU恢复不是回放效益；#6127原native seed case实际因effective Core profile不符失败。新增[#6243](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6243)给出显式finite-v2 seed启动修复，当前5fc版本已纠正本轮新增caller预算120→4800秒且新v3完整caller已实际通过；随后原build因Clang21.1.8缺少stddef.h而失败，原native positive和5回归未执行。旧7d的V8断连、普通caller超时及8514/7d两次hosted同类超时原件均保留。匹配Clang资源的原监督器、官方包、288项manifest及实际C API预检现已全部成功回读；这不替代native。13:49:21 UTC同5fc hosted原caller、双binary build及原1＋新5方法都已通过，root核对六个预期PASS行及各原source record；最终合并receipt/format步骤失败，正读取原artifact定位，备用v4未派发。完整CI仍为failure。没有改写其旧失败或授予Root身份。
 
-真实run-v2资产入口、正式freeze与B两个固定ID的原执行均已完成；C在B完整原件核验后受理，结果待读。资产验证、旧fixture、原cold-load和冻结成功不额外计作新actor完成；新B/C仍是已暴露development。所有12项原始资格门继续登记于当前[blocker清单](BLOCKER_CLOSURE_NEXT.md)。
+真实run-v2资产入口、正式freeze与B/C四个固定ID的原执行均已完成，四次原终态和完整报告已核验。资产验证、旧fixture、原cold-load和冻结成功不额外计作新actor完成；新B/C仍是已暴露development。所有12项原始资格门继续登记于当前[blocker清单](BLOCKER_CLOSURE_NEXT.md)。

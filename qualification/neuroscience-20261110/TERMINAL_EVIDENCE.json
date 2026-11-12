@@ -1,15 +1,41 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 13:02:08 UTC",
+  "observed_at_utc": "2026-11-12 13:49:21 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
-  "publication_parent": "10ba2e54cf6cf42cf11cb79ea23dbf0508348dbe",
-  "scope": "Evidence and documentation only. Exact original campaign reconciled without redispatch; raw research labels retained.",
+  "publication_parent": "1b44e2e7edfcaf67802f4adc3a334692148c8b22",
+  "scope": "Evidence and documentation only. Four pre-frozen B/C development macro executions reconciled; original failures and UNKNOWN records retained. Exact-source native/source test outcomes remain separately bound.",
   "status": "HOLD",
   "owner_decision": null,
   "owner_evaluation": "not_authenticated",
   "adoption": "NOT_REQUESTED",
   "all_blockers_closed": false,
-  "historical_snapshot": "NEXT_STEP_EVIDENCE.json",
+  "historical_snapshot": {
+    "0": "N",
+    "1": "E",
+    "2": "X",
+    "3": "T",
+    "4": "_",
+    "5": "S",
+    "6": "T",
+    "7": "E",
+    "8": "P",
+    "9": "_",
+    "10": "E",
+    "11": "V",
+    "12": "I",
+    "13": "D",
+    "14": "E",
+    "15": "N",
+    "16": "C",
+    "17": "E",
+    "18": ".",
+    "19": "j",
+    "20": "s",
+    "21": "o",
+    "22": "n",
+    "previous_full_snapshot": "evidence/history-20261112/TERMINAL_EVIDENCE-1b44.json",
+    "previous_commit": "1b44e2e7edfcaf67802f4adc3a334692148c8b22"
+  },
   "original_campaign": {
     "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
     "host": "ai395",
@@ -393,7 +419,7 @@
       "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
       "current_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
       "current_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
-      "current_native_status": "NOT_DISPATCHED; HOLD_MATCHING_CLANG_RESOURCE_PREFLIGHT",
+      "current_native_status": "EXACT_1026_LINUX_COMPILE_FAILED_E0659_ZERO_TESTS; WINDOWS_36_SELECTED_PASSED",
       "current_source_gate_status": "FOUR_SOURCE_GATES_PASSED",
       "previous_source_results_transferred": false,
       "full_inventory_original_gzip_bytes": 762747,
@@ -433,7 +459,22 @@
         "source_inventory_sha256": "8de3eb210fd92cbf1810930ce7a86cca766689ca188386d3a8bdde677a21e6e2",
         "full_original_core_text_artifacts_root_verified": 26,
         "full_inventory_payload_root_verified": false,
-        "root_readback": "../evaluated-current-read-20261112/source-caller-1026bd0-attempt2/ROOT_COMPLETE_READBACK.json"
+        "root_readback": "../evaluated-current-read-20261112/source-caller-1026bd0-attempt2/ROOT_COMPLETE_READBACK.json",
+        "hosted_caller": {
+          "run": 43213823243,
+          "job": 131167901712,
+          "status": "completed",
+          "conclusion": "success",
+          "full_original_job_log_bytes": 2132795,
+          "full_original_job_log_sha256": "2d2715a222862c381c5fec8891ca67bd04abe26a70dfef33cdba671feed8ad21",
+          "boundaries": 537,
+          "privileged_inventory": 537,
+          "protected_files": 386,
+          "rust_files": 6597,
+          "authority_granted": false,
+          "root_full_original_log_verified": true,
+          "evidence": "../evaluated-current-read-20261112/hosted-1026-caller-success/MANIFEST.json"
+        }
       },
       "previous_0e_validation": {
         "source": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
@@ -501,7 +542,55 @@
         "key": "owner6213-ai395-1026bd0-ordinary-native-862531d11598-v1",
         "request_blob": "4b5d2eb3b7f138c26ffc63209231f40c57dca5ea",
         "admitted": false,
-        "hold": "Actual matching Clang21 resource dependency preflight pending; source four gates passed."
+        "hold": "Not dispatched. Original hosted 1026 native compile failure is now known; next candidate must include the minimal import fix and the fixed a96 upstream integration, then receive new exact-source validation."
+      },
+      "current_native_validation": {
+        "source": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+        "linux": {
+          "run": 43213823243,
+          "job": 131167901028,
+          "status": "completed",
+          "conclusion": "failure",
+          "source_methods_passed": 398,
+          "helper_build_exit": 0,
+          "ordinary_command_exit": 101,
+          "tests_executed": 0,
+          "error": "E0659 assert_eq ambiguous in owner_service_readback_support_tests.rs:109",
+          "junit": "rejected missing junit.xml",
+          "root_suite": "NOT_RUN",
+          "fix": "NOT_RUN",
+          "fmt": "NOT_RUN",
+          "full_original_job_log_bytes": 2009920,
+          "full_original_job_log_sha256": "0e35ce7b3c97ebb4a89f110b5d38bc0b0b39f544d6157fe7439382a09a47633d"
+        },
+        "windows": {
+          "run": 43213822708,
+          "job": 131167903537,
+          "status": "completed",
+          "conclusion": "success",
+          "selected_methods": 36,
+          "passed": 36,
+          "not_selected": 597,
+          "original_job_log_bytes": 376423,
+          "original_job_log_sha256": "e649e3afccec55e17c42c3a6ec743aaba6ec1a7d33b4d58d0ed648e9f2e57956",
+          "scope": "Targeted LEARN/current regressions, not the full Linux owner or Root suite"
+        },
+        "original_job_logs_root_verified": true,
+        "original_artifact_members_root_verified": false,
+        "evidence": "../evaluated-current-read-20261112/hosted-1026-native-failure/ROOT_LOG_VERIFICATION.json"
+      },
+      "pending_integration": {
+        "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+        "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+        "status": "IN_PROGRESS_NOT_EXECUTED_NOT_PUBLISHED",
+        "canonical_upstream": "Opaque Evaluated read profile for original 4-cut Selection / 5-cut NextUse; independent wire operation/domain; read profiles actively attenuate to Readback.",
+        "retain": "Actual T/E and 2x2 CURRENT positive observations, original bytes unchanged, equivalent original refusal conditions, exact source-bound caller registration.",
+        "minimal_compile_fix_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+        "collector_fix_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+        "previous_4ab_candidate_not_executed": true,
+        "prior_source_results_transferred": false
       }
     }
   ],
@@ -532,7 +621,19 @@
       "original_registry_status": "UNKNOWN",
       "original_job_id": null,
       "earlier_unknown_identities_preserved": true,
-      "scored_memory_benefit_episodes": 0
+      "scored_memory_benefit_episodes": 0,
+      "registry_retrieval": {
+        "requests": 2,
+        "data_pages": 1,
+        "rows": 128,
+        "total_reported": 63578,
+        "inventory_complete": false,
+        "row_fields_lack_key_and_digest": true,
+        "absence_conclusion": false,
+        "job_guessing_or_redispatch": false,
+        "original_configured_host_unknown": true,
+        "evidence": "evidence/mem11-v3-reconciliation-20261112/registry-bounded-readback/MANIFEST.json"
+      }
     },
     "act2": {
       "controlled_published_head": "ba7d4a55bce09be44bf03fd86504f129220c513a",
@@ -568,15 +669,34 @@
           {
             "run": 43201926673,
             "head": "7d31bf9677748330ae17efe964de48d98ba5e542",
-            "status": "queued",
-            "observed_at_utc": "2026-11-12T12:37:00Z"
+            "status": "completed",
+            "observed_at_utc": "2026-11-12 13:46:32 UTC",
+            "job": 131169924469,
+            "conclusion": "failure",
+            "caller_elapsed_seconds": 120.096684342,
+            "caller_exit": 124,
+            "build_and_six_methods": "skipped",
+            "full_original_job_log_bytes": 82233,
+            "full_original_job_log_sha256": "d7224b2714789f96217ae76e5ebfe7cea1b3e2700c0b72ad6d48ec13dea78fad",
+            "root_full_log_verified": true
           },
           {
             "run": 43217423865,
             "head": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
-            "status": "pending",
-            "observed_at_utc": "2026-11-12T12:37:00Z",
-            "jobs_observed": 0
+            "status": "completed",
+            "observed_at_utc": "2026-11-12 13:49:21 UTC",
+            "jobs_observed": 1,
+            "job": 131198882642,
+            "conclusion": "failure",
+            "caller": "success",
+            "two_binary_build": "success",
+            "original_launcher_case": "passed",
+            "five_regressions": "passed",
+            "named_case_receipt": "Original artifact not yet read",
+            "exact_required_methods_observed": 6,
+            "receipt_and_format_stage": "failure",
+            "precise_post_test_failure_cause": "PENDING_ORIGINAL_ARTIFACT_READBACK",
+            "explicit_retries_flag_in_original_test_command": false
           }
         ],
         "ordinary_native": "V3_FAILED_BUILD_MISSING_CLANG_BUILTIN_HEADER; CALLER_PASSED",
@@ -656,45 +776,64 @@
           "package": "libclang1-21 1:21.1.8-6ubuntu1",
           "matching_resource_package_installed": false,
           "root_full_output_verified": true,
-          "resource_recovery": "In progress, user-local official package/hash-verified extraction only; no successful new build yet."
+          "resource_recovery": "COMPLETE_MATCHED_RESOURCE_PREFLIGHT; user-local official package, 288-entry manifest, actual C API baseline failure/positive no diagnostics, original supervisor succeeded exit0."
+        },
+        "ordinary_caller_full_log": {
+          "bytes": 75335,
+          "sha256": "64483cf38afc661e3d8e37d3ec511f9801ebf7f9eb13171fa02f09fca631e360",
+          "root_full_log_verified": true,
+          "evidence": "../notes-seed-profile-20261112/native-execution-5fc-v3-20261112/caller-complete/MANIFEST.json"
+        },
+        "clang_resource_preparation": {
+          "job": "1a1cfde1d88-2564-1ad1",
+          "status": "succeeded",
+          "exit_code": 0,
+          "full_output_complete": true,
+          "result_blob": "ac4539714f95897fb03b741331e211ebe39555b3",
+          "manifest_entries": 288,
+          "files": 282,
+          "symlinks": 6,
+          "root_full_originals_verified": true,
+          "native_build_claim": false,
+          "evidence": "../notes-seed-profile-20261112/clang-resource-preparation-20261112/ROOT_REVIEW.json"
+        },
+        "v4_contingency": {
+          "request_blob": "90fd33ad91d3f97729a003d77e4b34439e9d9f2a",
+          "driver_blob": "de7a6944df620e1e65010b2eb0669b6ecdeb3f43",
+          "status": "NOT_DISPATCHED_HOLD_ORIGINAL_FINAL_STAGE_DIAGNOSIS",
+          "static_review": "../notes-seed-profile-20261112/native-validation-proposal-5fc-v4-20261112/ROOT_STATIC_REVIEW.json",
+          "six_methods_proven": 0
+        },
+        "hosted_six_methods": {
+          "source": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+          "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+          "run": 43217423865,
+          "job": 131198882642,
+          "root_original_log_verified": true,
+          "selected_passed": 6,
+          "failed": 0,
+          "exact_six_methods_once": true,
+          "source_unchanged_for_caller_build_and_both_test_stages": true,
+          "overall_job_status": "FAILED_FINAL_COMBINED_RECEIPT_FORMAT_STEP",
+          "original_artifact_members_pending": true,
+          "evidence": "../notes-seed-profile-20261112/hosted-5fc-native-result-20261112/ROOT_LOG_REVIEW.json"
         }
       }
     }
   },
   "moving_bases": {
-    "observed_at_utc": "2026-11-12T11:09:00Z",
-    "owner_upstream": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
-    "ctrl_upstream": "928a2603a7911cb5e8db439b7b814b9e033b6007",
-    "affected_prs": [
-      6213
-    ],
-    "merge_integration": "COMPLETED_FOR_EXACT_cc22",
-    "prior_test_results_do_not_qualify_new_code": true,
-    "raw_github_merge_states": {
-      "6213": {
-        "mergeable": true,
-        "observation": "post-update PR metadata; exact two-parent integration checked"
-      },
-      "6221": {
-        "mergeable": true,
-        "mergeable_state": "unstable"
-      },
-      "6240": {
-        "mergeable": true,
-        "mergeable_state": "unstable"
-      },
-      "6243": {
-        "mergeable": true,
-        "mergeable_state": "unstable"
-      }
-    },
-    "note": "Actual branch ref cc22 was read independently of the stale PR base.sha. Both merge parents/tree and all 41 changed paths were checked before the leased update. Full caller proof later found a real missing manifest registration; no source/native result is inherited.",
-    "owner_merged_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
-    "owner_merged_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
-    "owner_ref_update_leased_against": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
-    "latest_observed_upstream": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
-    "latest_observed_at_utc": "2026-11-12T11:36:26Z",
-    "latest_upstream_integration": "COMPLETED exact620+639 into1026; root code/evidence byte review and new exact-source four gates passed. No prior-source results transferred."
+    "observed_at_utc": "2026-11-12 13:31:00 UTC",
+    "owner_current_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "owner_current_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+    "fixed_upstream_integration_target": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "status": "IN_PROGRESS",
+    "pr_api_base_sha_is_stale": true,
+    "actual_branch_ref_used": true,
+    "previous_completed_integration": "620235b + 639f894 -> 1026bd09",
+    "original_21_edge_diagnostic_fix_retained": true,
+    "cumulative_ours_vs_639_caller_edges": 22,
+    "cumulative_count_explanation": "21 actual edges fixed after the 620 diagnostic plus one earlier readback_owner edge; do not rewrite the historical 21-edge fix count.",
+    "source_results_do_not_transfer": true
   },
   "remaining_gates": [
     "Original source/exposure custody",
@@ -753,8 +892,8 @@
     "evidence": "evidence/rv-v2-entry-assets-20261112/",
     "source_confirmation": false
   },
-  "latest_act_admission_observed_at_utc": "2026-11-12 13:02:08 UTC",
-  "wrapper_actor_calls_scope": "B two native macro executions completed; C two-effect exact request admitted, result not yet read. Historical fixture/probe/freeze zero counts remain scoped to original executions. Total cannot yet be called four completed.",
+  "latest_act_admission_observed_at_utc": "2026-11-12 13:49:21 UTC",
+  "wrapper_actor_calls_scope": "Four pre-frozen native macro effects completed, all STOP and no READ. The original controller actor_calls_this_request remains null; total model/provider/tool contacts are not inferred.",
   "wrapper_development_execution": {
     "scope": "Existing exposed development sources; not independent B/C qualification",
     "independent_new_sources": 0,
@@ -800,24 +939,58 @@
       "native_report_canonical_sha256": "bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b",
       "root_full_original_stdout_status_report_terminals_realizations_verified": true,
       "source_before_file_info_sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
-      "source_after_file_info": "PENDING"
+      "source_after_file_info": "ROOT_VERIFIED_COMPLETE_ORIGINAL_SNAPSHOT"
     },
     "C": {
-      "status": "ADMITTED",
+      "status": "RECORDED",
       "planned_effects": 2,
       "job": "1a1cfd835b7-2564-1ac5",
       "key": "neuro4-rv-bc-phase-c-862531d-v1",
       "request_digest": "ad3de85d4a2e9cdd3fd9e7ac1f42cc89f0cf57db65bd9a95b067a2995fb0dfae",
       "request_blob": "05cdd4100337fd20f943baa3f5dbde31ec469830",
-      "completed": null,
-      "root_exact_request_reviewed": true
+      "completed": 2,
+      "root_exact_request_reviewed": true,
+      "supervisor": "succeeded exit0, complete/durable stdout11889B, stderr0",
+      "failed": 0,
+      "unknown": 0,
+      "not_started": 0,
+      "incomplete": 0,
+      "READ": 0,
+      "STOP": 2,
+      "qualities": [
+        0,
+        0
+      ],
+      "task_costs": [
+        0.018314381488598885,
+        0.018052525010425598
+      ],
+      "native_report_canonical_sha256": "e4c769b8134d0594ecf3ccbd70ba84b2fa2e937f605e0cca75f085f506090464",
+      "root_full_original_stdout_status_report_terminals_realizations_verified": true,
+      "original_inputs_unchanged": true,
+      "original_increment_manifest": "evidence/rv-bc-wrapper-development-20261112/phase-C/original/C_AND_SOURCE_READBACK_MANIFEST.json"
     },
     "calibration_complete": false,
     "full_cost_observed": false,
     "owner_decision": null,
     "qualification": "HOLD_NOT_EVALUATED",
-    "evidence": "evidence/rv-bc-wrapper-development-20261112/"
+    "evidence": "evidence/rv-bc-wrapper-development-20261112/",
+    "completed": 4,
+    "failed": 0,
+    "unknown": 0,
+    "READ": 0,
+    "STOP": 4,
+    "source_snapshot_readback": {
+      "files": 6,
+      "bytes_each": 40017,
+      "sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+      "three_final_paths_job": "1a1cfecfddc-2564-1ae8",
+      "status": "COMPLETE_ROOT_READBACK",
+      "scope": "Original six snapshot-file equality and original controllers' before/after checks; not a fresh live traversal of all 96 source inputs at archival time."
+    },
+    "root_completed_review": "evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json"
   },
   "current_source_results_transfer": false,
-  "latest_followup_observed_at_utc": "2026-11-12 13:02:08 UTC"
+  "latest_followup_observed_at_utc": "2026-11-12 13:49:21 UTC",
+  "wrapper_completed_macro_executions": 4
 }

@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.act.native-v4.root-static-contingency-review.v1",
+  "observed_at_utc": "2026-11-12 13:45:38 UTC",
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "request_blob": "90fd33ad91d3f97729a003d77e4b34439e9d9f2a",
+  "driver_blob": "de7a6944df620e1e65010b2eb0669b6ecdeb3f43",
+  "plan_blob": "ea295a0bec8ef2cc1a66b144ab2b5d76825751d6",
+  "root_full_original_bytes_hash_checked": true,
+  "exact_driver_diff_line_records_reconstruct_original_and_candidate": true,
+  "diff_representation": "Line records include the trailing empty original line; joining them with newline reconstructs both exact files without adding an extra newline.",
+  "removed_original_driver_lines": 1,
+  "added_driver_lines": 111,
+  "changes": "Only process-local Clang selection sanitation, exact successful resource/CAPI/download/library manifest pins, and before/after resource inventory checks are added. Original caller/build/two just-test groups/named-case receipt/format and source inventory pipeline remains byte-identical outside these additions.",
+  "source_or_locked_dependency_edits": false,
+  "resource_source": "Successful resource RESULT from ordinary preparation job 1a1cfde1d88-2564-1ad1, official package SHA256 c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e, matching Clang21.1.8 and 288 entries",
+  "native_methods_required": [
+    1,
+    5
+  ],
+  "test_retries": 0,
+  "driver_python_compile": "NOT_RUN",
+  "request_dispatched": false,
+  "execution_status": "NOT_DISPATCHED_HOLD_ORIGINAL_HOSTED_FINAL_STAGE_DIAGNOSIS",
+  "existing_hosted_run": 43217423865,
+  "existing_hosted_job": 131198882642,
+  "existing_hosted_observation": "2026-11-12 13:41:19 UTC: caller passed; two-binary build in_progress; six methods not yet observed",
+  "ordinary_predecessor": "v3 original caller passed then build failed missing stddef.h; historical failure retained.",
+  "owner_decision": null,
+  "scientific_qualification": false,
+  "replaced_original_line": "env.update(PLAN[\"environment\"]) is moved inside prepare_clang_environment after inherited selection sanitization; original test/build pipeline unchanged.",
+  "latest_hosted_observation": "2026-11-12 13:49:21 UTC: six exact methods passed; final combined receipt/format/clean step failed. Inspect original artifact before any new run."
+}

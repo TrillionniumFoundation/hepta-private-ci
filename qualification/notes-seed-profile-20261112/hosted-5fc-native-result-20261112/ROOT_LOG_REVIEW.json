@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.act5fc.hosted-root-log-review.v1",
+  "source": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "run": 43217423865,
+  "job": 131198882642,
+  "status": "completed",
+  "conclusion": "failure",
+  "observed_at_utc": "2026-11-12 13:49:21 UTC",
+  "original_log": {
+    "bytes": 641754,
+    "sha256": "914f4b0c5974e65938d645ece2d97ecbdd95436bba5577513ae168c41ad90ca1",
+    "representation": "Complete original decoded GitHub job log UTF-8; preserve all timestamps/BOM/ANSI, concatenate binary parts without separators.",
+    "parts": [
+      {
+        "offset": 0,
+        "bytes": 350000,
+        "sha256": "a7fa3a98578c7192f4bd0454bf9911c1b0a373100b4466580ef390b1d82127d6",
+        "git_blob": "6b21ec7afe9de481820d907da6667dd59a55dc48",
+        "path": "job131198882642.decoded.log.part-000.bin"
+      },
+      {
+        "offset": 350000,
+        "bytes": 291754,
+        "sha256": "4fec7e62eeddac38227914778c637f3cf50d9c3ddda5041d0f19f715fb85a6ef",
+        "git_blob": "317b564297f7982dd74686be6a4ca9abc0b639b4",
+        "path": "job131198882642.decoded.log.part-001.bin"
+      }
+    ]
+  },
+  "source_bound_stages": [
+    {
+      "command": [
+        "python3",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 504.10791517,
+      "source": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+      "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 0,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 75335,
+      "raw_inner_log_sha256": "64483cf38afc661e3d8e37d3ec511f9801ebf7f9eb13171fa02f09fca631e360",
+      "not_an_independently_retrieved_artifact_original": true
+    },
+    {
+      "command": [
+        "env",
+        "--chdir=codex-rs",
+        "rustup",
+        "run",
+        "1.96.0",
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "codex-hepta-agentd",
+        "--bin",
+        "hepta-notes-thread-seed"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 574.5052021130001,
+      "source": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+      "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 0,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 104315,
+      "raw_inner_log_sha256": "9868b940efddb7b71c8fd4d0ccd1021b5bc91f80b97a81e5690e588d70d7acf2",
+      "not_an_independently_retrieved_artifact_original": true
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "notes_thread_seed_product",
+        "-E",
+        "test(launcher_seeds_one_unused_original_thread_without_model_contact)",
+        "--status-level",
+        "all"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 260.37011132299995,
+      "source": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+      "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 1,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 34959,
+      "raw_inner_log_sha256": "e07a5809a96073317cde7d248bdb11a8ee0ed08eb0bac7a757d62f6bbe5217ee",
+      "not_an_independently_retrieved_artifact_original": true
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--test",
+        "notes_thread_seed_product",
+        "-E",
+        "test(original_notes_seed_profile_) | test(seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state) | test(standard_profile_rejects_original_notes_seed_before_model_contact)",
+        "--status-level",
+        "all"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "elapsed_seconds": 54.17343724800003,
+      "source": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+      "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+      "source_before_after_clean_and_equal": true,
+      "observed_passed": 5,
+      "observed_failed": 0,
+      "raw_inner_log_bytes": 177117,
+      "raw_inner_log_sha256": "73fc8578ed2c094d50672fd1e5252d407ce232f40d664f30b1254f0a42c22619",
+      "not_an_independently_retrieved_artifact_original": true
+    }
+  ],
+  "exact_named_pass_lines": [
+    "        PASS [   0.755s] codex-hepta-agentd::notes_thread_seed_product launcher_seeds_one_unused_original_thread_without_model_contact",
+    "        PASS [   0.161s] codex-hepta-agentd app_runtime::tests::seed_embedding_keeps_the_store_but_removes_general_cognitive_tool_state",
+    "        PASS [   0.017s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_does_not_supply_notes_execution_owners",
+    "        PASS [   0.030s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_rechecks_files_before_runtime",
+    "        PASS [   0.046s] codex-hepta-agentd config::notes_seed::tests::original_notes_seed_profile_rejects_mixed_configurations_in_both_orders",
+    "        PASS [   0.573s] codex-hepta-agentd::notes_thread_seed_product standard_profile_rejects_original_notes_seed_before_model_contact"
+  ],
+  "selected_cases": 6,
+  "required_cases_all_once_in_original_job_log": true,
+  "filter_exclusions": {
+    "launcher_phase": 1,
+    "regression_phase": 792
+  },
+  "explicit_retries_flag_in_hosted_test_record": false,
+  "retry_pass_lines_observed": 0,
+  "post_test_receipt_and_format_step": "FAILED",
+  "precise_failure_cause": "PENDING_READBACK_OF_ORIGINAL_ARTIFACT_RECEIPTS_AND_FORMAT_LOG",
+  "job_log_contains_python_traceback": false,
+  "artifact": {
+    "id": 13950881413,
+    "bytes": 59125,
+    "sha256": "58e908b0755dceacc75e2ad3eb57a94d12c370ed5a5f51f440beb286a729d33a",
+    "members_reported": 18,
+    "original_members_root_readback": false
+  },
+  "v4_contingency": "NOT_DISPATCHED; inspect original final-stage failure before another test attempt",
+  "owner_decision": null,
+  "scientific_or_production_qualification": false
+}

@@ -1,0 +1,228 @@
+{
+  "cohort": {
+    "adoption_authorized": false,
+    "arms": {
+      "conditional": {
+        "admitted_completed": 1,
+        "fully_costed": 0,
+        "missing_records": 0,
+        "observed_subset": {
+          "contexts": 1,
+          "full_cost_net": null,
+          "observed_task_cost_net": {
+            "contexts": 1,
+            "source_equal_mean": -0.018052525010425598,
+            "sources": 1
+          },
+          "quality": 0.0,
+          "sources": 1
+        },
+        "observed_task_cost_net_items": 1,
+        "observed_task_cost_total": 0.018052525010425598,
+        "one_off_cost_total": null,
+        "planned": 1,
+        "planned_sources": 1,
+        "primary_full_cost_net": null,
+        "primary_observed_task_cost_net": -0.018052525010425598,
+        "primary_quality": 0.0,
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 1,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      },
+      "tuned-fixed": {
+        "admitted_completed": 1,
+        "fully_costed": 0,
+        "missing_records": 0,
+        "observed_subset": {
+          "contexts": 1,
+          "full_cost_net": null,
+          "observed_task_cost_net": {
+            "contexts": 1,
+            "source_equal_mean": -0.018314381488598885,
+            "sources": 1
+          },
+          "quality": 0.0,
+          "sources": 1
+        },
+        "observed_task_cost_net_items": 1,
+        "observed_task_cost_total": 0.018314381488598885,
+        "one_off_cost_total": null,
+        "planned": 1,
+        "planned_sources": 1,
+        "primary_full_cost_net": null,
+        "primary_observed_task_cost_net": -0.018314381488598885,
+        "primary_quality": 0.0,
+        "statuses": {
+          "CANCELLED": 0,
+          "COMPLETED": 1,
+          "FAILED": 0,
+          "NOT_STARTED": 0,
+          "RUNNING": 0,
+          "UNKNOWN": 0
+        },
+        "unknown_task_cost_items": 0
+      }
+    },
+    "decision": "NoUpdate",
+    "factorial": null,
+    "fixture_records": 0,
+    "measured_metric_scope": {
+      "excluded_costs": [
+        "provider",
+        "energy",
+        "fit",
+        "calibration",
+        "tuning"
+      ],
+      "full_cost_metric": false,
+      "observed_task_cost_net": "quality minus observed task_cost",
+      "quality": "independently admitted terminal quality",
+      "task_cost": "macro executor elapsed seconds times frozen latency tariff",
+      "weighting": "context mean within each source, then equal source mean"
+    },
+    "new_source_confidence_bound_proved": false,
+    "observer_authenticated": false,
+    "paired_contrasts": [
+      {
+        "baseline": "conditional",
+        "candidate": "tuned-fixed",
+        "observed_task_cost_net": {
+          "observed_subset": {
+            "contexts": 1,
+            "source_equal_difference": -0.00026185647817328697,
+            "sources": 1
+          },
+          "paired_contexts": 1,
+          "paired_sources": 1,
+          "planned_contexts": 1,
+          "planned_sources": 1,
+          "source_equal_difference": -0.00026185647817328697
+        },
+        "paired_contexts": 0,
+        "paired_sources": 0,
+        "planned_contexts": 1,
+        "planned_sources": 1,
+        "quality": {
+          "observed_subset": {
+            "contexts": 1,
+            "source_equal_difference": 0.0,
+            "sources": 1
+          },
+          "paired_contexts": 1,
+          "paired_sources": 1,
+          "planned_contexts": 1,
+          "planned_sources": 1,
+          "source_equal_difference": 0.0
+        },
+        "source_equal_full_cost_difference": null
+      }
+    ],
+    "plan_sha256": "e01fc65e4b893fd72ab8838776c98ada5b09cb6018d83441752b0383b1eac172",
+    "planned_executions": 2,
+    "registered_full_cost_comparison_complete": false,
+    "schema": "ndu.real.macro-cohort-report.v1"
+  },
+  "cost_scope": "elapsed initialization, selection, action, scoring, admission; provider/energy/oneoff unknown",
+  "evidence_kind": "native_macro",
+  "full_cost_observed": false,
+  "native_owner_authenticated": false,
+  "plan_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a",
+  "policy_efficacy_proved": false,
+  "production_admission": false,
+  "rows": [
+    {
+      "arm_id": "tuned-fixed",
+      "case_id": "case-fdc68cd739dea87c3c21bb51",
+      "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+      "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+      "evidence_kind": "native_macro",
+      "evidence_sha256": "a5079dbd06fa538d6993cb9ded190a3c5ca84c2d364ec9387c953c6977e10fa4",
+      "execution_id": "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+      "full_cost_observed": false,
+      "quality": 0.0,
+      "seed": 130366,
+      "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+      "source_id": "merchant-ac7dff025170a6ee898d500b",
+      "status": "COMPLETED",
+      "task_cost": 0.018314381488598885
+    },
+    {
+      "arm_id": "conditional",
+      "case_id": "case-fdc68cd739dea87c3c21bb51",
+      "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+      "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+      "evidence_kind": "native_macro",
+      "evidence_sha256": "c92cc4c794272c2fc065c4147a870e690c46d45aa9295f2947258060c2a413f2",
+      "execution_id": "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+      "full_cost_observed": false,
+      "quality": 0.0,
+      "seed": 130366,
+      "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+      "source_id": "merchant-ac7dff025170a6ee898d500b",
+      "status": "COMPLETED",
+      "task_cost": 0.018052525010425598
+    }
+  ],
+  "schema": "ndu.real.macro-execution-report.v1",
+  "seed_scope": "registered READ intervention; model/control RNG frozen separately",
+  "terminals": [
+    {
+      "elapsed_seconds": 1.8314381488598883,
+      "full_cost_observed": false,
+      "native_error": null,
+      "native_terminal_status": "Completed",
+      "row": {
+        "arm_id": "tuned-fixed",
+        "case_id": "case-fdc68cd739dea87c3c21bb51",
+        "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+        "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+        "evidence_kind": "native_macro",
+        "evidence_sha256": "a5079dbd06fa538d6993cb9ded190a3c5ca84c2d364ec9387c953c6977e10fa4",
+        "execution_id": "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+        "full_cost_observed": false,
+        "quality": 0.0,
+        "seed": 130366,
+        "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+        "source_id": "merchant-ac7dff025170a6ee898d500b",
+        "status": "COMPLETED",
+        "task_cost": 0.018314381488598885
+      },
+      "runner_error": null,
+      "schema": "ndu.real.macro-terminal.v1",
+      "source_sha256": "96208c83578187ccb2af64b5746598a263139eeab3f486492f83653048bb3c72",
+      "start_sha256": "1eb1cfb305b0fc914962efedbb18fd6e76c44155b8f66cbc6c2ab62c7f2b54fa"
+    },
+    {
+      "elapsed_seconds": 1.8052525010425597,
+      "full_cost_observed": false,
+      "native_error": null,
+      "native_terminal_status": "Completed",
+      "row": {
+        "arm_id": "conditional",
+        "case_id": "case-fdc68cd739dea87c3c21bb51",
+        "content_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+        "critic_context_sha256": "2c5f3ca8bd208680ea54ffba80f0ab5d1d7c19c906f54779015c4588fe2b9058",
+        "evidence_kind": "native_macro",
+        "evidence_sha256": "c92cc4c794272c2fc065c4147a870e690c46d45aa9295f2947258060c2a413f2",
+        "execution_id": "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+        "full_cost_observed": false,
+        "quality": 0.0,
+        "seed": 130366,
+        "shared_sha256": "b968b259adb1134943b4b16e1ab4f82802b561860cf82e8269f935a6a01513ab",
+        "source_id": "merchant-ac7dff025170a6ee898d500b",
+        "status": "COMPLETED",
+        "task_cost": 0.018052525010425598
+      },
+      "runner_error": null,
+      "schema": "ndu.real.macro-terminal.v1",
+      "source_sha256": "96208c83578187ccb2af64b5746598a263139eeab3f486492f83653048bb3c72",
+      "start_sha256": "2606f866376beda5770f42bd1a37908924bf9bc141f130560d741065f392aefe"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.mem11.registry-readonly-scope.v1",
+  "status": "UNKNOWN_RETAINED",
+  "original_key": "mem11-first-local-generation-20261112-21bb-v3",
+  "original_execution_source_claim": "fa3b62440f3dbe21e904dfbd390d346d03322b7e",
+  "original_inner_request": {
+    "bytes": 169,
+    "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
+    "scope": "model request only; not h process_start typed request or durable request_digest"
+  },
+  "original_durable_request": {
+    "configured_host": null,
+    "request_digest": null,
+    "typed_request_available": false,
+    "job_id": null,
+    "registry_terminal": "UNKNOWN",
+    "readback_host": "ai395",
+    "readback_host_is_not_assumed_execution_host": true
+  },
+  "original_archive": {
+    "source_commit": "a21bea479bc51726da4a6e5ee15e4b1911f84716",
+    "generation_subtree": "49f7660fbfdccebe3486e55741c1bb021e5fb480",
+    "subtree_complete": true,
+    "typed_process_request_not_present_in_that_subtree": true,
+    "raw_files_reverified": 7,
+    "artifacts": [
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/EVIDENCE.original.json",
+        "bytes": 6787,
+        "sha256": "ed24ed5613bf77b7314c8a70615dd8c04c52a746629466338f85bc06dfacce09",
+        "git_blob": "d22c7b21f7682e09de6e8c906ca0fd96475e6fe6"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/ADMISSION.json",
+        "bytes": 2155,
+        "sha256": "8858b2192ba42d03905eff489ba94a79d300a9d8f603d475cd77ea1e4f9ea95c",
+        "git_blob": "a274ea32a4fa3f871c4abe5d0913f31494470314"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/combined.log",
+        "bytes": 463,
+        "sha256": "9d91fca392fc01b0e244c401b067264fb9afedc42dbd48546204c020d438511a",
+        "git_blob": "1d09e7015a239ef6d3f6597fcfb2b84ac375f4bf"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/GENERATION_RESULT.json",
+        "bytes": 4065,
+        "sha256": "9bd98fa187f0ccba9fdb143aad70e4be4aef3c5f669c01e044a44dd8509ee160",
+        "git_blob": "cf4e7174d57697b1d148b4c713ec72dc13e4ccf6"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/generation-request.bin",
+        "bytes": 169,
+        "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
+        "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/PREEXECUTION.json",
+        "bytes": 3465,
+        "sha256": "2a0d5e17dbb4424b175ffd393cf5035c7458180283489f0ce734e256585128a7",
+        "git_blob": "9b7c09ba54e57491d7281823432e2dfaedff41ef"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/RECEIPT.json",
+        "bytes": 3826,
+        "sha256": "54bd1a94a998baa2f1a5ea00b799ce7b71b1a3c57593a7aa0bc96406706f1b30",
+        "git_blob": "7e7e51d58fd74fb43e956055f7f67412b025b568"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/raw/request.bin",
+        "bytes": 169,
+        "sha256": "714f3f384179c326d43516d7d552eca342c9d253883c2f47a409d04234adb097",
+        "git_blob": "d42ec1669847a1b10b6a4c49f9ead00d11c31fd3"
+      },
+      {
+        "path": "qualification/neuroscience-20261110/evidence/mem11-v3-reconciliation-20261112/ROOT_RAW_VERIFICATION.json",
+        "bytes": 3088,
+        "sha256": "24a851a2cec8a578f426e01b00ac553aca7985286b4aa69470b82818926ee5c9",
+        "git_blob": "d13bd433a75639d849e65adb7ba3c97ffc01384a"
+      }
+    ]
+  },
+  "query_scope": {
+    "tool": "h_process_list_page",
+    "host_filter": null,
+    "read_only": true,
+    "requests": 2,
+    "pending_responses": 1,
+    "data_pages": 1,
+    "rows_observed": 128,
+    "total_reported": 63578,
+    "inventory_complete": false,
+    "stopped_for_parent_priority_change": true,
+    "parent_cap": {
+      "max_pages": 4,
+      "max_response_bytes": 262144
+    },
+    "snapshot_sha256": "1b887092267acc138effbd43e0e7f537283560a55ebeab03493c7307c58c08bb",
+    "first_id": "1a19ff4dc3e-f948-1",
+    "last_id": "1a1a07f1625-fc05-7f",
+    "exposed_row_fields": [
+      "created_unix_ms",
+      "execution_mode",
+      "host",
+      "id",
+      "launch_state"
+    ],
+    "exact_key_matching_possible": false,
+    "reason": "Compact registry pages do not expose idempotency_key or request_digest. No guessed ID or similar-job status was queried.",
+    "absence_conclusion": false,
+    "status_authoritative": false,
+    "continuation_preserved_but_not_followed": "c994ef2fae84677c9291b970963d37ee7e42356251f69071d4c25e414809d210:1a1a07f1625-fc05-7f"
+  },
+  "current_source_lookup": {
+    "github_contents_ref": "fa3b62440f3dbe21e904dfbd390d346d03322b7e",
+    "five_source_paths_status": 404,
+    "git_commit_endpoint_status": 404,
+    "scope": "Current independent Git retrieval unavailable; does not rewrite the archived execution source identity or infer mismatch"
+  },
+  "new_processes_started": 0,
+  "new_actors": 0,
+  "old_UNKNOWN_history_modified": false,
+  "owner_decision": null,
+  "scientific_benefit_claimed": false
+}
