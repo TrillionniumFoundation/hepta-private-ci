@@ -1,0 +1,152 @@
+{
+  "scope": "Exactly three complete Initial source-QA files,30 methods at exact2eda; no fullCLI/Rust/H process.",
+  "source": {
+    "head": "2eda6144bf00c1d4aa838e278e2767b90930a37f",
+    "tree": "bd1efaa304d851ca6aa7ad11e636df23d32b3dd7",
+    "status": "",
+    "tracked_files": 15494,
+    "tracked_bytes": 234378871,
+    "tracked_sha256": "a2cbac63af02e444af3f7011cd13653d9ba1278a7ac21944b03b993321052668",
+    "callers_sha256": "ae01152e87c0e8905631f6440988535acbc3744d82645c3979e09d23aa7d477e"
+  },
+  "stages": [
+    {
+      "stage": "initial_absolute_deadline_source_closure",
+      "tests_run": 7,
+      "unittest_seconds": 0.481,
+      "driver_seconds": 1.893848521001928,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "stderr": {
+        "bytes": 1526,
+        "sha256": "85bd111b92b07af1912a9d09f5e09dd5574873664f0c34b92581240e84dd98a2"
+      }
+    },
+    {
+      "stage": "initial_peer_ready_source_closure",
+      "tests_run": 15,
+      "unittest_seconds": 2.288,
+      "driver_seconds": 3.0093826040028944,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "stderr": {
+        "bytes": 3071,
+        "sha256": "5894396bb1acda79383118e03d46db06c7b78aed7823bcd3159f265cdfe46162"
+      }
+    },
+    {
+      "stage": "initial_baseline_phase_source_closure",
+      "tests_run": 8,
+      "unittest_seconds": 1.057,
+      "driver_seconds": 1.7833226779985125,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "stderr": {
+        "bytes": 1770,
+        "sha256": "9c510c169e448c0ed18e9595e1a8141240993ae2b82be3846854ff7bb7fa8446"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "actual-test-counts.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/actual-test-counts.json",
+      "bytes": 1691,
+      "sha256": "18e9db68cc6cd2d77537e668dd4de3d7f10baa3c0d7c728a9196e526573f841a",
+      "git_blob": "26d3fc9982d4812ba95fe9bc8d80bff3fb68d007"
+    },
+    {
+      "path": "checkout.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/checkout.json",
+      "bytes": 1374,
+      "sha256": "6804e2beca74cd366e591a3c21c51fca274c5bd9aaee9afa417d4a5ce29e16d8",
+      "git_blob": "4011297f3a9f4b2a2a455bbab892eb367ddf364b"
+    },
+    {
+      "path": "initial_absolute_deadline_source_closure.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_absolute_deadline_source_closure.json",
+      "bytes": 1695,
+      "sha256": "434ff5f667245981b0e11624fab09b823c7baff21a854a533e9770ae1a1da237",
+      "git_blob": "227b591cec5b4540bb6821837458eeaed0a62cc7"
+    },
+    {
+      "path": "initial_absolute_deadline_source_closure.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_absolute_deadline_source_closure.stderr.log",
+      "bytes": 1526,
+      "sha256": "85bd111b92b07af1912a9d09f5e09dd5574873664f0c34b92581240e84dd98a2",
+      "git_blob": "06f69cc73792882c16f9feaebc1172be13fa16fc"
+    },
+    {
+      "path": "initial_absolute_deadline_source_closure.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_absolute_deadline_source_closure.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "initial_baseline_phase_source_closure.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_baseline_phase_source_closure.json",
+      "bytes": 1685,
+      "sha256": "7d97560c689aeeda08217879583e3bf0c218402302218bc55af2d8436a3cac52",
+      "git_blob": "429596d002ce8c0a631e7be341b3c49a79a93dbf"
+    },
+    {
+      "path": "initial_baseline_phase_source_closure.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_baseline_phase_source_closure.stderr.log",
+      "bytes": 1770,
+      "sha256": "9c510c169e448c0ed18e9595e1a8141240993ae2b82be3846854ff7bb7fa8446",
+      "git_blob": "a1a053beeb9707a83d64d81bcd85f1b3829f373f"
+    },
+    {
+      "path": "initial_baseline_phase_source_closure.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_baseline_phase_source_closure.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "initial_peer_ready_source_closure.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_peer_ready_source_closure.json",
+      "bytes": 1669,
+      "sha256": "d4b4df09365d4615351d16b96c2992060ff71a57dc11886a739dc518cf265ea9",
+      "git_blob": "12f3fcbc045f18c58b72cc53dbf62861ed4a30d6"
+    },
+    {
+      "path": "initial_peer_ready_source_closure.stderr.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_peer_ready_source_closure.stderr.log",
+      "bytes": 3071,
+      "sha256": "5894396bb1acda79383118e03d46db06c7b78aed7823bcd3159f265cdfe46162",
+      "git_blob": "3150fce789b1efc24df1908fdb0ae34733d87dda"
+    },
+    {
+      "path": "initial_peer_ready_source_closure.stdout.log",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/initial_peer_ready_source_closure.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "result.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/result.json",
+      "bytes": 6966,
+      "sha256": "81da80a74d361a831a0106e3a0b6cd642f8e1194958e79c13a5bd476db05b859",
+      "git_blob": "cdbacda594c7d3ff6f025de43577fee2fdcb16b4"
+    },
+    {
+      "path": "source-before.json",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-2eda6144-initial-guards-ci-evidence-v1/source-before.json",
+      "bytes": 359,
+      "sha256": "d725ebbea49a71e5cda2e346e66286ebe08837e4e6b9e53dd8961cb559fb203d",
+      "git_blob": "6cc21c6ecb805f73847d4ae6c57f91138c5dba81"
+    },
+    {
+      "path": "driver.py",
+      "original_path": "/workspace/scratch/ff41dfc0f7bf/tooling/run_root_2eda6144_initial_guards_ci_evidence_v1.py",
+      "bytes": 6213,
+      "sha256": "a4028d87d54c282b3a546c727c5e2e5ca3f464a863f6ba1178a00ce97b4cac2c",
+      "git_blob": "70ea293428575b65c35b428463919f8e933f43af"
+    }
+  ],
+  "file_count": 14,
+  "input_bytes": 28019
+}
