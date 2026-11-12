@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "actor": "ProfHepta",
+  "origin": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+  "original_sources": {
+    "journal": "202be923c9693b85c23b34c94f3aaf9960762bd4",
+    "host": "a568e32ddc9dac056ea4e01befea4ae3fbfc941b"
+  },
+  "original_evidence": {
+    "journal": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+    "host": "a0ee4d04490a74d90aedad82d61dd91dd648d9fb"
+  },
+  "control_source": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+  "control_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+  "target_reused_after_authoritative_owner_closure": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700"
+  },
+  "resources": {
+    "cargo_jobs": 2,
+    "nextest_threads": 2,
+    "profile": "local",
+    "original_retries": 1
+  },
+  "free_space_bytes": {
+    "home": 14169100288,
+    "data": 174038536192
+  },
+  "required_reserves_bytes": {
+    "home": 1073741824,
+    "data": 10737418240
+  },
+  "wrapper_sha256": "c80b8d0bfbb53e76d5cc91f8cd592257f73773d05b95f0a7207d92daefbddb3a",
+  "product_input_sha256": {
+    "codex-rs/hepta-automation/src/taskflow_step.rs": "0adf7017779c5427927eb4690830a53c5603f6461065cdb92aed087f8445fd85",
+    "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs": "895b06c4989476040f9163e973f191c0feb70034a142cfe64737b0bb779eb182"
+  },
+  "inherited_nextest_retries_override_present": false,
+  "test_flags_changed": false,
+  "opaque_input_or_sdk_published": false
+}

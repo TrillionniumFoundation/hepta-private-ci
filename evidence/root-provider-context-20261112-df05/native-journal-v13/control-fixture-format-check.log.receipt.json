@@ -1,0 +1,61 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/rustfmt",
+    "--check",
+    "--config-path",
+    "/data/root-provider-context-20261112-df05-step-control-v1/source/codex-rs/rustfmt.toml",
+    "--config",
+    "skip_children=true",
+    "/data/root-provider-context-20261112-df05-step-control-v1/private/reviewed-fixture.rs"
+  ],
+  "cwd": "/data/root-provider-context-20261112-df05-step-control-v1/source/codex-rs",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ns": 2663516602,
+  "log": "fixture-format-check.log",
+  "executed": true,
+  "process_exit_code": 0,
+  "expected_source": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+      "source_tree": "a02883288253f7148b27acaeb6f2972a2f4de129",
+      "tracked_entries": 10849,
+      "tracked_bytes": 132602154,
+      "complete_map_sha256": "e7cc2d3c1db636067e34206cd9aa5b04c9a95d2751ac2719f95506d9d13ffc40",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+      "source_tree": "a02883288253f7148b27acaeb6f2972a2f4de129",
+      "tracked_entries": 10849,
+      "tracked_bytes": 132602154,
+      "complete_map_sha256": "e7cc2d3c1db636067e34206cd9aa5b04c9a95d2751ac2719f95506d9d13ffc40",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "process_owner_boundary": "retained leader through last group signal; not a sandbox; escaped sessions and kernel cleanup latency outside contract",
+  "target_observation": {
+    "path": "/data/root-provider-context-20261112-df05-v10-target",
+    "policy": "reuse_observed_prior_actual_target_after_closed_owner",
+    "device": 2067,
+    "inode": 47972373,
+    "mode": "0o700",
+    "lexists": true,
+    "is_directory": true,
+    "is_symlink": false,
+    "first_directory_observation_after_cargo": false,
+    "scope": "directory identity observation; not independent proof of every compiler environment"
+  },
+  "target_required_for_this_command": false,
+  "target_condition_met": true,
+  "log_bytes": 106,
+  "log_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+}

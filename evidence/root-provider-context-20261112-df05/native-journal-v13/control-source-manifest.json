@@ -1,0 +1,30 @@
+{
+  "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+  "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+  "source_parent": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+  "complete_mode_blob_map_sha256": "75810ad8ca4453af66f4735fcd0ed8a10a3fec57777e024cfe7aeddb82516256",
+  "physical_source": {
+    "source_commit": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+    "source_tree": "911a03c27f9e3bfb10377e89404affcc8a517143",
+    "tracked_entries": 10849,
+    "tracked_bytes": 132605100,
+    "complete_map_sha256": "95a37565c6b11c7c22040e4de7a3feefc646f664c620098c20355dd538749385",
+    "tracked_worktree_verified": true
+  },
+  "runner_blobs": {
+    "justfile": "5636206c53b44385e731b885eeefa7abedf32493",
+    "scripts/run-nextest.py": "952fd964e36af1e713eae04b54d4887695e6dd43",
+    "codex-rs/.config/nextest.toml": "26576a3b8ab4575db262c4614227a85eb3068b6c"
+  },
+  "production_preimage": {
+    "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+    "entry": [
+      "100644",
+      "blob",
+      "f359763d2eba77d956448e62af1f184a29e61c08"
+    ]
+  },
+  "only_fixture_changed": "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+  "fixture_sha256": "895b06c4989476040f9163e973f191c0feb70034a142cfe64737b0bb779eb182",
+  "production_concurrency_fix_applied": false
+}

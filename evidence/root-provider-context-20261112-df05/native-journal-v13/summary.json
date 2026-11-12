@@ -1,0 +1,214 @@
+{
+  "schema_version": 3,
+  "stage": "journal",
+  "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+  "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+  "source_parents": [
+    "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737"
+  ],
+  "wrapper_sha256": "c80b8d0bfbb53e76d5cc91f8cd592257f73773d05b95f0a7207d92daefbddb3a",
+  "reused_helper_program_sha256": "c65534e21bdd9b00fcb3985a90d0d33cb0fc226e969626726cb83e984c18e61b",
+  "package_commands": {
+    "codex-hepta-automation": {
+      "test": {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "-p",
+          "codex-hepta-automation",
+          "--status-level",
+          "all",
+          "--final-status-level",
+          "all"
+        ],
+        "cwd": "/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs",
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_ns": 150990077359,
+        "log": "codex-hepta-automation-test.log",
+        "executed": true,
+        "process_exit_code": 0,
+        "expected_source": "feee5752f7be21edec65eb78927fac75fbcb562d",
+        "source_before_verified": true,
+        "source_after_verified": true,
+        "source_verified": true,
+        "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+        "source_observations": [
+          {
+            "verified": true,
+            "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+            "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+            "tracked_entries": 10849,
+            "tracked_bytes": 132605612,
+            "complete_map_sha256": "5a29344570f5f91ce30685610cabe716dd79aaec1d91f9734595a0abb0025459",
+            "tracked_worktree_verified": true
+          },
+          {
+            "verified": true,
+            "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+            "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+            "tracked_entries": 10849,
+            "tracked_bytes": 132605612,
+            "complete_map_sha256": "5a29344570f5f91ce30685610cabe716dd79aaec1d91f9734595a0abb0025459",
+            "tracked_worktree_verified": true
+          }
+        ],
+        "owned_cleanup_completed": true,
+        "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract",
+        "build_target_observation": {
+          "path": "/data/root-provider-context-20261112-df05-v10-target",
+          "lexists": true,
+          "is_directory": true,
+          "is_symlink": false,
+          "device": 2067,
+          "inode": 47972373,
+          "mode": "0o700"
+        },
+        "build_target_verified": true
+      },
+      "fix": {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "fix",
+          "-p",
+          "codex-hepta-automation"
+        ],
+        "cwd": "/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs",
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_ns": 63259248846,
+        "log": "codex-hepta-automation-clippy-fix.log",
+        "executed": true,
+        "process_exit_code": 0,
+        "expected_source": "feee5752f7be21edec65eb78927fac75fbcb562d",
+        "source_before_verified": true,
+        "source_after_verified": true,
+        "source_verified": true,
+        "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+        "source_observations": [
+          {
+            "verified": true,
+            "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+            "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+            "tracked_entries": 10849,
+            "tracked_bytes": 132605612,
+            "complete_map_sha256": "5a29344570f5f91ce30685610cabe716dd79aaec1d91f9734595a0abb0025459",
+            "tracked_worktree_verified": true
+          },
+          {
+            "verified": true,
+            "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+            "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+            "tracked_entries": 10849,
+            "tracked_bytes": 132605612,
+            "complete_map_sha256": "5a29344570f5f91ce30685610cabe716dd79aaec1d91f9734595a0abb0025459",
+            "tracked_worktree_verified": true
+          }
+        ],
+        "owned_cleanup_completed": true,
+        "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract",
+        "build_target_observation": {
+          "path": "/data/root-provider-context-20261112-df05-v10-target",
+          "lexists": true,
+          "is_directory": true,
+          "is_symlink": false,
+          "device": 2067,
+          "inode": 47972373,
+          "mode": "0o700"
+        },
+        "build_target_verified": true
+      }
+    }
+  },
+  "fmt": {
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fmt",
+      "--base",
+      "cdc7eaa3ef7f6457270be06bbce5203d196205fb"
+    ],
+    "cwd": "/data/root-provider-context-20261112-df05-v10-sourceprep/journal/codex-rs",
+    "exit_code": 0,
+    "timed_out": false,
+    "elapsed_ns": 2918191710,
+    "log": "fmt.log",
+    "executed": true,
+    "process_exit_code": 0,
+    "expected_source": "feee5752f7be21edec65eb78927fac75fbcb562d",
+    "source_before_verified": true,
+    "source_after_verified": true,
+    "source_verified": true,
+    "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+    "source_observations": [
+      {
+        "verified": true,
+        "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+        "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+        "tracked_entries": 10849,
+        "tracked_bytes": 132605612,
+        "complete_map_sha256": "5a29344570f5f91ce30685610cabe716dd79aaec1d91f9734595a0abb0025459",
+        "tracked_worktree_verified": true
+      },
+      {
+        "verified": true,
+        "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+        "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+        "tracked_entries": 10849,
+        "tracked_bytes": 132605612,
+        "complete_map_sha256": "5a29344570f5f91ce30685610cabe716dd79aaec1d91f9734595a0abb0025459",
+        "tracked_worktree_verified": true
+      }
+    ],
+    "owned_cleanup_completed": true,
+    "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract"
+  },
+  "expected_regressions_observed": {
+    "codex-hepta-automation": {
+      "preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_context_profile": true,
+      "altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact": true,
+      "taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen": true,
+      "taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation": true,
+      "taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty": true,
+      "taskflow_provider_receipt_migration_preserves_legacy_recovery_material": true,
+      "taskflow_provider_receipt_storage_rejects_oversized_binding_without_partial_write": true,
+      "taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe": false,
+      "taskflow_step_reconcile_waits_for_writer_without_blocking_reads": true
+    }
+  },
+  "source_after_equal": true,
+  "source_after_physical": {
+    "source_commit": "feee5752f7be21edec65eb78927fac75fbcb562d",
+    "source_tree": "ae5a60df73df32d0250734591130116cfde22723",
+    "tracked_entries": 10849,
+    "tracked_bytes": 132605612,
+    "complete_map_sha256": "5a29344570f5f91ce30685610cabe716dd79aaec1d91f9734595a0abb0025459",
+    "tracked_worktree_verified": true
+  },
+  "command_source_and_owner_integrity": true,
+  "diff_check_exit": 0,
+  "native_scope_pass": false,
+  "evidence_prefix": "evidence/root-provider-context-20261112-df05/native-journal-v13/",
+  "tested_scope": "exact immutable journal source",
+  "actual_merge_commit": null,
+  "journal_evidence_in_source": null,
+  "prospective_github_merge_built_or_tested": false,
+  "prior_concurrent_receipt_failure_boundary": "provider reconciliation committed but step remained Recorded/Indeterminate; SQLite extended code was not retained",
+  "production_concurrency_fix_applied": true,
+  "concurrency_first_attempt_clean": {
+    "taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe": false,
+    "taskflow_step_reconcile_waits_for_writer_without_blocking_reads": true
+  },
+  "old_production_control_source": "60fdb3ef91ee9df6ab87a11ddcc7e34c178e7737",
+  "old_production_control_expected_failure_observed": true,
+  "controlled_fixture_sha256": "895b06c4989476040f9163e973f191c0feb70034a142cfe64737b0bb779eb182",
+  "source_diff_base": "c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9",
+  "nonmechanical_source_changed_lines": 765,
+  "prior_source_commit": "202be923c9693b85c23b34c94f3aaf9960762bd4",
+  "prior_evidence_commit": "cdc7eaa3ef7f6457270be06bbce5203d196205fb",
+  "prior_native_scope_pass": true,
+  "production_activation": false,
+  "production_merge_authority": false,
+  "original_v1_job_state": "UNKNOWN",
+  "original_v1_job_reference": "private prior operation record",
+  "process_owner_boundary": "not a sandbox; escaped sessions and kernel cleanup latency not certified"
+}
