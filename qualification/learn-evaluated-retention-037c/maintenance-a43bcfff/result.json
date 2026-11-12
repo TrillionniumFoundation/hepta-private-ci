@@ -1,0 +1,51 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "a43bcfff9f778a558587235afe829965bf1082be",
+    "dirty": " M codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_task_source_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs\n",
+    "file_count": 14739,
+    "inventory_sha256": "2c53fb4ea2f4d33999d120f58b900f365f3cb8d1e5bcd24c669e4b68e53191a5",
+    "tree": "9ef5b1d968e278690e53df121e8608881895a61a"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "a43bcfff9f778a558587235afe829965bf1082be",
+    "dirty": "",
+    "file_count": 14739,
+    "inventory_sha256": "b836073837a7ca0215be806d63e169058bdf6a1990d1104a2dd8beb9c63c80c9",
+    "tree": "9ef5b1d968e278690e53df121e8608881895a61a"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+    "finished_at": "2026-11-12T09:03:29.671427+00:00",
+    "log_bytes": 69687,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "d1d279718265e059841ecf1e11fa76be337752dbbaf88262723c2a92b8e54a7b",
+    "returncode": 0,
+    "started_at": "2026-11-12T08:58:25.272337+00:00"
+  },
+  "exit_code": 0,
+  "finished_at": "2026-11-12T09:03:34.901133+00:00",
+  "kind": "exact-source-fix-only",
+  "postimages": {
+    "file_count": 19,
+    "patch_bytes": 16056,
+    "patch_sha256": "4da6bf9215f49a18b80d3dfe8ac282a1d538feff7caa3d213f06d3facb7d33e9"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-native-maintenance-a43bcfff9f77-v1",
+  "source_sha": "a43bcfff9f778a558587235afe829965bf1082be",
+  "source_tree": "9ef5b1d968e278690e53df121e8608881895a61a",
+  "started_at": "2026-11-12T08:58:12.996210+00:00",
+  "status": "passed"
+}

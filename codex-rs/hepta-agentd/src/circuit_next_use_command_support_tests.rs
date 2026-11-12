@@ -26,7 +26,6 @@ use super::super::Error;
 use super::super::OriginalCircuitNextUseCommandClientV1;
 use super::super::OriginalCircuitNextUseCommandContextV1;
 use super::super::OriginalCircuitNextUseCommandReceiptV1;
-use super::super::evidence_wire;
 use super::super::now;
 use super::super::wire;
 use super::OriginalCircuitNextUseCommandOwnerV1;

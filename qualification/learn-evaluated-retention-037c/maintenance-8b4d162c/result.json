@@ -1,0 +1,51 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+    "dirty": "",
+    "file_count": 14739,
+    "inventory_sha256": "5eaa360bcf5aa6d9fbec4a59d351b1e7e9c50da1df7b3a4c64e9cfdd65ef8192",
+    "tree": "f6eba04ce6afa681046326157fdbfe12d9af0093"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+    "dirty": "",
+    "file_count": 14739,
+    "inventory_sha256": "5eaa360bcf5aa6d9fbec4a59d351b1e7e9c50da1df7b3a4c64e9cfdd65ef8192",
+    "tree": "f6eba04ce6afa681046326157fdbfe12d9af0093"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+    "finished_at": "2026-11-12T08:02:46.329147+00:00",
+    "log_bytes": 59674,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "7db2c4ec374c600c74ee239bb659efb8812618e19ceb4f24a5d1ab13700b2b6b",
+    "returncode": 101,
+    "started_at": "2026-11-12T07:53:21.793896+00:00"
+  },
+  "exit_code": 101,
+  "finished_at": "2026-11-12T08:02:51.200314+00:00",
+  "kind": "exact-source-fix-only",
+  "postimages": {
+    "file_count": 0,
+    "patch_bytes": 0,
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-maintenance-8b4d162cff8f-v1",
+  "source_sha": "8b4d162cff8fa7c4d53c520370217ceda99ee0aa",
+  "source_tree": "f6eba04ce6afa681046326157fdbfe12d9af0093",
+  "started_at": "2026-11-12T07:53:11.750467+00:00",
+  "status": "failed"
+}

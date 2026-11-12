@@ -1,0 +1,126 @@
+{
+  "a43_overlay_before": {
+    "accepted": false,
+    "error": "cell_q24_model_material_owner_readback: codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs: unresolved possible CellQ24ModelProposalOwnerV1::readback receiver"
+  },
+  "attack_construction": "copy unchanged actual registered product caller source into previously nonexistent unregistered source-index path",
+  "base": {
+    "bytes": 6754,
+    "git_blob": "f73ef8dfc9abedabf47c94e3bc582aec2e96d1f1",
+    "sha256": "58481d6fac3d30a5b36131149577d278f1e2615b9e152a4c51b45b38171674d7"
+  },
+  "base_source": "a43bcfff9f778a558587235afe829965bf1082be",
+  "boundary": "cell_q24_model_material_owner_readback",
+  "compiler_test_run": false,
+  "file": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+  "finished_at": "2026-11-12T09:45:05.317606+00:00",
+  "ignored_path_fragments": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "original_before": {
+    "accepted": false,
+    "error": "cell_q24_model_material_owner_readback: codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs: unresolved possible CellQ24ModelProposalOwnerV1::readback receiver"
+  },
+  "patch": {
+    "bytes": 1141,
+    "sha256": "d3cfa55c0457e3dabe1706c959bf8b7984d21a2e810cbf3f04607c0d8eaf3c38"
+  },
+  "post": {
+    "bytes": 7004,
+    "git_blob": "d32eb1681ce8e51b823ed483955d69257a25d981",
+    "sha256": "282e58e8a39c29939c1515c54711a08a858d71ebc9b8d6be1b9164deeb1d0e6e"
+  },
+  "proof_inputs": [
+    {
+      "git_blob": "44918e0d7e06eb2afcbf42fe8e38229eea4bf4a2",
+      "path": "CALLERS.toml",
+      "sha256": "a425554c89ffcb18b6dfa6fef2be6ef4c9b5c34781747fb9ac8f7451f2b6c29b"
+    },
+    {
+      "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "path": "scripts/verify_hepta_callers.py",
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    },
+    {
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "path": "scripts/hepta_typed_callers.py",
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    }
+  ],
+  "protected_rows_for_changed_path": [],
+  "related_definition_rows": [
+    {
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "definition": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "id": "cell_q24_current_model_owner_create"
+    },
+    {
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "definition": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "id": "cell_q24_current_model_owner_recover"
+    },
+    {
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "definition": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "id": "cell_q24_current_model_owner_commit"
+    },
+    {
+      "callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "definition": "codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs",
+      "id": "cell_q24_current_model_owner_readback"
+    }
+  ],
+  "rust_files": 6588,
+  "rustfmt": {
+    "changed": false,
+    "command": [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "--edition",
+      "2024",
+      "--config",
+      "imports_granularity=Item,skip_children=true",
+      "/home/qian-qi/hepta-learn-037c-evidence/caller-ufcs-fix-v1/postimages/codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs"
+    ],
+    "exit_code": 0,
+    "version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)"
+  },
+  "scope": "single original actual boundary; complete frozen 726 product Rust inventory with explicit exact-a43 one-file overlay; not whole-tree qualification",
+  "source": {
+    "commit": "726af8f4a345a2ffb148b971f3fa16c71436862d",
+    "status": "",
+    "tracked_count": 14739,
+    "tracked_paths_sha256": "c76737598b59b791ceaed0f423fde0b701a98ef7a9651ba6d2d9740d940a7579",
+    "tree": "04c2cd46be5833568491ae02ca299f16ef622f7d"
+  },
+  "source_roots": [
+    "codex-rs"
+  ],
+  "status": "PASS",
+  "ufcs_overlay_after": {
+    "accepted": true,
+    "result": {
+      "callPattern": null,
+      "id": "cell_q24_model_material_owner_readback",
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "receiverMethods": [],
+      "receiverType": "CellQ24ModelProposalOwnerV1",
+      "symbol": "CellQ24ModelProposalOwnerV1::readback"
+    }
+  },
+  "unregistered_real_caller_attack": {
+    "accepted": false,
+    "error": "cell_q24_model_material_owner_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/unregistered_model_readback_probe.rs']"
+  }
+}

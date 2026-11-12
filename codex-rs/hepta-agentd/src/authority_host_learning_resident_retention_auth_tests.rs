@@ -93,7 +93,7 @@ impl Metadata {
         })?;
         owners.evidence_trust_digest = verifier.trust_digest();
         let mut coordinator =
-            LearningIterationCoordinatorV1::new(original.initial.request.clone(), owners)?;
+            LearningIterationCoordinatorV1::new(original.initial.request, owners)?;
         let initial = coordinator.snapshot().clone();
         let rule = digest("resident-fixture-frozen-rule");
         let scope = FrozenLearningScopeV2::freeze(

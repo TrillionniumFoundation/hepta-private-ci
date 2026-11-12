@@ -242,15 +242,13 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
         for path, function, predecessor, verifier in (
             (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
-            (OBSERVER, "fn read_remote_next_use(", "predecessors", "authenticate_predecessors"),
+            (OBSERVER, "fn read_remote_next_use(", "predecessors", "evaluated::authenticate_predecessors"),
         ):
-            profile = "&self.profile, " if path == SELECTOR else ""
+            profile = "&self.profile, "
             remote_condition = (
                 "if matches!(\n            source.location(),\n"
                 "            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n"
                 "        )"
-                if path == SELECTOR
-                else "if matches!(source.location(), ObservationLocation::RemoteOwner)"
             )
             for marker in (
                 "live.require_original_context(",

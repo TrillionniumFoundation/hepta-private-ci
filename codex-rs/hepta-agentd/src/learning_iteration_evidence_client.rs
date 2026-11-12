@@ -62,6 +62,11 @@ pub use training_command::OriginalCellQ24TrainingCommandOwnerV1;
 pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
 pub use training_command::OriginalCellQ24TrainingReadbackConnectionV1;
 
+#[path = "circuit_evaluated_selection_readback_owner.rs"]
+mod evaluated_selection_readback;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackErrorV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackOwnerV1;
+
 #[path = "circuit_selection_command.rs"]
 mod selection_command;
 pub use selection_command::OriginalCircuitSelectionCommandClientV1;

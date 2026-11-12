@@ -29,6 +29,8 @@ EVALUATED = AGENT + "circuit_evaluated_selection_receipt.rs"
 COMMAND = AGENT + "circuit_selection_command.rs"
 SERVICE = AGENT + "circuit_selection_command_service.rs"
 NEXT_USE = AGENT + "circuit_next_use_receipt_owner.rs"
+NEXT_USE_BINDING = AGENT + "circuit_next_use_receipt_binding.rs"
+READONLY_HOST = AGENT + "circuit_evaluated_selection_readback_owner.rs"
 SUPPORT = AGENT + "circuit_evaluated_retention_publication_support_tests.rs"
 NATIVE = AGENT + "circuit_evaluated_retention_receipt_tests.rs"
 BOUNDARIES = (
@@ -64,6 +66,8 @@ class EvaluatedSelectionClosureTests(unittest.TestCase):
             PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def rejects(self, path, function, marker, replacement="", occurrence=0):
+        if path == NEXT_USE and function == "fn validate_config(":
+            path = NEXT_USE_BINDING
         source = (ROOT / path).read_text()
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
         start = code.index(function)
@@ -78,7 +82,7 @@ class EvaluatedSelectionClosureTests(unittest.TestCase):
             self.verifies(path, source[:chosen] + replacement + source[chosen + len(marker):])
 
     def test_original_profiles_pass_each_complete_protected_row(self):
-        for path in (CONTEXT, OWNER, EVALUATED, NEXT_USE, COMMAND, SERVICE):
+        for path in (CONTEXT, OWNER, EVALUATED, NEXT_USE, NEXT_USE_BINDING, COMMAND, SERVICE):
             with self.subTest(path=path):
                 self.verifies(path, (ROOT / path).read_text())
 
@@ -110,13 +114,19 @@ class EvaluatedSelectionClosureTests(unittest.TestCase):
         sources = {
             EVALUATED: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / EVALUATED).read_text())
-            )
+            ),
+            READONLY_HOST: PROOF._strip_cfg_test_items(
+                PROOF._strip_rust_non_code((ROOT / READONLY_HOST).read_text())
+            ),
         }
         for name in BOUNDARIES:
             with self.subTest(boundary=name):
                 row = self.boundaries[name]
                 self.assertIn(name, inventory)
-                self.assertEqual(row.product_callers, ())
+                self.assertEqual(
+                    row.product_callers,
+                    (READONLY_HOST,) if name == "learning_original_evaluated_selection_readback" else (),
+                )
                 self.assertEqual(row.definition_path, EVALUATED)
                 self.assertEqual(row.receiver_type, "OriginalCircuitSelectionReceiptOwnerV1")
                 PROOF._verify_boundary(ROOT, row, sources, ())
@@ -345,6 +355,7 @@ class EvaluatedSelectionClosureTests(unittest.TestCase):
         self.assertEqual(sorted(re.findall(r"\bpub\s+(?:async\s+)?fn\s+(\w+)", code)), sorted((
             "snapshot", "receipt", "attestation", "create_evaluated", "recover_evaluated",
             "attest_original_evaluated_selection", "readback_evaluated_selection",
+            "into_evaluated_readback_owner",
         )))
         for marker in (
             "pub fn from_snapshot(", "SigningKey::generate(", "LearningEvidenceVerifierV1::new(",

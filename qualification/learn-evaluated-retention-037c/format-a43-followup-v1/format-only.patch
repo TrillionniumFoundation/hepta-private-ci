@@ -1,0 +1,20 @@
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
+index 94d6c933086e3dd25c84ff5605c155a524759570..4c3063ecd9da813de7ef4b5b57bac4d16c27deee 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
+@@ -85,10 +85,11 @@
+                 return Ok(request_id - 1);
+             }
+             if request_id == 1
+-                && let Some((ready, release)) = pause.take() {
+-                    ready.send(())?;
+-                    release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
+-                }
++                && let Some((ready, release)) = pause.take()
++            {
++                ready.send(())?;
++                release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
++            }
+         }
+         anyhow::bail!("original material session exhausted");
+     }

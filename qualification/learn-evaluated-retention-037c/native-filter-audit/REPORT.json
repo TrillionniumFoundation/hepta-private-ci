@@ -1,0 +1,517 @@
+{
+  "result": "STATIC_FILTER_COVERAGE_COMPLETE",
+  "native_executed": false,
+  "h_called": false,
+  "rust_called": false,
+  "new_ordinary_cases": 9,
+  "focused_selected_new_ordinary_cases": 9,
+  "new_root_cases": 4,
+  "exact_root_parent_count": 32,
+  "minimum_additional_focused_filters": [],
+  "minimum_additional_root_parents": [],
+  "driver": {
+    "path": "/workspace/scratch/037c0371c195/recovery-audit/native_exact_driver.py",
+    "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+  },
+  "workflow": {
+    "path": "/workspace/scratch/037c0371c195/recovery-audit/a43-hepta-daemon-learning-native.yml",
+    "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334",
+    "exact_published_commit": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+    "exact_published_blob": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+    "byte_equal_to_published_workflow": true
+  },
+  "packages": [
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-neuron"
+  ],
+  "focused_filters": [
+    "cell_q24_dataset::tests::",
+    "circuit_experience_intake::tests::",
+    "original_execution_owner_",
+    "neuron_cell_evaluation::tests::learning::",
+    "holdout_current_completed_execution_readback_requires_physical_original",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+  ],
+  "case_groups": {
+    "S": [
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+        "line": 185,
+        "function": "evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+        "full_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+        "attributes": [
+          "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+        ]
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+        "line": 280,
+        "function": "evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+        "full_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+        "attributes": [
+          "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+        ]
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+        "line": 353,
+        "function": "evaluated_selector_refuses_either_original_owner_after_signed_completion",
+        "full_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+        "attributes": [
+          "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+        ]
+      }
+    ],
+    "C": [
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+        "line": 95,
+        "function": "evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+        "full_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+        "attributes": [
+          "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+        ]
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+        "line": 284,
+        "function": "evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+        "full_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+        "attributes": [
+          "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+        ]
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+        "line": 386,
+        "function": "evaluated_c_rereads_actual_source_after_the_final_s_response",
+        "full_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+        "attributes": [
+          "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+        ]
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+        "line": 458,
+        "function": "evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+        "full_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+        "attributes": [
+          "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+        ]
+      }
+    ],
+    "intake": [
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+        "line": 309,
+        "function": "independent_measurement_v2_preserves_original_pair_and_strict_v1",
+        "full_name": "circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1",
+        "attributes": [
+          "#[tokio::test]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "circuit_experience_intake::tests::"
+        ]
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+        "line": 365,
+        "function": "independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution",
+        "full_name": "circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution",
+        "attributes": [
+          "#[tokio::test]"
+        ],
+        "ignored": false,
+        "matching_focused_filters": [
+          "circuit_experience_intake::tests::"
+        ]
+      }
+    ],
+    "Root": [
+      {
+        "file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+        "line": 239,
+        "function": "resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+        "full_name": "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+        "attributes": [
+          "#[test]",
+          "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+        ],
+        "ignored": true,
+        "exact_root_parent_membership": true,
+        "matching_focused_filters": []
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+        "line": 265,
+        "function": "resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+        "full_name": "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+        "attributes": [
+          "#[test]",
+          "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+        ],
+        "ignored": true,
+        "exact_root_parent_membership": true,
+        "matching_focused_filters": []
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+        "line": 411,
+        "function": "resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+        "full_name": "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+        "attributes": [
+          "#[test]",
+          "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+        ],
+        "ignored": true,
+        "exact_root_parent_membership": true,
+        "matching_focused_filters": []
+      },
+      {
+        "file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+        "line": 433,
+        "function": "resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+        "full_name": "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+        "attributes": [
+          "#[test]",
+          "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+        ],
+        "ignored": true,
+        "exact_root_parent_membership": true,
+        "matching_focused_filters": []
+      }
+    ]
+  },
+  "mount_edges": [
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/lib.rs",
+      "child_file": "codex-rs/hepta-agentd/src/runtime.rs",
+      "module": "runtime",
+      "line": 772,
+      "actual_declaration": "mod runtime;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/runtime.rs",
+      "child_file": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "module": "tests",
+      "line": 841,
+      "actual_declaration": "#[path = \"runtime_tests.rs\"]\nmod tests;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+      "module": "circuit_task_ingress",
+      "line": 3,
+      "actual_declaration": "#[path = \"circuit_task_ingress_tests.rs\"]\nmod circuit_task_ingress;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+      "module": "q24_tests",
+      "line": 45,
+      "actual_declaration": "#[path = \"circuit_q24_task_ingress_tests.rs\"]\nmod q24_tests;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_published_tests.rs",
+      "module": "model_selection_owner",
+      "line": 217,
+      "actual_declaration": "#[path = \"circuit_model_selection_owner_published_tests.rs\"]\nmod model_selection_owner;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_published_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "module": "original",
+      "line": 20,
+      "actual_declaration": "#[path = \"circuit_model_selection_owner_support_tests.rs\"]\nmod original;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "module": "evaluation_provider",
+      "line": 679,
+      "actual_declaration": "#[path = \"circuit_original_evaluation_provider_tests.rs\"]\nmod evaluation_provider;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "module": "panel_members",
+      "line": 388,
+      "actual_declaration": "#[path = \"circuit_original_evaluation_panel_tests.rs\"]\nmod panel_members;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "module": "evaluation_host",
+      "line": 268,
+      "actual_declaration": "#[path = \"circuit_original_evaluation_host_tests.rs\"]\nmod evaluation_host;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "module": "evaluated_publication",
+      "line": 20,
+      "actual_declaration": "#[path = \"circuit_evaluated_retention_publication_tests.rs\"]\nmod evaluated_publication;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "module": "publication_fixture",
+      "line": 13,
+      "actual_declaration": "#[path = \"circuit_evaluated_retention_publication_support_tests.rs\"]\nmod publication_fixture;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "module": "receipt_tests",
+      "line": 336,
+      "actual_declaration": "#[path = \"circuit_evaluated_retention_receipt_tests.rs\"]\nmod receipt_tests;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "module": "next_use_tests",
+      "line": 414,
+      "actual_declaration": "#[path = \"circuit_evaluated_next_use_receipt_tests.rs\"]\nmod next_use_tests;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/lib.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "module": "circuit_experience_intake",
+      "line": 321,
+      "actual_declaration": "mod circuit_experience_intake;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "child_file": "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+      "module": "tests",
+      "line": 299,
+      "actual_declaration": "#[path = \"circuit_experience_intake_tests.rs\"]\nmod tests;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/lib.rs",
+      "child_file": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "module": "authority_host_service",
+      "line": 126,
+      "actual_declaration": "mod authority_host_service;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "child_file": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "module": "resident",
+      "line": 57,
+      "actual_declaration": "#[path = \"authority_host_learning_resident.rs\"]\npub(crate) mod resident;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "child_file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "module": "authority",
+      "line": 18,
+      "actual_declaration": "#[path = \"authority_host_learning_resident_authority.rs\"]\nmod authority;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "child_file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "module": "tests",
+      "line": 244,
+      "actual_declaration": "#[path = \"authority_host_learning_resident_root_tests.rs\"]\nmod tests;"
+    },
+    {
+      "parent_file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "child_file": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+      "module": "retention_auth",
+      "line": 428,
+      "actual_declaration": "#[path = \"authority_host_learning_resident_retention_auth_tests.rs\"]\nmod retention_auth;"
+    }
+  ],
+  "source_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 70644,
+      "sha256": "df0331bb909b10cd6edf7db3108cac71b67ed05c81bcfe444682b6afd0e7fa95",
+      "git_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 32937,
+      "sha256": "90de5ab09797ebfe6b137b657e120b4b49aa365881bf1a84a4b78f57bf8dbd38",
+      "git_blob": "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 38454,
+      "sha256": "098d5535c136f987c6ee3f27cb1ea2ab65e4c172e908d1c725dbbe4a1bcaceb3",
+      "git_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 23215,
+      "sha256": "372b3e24ed0df8c70e7978da0fa3c170d6a9810e3d6efac4e9cd91d46fc5691d",
+      "git_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 8292,
+      "sha256": "c88e6d015bd93dcad0d8555d51b46695863094f79b0535183d469e8e0095dcb8",
+      "git_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_published_tests.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 11029,
+      "sha256": "c3c31cc1633d011eda8b9312db83040ff61eb1d034a32aa47ad20cc781679fef",
+      "git_blob": "b1765932608e7e1ba911b515065ff03bd2229076"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 26865,
+      "sha256": "63738f26b0968a912d0d1bf0d95fce5434479341cc3cbe16c0d5cd526b557022",
+      "git_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 15931,
+      "sha256": "84179117a002a78c8d39bb1438b6d4d298cb00cbdc0f31f946e7bb476276ea2b",
+      "git_blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 9151,
+      "sha256": "f0d8fb55cd597f686a3f6dc5ba6a0f30f179f83c86cbdf33f9bb438bf8f623e4",
+      "git_blob": "f23a3d8e18fddfd000d9d3deab9f01c44633cf3c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 10961,
+      "sha256": "53f27be194c4176efbec00746925c1200807b2d99dfe217c4ff22095141d7210",
+      "git_blob": "c18766a6ab02eb4d9882df1224b12e093e7d0453"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 13553,
+      "sha256": "e148faa0009f2d742fcdb7098bf54f65995c484ede18a406af57eabfe49944ca",
+      "git_blob": "a4e4dd63ad5af3641d0afbbfc15e65d6f78cca19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 12745,
+      "sha256": "d7ee7f0dc75ac86fcbf39e3cdc2d6fcd69d521832a786b7cbb3df7bd84e77175",
+      "git_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 15286,
+      "sha256": "b1efc539271f321828fd77ea0fac3db77f6df5b2fc649cc6c812c6e88f40de58",
+      "git_blob": "2e301a7097eaf063f9f241d736a47340b82d4218"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 12489,
+      "sha256": "3f6ffc9d84932e1d14f624821e7d77ed1a019dd52790bc76482b3fd097ecf462",
+      "git_blob": "e64619d52662cb1a2b7f66fa08f371e07d64cb92"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 22835,
+      "sha256": "12b40dd7c917777b4d0bf49b822a48199982d3090664ffbdf0e2bba45204152f",
+      "git_blob": "dbf7af0bfc0fef0351aa7f883128d4e7823cea88"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 7941,
+      "sha256": "c99ed381b8c36a7123b5c8b90033759480b078ef8f4adfeb71c45d30ad182907",
+      "git_blob": "3275b6d0de952fab371578336cba1e04215d1ee7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "origin": "unchanged module parent at 094958b83a8fd19e3bc6d01a092793c0f420bb75",
+      "bytes": 9708,
+      "sha256": "5f8c7bd39912e2954fb5333279b9459ad3ff7c9f943818ab62e39aa270ee8445",
+      "git_blob": "02759f257a58147e8416391d9c1062e93bbc112c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 14985,
+      "sha256": "756dbde52a209fe2c86d3bc807a722a73f2a5fc1cf6f4092b1cfb599d6cfffd7",
+      "git_blob": "e16820f8bab3027ab74490f942a34c7ee5470739"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 19294,
+      "sha256": "b373ed0887d2eb21998d3fa3114c32793733242947b99fbe622cc602328f6566",
+      "git_blob": "f83c91242ee6b27f0523fb40e78eb923b607d953"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 18146,
+      "sha256": "afa9f585c572eb4c7c9a002a78d5aa7df57f1332b6642d7945709808586f3ee2",
+      "git_blob": "ccaaa271ed795e4051f347e0302bac8fdb1f8043"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs",
+      "origin": "proposed integrated working-tree postimage",
+      "bytes": 18714,
+      "sha256": "bf9670a5e0a27006999e7edde049e1556cc715db3f3f69833bccea1a4cfbc250",
+      "git_blob": "8b20df0711fa3bbaef70685b7a5381c6486a936e"
+    }
+  ],
+  "runtime_limitation": "This proves declared selection only. Actual native execution/pass must come from fresh source-bound JUnit. Focused currently has minimum_tests=1, not an exact nine-name coverage assertion; Root already asserts exactly the original 32 parent names.",
+  "root_selection": "The four ignored Root cases run only in root/all via the existing exact 32-parent filter and actual UID0; focused and ordinary do not execute them.",
+  "optional_redundant_nine_case_command_not_required_and_not_run": "just test --locked --offline -p codex-hepta-agentd --lib -E 'test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs) | test(=circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1) | test(=circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution)' --test-threads 2 --retries 0 --status-level pass --success-output final --failure-output final"
+}

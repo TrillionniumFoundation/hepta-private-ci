@@ -463,6 +463,10 @@ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandRecei
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionReadbackConnectionV1;
 
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitEvaluatedSelectionReadbackErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitEvaluatedSelectionReadbackOwnerV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandClientV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandContextV1;
@@ -597,6 +601,12 @@ pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionRece
 pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptV1;
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptConfigV1;
 #[cfg(target_os = "linux")]

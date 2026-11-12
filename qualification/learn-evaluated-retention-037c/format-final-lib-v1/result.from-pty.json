@@ -1,0 +1,32 @@
+{
+  "after": {
+    "bytes": 70644,
+    "git_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+    "sha256": "df0331bb909b10cd6edf7db3108cac71b67ed05c81bcfe444682b6afd0e7fa95"
+  },
+  "before": {
+    "bytes": 70644,
+    "git_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+    "sha256": "df0331bb909b10cd6edf7db3108cac71b67ed05c81bcfe444682b6afd0e7fa95"
+  },
+  "changed": false,
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "--edition",
+    "2024",
+    "--config",
+    "imports_granularity=Item,skip_children=true",
+    "/home/qian-qi/hepta-learn-037c-evidence/format-final-lib-v1/lib.rs"
+  ],
+  "exit_code": 0,
+  "finished_at": "2026-11-12T09:50:47.979480+00:00",
+  "patch": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+  "scope": "isolated exact input only; no native or caller source checkout writes",
+  "source_input_path": "/workspace/scratch/037c0371c195/root-complete-integration/codex-rs/hepta-agentd/src/lib.rs",
+  "status": "PASS"
+}

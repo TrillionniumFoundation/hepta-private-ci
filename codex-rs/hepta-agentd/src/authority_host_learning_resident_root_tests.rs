@@ -99,7 +99,7 @@ fn resident_root_formatter_and_original_registration_pin_both_scopes() -> anyhow
             changed_rule_scope,
             &metadata.verifier,
             fixture.profile.intent.clone(),
-            fixture.profile.lease.clone(),
+            fixture.profile.lease,
         )
         .is_err()
     );
