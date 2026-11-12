@@ -100,8 +100,18 @@ def write_json(name, value):
 
 def capture(command):
     require(command[0] in TOOLS.values(), "unexpected executable")
-    result = subprocess.run(command, cwd=REPO, env=ENV, stdin=subprocess.DEVNULL,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    process = subprocess.Popen(command, cwd=REPO, env=ENV, stdin=subprocess.DEVNULL,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        stdout, stderr = process.communicate()
+    except BaseException:
+        try:
+            process.communicate()
+        finally:
+            process.wait()
+        raise
+    process.wait()
+    result = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
     require(len(result.stdout) <= MAX_PROLOGUE_OUTPUT, "bounded command output exceeded")
     require(len(result.stderr) <= MAX_PROLOGUE_OUTPUT, "bounded command stderr exceeded")
     return result

@@ -7,9 +7,9 @@
     "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1"
   },
   "script": {
-    "git_blob": "e213846ed6eb636a3bd0cf42955c11d6979f600e",
-    "bytes": 15374,
-    "sha256": "790cbfb39bc6c3437211c0a0b312dc58a36594d0a76c90e00096d80cc564183d"
+    "git_blob": "02936de4e817426367a1e05c565f484e4bed456f",
+    "bytes": 15659,
+    "sha256": "9392c726e996c92a20bba2b0e12def6862e60492e186941a6f8015987861cf93"
   },
   "actual_reported_inputs": {
     "native": {
@@ -152,5 +152,35 @@
     "Symbol absence, inlining, large construction temporaries and live caller frames may remain unresolved.",
     "A stable observed ELF and a clean source checkout do not independently prove a cryptographic source-to-binary build relation.",
     "No Python syntax execution, H dispatch, binary execution, test rerun or native pass has occurred for this prepared script."
-  ]
+  ],
+  "refinement": {
+    "previous_prepared_commit": "c5a8c012e2d96a2435f67679f98555c6a027c85a",
+    "previous_script": {
+      "git_blob": "e213846ed6eb636a3bd0cf42955c11d6979f600e",
+      "bytes": 15374,
+      "sha256": "790cbfb39bc6c3437211c0a0b312dc58a36594d0a76c90e00096d80cc564183d"
+    },
+    "previous_request_blob": "6f4060c76ce45af2f6dbf5d568f471fa86eb07ac",
+    "dispatched": false,
+    "reason": "Source peer identified that CPython subprocess.run may signal its own child when communicate raises. Replace only capture with explicit Popen/communicate and same-handle drain/wait, without kill or terminate.",
+    "exact_reversible_helper_replacement": {
+      "before": "def capture(command):\n    require(command[0] in TOOLS.values(), \"unexpected executable\")\n    result = subprocess.run(command, cwd=REPO, env=ENV, stdin=subprocess.DEVNULL,\n                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)\n    require(len(result.stdout) <= MAX_PROLOGUE_OUTPUT, \"bounded command output exceeded\")\n    require(len(result.stderr) <= MAX_PROLOGUE_OUTPUT, \"bounded command stderr exceeded\")\n    return result\n",
+      "after": "def capture(command):\n    require(command[0] in TOOLS.values(), \"unexpected executable\")\n    process = subprocess.Popen(command, cwd=REPO, env=ENV, stdin=subprocess.DEVNULL,\n                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n    try:\n        stdout, stderr = process.communicate()\n    except BaseException:\n        try:\n            process.communicate()\n        finally:\n            process.wait()\n        raise\n    process.wait()\n    result = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)\n    require(len(result.stdout) <= MAX_PROLOGUE_OUTPUT, \"bounded command output exceeded\")\n    require(len(result.stderr) <= MAX_PROLOGUE_OUTPUT, \"bounded command stderr exceeded\")\n    return result\n"
+    },
+    "whole_previous_script_recovered_by_reverse_replacement": true,
+    "changed_script_functions": [
+      "capture"
+    ],
+    "unchanged": [
+      "source/native/outer pins and gates",
+      "owned ELF path and stable before/after identity/hash",
+      "two nm passes and exact target prefixes",
+      "64 symbols /16 aliases /512 code-byte bounds",
+      "environment",
+      "request idempotency key",
+      "all output paths",
+      "absence of timeout/resource fields"
+    ],
+    "limitation": "Exceptional communicate/drain/wait may itself be unable to finish; no termination or successful terminal result is fabricated to recover liveness."
+  }
 }
