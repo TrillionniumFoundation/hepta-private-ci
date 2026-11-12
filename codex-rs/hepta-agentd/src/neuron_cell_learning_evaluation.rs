@@ -129,9 +129,7 @@ pub fn prepare_cell_learning_evaluation_v1(
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
             LearningEvaluationDispositionV1::Qualified
         }
-        IndependentEvaluationDispositionV1::Ineligible => {
-            LearningEvaluationDispositionV1::NoUpdate
-        }
+        IndependentEvaluationDispositionV1::Ineligible => LearningEvaluationDispositionV1::NoUpdate,
         IndependentEvaluationDispositionV1::InsufficientEvidence => {
             return Err(CellLearningEvaluationErrorV1::InsufficientEvidence);
         }

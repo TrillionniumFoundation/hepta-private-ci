@@ -17,8 +17,10 @@ use crate::CellLearningEvaluationErrorV1;
 async fn insufficient_evaluation_never_claims_a_receipt_before_or_after_cold_reopen()
 -> anyhow::Result<()> {
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
-    let mut fixture =
-        LearningFixture::new_at(IndependentEvaluationDispositionV1::InsufficientEvidence, now);
+    let mut fixture = LearningFixture::new_at(
+        IndependentEvaluationDispositionV1::InsufficientEvidence,
+        now,
+    );
     let config = receipt_config(&fixture)?;
     let path = tempfile::tempdir()?;
     let mut owner = OriginalCellEvaluationReceiptOwnerV1::create(
@@ -76,13 +78,15 @@ async fn insufficient_evaluation_never_claims_a_receipt_before_or_after_cold_reo
             original
         );
         assert_eq!(
-            server.read(&mut [0]).expect_err("no Trainer request").kind(),
+            server
+                .read(&mut [0])
+                .expect_err("no Trainer request")
+                .kind(),
             ErrorKind::WouldBlock
         );
         assert_eq!(fixture.snapshot, config.training);
         assert_eq!(
-            LearningIterationCoordinatorV1::from_snapshot(fixture.snapshot.clone())?
-                .next_stage(),
+            LearningIterationCoordinatorV1::from_snapshot(fixture.snapshot.clone())?.next_stage(),
             Some(LearningIterationStageV1::Evaluation)
         );
     }
