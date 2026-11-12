@@ -81,6 +81,37 @@ struct OriginalPolicyAction {
 }
 
 impl OriginalHoldoutSourceData {
+    pub(super) fn require_original_times(
+        &self,
+        registered_at: u64,
+        policy_issued_at: u64,
+        observation_issued_at: u64,
+        now: u64,
+    ) -> io::Result<()> {
+        if self.registered_at_seconds != registered_at
+            || registered_at >= self.collected_after_seconds
+            || self.collected_after_seconds > now
+            || policy_issued_at < registered_at
+            || policy_issued_at > now
+            || observation_issued_at > now
+            || self
+                .training
+                .iter()
+                .any(|row| row.observed_at_seconds > registered_at)
+            || self.heldout.iter().any(|row| {
+                row.decision_at_seconds < self.collected_after_seconds
+                    || row.decision_at_seconds > policy_issued_at
+                    || row.observed_at_seconds <= policy_issued_at
+                    || row.observed_at_seconds > observation_issued_at
+            })
+        {
+            return Err(io::Error::other(
+                "B data does not follow its original Root registration",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn decode(bytes: &[u8]) -> io::Result<Self> {
         if bytes.is_empty() || bytes.len() > MAX_BYTES {
             return Err(io::Error::other("bounded original B source required"));
