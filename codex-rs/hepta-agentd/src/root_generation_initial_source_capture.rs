@@ -44,8 +44,7 @@ impl RootGenerationInitialClient {
         &self,
         _closed: OriginalCircuitSourceClosedV1,
     ) -> Result<(), AgentdError> {
-        if self.mode != RootGenerationInitialModeV1::Reserve
-            || self.fenced.load(Ordering::Acquire)
+        if self.mode != RootGenerationInitialModeV1::Reserve || self.fenced.load(Ordering::Acquire)
         {
             return Err(uncertain());
         }
@@ -72,12 +71,11 @@ impl RootGenerationInitialClient {
             command: Command::CaptureSource {},
         };
         self.connection.require_original_publication_session()?;
-        let raw = lane.stream.exchange(
-            &serde_json::to_vec(&capture).map_err(|_| uncertain())?,
-        ).map_err(|_| uncertain())?;
-        let pin = self.source_capture_reply(
-            &raw, captured_id, SourceCapturePhase::Captured,
-        )?;
+        let raw = lane
+            .stream
+            .exchange(&serde_json::to_vec(&capture).map_err(|_| uncertain())?)
+            .map_err(|_| uncertain())?;
+        let pin = self.source_capture_reply(&raw, captured_id, SourceCapturePhase::Captured)?;
         self.connection.require_original_publication_session()?;
         let acknowledgement = Request {
             schema: 1,
@@ -86,12 +84,14 @@ impl RootGenerationInitialClient {
             profile: self.profile.binding.clone(),
             command: Command::CaptureAck {},
         };
-        let raw = lane.stream.exchange_source_capture_terminal(
-            &serde_json::to_vec(&acknowledgement).map_err(|_| uncertain())?,
-        ).map_err(|_| uncertain())?;
-        let acknowledged = self.source_capture_reply(
-            &raw, acknowledged_id, SourceCapturePhase::Acknowledged,
-        )?;
+        let raw = lane
+            .stream
+            .exchange_source_capture_terminal(
+                &serde_json::to_vec(&acknowledgement).map_err(|_| uncertain())?,
+            )
+            .map_err(|_| uncertain())?;
+        let acknowledged =
+            self.source_capture_reply(&raw, acknowledged_id, SourceCapturePhase::Acknowledged)?;
         if acknowledged != pin {
             return Err(uncertain());
         }
@@ -104,8 +104,7 @@ impl RootGenerationInitialClient {
         request_id: u64,
         phase: SourceCapturePhase,
     ) -> Result<Digest32, AgentdError> {
-        let reply: SourceCaptureResponse =
-            serde_json::from_slice(raw).map_err(|_| uncertain())?;
+        let reply: SourceCaptureResponse = serde_json::from_slice(raw).map_err(|_| uncertain())?;
         let pin: Digest32 = reply.pin.parse().map_err(|_| uncertain())?;
         if reply.schema != 1
             || reply.purpose != SOURCE_CAPTURE_PURPOSE

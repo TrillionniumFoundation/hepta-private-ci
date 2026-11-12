@@ -79,8 +79,13 @@ async fn source_capture_control_waits_for_accepted_connection_before_join_receip
         "shutdown must wait for the already accepted request"
     );
     finish_health(&mut stream).await;
-    running.await.expect("join supervisor").expect("clean control completion");
-    receipt.require_original_control_join().expect("actual join receipt");
+    running
+        .await
+        .expect("join supervisor")
+        .expect("clean control completion");
+    receipt
+        .require_original_control_join()
+        .expect("actual join receipt");
     assert_eq!(Arc::strong_count(&fixture.state), 1);
 }
 
@@ -100,7 +105,10 @@ async fn source_capture_control_retains_connection_error_without_stopping_other_
     let mut invalid = UnixStream::connect(&fixture.identity.control_socket)
         .await
         .expect("connect invalid frame");
-    invalid.write_all(b"invalid-json\n").await.expect("send malformed frame");
+    invalid
+        .write_all(b"invalid-json\n")
+        .await
+        .expect("send malformed frame");
     let mut discarded = Vec::new();
     timeout(Duration::from_secs(1), invalid.read_to_end(&mut discarded))
         .await
@@ -130,14 +138,19 @@ async fn source_capture_control_supervisor_abort_cannot_acknowledge_join() {
     let receipt = server.original_source_capture_join().expect("select join");
     // A short test grace forces the real supervisor's abort path. Product
     // grace and transport deadlines remain unchanged.
-    let mut tasks = RuntimeTasks::new(cancellation, Duration::from_millis(20))
-        .expect("task supervisor");
-    tasks.spawn_required("control-server", server.run()).expect("own control");
+    let mut tasks =
+        RuntimeTasks::new(cancellation, Duration::from_millis(20)).expect("task supervisor");
+    tasks
+        .spawn_required("control-server", server.run())
+        .expect("own control");
     let mut stream = UnixStream::connect(&fixture.identity.control_socket)
         .await
         .expect("connect pending frame");
     await_accepted(&fixture.state).await;
-    tasks.run_until(async { Ok(()) }).await.expect("bounded shutdown");
+    tasks
+        .run_until(async { Ok(()) })
+        .await
+        .expect("bounded shutdown");
     assert!(receipt.require_original_control_join().is_err());
     let mut bytes = Vec::new();
     timeout(Duration::from_secs(1), stream.read_to_end(&mut bytes))
@@ -160,9 +173,11 @@ async fn source_capture_runtime_cancellation_without_actual_drain_is_refused() {
     .await
     .expect("bind");
     let receipt = server.original_source_capture_join().expect("select join");
-    let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(1))
-        .expect("task supervisor");
-    tasks.spawn_required("control-server", server.run()).expect("own control");
+    let mut tasks =
+        RuntimeTasks::new(cancellation.clone(), Duration::from_secs(1)).expect("task supervisor");
+    tasks
+        .spawn_required("control-server", server.run())
+        .expect("own control");
     cancellation.cancel();
     let result = run_until_original_source_drain(
         &mut tasks,
@@ -179,12 +194,18 @@ async fn source_capture_runtime_cancellation_without_actual_drain_is_refused() {
 async fn source_capture_runtime_requires_actual_drain_join_and_state_release() {
     let fixture = runtime_fixture();
     attach_runtime_prerequisites(&fixture).await;
-    fixture.state.attach_automation_store(
-        AutomationStore::open(&fixture.identity.layout).await.expect("real automation store"),
-    ).expect("attach automation");
-    fixture.registry.compare_and_transition(
-        &fixture.identity.agent_id, 1, AgentLifecycle::Running,
-    ).expect("running generation");
+    fixture
+        .state
+        .attach_automation_store(
+            AutomationStore::open(&fixture.identity.layout)
+                .await
+                .expect("real automation store"),
+        )
+        .expect("attach automation");
+    fixture
+        .registry
+        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .expect("running generation");
     fixture.state.refresh_generation().expect("refresh running");
     fixture.state.mark_app_server_ready().expect("ready");
     let RuntimeFixture { _temp, state, .. } = fixture;
@@ -198,12 +219,14 @@ async fn source_capture_runtime_requires_actual_drain_join_and_state_release() {
     .await
     .expect("bind");
     let receipt = server.original_source_capture_join().expect("select join");
-    let mut tasks = RuntimeTasks::new(cancellation, Duration::from_secs(1))
-        .expect("task supervisor");
-    tasks.spawn_required("control-server", server.run()).expect("own control");
-    let drained = run_until_original_source_drain(
-        &mut tasks, state, async { Ok(()) }, receipt,
-    ).await.expect("real drain, successful control join and State release");
+    let mut tasks =
+        RuntimeTasks::new(cancellation, Duration::from_secs(1)).expect("task supervisor");
+    tasks
+        .spawn_required("control-server", server.run())
+        .expect("own control");
+    let drained = run_until_original_source_drain(&mut tasks, state, async { Ok(()) }, receipt)
+        .await
+        .expect("real drain, successful control join and State release");
     drained.require_released_state().expect("still released");
     assert!(released.upgrade().is_none());
 }
