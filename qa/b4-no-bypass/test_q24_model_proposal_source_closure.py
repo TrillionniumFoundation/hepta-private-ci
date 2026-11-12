@@ -21,6 +21,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "cell_q24_model_proposal.rs"
 ADMISSION = AGENT + "cell_q24_model_proposal_admission.rs"
 FACTORY = AGENT + "root_q24_model_factory.rs"
+PROJECTION = AGENT + "cell_q24_model_projection.rs"
 BOUNDARIES = tuple(
     "cell_q24_model_material_owner_" + method
     for method in ("create", "recover", "commit", "readback")
@@ -38,7 +39,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, ADMISSION, FACTORY)
+            for path in (OWNER, ADMISSION, FACTORY, PROJECTION)
         }
 
     def rejects(self, path, function, marker):
@@ -98,7 +99,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             "verified.trust_digest() != cut.owners.evidence_trust_digest",
         ):
             with self.subTest(marker=marker):
-                self.rejects(ADMISSION, "fn validate<", marker)
+                self.rejects(PROJECTION, "fn project_original_qualified_model<", marker)
 
     def test_original_manifests_and_qualified_evaluation_are_required(self):
         for marker in (
@@ -108,10 +109,26 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             "coordinator.record(evaluation.clone(), evaluation.observed_unix_seconds)?",
         ):
             with self.subTest(marker=marker):
-                self.rejects(ADMISSION, "fn validate<", marker)
+                self.rejects(PROJECTION, "fn project_original_qualified_model<", marker)
 
     def test_final_readback_cannot_skip_current_witness(self):
         self.rejects(OWNER, "fn decode_current(", "self.require_current()?")
+
+    def test_root_projection_requires_actual_b_borrow_and_complete_original_cut(self):
+        for marker in (
+            "scope.validate_snapshot(training)?",
+            "original.observation.stage() != LearningIterationStageV1::Training",
+            "dataset.record(receipt.clone(), receipt.observed_unix_seconds)?",
+            "dataset.snapshot().head_digest != original.predecessor",
+            "training_attestation: actual.training_attestation()",
+            "runner: actual.runner()", "evaluation: actual.execution()",
+            "qualification: actual.qualification()",
+            "project_original_qualified_model(&inputs, now)?",
+            "projected.cut.receipts.last() != Some(actual.receipt())",
+            "proposal_binding: projected.key(owner).binding_digest.to_string()",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(PROJECTION, "fn project_original_root_model(", marker)
 
     def test_commit_cannot_skip_durable_claim_completion_or_witness(self):
         for marker in (
@@ -142,7 +159,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
         ):
             with self.subTest(function=function):
                 self.rejects(OWNER, function, marker)
-        self.rejects(ADMISSION, "fn validate<", "&request")
+        self.rejects(PROJECTION, "fn project_original_qualified_model<", "&request")
 
 
 if __name__ == "__main__":
