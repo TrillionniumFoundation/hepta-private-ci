@@ -2,6 +2,8 @@
 //! All connections retain the one original host state and bounded framing.
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
@@ -16,12 +18,23 @@ impl OriginalCellQ24ModelCommandHostV1 {
         consumer_uid: u32, original_consumer_pidfd: OwnedFd, timeout: Duration, lifetime: Duration,
     ) -> Result<u64, Error> {
         let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
-        tokio::task::spawn_blocking(move || {
+        // Bind the original descriptor/pidfd and absolute end before this
+        // service can queue. The worker cannot restart that original budget.
+        let mut channel = original_owner_command_channel_v1(stream, consumer, consumer_uid,
+            original_consumer_pidfd, timeout, lifetime)?;
+        let queued = QueuedModelServiceV1::new();
+        let cancellation = Arc::clone(&queued.cancelled);
+        let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            let mut channel = original_owner_command_channel_v1(stream, consumer, consumer_uid,
-                original_consumer_pidfd, timeout, lifetime)?;
+            // A service dropped while it was queued never enters the original
+            // frame reader. Cancellation after dispatch remains uncertain.
+            if cancellation.load(Ordering::Acquire) { return Err(Error::Cancelled); }
+            channel.check_peer_lifetime()?;
+            if cancellation.load(Ordering::Acquire) { return Err(Error::Cancelled); }
             self.serve_original_channel(&mut channel)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        }).await.map_err(|_| Error::CommitUncertain)?;
+        drop(queued);
+        result
     }
     fn serve_original_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
         for nonce in 1..=128 {
@@ -50,4 +63,12 @@ impl OriginalCellQ24ModelCommandHostV1 {
         if response.len() > 16_384 { return Err(Error::Binding("bounded original Model response")); }
         Ok(response)
     }
+}
+
+struct QueuedModelServiceV1 { cancelled: Arc<AtomicBool> }
+impl QueuedModelServiceV1 {
+    fn new() -> Self { Self { cancelled: Arc::new(AtomicBool::new(false)) } }
+}
+impl Drop for QueuedModelServiceV1 {
+    fn drop(&mut self) { self.cancelled.store(true, Ordering::Release); }
 }
