@@ -1,0 +1,213 @@
+{
+  "schema": "hpca-native-evidence-publication-provenance-v1",
+  "source_commit": "b0ea141de2d5218869823b2d9e075db6d7b215dd",
+  "source_tree": "132da19ad5829e38a3e96f304c061c0c4c96becf",
+  "branch": "research/hpca-routed-content-20261112-d706",
+  "pr": 6172,
+  "main": {
+    "host": "ai395",
+    "id": "1a1ce85599c-2564-16db",
+    "idempotency_key": "d706-hpca-routed-content-b0ea-main-v1",
+    "status": {
+      "at_unix_ms": 1794466490441,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1ce85599c-2564-16db",
+      "launch_nonce": "529d19975b863bfe3f5733275abd20f4",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 5067,
+          "stored": 5067
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "cold": {
+    "host": "ai395",
+    "id": "1a1ce8f4634-2564-16ee",
+    "idempotency_key": "d706-hpca-routed-content-b0ea-cold-v1",
+    "status": {
+      "at_unix_ms": 1794466891683,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1ce8f4634-2564-16ee",
+      "launch_nonce": "6fda98453317b4bf522b2609f181c4f1",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 283,
+          "stored": 283
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "reused": true,
+    "retried_launch": false
+  },
+  "archive": {
+    "host": "ai395",
+    "id": "1a1ce9478c0-2564-1703",
+    "status": {
+      "at_unix_ms": 1794467201762,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1ce9478c0-2564-1703",
+      "launch_nonce": "e3c9b27a7697d2a39e8033784dcbe02e",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 368,
+          "stored": 368
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "result": {
+      "bytes": 774420,
+      "cold_result_sha256": "9b42ff62fc3c1fb1b1daf56b523ee86c2d67362c7e1ac94b681321569183be56",
+      "file_count": 71,
+      "main_result_sha256": "0bd8a380cd565fc76b42bc184357c14d25f030b69286769d0863af68819e7e2b",
+      "path": "/home/qq/hpca-routed-content-20261112-d706-originals-v1.tar.xz",
+      "sha256": "7f04348e9d74a705fad8a707d39befb49720e6cc7ea69fe1fee587d499c04bda"
+    }
+  },
+  "archive_bridge": {
+    "host": "desktop",
+    "job": "1a1cea18859-2564-1740",
+    "idempotency_key": "d706-hpca-native-archive-gh-bridge-v1",
+    "result": {
+      "blobs": {
+        "archive": {
+          "bytes": 774420,
+          "git_blob_sha": "6d9447214a3ac437f5ef10d2797ad04c56aae5ac",
+          "sha256": "7f04348e9d74a705fad8a707d39befb49720e6cc7ea69fe1fee587d499c04bda"
+        },
+        "base64_transport": {
+          "bytes": 1032560,
+          "git_blob_sha": "2b7ad8abaf83c3da1ca6070eec6294f52f48e88f",
+          "sha256": "ecab60135ccaa7a1a20f23ee4d019ea09067edaf046810cb4cc2777b7225bea7"
+        }
+      },
+      "branch_modified": false,
+      "desktop_copy": "/home/qian-qi/hpca-routed-content-20261112-d706-transfer-v1/native-originals-v1.tar.xz",
+      "login": "ProfHepta",
+      "model_calls": 0,
+      "original_native_path": "/home/qq/hpca-routed-content-20261112-d706-originals-v1.tar.xz",
+      "schema": "hpca-native-archive-github-bridge-v1",
+      "wall_seconds": 9.248421447118744
+    },
+    "status": {
+      "at_unix_ms": 1794468066213,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1cea18859-2564-1740",
+      "launch_nonce": "d13414f1ff995c7c63a1fb9d6888aabb",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 705,
+          "stored": 705
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "readback_failures": {
+    "direct_h_calls": "Two cold-start acknowledgements and read-only file/transport calls returned MCP request timed out. Same cold key recovered the original succeeded job, with no retry. Archive transport read-only timeouts prompted immutable async result paging; six complete chunks were independently pinned and later matched the complete GitHub readback.",
+    "incomplete_async_orchestrator": "A local three-reader orchestration cell was stopped after read-only transport errors; it did not cancel, restart or otherwise operate any model job. Partial/unknown read operations have no effect on the immutable source or archive.",
+    "ai395_gh": "Existing gh not available in PATH; bounded read-only preflight job 1a1ce9f76cd-2564-1731 returned exit0 and gh_available=false.",
+    "desktop_ssh": "Read-only SCP used existing ai395-lan configuration with BatchMode=yes and StrictHostKeyChecking=yes. Only the sealed project archive was copied into a new dedicated directory; source size/SHA were verified before authenticated GitHub blob creation."
+  },
+  "model_calls_during_archival_transport_and_audit": 0,
+  "independent_future_B": false,
+  "decision": "HOLD_NO_GO"
+}

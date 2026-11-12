@@ -1,4 +1,24 @@
-# Routed feedback on actual generated content: frozen development protocol
+# Routed feedback on actual generated content
+
+## Completed native result
+
+The frozen experiment completed **1,632 / 1,632 main generations**, **4,096
+manual update slots** (3,072 nonzero), and **204 / 204 fresh-process checkpoint
+generations**, with zero generation failures. All 204 cold outputs independently
+match the original tokens, text, features and head shifts exactly. Correct routing
+did not establish a consistent content improvement: four-seed mean accuracy was
+46.875%, versus 46.09375% for shuffled routing and 50% for the unchanged base.
+The same 64 content tasks are repeated over four seeds; these are not 256
+independent tasks. The base also failed the frozen retention competency gate.
+
+See [the complete result and limitations](evidence/native-20261112-v1/RESULTS.md),
+[machine-readable summary](evidence/native-20261112-v1/SUMMARY.json), and
+[all original native records](evidence/native-20261112-v1/native-originals.tar.xz).
+Executed source is `b0ea141de2d5218869823b2d9e075db6d7b215dd`; the seven runtime/data
+files remain unchanged. **HOLD_NO_GO; independent_future_B=false.** No candidate
+was selected or retuned after these results.
+
+## Frozen development protocol
 
 This lane starts from the published data stage at `0e6634cadf4497c653e191e50e6394387190ca55`.
 It is separate from the old eight-adapter, 624-generation protocol. No result
@@ -79,8 +99,9 @@ remain retained even if a task or process fails. CPU-only four-thread main and
 cold ceilings are 1,200 and 300 seconds, with 4 GiB memory. Setup, queueing,
 prior base-model training, energy, and production owner costs are not measured.
 
-All empirical outcomes remain **HOLD_NO_GO**. This source stage alone reports
-zero new model calls. Independent future B, ordinary A→learn→B→C, native owner
+All empirical outcomes remain **HOLD_NO_GO**. The earlier source-only stage
+reported zero model calls; the observed native execution is documented above.
+Independent future B, ordinary A→learn→B→C, native owner
 authorization, old capability adequacy, content-core×NDU 2×2, and production
 adoption remain separate gates. Four seeds and synthetic development records
 cannot establish a broad generalization or neuroscience claim.
