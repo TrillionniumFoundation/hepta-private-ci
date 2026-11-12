@@ -64,6 +64,7 @@ class ProjectedGradientTests(unittest.TestCase):
 
     def test_post_update_flow_jacobians_cover_all_retained_outputs(self):
         report = audit.audit_projected_trace(self.trace, max_records=32)
+        self.numerical_evidence = report
         self.assertEqual(report["status"], "passed_recorded_projected_gradients", report)
         self.assertTrue(report["complete_retained_coverage"])
         self.assertTrue(report["source_unchanged_during_audit"])
@@ -71,7 +72,6 @@ class ProjectedGradientTests(unittest.TestCase):
         self.assertEqual(len({row["model_sha256"] for row in report["visits"]}), 3)
         self.assertEqual(sum(row["derivative_coordinates"] for row in report["visits"]), 675)
         self.assertTrue(any(abs(value) > 1e-7 for row in report["visits"] for values in row["ad"] for value in values))
-        self.numerical_evidence = report
 
     def test_detached_physics_gradient_is_detected(self):
         original = audit._flow_vector

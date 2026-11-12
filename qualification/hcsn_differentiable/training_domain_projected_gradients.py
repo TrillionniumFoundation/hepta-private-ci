@@ -122,6 +122,8 @@ def audit_visit(visit, *, deadline=math.inf):
         rows.append({
             "parameter": name, "finite_difference_steps": [s[parameter_index] for s in steps],
             "maximum_absolute_error": float(error[:, parameter_index].max()),
+            "maximum_absolute_ad": float(ad[:, parameter_index].abs().max()),
+            "maximum_absolute_fd": float(fine[:, parameter_index].abs().max()),
             "maximum_tolerance_ratio": float(ratios.max()),
             "maximum_step_stability_ratio": float((stability[:, parameter_index] / stability_scale[:, parameter_index]).max()),
             "ordinary_relative_errors": ordinary_relative,
