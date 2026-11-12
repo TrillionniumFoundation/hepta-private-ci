@@ -71,3 +71,11 @@ No independent calibration set, future source or old-task retention panel has
 been supplied: all remain MISSING in PREEXECUTION. The exposed 60-prompt B2
 negative result is unchanged. No label inversion, fitted threshold, model
 selection, scientific gain, production adoption or native NoUpdate is claimed.
+
+## Retained native observation and successor guard
+
+Execution source `0b75caf446a18807e527f8e2ed9937ae3cae515d` completed 39 targeted tests and the frozen 216 native generation attempts on ai395. The retained preexecution record identifies Python 3.14.4, torch 2.9.1+cpu, transformers 4.57.3, peft 0.18.0, and the original model plus eight adapters. Its effective `is_assistant` value is false. The native archive summary reports every output as token `[2]` (native EOS) and empty decoded text, yielding 0/24 valid responses in each of nine conditions on 24 public tasks. The preexecution record, original test log, native wrapper stdout and summary are retained under `evidence/runtime-contract-20261112-e901`; the transfer-status file distinguishes locally retained complete result/journal files from their still-pending GitHub transfer. An independent row-level audit must read those complete raw files before claiming a full re-score.
+
+A subsequent review of Transformers 4.57.3 found that `is_assistant=True` can activate confidence stopping while the generation mode still reports greedy. This successor adds one fail-closed field check and one counterexample test. It does not change the recorded execution source, rerun the model, or imply that confidence stopping occurred in the retained run. The earlier native 39-test result does not certify the successor test; its test result is recorded separately by the targeted workflow.
+
+`just fmt` was not executed: neither the native sparse worktree's `codex-rs/justfile` nor a `just` executable was available. Raw formatting status is retained. Independent calibration, future sources and old-task retention remain MISSING.
