@@ -28,6 +28,10 @@ use crate::authority_host_service::q24_model::Response;
 use crate::authority_host_service::q24_model::WITNESS_RECORDS;
 use crate::root_observation_stream::RootObservationStream;
 
+#[path = "root_q24_model_b_client.rs"]
+mod original_b;
+pub(crate) use original_b::OriginalRootModelMaterialV1;
+
 /// Non-cloneable original factory. Retains sole writable file rights, the
 /// original Root connection/pidfd and its full immutable learning scope.
 /// It grants only the existing DENY_ALL Model proposal owner operation.

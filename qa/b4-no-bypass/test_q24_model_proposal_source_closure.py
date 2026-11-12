@@ -187,6 +187,47 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
                 self.rejects(path, "fn serve_q24_model_factory_with_end(", marker)
         self.rejects(path, "fn original_factory_lease(", "service.issuer.revocations()?")
 
+    def test_actual_root_response_precedes_the_sole_model_writer(self):
+        path = AGENT + "root_q24_model_b_client.rs"
+        for marker in (
+            "self.fenced = true", "self.profile.require_files(&journal, &witness_file)?",
+            "CellQ24ModelProposalOwnerV1::create_from_original_root(",
+            "CellQ24ModelProposalOwnerV1::recover_from_original_root(",
+            "after.projection != material.projection", "current.lease != bound.lease",
+            "let receipt = result.map_err(original_model_error)?",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn operate_original_b(", marker)
+        for marker in (
+            "transport.read(&request).await", "response.original_b != request.original_b",
+            "response.binding != self.profile.binding()", "response.request_id != request_id",
+            "projection: response.projection", "original_root_model_key(&material)",
+            "validate_reply(&command, &response.reply)?", "self.transport = Some(transport)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn exchange_original_b<'a, 'read>(", marker)
+
+    def test_root_model_projection_keeps_the_actual_training_and_qualified_b(self):
+        path = AGENT + "cell_q24_model_root_admission.rs"
+        for marker in (
+            "original.scope().validate_snapshot(training)?", "trained != original.training_receipt()",
+            "LearningEvaluationDispositionV1::Qualified", "dataset.snapshot().head_digest != trained.predecessor",
+            "trained.evidence_digest", "original.projection() != &expected",
+            "proposal_binding: admission.key(binding).binding_digest.to_string()",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn validate_original_root_material(", marker)
+
+    def test_root_writer_cannot_skip_original_projection_or_source_postcheck(self):
+        path = AGENT + "cell_q24_model_root_owner.rs"
+        for function in ("create_from_original_root", "recover_from_original_root",
+                         "commit_original_root", "read_original_root"):
+            with self.subTest(function=function):
+                self.rejects(path, "fn " + function + "(", "original.require_current_training_source()?")
+        for marker in ("observed.dataset != self.dataset_cut", "observed.scope != self.scope",
+                       "observed.binding != self.binding"):
+            self.rejects(path, "fn admit_original_root(", marker)
+
     def test_commit_cannot_skip_durable_claim_completion_or_witness(self):
         for marker in (
             "self.journal.claim(&key)",
