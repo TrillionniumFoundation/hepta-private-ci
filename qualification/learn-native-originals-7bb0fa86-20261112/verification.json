@@ -1,0 +1,108 @@
+{
+  "archive": "/workspace/scratch/ff41dfc0f7bf/tooling/validation/root-native-originals-7bb0fa86-v1/originals.tar.xz",
+  "bytes": 93180,
+  "sha256": "2e19aa546f0239a3f99b9b8b4368593cf53ba9fb5d08c87cc50e3538104770e9",
+  "git_blob": "d4178d4a1aef652daef1db6dd5e5b5864217da41",
+  "manifest_sha256": "686f46c7255c9cc0020ca2711353953193068ef4b8a1b094bb15a27a74506ea0",
+  "file_count": 41,
+  "input_bytes": 2326070,
+  "all_member_sizes_sha256_git_blobs_verified": true,
+  "collector_job_id": "1a1d1fd5219-2564-1c8c",
+  "collector_exit_code": 0,
+  "collector_idempotency_key": "ci-evidence-collect-7bb0fa86-20261112-v1-ff41",
+  "transport": [
+    {
+      "chunk_sha256": "30bb88cdbe09e93862b64c93408f6d274b642508a20f024b6a4c8f8b46b3d3ac",
+      "eof": false,
+      "next_offset": 16384,
+      "offset": 0,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-7bb0fa86-v1/originals.tar.xz",
+      "size": 93180,
+      "version": "66306:63749940:93180:1794524404137485382:1794524404140830730"
+    },
+    {
+      "chunk_sha256": "a047a3a50da5b91bc997cf190f79660375dab0bf2ac752d1eb1a7a53f61dfdd1",
+      "eof": false,
+      "next_offset": 32768,
+      "offset": 16384,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-7bb0fa86-v1/originals.tar.xz",
+      "size": 93180,
+      "version": "66306:63749940:93180:1794524404137485382:1794524404140830730"
+    },
+    {
+      "chunk_sha256": "59a8be3d1a0c4d713ab3cc15cc1eeee46994f0258e1e50565f123677a0270dcd",
+      "eof": false,
+      "next_offset": 49152,
+      "offset": 32768,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-7bb0fa86-v1/originals.tar.xz",
+      "size": 93180,
+      "version": "66306:63749940:93180:1794524404137485382:1794524404140830730"
+    },
+    {
+      "chunk_sha256": "43046125cd6875ca7b86f6be1b7cf93f8668a680d0968e49b3730875a19e22bf",
+      "eof": false,
+      "next_offset": 65536,
+      "offset": 49152,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-7bb0fa86-v1/originals.tar.xz",
+      "size": 93180,
+      "version": "66306:63749940:93180:1794524404137485382:1794524404140830730"
+    },
+    {
+      "chunk_sha256": "94a839e62e96e437452033102265175c0c3631a850008301893a87e04f9e9e50",
+      "eof": false,
+      "next_offset": 81920,
+      "offset": 65536,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-7bb0fa86-v1/originals.tar.xz",
+      "size": 93180,
+      "version": "66306:63749940:93180:1794524404137485382:1794524404140830730"
+    },
+    {
+      "chunk_sha256": "d81ee47fdee68d839cea881a17bc0185a71461b35c6a108a5b9ca8422c64bae9",
+      "eof": true,
+      "next_offset": 93180,
+      "offset": 81920,
+      "path": "/home/qq/hepta-learn-ff41-tools/validation/root-native-originals-7bb0fa86-v1/originals.tar.xz",
+      "size": 93180,
+      "version": "66306:63749940:93180:1794524404137485382:1794524404140830730"
+    }
+  ],
+  "source_head": "7bb0fa86fd3588c7711fe1ed6e361962c8d11741",
+  "source_tree": "ad0c66b5cf914a2effac4b3695042ccb4c79bfff",
+  "scoped_compile_exit": 0,
+  "scoped_compile_elapsed": 113.01437711413018,
+  "ordinary_a": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "testcase_time": "1.418",
+    "junit_bytes": 2198,
+    "junit_sha256": "9acad88ba70193ca7eae8f454168509f81bb8be5799f492f0a4b7028ae5786b1"
+  },
+  "source_unchanged": true,
+  "child_logs": [
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-G11d7R/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-G11d7R/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-qHb1lM/stderr.log",
+      "bytes": 281,
+      "sha256": "8a0e49fefd78db69e03426f6c0f6c505f8680652c8ca1f2b77561df262d09418"
+    },
+    {
+      "path": "original-child-logs/ordinary-q24-original-process-qHb1lM/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "daemon_stderr": "Error: original Initial readiness frame exchange: original Root publication frame read response length: original Root publication poll rejected: ready=0; requested_events=0x1; root_revents=0x0; stream_revents=0x0; deadline_elapsed=true; os_error=None; io_kind=Other; os_error=None\n",
+  "observed_utc": "2026-11-12T23:02:30.915037+00:00",
+  "native_tests_executed_by_collector": false
+}
