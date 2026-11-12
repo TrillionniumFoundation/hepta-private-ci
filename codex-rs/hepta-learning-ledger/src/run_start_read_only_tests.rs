@@ -337,7 +337,7 @@ fn run_start_read_only_validates_conflicts_without_returning_them_as_run_starts(
     assert_eq!(must(reader.read(&id("conflict"))), None);
     assert!(must(reader.read(&id("original"))).is_some());
     let bytes = must(fs::read(fixture.path()));
-    let mut corrupt = bytes.clone();
+    let mut corrupt = bytes;
     let last = corrupt.len() - 1;
     corrupt[last] ^= 1;
     replace_bytes(&fixture, &corrupt);
