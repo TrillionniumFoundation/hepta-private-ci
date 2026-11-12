@@ -1,0 +1,147 @@
+{
+  "authority": "DENY_ALL",
+  "independent_evaluator": false,
+  "interpretation": "Descriptive within-family and cross-family rank-pair partition on the same retained operator-built 60 tasks; nine reused task rosters are not nine independent evaluation cohorts. No efficacy, prospective accuracy, statistical significance or production claim.",
+  "model_inference_reexecuted": false,
+  "original_manifest_sha256": "0f12ac4aa7fd32989ba62983ed82367b83fe6a3f51868e4c1b8f567a9decf12a",
+  "original_result_sha256": "937a87f1da2e502f954be0870cd3a64ce06df0245938fc984b8b2a5ed0d95731",
+  "qualification": "HOLD_NO_GO",
+  "runs": [
+    {
+      "arm": "frozen_base",
+      "cross_family": {
+        "auc": 0.45,
+        "pairs": 720,
+        "twice_wins": 648
+      },
+      "pooled_auc": 0.43555555555555553,
+      "seed": 0,
+      "within_family": {
+        "auc": 0.37777777777777777,
+        "pairs": 180,
+        "twice_wins": 136
+      }
+    },
+    {
+      "arm": "interleaved",
+      "cross_family": {
+        "auc": 0.45416666666666666,
+        "pairs": 720,
+        "twice_wins": 654
+      },
+      "pooled_auc": 0.4388888888888889,
+      "seed": 11,
+      "within_family": {
+        "auc": 0.37777777777777777,
+        "pairs": 180,
+        "twice_wins": 136
+      }
+    },
+    {
+      "arm": "bursty",
+      "cross_family": {
+        "auc": 0.45416666666666666,
+        "pairs": 720,
+        "twice_wins": 654
+      },
+      "pooled_auc": 0.4388888888888889,
+      "seed": 11,
+      "within_family": {
+        "auc": 0.37777777777777777,
+        "pairs": 180,
+        "twice_wins": 136
+      }
+    },
+    {
+      "arm": "interleaved",
+      "cross_family": {
+        "auc": 0.4513888888888889,
+        "pairs": 720,
+        "twice_wins": 650
+      },
+      "pooled_auc": 0.43666666666666665,
+      "seed": 17,
+      "within_family": {
+        "auc": 0.37777777777777777,
+        "pairs": 180,
+        "twice_wins": 136
+      }
+    },
+    {
+      "arm": "bursty",
+      "cross_family": {
+        "auc": 0.4513888888888889,
+        "pairs": 720,
+        "twice_wins": 650
+      },
+      "pooled_auc": 0.43666666666666665,
+      "seed": 17,
+      "within_family": {
+        "auc": 0.37777777777777777,
+        "pairs": 180,
+        "twice_wins": 136
+      }
+    },
+    {
+      "arm": "interleaved",
+      "cross_family": {
+        "auc": 0.46111111111111114,
+        "pairs": 720,
+        "twice_wins": 664
+      },
+      "pooled_auc": 0.44333333333333336,
+      "seed": 23,
+      "within_family": {
+        "auc": 0.37222222222222223,
+        "pairs": 180,
+        "twice_wins": 134
+      }
+    },
+    {
+      "arm": "bursty",
+      "cross_family": {
+        "auc": 0.46111111111111114,
+        "pairs": 720,
+        "twice_wins": 664
+      },
+      "pooled_auc": 0.4444444444444444,
+      "seed": 23,
+      "within_family": {
+        "auc": 0.37777777777777777,
+        "pairs": 180,
+        "twice_wins": 136
+      }
+    },
+    {
+      "arm": "interleaved",
+      "cross_family": {
+        "auc": 0.44722222222222224,
+        "pairs": 720,
+        "twice_wins": 644
+      },
+      "pooled_auc": 0.43444444444444447,
+      "seed": 29,
+      "within_family": {
+        "auc": 0.38333333333333336,
+        "pairs": 180,
+        "twice_wins": 138
+      }
+    },
+    {
+      "arm": "bursty",
+      "cross_family": {
+        "auc": 0.44722222222222224,
+        "pairs": 720,
+        "twice_wins": 644
+      },
+      "pooled_auc": 0.43444444444444447,
+      "seed": 29,
+      "within_family": {
+        "auc": 0.38333333333333336,
+        "pairs": 180,
+        "twice_wins": 138
+      }
+    }
+  ],
+  "schema": "hpca.b2.retained.family-decomposition.v1"
+}
