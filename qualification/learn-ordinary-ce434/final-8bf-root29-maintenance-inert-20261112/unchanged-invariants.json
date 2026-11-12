@@ -1,0 +1,249 @@
+{
+  "schema": "hepta.learn.inert-template-static-review.v1",
+  "scope": "Whole byte replay and narrowly selected exact text blocks; not Python execution or runtime verification",
+  "changes": {
+    "root29": {
+      "hunks": 35,
+      "removed": 41,
+      "added": 131,
+      "edits": 40
+    },
+    "maintenance": {
+      "hunks": 9,
+      "removed": 18,
+      "added": 20,
+      "edits": 17
+    }
+  },
+  "unchanged_blocks": [
+    {
+      "script": "root29",
+      "name": "all_29_ordered_original_cases",
+      "bytes": 4554,
+      "sha256": "15ed350ceffc455248f142d90721c3fc66735db3cd20a6350de7f31303b3fd7e",
+      "equal": true
+    },
+    {
+      "script": "root29",
+      "name": "CI_source_pins",
+      "bytes": 643,
+      "sha256": "c7eed1b0d61a9997e61dc31e5327bc6ef7be387dce4aeec564f311c642e20149",
+      "equal": true
+    },
+    {
+      "script": "root29",
+      "name": "sudo_environment_allowlist",
+      "bytes": 407,
+      "sha256": "94529241b0469ce9ee6a6511a355adcf7c2c0f997e9bd0e64e071701363f5fc9",
+      "equal": true
+    },
+    {
+      "script": "root29",
+      "name": "original_just_test_command_recorder_7200_seconds",
+      "bytes": 854,
+      "sha256": "a17963c59766a6944ca447738753e751367f36dd95785b5fdd906d6b1b7970cc",
+      "equal": true
+    },
+    {
+      "script": "root29",
+      "name": "original_root_inner_terminal_before_cleanup",
+      "bytes": 1571,
+      "sha256": "e959c528df187a519313402c8ce6b6bbca1189452843c4d6adc0fb1ab8a302b6",
+      "equal": true
+    },
+    {
+      "script": "root29",
+      "name": "scoped_chown_only_three_owned_paths",
+      "bytes": 905,
+      "sha256": "c08afac8450ca54a38eb7ad907bca91ee49ff5b03f581c7f525cbb94cf7c1cc3",
+      "equal": true
+    },
+    {
+      "script": "root29",
+      "name": "strict_original_29_JUnit_counter",
+      "bytes": 1249,
+      "sha256": "d658d8171409468ba58ad7ba32c70c2d36a733493bda6218b7a89b1ba1aaac31",
+      "equal": true
+    },
+    {
+      "script": "root29",
+      "name": "unknown_original_child_preserves_fixture",
+      "bytes": 1149,
+      "sha256": "d9a656e96fef757f165b99051000dab953dc91efa26201e1ae819b51679fcfc9",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "require",
+      "bytes": 85,
+      "sha256": "c9cda1a2e11c72d605cafafa30452f1032e07902ffa33e72101b1d1941fdc61f",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "utc",
+      "bytes": 61,
+      "sha256": "9d8b08a4dd4ea8a24d2b8df3e449df081dd451e0fb112b768c3300adb0d51543",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "identity",
+      "bytes": 162,
+      "sha256": "44e0186d82042006c8f7c3afeea40128a88b712d50bb9e1d98fff5090d389488",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "directory",
+      "bytes": 269,
+      "sha256": "5ebd4b8f33a87bc96fbf64120d5de6eeeeb4afd8668d6b1b2a7995f45fbe6c57",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "stable_bytes",
+      "bytes": 659,
+      "sha256": "45e24cf2b14df040371acb4788770653bbe7939ba6ce88986f54a02d242c4336",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "file_digest",
+      "bytes": 786,
+      "sha256": "0d631388eefcaf93c647254727016ac6cf11c1ee88822fc7fe897a1a893e3c63",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "bound_json",
+      "bytes": 348,
+      "sha256": "a4ad33e0688f2a30b2f689c0da7bb92f4018e934573729213f963cd1913699f0",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "write_bytes",
+      "bytes": 151,
+      "sha256": "3f7af9f99c2fccdaa959eab646fb0a7d1b4202a8fef0803dba8e1d70a53e58ae",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "save_json",
+      "bytes": 409,
+      "sha256": "6e833bcbb6c75f30c6ce665f0dcbdbfe309487aac58122d0ce427c5851099e23",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "source_pin",
+      "bytes": 105,
+      "sha256": "213c663064d7e5fb0dc2a979fe3e7a281f36937c48b079b096ebdb36772e6471",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "root29_eligible",
+      "bytes": 1066,
+      "sha256": "4e3e218e28b20ad01e3daab464304211779ce5ccb71efd765cd284b6333a1743",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "native_terminal",
+      "bytes": 3964,
+      "sha256": "3aa21bd8147f5f4fbbe67557267401362a49cc0c95d3cf8e63046f740a4a7f6f",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "command",
+      "bytes": 1493,
+      "sha256": "5679dff09e3f48ec228bf588f65f542e36a1654f160b5cd2b1e71d79dd28599a",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "git_capture",
+      "bytes": 374,
+      "sha256": "aa8d30e1a2161e47e57d672c75df1f7998f7fb5c8f16e362305456752b9fe632",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "relative_path",
+      "bytes": 229,
+      "sha256": "2b0065f6d4921554684dba47e60d1cb635deabeec8cee43b49bbf0dc63606fd7",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "postimage",
+      "bytes": 2691,
+      "sha256": "3cd4195fc416f12a12e1343cb4bcdcc6ff75847e3a05c82b68bdef72a0e2d1ff",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "snapshot",
+      "bytes": 2303,
+      "sha256": "974d0af3abc3ad6b4ede48d38f9c978b3aea9e4d32ea678a2452470aca761e49",
+      "equal": true
+    },
+    {
+      "script": "maintenance",
+      "name": "five_package_fix_then_original_formatter_base",
+      "bytes": 313,
+      "sha256": "e718cf0f00da373f15d5f6ab023e5f52c33b7d9fa481bff6066a54be6e723a30",
+      "equal": true
+    }
+  ],
+  "checks": {
+    "root29_cases": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+      "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+      "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+      "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+      "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes",
+      "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate"
+    ],
+    "root29_none_before_imports": true,
+    "maintenance_none_before_imports": true,
+    "no_subprocess_run_or_check_output": true,
+    "no_signal_methods": true,
+    "maintenance_post_sha_null": true,
+    "maintenance_post_tree_null": true,
+    "maintenance_working_tree_commit_null": true,
+    "original_v1_recovery_literal_preserved": true
+  },
+  "actual_input_not_test_success": {
+    "target_receipt": "c67c20427461211dcd17af6cead26a1de73a2d0d",
+    "created_under_source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tested_source": "8bf3881afa8cccff286fc58909995c96f3e0b260"
+  },
+  "no_python_or_H_execution": true
+}

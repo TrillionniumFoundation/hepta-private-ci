@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.learn.exact-script-edits.v1",
+  "source_sha": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+  "mode": "prepared-inert",
+  "original": {
+    "sha": "c5a8a9f0a21aa660bad1e1cc0b34c01919849117",
+    "bytes": 37500,
+    "sha256": "b24bc557e36392ac9f447868f5bb31320b09540fcf152e0910545164266c3a78"
+  },
+  "postimage": {
+    "sha": "c948b942a88dd995cbc4ad6cbf85f9be28e090cb",
+    "bytes": 37628,
+    "sha256": "dd4feaf6125ab4852318ccc123d2a441f5a20c6024dcfafe06b371a28e99ba66"
+  },
+  "verification": {
+    "exact_occurrence_counts": true,
+    "forward_whole_file_equal": true,
+    "inverse_whole_file_equal": true,
+    "executed_python": false,
+    "executed_H": false
+  },
+  "edits": [
+    {
+      "label": "None guard before imports/Path/FS/child",
+      "before": "\"\"\"Prepared only. Bind actual terminal evidence before final source maintenance.\"\"\"\n",
+      "after": "\"\"\"Prepared only. Bind actual terminal evidence before final source maintenance.\"\"\"\nBINDING = None\nif BINDING is None:\n    raise SystemExit(\"INERT: actual 8bf main/native/fullcaller/Root29 evidence is not bound; no filesystem action is permitted\")\n\n",
+      "count": 1
+    },
+    {
+      "label": "retain one binding; remove later reset",
+      "before": "# Replace only with a separately frozen binding containing actual evidence.\n# This sentinel rejects before any filesystem mutation or subprocess.\nBINDING = None\n",
+      "after": "# Replace only the leading sentinel with a separately frozen actual-evidence binding.\n",
+      "count": 1
+    },
+    {
+      "label": "tested source commit",
+      "before": "SOURCE = \"4537458b51b6ca936264aecea7cfe384b941d0d1\"",
+      "after": "SOURCE = \"8bf3881afa8cccff286fc58909995c96f3e0b260\"",
+      "count": 1
+    },
+    {
+      "label": "tested source tree",
+      "before": "TREE = \"8cbd7b269c9c39df4ee3ffcefed8473060696184\"",
+      "after": "TREE = \"c8730bab75eabe47a3b0b3260a6203a0d86d1443\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific repo/evidence line",
+      "before": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")",
+      "after": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1\")",
+      "count": 1
+    },
+    {
+      "label": "source-specific repo/evidence line",
+      "before": "MAIN = EVIDENCE / \"live-owners-full-4537458b51b6-isolated-v1\"",
+      "after": "MAIN = EVIDENCE / \"live-owners-full-8bf3881afa8c-isolated-v1\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific repo/evidence line",
+      "before": "OUTER = EVIDENCE / \"unified-4537458b51b6-isolated-v1\"",
+      "after": "OUTER = EVIDENCE / \"unified-8bf3881afa8c-isolated-v1\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific repo/evidence line",
+      "before": "CALLER = EVIDENCE / \"fullcaller-4537458b51b6-isolated-v1\"",
+      "after": "CALLER = EVIDENCE / \"fullcaller-8bf3881afa8c-isolated-v1\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific repo/evidence line",
+      "before": "LAUNCH = EVIDENCE / \"fullcaller-4537458b51b6-isolated-launch-v1\"",
+      "after": "LAUNCH = EVIDENCE / \"fullcaller-8bf3881afa8c-isolated-launch-v1\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific repo/evidence line",
+      "before": "        require(re.fullmatch(r\"root-29-4537458b51b6-isolated-v[1-9][0-9]*\", name),",
+      "after": "        require(re.fullmatch(r\"root-29-8bf3881afa8c-isolated-v[1-9][0-9]*\", name),",
+      "count": 1
+    },
+    {
+      "label": "source-specific repo/evidence line",
+      "before": "            and re.fullmatch(r\"maintenance-4537458b51b6-isolated-v[1-9][0-9]*\", name),",
+      "after": "            and re.fullmatch(r\"maintenance-8bf3881afa8c-isolated-v[1-9][0-9]*\", name),",
+      "count": 1
+    },
+    {
+      "label": "actual new target path",
+      "before": "TARGET = Path(\"/data/hepta-learn-ce434-runtime-20261112-v2/target\")",
+      "after": "TARGET = Path(\"/data/hepta-learn-ce434-runtime-20261112-v3/target\")",
+      "count": 1
+    },
+    {
+      "label": "actual target creation receipt path",
+      "before": "TARGET_RECORD = EVIDENCE / \"build-root-recovery-e5c7-v2/result.json\"",
+      "after": "TARGET_RECORD = EVIDENCE / \"build-root-recovery-4537458b51b6-v3-attempt2/result.json\"",
+      "count": 1
+    },
+    {
+      "label": "actual full target creation receipt hash",
+      "before": "TARGET_HASH = \"cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb\"",
+      "after": "TARGET_HASH = \"1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b\"",
+      "count": 1
+    },
+    {
+      "label": "creation source stays separate453",
+      "before": "== \"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\"",
+      "after": "== \"4537458b51b6ca936264aecea7cfe384b941d0d1\"",
+      "count": 1
+    },
+    {
+      "label": "creation tree stays separate8cbd",
+      "before": "and created[\"source_tree\"] == \"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\"",
+      "after": "and created[\"source_tree\"] == \"8cbd7b269c9c39df4ee3ffcefed8473060696184\"",
+      "count": 1
+    },
+    {
+      "label": "environment provenance label",
+      "before": "\"environment_origin\": \"original outer + native21cb; same fixed resources; no global environment mutation\"",
+      "after": "\"environment_origin\": \"original outer + actual bound 8bf native carrier; same fixed resources; no global environment mutation\"",
+      "count": 1
+    }
+  ],
+  "diff_stats": {
+    "hunks": 9,
+    "removed": 18,
+    "added": 20
+  }
+}

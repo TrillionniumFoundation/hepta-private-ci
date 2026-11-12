@@ -1,0 +1,269 @@
+{
+  "schema": "hepta.learn.exact-script-edits.v1",
+  "source_sha": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+  "mode": "prepared-inert",
+  "original": {
+    "sha": "07a7b440e3b6d8cd23a80ac43b84efbfdc3db392",
+    "bytes": 35123,
+    "sha256": "e2ea4e03052e5028c8e618f55c6625890ca163b5222c7b32e5035027f6a00970"
+  },
+  "postimage": {
+    "sha": "057787891e4223e81441db28ba79b34f934bffc7",
+    "bytes": 39520,
+    "sha256": "479f535614629eefdb3ed25da9a2a595fa56e230c706fdea73be8bf91ef854b9"
+  },
+  "verification": {
+    "exact_occurrence_counts": true,
+    "forward_whole_file_equal": true,
+    "inverse_whole_file_equal": true,
+    "executed_python": false,
+    "executed_H": false
+  },
+  "edits": [
+    {
+      "label": "None before imports or filesystem",
+      "before": "\"\"\"\nfrom collections import Counter\n",
+      "after": "\"\"\"\nBINDING = None\nif BINDING is None:\n    raise SystemExit(\"INERT: actual 8bf native201 and terminal evidence is not bound; no filesystem action is permitted\")\n\nfrom collections import Counter\n",
+      "count": 1
+    },
+    {
+      "label": "future bindings must contain actual full hashes",
+      "before": "import xml.etree.ElementTree as ET\n",
+      "after": "import xml.etree.ElementTree as ET\n\nif not isinstance(BINDING, dict) or set(BINDING) != {\n    \"main_native_sha256\", \"main_execution_sha256\"\n}:\n    raise RuntimeError(\"actual Root29 prerequisite binding shape differs\")\nif any(not isinstance(value, str) or re.fullmatch(r\"[0-9a-f]{64}\", value) is None\n       for value in BINDING.values()):\n    raise RuntimeError(\"actual Root29 prerequisite hash is unbound\")\n",
+      "count": 1
+    },
+    {
+      "label": "tested source",
+      "before": "SOURCE = \"4537458b51b6ca936264aecea7cfe384b941d0d1\"",
+      "after": "SOURCE = \"8bf3881afa8cccff286fc58909995c96f3e0b260\"",
+      "count": 1
+    },
+    {
+      "label": "tested tree",
+      "before": "TREE = \"8cbd7b269c9c39df4ee3ffcefed8473060696184\"",
+      "after": "TREE = \"c8730bab75eabe47a3b0b3260a6203a0d86d1443\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "\"\"\"Prepared 4537458b51b6-only Root29 append. Not dispatched by the preparing agent.",
+      "after": "\"\"\"Prepared 8bf3881afa8c-only Root29 append. Not dispatched by the preparing agent.",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")",
+      "after": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1\")",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "MAIN = EVIDENCE / \"live-owners-full-4537458b51b6-isolated-v1\"",
+      "after": "MAIN = EVIDENCE / \"live-owners-full-8bf3881afa8c-isolated-v1\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "NATIVE_DRIVER = EVIDENCE / \"unified-4537458b51b6-isolated-v1/native-runner.py\"",
+      "after": "NATIVE_DRIVER = EVIDENCE / \"unified-8bf3881afa8c-isolated-v1/native-runner.py\"",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "            \"Root29 requires the same clean 4537458b51b6 checkout\")",
+      "after": "            \"Root29 requires the same clean 8bf3881afa8c checkout\")",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "            \"original helper verifier did not certify this clean 4537458b51b6 source\")",
+      "after": "            \"original helper verifier did not certify this clean 8bf3881afa8c source\")",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "assert p.parent == Path(\"/run\") and p.name.startswith(\"hepta-learn-root29-4537458b51b6-\")",
+      "after": "assert p.parent == Path(\"/run\") and p.name.startswith(\"hepta-learn-root29-8bf3881afa8c-\")",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "    raise SystemExit(\"usage: root29-4537458b51b6-runner.py vN (new, explicitly selected attempt)\")",
+      "after": "    raise SystemExit(\"usage: root29-8bf3881afa8c-runner.py vN (new, explicitly selected attempt)\")",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "out = EVIDENCE / (\"root-29-4537458b51b6-isolated-\" + attempt)",
+      "after": "out = EVIDENCE / (\"root-29-8bf3881afa8c-isolated-\" + attempt)",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "root_dir = Path(\"/run\") / (\"hepta-learn-root29-4537458b51b6-\" + attempt)",
+      "after": "root_dir = Path(\"/run\") / (\"hepta-learn-root29-8bf3881afa8c-\" + attempt)",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, \"frozen original 4537458b51b6 native driver differs\")",
+      "after": "require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, \"frozen original 8bf3881afa8c native driver differs\")",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "    \"schema\": \"hepta.learn.root29-4537458b51b6-original-ci-append.v1\",",
+      "after": "    \"schema\": \"hepta.learn.root29-8bf3881afa8c-original-ci-append.v1\",",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "        \"resource_values_and_path_prefix\": \"fixed original 4537458b51b6 native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260\",",
+      "after": "        \"resource_values_and_path_prefix\": \"fixed original 8bf3881afa8c native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260\",",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "        \"helper\": \"same-4537458b51b6 original helper --verify-only and exact env.json\",",
+      "after": "        \"helper\": \"same-8bf3881afa8c original helper --verify-only and exact env.json\",",
+      "count": 1
+    },
+    {
+      "label": "source-specific path/namespace/provenance stamp",
+      "before": "    report[\"source_identity_claim\"] = \"same fixed 4537458b51b6 fixture mechanisms only; no ordinary daemon cold-start or adoption claim\"",
+      "after": "    report[\"source_identity_claim\"] = \"same fixed 8bf3881afa8c fixture mechanisms only; no ordinary daemon cold-start or adoption claim\"",
+      "count": 1
+    },
+    {
+      "label": "actual v3 target",
+      "before": "TARGET = Path(\"/data/hepta-learn-ce434-runtime-20261112-v2/target\")",
+      "after": "TARGET = Path(\"/data/hepta-learn-ce434-runtime-20261112-v3/target\")",
+      "count": 1
+    },
+    {
+      "label": "actual v3 receipt path",
+      "before": "TARGET_CREATION = EVIDENCE / \"build-root-recovery-e5c7-v2/result.json\"",
+      "after": "TARGET_CREATION = EVIDENCE / \"build-root-recovery-4537458b51b6-v3-attempt2/result.json\"",
+      "count": 1
+    },
+    {
+      "label": "actual complete v3 receipt hash",
+      "before": "TARGET_CREATION_SHA256 = \"cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb\"",
+      "after": "TARGET_CREATION_SHA256 = \"1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b\"",
+      "count": 1
+    },
+    {
+      "label": "pin actual final8bf native driver full hash",
+      "before": "NATIVE_DRIVER_SHA256 = \"f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb\"",
+      "after": "NATIVE_DRIVER_SHA256 = \"3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a\"",
+      "count": 1
+    },
+    {
+      "label": "rename target provenance verifier",
+      "before": "verify_target_v2",
+      "after": "verify_target_v3",
+      "count": 2
+    },
+    {
+      "label": "correct target error labels",
+      "before": "target-v2",
+      "after": "target-v3",
+      "count": 5
+    },
+    {
+      "label": "keep creation/test sources separate",
+      "before": "# e5c is immutable creation provenance, not this run's tested source.",
+      "after": "# 453 is immutable creation provenance, not this run's tested source.",
+      "count": 1
+    },
+    {
+      "label": "creation source453",
+      "before": "== \"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\"",
+      "after": "== \"4537458b51b6ca936264aecea7cfe384b941d0d1\"",
+      "count": 1
+    },
+    {
+      "label": "creation tree8cbd",
+      "before": "and created[\"source_tree\"] == \"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\"",
+      "after": "and created[\"source_tree\"] == \"8cbd7b269c9c39df4ee3ffcefed8473060696184\"",
+      "count": 1
+    },
+    {
+      "label": "same Git argv/cwd/environment; own Popen drain/wait without implicit run kill",
+      "before": "def git(*arguments):\n    return subprocess.check_output(\n        [\"git\", \"--no-optional-locks\", *arguments], cwd=REPO, env=normal_env, text=True\n    ).strip()\n",
+      "after": "def git(*arguments):\n    command = [\"git\", \"--no-optional-locks\", *arguments]\n    process = subprocess.Popen(command, cwd=REPO, env=normal_env, stdout=subprocess.PIPE)\n    try:\n        stdout, _ = process.communicate()\n    except BaseException:\n        try:\n            process.communicate()\n        finally:\n            process.wait()\n        raise\n    process.wait()\n    if process.returncode:\n        raise subprocess.CalledProcessError(process.returncode, command, output=stdout)\n    return stdout.decode(\"utf-8\").strip()\n",
+      "count": 1
+    },
+    {
+      "label": "same step command/logs; own Popen wait without implicit run kill",
+      "before": "        result = subprocess.run(command, cwd=REPO, env=environment,\n                                stdout=stream, stderr=subprocess.STDOUT, check=False)\n    row = {\"name\": name, \"command\": command, \"exit_code\": result.returncode,",
+      "after": "        process = subprocess.Popen(command, cwd=REPO, env=environment,\n                                   stdout=stream, stderr=subprocess.STDOUT)\n        try:\n            returncode = process.wait()\n        except BaseException:\n            process.wait()\n            raise\n    row = {\"name\": name, \"command\": command, \"exit_code\": returncode,",
+      "count": 1
+    },
+    {
+      "label": "step return actual waited code",
+      "before": "    return result.returncode, log\n",
+      "after": "    return returncode, log\n",
+      "count": 1
+    },
+    {
+      "label": "same invocation-owned mount command; Popen wait no implicit run kill",
+      "before": "subprocess.run([\"/usr/bin/mount\", \"--bind\", str(p / \"source\"), str(p / \"bind\")], check=True)",
+      "after": "process = subprocess.Popen([\"/usr/bin/mount\", \"--bind\", str(p / \"source\"), str(p / \"bind\")])\ntry:\n    code = process.wait()\nexcept BaseException:\n    process.wait()\n    raise\nif code:\n    raise subprocess.CalledProcessError(code, process.args)",
+      "count": 1
+    },
+    {
+      "label": "same invocation-owned mount command; Popen wait no implicit run kill",
+      "before": "subprocess.run([\"/usr/bin/umount\", \"--\", str(p / \"bind\")], check=True)",
+      "after": "process = subprocess.Popen([\"/usr/bin/umount\", \"--\", str(p / \"bind\")])\ntry:\n    code = process.wait()\nexcept BaseException:\n    process.wait()\n    raise\nif code:\n    raise subprocess.CalledProcessError(code, process.args)",
+      "count": 1
+    },
+    {
+      "label": "bind original actual native201 child before Root eligibility",
+      "before": "def verify_v8():\n",
+      "after": "def verify_main_execution(main):\n    data = read_stable(MAIN / \"focused-native.json\")\n    require(digest_bytes(data) == BINDING[\"main_execution_sha256\"],\n            \"bound original native201 execution record differs\")\n    execution = json.loads(data)\n    cases = main.get(\"expected_owner_cases\")\n    require(isinstance(cases, list) and len(cases) == 201\n            and all(isinstance(row, list) and len(row) == 2\n                    and all(isinstance(value, str) and value for value in row) for row in cases)\n            and len({tuple(row) for row in cases}) == 201,\n            \"original native201 case inventory differs\")\n    packages = sorted({row[0] for row in cases})\n    require(packages == [\"codex-hepta-agentd\", \"codex-hepta-intelligence-eval\",\n                         \"codex-hepta-learning-artifacts\", \"codex-hepta-neuron\"],\n            \"original native201 package set differs\")\n    expression = \" | \".join(\"(package(=\" + package + \") & test(=\" + name + \"))\"\n                            for package, name in cases)\n    expected = [\"just\", \"test\", \"--locked\", \"--offline\",\n                *(arg for package in packages for arg in (\"-p\", package)),\n                \"--lib\", \"-E\", expression, \"--test-threads\", \"2\", \"--retries\", \"0\",\n                \"--no-tests\", \"fail\", \"--status-level\", \"pass\",\n                \"--success-output\", \"final\", \"--failure-output\", \"final\"]\n    require(execution.get(\"source_sha\") == execution.get(\"tested_sha\") == SOURCE\n            and execution.get(\"lane\") == \"source-head\"\n            and execution.get(\"working_directory\") == str(REPO / \"codex-rs\")\n            and execution.get(\"before\") == execution.get(\"after\")\n            and execution.get(\"before\", {}).get(\"commit\") == SOURCE\n            and execution.get(\"before\", {}).get(\"tree\") == TREE\n            and execution.get(\"before\", {}).get(\"dirty\") is False\n            and execution.get(\"command\") == expected\n            and execution.get(\"status\") == \"passed\"\n            and isinstance(execution.get(\"finished_at\"), str) and bool(execution[\"finished_at\"])\n            and all(type(execution.get(key)) is int and execution[key] == 0\n                    for key in (\"exit_code\", \"returncode\", \"command_exit_code\"))\n            and execution.get(\"timed_out\") is False\n            and execution.get(\"output_limit_exceeded\") is False,\n            \"the actual original native201 child did not pass this exact source and command\")\n    return data, execution\n\n\ndef verify_v8():\n",
+      "count": 1
+    },
+    {
+      "label": "main receipt full hash binding",
+      "before": "main_bytes = read_stable(MAIN / \"result.json\")\nmain = json.loads(main_bytes)\n",
+      "after": "main_bytes = read_stable(MAIN / \"result.json\")\nrequire(digest_bytes(main_bytes) == BINDING[\"main_native_sha256\"],\n        \"bound original native201 main receipt differs\")\nmain = json.loads(main_bytes)\n",
+      "count": 1
+    },
+    {
+      "label": "require actual main inner success before any root setup",
+      "before": "        \"original main preparation/terminal receipts incomplete\")\ntarget_stat = TARGET.lstat()\n",
+      "after": "        \"original main preparation/terminal receipts incomplete\")\nmain_execution_bytes, main_execution = verify_main_execution(main)\ntarget_stat = TARGET.lstat()\n",
+      "count": 1
+    },
+    {
+      "label": "record pinned actual main execution provenance",
+      "before": "    \"main_native_result_is_not_overridden\": True,\n",
+      "after": "    \"main_native_result_is_not_overridden\": True,\n    \"main_original_execution_record\": {\"path\": str(MAIN / \"focused-native.json\"),\n                                       \"sha256\": digest_bytes(main_execution_bytes),\n                                       \"status\": main_execution[\"status\"]},\n",
+      "count": 1
+    },
+    {
+      "label": "actual main evidence unchanged immediately before Root",
+      "before": "    require(identity() == initial and read_stable(MAIN / \"result.json\") == main_bytes,\n",
+      "after": "    require(identity() == initial and read_stable(MAIN / \"result.json\") == main_bytes\n            and read_stable(MAIN / \"focused-native.json\") == main_execution_bytes,\n",
+      "count": 1
+    },
+    {
+      "label": "actual main execution retained at final Root pass",
+      "before": "        and read_stable(MAIN / \"result.json\") == main_bytes\n",
+      "after": "        and read_stable(MAIN / \"result.json\") == main_bytes\n        and read_stable(MAIN / \"focused-native.json\") == main_execution_bytes\n",
+      "count": 1
+    },
+    {
+      "label": "accurate current native driver origin",
+      "before": "\"resource_values_and_path_prefix\": \"fixed original 8bf3881afa8c native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260\"",
+      "after": "\"resource_values_and_path_prefix\": \"actual frozen 8bf native-runner.py 7b38fb189736532092d88f59da6a71dd63498ae3; original resources unchanged\"",
+      "count": 1
+    }
+  ],
+  "diff_stats": {
+    "hunks": 35,
+    "removed": 41,
+    "added": 131
+  }
+}
