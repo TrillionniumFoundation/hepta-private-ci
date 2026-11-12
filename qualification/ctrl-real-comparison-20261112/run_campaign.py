@@ -36,8 +36,13 @@ def main():
     head = subprocess.check_output(
         ["git", "-C", str(code), "rev-parse", "HEAD"], text=True
     ).strip()
+    dirty = subprocess.check_output(
+        ["git", "-C", str(code), "status", "--porcelain=v1", "--untracked-files=all"],
+        text=True,
+    ).strip()
     if (
         head != args.expected_source
+        or dirty
         or pin(args.prior_freeze) != args.prior_freeze_sha256
     ):
         raise ValueError("Source checkout or retained prior input changed")
@@ -46,6 +51,7 @@ def main():
     plan = {
         "schema": "ctrl.real-development-campaign.v1",
         "source_sha": head,
+        "source_checkout_clean": True,
         "wrapper_sha256": pin(__file__),
         "prior_freeze_sha256": args.prior_freeze_sha256,
         "prior_incomplete_collection_retained": True,
