@@ -28,6 +28,8 @@ READ = AGENT + "circuit_original_evaluation_provider_read.rs"
 POLICY = AGENT + "circuit_task_source_policy.rs"
 SOURCE = AGENT + "circuit_task_source.rs"
 CURRENT = AGENT + "circuit_original_evaluation_cohort_readback.rs"
+PANEL_MEMBER = AGENT + "neuron_cell_evaluation_panel_member.rs"
+PANEL_BINDING = AGENT + "neuron_cell_evaluation_panel_binding.rs"
 EXPECTED = {
     "learning_original_evaluation_cohort_capture": (),
     "learning_original_evaluation_holdout_provider": (),
@@ -36,9 +38,9 @@ EXPECTED = {
     "learning_original_evaluation_cohort_readback_retain": (CORE,),
     "learning_original_evaluation_cohort_readback_after_release": (),
     "learning_original_evaluation_cohort_readback_cold": (),
-    "learning_original_evaluation_cohort_readback_current": (CORE,),
-    "learning_original_evaluation_cohort_member_binding": (),
-    "learning_original_evaluation_cohort_final_authentication": (),
+    "learning_original_evaluation_cohort_readback_current": (CORE, PANEL_MEMBER),
+    "learning_original_evaluation_cohort_member_binding": (PANEL_BINDING,),
+    "learning_original_evaluation_cohort_final_authentication": (PANEL_MEMBER,),
 }
 
 
@@ -75,7 +77,7 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             self.verifies(path, changed)
 
     def test_exact_cohort_capture_provider_and_original_policy_edges(self):
-        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE, CURRENT}
+        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE, CURRENT, PANEL_MEMBER, PANEL_BINDING}
         sources = {path: self.code((ROOT / path).read_text()) for path in paths}
         for identifier, expected in EXPECTED.items():
             with self.subTest(boundary=identifier):
