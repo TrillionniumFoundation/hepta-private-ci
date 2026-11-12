@@ -251,8 +251,10 @@ pub(super) fn authenticate_receipt(
     }
     verify_signed_actor_separation(&training, &selector, current)?;
     if let Some(original) = &context.evaluated {
-        for predecessor in original.original_receipt_predecessors(current)
-            .map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)? {
+        for predecessor in original
+            .original_receipt_predecessors(current)
+            .map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)?
+        {
             verify_signed_actor_separation(&predecessor, &selector, current)?;
         }
     }
@@ -261,6 +263,9 @@ pub(super) fn authenticate_receipt(
         receipt,
         attestation: signed,
         training_evidence: context.training_evidence.clone(),
-        evaluated: context.evaluated.as_ref().map(crate::OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
+        evaluated: context
+            .evaluated
+            .as_ref()
+            .map(crate::OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
     })
 }

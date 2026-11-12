@@ -221,7 +221,12 @@ pub(super) fn authenticate_receipt(
         .selected_bundle
         .digest()
         .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
-    let selected = &context.selection.receipts.last().ok_or(Error::Binding("original Selection predecessor"))?.observation;
+    let selected = &context
+        .selection
+        .receipts
+        .last()
+        .ok_or(Error::Binding("original Selection predecessor"))?
+        .observation;
     if !matches!(&receipt.observation,
         LearningIterationObservationV1::RetainedModelNextUse {
             retained_bundle, state_partition, checkpoint_digest, selection_digest,
@@ -268,8 +273,10 @@ pub(super) fn authenticate_receipt(
         verify_signed_actor_separation(predecessor, &observer, current)?;
     }
     if let Some(selection) = &context.evaluated {
-        for predecessor in selection.original_receipt_predecessors(current)
-            .map_err(crate::OriginalCircuitNextUseReceiptErrorV1::from)? {
+        for predecessor in selection
+            .original_receipt_predecessors(current)
+            .map_err(crate::OriginalCircuitNextUseReceiptErrorV1::from)?
+        {
             verify_signed_actor_separation(&predecessor, &observer, current)?;
         }
     }

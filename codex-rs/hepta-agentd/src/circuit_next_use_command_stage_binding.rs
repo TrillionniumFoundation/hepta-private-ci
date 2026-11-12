@@ -25,7 +25,8 @@ impl OriginalCircuitNextUseCommandClientV1 {
         origin: Origin,
     ) -> Result<Self, Error> {
         let started_at = now()?;
-        let original = selection.evaluated_receipt()
+        let original = selection
+            .evaluated_receipt()
             .map_err(|_| Error::Binding("actual original evaluated Selector response"))?;
         let original = match origin {
             Origin::Fresh => original,
@@ -35,25 +36,38 @@ impl OriginalCircuitNextUseCommandClientV1 {
         let mut actual_dataset = context.selection.clone();
         actual_dataset.head_digest = actual_dataset.receipts[2].predecessor;
         actual_dataset.receipts.truncate(2);
-        if context.initial()? != material.initial || &actual_dataset != dataset.snapshot()
+        if context.initial()? != material.initial
+            || &actual_dataset != dataset.snapshot()
             || context.scope != material.scope
             || context.verifier.trust_digest() != material.verifier.trust_digest()
             || context.verifier.scope_digest() != material.verifier.scope_digest()
-            || context.verifier.objective_digest() != material.verifier.objective_digest() {
-            return Err(Error::Binding("same original evaluated Dataset before NextUse"));
+            || context.verifier.objective_digest() != material.verifier.objective_digest()
+        {
+            return Err(Error::Binding(
+                "same original evaluated Dataset before NextUse",
+            ));
         }
         let binding = context.binding(started_at)?;
         peer.check_peer_lifetime()?;
-        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(dataset, material)
-            .map_err(|_| Error::Binding("same original evaluated Material before NextUse"))?;
+        let fresh = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            dataset, material,
+        )
+        .map_err(|_| Error::Binding("same original evaluated Material before NextUse"))?;
         require_clock(started_at, fresh)?;
         if context.binding(fresh)? != binding {
-            return Err(Error::Binding("unchanged full original evaluated C predecessors"));
+            return Err(Error::Binding(
+                "unchanged full original evaluated C predecessors",
+            ));
         }
         Ok(Self {
-            channel: Mutex::new(Some(Channel { peer, next_request_id: 1,
-                execution_requested: origin == Origin::Recovered })),
-            context, binding, retained: Mutex::new(None),
+            channel: Mutex::new(Some(Channel {
+                peer,
+                next_request_id: 1,
+                execution_requested: origin == Origin::Recovered,
+            })),
+            context,
+            binding,
+            retained: Mutex::new(None),
         })
     }
 

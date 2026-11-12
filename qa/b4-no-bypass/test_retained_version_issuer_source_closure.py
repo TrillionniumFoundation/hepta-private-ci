@@ -21,6 +21,8 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
+VERSION_STATE = AGENT + "circuit_retained_version_state.rs"
+PREPARED = AGENT + "circuit_retained_version_prepared.rs"
 WRAPPER = AGENT + "root_retained_version_issuer.rs"
 WORKER = AGENT + "circuit_retained_version_issuer.rs"
 HOST = AGENT + "circuit_retained_version_host.rs"
@@ -103,6 +105,9 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
         ))
         self.reject_each(HOST, "from_original_owners", (
             "final_use_issuer: AgentdUnixFinalUseGrantProvider",
+            "Self::from_original_profile(", "InitialVersionEvidence::TrainingNoUpdate",
+        ))
+        self.reject_each(HOST, "from_original_profile", (
             "task.require_completed_a(&inputs.completed)?",
             "RetainedVersionArtifactOwnerV1::new(",
             "AgentdUnixFinalUseGrantProvider::into_original_retained_version_issuer(",
@@ -151,7 +156,7 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
         self.rejects(WORKER, "require_not_cancelled", "cancelled.load(Ordering::Acquire)")
 
     def test_cold_and_unknown_never_reset_the_original_issuer(self):
-        self.reject_each(HOST, "recover_from_original_owners", (
+        self.reject_each(HOST, "recover_original_profile", (
             "RetainedVersionOriginV1::Recovered", "final_use_issuer: None",
         ))
         self.reject_each(HOST, "new", (
@@ -167,6 +172,9 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
         ):
             with self.subTest(injected=injected):
                 self.rejects_source(WORKER, source + "\nfn unsafe_reset() { " + injected + " }\n")
+        self.reject_each(HOST, "recover_from_original_owners", (
+            "Self::recover_original_profile(", "InitialVersionEvidence::TrainingNoUpdate",
+        ))
 
     def test_publication_and_c_runtime_keep_the_original_verifier_tail(self):
         self.reject_each(EFFECT, "publish_original_final_use", (
@@ -174,7 +182,7 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
             "state.final_use_issuer.is_some()",
             "signed.grant.binding != original.final_use_binding()",
             "self.publication_requested.swap(true, Ordering::AcqRel)",
-            "publish_and_retain_original_trainer(", "task\n                .install_original(published, cut, intent)",
+            ".block_on((*original).publish(signed))", "task\n                .install_original(published, cut, intent)",
             "self.final_use_outcome.store(\n                RetainedVersionFinalUseOutcomeV1::Published as u8,\n                Ordering::Release,\n            )",
         ))
         self.reject_each(EFFECT, "run_original_c", (
@@ -187,15 +195,24 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
             "pub(super) async fn publish_original_final_use(",
             "pub async fn publish_original_final_use(", 1,
         ))
+        self.reject_each(PREPARED, "publish", (
+            "PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(",
+            "PreparedOriginalCircuitEvaluatedRetentionV1::publish_and_retain_original_evidence(",
+            "Ok((task, trainer, None))", "Ok((task, trainer, Some(evaluator)))",
+        ))
 
     def test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback(self):
         self.rejects(SERVICE, "serve_original_ordinary",
                      "OriginalCircuitRetainedVersionHostV1::serve_original_final_use(")
         self.reject_each(SERVICE, "command_response", (
-            "self.read_original(&state)", "self.original_final_use_outcome()",
+            "self.read_original_recovery(&mut state)", "self.original_final_use_outcome()",
             "RetainedVersionFinalUseOutcomeV1::Denied", "wire::OriginalResult::FinalUseDenied",
             "RetainedVersionFinalUseOutcomeV1::Requested",
             "RetainedVersionFinalUseOutcomeV1::Uncertain",
+        ))
+        self.reject_each(VERSION_STATE, "read_original_recovery", (
+            "let before = self.read_original(state)?;",
+            "let after = self.read_original(state)?;",
         ))
 
     def test_no_new_key_policy_socket_or_resident_grant_authorizes_publication(self):

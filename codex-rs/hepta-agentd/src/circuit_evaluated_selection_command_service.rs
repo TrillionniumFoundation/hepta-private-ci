@@ -2,7 +2,8 @@
 //! command purpose. No client is cloned, reopened, signed or discovered here.
 
 use super::*;
-use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellQ24TrainingCommandClientV1};
+use crate::OriginalCellEvaluationCommandClientV1;
+use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
@@ -22,7 +23,8 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         trainer: OriginalCellQ24TrainingCommandClientV1,
         evaluator: OriginalCellEvaluationCommandClientV1,
     ) -> Result<Self, Error> {
-        let original = owner.original_evaluated_command_context()
+        let original = owner
+            .original_evaluated_command_context()
             .ok_or(Error::Binding("original evaluated Selector custody"))?;
         let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(original)?;
         live.require_original_evaluated_selection(original)
@@ -31,9 +33,12 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         let initial = context.initial()?;
         let binding = context.binding(now()?)?;
         Ok(Self {
-            owner: Mutex::new(owner), live,
+            owner: Mutex::new(owner),
+            live,
             predecessors: OriginalPredecessors::Evaluated { trainer, evaluator },
-            context, initial_head: initial.head_digest, binding,
+            context,
+            initial_head: initial.head_digest,
+            binding,
             execution_requested: AtomicBool::new(readback_only),
             runtime: Handle::try_current().map_err(|_| Error::Unavailable)?,
             connections: Arc::new(Semaphore::new(4)),
@@ -44,24 +49,39 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         &self,
         owner: &mut OriginalCircuitSelectionReceiptOwnerV1<W>,
         action: wire::Action,
-    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), OriginalCircuitSelectionReceiptErrorV1> {
+    ) -> Result<
+        (LearningIterationReceiptV1, SignedLearningEvidenceV1),
+        OriginalCircuitSelectionReceiptErrorV1,
+    > {
         match &self.predecessors {
             OriginalPredecessors::Legacy(trainer) => {
                 let source = OriginalCircuitSelectionRemoteSourcesV1 {
-                    snapshot: &self.context.training, live: &self.live, trainer,
+                    snapshot: &self.context.training,
+                    live: &self.live,
+                    trainer,
                 };
                 match action {
                     wire::Action::Execute => self.runtime.block_on(
-                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(owner, source)),
+                        OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(
+                            owner, source,
+                        ),
+                    ),
                     wire::Action::Readback => self.runtime.block_on(
-                        OriginalCircuitSelectionReceiptOwnerV1::readback_remote(owner, source)),
+                        OriginalCircuitSelectionReceiptOwnerV1::readback_remote(owner, source),
+                    ),
                 }
             }
             OriginalPredecessors::Evaluated { trainer, evaluator } => {
                 self.context.evaluated.as_ref().ok_or(
-                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding("original evaluated Selector command profile"))?;
+                    crate::learning_owner_journal::LearningOriginalOwnerErrorV1::Binding(
+                        "original evaluated Selector command profile",
+                    ),
+                )?;
                 let source = OriginalCircuitEvaluatedSelectionRemoteSourcesV1 {
-                    snapshot: &self.context.training, live: &self.live, trainer, evaluator,
+                    snapshot: &self.context.training,
+                    live: &self.live,
+                    trainer,
+                    evaluator,
                 };
                 let original = match action {
                     wire::Action::Execute => self.runtime.block_on(

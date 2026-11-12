@@ -209,7 +209,8 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
                 "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
                 "dataset, material",
             ):
-                self.rejects(path, "fn bind_original_stage_channel(", marker)
+                function = "fn bind_profile(" if path == READINESS else "fn bind_original_stage_channel("
+                self.rejects(path, function, marker)
             for addition in (
                 "fn reopen() { original_owner_command_channel_v1(); }",
                 "fn reopen() { HostAuthorityPeerChannel::from_stream(); }",
@@ -227,6 +228,7 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             ("fn ensure_readiness(", "self\n                .readiness_initial\n                .take()"),
         ):
             self.rejects(STATE, function, marker)
+        self.rejects(READINESS, "fn bind_original_stage_channel(", "ReadProfile::TrainingNoUpdate(context)")
 
     def test_readiness_only_original_unresolved_publication_remains_pending(self):
         for marker in (
@@ -242,28 +244,30 @@ class OriginalNoUpdateStageClosureTests(unittest.TestCase):
             self.rejects(READINESS_OWNER, "fn read_original_readiness(", marker)
         self.rejects(READINESS_OWNER, "fn serve_readiness_channel(", "for request_id in 1..=128")
         self.rejects(READINESS_OWNER, "fn readiness_response(", "bytes.is_empty() || bytes.len() > 16_384")
-        self.rejects(READINESS, "fn bind_original_stage_channel(", "original::context_binding(&context, started_at)?")
+        self.rejects(READINESS, "fn bind_profile(", "context.binding(started_at)?")
+        self.rejects(READINESS, "fn bind_original_stage_channel(", "ReadProfile::TrainingNoUpdate(context)")
 
     def test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity(self):
         for marker in (
             ".take()\n            .ok_or(Error::Unavailable)?",
             "!(1..=128).contains(&channel.next_request_id)",
             "channel.peer.request(&bytes)?",
-            "response\n            .request\n            .require_context(",
+            "response\n            .request\n            .require_profile(",
             "channel.peer.check_peer_lifetime()?",
             "let fresh = now()?",
-            "fresh < started_at || original::context_binding(&self.context, fresh)? != self.binding",
+            "fresh < started_at || self.context.binding(fresh)? != self.binding",
             "retained\n                .as_ref()\n                .is_some_and(|prior| current.as_ref() != Some(prior))",
             "*retained = Some(ready.clone())",
         ):
             self.rejects(READINESS, "fn read_current(", marker)
         self.rejects(READINESS, "fn require_context(", "self.purpose != PURPOSE")
         for marker in (
-            "request.require_context(self.context.legacy()?, self.binding, request_id)?",
+            "request.require_profile(&self.context, self.binding, request_id)?",
             "self.read_original_readiness()?",
-            "fresh < started_at\n            || wire::context_binding(self.context.legacy()?, fresh)? != self.binding",
+            "fresh < started_at || self.context.binding(fresh)? != self.binding",
         ):
             self.rejects(READINESS_OWNER, "fn readiness_response(", marker)
+        self.rejects(READINESS, "fn require_profile(", "self.require_context(legacy, binding, request_id)")
 
     def test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added(self):
         self.rejects(CORE, "fn prepare_proposal<'a>", "Err(Error::OwnerUnavailable(")

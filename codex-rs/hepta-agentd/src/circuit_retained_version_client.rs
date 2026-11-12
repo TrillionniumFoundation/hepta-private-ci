@@ -16,10 +16,10 @@ use super::RetainedVersionOriginV1;
 use super::context::OriginalVersionCut;
 use super::now;
 use super::wire;
+use crate::OriginalCellEvaluationCommandReceiptV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
-use crate::OriginalCellEvaluationCommandReceiptV1;
 
 struct OriginalVersionChannel {
     peer: HostAuthorityPeerChannel,
@@ -100,8 +100,13 @@ impl OriginalCircuitRetainedVersionClientV1 {
         evaluation: &OriginalCellEvaluationCommandReceiptV1,
     ) -> Result<Self, Error> {
         let started = now()?;
-        let cut = OriginalVersionCut::from_original_evaluated(material.clone(), dataset.clone(),
-            training, evaluation, RetainedVersionOriginV1::Fresh)?;
+        let cut = OriginalVersionCut::from_original_evaluated(
+            material.clone(),
+            dataset.clone(),
+            training,
+            evaluation,
+            RetainedVersionOriginV1::Fresh,
+        )?;
         Self::bind_cut(peer, cut, RetainedVersionOriginV1::Fresh, started)
     }
 
@@ -113,8 +118,13 @@ impl OriginalCircuitRetainedVersionClientV1 {
         evaluation: &OriginalCellEvaluationCommandReceiptV1,
     ) -> Result<Self, Error> {
         let started = now()?;
-        let cut = OriginalVersionCut::from_original_evaluated(material.clone(), dataset.clone(),
-            training, evaluation, RetainedVersionOriginV1::Recovered)?;
+        let cut = OriginalVersionCut::from_original_evaluated(
+            material.clone(),
+            dataset.clone(),
+            training,
+            evaluation,
+            RetainedVersionOriginV1::Recovered,
+        )?;
         Self::bind_cut(peer, cut, RetainedVersionOriginV1::Recovered, started)
     }
 

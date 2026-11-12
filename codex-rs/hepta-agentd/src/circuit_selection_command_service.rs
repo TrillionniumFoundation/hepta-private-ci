@@ -209,7 +209,14 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
                 Err(_) => return Ok(wire::CommandResult::Busy),
             };
             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
-            self.observe_original(original, if execute { wire::Action::Execute } else { wire::Action::Readback })
+            self.observe_original(
+                original,
+                if execute {
+                    wire::Action::Execute
+                } else {
+                    wire::Action::Readback
+                },
+            )
         };
         match completed {
             Ok((receipt, signed)) => wire::encode_completed(&self.context, receipt, signed, now()?),

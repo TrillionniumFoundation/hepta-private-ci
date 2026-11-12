@@ -139,7 +139,9 @@ impl RetainedVersionPurposeV1 {
     fn operation(self) -> &'static str {
         match self {
             Self::TrainingNoUpdate => wire::OPERATION,
-            Self::EvaluatedNoUpdate => "runtime.learning.original-evaluated-retained-version.command.v1",
+            Self::EvaluatedNoUpdate => {
+                "runtime.learning.original-evaluated-retained-version.command.v1"
+            }
         }
     }
 }

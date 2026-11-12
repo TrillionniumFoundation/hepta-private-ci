@@ -206,7 +206,7 @@ class ResidentEvaluatedRetentionSourceClosureTests(unittest.TestCase):
         self.rejects(STAGES, "fn require_stage(",
                      "matches!(self, Self::Candidate(_))\n                    && snapshot.training_no_update_v2().is_none()")
         self.rejects(CANDIDATE, "fn execute_stage<'a>",
-                     "matches!(stage, Stage::Selection | Stage::NextUse)")
+                     "if matches!(stage, Stage::Selection | Stage::NextUse)\n                    && snapshot.training_no_update_v2().is_none()")
         self.rejects(CANDIDATE, "fn execute_stage<'a>",
                      "snapshot.training_no_update_v2().is_none()")
         boundaries = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
@@ -217,6 +217,10 @@ class ResidentEvaluatedRetentionSourceClosureTests(unittest.TestCase):
         ):
             self.assertEqual(boundaries[identifier].product_callers, ())
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
+        self.rejects(STAGES, "fn require_stage(",
+                     "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(")
+        self.rejects(CANDIDATE, "fn execute_stage<'a>",
+                     "self.execute_evaluated_retained_stage(snapshot, stage).await")
 
 
 if __name__ == "__main__":

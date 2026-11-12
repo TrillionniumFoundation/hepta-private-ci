@@ -39,15 +39,27 @@ impl OriginalCircuitRetainedVersionHostV1 {
         cut.require_fresh(super::super::now()?, PublicationAccess::NewWork)?;
         let trainer = state.trainer.take().ok_or(Error::CommitUncertain)?;
         let prepared = match &cut.evaluated {
-            None => RetainedVersionPreparedV1::TrainingNoUpdate(self.runtime.block_on(
-                crate::prepare_original_circuit_retained_publication_v1(
-                    cut.original_context(), trainer, *inputs)).map_err(|_| Error::CommitUncertain)?),
+            None => RetainedVersionPreparedV1::TrainingNoUpdate(
+                self.runtime
+                    .block_on(crate::prepare_original_circuit_retained_publication_v1(
+                        cut.original_context(),
+                        trainer,
+                        *inputs,
+                    ))
+                    .map_err(|_| Error::CommitUncertain)?,
+            ),
             Some(context) => {
                 let evaluator = state.evaluator.take().ok_or(Error::CommitUncertain)?;
-                RetainedVersionPreparedV1::EvaluatedNoUpdate(self.runtime.block_on(
-                    crate::prepare_original_circuit_evaluated_retention_v1(
-                        context.clone_for_original_receipt(), trainer, evaluator, *inputs))
-                    .map_err(|_| Error::CommitUncertain)?)
+                RetainedVersionPreparedV1::EvaluatedNoUpdate(
+                    self.runtime
+                        .block_on(crate::prepare_original_circuit_evaluated_retention_v1(
+                            context.clone_for_original_receipt(),
+                            trainer,
+                            evaluator,
+                            *inputs,
+                        ))
+                        .map_err(|_| Error::CommitUncertain)?,
+                )
             }
         };
         state.phase = Some(RetainedVersionHostPhaseV1::Prepared {
@@ -152,9 +164,10 @@ impl OriginalCircuitRetainedVersionHostV1 {
             };
             task.require_completed_a(original.completed())?;
             require_not_cancelled(&cancellation)?;
-            let (published, trainer, evaluator) = self.runtime.block_on(
-                (*original).publish(signed),
-            ).map_err(|_| Error::CommitUncertain)?;
+            let (published, trainer, evaluator) = self
+                .runtime
+                .block_on((*original).publish(signed))
+                .map_err(|_| Error::CommitUncertain)?;
             let cut = state.cut.as_ref().ok_or(Error::CommitUncertain)?;
             let intent = match &published.0.publication {
                 crate::circuit_feature_current::Publication::Update { original, .. } => {

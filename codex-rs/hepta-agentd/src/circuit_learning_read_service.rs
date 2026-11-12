@@ -134,7 +134,9 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         if !matches!(&self.context, ReadProfile::Evaluated(_))
             || self.context.mode()? != wire::Mode::Selection
         {
-            return Err(Error::Binding("evaluated retained Version Selection-only read purpose"));
+            return Err(Error::Binding(
+                "evaluated retained Version Selection-only read purpose",
+            ));
         }
         self.serve_channel(channel)
     }

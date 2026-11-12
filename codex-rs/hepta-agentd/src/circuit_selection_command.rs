@@ -380,7 +380,9 @@ impl OriginalCircuitSelectionCommandClientV1 {
             return Err(Error::DeadlineExceeded);
         }
         if let Some(context) = &self.context.evaluated {
-            context.require_new_original_receipt(current).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+            context
+                .require_new_original_receipt(current)
+                .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
         }
         self.exchange(wire::Action::Execute).await
     }

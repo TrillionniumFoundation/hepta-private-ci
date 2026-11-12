@@ -33,9 +33,9 @@ use super::LearningIterationEvidencePeerV1;
 use super::wire as evidence_wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationCheckpointErrorV1;
+use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 use crate::OriginalCircuitNextUseReceiptErrorV1;
 use crate::OriginalCircuitSelectionCommandReceiptV1;
-use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
@@ -407,7 +407,9 @@ impl OriginalCircuitNextUseCommandClientV1 {
             return Err(Error::DeadlineExceeded);
         }
         if let Some(selection) = &self.context.evaluated {
-            selection.original_context().require_new_original_receipt(current)
+            selection
+                .original_context()
+                .require_new_original_receipt(current)
                 .map_err(OriginalCircuitNextUseReceiptErrorV1::from)?;
         }
         self.exchange(wire::Action::Execute).await

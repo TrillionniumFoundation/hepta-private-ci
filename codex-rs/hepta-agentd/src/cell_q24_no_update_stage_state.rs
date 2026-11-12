@@ -58,7 +58,8 @@ impl Continuation {
         owners: &Owners,
         original: &crate::OriginalCircuitEvaluatedRetentionContextV1,
     ) -> Result<EvaluatedRetainedChannels, Error> {
-        original.original_receipt_predecessors(auth::now()?)
+        original
+            .original_receipt_predecessors(auth::now()?)
             .map_err(|_| Error::WrongScope)?;
         let snapshot = original.snapshot();
         let (scope, verifier, training_signature) = original.receipt_configuration();
@@ -69,17 +70,27 @@ impl Continuation {
             || verifier.scope_digest() != owners.material.verifier.scope_digest()
             || verifier.objective_digest() != owners.material.verifier.objective_digest()
             || self.records.len() != 3
-            || self.records.iter().zip(&snapshot.receipts).any(|(actual, expected)| &actual.0 != expected)
+            || self
+                .records
+                .iter()
+                .zip(&snapshot.receipts)
+                .any(|(actual, expected)| &actual.0 != expected)
             || self.records[2].1 != training_signature
-            || self.version.is_some() || self.selector.is_some()
-            || self.next_use.is_some() || self.readiness.is_some() {
+            || self.version.is_some()
+            || self.selector.is_some()
+            || self.next_use.is_some()
+            || self.readiness.is_some()
+        {
             return Err(Error::WrongScope);
         }
         Ok(EvaluatedRetainedChannels {
             version: self.version_initial.take().ok_or(Error::CommitUncertain)?,
             selector: self.selector_initial.take().ok_or(Error::CommitUncertain)?,
             next_use: self.next_use_initial.take().ok_or(Error::CommitUncertain)?,
-            readiness: self.readiness_initial.take().ok_or(Error::CommitUncertain)?,
+            readiness: self
+                .readiness_initial
+                .take()
+                .ok_or(Error::CommitUncertain)?,
         })
     }
 

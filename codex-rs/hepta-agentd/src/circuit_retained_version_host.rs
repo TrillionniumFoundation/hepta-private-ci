@@ -21,12 +21,10 @@ use tokio::sync::Notify;
 use tokio::sync::Semaphore;
 
 use super::super::OriginalCircuitRetainedPublicationInputsV1;
-use super::RetainedVersionPurposeV1;
-use crate::OriginalCellEvaluationCommandConnectionV1;
-use crate::OriginalCellEvaluationCommandClientV1;
 use super::Error;
 use super::OriginalCircuitRetainedTaskInputsV1;
 use super::RetainedVersionOriginV1;
+use super::RetainedVersionPurposeV1;
 use super::c_task::RetainedVersionInstalledTaskV1;
 use super::context::OriginalVersionCut;
 use crate::AgentdConfig;
@@ -34,6 +32,8 @@ use crate::AgentdIdentity;
 use crate::AgentdUnixFinalUseGrantProvider;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::NeuronGenerationCurrentOwnerV1;
+use crate::OriginalCellEvaluationCommandClientV1;
+use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
@@ -188,8 +188,17 @@ impl OriginalCircuitRetainedVersionHostV1 {
         final_use_issuer: AgentdUnixFinalUseGrantProvider,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::from_original_profile(material, dataset, trainer, InitialVersionEvidence::TrainingNoUpdate,
-            inputs, task, artifact_checkpoint, final_use_issuer, lifetime)
+        Self::from_original_profile(
+            material,
+            dataset,
+            trainer,
+            InitialVersionEvidence::TrainingNoUpdate,
+            inputs,
+            task,
+            artifact_checkpoint,
+            final_use_issuer,
+            lifetime,
+        )
     }
 
     /// The separate evaluated purpose requires an original E connection held
@@ -205,9 +214,17 @@ impl OriginalCircuitRetainedVersionHostV1 {
         final_use_issuer: AgentdUnixFinalUseGrantProvider,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::from_original_profile(material, dataset, trainer,
-            InitialVersionEvidence::EvaluatedNoUpdate(evaluator), inputs, task,
-            artifact_checkpoint, final_use_issuer, lifetime)
+        Self::from_original_profile(
+            material,
+            dataset,
+            trainer,
+            InitialVersionEvidence::EvaluatedNoUpdate(evaluator),
+            inputs,
+            task,
+            artifact_checkpoint,
+            final_use_issuer,
+            lifetime,
+        )
     }
 
     fn from_original_profile(
@@ -275,8 +292,14 @@ impl OriginalCircuitRetainedVersionHostV1 {
         original: OriginalCircuitRetainedVersionRecoveryV1,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::recover_original_profile(material, dataset, trainer,
-            InitialVersionEvidence::TrainingNoUpdate, original, lifetime)
+        Self::recover_original_profile(
+            material,
+            dataset,
+            trainer,
+            InitialVersionEvidence::TrainingNoUpdate,
+            original,
+            lifetime,
+        )
     }
 
     /// Read-only cold recovery of a complete four-cut evaluated NoUpdate.
@@ -289,8 +312,14 @@ impl OriginalCircuitRetainedVersionHostV1 {
         original: OriginalCircuitRetainedVersionRecoveryV1,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::recover_original_profile(material, dataset, trainer,
-            InitialVersionEvidence::EvaluatedNoUpdate(evaluator), original, lifetime)
+        Self::recover_original_profile(
+            material,
+            dataset,
+            trainer,
+            InitialVersionEvidence::EvaluatedNoUpdate(evaluator),
+            original,
+            lifetime,
+        )
     }
 
     fn recover_original_profile(

@@ -1,18 +1,28 @@
 //! Private custody of the original publication preparation. Every variant is
 //! consumed once, retaining the same original finite predecessor connections.
 
-use codex_hepta_contracts::{FinalUseBinding, SignedFinalUseGrant};
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
 use super::super::Error;
-use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellQ24TrainingCommandClientV1};
-use crate::{PreparedOriginalCircuitEvaluatedRetentionV1, PreparedOriginalCircuitRetainedPublicationV1};
+use crate::OriginalCellEvaluationCommandClientV1;
+use crate::OriginalCellQ24TrainingCommandClientV1;
+use crate::PreparedOriginalCircuitEvaluatedRetentionV1;
+use crate::PreparedOriginalCircuitRetainedPublicationV1;
 use crate::PublishedCircuitFeatureTaskV1;
 
 pub(super) enum RetainedVersionPreparedV1 {
-    TrainingNoUpdate(PreparedOriginalCircuitRetainedPublicationV1<FileAnchorWitnessStore, FileAnchorWitnessStore>),
-    EvaluatedNoUpdate(PreparedOriginalCircuitEvaluatedRetentionV1<FileAnchorWitnessStore, FileAnchorWitnessStore>),
+    TrainingNoUpdate(
+        PreparedOriginalCircuitRetainedPublicationV1<
+            FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
+        >,
+    ),
+    EvaluatedNoUpdate(
+        PreparedOriginalCircuitEvaluatedRetentionV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+    ),
 }
 
 impl RetainedVersionPreparedV1 {
@@ -54,8 +64,14 @@ impl RetainedVersionPreparedV1 {
     pub(super) async fn publish(
         self,
         signed: SignedFinalUseGrant,
-    ) -> Result<(PublishedCircuitFeatureTaskV1, OriginalCellQ24TrainingCommandClientV1,
-        Option<OriginalCellEvaluationCommandClientV1>), Error> {
+    ) -> Result<
+        (
+            PublishedCircuitFeatureTaskV1,
+            OriginalCellQ24TrainingCommandClientV1,
+            Option<OriginalCellEvaluationCommandClientV1>,
+        ),
+        Error,
+    > {
         match self {
             Self::TrainingNoUpdate(original) => {
                 let (task, trainer) = PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(

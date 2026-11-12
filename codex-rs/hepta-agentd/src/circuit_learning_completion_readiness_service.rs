@@ -12,9 +12,9 @@ use codex_hepta_neuron::AnchorWitnessStore;
 use super::super::readiness;
 use super::Error;
 use super::OriginalCircuitLearningReadOwnerV1;
+use super::ReadProfile;
 use super::Readback;
 use super::now;
-use super::ReadProfile;
 use super::require_timing;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
@@ -40,7 +40,14 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         if wire::mode(self.context.legacy()?)? != wire::Mode::NextUse {
             return Err(Error::Binding("only original C completion readiness"));
         }
-        self.serve_completion_profile(stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime)
+        self.serve_completion_profile(
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
     }
 
     /// A separate evaluated five-cut purpose over the existing original C.
@@ -58,9 +65,18 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         if !matches!(&self.context, ReadProfile::Evaluated(_))
             || self.context.mode()? != wire::Mode::NextUse
         {
-            return Err(Error::Binding("only original evaluated C completion readiness"));
+            return Err(Error::Binding(
+                "only original evaluated C completion readiness",
+            ));
         }
-        self.serve_completion_profile(stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime)
+        self.serve_completion_profile(
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
     }
 
     fn serve_completion_profile(
@@ -121,9 +137,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         }
         let current = self.read_original_readiness()?;
         let fresh = now()?;
-        if fresh < started_at
-            || self.context.binding(fresh)? != self.binding
-        {
+        if fresh < started_at || self.context.binding(fresh)? != self.binding {
             return Err(Error::Binding("readiness window after original owner I/O"));
         }
         let result = match current {

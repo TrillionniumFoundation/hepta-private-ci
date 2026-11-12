@@ -2,9 +2,9 @@
 //! Only same-process transport admission is a fixture; binding later consumes
 //! the production Connection and its original monotonic channel lifetime.
 
-use super::*;
-use super::super::OriginalCellEvaluationCommandConnectionV1;
 use super::super::Origin;
+use super::super::OriginalCellEvaluationCommandConnectionV1;
+use super::*;
 
 impl OriginalCellEvaluationHostV1 {
     pub(crate) fn fixture_original_readback_connection(
@@ -39,13 +39,15 @@ impl OriginalCellEvaluationHostV1 {
                         original_error = Some(error);
                         HostIssuerTransportError::InvalidRequest
                     })?;
-                    owner.fixture_command_response(bytes, request_id).map_err(|error| {
-                        original_error = Some(error.into());
-                        HostIssuerTransportError::InvalidRequest
-                    })
+                    owner
+                        .fixture_command_response(bytes, request_id)
+                        .map_err(|error| {
+                            original_error = Some(error.into());
+                            HostIssuerTransportError::InvalidRequest
+                        })
                 });
                 match exchanged {
-                    Ok(true) => {},
+                    Ok(true) => {}
                     Ok(false) => return Ok(request_id - 1),
                     Err(error) => return Err(original_error.unwrap_or_else(|| error.into())),
                 }

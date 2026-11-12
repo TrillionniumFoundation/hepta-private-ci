@@ -136,18 +136,24 @@ impl OriginalCircuitRetainedVersionHostV1 {
             channel.check_peer_lifetime()?;
             let reader = {
                 match self.state.try_lock() {
-                    Ok(state) if self.original_final_use_outcome() == RetainedVersionFinalUseOutcomeV1::Published => {
+                    Ok(state)
+                        if self.original_final_use_outcome()
+                            == RetainedVersionFinalUseOutcomeV1::Published =>
+                    {
                         if let Some(reader) = state.selection_reader.as_ref() {
                             // Admission of this connection still requires the
                             // held full Material/D/T/B windows. A task reader's
                             // own T/B pins do not replace the Material freeze.
-                            state.cut.as_ref().ok_or(Error::Unavailable)?
+                            state
+                                .cut
+                                .as_ref()
+                                .ok_or(Error::Unavailable)?
                                 .require_fresh(super::super::now()?, PublicationAccess::Readback)?;
                             Some(Arc::clone(reader))
                         } else {
                             None
                         }
-                    },
+                    }
                     Ok(_) => None,
                     Err(std::sync::TryLockError::WouldBlock) => None,
                     Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),

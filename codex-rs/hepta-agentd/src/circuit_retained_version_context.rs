@@ -7,13 +7,13 @@ use super::super::context::PublicationAccess;
 use super::Error;
 use super::RetainedVersionOriginV1;
 use super::RetainedVersionPurposeV1;
-use crate::OriginalCircuitEvaluatedRetentionContextV1;
-use crate::OriginalCellEvaluationCommandReceiptV1;
 use super::now;
 use super::require_clock;
+use crate::OriginalCellEvaluationCommandReceiptV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
+use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 
 pub(super) struct OriginalVersionCut {
@@ -88,12 +88,26 @@ impl OriginalVersionCut {
         origin: RetainedVersionOriginV1,
     ) -> Result<Self, Error> {
         let started = now()?;
-        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(&dataset, &material)?;
+        OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+            &dataset, &material,
+        )?;
         let context = match origin {
-            RetainedVersionOriginV1::Fresh => OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
-                material.scope.clone(), material.verifier.clone(), training, evaluation)?,
-            RetainedVersionOriginV1::Recovered => OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
-                material.scope.clone(), material.verifier.clone(), training, evaluation)?,
+            RetainedVersionOriginV1::Fresh => {
+                OriginalCircuitEvaluatedRetentionContextV1::from_original_evaluation(
+                    material.scope.clone(),
+                    material.verifier.clone(),
+                    training,
+                    evaluation,
+                )?
+            }
+            RetainedVersionOriginV1::Recovered => {
+                OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
+                    material.scope.clone(),
+                    material.verifier.clone(),
+                    training,
+                    evaluation,
+                )?
+            }
         };
         let (initial_binding, fresh) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
@@ -123,7 +137,9 @@ impl OriginalVersionCut {
     }
 
     pub(super) fn coordinator(
-        &self, at: u64, access: PublicationAccess,
+        &self,
+        at: u64,
+        access: PublicationAccess,
     ) -> Result<LearningIterationCoordinatorV1, Error> {
         match &self.evaluated {
             Some(context) => {
@@ -174,8 +190,12 @@ impl OriginalVersionCut {
             signatures.extend_from_slice(&context.evaluation_attestation().signature);
         }
         let domain: &[u8] = match self.purpose() {
-            RetainedVersionPurposeV1::TrainingNoUpdate => b"hepta.agentd.original-retained-version.command.v1\0",
-            RetainedVersionPurposeV1::EvaluatedNoUpdate => b"hepta.agentd.original-evaluated-retained-version.command.v1\0",
+            RetainedVersionPurposeV1::TrainingNoUpdate => {
+                b"hepta.agentd.original-retained-version.command.v1\0"
+            }
+            RetainedVersionPurposeV1::EvaluatedNoUpdate => {
+                b"hepta.agentd.original-evaluated-retained-version.command.v1\0"
+            }
         };
         Ok(Digest32::of_parts(&[
             domain,
@@ -221,7 +241,10 @@ impl OriginalVersionCut {
             material: self.material.clone(),
             dataset: self.dataset.clone(),
             training: self.original_context(),
-            evaluated: self.evaluated.as_ref().map(OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
+            evaluated: self
+                .evaluated
+                .as_ref()
+                .map(OriginalCircuitEvaluatedRetentionContextV1::clone_for_original_receipt),
             binding: self.binding,
             initial_binding: self.initial_binding,
         }

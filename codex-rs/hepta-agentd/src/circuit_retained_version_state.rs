@@ -4,10 +4,9 @@ use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 
 use super::super::super::context::PublicationAccess;
 use super::super::Error;
-use super::super::RetainedVersionPurposeV1;
-use super::super::RetainedVersionOriginV1;
-use crate::{OriginalCellEvaluationCommandClientV1, OriginalCellEvaluationCommandConnectionV1};
 use super::super::OriginalCircuitRetainedVersionReadbackV1;
+use super::super::RetainedVersionOriginV1;
+use super::super::RetainedVersionPurposeV1;
 use super::super::context::OriginalVersionCut;
 use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionHostPhaseV1;
@@ -15,6 +14,8 @@ use super::RetainedVersionHostStateV1;
 use super::artifact;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::NeuronGenerationUpdateReadbackV1;
+use crate::OriginalCellEvaluationCommandClientV1;
+use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCellQ24TrainingCommandConnectionV1;
@@ -47,17 +48,34 @@ impl OriginalCircuitRetainedVersionHostV1 {
             .block_on(OriginalCellQ24TrainingCommandClientV1::readback(&trainer))?;
         let (cut, evaluator) = match self.purpose {
             RetainedVersionPurposeV1::TrainingNoUpdate => (
-                OriginalVersionCut::from_original(self.material.clone(), dataset, &training, self.origin)?,
+                OriginalVersionCut::from_original(
+                    self.material.clone(),
+                    dataset,
+                    &training,
+                    self.origin,
+                )?,
                 None,
             ),
             RetainedVersionPurposeV1::EvaluatedNoUpdate => {
-                let initial = state.initial_evaluator.take().ok_or(Error::ReadbackRequired)?;
+                let initial = state
+                    .initial_evaluator
+                    .take()
+                    .ok_or(Error::ReadbackRequired)?;
                 let evaluator = OriginalCellEvaluationCommandConnectionV1::bind_original_training(
-                    initial, dataset.snapshot().clone(), &training)?;
-                let evaluation = self.runtime.block_on(
-                    OriginalCellEvaluationCommandClientV1::readback(&evaluator))?;
+                    initial,
+                    dataset.snapshot().clone(),
+                    &training,
+                )?;
+                let evaluation = self
+                    .runtime
+                    .block_on(OriginalCellEvaluationCommandClientV1::readback(&evaluator))?;
                 let cut = OriginalVersionCut::from_original_evaluated(
-                    self.material.clone(), dataset, &training, &evaluation, self.origin)?;
+                    self.material.clone(),
+                    dataset,
+                    &training,
+                    &evaluation,
+                    self.origin,
+                )?;
                 (cut, Some(evaluator))
             }
         };
@@ -95,13 +113,18 @@ impl OriginalCircuitRetainedVersionHostV1 {
         let before = self.read_original(state)?;
         let reader = match retained_reader {
             Some(reader) => reader,
-            None => state.build_original_selection_reader()?.ok_or(Error::ReadbackRequired)?,
+            None => state
+                .build_original_selection_reader()?
+                .ok_or(Error::ReadbackRequired)?,
         };
         let after = self.read_original(state)?;
         if before != after || after.publication().is_none() {
             return Err(Error::CommitUncertain);
         }
-        state.cut.as_ref().ok_or(Error::Unavailable)?
+        state
+            .cut
+            .as_ref()
+            .ok_or(Error::Unavailable)?
             .require_fresh(super::super::now()?, PublicationAccess::Readback)?;
         self.require_lifetime()?;
         state.selection_reader = Some(reader);
@@ -146,12 +169,19 @@ impl RetainedVersionHostStateV1 {
         Ok(())
     }
 
-    fn build_original_selection_reader(&self) -> Result<Option<std::sync::Arc<
-        crate::OriginalCircuitLearningReadOwnerV1<
-            codex_hepta_neuron::FileAnchorWitnessStore,
-            codex_hepta_neuron::FileAnchorWitnessStore,
+    fn build_original_selection_reader(
+        &self,
+    ) -> Result<
+        Option<
+            std::sync::Arc<
+                crate::OriginalCircuitLearningReadOwnerV1<
+                    codex_hepta_neuron::FileAnchorWitnessStore,
+                    codex_hepta_neuron::FileAnchorWitnessStore,
+                >,
+            >,
         >,
-    >>, Error> {
+        Error,
+    > {
         let original = match self.phase.as_ref() {
             Some(
                 RetainedVersionHostPhaseV1::Installed { original, .. }
@@ -163,20 +193,36 @@ impl RetainedVersionHostStateV1 {
         let reader = match &cut.evaluated {
             None => {
                 let context = crate::OriginalCircuitLearningReadContextV1 {
-                    prefix: cut.training.training.clone(), scope: cut.training.scope.clone(),
+                    prefix: cut.training.training.clone(),
+                    scope: cut.training.scope.clone(),
                     verifier: cut.training.verifier.clone(),
-                    training_evidence: cut.training.training_evidence.clone(), selection_evidence: None,
+                    training_evidence: cut.training.training_evidence.clone(),
+                    selection_evidence: None,
                 };
                 crate::OriginalCircuitLearningReadOwnerV1::from_original_owners(
-                    original.cell.clone(), original.source.as_ref().clone(), original.identity.clone(), context)
+                    original.cell.clone(),
+                    original.source.as_ref().clone(),
+                    original.identity.clone(),
+                    context,
+                )
             }
             Some(evaluated) => {
-                let context = crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(evaluated.clone_for_original_receipt())
-                    .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
+                let context =
+                    crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(
+                        evaluated.clone_for_original_receipt(),
+                    )
+                    .map_err(|error| {
+                        Error::Owner(crate::AgentdError::Invalid(error.to_string()))
+                    })?;
                 crate::OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(
-                    original.cell.clone(), original.source.as_ref().clone(), original.identity.clone(), context)
+                    original.cell.clone(),
+                    original.source.as_ref().clone(),
+                    original.identity.clone(),
+                    context,
+                )
             }
-        }.map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
+        }
+        .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())))?;
         Ok(Some(std::sync::Arc::new(reader)))
     }
 
@@ -189,7 +235,9 @@ impl RetainedVersionHostStateV1 {
 
     fn original_evaluator(&self) -> Result<&OriginalCellEvaluationCommandClientV1, Error> {
         match self.phase.as_ref().ok_or(Error::CommitUncertain)? {
-            RetainedVersionHostPhaseV1::Prepared { original, .. } => original.evaluator().ok_or(Error::Unavailable),
+            RetainedVersionHostPhaseV1::Prepared { original, .. } => {
+                original.evaluator().ok_or(Error::Unavailable)
+            }
             _ => self.evaluator.as_ref().ok_or(Error::Unavailable),
         }
     }
@@ -210,10 +258,17 @@ impl RetainedVersionHostStateV1 {
             ));
         }
         match &cut.evaluated {
-            None => runtime.block_on(cut.training.require_training_current(
-                self.original_trainer()?, PublicationAccess::Readback))?,
+            None => {
+                runtime.block_on(cut.training.require_training_current(
+                    self.original_trainer()?,
+                    PublicationAccess::Readback,
+                ))?
+            }
             Some(context) => runtime.block_on(context.require_current(
-                self.original_trainer()?, self.original_evaluator()?, PublicationAccess::Readback))?,
+                self.original_trainer()?,
+                self.original_evaluator()?,
+                PublicationAccess::Readback,
+            ))?,
         }
         cut.require_fresh(started, PublicationAccess::Readback)
     }

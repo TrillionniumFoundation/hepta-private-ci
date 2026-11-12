@@ -75,7 +75,9 @@ impl ResidentOriginalStageOwnersV3 {
                 if matches!(self, Self::Candidate(_))
                     && snapshot.training_no_update_v2().is_none() =>
             {
-                OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(snapshot, stage)
+                OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(
+                    snapshot, stage,
+                )
             }
             Stage::Experience
             | Stage::Dataset

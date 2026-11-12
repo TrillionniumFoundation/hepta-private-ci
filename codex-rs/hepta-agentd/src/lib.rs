@@ -606,9 +606,9 @@ pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptCo
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
 #[cfg(target_os = "linux")]
-pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
-#[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptConfigV1;
 #[cfg(target_os = "linux")]

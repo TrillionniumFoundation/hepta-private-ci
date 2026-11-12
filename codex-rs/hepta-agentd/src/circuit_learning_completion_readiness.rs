@@ -11,19 +11,20 @@ use serde::Serialize;
 
 use super::Channel;
 use super::Error;
+use super::OriginalCircuitEvaluatedLearningReadContextV1;
 use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
 use super::now;
 use super::profile::ReadProfile;
-use super::OriginalCircuitEvaluatedLearningReadContextV1;
-use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 use super::wire as original;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
+use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 use crate::OriginalCircuitSelectionCommandReceiptV1;
 
 const PURPOSE: &str = "runtime.learning.original-circuit.completion-readiness.v1";
-const EVALUATED_PURPOSE: &str = "runtime.learning.original-circuit.evaluated-completion-readiness.v1";
+const EVALUATED_PURPOSE: &str =
+    "runtime.learning.original-circuit.evaluated-completion-readiness.v1";
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -68,7 +69,9 @@ impl Request {
             ReadProfile::TrainingNoUpdate(legacy) => Self::new(legacy, binding, request_id),
             ReadProfile::Evaluated(_) => {
                 if context.mode()? != original::Mode::NextUse {
-                    return Err(Error::Binding("evaluated readiness requires original Selection"));
+                    return Err(Error::Binding(
+                        "evaluated readiness requires original Selection",
+                    ));
                 }
                 Ok(Self {
                     purpose: EVALUATED_PURPOSE.into(),
@@ -85,10 +88,14 @@ impl Request {
         request_id: u64,
     ) -> Result<(), Error> {
         match context {
-            ReadProfile::TrainingNoUpdate(legacy) => self.require_context(legacy, binding, request_id),
+            ReadProfile::TrainingNoUpdate(legacy) => {
+                self.require_context(legacy, binding, request_id)
+            }
             ReadProfile::Evaluated(_) => {
                 if self.purpose != EVALUATED_PURPOSE || context.mode()? != original::Mode::NextUse {
-                    return Err(Error::Binding("fixed evaluated completion-readiness purpose"));
+                    return Err(Error::Binding(
+                        "fixed evaluated completion-readiness purpose",
+                    ));
                 }
                 context.require_request(&self.original, binding, request_id)
             }
@@ -133,7 +140,12 @@ impl OriginalCircuitCompletionReadinessClientV1 {
             training_evidence: selection.training_attestation().clone(),
             selection_evidence: Some(selection.attestation().clone()),
         };
-        Self::bind_profile(peer, material, dataset, ReadProfile::TrainingNoUpdate(context))
+        Self::bind_profile(
+            peer,
+            material,
+            dataset,
+            ReadProfile::TrainingNoUpdate(context),
+        )
     }
 
     pub(crate) fn bind_original_evaluated_stage_channel(
@@ -148,9 +160,13 @@ impl OriginalCircuitCompletionReadinessClientV1 {
             || verifier.scope_digest() != material.verifier.scope_digest()
             || verifier.objective_digest() != material.verifier.objective_digest()
         {
-            return Err(Error::Binding("same original evaluated Material readiness context"));
+            return Err(Error::Binding(
+                "same original evaluated Material readiness context",
+            ));
         }
-        let context = OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(selection.clone())?;
+        let context = OriginalCircuitEvaluatedLearningReadContextV1::for_original_next_use(
+            selection.clone(),
+        )?;
         Self::bind_profile(peer, material, dataset, ReadProfile::Evaluated(context))
     }
 
@@ -163,7 +179,9 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         let started_at = now()?;
         let binding = context.binding(started_at)?;
         if context.mode()? != original::Mode::NextUse {
-            return Err(Error::Binding("completion readiness requires original Selection"));
+            return Err(Error::Binding(
+                "completion readiness requires original Selection",
+            ));
         }
         let initial = LearningIterationCoordinatorV1::new(
             context.prefix().request.clone(),

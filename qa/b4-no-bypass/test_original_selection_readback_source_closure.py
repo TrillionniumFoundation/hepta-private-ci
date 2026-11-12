@@ -20,6 +20,7 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
+EVALUATED_SERVICE = AGENT + "circuit_evaluated_selection_command_service.rs"
 CLIENT = AGENT + "circuit_selection_command_readback.rs"
 SERVICE = AGENT + "circuit_selection_command_readback_service.rs"
 EVALUATED = AGENT + "circuit_evaluated_selection_readback_owner.rs"
@@ -80,7 +81,7 @@ ADMITTED = {
     "learning_original_owner_command_channel": (EVALUATED, CLIENT, SERVICE),
     "learning_original_material_initial_context_check": (CLIENT,),
     "learning_original_material_dataset_context_check": (CLIENT,),
-    "learning_original_circuit_selection_remote_readback": (SERVICE,),
+    "learning_original_circuit_selection_remote_readback": (EVALUATED_SERVICE,),
 }
 
 
@@ -107,12 +108,17 @@ class OriginalSelectionReadbackClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def mutate(self, path, function, marker, replacement=""):
+    def mutate(self, path, function, marker, replacement="", branch=None):
         original = (ROOT / path).read_text()
         code = PROOF._strip_rust_non_code(original)
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
+        if branch is not None:
+            self.assertEqual(code[start:end + 1].count(branch), 1)
+            start = code.index(branch, start, end + 1)
+            end = PROOF._rust_item_end(code, start)
+            self.assertIsNotNone(end)
         body = original[start:end + 1]
         self.assertEqual(body.count(marker), 1, (path, function, marker))
         changed = body.replace(marker, replacement, 1)
@@ -227,13 +233,17 @@ class OriginalSelectionReadbackClosureTests(unittest.TestCase):
         )
         for marker in checks:
             with self.subTest(marker=marker):
-                self.mutate(CLIENT, "fn bind_original_selection(", marker)
+                function = ("fn bind_original_selection(" if marker in checks[:3]
+                            else "fn finish_binding(")
+                self.mutate(CLIENT, function, marker)
         self.mutate(
-            CLIENT, "fn bind_original_selection(",
+            CLIENT, "fn finish_binding(",
             "if verified != selection || context_binding(&context, verified_at)? != binding",
             "if verified == selection && context_binding(&context, verified_at)? == binding",
         )
         self.mutate(CLIENT, "fn context_binding(", "context.binding(current)?.as_array()")
+        self.mutate(CLIENT, "fn bind_original_selection(",
+                    "self.finish_binding(dataset, selection, context, started_at)")
 
     def test_wire_purpose_action_sequence_and_original_context_cannot_change(self):
         original = (ROOT / CLIENT).read_text()
@@ -243,10 +253,10 @@ class OriginalSelectionReadbackClosureTests(unittest.TestCase):
             CLIENT, original.replace(purpose, '"runtime.learning.original-circuit-selection.command.v1"', 1)
         )
         self.mutate(CLIENT, "fn request(", "wire::Action::Readback", "wire::Action::Execute")
-        self.mutate(CLIENT, "fn request(", "request.operation = OPERATION.into();")
+        self.mutate(CLIENT, "fn request(", "request.operation = operation(context).into();")
         checks = (
             "observed.schema != expected.schema",
-            "observed.operation != OPERATION",
+            "observed.operation != operation(context)",
             "observed.request_id != request_id",
             "!(1..=128).contains(&request_id)",
             "observed.binding != expected.binding",
@@ -260,6 +270,8 @@ class OriginalSelectionReadbackClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 replacement = marker.replace("!=", "==") if "!=" in marker else marker.replace("!", "", 1)
                 self.mutate(CLIENT, "fn require_request(", marker, replacement)
+        self.mutate(CLIENT, "fn operation(", "None => OPERATION")
+        self.mutate(CLIENT, "fn operation(", "Some(_)")
 
     def test_service_checks_read_only_request_before_the_same_original_owner(self):
         guard = "readonly::require_request(&request, &self.context, request_id, now()?)?;"
@@ -273,18 +285,24 @@ class OriginalSelectionReadbackClosureTests(unittest.TestCase):
         checks = (
             "let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;",
             "let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;",
-            "snapshot: &self.context.training,",
-            "live: &self.live,",
-            "trainer: &self.trainer,",
         )
         for marker in checks:
             with self.subTest(marker=marker):
                 self.mutate(SERVICE, "fn original_selection_readback_response(", marker)
         self.mutate(
-            SERVICE, "fn original_selection_readback_response(",
+            EVALUATED_SERVICE, "fn observe_original(",
             "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(",
             "OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(",
+            branch="OriginalPredecessors::Legacy(trainer) => {",
         )
+        for marker in ("snapshot: &self.context.training,", "live: &self.live,", "trainer,"):
+            with self.subTest(original_predecessor=marker):
+                self.mutate(EVALUATED_SERVICE, "fn observe_original(", marker,
+                            branch="OriginalPredecessors::Legacy(trainer) => {")
+        self.mutate(SERVICE, "fn original_selection_readback_response(",
+                    "self.observe_original(original, wire::Action::Readback)")
+        self.mutate(SERVICE, "fn original_selection_readback_response(",
+                    "wire::Action::Readback", "wire::Action::Execute")
 
     def test_client_requires_fresh_complete_original_evidence_before_restoring_peer(self):
         checks = (

@@ -164,6 +164,8 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
         ):
             self.rejects(AUTH, "fn verify_non_model_attestations(", marker)
         self.rejects(AUTH, "fn verify_non_model_attestations(", "snapshot.training_no_update_v2().is_none()")
+        self.rejects(STAGES, "fn require_stage(",
+                     "OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage(")
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
+EVALUATED_SERVICE = AGENT + "circuit_evaluated_next_use_command_service.rs"
 MAIN = AGENT + "circuit_next_use_command.rs"
 WIRE = AGENT + "circuit_next_use_command_wire.rs"
 SERVICE = AGENT + "circuit_next_use_command_service.rs"
@@ -156,23 +157,29 @@ class OriginalNextUseCommandClosureTests(unittest.TestCase):
                      "OriginalCircuitNextUseCommandClientV1::readback(self).await?")
 
     def test_attestation_and_readback_use_live_original_owners_without_running_c(self):
-        self.rejects(SERVICE, "fn original_response(",
+        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
                      "OriginalCircuitNextUseReceiptOwnerV1::attest_original_remote_completion(")
-        self.rejects(SERVICE, "fn original_response(",
+        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
                      "OriginalCircuitNextUseReceiptOwnerV1::readback_remote(")
-        self.rejects(SERVICE, "fn original_response(", "selector: &self.selector")
+        self.rejects(EVALUATED_SERVICE, "fn observe_original(", "selector: &self.selector")
         self.rejects(SERVICE, "fn serve_commands(", "tokio::task::spawn_blocking(")
         self.rejects(SERVICE, "fn serve_evidence_readback(",
                      "timeout > Duration::from_millis(500)")
         self.rejects(SERVICE, "fn command_response(", "let current = now()?")
         self.rejects(SERVICE, "fn command_response(", "require_clock(started_at, current)?")
         self.rejects(EVIDENCE, "fn evidence_response(",
-                     "OriginalCircuitNextUseReceiptOwnerV1::readback_remote(")
+                     "self.observe_original(original, wire::Action::Readback)?")
         self.rejects(EVIDENCE, "fn evidence_response(",
                      "wire::authenticate_receipt(&self.context, receipt, signed, current)?")
         self.rejects(EVIDENCE, "fn evidence_response(",
                      "request.receipt_digest != original.attestation.payload_digest.to_string()")
         self.rejects(EVIDENCE, "fn evidence_response(", "require_clock(started_at, current)?")
+        self.rejects(SERVICE, "fn original_response(", "self.observe_original(")
+        self.rejects(SERVICE, "fn original_response(", "wire::Action::Execute", "wire::Action::Readback")
+        self.rejects(EVIDENCE, "fn evidence_response(", "wire::Action::Readback", "wire::Action::Execute")
+        for marker in ("OriginalCircuitNextUseReceiptOwnerV1::attest_original_evaluated_remote_completion(",
+                       "OriginalCircuitNextUseReceiptOwnerV1::readback_evaluated_remote_completion("):
+            self.rejects(EVALUATED_SERVICE, "fn observe_original(", marker)
 
     def test_response_requires_actual_retained_c_with_new_run_and_original_roles(self):
         for function, marker in (

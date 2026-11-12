@@ -21,6 +21,7 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
+EVALUATED_SERVICE = AGENT + "circuit_evaluated_selection_command_service.rs"
 MAIN = AGENT + "circuit_selection_command.rs"
 WIRE = AGENT + "circuit_selection_command_wire.rs"
 SERVICE = AGENT + "circuit_selection_command_service.rs"
@@ -151,19 +152,25 @@ class OriginalSelectorCommandClosureTests(unittest.TestCase):
                      "OriginalCircuitSelectionCommandClientV1::readback(self).await?")
 
     def test_command_and_readback_keep_actual_owner_and_original_transport_bounds(self):
-        self.rejects(SERVICE, "fn original_response(",
+        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
                      "OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(")
-        self.rejects(SERVICE, "fn original_response(",
+        self.rejects(EVALUATED_SERVICE, "fn observe_original(",
                      "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(")
         self.rejects(SERVICE, "fn serve_commands(", "tokio::task::spawn_blocking(")
         self.rejects(SERVICE, "fn serve_evidence_readback(",
                      "timeout > Duration::from_millis(500)")
         self.rejects(EVIDENCE, "fn evidence_response(",
-                     "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(")
+                     "self.observe_original(original, wire::Action::Readback)?")
         self.rejects(EVIDENCE, "fn evidence_response(",
                      "wire::authenticate_receipt(&self.context, receipt, signed, now()?)?")
         self.rejects(EVIDENCE, "fn evidence_response(",
                      "request.receipt_digest != original.attestation.payload_digest.to_string()")
+        self.rejects(SERVICE, "fn original_response(", "self.observe_original(")
+        self.rejects(SERVICE, "fn original_response(", "wire::Action::Execute", "wire::Action::Readback")
+        self.rejects(EVIDENCE, "fn evidence_response(", "wire::Action::Readback", "wire::Action::Execute")
+        for marker in ("OriginalCircuitSelectionReceiptOwnerV1::attest_original_evaluated_remote_selection(",
+                       "OriginalCircuitSelectionReceiptOwnerV1::readback_evaluated_remote_selection("):
+            self.rejects(EVALUATED_SERVICE, "fn observe_original(", marker)
 
     def test_response_verifies_exact_extension_baseline_and_independent_original_roles(self):
         for function, marker in (

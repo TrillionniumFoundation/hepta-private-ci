@@ -19,7 +19,10 @@ impl OriginalCircuitRetainedVersionHostV1 {
             let (request, pin) = {
                 let state = self.state.try_lock().map_err(|_| Error::Busy)?;
                 let cut = state.cut.as_ref().ok_or(Error::Unavailable)?;
-                (wire::Request::new(cut, 1, wire::Action::Readback), cut.duplicate_response_pin())
+                (
+                    wire::Request::new(cut, 1, wire::Action::Readback),
+                    cut.duplicate_response_pin(),
+                )
             };
             let response = self.command_response(&serde_json::to_vec(&request)?, 1)?;
             let response: wire::Response = serde_json::from_slice(&response)?;
@@ -27,7 +30,9 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 return Err(Error::CommitUncertain);
             }
             response.result.decode(&pin)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 
     pub(crate) fn fixture_original_selection_reader_installed(&self) -> Result<bool, Error> {
@@ -41,7 +46,8 @@ impl OriginalCircuitRetainedVersionHostV1 {
     ) -> Result<u64, Error> {
         self.require_lifetime()?;
         let permit = Arc::clone(&self.connections)
-            .try_acquire_owned().map_err(|_| Error::Busy)?;
+            .try_acquire_owned()
+            .map_err(|_| Error::Busy)?;
         self.serve_original_selection_channel(channel, permit).await
     }
 }

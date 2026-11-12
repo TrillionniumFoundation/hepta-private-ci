@@ -3,10 +3,6 @@
 //! fixture keys differ from deployment. No receipt is supplied as a response.
 
 use super::*;
-use anyhow::Context as _;
-use ed25519_dalek::SigningKey;
-use pretty_assertions::assert_eq;
-use std::time::Duration;
 use crate::OriginalCellEvaluationCommandConnectionV1;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
@@ -18,6 +14,10 @@ use crate::OriginalCircuitRetainedVersionHostV1 as Version;
 use crate::OriginalCircuitRetainedVersionRecoveryV1;
 use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as training_ports;
 use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
+use anyhow::Context as _;
+use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
+use std::time::Duration;
 
 struct HeldPredecessors {
     dataset: OriginalCellQ24DatasetCommandReadbackV1,
@@ -42,8 +42,14 @@ impl HeldPeers {
     }
 }
 
-async fn held_predecessors(f: &PublicationFixture) -> anyhow::Result<(HeldPredecessors, HeldPeers)> {
-    let (evaluator, evaluator_peer) = f.host.host.as_ref().context("same original E host")?
+async fn held_predecessors(
+    f: &PublicationFixture,
+) -> anyhow::Result<(HeldPredecessors, HeldPeers)> {
+    let (evaluator, evaluator_peer) = f
+        .host
+        .host
+        .as_ref()
+        .context("same original E host")?
         .fixture_original_readback_connection()?;
     held_predecessors_with_evaluator(f, evaluator, evaluator_peer).await
 }
@@ -62,29 +68,63 @@ async fn held_predecessors_with_evaluator(
     let owners = OriginalCellQ24MaterialReceiptOwnersV1::recover(
         OriginalCellQ24MaterialReceiptFilesV1 {
             experience: opened(&original.root, "positive-experience", false)?,
-            experience_witness: original_witness(&original.root, "positive-experience-witness", &material.scope, objective, false)?,
+            experience_witness: original_witness(
+                &original.root,
+                "positive-experience-witness",
+                &material.scope,
+                objective,
+                false,
+            )?,
             dataset: opened(&original.root, "positive-dataset", false)?,
-            dataset_witness: original_witness(&original.root, "positive-dataset-witness", &material.scope, objective, false)?,
+            dataset_witness: original_witness(
+                &original.root,
+                "positive-dataset-witness",
+                &material.scope,
+                objective,
+                false,
+            )?,
         },
-        material.clone(), SigningKey::from_bytes(&[44; 32]), SigningKey::from_bytes(&[45; 32]),
+        material.clone(),
+        SigningKey::from_bytes(&[44; 32]),
+        SigningKey::from_bytes(&[45; 32]),
     )?;
     let host = Arc::new(owners.into_command_owner(
-        f.original_source.as_ref().clone(), f.identity_a.clone(),
-        Arc::clone(&original.ledger), Arc::clone(&original.baseline),
+        f.original_source.as_ref().clone(),
+        f.identity_a.clone(),
+        Arc::clone(&original.ledger),
+        Arc::clone(&original.baseline),
     )?);
     let (dataset, dataset_peer) = material_ports::commands_for_original(
-        host, material.clone(), OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
+        host,
+        material.clone(),
+        OriginalCellQ24MaterialEvidenceRoleV1::Dataset,
     )?;
     let dataset = dataset.into_original_dataset_readback(material)?;
     let dataset_receipt = dataset.readback().await?;
     assert_eq!(dataset_receipt.snapshot(), &f.trainer_context.dataset);
     assert_eq!(dataset_receipt.attestations(), &original.material_evidence);
     let (trainer, channel) = training_ports::recovered_peer(
-        material.clone(), Some((f.training.receipt().clone(), f.training.attestation().clone())), Duration::from_secs(300),
+        material.clone(),
+        Some((
+            f.training.receipt().clone(),
+            f.training.attestation().clone(),
+        )),
+        Duration::from_secs(300),
     )?;
     let trainer_peer = commands::serve(Arc::clone(&f.trainer), channel);
-    Ok((HeldPredecessors { dataset, dataset_receipt, trainer, evaluator },
-        HeldPeers { dataset: dataset_peer, trainer: trainer_peer, evaluator: evaluator_peer }))
+    Ok((
+        HeldPredecessors {
+            dataset,
+            dataset_receipt,
+            trainer,
+            evaluator,
+        },
+        HeldPeers {
+            dataset: dataset_peer,
+            trainer: trainer_peer,
+            evaluator: evaluator_peer,
+        },
+    ))
 }
 
 async fn publish_for_recovery(
@@ -98,7 +138,13 @@ async fn publish_for_recovery(
     let artifact_selection = inputs.selection.signed.clone();
     let artifact_verifier = inputs.selection.verifier.clone();
     let checkpoint = f.host.original.version.retained_artifact_checkpoint()?;
-    let prepared = crate::prepare_original_circuit_evaluated_retention_v1(f.context()?, trainer, evaluator, inputs).await?;
+    let prepared = crate::prepare_original_circuit_evaluated_retention_v1(
+        f.context()?,
+        trainer,
+        evaluator,
+        inputs,
+    )
+    .await?;
     let intent = prepared.intent_digest();
     let grant = f.host.original.version.sign(prepared.final_use_binding())?;
     let (task, trainer, evaluator) = prepared.publish_and_retain_original_evidence(grant).await?;
@@ -110,9 +156,17 @@ async fn publish_for_recovery(
     attestations.push(f.training.attestation().clone());
     attestations.push(f.evaluation.attestation().clone());
     let recovery = OriginalCircuitRetainedVersionRecoveryV1 {
-        training: f.evaluation.snapshot().clone(), attestations, intent_digest: intent,
-        cell: c.cell.clone(), source: Arc::clone(&c.source), identity: c.runtime.identity.clone(),
-        current, artifacts, artifact_checkpoint: checkpoint, artifact_selection, artifact_verifier,
+        training: f.evaluation.snapshot().clone(),
+        attestations,
+        intent_digest: intent,
+        cell: c.cell.clone(),
+        source: Arc::clone(&c.source),
+        identity: c.runtime.identity.clone(),
+        current,
+        artifacts,
+        artifact_checkpoint: checkpoint,
+        artifact_selection,
+        artifact_verifier,
     };
     Ok((c, recovery))
 }
@@ -123,8 +177,12 @@ fn cold_version(
     recovery: OriginalCircuitRetainedVersionRecoveryV1,
 ) -> Result<Arc<Version>, crate::OriginalCircuitRetainedVersionErrorV1> {
     Ok(Arc::new(Version::recover_from_original_evaluated_owners(
-        f.host.original.command_config.clone(), held.dataset, held.trainer, held.evaluator,
-        recovery, Duration::from_secs(300),
+        f.host.original.command_config.clone(),
+        held.dataset,
+        held.trainer,
+        held.evaluator,
+        recovery,
+        Duration::from_secs(300),
     )?))
 }
 

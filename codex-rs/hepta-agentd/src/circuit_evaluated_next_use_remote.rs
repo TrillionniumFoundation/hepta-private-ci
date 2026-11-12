@@ -13,10 +13,21 @@ pub struct OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'a> {
 }
 
 impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_> {
-    fn snapshot(&self) -> &LearningIterationSnapshotV1 { self.snapshot }
-    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> { None }
-    fn selector(&self) -> &LearningIterationEvidenceClientV1 { self.selector }
-    fn evaluated_owners(&self) -> Option<(&OriginalCellQ24TrainingCommandClientV1, &OriginalCellEvaluationCommandClientV1)> {
+    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.snapshot
+    }
+    fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> {
+        None
+    }
+    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
+        self.selector
+    }
+    fn evaluated_owners(
+        &self,
+    ) -> Option<(
+        &OriginalCellQ24TrainingCommandClientV1,
+        &OriginalCellEvaluationCommandClientV1,
+    )> {
         Some((self.trainer, self.evaluator))
     }
     fn location(&self) -> ObservationLocation {
@@ -38,14 +49,19 @@ impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_> {
         Ok(())
     }
 
-    async fn observe(&self, _config: &OriginalCircuitNextUseReceiptConfigV1) -> Result<LearningIterationObservationV1, Error> {
+    async fn observe(
+        &self,
+        _config: &OriginalCircuitNextUseReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error> {
         let original = OriginalCircuitLearningReadClientV1::read_current(self.live).await?;
         Ok(original.observation().clone())
     }
 }
 
 impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
-    pub(crate) fn original_evaluated_command_selection(&self) -> Option<&OriginalCircuitEvaluatedSelectionReceiptV1> {
+    pub(crate) fn original_evaluated_command_selection(
+        &self,
+    ) -> Option<&OriginalCircuitEvaluatedSelectionReceiptV1> {
         match &self.profile {
             Profile::Legacy => None,
             Profile::Evaluated(selection) => Some(selection),
@@ -53,7 +69,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     }
 
     pub async fn attest_original_evaluated_remote_completion(
-        &mut self, source: OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>,
+        &mut self,
+        source: OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>,
     ) -> Result<OriginalCircuitEvaluatedNextUseReceiptV1, Error> {
         let completed = match self.command_origin {
             CommandOrigin::FreshCreate => self.attest_source(source).await?,
@@ -63,7 +80,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     }
 
     pub async fn readback_evaluated_remote_completion(
-        &mut self, source: OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>,
+        &mut self,
+        source: OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_>,
     ) -> Result<OriginalCircuitEvaluatedNextUseReceiptV1, Error> {
         let completed = self.readback_source(source).await?;
         self.completed_evaluated_next_use(completed)
@@ -75,10 +93,15 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         trainer: OriginalCellQ24TrainingCommandClientV1,
         evaluator: OriginalCellEvaluationCommandClientV1,
         selector: LearningIterationEvidenceClientV1,
-    ) -> Result<crate::OriginalCircuitNextUseCommandOwnerV1<W>, crate::OriginalCircuitNextUseCommandErrorV1>
-    where W: Send + 'static,
+    ) -> Result<
+        crate::OriginalCircuitNextUseCommandOwnerV1<W>,
+        crate::OriginalCircuitNextUseCommandErrorV1,
+    >
+    where
+        W: Send + 'static,
     {
         crate::OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_receipt_owner(
-            self, live, trainer, evaluator, selector)
+            self, live, trainer, evaluator, selector,
+        )
     }
 }

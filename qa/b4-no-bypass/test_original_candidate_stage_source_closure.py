@@ -222,6 +222,8 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
             self.verifies(path, source)
             with self.assertRaises(PROOF.VerificationFailure):
                 self.verifies(path, source + "\n" + body + "\n")
+        self.rejects(CORE, "fn execute_stage<'a>", "retained::is_evaluated_no_update(snapshot)")
+        self.rejects(CORE, "fn execute_stage<'a>", "self.execute_evaluated_retained_stage(snapshot, stage).await")
 
 
 if __name__ == "__main__":

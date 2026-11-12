@@ -19,10 +19,10 @@ use super::wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationEvidenceClientV1;
 use crate::LearningIterationEvidencePeerV1;
+use crate::OriginalCellEvaluationCommandReceiptV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
-use crate::OriginalCellEvaluationCommandReceiptV1;
 use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::learning_iteration_evidence_client::command_evidence::OriginalCommandEvidenceV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
@@ -112,8 +112,12 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
     ) -> Result<LearningIterationEvidenceClientV1, Error> {
         let started_at = now()?;
         let original = OriginalCircuitEvaluatedRetentionContextV1::recover_original_evaluation(
-            self.material.scope.clone(), self.material.verifier.clone(), training, evaluation,
-        ).map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)?;
+            self.material.scope.clone(),
+            self.material.verifier.clone(),
+            training,
+            evaluation,
+        )
+        .map_err(crate::OriginalCircuitSelectionReceiptErrorV1::from)?;
         let context = OriginalCircuitSelectionCommandContextV1::from_evaluated_context(&original)?;
         self.finish_binding(dataset, selection, context, started_at)
     }
