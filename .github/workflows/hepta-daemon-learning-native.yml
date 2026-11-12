@@ -90,6 +90,11 @@ jobs:
               "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_never_promotes_missing_pending_or_fenced",
               "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_observed_conflict_stays_refused_after_restored_bytes",
               "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_rejects_peer_ack_without_context_finalization",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_restored_primary_stays_refused_in_fresh_process",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_refuses_legacy_primary_without_admitting_a_clear_companion",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_wrong_target_cannot_poison_original_registration",
+              "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_refusal_incomplete_registration_never_reopens_or_reinitializes",
+              "authority_host_service::generation_initial::historical_source_pin::tests::root_source_pin_restored_primary_stays_refused_in_fresh_process",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",

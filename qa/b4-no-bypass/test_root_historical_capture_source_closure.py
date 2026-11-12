@@ -30,7 +30,14 @@ RUNTIME = AGENT + "authority_host_generation_initial_runtime.rs"
 TRANSPORT = AGENT + "authority_host_historical_source_transport.rs"
 HANDOFF = AGENT + "authority_host_historical_source_handoff.rs"
 DEPLOYMENT = AGENT + "authority_host_historical_source_deployment.rs"
+REFUSAL = AGENT + "authority_host_historical_source_refusal.rs"
 CALLERS = {
+    "root_historical_refusal_register_original": (PIN, HANDOFF,),
+    "root_historical_refusal_complete_original_registration": (PIN, HANDOFF,),
+    "root_historical_refusal_open_existing": (PIN, HANDOFF,),
+    "root_historical_refusal_require_open": (PIN, HANDOFF,),
+    "root_historical_refusal_refuse": (PIN, HANDOFF,),
+
     "root_initial_original_writer_context": (
         AGENT + "authority_host_generation_initial_session.rs",
         AGENT + "authority_host_generation_initial_enrollment.rs",
@@ -260,6 +267,36 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
         self.rejects_removal(RUNTIME, "serve_optional", (
             "source_capture::serve_optional(", "slot: &slot", "stopping: &stopping",
             "initial.runtime.source_capture.as_ref()", "source.close()",
+        ))
+
+
+    def test_independent_refusal_registration_read_and_fence_cannot_be_removed(self):
+        self.rejects_removal(REFUSAL, "register_original", (
+            "original_root()?", "RefusalState::Pending", "Registration::New",
+            "AuthorityTrustError::Conflict", "Registration::Existing,",
+            "HistoricalSourceRefusalV1::require_open(&retained)?",
+        ))
+        self.rejects_removal(REFUSAL, "open_existing", (
+            "original_root()?", "HostAuthorityFrontierStore::open(root, owner.clone())",
+            "HistoricalSourceRefusalV1::require_open(&retained)?",
+        ))
+        self.rejects_removal(REFUSAL, "complete_original_registration", (
+            "original_root()?",
+            "compare_and_set(&self.owner, &RefusalState::Pending, &RefusalState::Open)",
+            "HistoricalSourceRefusalV1::require_open(self)",
+        ))
+        self.rejects_removal(REFUSAL, "require_open", (
+            "original_root()?", "self.store.load(&self.owner)",
+            "Ok(RefusalState::Open) => Ok(())",
+            "Ok(RefusalState::Pending | RefusalState::Refused)",
+        ))
+        self.rejects_removal(REFUSAL, "refuse", (
+            "original_root()?", "self.store.load(&self.owner)",
+            "compare_and_set(&self.owner, &observed, &RefusalState::Refused)",
+        ))
+        self.rejects_removal(HANDOFF, "require_exact", (
+            "HistoricalSourceRefusalV1::require_open(&self.refusal)?",
+            "HistoricalSourceRefusalV1::refuse(&self.refusal)?",
         ))
 
 

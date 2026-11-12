@@ -143,3 +143,97 @@ fn root_source_pin_preserves_exact_registration_and_never_initializes_recovery()
     assert!(RootHistoricalSourcePinV1::open_existing(root, &target).is_err());
     Ok(())
 }
+
+#[test]
+#[ignore = "actual UID0 and original Root-owned directory custody"]
+fn root_source_pin_restored_primary_stays_refused_in_fresh_process()
+-> anyhow::Result<()> {
+    original_root()?;
+    if let Some(path) = std::env::var_os("HEPTA_COLD_PIN_COMPONENT_ROOT") {
+        let root = RootAuthorityDirectory::open(std::path::Path::new(&path))?;
+        let (target, _, _) = target()?;
+        assert!(RootHistoricalSourcePinV1::open_existing(root, &target).is_err());
+        println!("HEPTA_COLD_PIN_CHILD_REFUSED");
+        return Ok(());
+    }
+    let directory = tempfile::Builder::new()
+        .prefix("source-pin-")
+        .tempdir_in("/run")?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let root = RootAuthorityDirectory::open(directory.path())?;
+    let (target, _, _) = target()?;
+    assert!(RootHistoricalSourcePinV1::open_existing(root.clone(), &target).is_err());
+    let named = tempfile::NamedTempFile::new()?;
+    let file = named.as_file();
+    file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+    let file_pin = FilePin::read(file, /*uid*/ 0, /*gid*/ 0)?;
+    let pin = SourcePin {
+        schema: 1,
+        purpose: PIN_PURPOSE.into(),
+        initial_profile: "component-profile".into(),
+        identity: "component-identity".into(),
+        spawn_generation: 1,
+        publisher_epoch: 1,
+        publisher: CognitiveCheckpointPeerLifetime {
+            uid: 60001,
+            pid: 101,
+            boot_id: "component-boot".into(),
+            process_start_ticks: 1,
+        },
+        writer: "component-writer".into(),
+        target: target.clone(),
+        target_files: "component-target-files".into(),
+        source_files: [file_pin.clone(), file_pin],
+        source_configuration: "component-configuration".into(),
+        witness_context: "component-witness".into(),
+        source_sequence: 7,
+        source_checkpoint: "component-anchor".into(),
+        publication: "component-publication".into(),
+        completed_task: "component-completion".into(),
+        fence_digest: Digest32::of_bytes(b"component-fence-digest").to_string(),
+    };
+    let retained = RootHistoricalSourcePinV1::retain(root.clone(), pin.clone())?;
+    let digest = retained.readback_digest()?;
+    assert_eq!(
+        RootHistoricalSourcePinV1::retain(root.clone(), pin.clone())?.readback_digest()?,
+        digest
+    );
+    let mut changed = pin;
+    changed.publication = "different-publication".into();
+    assert!(RootHistoricalSourcePinV1::retain(root.clone(), changed).is_err());
+    assert_eq!(
+        RootHistoricalSourcePinV1::open_existing(root.clone(), &target)?.readback_digest()?,
+        digest
+    );
+    let primary = std::fs::read_dir(directory.path())?
+        .filter_map(Result::ok)
+        .find_map(|entry| {
+            let bytes = std::fs::read(entry.path()).ok()?;
+            let value: serde_json::Value = serde_json::from_slice(&bytes).ok()?;
+            (value["frontier"]["pin"]["purpose"] == PIN_PURPOSE).then(|| entry.path())
+        })
+        .ok_or_else(|| anyhow::anyhow!("original source pin missing"))?;
+    let trusted = std::fs::read(&primary)?;
+    std::fs::write(&primary, b"{")?;
+    File::open(&primary)?.sync_all()?;
+    assert!(retained.readback_digest().is_err());
+    assert!(retained.fence().is_err());
+    std::fs::write(&primary, &trusted)?;
+    File::open(&primary)?.sync_all()?;
+    drop(retained);
+    drop(root);
+    let thread = std::thread::current();
+    let test_name = thread.name().ok_or_else(|| anyhow::anyhow!("test name missing"))?;
+    let output = std::process::Command::new(std::env::current_exe()?)
+        .args(["--exact", test_name, "--ignored", "--nocapture"])
+        .env("HEPTA_COLD_PIN_COMPONENT_ROOT", directory.path())
+        .output()?;
+    assert!(
+        output.status.success(),
+        "fresh process accepted restored pin: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+    assert!(String::from_utf8_lossy(&output.stdout).contains("HEPTA_COLD_PIN_CHILD_REFUSED"));
+    assert_eq!(std::fs::read(primary)?, trusted);
+    Ok(())
+}

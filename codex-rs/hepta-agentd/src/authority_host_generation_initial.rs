@@ -40,6 +40,9 @@ pub use inputs::RootGenerationInitialEnrollmentV1;
 pub use inputs::RootGenerationInitialModeV1;
 #[path = "authority_host_generation_initial_enrollment.rs"]
 mod enrollment;
+#[path = "authority_host_historical_source_refusal.rs"]
+mod historical_source_refusal;
+use historical_source_refusal::HistoricalSourceRefusalV1;
 #[path = "authority_host_historical_source_pin.rs"]
 pub(crate) mod historical_source_pin;
 pub use historical_source_pin::RootHistoricalSourceInputsV1;
