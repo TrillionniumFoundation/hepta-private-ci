@@ -1,0 +1,57 @@
+import dataclasses,hashlib,importlib.util,json,os,pathlib,re,subprocess,sys,time
+from datetime import datetime,timezone
+cfg=json.loads(sys.argv[1]);root=pathlib.Path(cfg["checkout"]);out=pathlib.Path(cfg["evidence"]);out.mkdir(parents=True,exist_ok=False)
+report={"schema_version":1,"mode":"all-boundary-diagnostic","qualification_gate":False,"source_sha":cfg["sha"],"source_tree":cfg["tree"],"started_at":datetime.now(timezone.utc).isoformat(),"complete":False,"native_build_or_test_started":False,"sudo_or_escalation_attempted":False,"boundaries":[],"protected_files":[],"failures":[]}
+def save(name,value):
+ data=(json.dumps(value,indent=2,sort_keys=True)+"\n").encode();temp=out/(name+".tmp");temp.write_bytes(data);temp.replace(out/name)
+def emit(value):print(json.dumps(value,sort_keys=True),flush=True)
+def source_snapshot():
+ def git(*arguments):return subprocess.check_output(["git","-C",str(root),*arguments],stderr=subprocess.PIPE).decode().strip()
+ return {"head":git("rev-parse","HEAD"),"tree":git("rev-parse","HEAD^{tree}"),"status":git("status","--porcelain=v1","--untracked-files=all")}
+def blob(data):return hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+exit_code=2
+try:
+ before=source_snapshot();report["source_before"]=before
+ if before!={"head":cfg["sha"],"tree":cfg["tree"],"status":""}:raise RuntimeError("diagnostic requires exact clean source")
+ sys.path.insert(0,str(root/"scripts"))
+ spec=importlib.util.spec_from_file_location("owner620_diagnostic_proof",root/"scripts/verify_hepta_callers.py")
+ if spec is None or spec.loader is None:raise RuntimeError("source proof module unavailable")
+ proof=importlib.util.module_from_spec(spec);sys.modules[spec.name]=proof;spec.loader.exec_module(proof)
+ data=proof._load_manifest(root/"CALLERS.toml");boundaries=proof._boundary_rows(data);proof._verify_privileged_inventory(data,boundaries)
+ source_roots=proof._string_tuple(data,"source_roots");ignored=proof._string_tuple(data,"ignored_path_fragments");files=proof._source_files(root,source_roots)
+ sources={};identities={}
+ for path in files:
+  relative=path.relative_to(root).as_posix();raw=path.read_bytes();text=raw.decode("utf-8")
+  identities[relative]={"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),"git_blob_sha":blob(raw)}
+  sources[relative]=proof._strip_cfg_test_items(proof._strip_rust_non_code(text))
+ source_identity_bytes=json.dumps(identities,sort_keys=True,separators=(",",":")).encode();(out/"source-index.json").write_bytes(source_identity_bytes)
+ report["source_index"]={"files":len(sources),"bytes":len(source_identity_bytes),"sha256":hashlib.sha256(source_identity_bytes).hexdigest()}
+ report["requested_boundaries"]=len(boundaries);report["requested_protected_files"]=len(data["protected_file"])
+ report["checker"]={"path":"scripts/verify_hepta_callers.py","git_blob_sha":blob((root/"scripts/verify_hepta_callers.py").read_bytes())}
+ fields_by_receiver_type={}
+ emit({"phase":"diagnostic_indexed","boundaries":len(boundaries),"protected_files":len(data["protected_file"]),"source_files":len(sources),"qualification_gate":False})
+ for index,boundary in enumerate(boundaries):
+  started=time.monotonic()
+  try:
+   proof._verify_boundary(root,boundary,sources,ignored,fields_by_receiver_type=fields_by_receiver_type)
+   observed={"index":index,"id":boundary.identifier,"status":"verified"}
+  except proof.VerificationFailure as error:
+   paths=sorted(set(re.findall(r"codex-rs/[A-Za-z0-9_./-]+\\.rs",str(error))))
+   observed={"index":index,"id":boundary.identifier,"status":"rejected","error_type":type(error).__name__,"error":str(error),"boundary":dataclasses.asdict(boundary),"actual_sources":{path:identities[path] for path in paths if path in identities}}
+   report["failures"].append(observed);emit({"phase":"boundary_rejected",**observed})
+  observed["elapsed_seconds"]=time.monotonic()-started;report["boundaries"].append(observed)
+  if (index+1)%50==0:save("progress.json",{"source_sha":cfg["sha"],"visited":index+1,"total":len(boundaries),"failures":report["failures"]});emit({"phase":"diagnostic_progress","visited":index+1,"total":len(boundaries),"failed":len(report["failures"])})
+ for row in data["protected_file"]:
+  try:
+   proof._verify_protected_files(root,{"protected_file":[row]});observed={"path":row["path"],"status":"verified"}
+  except proof.VerificationFailure as error:
+   observed={"path":row["path"],"status":"rejected","error_type":type(error).__name__,"error":str(error)};report["failures"].append(observed);emit({"phase":"protected_file_rejected",**observed})
+  report["protected_files"].append(observed)
+ after=source_snapshot();report["source_after"]=after;report["source_unchanged"]=before==after
+ if before!=after:raise RuntimeError("source changed during diagnostic")
+ report["complete"]=True;report["status"]="diagnostic_rejections" if report["failures"] else "diagnostic_no_rejections";exit_code=1 if report["failures"] else 0
+except Exception as error:
+ report["status"]="diagnostic_incomplete";report["error_type"]=type(error).__name__;report["error"]=str(error);exit_code=2
+finally:
+ report["exit_code"]=exit_code;report["finished_at"]=datetime.now(timezone.utc).isoformat();save("DIAGNOSTIC.json",report);emit({"phase":"diagnostic_finished","status":report["status"],"complete":report["complete"],"exit_code":exit_code,"visited_boundaries":len(report["boundaries"]),"visited_protected_files":len(report["protected_files"]),"failure_count":len(report["failures"]),"qualification_gate":False})
+raise SystemExit(exit_code)

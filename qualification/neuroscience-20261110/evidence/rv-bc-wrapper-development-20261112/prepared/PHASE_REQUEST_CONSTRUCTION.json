@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.rv.future-request-construction.v1",
+  "state": "NOT_DISPATCHABLE_UNTIL_ACTUAL_FREEZE_AND_SEPARATE_ROOT_REVIEW",
+  "base_request_artifact": "FREEZE_REQUEST.json",
+  "driver_git_blob": "d63ff1216eafcc5b4dfdd98c03a83972b268b25e",
+  "driver_sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb",
+  "registration_sha256": "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4",
+  "instructions": [
+    "Parse the complete FREEZE_REQUEST.json into a new object; never mutate or reuse the already-submitted freeze request.",
+    "Keep executable, argv[0:2], cwd, env, quota, memory, nice, wrapper_utf8, registration_utf8 and driver_sha256 byte-exact.",
+    "For B, C or reconcile, replace argv[2] with the named stage; parse stdin JSON, replace only stage and expected_frozen_sha256, serialize as a new prospective immutable request.",
+    "Actual expected_frozen_sha256 must come from reviewed real FROZEN raw bytes and the completed freeze terminal, not this document. It is currently null.",
+    "Assign the corresponding fresh stage key exactly once; ambiguous acknowledgement may only query/reconcile that original exact request. Do not call a stage again to repair partial effects.",
+    "Freeze is the only complete dispatch request supplied by this bundle, and has not been sent. No B/C tool request is currently registered or authorized."
+  ],
+  "stages": [
+    {
+      "stage": "B",
+      "idempotency_key": "neuro4-rv-bc-phase-b-862531d-v1",
+      "timeout_seconds": 600,
+      "actor_cap": 2,
+      "precondition": "FROZEN_VERIFIED_NO_ACTORS, exact actual external freeze pin, four-ID roster disjoint from old576; no previous B request/start/output"
+    },
+    {
+      "stage": "C",
+      "idempotency_key": "neuro4-rv-bc-phase-c-862531d-v1",
+      "timeout_seconds": 600,
+      "actor_cap": 2,
+      "precondition": "B controller RECORDED and original_inputs_unchanged=true; original B wrapper RECORDED and original reconciliation digest unchanged, incomplete=0; no previous C request/start/output"
+    },
+    {
+      "stage": "inspect",
+      "idempotency_key": "neuro4-rv-bc-inspect-862531d-v1",
+      "timeout_seconds": 120,
+      "actor_cap": 0,
+      "precondition": "Read-only snapshot; expected pin may be null when diagnosing a freeze acknowledgement. Any observed pin must still be reviewed before future dispatch."
+    },
+    {
+      "stage": "reconcile-B",
+      "idempotency_key": "neuro4-rv-bc-reconcile-b-862531d-v1",
+      "timeout_seconds": 120,
+      "actor_cap": 0,
+      "precondition": "Actual external freeze pin; no writes, network or subprocesses; no repair/retry"
+    },
+    {
+      "stage": "reconcile-C",
+      "idempotency_key": "neuro4-rv-bc-reconcile-c-862531d-v1",
+      "timeout_seconds": 120,
+      "actor_cap": 0,
+      "precondition": "Actual external freeze pin; no writes, network or subprocesses; no repair/retry"
+    }
+  ],
+  "expected_effects": [
+    {
+      "phase": "B",
+      "arm_id": "tuned-fixed",
+      "context": {
+        "source_id": "merchant-8be0cc526665e1b3713e88d9",
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "seed": 130363
+      },
+      "actual_operation_id": null,
+      "actual_plan_sha256": null
+    },
+    {
+      "phase": "B",
+      "arm_id": "conditional",
+      "context": {
+        "source_id": "merchant-8be0cc526665e1b3713e88d9",
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "seed": 130363
+      },
+      "actual_operation_id": null,
+      "actual_plan_sha256": null
+    },
+    {
+      "phase": "C",
+      "arm_id": "tuned-fixed",
+      "context": {
+        "source_id": "merchant-ac7dff025170a6ee898d500b",
+        "case_id": "case-fdc68cd739dea87c3c21bb51",
+        "seed": 130366
+      },
+      "actual_operation_id": null,
+      "actual_plan_sha256": null
+    },
+    {
+      "phase": "C",
+      "arm_id": "conditional",
+      "context": {
+        "source_id": "merchant-ac7dff025170a6ee898d500b",
+        "case_id": "case-fdc68cd739dea87c3c21bb51",
+        "seed": 130366
+      },
+      "actual_operation_id": null,
+      "actual_plan_sha256": null
+    }
+  ],
+  "actual_effect_roster_exists": false,
+  "effect_roster_future_path": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/EFFECT_ROSTER.json"
+}
