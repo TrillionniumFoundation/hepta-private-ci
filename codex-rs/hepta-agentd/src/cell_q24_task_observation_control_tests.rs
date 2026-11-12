@@ -46,7 +46,7 @@ async fn q24_live_task_observation_reads_the_signed_decision_without_creating_ou
         Q24OriginalTaskObservationV1 {
             run_id: original.record_id.to_string(),
             source_publication_digest: f.publication.publication_digest().to_string(),
-            source_history_digest: f.publication.history_digest().to_string(),
+            source_history_digest: f.publication.history_digest().as_str().to_owned(),
             // Verified above against the actual original Generator signature,
             // not recomputed with a second implementation of the projection.
             decision_preimage_hex: observed.decision_preimage_hex.clone(),
