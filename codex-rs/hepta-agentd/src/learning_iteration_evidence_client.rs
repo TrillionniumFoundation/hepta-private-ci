@@ -50,6 +50,8 @@ pub use training_command::OriginalCellQ24ModelCommandConnectionV1;
 pub use training_command::OriginalCellQ24ModelCommandErrorV1;
 pub use training_command::OriginalCellQ24ModelCommandHostV1;
 pub use training_command::OriginalCellQ24ModelCommandReceiptV1;
+pub(crate) use training_command::OriginalCellQ24ModelReadV1;
+pub(crate) use training_command::OriginalCellQ24ModelReadCompletionV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapCustodyV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapErrorV1;
@@ -79,6 +81,21 @@ pub use next_use_command::OriginalCircuitNextUseCommandContextV1;
 pub use next_use_command::OriginalCircuitNextUseCommandErrorV1;
 pub use next_use_command::OriginalCircuitNextUseCommandOwnerV1;
 pub use next_use_command::OriginalCircuitNextUseCommandReceiptV1;
+
+#[path = "circuit_candidate_next_use_command.rs"]
+mod candidate_next_use_command;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandClientV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandContextV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandErrorV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandOwnerV1;
+pub use candidate_next_use_command::OriginalCircuitCandidateNextUseCommandReceiptV1;
+
+#[path = "circuit_model_selection_command.rs"]
+mod model_selection_command;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandClientV1;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandErrorV1;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandOwnerV1;
+pub use model_selection_command::OriginalCircuitModelSelectionCommandReceiptV1;
 
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;

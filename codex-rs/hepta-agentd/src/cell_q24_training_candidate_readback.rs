@@ -4,6 +4,8 @@
 
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
@@ -114,20 +116,18 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
         })
     }
 
-    /// Re-read every page from the same live original owner. No cached seal,
-    /// successful prefix or late ACK is reused after an error or cancellation.
-    /// Missing/Pending/NoUpdate never execute, initialize, recover or sign.
+    /// Read one bounded Begin/Pages/Finish on the same original channel.
+    /// Only Finish can release a Candidate; cancellation never restores a
+    /// partial transfer or sends a later queued page as a new operation.
     pub async fn readback(&self) -> Result<OriginalCellQ24CandidateMaterialV1, Error> {
         let started_at = now()?;
-        let mut channel = self
-            .channel
-            .try_lock()
-            .map_err(|_| Error::Unavailable)?
-            .take()
-            .ok_or(Error::Unavailable)?;
+        let mut channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
+            .take().ok_or(Error::Unavailable)?;
         if !channel.execution_requested {
             return Err(Error::Binding("permanently read-only Candidate connection"));
         }
+        let cancelled = CancelledCandidateRead(Arc::new(AtomicBool::new(false)));
+        let cancellation = Arc::clone(&cancelled.0);
         let context = self.context.clone();
         let material = self.material.clone();
         let dataset = self.dataset.clone();
@@ -137,120 +137,152 @@ impl OriginalCellQ24CandidateReadbackClientV1 {
         let completion = self.completion;
         let length = self.length;
         let (channel, candidate, last_at) = tokio::task::spawn_blocking(move || {
-            let mut last_at =
-                verify_original_context(&context, &material, &dataset, &expected, started_at)?;
+            let mut last_at = verify_original_context(
+                &context, &material, &dataset, &expected, started_at,
+            )?;
             if signed_length(&context, &expected)? != length {
                 return Err(Error::Binding("unchanged signed Candidate length"));
             }
             let pages = length.div_ceil(candidate_wire::PAGE_BYTES);
-            if pages == 0 || pages > candidate_wire::MAX_PAGES {
-                return Err(Error::Binding("bounded complete Candidate page count"));
+            let transfer = channel.next_request_id;
+            if pages == 0 || pages > candidate_wire::MAX_PAGES
+                || transfer == 0
+                || transfer.checked_add(pages as u64).is_none_or(|last| last > 128)
+            {
+                return Err(Error::Binding("bounded complete Candidate transfer"));
+            }
+            let LearningIterationObservationV1::Training { candidate, .. } =
+                &expected.receipt().observation else { return Err(Error::NoCandidate); };
+            let heads_digest = candidate.components.heads;
+            if heads_digest.is_zero() {
+                return Err(Error::Binding("signed original Candidate heads digest"));
             }
             let mut heads = Vec::with_capacity(length);
             for page in 0..pages {
-                let request_id = channel.next_request_id;
-                channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;
-                let request =
-                    candidate_wire::Request::new(&context, binding, completion, request_id, page)?;
-                let encoded = serde_json::to_vec(&request)
-                    .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-                let bytes = channel
-                    .peer
-                    .request(&encoded)
-                    .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-                let response: candidate_wire::Response = serde_json::from_slice(&bytes)
-                    .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-                if response.request != request {
-                    return Err(Error::Binding(
-                        "exact Candidate purpose, page and full completion pin",
-                    ));
-                }
-                let (offset, total, encoded_heads) = match response.result {
+                let request = candidate_wire::Request::new(
+                    &context, binding, completion, channel.next_request_id, page,
+                )?;
+                let result = exchange(&mut channel, &request, &cancellation)?;
+                let (offset, total, encoded_heads, digest) = match result {
                     candidate_wire::MaterialResult::Page {
-                        offset,
-                        total,
-                        heads,
-                    } => (offset, total, heads),
-                    candidate_wire::MaterialResult::NoCandidate => return Err(Error::NoCandidate),
-                    candidate_wire::MaterialResult::Missing => {
-                        return Err(OriginalCellQ24TrainingCommandErrorV1::Missing.into());
-                    }
-                    candidate_wire::MaterialResult::Pending => {
-                        return Err(OriginalCellQ24TrainingCommandErrorV1::Pending.into());
-                    }
-                    candidate_wire::MaterialResult::Busy => {
-                        return Err(OriginalCellQ24TrainingCommandErrorV1::Busy.into());
-                    }
-                    candidate_wire::MaterialResult::ReadbackRequired => {
-                        return Err(OriginalCellQ24TrainingCommandErrorV1::ReadbackRequired.into());
-                    }
-                    candidate_wire::MaterialResult::Uncertain => {
-                        return Err(OriginalCellQ24TrainingCommandErrorV1::CommitUncertain.into());
-                    }
-                    candidate_wire::MaterialResult::Unavailable => return Err(Error::Unavailable),
+                        offset, total, heads, heads_digest,
+                    } => (offset, total, heads, heads_digest),
+                    other => return Err(response_error(other)),
                 };
-                let expected_offset = page * candidate_wire::PAGE_BYTES;
-                let expected_page_length = candidate_wire::PAGE_BYTES.min(length - expected_offset);
-                if offset as usize != expected_offset
-                    || total as usize != length
-                    || heads.len() != expected_offset
+                let offset_expected = page * candidate_wire::PAGE_BYTES;
+                let page_expected = candidate_wire::PAGE_BYTES.min(length - offset_expected);
+                if offset as usize != offset_expected || total as usize != length
+                    || heads.len() != offset_expected || digest != heads_digest.to_string()
                     || encoded_heads.len() > candidate_wire::PAGE_BYTES.div_ceil(3) * 4
                 {
-                    return Err(Error::Binding(
-                        "signed Candidate length and consecutive page",
-                    ));
+                    return Err(Error::Binding("signed Candidate length and consecutive page"));
                 }
-                let part = STANDARD_NO_PAD
-                    .decode(&encoded_heads)
+                let part = STANDARD_NO_PAD.decode(&encoded_heads)
                     .map_err(|_| Error::Binding("Candidate page encoding"))?;
-                if part.len() != expected_page_length
-                    || STANDARD_NO_PAD.encode(&part) != encoded_heads
-                {
+                if part.len() != page_expected || STANDARD_NO_PAD.encode(&part) != encoded_heads {
                     return Err(Error::Binding("complete canonical Candidate page"));
                 }
-                // Peer liveness performs I/O. All original signature windows
-                // are checked only after that I/O and before retaining a page.
-                channel
-                    .peer
-                    .check_peer_lifetime()
-                    .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-                last_at =
-                    verify_original_context(&context, &material, &dataset, &expected, last_at)?;
+                last_at = verify_original_context(
+                    &context, &material, &dataset, &expected, last_at,
+                )?;
                 heads.extend_from_slice(&part);
             }
-            if heads.len() != length {
-                return Err(Error::Binding("complete original Candidate bytes"));
+            if heads.len() != length || Digest32::of_bytes(&heads) != heads_digest {
+                return Err(Error::Binding("complete signed original Candidate body"));
             }
-            // This verifies the final whole-head hash and exact rebuilt bundle,
-            // then validates the actual changed row against the loaded baseline.
-            let candidate = OriginalCellQ24CandidateMaterialV1::from_verified_readback(
-                &baseline,
-                &context.dataset,
-                heads,
-                expected.receipt().clone(),
-                expected.attestation().clone(),
+            let finish = candidate_wire::Request::finish(
+                &context, binding, completion, channel.next_request_id, transfer,
             )?;
-            let last_at =
-                verify_original_context(&context, &material, &dataset, &expected, last_at)?;
+            match exchange(&mut channel, &finish, &cancellation)? {
+                candidate_wire::MaterialResult::Finished { total, heads_digest: digest }
+                    if total as usize == length && digest == heads_digest.to_string() => {}
+                other => return Err(response_error(other)),
+            }
+            // Actual source/native/T Finish occurred above. This pure decoder
+            // is the first point at which the staged bytes become a Candidate.
+            last_at = verify_original_context(
+                &context, &material, &dataset, &expected, last_at,
+            )?;
+            if cancellation.load(Ordering::Acquire) {
+                return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());
+            }
+            let candidate = OriginalCellQ24CandidateMaterialV1::from_verified_readback(
+                &baseline, &context.dataset, heads,
+                expected.receipt().clone(), expected.attestation().clone(),
+            )?;
+            let last_at = verify_original_context(
+                &context, &material, &dataset, &expected, last_at,
+            )?;
             Ok::<_, Error>((channel, candidate, last_at))
-        })
-        .await
-        .map_err(|_| Error::Unavailable)??;
-        // A cancelled future never restores the moved channel. The original
-        // framer retains its first admission time throughout all pages/reads.
-        channel
-            .peer
-            .check_peer_lifetime()
+        }).await.map_err(|_| Error::Unavailable)??;
+        channel.peer.check_peer_lifetime()
             .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         verify_original_context(
-            &self.context,
-            &self.material,
-            &self.dataset,
-            &self.expected,
-            last_at,
+            &self.context, &self.material, &self.dataset, &self.expected, last_at,
         )?;
-        *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
+        let mut retained_channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
+        if retained_channel.is_some() { return Err(Error::Unavailable); }
+        *retained_channel = Some(channel);
+        drop(retained_channel);
+        drop(cancelled);
         Ok(candidate)
+    }
+}
+
+struct CancelledCandidateRead(Arc<AtomicBool>);
+impl Drop for CancelledCandidateRead {
+    fn drop(&mut self) { self.0.store(true, Ordering::Release); }
+}
+
+fn exchange(
+    channel: &mut Channel,
+    request: &candidate_wire::Request,
+    cancelled: &AtomicBool,
+) -> Result<candidate_wire::MaterialResult, Error> {
+    if !(1..=128).contains(&channel.next_request_id)
+        || request.request_id != channel.next_request_id
+    {
+        return Err(Error::Binding("bounded original Candidate nonce"));
+    }
+    channel.peer.check_peer_lifetime()
+        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+    if cancelled.load(Ordering::Acquire) {
+        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());
+    }
+    let encoded = serde_json::to_vec(request).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+    if encoded.len() > 16_384 {
+        return Err(Error::Binding("bounded original Candidate request"));
+    }
+    let bytes = channel.peer.request(&encoded)
+        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+    if bytes.len() > 16_384 {
+        return Err(Error::Binding("bounded original Candidate response"));
+    }
+    let response: candidate_wire::Response = serde_json::from_slice(&bytes)
+        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+    if &response.request != request {
+        return Err(Error::Binding("exact Candidate purpose, page and full completion pin"));
+    }
+    channel.peer.check_peer_lifetime()
+        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+    if cancelled.load(Ordering::Acquire) {
+        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());
+    }
+    channel.next_request_id += 1;
+    Ok(response.result)
+}
+
+fn response_error(result: candidate_wire::MaterialResult) -> Error {
+    use candidate_wire::MaterialResult as R;
+    match result {
+        R::NoCandidate => Error::NoCandidate,
+        R::Missing => OriginalCellQ24TrainingCommandErrorV1::Missing.into(),
+        R::Pending => OriginalCellQ24TrainingCommandErrorV1::Pending.into(),
+        R::Busy => OriginalCellQ24TrainingCommandErrorV1::Busy.into(),
+        R::ReadbackRequired => OriginalCellQ24TrainingCommandErrorV1::ReadbackRequired.into(),
+        R::Uncertain | R::Finished { .. } => OriginalCellQ24TrainingCommandErrorV1::CommitUncertain.into(),
+        R::Unavailable => Error::Unavailable,
+        R::Page { .. } => Error::Binding("original Candidate response phase"),
     }
 }
 

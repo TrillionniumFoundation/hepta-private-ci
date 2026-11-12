@@ -24,6 +24,27 @@ use crate::OriginalCellQ24ModelCommandClientV1;
 use crate::OriginalCellQ24ModelCommandReceiptV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
 
+/// Data from the originally admitted D/T/E commands. These opaque receipts
+/// can be compared but cannot create an owner, signature or publication.
+pub struct OriginalCircuitModelPublicationPredecessorsV1 {
+    pub material: OriginalCellQ24MaterialReceiptConfigV1,
+    pub registration: OriginalCellEvaluationPanelRegistrationV1,
+    pub dataset: OriginalCellQ24MaterialCommandReceiptV1,
+    pub training: OriginalCellQ24TrainingCommandReceiptV1,
+    pub evaluation: OriginalCellEvaluationCommandReceiptV1,
+}
+
+impl OriginalCircuitModelPublicationPredecessorsV1 {
+    pub(super) fn with_original_model(
+        self,
+        model: OriginalCellQ24ModelCommandReceiptV1,
+    ) -> Result<OriginalCircuitModelPublicationContextV1, Error> {
+        OriginalCircuitModelPublicationContextV1::from_original_receipt(
+            self.material, self.registration, self.dataset, self.training, self.evaluation, model,
+        )
+    }
+}
+
 /// No Clone, Deserialize, public fields or original owner extraction. Sharing
 /// an Arc shares comparison data only, never a completed CURRENT observation.
 pub struct OriginalCircuitModelPublicationContextV1 {
@@ -168,21 +189,6 @@ impl OriginalCircuitModelPublicationContextV1 {
             return Err(Error::DeadlineExceeded);
         }
         Ok((coordinator, current))
-    }
-
-    pub(crate) async fn require_model_current(
-        &self,
-        original: &OriginalCellQ24ModelCommandClientV1,
-        new_work: bool,
-    ) -> Result<(), Error> {
-        let started = now()?;
-        self.authenticate(started, new_work)?;
-        let actual = OriginalCellQ24ModelCommandClientV1::readback(original).await?;
-        if actual != self.model {
-            return Err(Error::Binding("unchanged full original Model receipt and four signatures"));
-        }
-        self.authenticate(started, new_work)?;
-        Ok(())
     }
 
     /// Called after the actual final owner I/O. Every primary and retention

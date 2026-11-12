@@ -412,6 +412,8 @@ pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandErrorV1;
 pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandHostV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24ModelCommandReceiptV1;
+pub(crate) use learning_iteration_evidence_client::OriginalCellQ24ModelReadV1;
+pub(crate) use learning_iteration_evidence_client::OriginalCellQ24ModelReadCompletionV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdatePeerStreamV1;
 #[cfg(target_os = "linux")]
@@ -847,6 +849,8 @@ pub use circuit_feature_current::OriginalCircuitModelPublicationContextV1;
 pub use circuit_feature_current::OriginalCircuitModelPublicationErrorV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitModelPublicationInputsV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitModelPublicationPredecessorsV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitModelPublicationRecoveryV1;
 #[cfg(target_os = "linux")]
@@ -1490,3 +1494,35 @@ pub use artifact_original_head::OriginalArtifactHeadOwnerV1;
 pub use artifact_original_head::OriginalArtifactRegistrySourceClientV1;
 #[cfg(target_os = "linux")]
 pub use artifact_original_head::OriginalArtifactRegistrySourceOwnerV1;
+
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandContextV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitCandidateNextUseCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadClientV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadContextV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitCandidateLearningReadbackV1;
+#[cfg(target_os = "linux")]
+pub(crate) use circuit_feature_current::OriginalCircuitCandidateCompletionReadinessClientV1;
+
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitModelSelectionCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitModelSelectionCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitModelSelectionCommandOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitModelSelectionCommandReceiptV1;

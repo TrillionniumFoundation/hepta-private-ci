@@ -146,6 +146,11 @@ impl OriginalCellQ24ModelCommandClientV1 {
             wire::Outcome::ReadbackRequired => Err(Error::ReadbackRequired),
             wire::Outcome::Unavailable => return Err(Error::Unavailable),
             wire::Outcome::Uncertain => return Err(Error::CommitUncertain),
+            wire::Outcome::OriginalReadStarted { .. }
+            | wire::Outcome::OriginalReadPage { .. }
+            | wire::Outcome::OriginalReadFinished { .. } => {
+                return Err(Error::Binding("staged Model response on ordinary command"));
+            }
         };
         channel.next += 1;
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);

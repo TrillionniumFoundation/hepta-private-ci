@@ -29,9 +29,9 @@ use crate::AgentdSelectedGenerationV1;
 use crate::CircuitTaskSourceInputV1;
 use crate::NeuronGenerationCurrentOwnerV1;
 use crate::OriginalCellEvaluationCommandErrorV1;
-use crate::OriginalCellEvaluationModelMaterialClientV1;
 use crate::OriginalCellQ24ModelCommandClientV1;
 use crate::OriginalCellQ24ModelCommandErrorV1;
+use crate::OriginalCellQ24ModelReadV1;
 use crate::PreparedAgentdGenerationUpdateV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::PublishedCircuitFeatureTaskV1;
@@ -44,6 +44,7 @@ mod context;
 mod recovery;
 
 pub use context::OriginalCircuitModelPublicationContextV1;
+pub use context::OriginalCircuitModelPublicationPredecessorsV1;
 pub use recovery::OriginalCircuitModelPublicationRecoveryV1;
 pub use recovery::recover_original_circuit_model_publication_v1;
 
@@ -91,16 +92,16 @@ pub struct OriginalCircuitModelPublicationInputsV1<Old: AnchorWitnessStore, New:
     pub completed: PublishedCircuitFeatureCompletionV1,
 }
 
-/// The original old/new locks and the two originally delivered read clients
+/// The original old/new locks and one unfinished original Model operation
 /// remain in this non-Clone value until publication. Its intent is data only.
-pub struct PreparedOriginalCircuitModelPublicationV1<Old: AnchorWitnessStore, New: AnchorWitnessStore> {
+pub struct PreparedOriginalCircuitModelPublicationV1<'a, Old: AnchorWitnessStore, New: AnchorWitnessStore> {
     context: OriginalCircuitModelPublicationContextV1,
-    model: OriginalCellQ24ModelCommandClientV1,
-    evaluator: OriginalCellEvaluationModelMaterialClientV1,
+    observation: OriginalCellQ24ModelReadV1<'a>,
     prepared: PreparedAgentdGenerationUpdateV1<Old, New>,
     definition: CellDefinitionV1,
     source: CircuitTaskSourceInputV1,
     completed: PublishedCircuitFeatureCompletionV1,
+    started_at: u64,
 }
 
 /// Produced only after original publication or original-operation recovery and
@@ -118,20 +119,20 @@ impl OriginalCircuitModelPublicationV1 {
     }
 }
 
-pub async fn prepare_original_circuit_model_publication_v1<Old, New>(
-    context: OriginalCircuitModelPublicationContextV1,
-    model: OriginalCellQ24ModelCommandClientV1,
-    evaluator: OriginalCellEvaluationModelMaterialClientV1,
+pub async fn prepare_original_circuit_model_publication_v1<'a, Old, New>(
+    predecessors: OriginalCircuitModelPublicationPredecessorsV1,
+    model: &'a OriginalCellQ24ModelCommandClientV1,
     inputs: OriginalCircuitModelPublicationInputsV1<Old, New>,
-) -> Result<PreparedOriginalCircuitModelPublicationV1<Old, New>, Error>
+) -> Result<PreparedOriginalCircuitModelPublicationV1<'a, Old, New>, Error>
 where
     Old: AnchorWitnessStore + Send + 'static,
     New: AnchorWitnessStore + Send + 'static,
 {
     let started = now()?;
-    let observation = evaluator.begin_model_read().await?;
+    let observation = model.begin_original_model_read().await?;
+    let context = predecessors.with_original_model(observation.model().clone())?;
+    observation.require_current(started)?;
     let original_expiry = context.authenticate_material(observation.material(), started, true)?;
-    context.require_model_current(&model, true).await?;
     binding::require_inputs(&context, &inputs)?;
     let queued = QueuedPublicationFence::new();
     let cancelled = Arc::clone(&queued.cancelled);
@@ -160,16 +161,17 @@ where
         Ok::<_, Error>((context, prepared, inputs.definition, inputs.source, inputs.completed))
     }).await.map_err(uncertain)??;
     drop(queued);
-    context.require_model_current(&model, true).await.map_err(uncertain)?;
-    let material = observation.finish().await.map_err(uncertain)?;
-    context.authenticate_material(&material, started, true).map_err(uncertain)?;
+    // Provisional material stays private in this same unfinished operation.
+    // Returning a Prepared binding cannot release CURRENT or reset its peer.
+    observation.require_current(started).map_err(uncertain)?;
+    context.authenticate_material(observation.material(), started, true).map_err(uncertain)?;
     Ok(PreparedOriginalCircuitModelPublicationV1 {
-        context, model, evaluator, prepared, definition, source, completed,
+        context, observation, prepared, definition, source, completed, started_at: started,
     })
 }
 
 impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 'static>
-    PreparedOriginalCircuitModelPublicationV1<Old, New>
+    PreparedOriginalCircuitModelPublicationV1<'_, Old, New>
 {
     pub fn final_use_binding(&self) -> &FinalUseBinding {
         self.prepared.final_use_binding()
@@ -179,22 +181,24 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         self.prepared.intent_digest()
     }
 
-    /// The original issuer must supply this exact already-authorized grant.
-    /// No Root admission grant, E result or Model record is converted to it.
+    /// Consume the same original invocation after the issuer signs the real
+    /// Prepared binding. The original peer and absolute lifetime stay held.
     pub async fn publish_original_model_task(
         self,
         signed: SignedFinalUseGrant,
     ) -> Result<OriginalCircuitModelPublicationV1, Error> {
-        let Self { context, model, evaluator, prepared, definition, source, completed } = self;
-        let started = now()?;
-        let observation = evaluator.begin_model_read().await?;
-        let original_expiry = context.authenticate_material(observation.material(), started, true)?;
-        context.require_model_current(&model, true).await?;
+        let Self {
+            context, observation, prepared, definition, source, completed, started_at,
+        } = self;
+        observation.require_current(started_at)?;
+        let original_expiry = context.authenticate_material(
+            observation.material(), started_at, true,
+        )?;
         let queued = QueuedPublicationFence::new();
         let cancelled = Arc::clone(&queued.cancelled);
         let (context, task) = tokio::task::spawn_blocking(move || {
-            context.authenticate(started, true)?;
-            require_predecessor_window(started, original_expiry)?;
+            context.authenticate(started_at, true)?;
+            require_predecessor_window(started_at, original_expiry)?;
             require_not_cancelled(&cancelled)?;
             let ready = PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)
                 .map_err(uncertain)?;
@@ -204,11 +208,18 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
             Ok::<_, Error>((context, task))
         }).await.map_err(uncertain)??;
         drop(queued);
-        // All version I/O is complete before these actual original reads.
-        // No physical effect follows the final complete material authentication.
-        context.require_model_current(&model, true).await.map_err(uncertain)?;
-        let material = observation.finish().await.map_err(uncertain)?;
-        context.authenticate_material(&material, started, true).map_err(uncertain)?;
+        // Finish performs actual E/retention and last native Model/Training
+        // reads. Every post-publication error preserves the original effect.
+        let completed = observation.finish().await.map_err(uncertain)?;
+        if completed.model() != context.model() {
+            return Err(uncertain(Error::Binding("same complete original Model after publication")));
+        }
+        let (context, task) = tokio::task::spawn_blocking(move || {
+            // Re-read physical version CURRENT after the last Model I/O.
+            binding::require_published(&context, &task, true).map_err(uncertain)?;
+            Ok::<_, Error>((context, task))
+        }).await.map_err(uncertain)??;
+        context.authenticate_material(completed.material(), started_at, true).map_err(uncertain)?;
         Ok(OriginalCircuitModelPublicationV1 { context, task })
     }
 }

@@ -65,6 +65,8 @@ pub(super) enum Fault {
     WrongTotal,
     CorruptHeads,
     CloseAfterFirst,
+    WrongFinishDigest,
+    DropFinishAck,
 }
 
 pub(super) struct ResponseGate {
@@ -86,7 +88,8 @@ impl PagePeer {
 }
 
 /// Prebind the one original descriptor before its opaque T is supplied.
-/// Each frame still calls the real retained owner. Faults alter only its reply.
+/// Each frame calls the real retained handler; only Begin and Finish read the
+/// native owners. Faults alter only an actual original handler reply.
 pub(super) fn page_peer(
     owner: Arc<Host>,
     config: crate::OriginalCellQ24MaterialReceiptConfigV1,
@@ -140,6 +143,7 @@ pub(super) fn page_peer(
                                 offset,
                                 total,
                                 heads,
+                                ..
                             } = &mut response.result
                             else {
                                 return Err(HostIssuerTransportError::InvalidRequest);
@@ -157,7 +161,21 @@ pub(super) fn page_peer(
                                 _ => unreachable!(),
                             }
                         }
-                        Fault::Original | Fault::CloseAfterFirst => {}
+                        Fault::Original | Fault::CloseAfterFirst
+                        | Fault::WrongFinishDigest | Fault::DropFinishAck => {}
+                    }
+                }
+                if response.request.phase == candidate_wire::Phase::Finish {
+                    match fault {
+                        Fault::WrongFinishDigest => {
+                            let candidate_wire::MaterialResult::Finished { heads_digest, .. } =
+                                &mut response.result else {
+                                    return Err(HostIssuerTransportError::InvalidRequest);
+                                };
+                            *heads_digest = Digest32::of_bytes(b"wrong whole Candidate Finish").to_string();
+                        }
+                        Fault::DropFinishAck => return Err(HostIssuerTransportError::Unavailable),
+                        _ => {}
                     }
                 }
                 serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)

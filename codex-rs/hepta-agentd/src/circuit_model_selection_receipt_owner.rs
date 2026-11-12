@@ -44,6 +44,9 @@ use crate::learning_owner_journal::LearningOwnerJournalV1;
 mod binding;
 #[path = "circuit_model_selection_receipt_sources.rs"]
 mod sources;
+#[path = "circuit_model_selection_receipt_remote.rs"]
+mod remote;
+pub(crate) use remote::OriginalCircuitModelSelectionRemoteSourcesV1;
 pub use sources::OriginalCircuitModelSelectionEvaluationSourcesV1;
 pub use sources::OriginalCircuitModelSelectionReceiptSourcesV1;
 
@@ -94,6 +97,7 @@ pub struct OriginalCircuitModelSelectionReceiptOwnerV1<W: AnchorWitnessStore> {
     training: LearningIterationSnapshotV1,
     runtime: Handle,
     fenced: bool,
+    readback_only: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -130,6 +134,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
             training,
             runtime,
             fenced: false,
+            readback_only: false,
         })
     }
 
@@ -153,6 +158,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
             training,
             runtime,
             fenced: false,
+            readback_only: true,
         })
     }
 
@@ -353,5 +359,24 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         verify_signed_actor_separation(&training, &verified, current)?;
         verify_signed_actor_separation(&evaluation, &verified, current)?;
         Ok((receipt, signed))
+    }
+}
+
+impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
+    /// Transfer the existing Selector journal/key once. The Model and version
+    /// peers are original connected read capabilities, never result DTOs.
+    pub fn into_command_owner(
+        self,
+        context: crate::OriginalCircuitCandidateLearningReadContextV1,
+        model: crate::OriginalCellQ24ModelCommandClientV1,
+        live: crate::OriginalCircuitCandidateLearningReadClientV1,
+    ) -> Result<crate::OriginalCircuitModelSelectionCommandOwnerV1<W>, crate::OriginalCircuitModelSelectionCommandErrorV1> {
+        crate::OriginalCircuitModelSelectionCommandOwnerV1::from_original_receipt_owner(
+            self, context, model, live,
+        )
+    }
+
+    pub(crate) fn original_command_profile(&self) -> (&OriginalCircuitModelSelectionReceiptConfigV1, bool) {
+        (&self.config, self.readback_only)
     }
 }

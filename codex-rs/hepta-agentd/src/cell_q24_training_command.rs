@@ -57,6 +57,8 @@ pub use model_command::OriginalCellQ24ModelCommandConnectionV1;
 pub use model_command::OriginalCellQ24ModelCommandErrorV1;
 pub use model_command::OriginalCellQ24ModelCommandHostV1;
 pub use model_command::OriginalCellQ24ModelCommandReceiptV1;
+pub(crate) use model_command::OriginalCellQ24ModelReadV1;
+pub(crate) use model_command::OriginalCellQ24ModelReadCompletionV1;
 #[path = "cell_q24_training_command_wire.rs"]
 mod wire;
 pub use serving::OriginalCellQ24TrainingCommandOwnerV1;

@@ -9,7 +9,7 @@ use codex_hepta_neuron::CellDefinitionV1;
 use codex_hepta_types::Digest32;
 
 use super::Error;
-use super::OriginalCircuitModelPublicationContextV1;
+use super::OriginalCircuitModelPublicationPredecessorsV1;
 use super::OriginalCircuitModelPublicationSelectionV1;
 use super::OriginalCircuitModelPublicationV1;
 use super::binding;
@@ -24,7 +24,6 @@ use crate::CircuitFeaturePredecessorFilesV1;
 use crate::CircuitTaskSourceInputV1;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::NeuronGenerationCurrentOwnerV1;
-use crate::OriginalCellEvaluationModelMaterialClientV1;
 use crate::OriginalCellQ24ModelCommandClientV1;
 
 pub struct OriginalCircuitModelPublicationRecoveryV1<New, Cell, Source>
@@ -46,9 +45,8 @@ where
 }
 
 pub async fn recover_original_circuit_model_publication_v1<New, Cell, Source>(
-    context: OriginalCircuitModelPublicationContextV1,
-    model: OriginalCellQ24ModelCommandClientV1,
-    evaluator: OriginalCellEvaluationModelMaterialClientV1,
+    predecessors: OriginalCircuitModelPublicationPredecessorsV1,
+    model: &OriginalCellQ24ModelCommandClientV1,
     original: OriginalCircuitModelPublicationRecoveryV1<New, Cell, Source>,
 ) -> Result<OriginalCircuitModelPublicationV1, Error>
 where
@@ -60,9 +58,10 @@ where
         return Err(Error::Binding("original Model publication intent"));
     }
     let started = now()?;
-    let observation = evaluator.begin_model_read().await?;
+    let observation = model.begin_original_model_read().await?;
+    let context = predecessors.with_original_model(observation.model().clone())?;
+    observation.require_current(started)?;
     context.authenticate_material(observation.material(), started, false)?;
-    context.require_model_current(&model, false).await?;
     let (context, task) = tokio::task::spawn_blocking(move || {
         let coordinator = context.authenticate(started, false)?;
         let operation = crate::learning_updated_task_operation_id_v1(&coordinator)?;
@@ -87,8 +86,14 @@ where
         binding::require_published(&context, &task, false)?;
         Ok::<_, Error>((context, task))
     }).await.map_err(uncertain)??;
-    context.require_model_current(&model, false).await?;
-    let material = observation.finish().await?;
-    context.authenticate_material(&material, started, false)?;
+    let completed = observation.finish().await?;
+    if completed.model() != context.model() {
+        return Err(Error::Binding("same complete original Model during recovery"));
+    }
+    let (context, task) = tokio::task::spawn_blocking(move || {
+        binding::require_published(&context, &task, false)?;
+        Ok::<_, Error>((context, task))
+    }).await.map_err(uncertain)??;
+    context.authenticate_material(completed.material(), started, false)?;
     Ok(OriginalCircuitModelPublicationV1 { context, task })
 }
