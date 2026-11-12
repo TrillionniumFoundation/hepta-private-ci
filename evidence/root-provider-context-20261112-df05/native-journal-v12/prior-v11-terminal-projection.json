@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "state": "failed",
+  "exit_code": 1,
+  "cancelled": false,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "stdout_bytes": 0,
+  "stderr_bytes": 133,
+  "original": {
+    "bytes": 726,
+    "sha256": "972d9526b41ea7c9ec68cedbc84627589f91feba8abe57c9cd5f95889899c7aa",
+    "reference": "private native v12 control/prior-v11-terminal-original.json"
+  },
+  "phase": "Draft body admission after read-only source and old artifact checks, before new OUT creation, product edits, Rust commands, commits or publication",
+  "failure": "The supplied host snapshot had the v10 evidence head but retained the v6 body from the push-to-body-update window.",
+  "recovery": "Preserve the rejected fixed request. Reread both PR bodies after v10 publication completed and verify their internal source, evidence, merge and package outcomes against the actual v10 summaries."
+}

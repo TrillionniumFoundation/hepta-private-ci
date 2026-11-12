@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "source": "authoritative native process status; original retained privately",
+  "state": "succeeded",
+  "exit_code": 0,
+  "cancelled": false,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "log_bytes": {
+    "stdout": {
+      "seen": 26724,
+      "stored": 26724
+    },
+    "stderr": {
+      "seen": 4222,
+      "stored": 4222
+    }
+  },
+  "log_synced": {
+    "stdout": true,
+    "stderr": true
+  },
+  "log_truncated": {
+    "stdout": false,
+    "stderr": false
+  },
+  "original": {
+    "bytes": 739,
+    "sha256": "04cb0f710ca007a4b6e94eb30976b28c6061288a42563e6514cb37afbef2eee0",
+    "reference": "private native v12 control/prior-v6-terminal-native.json"
+  },
+  "scope_note": "Wrapper exit zero is not product-test success; preserved v6 package gates failed."
+}
