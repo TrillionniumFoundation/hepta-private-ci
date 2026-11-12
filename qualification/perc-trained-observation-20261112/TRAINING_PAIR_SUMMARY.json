@@ -1,0 +1,25 @@
+{
+  "schema": "perc1.real-utility-pair-summary.v1",
+  "pairs_file_sha256": "a0462c86fddeee5dfef5971321c46d4145fbad926ae79c9882654c29f13cb7c2",
+  "splits": {
+    "train": {
+      "pairs": 72,
+      "source_groups": 24,
+      "observed_gain_counts": {
+        "0.0": 67,
+        "1.0": 5
+      }
+    },
+    "dev": {
+      "pairs": 24,
+      "source_groups": 8,
+      "observed_gain_counts": {
+        "0.0": 20,
+        "1.0": 4
+      }
+    }
+  },
+  "labels": "real completed OCR continuation versus same initial prefix; no confirmation labels used in fitting",
+  "scientific_status": "HOLD",
+  "adoption": "NoUpdate"
+}
