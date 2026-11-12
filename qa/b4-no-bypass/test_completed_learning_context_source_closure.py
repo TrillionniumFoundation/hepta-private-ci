@@ -53,6 +53,7 @@ class CompletedLearningContextSourceClosure(unittest.TestCase):
             "trust.activate_for_recipient(",
             "trust.require_activation_pin(",
             "RootHistoricalLearningTrustV1::revalidate(",
+            "context.revalidate_recorded_signers()?",
         ):
             with self.subTest(marker=marker):
                 self.reject(marker)
