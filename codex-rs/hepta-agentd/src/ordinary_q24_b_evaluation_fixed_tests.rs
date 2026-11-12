@@ -44,6 +44,78 @@ pub(super) struct FixedControlData {
     pub(super) receipt: [u8; 32],
 }
 
+/// A prospective one-row, native SGD declaration for this ordinary fixture.
+/// It is computed independently of the fixed control's result. Root must
+/// match it to the actual signed Training preimage before any B execution.
+pub(super) fn declare_candidate(
+    model_directory: &Path,
+    structure: [u8; 32],
+) -> anyhow::Result<ArmData> {
+    let (model, bundle, _) = super::super::super::material::load(model_directory)?;
+    let mut total_parameters = 0_u64;
+    let mut head_width = None;
+    for (name, expected) in [
+        ("base", bundle.components.base),
+        ("encoder", bundle.components.encoder),
+        ("heads", bundle.components.heads),
+    ] {
+        let bytes = std::fs::read(model_directory.join(name))?;
+        anyhow::ensure!(
+            bytes.len() >= 12
+                && &bytes[..8] == b"HQ24M001"
+                && Digest32::of_bytes(&bytes) == expected,
+            "actual baseline matrix bytes required for the candidate declaration"
+        );
+        let rows = u64::from(u16::from_le_bytes(bytes[8..10].try_into()?));
+        let cols = u64::from(u16::from_le_bytes(bytes[10..12].try_into()?));
+        anyhow::ensure!(
+            rows > 0 && cols > 0 && bytes.len() as u64 == 12 + 8 * rows * cols,
+            "original candidate matrix dimensions"
+        );
+        total_parameters += rows * cols;
+        if name == "heads" {
+            head_width = Some(cols);
+        }
+    }
+    anyhow::ensure!(
+        bundle.components.organ_adapter.is_none()
+            && bundle.components.cell_adapter.is_none()
+            && model.components() == &bundle.components,
+        "this fixture declares only its actual three-matrix baseline"
+    );
+    let width = head_width.ok_or_else(|| anyhow::anyhow!("original head matrix absent"))?;
+    let examples_seen = 1; // The ordinary A fixture submits exactly one frozen row.
+    let optimizer_steps = examples_seen * u64::from(EPOCHS);
+    let updates = optimizer_steps * width;
+    let (compute, policy, eligibility, schedule) = work_contract();
+    Ok(ArmData {
+        total_parameters,
+        trainable_parameters: width,
+        maximum_active_parameters: total_parameters,
+        examples_seen,
+        optimizer_steps,
+        parameter_updates: updates,
+        compute_units: updates,
+        compute_unit_contract: compute.into_array(),
+        update_policy: policy.into_array(),
+        update_eligibility: eligibility.into_array(),
+        update_schedule: schedule.into_array(),
+        maximum_parameters_per_step: width,
+        structure_before: structure,
+        structure_after: structure,
+    })
+}
+
+fn work_contract() -> (Digest32, Digest32, Digest32, Digest32) {
+    crate::cell_composed_q24::original_q24_work_contract(
+        crate::CellQ24PrivateHeadV1::Drive { index: 0 },
+        crate::CellQ24SgdRuleV1 {
+            epochs: EPOCHS,
+            learning_rate_q24: LEARNING_RATE_Q24,
+        },
+    )
+}
+
 pub(super) fn execute(
     model_directory: &Path,
     evidence_directory: &Path,
@@ -141,27 +213,21 @@ pub(super) fn execute(
             "fixed baseline control changed the original model"
         );
     }
-    let compute_unit_contract = Digest32::of_bytes(
-        b"original-fixed-control-v1;unit=one-Q24-SGD-gradient-coordinate;native-forward-cost-separate;zero-delta-still-evaluated");
+    let (compute, policy, eligibility, schedule) = work_contract();
+    let total_parameters = ((base.len() + encoder.len() + heads.len() - 36) / 8) as u64;
     let arm = ArmData {
-        total_parameters: ((base.len() + encoder.len() + heads.len() - 36) / 8) as u64,
-        trainable_parameters: 2,
-        maximum_active_parameters: 28,
+        total_parameters,
+        trainable_parameters: weights.len() as u64,
+        maximum_active_parameters: total_parameters,
         examples_seen: 1,
         optimizer_steps: steps,
         parameter_updates: updates,
         compute_units: updates,
-        compute_unit_contract: compute_unit_contract.into_array(),
-        update_policy: Digest32::of_bytes(b"single-private-drive0-Q24-SGD-STE-clip-eight")
-            .into_array(),
-        update_eligibility: Digest32::of_bytes(b"one-original-frozen-input-row").into_array(),
-        update_schedule: Digest32::of_parts(&[
-            b"original-fixed-order-SGD-epochs\0",
-            &EPOCHS.to_le_bytes(),
-            &LEARNING_RATE_Q24.to_le_bytes(),
-        ])
-        .into_array(),
-        maximum_parameters_per_step: 2,
+        compute_unit_contract: compute.into_array(),
+        update_policy: policy.into_array(),
+        update_eligibility: eligibility.into_array(),
+        update_schedule: schedule.into_array(),
+        maximum_parameters_per_step: weights.len() as u64,
         structure_before: structure,
         structure_after: structure,
     };
