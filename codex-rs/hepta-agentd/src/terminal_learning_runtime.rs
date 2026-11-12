@@ -161,7 +161,9 @@ impl TerminalLearningRuntimeBootstrapV1 {
                     require_ready(&state)?;
                     let now = clock()?;
                     let result = match mode {
-                        TerminalLearningModeV1::Readback => self.owner.readback(*request, now).await,
+                        TerminalLearningModeV1::Readback => {
+                            AgentdTerminalLearningOwnerV1::readback(&self.owner, *request, now).await
+                        }
                         TerminalLearningModeV1::Train => self.owner.train(*request, now).await,
                     };
                     require_ready(&state)?;
