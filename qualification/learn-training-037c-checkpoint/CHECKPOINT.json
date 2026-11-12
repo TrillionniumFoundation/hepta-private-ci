@@ -1,0 +1,156 @@
+{
+  "schema": "learn_training_checkpoint_v1",
+  "checkpoint_status": "PARTIAL_RECOVERY_ARCHIVE_PAGING_PAUSED",
+  "prior_observed_validation": "ACTUAL_FMT_SCOPED18PASS_NATIVE_UNRUN",
+  "base_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "base_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "product_sources_materialized_in_this_commit": 0,
+  "new_tests_run_during_recovery": false,
+  "ordinary_qualification": {
+    "Adopt": 0,
+    "NoUpdate": 0,
+    "daemon_and_Root_cold_recovery": 0
+  },
+  "exact_recovered_artifacts": [
+    {
+      "path": "qualification/learn-training-037c-checkpoint/source-guard-final-v1.raw.log",
+      "bytes": 4367,
+      "sha256": "1f827ce39df5df07f6c9efa199b0af756a9d594a16fd8e360ab6eda1306d4280",
+      "blob": "19dce5159166ca0041c8eb7e064fd0641379696c",
+      "kind": "exact_original",
+      "provenance": "Complete prior untruncated stdout recovered and length/SHA256/Git blob matched frozen original."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/DELIVERY.original.json",
+      "bytes": 2671,
+      "sha256": "9f30796c69e29f1b633bfefcac47502b361806b6bbf62eeeb4fcd883c4091a7d",
+      "blob": "fa8f728df0c14c9f6a8b57ec6d8eb6102709b31d",
+      "kind": "exact_original",
+      "provenance": "Complete prior tool-visible JSON recovered and length/SHA256/Git blob matched frozen original."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/final-qa/test_original_training_source_capture_source_closure.py",
+      "bytes": 9962,
+      "sha256": "faceed119e66c617455b1ee5a3264ab1e2fe954803c45f92179aab713fb1c79f",
+      "blob": "0d3aece1ccf5769913c5953053baba5ff2a5a2b1",
+      "kind": "exact_final_postimage",
+      "provenance": "Exact a96 base plus recorded two substitutions; output matches original final length/SHA256/Git blob."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/final-qa/test_original_candidate_material_source_closure.py",
+      "bytes": 12223,
+      "sha256": "c9e148857d7f4ba1c2697bc46c3b0039dc25d59b109694715acbb74917795fd3",
+      "blob": "b143221d0b15b5da2dd076ddc199bf6f4eadd77a",
+      "kind": "exact_final_postimage",
+      "provenance": "Candidate checkpoint e18d Current QA plus recorded T substitutions; output matches original final length/SHA256/Git blob."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-0.part",
+      "bytes": 4096,
+      "sha256": "89e1d0a73f3605f02450ea330d1a21af6c206a575fb4883d9a7369b1c942aa81",
+      "blob": "48dba48916946d7276d5ce75519bdb7718d451ef",
+      "kind": "partial_original_payload",
+      "provenance": "Original operation ae293bd955db071103705baa01c831b991e2ac35d6f110f0531144996241a5ab, offset 0, whole expected 39810B/a33241d765b563125737780b667bb0e7f4f75879f4081fdaf4556aa5c14390ed."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-0.receipt.json",
+      "bytes": 6320,
+      "sha256": "4a50ae48e507f2cd54dbeebf6ed181d48e505d0a0d6304b594434812bed6741d",
+      "blob": "7fff02a7bd41cb705e80abb2bcd8208f23b879af",
+      "kind": "observed_tool_result",
+      "provenance": "Complete original returned CallToolResult retained with JSON pretty serialization."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-4096.part",
+      "bytes": 4096,
+      "sha256": "e82028dbde08ce8c0c2831af1f9dedfced66f7789fb4bca1f1063971d997520a",
+      "blob": "99307cf31637d990565d5a0c44a673cd2b07b4f1",
+      "kind": "partial_original_payload",
+      "provenance": "Original operation ae293bd955db071103705baa01c831b991e2ac35d6f110f0531144996241a5ab, offset 4096, whole expected 39810B/a33241d765b563125737780b667bb0e7f4f75879f4081fdaf4556aa5c14390ed."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-4096.receipt.json",
+      "bytes": 6323,
+      "sha256": "8bda20ca63a1c0c5f0416a76d487357697ee4673d75a9479b9516a09e8b5dfee",
+      "blob": "b603905936e192b30b57b8c2bf04b1ea652476e3",
+      "kind": "observed_tool_result",
+      "provenance": "Complete original returned CallToolResult retained with JSON pretty serialization."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/immutable-readback/training-postimages.offset-8192.attempt-1.error.json",
+      "bytes": 222,
+      "sha256": "ff3e11aaea0932b26ac796be1ee206fc93704b6738983e3936efca9158c83e0c",
+      "blob": "005f84b22256717b80dc4b19a67beac009eab93b",
+      "kind": "observed_rpc_error",
+      "provenance": "Read-only page RPC timed out; no native effect and no new operation dispatched."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/recovery-tools/hashes-and-codecs.function-body.js",
+      "bytes": 4553,
+      "sha256": "a3ab5db43c61b5477d31dcf5e1f010c943bf956066f53b6852639fed6bc91443",
+      "blob": "65951e3e4af22261dfeb0f1cfc05df61090283ec",
+      "kind": "recovery_utility",
+      "provenance": "Pure JS codecs verified against standard hash vectors and full exact a96 SourceCapture QA hash."
+    },
+    {
+      "path": "qualification/learn-training-037c-checkpoint/recovery-tools/gzip.function-body.js",
+      "bytes": 5004,
+      "sha256": "551e3811e82136c5ffef6c5f5cf0b4d620ef3c4aeca65184bb1ba44604e0ada5",
+      "blob": "a3ec2140472c00d21e6a6b22e9db0d2e9e8347c3",
+      "kind": "exact_existing_utility",
+      "provenance": "Profile checkpoint 807896d0b8b3dfb89b912f12f3ffeb9373f38550; exact known5004B/551e3811...; not yet used on partial T archive."
+    }
+  ],
+  "archive_readback": {
+    "operation_id": "ae293bd955db071103705baa01c831b991e2ac35d6f110f0531144996241a5ab",
+    "next_offset": 8192,
+    "total_bytes": 39810,
+    "result_sha256": "a33241d765b563125737780b667bb0e7f4f75879f4081fdaf4556aa5c14390ed",
+    "pages": [
+      {
+        "offset": 0,
+        "bytes": 4096,
+        "sha256": "89e1d0a73f3605f02450ea330d1a21af6c206a575fb4883d9a7369b1c942aa81"
+      },
+      {
+        "offset": 4096,
+        "bytes": 4096,
+        "sha256": "e82028dbde08ce8c0c2831af1f9dedfced66f7789fb4bca1f1063971d997520a"
+      }
+    ]
+  },
+  "recovery_pause": "Root owns H window for V8 input restoration and original diagnostic native launch; next immutable read must resume the same operation at offset8192.",
+  "missing_complete_originals": [
+    {
+      "path": "training-read-transaction-formatted-v3/complete-postimages.json.gz",
+      "bytes": 29526,
+      "sha256": "d5feb190422009022a9a1f091359f35042e54127b53212d83eba8cc289d11ef3",
+      "recoverable_from_operation": "ae293bd955db071103705baa01c831b991e2ac35d6f110f0531144996241a5ab"
+    },
+    {
+      "path": "training-read-transaction-guards-formatted-v3/postimages/qa/b4-no-bypass/test_original_training_read_transaction_source_closure.py",
+      "bytes": 11061,
+      "sha256": "35321542e88887630373801e7d903aab786f76c18320711b5c7d7fb316790abe",
+      "state": "complete content not yet recovered; not represented by a hash-only replacement"
+    },
+    {
+      "path": "training-read-transaction-guards-formatted-v3/CALLERS-DELTA.json",
+      "bytes": 47147,
+      "sha256": "3a780c5f8846c6cd6c637306ea62e1049a5eb67fe86feedf24daaa6d4c8b42c8",
+      "state": "complete content not yet recovered; no global CALLERS overwrite"
+    },
+    {
+      "path": "candidate-current-protocol-a96-v1/CALLERS-DELTA.json",
+      "bytes": 72732,
+      "sha256": "3557f035138daa7566d2fde7d4d883bf4a856011dab8112ee6cba2dd885eabd8",
+      "state": "complete content not yet recovered"
+    }
+  ],
+  "current13_source_saved_separately": {
+    "commit": "e18d71c2d066fbefc4f323159a9f2d968eac2d54",
+    "description": "Candidate-owned central v1 checkpoint includes actual Current13 and its two QA files."
+  },
+  "integration_warning": "This checkpoint preserves validated bytes and known gaps; it does not create a runnable complete LEARN cohort or grant native/ordinary qualification.",
+  "main_pr_updated": false,
+  "global_callers_written": false
+}

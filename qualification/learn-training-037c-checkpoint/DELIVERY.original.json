@@ -1,0 +1,54 @@
+{
+  "status": "ACTUAL_FORMATTED_SOURCE_GUARDS_VERIFIED",
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "source_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "product_manifest": {
+    "path": "/workspace/scratch/037c0371c195/training-read-transaction-formatted-v3/VERIFIED_MANIFEST.json",
+    "bytes": 13577,
+    "sha256": "4d483fbc303794ac0aab81408e80d0492cb05a666e2684b68a31c1fc3fa6cbf3",
+    "blob": "9a6916347b55ef822995b94753bc30b9ef8daf02"
+  },
+  "qa_files": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/postimages/qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "bytes": 12223,
+      "sha256": "c9e148857d7f4ba1c2697bc46c3b0039dc25d59b109694715acbb74917795fd3",
+      "blob": "b143221d0b15b5da2dd076ddc199bf6f4eadd77a"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_read_transaction_source_closure.py",
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/postimages/qa/b4-no-bypass/test_original_training_read_transaction_source_closure.py",
+      "bytes": 11061,
+      "sha256": "35321542e88887630373801e7d903aab786f76c18320711b5c7d7fb316790abe",
+      "blob": "72db2dfd45fb0d3153e26fcbb3f2922a2fdae9bf"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "postimage": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/postimages/qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "bytes": 9962,
+      "sha256": "faceed119e66c617455b1ee5a3264ab1e2fe954803c45f92179aab713fb1c79f",
+      "blob": "0d3aece1ccf5769913c5953053baba5ff2a5a2b1"
+    }
+  ],
+  "callers_delta": {
+    "path": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/CALLERS-DELTA.json",
+    "bytes": 47147,
+    "sha256": "3a780c5f8846c6cd6c637306ea62e1049a5eb67fe86feedf24daaa6d4c8b42c8",
+    "blob": "b757cfe9292861f8e2a0e9b17d33930e2f1252d2"
+  },
+  "local_source_checks": {
+    "passed": 18,
+    "failed": 0,
+    "result": "/workspace/scratch/037c0371c195/training-read-transaction-guards-formatted-v3/source-guard-final-v1.result.json"
+  },
+  "all_legacy_forbidden_markers_preserved": true,
+  "new_boundaries": 8,
+  "changed_boundaries": 3,
+  "changed_original_protected_rows": 2,
+  "new_protected_rows": 6,
+  "rust_or_native_tests_run": false,
+  "complete_ordinary_NoUpdate_qualification": 0,
+  "global_manifest_or_allowlist_written": false,
+  "frozen_prefmt_originals_unchanged": true
+}
