@@ -1,0 +1,2562 @@
+{
+  "identity": "currentstate-largegrid-stdlib-static-cost-v2",
+  "attempt": "002",
+  "reviewed_core_source": "/workspace/scratch/c06d659c1e72/currentstate-packets/qualification/hcsn_currentstate/packets.py",
+  "reviewed_core_source_freeze": "de3d9372d8bd53bb4c523c6f1a43e3e213d33790",
+  "core_sha256_before": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+  "core_sha256_after": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+  "input_binding_status": "parent-supplied intended binding; no NPZ or actual selected law loaded by this reviewer",
+  "binding": {
+    "intervals_N": [
+      128,
+      256,
+      512
+    ],
+    "interior_n": "N-1",
+    "channels": 5,
+    "signed_channels": 4,
+    "L": "8",
+    "graded_stretch": "6",
+    "reset_point_decimal": "0.3131468965881033",
+    "phase_supports": "[j/40,(j+1)/40], j=0,...,7",
+    "delay": "1/5",
+    "max_time": "9/25",
+    "upper_state": "permanently active and nonreturning",
+    "N128_N512_inputs": "parent reports original NPZ+JSON persisted in #6234 archive; not loaded here",
+    "N256_inputs": "missing export: hard input gate; no regeneration performed"
+  },
+  "assumptions": [
+    "Direct extension preserves dense arrays, two active generations, three upper origins and exact-support packets.",
+    "Spatial generator is irreducible with a nonzero lower-hit selector; reset couples the incoming source to it.",
+    "All eight initial phase packets are represented; supports are disjoint. No floating coefficient threshold pruning.",
+    "No new input/physics/reset changes during the episode; T<=.36<2d.",
+    "Event graph counts source/active ancestor dimensions, not any numerical semigroup or hit probability."
+  ],
+  "formulas": {
+    "C_dimension": "m=2n+s, s=sum dimensions of simultaneously releasing continuous packets",
+    "advance_expm_dimensions": [
+      "m+5",
+      "m+8"
+    ],
+    "observe_expm_dimension": "k+1, twice per flux packet per readout",
+    "packet_float64_count": "k^2+(C+1)k",
+    "physical_state_float64_count": "C(2n+10)",
+    "readout_scalar_count": "C(2n+16)",
+    "minimal_final_F_C5": "37n^2+180n+113",
+    "planned_warm_final_F_C5": "52n^2+246n+134",
+    "array_group_count": "A=5+3P",
+    "hex_contents_lower": "11F-A; exclude [] and all metadata",
+    "hex_arrays_lower": "11F+A; include [] but exclude dictionary/shape/support/hash metadata",
+    "hex_contents_upper": "27F-A for finite binary64 only; metadata has no universal bound for arbitrary Fraction denominators"
+  },
+  "minimal_graph": {
+    "segments": 15,
+    "advance_expm_calls_structural": 30,
+    "observe_expm_calls_structural": 32,
+    "total_expm_calls_structural": 62,
+    "queries": [
+      {
+        "time": "9/25",
+        "packets": 16,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 7
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 2
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 7
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "left": "0",
+        "right": "1/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/40",
+        "right": "1/20",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/20",
+        "right": "3/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/40",
+        "right": "1/10",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/10",
+        "right": "1/8",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/8",
+        "right": "3/20",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/20",
+        "right": "7/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/40",
+        "right": "1/5",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/5",
+        "right": "9/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "9/40",
+        "right": "1/4",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/4",
+        "right": "11/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "11/40",
+        "right": "3/10",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/10",
+        "right": "13/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "13/40",
+        "right": "7/20",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/20",
+        "right": "9/25",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "final_packet_groups": [
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          0
+        ],
+        "count": 7
+      },
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          1
+        ],
+        "count": 2
+      },
+      {
+        "target": 3,
+        "dimension_a_n_plus_b": [
+          2,
+          1
+        ],
+        "count": 7
+      }
+    ]
+  },
+  "planned_warm_graph": {
+    "segments": 21,
+    "advance_expm_calls_structural": 42,
+    "observe_expm_calls_structural": 202,
+    "total_expm_calls_structural": 244,
+    "queries": [
+      {
+        "time": "0",
+        "packets": 8,
+        "groups": [
+          {
+            "target": 1,
+            "dimension_a_n_plus_b": [
+              0,
+              1
+            ],
+            "count": 8
+          }
+        ]
+      },
+      {
+        "time": "1/1000",
+        "packets": 9,
+        "groups": [
+          {
+            "target": 1,
+            "dimension_a_n_plus_b": [
+              0,
+              1
+            ],
+            "count": 8
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "time": "1/50",
+        "packets": 10,
+        "groups": [
+          {
+            "target": 1,
+            "dimension_a_n_plus_b": [
+              0,
+              1
+            ],
+            "count": 8
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 2
+          }
+        ]
+      },
+      {
+        "time": "4/25",
+        "packets": 11,
+        "groups": [
+          {
+            "target": 1,
+            "dimension_a_n_plus_b": [
+              0,
+              1
+            ],
+            "count": 2
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 9
+          }
+        ]
+      },
+      {
+        "time": "1/5",
+        "packets": 11,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 11
+          }
+        ]
+      },
+      {
+        "time": "201/1000",
+        "packets": 12,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 10
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "time": "7/25",
+        "packets": 18,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 6
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 6
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 6
+          }
+        ]
+      },
+      {
+        "time": "9/25",
+        "packets": 22,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 10
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 2
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 10
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "left": "0",
+        "right": "1/1000",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/1000",
+        "right": "1/50",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/50",
+        "right": "1/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/40",
+        "right": "1/20",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/20",
+        "right": "3/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/40",
+        "right": "1/10",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/10",
+        "right": "1/8",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/8",
+        "right": "3/20",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/20",
+        "right": "4/25",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "4/25",
+        "right": "7/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/40",
+        "right": "1/5",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/5",
+        "right": "201/1000",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "201/1000",
+        "right": "11/50",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "11/50",
+        "right": "9/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "9/40",
+        "right": "1/4",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/4",
+        "right": "11/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "11/40",
+        "right": "7/25",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/25",
+        "right": "3/10",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/10",
+        "right": "13/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "13/40",
+        "right": "7/20",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/20",
+        "right": "9/25",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "final_packet_groups": [
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          0
+        ],
+        "count": 10
+      },
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          1
+        ],
+        "count": 2
+      },
+      {
+        "target": 3,
+        "dimension_a_n_plus_b": [
+          2,
+          1
+        ],
+        "count": 10
+      }
+    ]
+  },
+  "planned_coarse_graph": {
+    "segments": 15,
+    "advance_expm_calls_structural": 30,
+    "observe_expm_calls_structural": 64,
+    "total_expm_calls_structural": 94,
+    "queries": [
+      {
+        "time": "0",
+        "packets": 8,
+        "groups": [
+          {
+            "target": 1,
+            "dimension_a_n_plus_b": [
+              0,
+              1
+            ],
+            "count": 8
+          }
+        ]
+      },
+      {
+        "time": "1/5",
+        "packets": 8,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 8
+          }
+        ]
+      },
+      {
+        "time": "9/25",
+        "packets": 16,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 7
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 2
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 7
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "left": "0",
+        "right": "1/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/40",
+        "right": "1/20",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/20",
+        "right": "3/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/40",
+        "right": "1/10",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/10",
+        "right": "1/8",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/8",
+        "right": "3/20",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/20",
+        "right": "7/40",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/40",
+        "right": "1/5",
+        "source_dim_a_n_plus_b": [
+          0,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          2,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/5",
+        "right": "9/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "9/40",
+        "right": "1/4",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/4",
+        "right": "11/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "11/40",
+        "right": "3/10",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/10",
+        "right": "13/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "13/40",
+        "right": "7/20",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/20",
+        "right": "9/25",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "final_packet_groups": [
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          0
+        ],
+        "count": 7
+      },
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          1
+        ],
+        "count": 2
+      },
+      {
+        "target": 3,
+        "dimension_a_n_plus_b": [
+          2,
+          1
+        ],
+        "count": 7
+      }
+    ]
+  },
+  "planned_cold_graph": {
+    "segments": 9,
+    "advance_expm_calls_structural": 18,
+    "observe_expm_calls_structural": 104,
+    "total_expm_calls_structural": 122,
+    "queries": [
+      {
+        "time": "201/1000",
+        "packets": 12,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 10
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "time": "7/25",
+        "packets": 18,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 6
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 6
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 6
+          }
+        ]
+      },
+      {
+        "time": "9/25",
+        "packets": 22,
+        "groups": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 10
+          },
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              1
+            ],
+            "count": 2
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 10
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "left": "201/1000",
+        "right": "11/50",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "11/50",
+        "right": "9/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "9/40",
+        "right": "1/4",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "1/4",
+        "right": "11/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "11/40",
+        "right": "7/25",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/25",
+        "right": "3/10",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "3/10",
+        "right": "13/40",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "13/40",
+        "right": "7/20",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      },
+      {
+        "left": "7/20",
+        "right": "9/25",
+        "source_dim_a_n_plus_b": [
+          1,
+          1
+        ],
+        "C_dim_a_n_plus_b": [
+          3,
+          1
+        ],
+        "new_packet_dimensions": [
+          {
+            "target": 2,
+            "dimension_a_n_plus_b": [
+              1,
+              0
+            ],
+            "count": 1
+          },
+          {
+            "target": 3,
+            "dimension_a_n_plus_b": [
+              2,
+              1
+            ],
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "final_packet_groups": [
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          0
+        ],
+        "count": 10
+      },
+      {
+        "target": 2,
+        "dimension_a_n_plus_b": [
+          1,
+          1
+        ],
+        "count": 2
+      },
+      {
+        "target": 3,
+        "dimension_a_n_plus_b": [
+          2,
+          1
+        ],
+        "count": 10
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "intervals_N": 128,
+      "interior_n": 127,
+      "channels_C": 5,
+      "physical_state_float64_count": 1320,
+      "readout_scalar_denominator_per_query": 1350,
+      "planned_14_readouts_scalar_denominator": 18900,
+      "planned_8_unique_reference_scalar_denominator": 10800,
+      "external_physics_float64_count_including_discount": 16511,
+      "dimension_cases": [
+        {
+          "case": "no_releasing_packet",
+          "releasing_source_dim": 0,
+          "C_dim": 254,
+          "first_advance_expm_dim": 259,
+          "second_advance_expm_dim": 262,
+          "one_largest_dense_float64_matrix_bytes": 549152,
+          "two_visible_argument_matrices_float64_bytes": 1098304,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 2679472,
+          "dimension_cube_scaling_unit": 17984728
+        },
+        {
+          "case": "original_scalar_phase_release",
+          "releasing_source_dim": 1,
+          "C_dim": 255,
+          "first_advance_expm_dim": 260,
+          "second_advance_expm_dim": 263,
+          "one_largest_dense_float64_matrix_bytes": 553352,
+          "two_visible_argument_matrices_float64_bytes": 1106704,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 2700216,
+          "dimension_cube_scaling_unit": 18191447
+        },
+        {
+          "case": "one_first_hit_packet_release",
+          "releasing_source_dim": 128,
+          "C_dim": 382,
+          "first_advance_expm_dim": 387,
+          "second_advance_expm_dim": 390,
+          "one_largest_dense_float64_matrix_bytes": 1216800,
+          "two_visible_argument_matrices_float64_bytes": 2433600,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 5984944,
+          "dimension_cube_scaling_unit": 59319000
+        }
+      ],
+      "packet_cases": [
+        {
+          "kind": "first_hit_without_phase_source",
+          "dimension": 127,
+          "generator_float64_bytes": 129032,
+          "all_packet_array_float64_count": 16891,
+          "all_packet_array_float64_bytes": 135128,
+          "hex_contents_lower_bytes": 185798
+        },
+        {
+          "kind": "first_hit_with_scalar_phase_source",
+          "dimension": 128,
+          "generator_float64_bytes": 131072,
+          "all_packet_array_float64_count": 17152,
+          "all_packet_array_float64_bytes": 137216,
+          "hex_contents_lower_bytes": 188669
+        },
+        {
+          "kind": "second_hit_after_first_packet_release",
+          "dimension": 255,
+          "generator_float64_bytes": 520200,
+          "all_packet_array_float64_count": 66555,
+          "all_packet_array_float64_bytes": 532440,
+          "hex_contents_lower_bytes": 732102
+        }
+      ],
+      "minimal_single_advance_final": {
+        "packet_count": 16,
+        "float64_count": 619746,
+        "float64_array_bytes": 4957968,
+        "nonempty_hex_array_groups": 53,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 6817153,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 6817259,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 16733089,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 35325522,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_warm_final": {
+        "packet_count": 22,
+        "float64_count": 870084,
+        "float64_array_bytes": 6960672,
+        "nonempty_hex_array_groups": 71,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 9570853,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 9570995,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 23492197,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 49594788,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_coarse_final": {
+        "packet_count": 16,
+        "float64_count": 619746,
+        "float64_array_bytes": 4957968,
+        "nonempty_hex_array_groups": 53,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 6817153,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 6817259,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 16733089,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 35325522,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_resume_0_201": {
+        "packet_count": 12,
+        "float64_count": 256286,
+        "float64_array_bytes": 2050288,
+        "nonempty_hex_array_groups": 41,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 2819105,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 2819187,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 6919681,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 14608302,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "existing_operator_refusals": {
+        "Physics_n_not_1_or_2": true,
+        "channels_not_three": true,
+        "no_source_C_exceeds_64": true,
+        "no_source_largest_expm_exceeds_128": true,
+        "first_phase_packet_exceeds_64": true,
+        "active_array_axis_exceeds_128": false,
+        "second_packet_array_axis_exceeds_128": true,
+        "planned_warm_segments_exceed_20": true,
+        "planned_warm_expm_exceed_resume_ledger_100": true,
+        "planned_cold_expm_exceed_resume_ledger_100": true
+      }
+    },
+    {
+      "intervals_N": 256,
+      "interior_n": 255,
+      "channels_C": 5,
+      "physical_state_float64_count": 2600,
+      "readout_scalar_denominator_per_query": 2630,
+      "planned_14_readouts_scalar_denominator": 36820,
+      "planned_8_unique_reference_scalar_denominator": 21040,
+      "external_physics_float64_count_including_discount": 65791,
+      "dimension_cases": [
+        {
+          "case": "no_releasing_packet",
+          "releasing_source_dim": 0,
+          "C_dim": 510,
+          "first_advance_expm_dim": 515,
+          "second_advance_expm_dim": 518,
+          "one_largest_dense_float64_matrix_bytes": 2146592,
+          "two_visible_argument_matrices_float64_bytes": 4293184,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 10601136,
+          "dimension_cube_scaling_unit": 138991832
+        },
+        {
+          "case": "original_scalar_phase_release",
+          "releasing_source_dim": 1,
+          "C_dim": 511,
+          "first_advance_expm_dim": 516,
+          "second_advance_expm_dim": 519,
+          "one_largest_dense_float64_matrix_bytes": 2154888,
+          "two_visible_argument_matrices_float64_bytes": 4309776,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 10642360,
+          "dimension_cube_scaling_unit": 139798359
+        },
+        {
+          "case": "one_first_hit_packet_release",
+          "releasing_source_dim": 256,
+          "C_dim": 766,
+          "first_advance_expm_dim": 771,
+          "second_advance_expm_dim": 774,
+          "one_largest_dense_float64_matrix_bytes": 4792608,
+          "two_visible_argument_matrices_float64_bytes": 9585216,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 23765680,
+          "dimension_cube_scaling_unit": 463684824
+        }
+      ],
+      "packet_cases": [
+        {
+          "kind": "first_hit_without_phase_source",
+          "dimension": 255,
+          "generator_float64_bytes": 520200,
+          "all_packet_array_float64_count": 66555,
+          "all_packet_array_float64_bytes": 532440,
+          "hex_contents_lower_bytes": 732102
+        },
+        {
+          "kind": "first_hit_with_scalar_phase_source",
+          "dimension": 256,
+          "generator_float64_bytes": 524288,
+          "all_packet_array_float64_count": 67072,
+          "all_packet_array_float64_bytes": 536576,
+          "hex_contents_lower_bytes": 737789
+        },
+        {
+          "kind": "second_hit_after_first_packet_release",
+          "dimension": 511,
+          "generator_float64_bytes": 2088968,
+          "all_packet_array_float64_count": 264187,
+          "all_packet_array_float64_bytes": 2113496,
+          "hex_contents_lower_bytes": 2906054
+        }
+      ],
+      "minimal_single_advance_final": {
+        "packet_count": 16,
+        "float64_count": 2451938,
+        "float64_array_bytes": 19615504,
+        "nonempty_hex_array_groups": 53,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 26971265,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 26971371,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 66202273,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 139760466,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_warm_final": {
+        "packet_count": 22,
+        "float64_count": 3444164,
+        "float64_array_bytes": 27553312,
+        "nonempty_hex_array_groups": 71,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 37885733,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 37885875,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 92992357,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 196317348,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_coarse_final": {
+        "packet_count": 16,
+        "float64_count": 2451938,
+        "float64_array_bytes": 19615504,
+        "nonempty_hex_array_groups": 53,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 26971265,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 26971371,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 66202273,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 139760466,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_resume_0_201": {
+        "packet_count": 12,
+        "float64_count": 1004062,
+        "float64_array_bytes": 8032496,
+        "nonempty_hex_array_groups": 41,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 11044641,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 11044723,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 27109633,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 57231534,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "existing_operator_refusals": {
+        "Physics_n_not_1_or_2": true,
+        "channels_not_three": true,
+        "no_source_C_exceeds_64": true,
+        "no_source_largest_expm_exceeds_128": true,
+        "first_phase_packet_exceeds_64": true,
+        "active_array_axis_exceeds_128": true,
+        "second_packet_array_axis_exceeds_128": true,
+        "planned_warm_segments_exceed_20": true,
+        "planned_warm_expm_exceed_resume_ledger_100": true,
+        "planned_cold_expm_exceed_resume_ledger_100": true
+      }
+    },
+    {
+      "intervals_N": 512,
+      "interior_n": 511,
+      "channels_C": 5,
+      "physical_state_float64_count": 5160,
+      "readout_scalar_denominator_per_query": 5190,
+      "planned_14_readouts_scalar_denominator": 72660,
+      "planned_8_unique_reference_scalar_denominator": 41520,
+      "external_physics_float64_count_including_discount": 262655,
+      "dimension_cases": [
+        {
+          "case": "no_releasing_packet",
+          "releasing_source_dim": 0,
+          "C_dim": 1022,
+          "first_advance_expm_dim": 1027,
+          "second_advance_expm_dim": 1030,
+          "one_largest_dense_float64_matrix_bytes": 8487200,
+          "two_visible_argument_matrices_float64_bytes": 16974400,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 42173104,
+          "dimension_cube_scaling_unit": 1092727000
+        },
+        {
+          "case": "original_scalar_phase_release",
+          "releasing_source_dim": 1,
+          "C_dim": 1023,
+          "first_advance_expm_dim": 1028,
+          "second_advance_expm_dim": 1031,
+          "one_largest_dense_float64_matrix_bytes": 8503688,
+          "two_visible_argument_matrices_float64_bytes": 17007376,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 42255288,
+          "dimension_cube_scaling_unit": 1095912791
+        },
+        {
+          "case": "one_first_hit_packet_release",
+          "releasing_source_dim": 512,
+          "C_dim": 1534,
+          "first_advance_expm_dim": 1539,
+          "second_advance_expm_dim": 1542,
+          "one_largest_dense_float64_matrix_bytes": 19022112,
+          "two_visible_argument_matrices_float64_bytes": 38044224,
+          "visible_C_extended_first_result_second_z_and_argument_bytes": 94716592,
+          "dimension_cube_scaling_unit": 3666512088
+        }
+      ],
+      "packet_cases": [
+        {
+          "kind": "first_hit_without_phase_source",
+          "dimension": 511,
+          "generator_float64_bytes": 2088968,
+          "all_packet_array_float64_count": 264187,
+          "all_packet_array_float64_bytes": 2113496,
+          "hex_contents_lower_bytes": 2906054
+        },
+        {
+          "kind": "first_hit_with_scalar_phase_source",
+          "dimension": 512,
+          "generator_float64_bytes": 2097152,
+          "all_packet_array_float64_count": 265216,
+          "all_packet_array_float64_bytes": 2121728,
+          "hex_contents_lower_bytes": 2917373
+        },
+        {
+          "kind": "second_hit_after_first_packet_release",
+          "dimension": 1023,
+          "generator_float64_bytes": 8372232,
+          "all_packet_array_float64_count": 1052667,
+          "all_packet_array_float64_bytes": 8421336,
+          "hex_contents_lower_bytes": 11579334
+        }
+      ],
+      "minimal_single_advance_final": {
+        "packet_count": 16,
+        "float64_count": 9753570,
+        "float64_array_bytes": 78028560,
+        "nonempty_hex_array_groups": 53,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 107289217,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 107289323,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 263346337,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 555953490,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_warm_final": {
+        "packet_count": 22,
+        "float64_count": 13704132,
+        "float64_array_bytes": 109633056,
+        "nonempty_hex_array_groups": 71,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 150745381,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 150745523,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 370011493,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 781135524,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_coarse_final": {
+        "packet_count": 16,
+        "float64_count": 9753570,
+        "float64_array_bytes": 78028560,
+        "nonempty_hex_array_groups": 53,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 107289217,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 107289323,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 263346337,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 555953490,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "planned_resume_0_201": {
+        "packet_count": 12,
+        "float64_count": 3974174,
+        "float64_array_bytes": 31793392,
+        "nonempty_hex_array_groups": 41,
+        "hex_contents_lower_bytes_excluding_brackets_metadata": 43715873,
+        "hex_arrays_lower_bytes_including_brackets_excluding_metadata": 43715955,
+        "hex_contents_upper_bytes_excluding_brackets_metadata": 107302657,
+        "CPython_ASCII_strings_plus_list_slots_lower_estimate_bytes": 226527918,
+        "exceeds_legacy_900000_byte_cap_by_hex_contents_lower_bound": true
+      },
+      "existing_operator_refusals": {
+        "Physics_n_not_1_or_2": true,
+        "channels_not_three": true,
+        "no_source_C_exceeds_64": true,
+        "no_source_largest_expm_exceeds_128": true,
+        "first_phase_packet_exceeds_64": true,
+        "active_array_axis_exceeds_128": true,
+        "second_packet_array_axis_exceeds_128": true,
+        "planned_warm_segments_exceed_20": true,
+        "planned_warm_expm_exceed_resume_ledger_100": true,
+        "planned_cold_expm_exceed_resume_ledger_100": true
+      }
+    }
+  ],
+  "planned_all_three_grids": {
+    "readouts": 42,
+    "capsules": 42,
+    "warm_cold_raw_pairs": 9,
+    "structural_expm_calls": 1380,
+    "structural_segments": 135,
+    "observation_scalar_denominator": 128380,
+    "unique_reference_scalar_denominator": 73360
+  },
+  "Python_object_size_environment": {
+    "implementation": "cpython",
+    "version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "eight_character_ASCII_string_getsizeof": 49,
+    "pointer_bytes": 8
+  },
+  "memory_qualifications": [
+    "All array byte figures are estimates or strict representation lower bounds, never measured peak RSS.",
+    "Visible dense matrix count excludes scipy workspace, expression temporaries, Python/numpy headers and old states.",
+    "CPython payload estimate assumes independently allocated compact ASCII hex strings; uses measured sys.getsizeof of an eight-character ASCII string plus pointer bytes from Python_object_size_environment. Not a portable RSS certificate.",
+    "No generic JSON metadata upper bound exists without a bound on rational numerator/denominator bit lengths. The worked schedules use denominators dividing1000."
+  ],
+  "new_candidate_calls": 0,
+  "new_reference_calls": 0,
+  "new_expm_calls": 0,
+  "new_quadratures": 0,
+  "numpy_imports": 0,
+  "scipy_imports": 0,
+  "core_imports": 0,
+  "model_runs": 0,
+  "NPZ_loads": 0,
+  "integer_event_graph_only": true,
+  "N256_hard_input_gate": true,
+  "previous_static_attempt": "originals/attempt001 retains first script/JSON/stdout: computed bytes were correct, but one prose assumption hardcoded an incorrect Python string object size. This attempt uses measured fields and fixes that prose only.",
+  "dynamic_admission": "REJECTED_BY_EXISTING_CAPS_AND_NOT_EXECUTED",
+  "admission": "HOLD_NO_GO",
+  "all_closed": false,
+  "reviewer_source_sha256": "55e74d4cf0d844df5f9c880bbef2728c38fd67cbe053bf22ff655cee3edd2d4e"
+}
