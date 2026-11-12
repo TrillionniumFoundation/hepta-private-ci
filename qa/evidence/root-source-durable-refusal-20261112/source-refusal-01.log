@@ -1,0 +1,180 @@
+test_comment_literal_and_test_only_functions_cannot_supply_definition (test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_comment_literal_and_test_only_functions_cannot_supply_definition) ... ok
+test_existing_and_actual_generic_markers_remain_exact (test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_existing_and_actual_generic_markers_remain_exact) ... ok
+test_missing_and_duplicate_definitions_are_refused (test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_missing_and_duplicate_definitions_are_refused) ... ok
+test_reordered_and_nested_calls_cannot_supply_original_body (test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_reordered_and_nested_calls_cannot_supply_original_body) ... ok
+test_unimplemented_generic_grammar_is_rejected_without_fuzzy_matching (test_exact_generic_function_order.ExactGenericFunctionOrderTests.test_unimplemented_generic_grammar_is_rejected_without_fuzzy_matching) ... ok
+test_component_and_terminal_root_callers_are_exact (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_component_and_terminal_root_callers_are_exact) ... 
+  test_component_and_terminal_root_callers_are_exact (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_component_and_terminal_root_callers_are_exact) (identifier='root_initial_data_refusal_inspect') ... ERROR
+test_each_real_internal_caller_must_be_declared (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_each_real_internal_caller_must_be_declared) ... 
+  test_each_real_internal_caller_must_be_declared (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_each_real_internal_caller_must_be_declared) (identifier='root_initial_data_refusal_inspect', missing='codex-rs/hepta-agentd/src/authority_host_historical_source_record.rs') ... FAIL
+  test_each_real_internal_caller_must_be_declared (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_each_real_internal_caller_must_be_declared) (identifier='root_initial_data_refusal_inspect', missing='codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs') ... FAIL
+test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set) ... 
+  test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set) (identifier='root_initial_data_refusal_inspect') ... FAIL
+test_capability_shares_the_session_deadline_and_requires_one_shot_ack_consumption (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_capability_shares_the_session_deadline_and_requires_one_shot_ack_consumption) ... ok
+test_capture_request_cannot_choose_payload_or_clone_a_capability (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_capture_request_cannot_choose_payload_or_clone_a_capability) ... ok
+test_capture_requires_reserve_original_process_writer_and_target (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_capture_requires_reserve_original_process_writer_and_target) ... ok
+test_descriptor_custody_does_not_borrow_the_writer_lock (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_descriptor_custody_does_not_borrow_the_writer_lock) ... ok
+test_original_inputs_are_fixed_before_serving_and_rechecked_at_capture (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_original_inputs_are_fixed_before_serving_and_rechecked_at_capture) ... ok
+test_original_session_exit_closes_pending_capture_without_a_new_wait_window (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_original_session_exit_closes_pending_capture_without_a_new_wait_window) ... ok
+test_pin_recovery_does_not_initialize_and_refuses_fenced_or_different_records (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_pin_recovery_does_not_initialize_and_refuses_fenced_or_different_records) ... ok
+test_root_lifetime_is_the_actual_process_and_boot (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_root_lifetime_is_the_actual_process_and_boot) ... ok
+test_source_cut_must_be_read_physically_before_and_after_root_retention (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_source_cut_must_be_read_physically_before_and_after_root_retention) ... 
+  test_source_cut_must_be_read_physically_before_and_after_root_retention (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_source_cut_must_be_read_physically_before_and_after_root_retention) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs', function='capture_initial_source_pin', marker='!= inputs.definition.bundle_digest') ... FAIL
+test_ack_is_exact_pending_cas_and_conflict_stays_poisoned (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_ack_is_exact_pending_cas_and_conflict_stays_poisoned) ... ok
+test_capture_wait_occurs_after_original_context_has_returned (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_capture_wait_occurs_after_original_context_has_returned) ... ok
+test_cli_requires_the_original_initial_route_before_exposing_the_offer (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_cli_requires_the_original_initial_route_before_exposing_the_offer) ... ok
+test_durable_ack_precedes_completion_and_failed_ack_fences_before_data (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_durable_ack_precedes_completion_and_failed_ack_fences_before_data) ... 
+  test_durable_ack_precedes_completion_and_failed_ack_fences_before_data (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_durable_ack_precedes_completion_and_failed_ack_fences_before_data) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs', function='exchange', marker='retained_root') ... FAIL
+  test_durable_ack_precedes_completion_and_failed_ack_fences_before_data (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_durable_ack_precedes_completion_and_failed_ack_fences_before_data) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs', function='exchange', marker='retained_target') ... FAIL
+test_missing_pending_fenced_and_wrong_pin_cannot_be_recovered_as_finalized (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_missing_pending_fenced_and_wrong_pin_cannot_be_recovered_as_finalized) ... ok
+test_only_a_real_original_receipt_and_matching_pin_can_create_pending (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_only_a_real_original_receipt_and_matching_pin_can_create_pending) ... ok
+test_peer_ack_cannot_skip_original_context_postchecks_or_durable_finalization (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_peer_ack_cannot_skip_original_context_postchecks_or_durable_finalization) ... ok
+test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) ... ok
+test_terminal_requests_have_no_material_payload (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_terminal_requests_have_no_material_payload) ... ok
+test_arm_precedes_action_and_keeps_exact_attempt_and_shared_gate (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_arm_precedes_action_and_keeps_exact_attempt_and_shared_gate) ... ok
+test_context_failure_cannot_leave_a_successful_pin_arm (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_context_failure_cannot_leave_a_successful_pin_arm) ... ok
+test_existing_marker_fallback_cannot_replay_a_started_capture (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_existing_marker_fallback_cannot_replay_a_started_capture) ... ok
+test_extra_primary_read_outside_arm_is_rejected (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_extra_primary_read_outside_arm_is_rejected) ... ok
+test_final_primary_readback_and_actual_receipt_stay_inside_arm (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_final_primary_readback_and_actual_receipt_stay_inside_arm) ... ok
+test_refusal_does_not_need_to_decode_the_primary (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_refusal_does_not_need_to_decode_the_primary) ... ok
+test_same_scope_full_target_and_no_cold_initialization_are_required (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_same_scope_full_target_and_no_cold_initialization_are_required) ... ok
+test_subprocess_success_requires_an_actual_child_execution_receipt (test_root_data_refusal_source_closure.RootDataRefusalClosureTests.test_subprocess_success_requires_an_actual_child_execution_receipt) ... ok
+
+======================================================================
+ERROR: test_component_and_terminal_root_callers_are_exact (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_component_and_terminal_root_callers_are_exact) (identifier='root_initial_data_refusal_inspect')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible RootDataRefusalV1::inspect receiver
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 297, in test_component_and_terminal_root_callers_are_exact
+    PROOF._verify_boundary(ROOT, row, self.sources, ())
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+    raise VerificationFailure(
+root_historical_source_proof.VerificationFailure: root_initial_data_refusal_inspect: codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs: unresolved possible RootDataRefusalV1::inspect receiver
+
+======================================================================
+FAIL: test_each_real_internal_caller_must_be_declared (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_each_real_internal_caller_must_be_declared) (identifier='root_initial_data_refusal_inspect', missing='codex-rs/hepta-agentd/src/authority_host_historical_source_record.rs')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible RootDataRefusalV1::inspect receiver
+
+The above exception was the direct cause of the following exception:
+
+root_historical_source_proof.VerificationFailure: root_initial_data_refusal_inspect: codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs: unresolved possible RootDataRefusalV1::inspect receiver
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 305, in test_each_real_internal_caller_must_be_declared
+    with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "unexpected" does not match "root_initial_data_refusal_inspect: codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs: unresolved possible RootDataRefusalV1::inspect receiver"
+
+======================================================================
+FAIL: test_each_real_internal_caller_must_be_declared (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_each_real_internal_caller_must_be_declared) (identifier='root_initial_data_refusal_inspect', missing='codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible RootDataRefusalV1::inspect receiver
+
+The above exception was the direct cause of the following exception:
+
+root_historical_source_proof.VerificationFailure: root_initial_data_refusal_inspect: codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs: unresolved possible RootDataRefusalV1::inspect receiver
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 305, in test_each_real_internal_caller_must_be_declared
+    with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "unexpected" does not match "root_initial_data_refusal_inspect: codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs: unresolved possible RootDataRefusalV1::inspect receiver"
+
+======================================================================
+FAIL: test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set (test_root_historical_capture_source_closure.RootHistoricalSourceCallerClosureTests.test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set) (identifier='root_initial_data_refusal_inspect')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible RootDataRefusalV1::inspect receiver
+
+The above exception was the direct cause of the following exception:
+
+root_historical_source_proof.VerificationFailure: root_initial_data_refusal_inspect: codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs: unresolved possible RootDataRefusalV1::inspect receiver
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 334, in test_new_public_entrypoint_callers_cannot_hide_outside_the_closed_set
+    with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "unexpected" does not match "root_initial_data_refusal_inspect: codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs: unresolved possible RootDataRefusalV1::inspect receiver"
+
+======================================================================
+FAIL: test_source_cut_must_be_read_physically_before_and_after_root_retention (test_root_historical_capture_source_closure.RootHistoricalSourceCaptureClosureTests.test_source_cut_must_be_read_physically_before_and_after_root_retention) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs', function='capture_initial_source_pin', marker='!= inputs.definition.bundle_digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 135, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 121, in check_mutation
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+======================================================================
+FAIL: test_durable_ack_precedes_completion_and_failed_ack_fences_before_data (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_durable_ack_precedes_completion_and_failed_ack_fences_before_data) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs', function='exchange', marker='retained_root')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 135, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 53, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 121, in check_mutation
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+======================================================================
+FAIL: test_durable_ack_precedes_completion_and_failed_ack_fences_before_data (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_durable_ack_precedes_completion_and_failed_ack_fences_before_data) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs', function='exchange', marker='retained_target')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 135, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 53, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-fence-guards-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 121, in check_mutation
+    with self.assertRaises(PROOF.VerificationFailure):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: VerificationFailure not raised
+
+----------------------------------------------------------------------
+Ran 34 tests in 5.096s
+
+FAILED (failures=6, errors=1)
