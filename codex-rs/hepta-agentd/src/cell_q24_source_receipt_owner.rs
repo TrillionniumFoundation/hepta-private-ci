@@ -4,8 +4,6 @@
 
 use std::fs::File;
 use std::sync::Arc;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
@@ -25,19 +23,26 @@ use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 use crate::CellQ24LearningPreparationErrorV1;
 use crate::CellQ24PreparedLearningV1;
+use crate::cell_composed_q24_training::OriginalPreparedReadV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
 
 #[path = "cell_q24_source_owner_files.rs"]
 mod files;
+#[path = "cell_q24_source_signature.rs"]
+mod signature;
 pub use files::OriginalCellQ24SourceFilesV1;
 pub use files::OriginalCellQ24SourceJournalV1;
+use signature::binding;
+use signature::evidence_id;
+use signature::now;
+use signature::sign_original_source_receipt;
+use signature::source_binding;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum OriginalCellQ24SourceStageV1 {
@@ -129,19 +134,25 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         if self.config.stage != stage
             || self.prepared.initial() != prepared.initial()
             || self.prepared.scope() != prepared.scope()
+            || !std::ptr::eq(self.prepared.as_ref(), prepared)
         {
             return Err(binding("original source handoff operation and stage"));
         }
-        if validate_config(&self.prepared, &self.config, &self.key)? != self.saved
-            || validate_config(prepared, &self.config, &self.key)? != self.saved
-            || self.prepared.read_validated_facts()? != prepared.read_validated_facts()?
-        {
-            return Err(binding("original source handoff capability changed"));
-        }
-        let original_prepared: &CellQ24PreparedLearningV1 = &self.prepared;
-        original_prepared.revalidate_source()?;
-        prepared.revalidate_source()?;
-        Ok(())
+        self.prepared.with_original_prepared_operation(|read| {
+            if validate_config(&self.prepared, &self.config, &self.key, read)? != self.saved
+                || validate_config(prepared, &self.config, &self.key, read)? != self.saved
+            {
+                return Err(binding("original source handoff capability changed"));
+            }
+            let original_facts = OriginalPreparedReadV1::read_validated_facts(read)?;
+            let retained_facts = OriginalPreparedReadV1::read_validated_facts(read)?;
+            if original_facts != retained_facts {
+                return Err(binding("original source handoff facts changed"));
+            }
+            OriginalPreparedReadV1::require_prepared(read, &self.prepared)?;
+            OriginalPreparedReadV1::require_prepared(read, prepared)?;
+            Ok(())
+        })?
     }
 
     pub fn create(
@@ -151,9 +162,13 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         config: OriginalCellQ24SourceSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        let saved = validate_config(&prepared, &config, &key)?;
-        let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
-        prepared.revalidate_source()?;
+        let (saved, journal) =
+            prepared.with_original_prepared_operation(|read| -> Result<_, Error> {
+                let saved = validate_config(&prepared, &config, &key, read)?;
+                let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
+                OriginalPreparedReadV1::require_prepared(read, &prepared)?;
+                Ok((saved, journal))
+            })??;
         Ok(Self {
             journal,
             prepared,
@@ -172,9 +187,13 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         config: OriginalCellQ24SourceSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        let saved = validate_config(&prepared, &config, &key)?;
-        let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
-        prepared.revalidate_source()?;
+        let (saved, journal) =
+            prepared.with_original_prepared_operation(|read| -> Result<_, Error> {
+                let saved = validate_config(&prepared, &config, &key, read)?;
+                let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
+                OriginalPreparedReadV1::require_prepared(read, &prepared)?;
+                Ok((saved, journal))
+            })??;
         Ok(Self {
             journal,
             prepared,
@@ -188,14 +207,17 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         if self.config.stage != OriginalCellQ24SourceStageV1::Experience {
             return Err(binding("original Experience owner"));
         }
-        self.attest_at(&self.prepared.initial().clone())
+        let prepared = Arc::clone(&self.prepared);
+        prepared
+            .with_original_prepared_operation(|read| self.attest_at(prepared.initial(), read))?
     }
 
     pub fn read_experience(&mut self) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
         if self.config.stage != OriginalCellQ24SourceStageV1::Experience {
             return Err(binding("original Experience owner"));
         }
-        self.read_at(&self.prepared.initial().clone())
+        let prepared = Arc::clone(&self.prepared);
+        prepared.with_original_prepared_operation(|read| self.read_at(prepared.initial(), read))?
     }
 
     /// Borrow the actual predecessor owner, not a cached receipt. Its live
@@ -218,10 +240,11 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
     fn attest_at(
         &mut self,
         prefix: &LearningIterationSnapshotV1,
+        read: &OriginalPreparedReadV1<'_>,
     ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
-        let (observation, evidence_digest) = self.original_observation()?;
+        let (observation, evidence_digest) = self.original_observation(read)?;
         match self.journal.read(&self.saved) {
-            Ok(bytes) => return self.authenticate_completed(prefix, &bytes),
+            Ok(bytes) => return self.authenticate_completed(prefix, &bytes, read),
             Err(LearningOriginalOwnerErrorV1::Store(
                 ProductEvaluationExecutionStoreErrorV1::Missing,
             )) => {}
@@ -246,7 +269,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         let prepared: &CellQ24PreparedLearningV1 = &self.prepared;
         let saved = &self.saved;
         let bytes = self.journal.commit_once(saved, || {
-            prepared.revalidate_source().map_err(source_binding)?;
+            OriginalPreparedReadV1::require_prepared(read, prepared).map_err(source_binding)?;
             let receipt = source_receipt(
                 prepared,
                 config,
@@ -258,21 +281,28 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
             .map_err(|_| LearningOriginalOwnerErrorV1::Binding("original source receipt"))?;
             let payload = learning_iteration_receipt_signing_bytes_v1(&receipt)
                 .map_err(|_| LearningOriginalOwnerErrorV1::Binding("original source bytes"))?;
-            let signed = sign_original(config, key, &receipt, &payload, saved.binding_digest)?;
-            prepared.revalidate_source().map_err(source_binding)?;
+            let signed = sign_original_source_receipt(
+                config,
+                key,
+                &receipt,
+                &payload,
+                saved.binding_digest,
+            )?;
+            OriginalPreparedReadV1::require_prepared(read, prepared).map_err(source_binding)?;
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(prefix, &bytes)
+        self.authenticate_completed(prefix, &bytes, read)
     }
 
     fn read_at(
         &mut self,
         prefix: &LearningIterationSnapshotV1,
+        read: &OriginalPreparedReadV1<'_>,
     ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
         let prepared: &CellQ24PreparedLearningV1 = &self.prepared;
-        prepared.revalidate_source()?;
+        OriginalPreparedReadV1::require_prepared(read, prepared)?;
         let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(prefix, &bytes)
+        self.authenticate_completed(prefix, &bytes, read)
     }
 
     fn with_original_experience(
@@ -281,51 +311,63 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         operation: impl FnOnce(
             &mut Self,
             &LearningIterationSnapshotV1,
+            &OriginalPreparedReadV1<'_>,
         ) -> Result<OriginalCellQ24SourceCompletionV1, Error>,
     ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
-        if self.config.stage != OriginalCellQ24SourceStageV1::Dataset {
-            return Err(binding("original Dataset owner"));
-        }
-        let before = experience.read_experience()?;
-        let facts = self.prepared.read_validated_facts()?;
-        let initial = self.prepared.initial();
-        let receipt = &before.receipt;
-        if receipt.operation_id != initial.request.operation_id
-            || receipt.predecessor != initial.head_digest
-            || receipt.actor_id != initial.owners.experience
-            || &receipt.observation != facts.experience()
-            || receipt.evidence_digest != facts.experience_evidence_digest()
-            || receipt.observed_unix_seconds != before.attestation.issued_at
+        if self.config.stage != OriginalCellQ24SourceStageV1::Dataset
+            || experience.config.stage != OriginalCellQ24SourceStageV1::Experience
+            || !Arc::ptr_eq(&self.prepared, &experience.prepared)
         {
-            return Err(binding("original Experience predecessor"));
+            return Err(binding("original Dataset and Experience owners"));
         }
-        let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        let verified = self.config.verifier.verify(
-            LearningEvidenceRoleV1::Observer,
-            &before.attestation,
-            &payload,
-            now()?,
-        )?;
-        if verified.principal().principal_id != initial.owners.experience {
-            return Err(binding("original Experience Observer"));
-        }
-        let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
-        coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
-        self.prepared
-            .scope()
-            .validate_snapshot(coordinator.snapshot())?;
-        if coordinator.snapshot() != &before.snapshot {
-            return Err(binding("original Experience checkpoint"));
-        }
-        let completed = operation(self, &before.snapshot)?;
-        if experience.read_experience()? != before {
-            return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
-        }
-        Ok(completed)
+        let prepared = Arc::clone(&self.prepared);
+        prepared.with_original_prepared_operation(|read| {
+            let before = experience.read_at(prepared.initial(), read)?;
+            OriginalPreparedReadV1::require_prepared(read, &self.prepared)?;
+            let facts = OriginalPreparedReadV1::read_validated_facts(read)?;
+            let initial = self.prepared.initial();
+            let receipt = &before.receipt;
+            if receipt.operation_id != initial.request.operation_id
+                || receipt.predecessor != initial.head_digest
+                || receipt.actor_id != initial.owners.experience
+                || &receipt.observation != facts.experience()
+                || receipt.evidence_digest != facts.experience_evidence_digest()
+                || receipt.observed_unix_seconds != before.attestation.issued_at
+            {
+                return Err(binding("original Experience predecessor"));
+            }
+            let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
+            let verified = self.config.verifier.verify(
+                LearningEvidenceRoleV1::Observer,
+                &before.attestation,
+                &payload,
+                now()?,
+            )?;
+            if verified.principal().principal_id != initial.owners.experience {
+                return Err(binding("original Experience Observer"));
+            }
+            let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
+            coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
+            self.prepared
+                .scope()
+                .validate_snapshot(coordinator.snapshot())?;
+            if coordinator.snapshot() != &before.snapshot {
+                return Err(binding("original Experience checkpoint"));
+            }
+            let completed = operation(self, &before.snapshot, read)?;
+            if experience.read_at(prepared.initial(), read)? != before {
+                return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
+            }
+            Ok(completed)
+        })?
     }
 
-    fn original_observation(&self) -> Result<(LearningIterationObservationV1, Digest32), Error> {
-        let facts = self.prepared.read_validated_facts()?;
+    fn original_observation(
+        &self,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<(LearningIterationObservationV1, Digest32), Error> {
+        OriginalPreparedReadV1::require_prepared(read, &self.prepared)?;
+        let facts = OriginalPreparedReadV1::read_validated_facts(read)?;
         Ok(match self.config.stage {
             OriginalCellQ24SourceStageV1::Experience => (
                 facts.experience().clone(),
@@ -341,9 +383,10 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         &mut self,
         prefix: &LearningIterationSnapshotV1,
         bytes: &[u8],
+        read: &OriginalPreparedReadV1<'_>,
     ) -> Result<OriginalCellQ24SourceCompletionV1, Error> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
-        let (observation, evidence_digest) = self.original_observation()?;
+        let (observation, evidence_digest) = self.original_observation(read)?;
         let receipt = source_receipt(
             &self.prepared,
             &self.config,
@@ -372,7 +415,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24SourceReceiptOwnerV1<W> {
         self.prepared
             .scope()
             .validate_snapshot(coordinator.snapshot())?;
-        if self.original_observation()? != (observation, evidence_digest)
+        if self.original_observation(read)? != (observation, evidence_digest)
             || self.journal.read(&self.saved)? != bytes
         {
             return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
@@ -389,8 +432,9 @@ fn validate_config(
     prepared: &CellQ24PreparedLearningV1,
     config: &OriginalCellQ24SourceSigningConfigV1,
     key: &SigningKey,
+    read: &OriginalPreparedReadV1<'_>,
 ) -> Result<ProductEvaluationExecutionKeyV1, Error> {
-    prepared.revalidate_source()?;
+    OriginalPreparedReadV1::require_prepared(read, prepared)?;
     let initial = prepared.initial();
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
     prepared.scope().validate_snapshot(initial)?;
@@ -446,66 +490,4 @@ fn source_receipt(
     coordinator.record(receipt.clone(), observed_unix_seconds)?;
     prepared.scope().validate_snapshot(coordinator.snapshot())?;
     Ok(receipt)
-}
-
-fn sign_original(
-    config: &OriginalCellQ24SourceSigningConfigV1,
-    key: &SigningKey,
-    receipt: &LearningIterationReceiptV1,
-    payload: &[u8],
-    identity: Digest32,
-) -> Result<SignedLearningEvidenceV1, LearningOriginalOwnerErrorV1> {
-    let issued_at = receipt.observed_unix_seconds;
-    config.verifier.require_signer_binding(
-        LearningEvidenceRoleV1::Observer,
-        &config.signer,
-        issued_at,
-    )?;
-    let expires_at = issued_at
-        .checked_add(config.maximum_signature_lifetime_seconds)
-        .ok_or(LearningOriginalOwnerErrorV1::Binding(
-            "signature deadline overflow",
-        ))?
-        .min(config.signer.principal.expires_at);
-    let mut signed = SignedLearningEvidenceV1 {
-        evidence_id: evidence_id(identity)?,
-        principal_id: config.signer.principal.principal_id.clone(),
-        role: LearningEvidenceRoleV1::Observer,
-        trust_digest: config.verifier.trust_digest(),
-        scope_digest: config.verifier.scope_digest(),
-        objective_digest: config.verifier.objective_digest(),
-        authority_epoch: config.signer.principal.authority_epoch,
-        issued_at,
-        expires_at,
-        payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
-    };
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-    config.verifier.verify(
-        LearningEvidenceRoleV1::Observer,
-        &signed,
-        payload,
-        issued_at,
-    )?;
-    Ok(signed)
-}
-
-fn evidence_id(identity: Digest32) -> Result<StableId, LearningOriginalOwnerErrorV1> {
-    StableId::new(format!("original-source:{identity}"))
-        .map_err(|_| LearningOriginalOwnerErrorV1::Binding("source evidence id"))
-}
-
-fn binding(message: &'static str) -> Error {
-    LearningOriginalOwnerErrorV1::Binding(message).into()
-}
-
-fn source_binding(_: CellQ24LearningPreparationErrorV1) -> LearningOriginalOwnerErrorV1 {
-    LearningOriginalOwnerErrorV1::Binding("original task or Dataset changed during signing")
-}
-
-fn now() -> Result<u64, LearningOriginalOwnerErrorV1> {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_secs())
-        .map_err(|_| LearningOriginalOwnerErrorV1::Binding("original source owner clock"))
 }
