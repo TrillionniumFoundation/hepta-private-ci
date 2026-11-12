@@ -1,0 +1,124 @@
+﻿2026-11-12T17:12:40.8716801Z Current runner version: '2.338.2'
+2026-11-12T17:12:40.8742663Z ##[group]Runner Image Provisioner
+2026-11-12T17:12:40.8743770Z Hosted Compute Agent
+2026-11-12T17:12:40.8744294Z Version: 20261028.624
+2026-11-12T17:12:40.8744943Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T17:12:40.8745595Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T17:12:40.8746200Z Worker ID: {8aee595f-bc76-4c2a-a497-6a48b60f0dd2}
+2026-11-12T17:12:40.8746948Z Region: centralus
+2026-11-12T17:12:40.8747451Z Cloud: Azure
+2026-11-12T17:12:40.8747952Z ##[endgroup]
+2026-11-12T17:12:40.8749152Z ##[group]Operating System
+2026-11-12T17:12:40.8749693Z Ubuntu
+2026-11-12T17:12:40.8750278Z 24.04.5
+2026-11-12T17:12:40.8750734Z LTS
+2026-11-12T17:12:40.8751293Z ##[endgroup]
+2026-11-12T17:12:40.8751818Z ##[group]Runner Image
+2026-11-12T17:12:40.8752383Z Image: ubuntu-24.04
+2026-11-12T17:12:40.8753020Z Version: 20261101.360.1
+2026-11-12T17:12:40.8754382Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T17:12:40.8755867Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T17:12:40.8756758Z ##[endgroup]
+2026-11-12T17:12:40.8757851Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T17:12:40.8759650Z Contents: read
+2026-11-12T17:12:40.8760256Z Metadata: read
+2026-11-12T17:12:40.8760760Z ##[endgroup]
+2026-11-12T17:12:40.8763042Z Secret source: Actions
+2026-11-12T17:12:40.8764289Z Cache mode: write
+2026-11-12T17:12:40.8764929Z Prepare workflow directory
+2026-11-12T17:12:40.9054904Z Prepare all required actions
+2026-11-12T17:12:40.9087300Z Getting action download info
+2026-11-12T17:12:41.1561835Z Download action repository 'openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63' (SHA:e6b39c80c51cb2b2a39448ddeff74b3b886c0a63)
+2026-11-12T17:12:47.0521242Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T17:12:47.1523965Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/blob-size-policy.yml@refs/pull/6213/merge (81e63e9afa1c6aa1d8b77417056e3f6e7c4a6900)
+2026-11-12T17:12:47.1526412Z Complete job name: Blob size policy / Blob size policy
+2026-11-12T17:12:47.2546207Z ##[group]Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63
+2026-11-12T17:12:47.2546554Z with:
+2026-11-12T17:12:47.2546694Z   mode: audit
+2026-11-12T17:12:47.2546917Z env:
+2026-11-12T17:12:47.2607619Z   ACTIONS_STEP_DEBUG: true
+2026-11-12T17:12:47.2607913Z ##[endgroup]
+2026-11-12T17:12:47.5675855Z 🛡️ Fence v0.10.0
+2026-11-12T17:12:47.5676375Z 👀 Mode: audit
+2026-11-12T17:12:47.5676748Z 🌐 Policy: observing GitHub workflow traffic + 0 allowlist entries
+2026-11-12T17:12:47.5687914Z ##[group]Fence debug: setup inputs
+2026-11-12T17:12:47.5688258Z mode=audit
+2026-11-12T17:12:47.5688498Z invocation_id=fence-43266970777-1
+2026-11-12T17:12:47.5688790Z config_source=native inputs
+2026-11-12T17:12:47.5689039Z container_policy=not used
+2026-11-12T17:12:47.5689335Z platform_profile=github_hosted_workflow_bootstrap_v5
+2026-11-12T17:12:47.5689732Z disable_broad_github_domains=false
+2026-11-12T17:12:47.5689996Z allow_github_artifacts=false
+2026-11-12T17:12:47.5690243Z allowlist_count=0
+2026-11-12T17:12:47.5690519Z bundle_release=v0.10.0
+2026-11-12T17:12:47.5690821Z bundle_source_commit=735375fadb54cc11a7d2d10642b3150f93fe8720
+2026-11-12T17:12:47.5691151Z platform=linux
+2026-11-12T17:12:47.5691360Z arch=x64
+2026-11-12T17:12:47.5691588Z runtime_directory=/run/fence/fence-43266970777-1
+2026-11-12T17:12:47.5691891Z unit=fence-fence-43266970777-1.service
+2026-11-12T17:12:47.5692498Z ##[endgroup]
+2026-11-12T17:12:47.7343754Z ##[group]Fence debug: protected Action runtime
+2026-11-12T17:12:47.7344663Z registered_runtime=verified
+2026-11-12T17:12:47.7344937Z protected_copy=verified
+2026-11-12T17:12:47.7345171Z path_guard_count=5
+2026-11-12T17:12:47.7345523Z runtime_digest=097af71998280e9c1b2a769fdf6f5e6522beca375040eab82bdf9ffd465f1fe7
+2026-11-12T17:12:47.7345913Z mount_options=ro,nodev,nosuid
+2026-11-12T17:12:47.7346714Z ##[endgroup]
+2026-11-12T17:12:47.7638974Z 🚀 Starting resident service
+2026-11-12T17:12:47.7639799Z ##[group]Fence debug: service launch
+2026-11-12T17:12:47.7640109Z executable=/usr/bin/sudo
+2026-11-12T17:12:47.7640443Z protected_binary=/run/fence-launcher/fence-43266970777-1/action/bin/fence
+2026-11-12T17:12:47.7641330Z args=/usr/bin/systemd-run --quiet --property=Type=exec --unit fence-fence-43266970777-1.service /run/fence-launcher/fence-43266970777-1/action/bin/fence run --config /run/fence/fence-43266970777-1/config.json
+2026-11-12T17:12:47.7642032Z child_timeout_ms=10000
+2026-11-12T17:12:47.7642457Z ##[endgroup]
+2026-11-12T17:12:47.7838771Z ##[group]Fence debug: readiness
+2026-11-12T17:12:47.7839287Z timeout_ms=30000
+2026-11-12T17:12:47.7839887Z poll_interval_ms=100
+2026-11-12T17:12:47.7840208Z ready_path=/run/fence/fence-43266970777-1/ready.json
+2026-11-12T17:12:47.7840599Z report_path=/run/fence/fence-43266970777-1/report.json
+2026-11-12T17:12:47.7841086Z ##[endgroup]
+2026-11-12T17:12:49.0678415Z ##[error]Fence setup failed: Fence resident service exited before readiness: LoadState=loaded; ActiveState=failed; SubState=failed; Result=exit-code; ExecMainCode=1; ExecMainStatus=1; MainPID=0
+2026-11-12T17:12:49.0722390Z ##[warning]Fence service state for fence-fence-43266970777-1.service: MainPID=0; Result=exit-code; ExecMainCode=1; ExecMainStatus=1; LoadState=loaded; ActiveState=failed; SubState=failed
+2026-11-12T17:12:49.0723876Z ##[group]Fence debug: service status
+2026-11-12T17:12:49.0724052Z unit=fence-fence-43266970777-1.service
+2026-11-12T17:12:49.0724193Z status=0
+2026-11-12T17:12:49.0724296Z error=none
+2026-11-12T17:12:49.0724399Z MainPID=0
+2026-11-12T17:12:49.0724504Z Result=exit-code
+2026-11-12T17:12:49.0724619Z ExecMainCode=1
+2026-11-12T17:12:49.0724747Z ExecMainStatus=1
+2026-11-12T17:12:49.0724860Z LoadState=loaded
+2026-11-12T17:12:49.0724970Z ActiveState=failed
+2026-11-12T17:12:49.0725083Z SubState=failed
+2026-11-12T17:12:49.0725283Z ##[endgroup]
+2026-11-12T17:12:49.0775480Z ##[warning]Fence resident error code: local_control_inventory_unavailable
+2026-11-12T17:12:49.0776593Z ##[group]Fence debug: service journal
+2026-11-12T17:12:49.0777276Z unit=fence-fence-43266970777-1.service
+2026-11-12T17:12:49.0777490Z status=0
+2026-11-12T17:12:49.0777642Z error=none
+2026-11-12T17:12:49.0777915Z pam_unix(sudo:session): session opened for user runner(uid=1001) by (uid=0)
+2026-11-12T17:12:49.0778258Z pam_unix(sudo:session): session closed for user runner
+2026-11-12T17:12:49.0778906Z     root : *** ; USER=runner ; COMMAND=/proc/self/fd/0 -w /run/containerd/containerd.sock.ttrpc
+2026-11-12T17:12:49.0779193Z pam_unix(sudo:session): session opened for user runner(uid=1001) by (uid=0)
+2026-11-12T17:12:49.0779417Z pam_unix(sudo:session): session closed for user runner
+2026-11-12T17:12:49.0779664Z     root : *** ; USER=runner ; COMMAND=/proc/self/fd/0 -w /run/containerd/containerd.sock
+2026-11-12T17:12:49.0779927Z pam_unix(sudo:session): session opened for user runner(uid=1001) by (uid=0)
+2026-11-12T17:12:49.0780165Z pam_unix(sudo:session): session closed for user runner
+2026-11-12T17:12:49.0780418Z     root : *** ; USER=runner ; COMMAND=/proc/self/fd/0 -w /run/systemd/io.systemd.sysext
+2026-11-12T17:12:49.0780676Z pam_unix(sudo:session): session opened for user runner(uid=1001) by (uid=0)
+2026-11-12T17:12:49.0780925Z pam_unix(sudo:session): session closed for user runner
+2026-11-12T17:12:49.0781193Z     root : *** ; USER=runner ; COMMAND=/proc/self/fd/0 -w /run/php/php8.3-fpm.sock
+2026-11-12T17:12:49.0781441Z pam_unix(sudo:session): session opened for user runner(uid=1001) by (uid=0)
+2026-11-12T17:12:49.0781666Z pam_unix(sudo:session): session closed for user runner
+2026-11-12T17:12:49.0781990Z     root : *** ; USER=runner ; COMMAND=/proc/self/fd/0 -w /var/run/docker/metrics.sock
+2026-11-12T17:12:49.0782271Z pam_unix(sudo:session): session opened for user runner(uid=1001) by (uid=0)
+2026-11-12T17:12:49.0782487Z pam_unix(sudo:session): session closed for user runner
+2026-11-12T17:12:49.0783016Z {"schema_version":1,"command":"run","status":"error","fence_version":"0.10.0","error":{"code":"local_control_inventory_unavailable","message":"protected lifecycle setup failed"}}
+2026-11-12T17:12:49.0783690Z fence-fence-43266970777-1.service: Main process exited, code=exited, status=1/FAILURE
+2026-11-12T17:12:49.0783964Z fence-fence-43266970777-1.service: Failed with result 'exit-code'.
+2026-11-12T17:12:49.0784255Z ##[endgroup]
+2026-11-12T17:12:49.1728335Z ##[error]Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under '/home/runner/work/hepta-private-ci/hepta-private-ci/.github/actions/check-clean-worktree'. Did you forget to run actions/checkout before running your local action?
+2026-11-12T17:12:49.1784730Z Post job cleanup.
+2026-11-12T17:12:49.2502020Z 📋 Validating Fence evidence
+2026-11-12T17:12:49.2512742Z ##[error]Fence post-job evidence failed: Fence active Action mount evidence is unavailable
+2026-11-12T17:12:49.2648356Z Cleaning up orphan processes

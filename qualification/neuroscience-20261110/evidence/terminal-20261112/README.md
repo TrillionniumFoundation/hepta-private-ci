@@ -1,5 +1,17 @@
 # 原始终态证据与最新增量
 
+截至 2026-11-12 17:35:16 UTC，当前 CURRENT 源码为 **edaf1d9a420dc99336f36b24515eb9c65a97b0da**，tree **056ad664fecbafc0c901ebbdc228ea1f98b86b52**。16 路径实际修复与随后 2 文件／3 hunks 格式修正已发布到原 Draft PR；原方法、deadline／cap 与 owner 决策不变。当前 source／parser／helper 步骤 success，ordinary 与完整 caller 正在执行，最终分母及 Root 结果未观察。
+
+当前 Rustfmt／GNU Clippy 完整原日志 success，actual checkout 0b2238e7 与源码树完全相同；GNU／Windows release、Windows Clippy 原元数据 success。Fence 原完整日志在 checkout 前失败；GNU／musl Bazel 各 300.1 秒超时，915 PASS／15 FAIL／87 ignored／173 无终态（1,190 announced），Windows分片4也失败。这些当前原件与旧9fac分别记录。
+
+[root 源码核验](../../../evaluated-current-read-20261112/repair-286c-review/ROOT_SOURCE_REVIEW.json) · [三早期完整日志](../../../evaluated-current-read-20261112/edaf-early-ci/ROOT_ORIGINAL_LOG_VERIFICATION.json) · [三完整 Bazel 失败日志](../../../evaluated-current-read-20261112/edaf-bazel-failure/ROOT_ORIGINAL_LOG_VERIFICATION.json) · [本次 Git 读回](GIT_READBACK_1735.json) · [blocker 清单](../../BLOCKER_CLOSURE_NEXT.md) · [机器索引](../../TERMINAL_EVIDENCE.json)。完整桥接与递归 Material 预算未闭合；12完整科学／权限门仍 OPEN，owner_decision=null，HOLD。
+
+## f224 检查点的原说明
+
+以下逐字保留 f224 原说明；“当前／未推送”等为原观察时状态。独立副本见 [f224 README](../history-20261112/TERMINAL_README-f224.md)。
+
+# 原始终态证据与最新增量
+
 截至 2026-11-12 16:59:26 UTC，当前源码仍为 `9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca`。其自身 source 414/414、parser 16/16、同源 helper 与完整 caller 通过。ordinary 实际 1,738 项：1,726 PASS、11 FAIL、1 TIMEOUT、0 重试。Root 与 scoped maintenance 未执行。CURRENT 正例和两个 deep readonly 原方法通过，完整资格仍未通过。
 
 Fence、GNU Clippy/release、Rustfmt、Windows Clippy 和独立 Windows 私有状态专项通过；Linux 两个 Bazel 原目标超时及 Windows 分片失败完整保留。九份完整原日志已独立取得并按原字节重组，源码/tree 已核对。完整 caller 为 541 boundaries/541 inventory/390 protected/6,604 Rust files，authorityGranted=false。[本次 Git 读回](GIT_READBACK_1700.json)。9fac 整 ZIP、JUnit XML 与完整 source inventory 尚未另取；日志原收集记录保留原始整数与时间字段。

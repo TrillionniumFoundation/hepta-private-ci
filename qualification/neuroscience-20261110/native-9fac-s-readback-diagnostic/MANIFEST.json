@@ -1,0 +1,68 @@
+{
+  "schema": "neuro4.native-evaluated-s-readback-diagnostic.v1",
+  "source_base_commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "source_base_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "overlay_base_tree": "008f13b46caca4d2e7af73551ce1627dafc07e5e",
+  "inherited_fix_manifest": "01ee8c8549cc791ff3a13550e170643e07ef07e0",
+  "original_failure_index": "3d9e6598abd60bb22af198b74d3210492e9dcc86",
+  "code": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "source_base_blob": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+      "overlay_base_blob": "8bf830aa09eeb894a6dffd4d45eb38e59a68de71",
+      "post_blob": "76e472fcb2237c719d3ee6455a9ac821036e8dfd",
+      "bytes": 7277,
+      "sha256": "13f723c29e3c3a8be879e37fe71f2d2cfe4eec5960e936729884954e1b828804"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "source_base_blob": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+      "overlay_base_blob": "24fa38967fdb961b4249109e015cf56c513ffc79",
+      "post_blob": "320a6ce49e5d5016aa1af408a981c464f29e38af",
+      "bytes": 19569,
+      "sha256": "49538185200d50bd961647af16f8fde21940b342148788fa166ddad273a0e6fb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs",
+      "source_base_blob": "9b098811990e34d61c0d515cc2de731090a2b33a",
+      "overlay_base_blob": "9b098811990e34d61c0d515cc2de731090a2b33a",
+      "post_blob": "a69bfe96936d66872316958bd098a02b3323e3bd",
+      "bytes": 12204,
+      "sha256": "b29256962e417548102140589c49061e2d002761fae92b16433416d3848cc1ff"
+    }
+  ],
+  "invariant": {
+    "production_source_unchanged": true,
+    "timeout_ms": 500,
+    "lifetime_seconds": 300,
+    "frame_limit": 128,
+    "new_exchanges": 0,
+    "new_connections": 0,
+    "methods_added": 0,
+    "assertions_relaxed": 0,
+    "original_effects_and_signatures_unchanged": true,
+    "no_normal_material_logging": true
+  },
+  "diagnostic": "Within the original exchange, sample Instants and retain the exact original callback result only (successful byte length, or owned original Error). Emit diagnostics only after exchange returns. Existing Material fixture logs remain outside the timed callback and only on real errors/cap exhaustion.",
+  "uncertainty": "No actual callback timings exist yet. The theory that starting the server consumes the 500-ms budget while idle is excluded by the original contract; frame/callback failure and underlying Material exhaustion still need actual observations.",
+  "validation": {
+    "format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native": "NOT_RUN",
+    "source_qa": "NOT_RUN"
+  },
+  "effect": "Only original native test fixtures log extra timing/error metadata. No science or actor run dispatched.",
+  "owner_decision": null,
+  "transport_contract": {
+    "blob": "36e4524baea04320b7610325579f0ff206690fab",
+    "function": "HostAuthorityPeerChannel::exchange_inner",
+    "first_byte": "Wait uses owner.end(), the unchanged original session lifetime.",
+    "frame": "After the first byte, deadline(policy.timeout) covers the remaining request, original handler and entire response.",
+    "interpretation": "callback_wait and exchange elapsed include idle and are not the 500-ms budget. False callback_entered does not establish an idle 500-ms timeout."
+  },
+  "supersedes": {
+    "historical_tree": "2b3be0a59d578d4589fac951de2188fb6326cded",
+    "historical_s_fixture_blob": "5ee1579bf4bb07165156b4fa466a925939d26fbe",
+    "reason": "Move all diagnostic stderr outside the original 500-ms exchange and correct first-byte idle timing explanation; other code leaves unchanged."
+  }
+}
