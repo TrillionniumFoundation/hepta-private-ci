@@ -15,7 +15,8 @@ from rust_source_marker_support import source_marker_span
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = (
-    "qualification/learn-ordinary-ce434/positive-root-route-20261112/guard-contract.json"
+    "qualification/learn-ordinary-ce434/"
+    "model-root-closure-repair-441-20261112/route-current-contract.json"
 )
 SPEC = importlib.util.spec_from_file_location(
     "positive_root_suffix_proof", ROOT / "scripts/verify_hepta_callers.py"

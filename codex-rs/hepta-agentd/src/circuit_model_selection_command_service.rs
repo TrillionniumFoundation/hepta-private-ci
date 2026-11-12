@@ -173,7 +173,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitModelSelectionComman
         }
         let request: wire::Request = serde_json::from_slice(bytes)?;
         request.require_context(&self.context, self.binding, request_id)?;
-        self.context.authenticate(now()?)?;
+        OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, now()?)?;
         let result = match request.action {
             wire::Action::Execute => {
                 if self.execution_requested.swap(/*val*/ true, Ordering::AcqRel) {
@@ -188,7 +188,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitModelSelectionComman
         };
         // Original owner guard is released only after full Model/E closure and
         // both physical Selector journal reads. No retained response is reused.
-        self.context.authenticate(now()?)?;
+        OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, now()?)?;
         let encoded = serde_json::to_vec(&wire::Response::from_request(&request, result))?;
         if encoded.is_empty() || encoded.len() > 16_384 {
             return Err(Error::Binding("bounded original positive Selector response"));

@@ -1,0 +1,354 @@
+{
+  "schema": "learn-root-441-observed-failure-repair-convergence-v1",
+  "source_base": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "ordered_parents": [
+    "6f0f7f4997b8811daf2249088a87b70fdb42d220",
+    "a142a4c1576c0487dbce0343199d2f15be06d2a7",
+    "41523fe03f3d76da74df6ffccf5accf9ef549735",
+    "036db39586fc1d33fe8894f70aa45b173e59aa48"
+  ],
+  "first_parent_tree": "fcfbfe70777c75bf637fa1402369b5efc13669c8",
+  "observed_original": {
+    "source_methods": 423,
+    "failures": 5,
+    "errors": 69,
+    "skipped": 0,
+    "unique_affected_methods": [
+      "test_original_on_policy_evaluation_source_closure.OriginalOnPolicyEvaluationClosureTests.test_exact_original_paired_and_closed_cohort_edges",
+      "test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests.test_domains_are_actual_literals_in_the_original_functions",
+      "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_complete_guard_records_and_exact_caller_delta_are_installed",
+      "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_private_adoption_data_cannot_create_signers_or_reconnect",
+      "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_exact_private_edges_and_unregistered_callers"
+    ],
+    "source_json_sha256": "a628f9b0bc2b03a4b4ae3542a15d3d57b79949d924080d8bdf73f02c2c17c666",
+    "source_log_sha256": "579750613553fa90ce30c2fc4965e8760b964ef80d84ef633515d5ece15010d4",
+    "source_log_bytes": 384649,
+    "all_original_source_json_and_log_bytes_retrieved_and_verified": true,
+    "source_head_and_tree_before_after_fixed": true,
+    "worktree_clean_after": true,
+    "scanner_self_test_exit": 0,
+    "native_preparation_exit": 1,
+    "native_compile_or_test_started": false,
+    "actual_native_tests": 0
+  },
+  "failure_repairs": [
+    {
+      "owner": "paired Source",
+      "actual": "records checkpoint typed receiver unresolved",
+      "change": "three explicit calls of the original CircuitTaskPolicyProjectionV1::checkpoint_before using the original receiver; two complete protected records migrate exact markers",
+      "static_followon": "Episode constructor-return lexical type ambiguity is a separately identified static follow-on, not a second observed original error"
+    },
+    {
+      "owner": "paired Product QA",
+      "actual": "25 original ValueError exceptions escape the expected negative-control exception classes (6 direct mutations, 19 comment decoys)",
+      "change": "translate only source_marker_span's missing-literal ValueError to AssertionError inside the existing QA adapter; keep actual literals, original verifier and helper, Rust Product domains and statistics unchanged"
+    },
+    {
+      "owner": "Model/Root QA",
+      "actual": "42 original positive-control VerificationFailure exceptions and five exact-record count failures from five stale complete contract rows",
+      "change": "keep old historical contract bytes; point unchanged six-method/69-deletion/12-injection suite to a new fixed complete 13-record and 32-boundary contract matching actual source"
+    },
+    {
+      "owner": "Model Selection service",
+      "actual": "one unresolved actual private ReadContext receiver in two authentication positions",
+      "change": "explicit original ReadContext UFCS before and after effect; complete service record migrates only those two markers; no new authority caller"
+    }
+  ],
+  "complete_manifest_merge": {
+    "operations": [
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+        "status": "replaced complete record",
+        "owner": "actual-441-Model-service"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+        "status": "replaced complete record",
+        "owner": "actual-441-paired-checkpoint"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+        "status": "replaced complete record",
+        "owner": "actual-441-paired-checkpoint"
+      }
+    ],
+    "boundaries": 710,
+    "protected_records": 489,
+    "inventory_ids": 710,
+    "complete_record_multiset_verified": true,
+    "unowned_raw_records_preserved": 1196,
+    "other_top_level_unchanged": true
+  },
+  "merged_manifest_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+  "qa_method_preservation": [
+    {
+      "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+      "before": "8cbf737c8babd802b062ad88351ab7bb6c502edd",
+      "after": "8474d6d18a5b374bcd2810aa0b8ebc9e3264e05c",
+      "preserved_methods": [
+        "test_complete_guard_records_and_exact_caller_delta_are_installed",
+        "test_fixed_model_prefix_cannot_absorb_unsigned_suffix_or_another_model",
+        "test_original_channels_model_finish_and_owner_effects_remain_real",
+        "test_readiness_and_full_original_s_c_evidence_remain_separate",
+        "test_verifier_uses_original_evidence_scope_and_all_three_context_pins",
+        "test_private_adoption_data_cannot_create_signers_or_reconnect"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "before": "9832e7800829bfbe9ee913884c50bd3d2add68bc",
+      "after": "2e3e99ad03d1d5e630694faca0906446e0d110c0",
+      "preserved_methods": [
+        "test_exact_original_paired_and_closed_cohort_edges",
+        "test_complete_records_preserve_shared_and_paired_guards",
+        "test_each_actual_producer_guard_cannot_move_to_a_comment",
+        "test_original_authority_and_outcome_substitutions_are_rejected",
+        "test_freeze_guards_stay_inside_the_one_original_generic_function",
+        "test_frozen_identity_fresh_empty_and_actual_principal_are_required",
+        "test_distinct_domains_are_real_code_and_cannot_be_comment_substitutes",
+        "test_shared_release_and_cross_mode_current_are_explicitly_closed"
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+      "before": "9fe310b95ab493e9704ad5be39beba2f5d048f9a",
+      "after": "548d0bfbdc17f498f515c258903b721fd2f525e4",
+      "preserved_methods": [
+        "test_complete_records_and_actual_composed_callers_are_installed",
+        "test_frozen_protocol_and_temporal_parameters_cannot_drift",
+        "test_original_run_source_outcome_and_principal_identities_cannot_merge",
+        "test_single_original_consumption_and_signed_qualification_path_remain",
+        "test_complete_paired_body_and_legacy_mode_are_not_interchangeable",
+        "test_original_confidence_bounds_and_strict_roles_cannot_be_softened",
+        "test_domains_are_actual_literals_in_the_original_functions",
+        "test_original_shared_function_code_is_preserved",
+        "test_pure_pair_metadata_cannot_mint_authority_or_reconnect"
+      ]
+    }
+  ],
+  "full_inventory": {
+    "source_methods": 423,
+    "modules": 59,
+    "explicit_caller_entries": 565,
+    "native_cases": 190,
+    "native_groups": 41,
+    "boundaries": 710,
+    "protected_records": 489,
+    "tracked_rust_files_expected": 6766
+  },
+  "actual_base_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+      "left": "1c5d3d4414d718ad34097ff4770dbd11c0fc8503",
+      "base": "1c5d3d4414d718ad34097ff4770dbd11c0fc8503",
+      "equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+      "left": "8cbf737c8babd802b062ad88351ab7bb6c502edd",
+      "base": "8cbf737c8babd802b062ad88351ab7bb6c502edd",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "left": "112f330ada77a72524a19ebfc7bfa16d6b676668",
+      "base": "112f330ada77a72524a19ebfc7bfa16d6b676668",
+      "equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "left": "005e108f3bede3723753d10b89f6f1f05e70da42",
+      "base": "005e108f3bede3723753d10b89f6f1f05e70da42",
+      "equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "left": "9832e7800829bfbe9ee913884c50bd3d2add68bc",
+      "base": "9832e7800829bfbe9ee913884c50bd3d2add68bc",
+      "equal": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+      "left": "9fe310b95ab493e9704ad5be39beba2f5d048f9a",
+      "base": "9fe310b95ab493e9704ad5be39beba2f5d048f9a",
+      "equal": true
+    }
+  ],
+  "root_current_contract": {
+    "complete_rows": 13,
+    "all_exact_after_merge": true,
+    "complete_boundary_records": 32
+  },
+  "original_gate_function_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "function": "pub(super) fn require_stage(",
+      "bytes": 985,
+      "sha256": "41ba69eada8c3a36fc57a4aa8571ee785f8c9dafcfd11860e6f429a6a579db0a",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "final_entire_function_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn execute_stage<'a>(",
+      "bytes": 1438,
+      "sha256": "65e7dcb3f1ca708c5e7dc8c14a47194f0e3c3efabe012f21ccbb143f1850f518",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "final_entire_function_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "function": "pub(super) fn verify_checkpoint_evidence(",
+      "bytes": 626,
+      "sha256": "80eebfc50ca8e51447df8031530f8dd9d9be10820b105bebe8674fe10c96acc3",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "final_entire_function_equal": true
+    }
+  ],
+  "gate_source_paths_changed": false,
+  "native_inventory_blob_unchanged": "672a90aef6c8791265891fd31b9b2cadb8660952",
+  "native_test_case_definitions_changed": false,
+  "original_dependency_recovery": {
+    "source_sha": "441de918b863dd15b2faeae920017c1b4b08f59d",
+    "full_recovery_record_blob": "fac86c2e14425cba99758bd9952983d06b9d2a49",
+    "full_recovery_record_sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+    "archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "binding_sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+    "new_private_target": "/data/hepta-learn-ce434-runtime-20261112-v1/target",
+    "original_missing_paths_and_failure_preserved": true,
+    "no_existing_directory_deleted": true
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+      "blob": "8e4f9d6c0bb07b816da77e5eea7959c1e2c9763f",
+      "origin": "Model415",
+      "bytes": 10441
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+      "blob": "8474d6d18a5b374bcd2810aa0b8ebc9e3264e05c",
+      "origin": "Model415",
+      "bytes": 5305
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/guard-contract.json",
+      "blob": "a7a3550b6ed75401f2036f3d0538161c34db5a37",
+      "origin": "Model415",
+      "bytes": 21611
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/route-current-contract.json",
+      "blob": "398718743fa9e0b6fac6ccdc51cd136cf7f18948",
+      "origin": "Model415",
+      "bytes": 319907
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/source-projection.json",
+      "blob": "2767cde3fe78d3da2ebcd1b9309b9f93370ed5bf",
+      "origin": "Model415",
+      "bytes": 82352
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "blob": "270227f62f8af4824c1bc75b4246eef2dc071132",
+      "origin": "paired7db",
+      "bytes": 8992
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "blob": "c33b542c30c7bc53b5ba002f0c691e50b29fdf1f",
+      "origin": "paired7db",
+      "bytes": 9494
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "blob": "2e3e99ad03d1d5e630694faca0906446e0d110c0",
+      "origin": "paired7db",
+      "bytes": 20515
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+      "blob": "548d0bfbdc17f498f515c258903b721fd2f525e4",
+      "origin": "paired7db",
+      "bytes": 9234
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-source-repair-20261112/guard-contract.json",
+      "blob": "b101d269e7fdee1b64623795bf07982a07f7a95b",
+      "origin": "paired7db",
+      "bytes": 29205
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-source-repair-20261112/reproduction-evidence.json",
+      "blob": "a50b8cfba85367d4fcee3d23f829984cfe113b85",
+      "origin": "paired7db",
+      "bytes": 49533
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/original-h-evidence-export-request/export-original.py",
+      "blob": "9e7d0dfe7f0ed8da7f9781c332e65ecb59c2dda7",
+      "origin": "frozen-export-v2",
+      "bytes": 7980
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/original-h-evidence-export-request/frozen-request.json",
+      "blob": "1e537748e22f525808f5856389eb9051ef61c971",
+      "origin": "frozen-export-v2",
+      "bytes": 8741
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+      "origin": "root-complete-three-record-merge",
+      "bytes": 1537190
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-source-repair-20261112/original-trace-confirmation.json",
+      "blob": "8599d759c879fe210012014dc5e9da2152da1e06",
+      "origin": "actual-E-complete-trace-036",
+      "bytes": 28468
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/model-root-full-error-corroboration.json",
+      "blob": "5aad413922e88a35f3123d493029233a3c502691",
+      "origin": "actual-Model-complete-trace",
+      "bytes": 32072
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/root-uid-29-441-command/review-contract.json",
+      "blob": "cff41f573eaa1328a1b555edbb3e5d32a2d71286",
+      "origin": "root29-original-fixed441-review-unexecuted",
+      "bytes": 66374
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/root-uid-29-441-command/parents.json",
+      "blob": "88664e8ecc545a7fcb14726204eae67b70475565",
+      "origin": "root29-original-fixed441-review-unexecuted",
+      "bytes": 4918
+    }
+  ],
+  "execution_status": {
+    "new_source_python_executed": false,
+    "new_source_native_executed": false,
+    "new_source_full_caller_executed": false,
+    "new_source_root_uid_29_executed": false,
+    "final_fix_fmt_executed": false
+  },
+  "ordinary_acceptance": {
+    "positive": 0,
+    "complete_no_update_or_fallback": 0,
+    "fresh_different_input_C": 0,
+    "daemon_and_root_cold_restart": 0
+  },
+  "unchanged_authority_and_statistics": "No original production keys/grants/leases/policies or universal signer added; no threshold, episode/exchange cap, canonical domain, principal rule or original positive gate relaxed. Existing ordinary owner custody, pre-adoption B execution capability and real adopted C remain unestablished.",
+  "evidence_read_limit": "Earlier ranged h_view and MCP timeout records remain historical. Complete original 441 source JSON/log, native preparation error, PTY and dependency recovery bytes were subsequently exported from the original host using existing Git transport and independently verified in Git. Unknown read-only background admissions are not counted as completed."
+}

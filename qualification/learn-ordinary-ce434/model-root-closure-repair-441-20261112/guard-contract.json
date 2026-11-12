@@ -1,0 +1,490 @@
+{
+  "schema": "hepta.learn.model-root-441-closure-repair-guard-contract.v1",
+  "source_parent": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "source_parent_tree": "c3390ffc8c18c47f7bb4cbaa24ce4b585645fae2",
+  "reason": [
+    "The actual 441 source run reports an unresolved possible publication-context authenticate receiver in Selection service; both calls use the explicitly declared CandidateLearningReadContext field.",
+    "The Root suffix QA still pins the historical f636 complete records although five records were deliberately strengthened or migrated to actual receiver types by already installed repairs.",
+    "Preserve every original protection, test method, deletion mutation and private-authority rejection; update exact actual syntax and a separately pinned current contract."
+  ],
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+      "before_blob": "1c5d3d4414d718ad34097ff4770dbd11c0fc8503",
+      "after_blob": "8e4f9d6c0bb07b816da77e5eea7959c1e2c9763f",
+      "exact_occurrences": 2,
+      "before": "self.context.authenticate(now()?)?;",
+      "after": "OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, now()?)?;",
+      "behavior": "Both pre-effect and post-effect checks call the same existing actual receiver type; no authorization, ordering, I/O or error change."
+    }
+  ],
+  "manifest": {
+    "path": "CALLERS.toml",
+    "before_blob": "f11dc34ca24ce63057257702a775e74828e792af",
+    "after_blob": "3d4c4e5fa4f22a5dd5eea1022fe6d05c4cda474b",
+    "before_counts": {
+      "boundary": 710,
+      "protected_file": 489
+    },
+    "after_counts": {
+      "boundary": 710,
+      "protected_file": 489
+    },
+    "protected_file_changes": [
+      {
+        "before": {
+          "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+          "required": [
+            "pub struct OriginalCircuitModelSelectionCommandOwnerV1<W: AnchorWitnessStore> {",
+            "owner: Mutex<OriginalCircuitModelSelectionReceiptOwnerV1<W>>,",
+            "live: OriginalCircuitCandidateLearningReadClientV1,",
+            "model: OriginalCellQ24ModelCommandClientV1,",
+            "context: OriginalCircuitCandidateLearningReadContextV1,",
+            "execution_requested: AtomicBool,",
+            "runtime: Handle,",
+            "connections: Arc<Semaphore>,",
+            "pub(crate) fn from_original_receipt_owner("
+          ],
+          "forbidden": [
+            "SigningKey::generate",
+            "SigningKey::from_bytes",
+            "LearningEvidenceVerifierV1::new",
+            "LearningEvidenceTrustV1",
+            "UnixStream::connect",
+            "File::open",
+            "with_root_learning_stage_owners(",
+            "LearningIterationStageOwnerPortsV1 for",
+            "permit_all",
+            "if false",
+            "Clone",
+            "Deserialize",
+            "SigningKey",
+            "SignedFinalUseGrant",
+            "LearningOwnerJournalV1",
+            "CellEvaluationQualificationV1",
+            "pub owner:",
+            "pub context:",
+            "pub model:",
+            "pub live:",
+            "execution_requested.store(false",
+            "AtomicBool::new(false)",
+            "RootStageOwner",
+            "publish(",
+            ".commit_once(",
+            "TrainingNoUpdateV2"
+          ],
+          "required_function_order": [
+            {
+              "function": "fn from_original_receipt_owner(",
+              "sequence": [
+                "let started_at = now()?",
+                "wire::require_selection_context(&context, started_at)?",
+                "OriginalCircuitModelSelectionReceiptOwnerV1::original_command_profile(&owner)",
+                "context.model_publication_context()",
+                "&config.decision != context.decision()",
+                "&config.scope != context.scope()",
+                "config.verifier.trust_digest() != context.verifier().trust_digest()",
+                "config.verifier.scope_digest() != context.verifier().scope_digest()",
+                "config.verifier.objective_digest() != context.verifier().objective_digest()",
+                "config.training_evidence != publication.signatures()[2]",
+                "config.evaluation_evidence != publication.signatures()[3]",
+                "live.require_original_context(&context)?",
+                "LearningIterationCoordinatorV1::new(",
+                "context.decision().request.clone(), context.decision().owners.clone()",
+                "context.binding(started_at)?",
+                "Handle::try_current()",
+                "owner: Mutex::new(owner)",
+                "initial_head: initial.snapshot().head_digest",
+                "execution_requested: AtomicBool::new(readback_only)",
+                "Arc::new(Semaphore::new(4))"
+              ],
+              "top_level": [
+                "wire::require_selection_context(&context, started_at)?",
+                "live.require_original_context(&context)?"
+              ]
+            },
+            {
+              "function": "fn serve_command_channel(",
+              "sequence": [
+                "for request_id in 1..=128_u64",
+                "channel.exchange(|bytes|",
+                "self.command_response(bytes, request_id)",
+                "HostIssuerTransportError::InvalidRequest",
+                "Ok(request_id - 1)",
+                "Err(Error::Unavailable)"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn command_response(",
+              "sequence": [
+                "bytes.is_empty() || bytes.len() > 16_384",
+                "serde_json::from_slice(bytes)?",
+                "request.require_context(&self.context, self.binding, request_id)?",
+                "self.context.authenticate(now()?)?",
+                "match request.action",
+                "wire::Action::Execute",
+                "self.execution_requested.swap(        true, Ordering::AcqRel)",
+                "wire::CommandResult::ReadbackRequired",
+                "now()? >= self.context.decision().request.envelope.expiry_unix_seconds",
+                "wire::CommandResult::Expired",
+                "self.original_response(            true)?",
+                "wire::Action::Readback => self.original_response(            false)?",
+                "self.context.authenticate(now()?)?",
+                "serde_json::to_vec(&wire::Response::from_request(&request, result))?",
+                "encoded.is_empty() || encoded.len() > 16_384",
+                "Ok(encoded)"
+              ],
+              "top_level": [
+                "request.require_context(&self.context, self.binding, request_id)?",
+                "let result = match request.action"
+              ]
+            },
+            {
+              "function": "fn original_response(",
+              "sequence": [
+                "let completed = {",
+                "self.owner.try_lock()",
+                "Err(_) => return Ok(wire::CommandResult::Busy)",
+                "&mut OriginalCircuitModelSelectionReceiptOwnerV1<W> = &mut owner",
+                "OriginalCircuitModelSelectionRemoteSourcesV1",
+                "context: &self.context",
+                "model: &self.model",
+                "live: &self.live",
+                "if execute",
+                "OriginalCircuitModelSelectionReceiptOwnerV1::attest_original_remote_selection(",
+                "original, source",
+                "OriginalCircuitModelSelectionReceiptOwnerV1::readback_remote(",
+                "original, source",
+                "match completed",
+                "wire::encode_completed(&self.context, receipt, signed, now()?)",
+                "Err(error) => Ok(original_state(error))"
+              ],
+              "top_level": [
+                "let completed = {",
+                "match completed"
+              ]
+            },
+            {
+              "function": "fn original_state(",
+              "sequence": [
+                "match error",
+                "Selection::Owner(Owner::Pending) => wire::CommandResult::Pending",
+                "Selection::Owner(Owner::Store(Store::Missing)) => wire::CommandResult::Missing",
+                "_ => wire::CommandResult::Uncertain"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn serve_commands(",
+              "sequence": [
+                "Arc::clone(&self.connections)",
+                ".try_acquire_owned()",
+                "tokio::task::spawn_blocking(move ||",
+                "let _permit = permit",
+                "original_owner_command_channel_v1(",
+                "stream",
+                "consumer",
+                "consumer_uid",
+                "original_consumer_pidfd",
+                "timeout",
+                "lifetime",
+                "self.serve_command_channel(&mut channel)",
+                ".map_err(|_| Error::CommitUncertain)"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn serve_evidence_readback(",
+              "sequence": [
+                "timeout.is_zero() || timeout > Duration::from_millis(500)",
+                "Arc::clone(&self.connections)",
+                ".try_acquire_owned()",
+                "tokio::task::spawn_blocking(move ||",
+                "let _permit = permit",
+                "original_owner_command_channel_v1(",
+                "stream",
+                "consumer",
+                "consumer_uid",
+                "original_consumer_pidfd",
+                "timeout",
+                "lifetime",
+                "self.serve_evidence_channel(&mut channel)",
+                ".map_err(|_| Error::CommitUncertain)"
+              ],
+              "top_level": []
+            }
+          ]
+        },
+        "after": {
+          "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+          "required": [
+            "pub struct OriginalCircuitModelSelectionCommandOwnerV1<W: AnchorWitnessStore> {",
+            "owner: Mutex<OriginalCircuitModelSelectionReceiptOwnerV1<W>>,",
+            "live: OriginalCircuitCandidateLearningReadClientV1,",
+            "model: OriginalCellQ24ModelCommandClientV1,",
+            "context: OriginalCircuitCandidateLearningReadContextV1,",
+            "execution_requested: AtomicBool,",
+            "runtime: Handle,",
+            "connections: Arc<Semaphore>,",
+            "pub(crate) fn from_original_receipt_owner("
+          ],
+          "forbidden": [
+            "SigningKey::generate",
+            "SigningKey::from_bytes",
+            "LearningEvidenceVerifierV1::new",
+            "LearningEvidenceTrustV1",
+            "UnixStream::connect",
+            "File::open",
+            "with_root_learning_stage_owners(",
+            "LearningIterationStageOwnerPortsV1 for",
+            "permit_all",
+            "if false",
+            "Clone",
+            "Deserialize",
+            "SigningKey",
+            "SignedFinalUseGrant",
+            "LearningOwnerJournalV1",
+            "CellEvaluationQualificationV1",
+            "pub owner:",
+            "pub context:",
+            "pub model:",
+            "pub live:",
+            "execution_requested.store(false",
+            "AtomicBool::new(false)",
+            "RootStageOwner",
+            "publish(",
+            ".commit_once(",
+            "TrainingNoUpdateV2"
+          ],
+          "required_function_order": [
+            {
+              "function": "fn from_original_receipt_owner(",
+              "sequence": [
+                "let started_at = now()?",
+                "wire::require_selection_context(&context, started_at)?",
+                "OriginalCircuitModelSelectionReceiptOwnerV1::original_command_profile(&owner)",
+                "context.model_publication_context()",
+                "&config.decision != context.decision()",
+                "&config.scope != context.scope()",
+                "config.verifier.trust_digest() != context.verifier().trust_digest()",
+                "config.verifier.scope_digest() != context.verifier().scope_digest()",
+                "config.verifier.objective_digest() != context.verifier().objective_digest()",
+                "config.training_evidence != publication.signatures()[2]",
+                "config.evaluation_evidence != publication.signatures()[3]",
+                "live.require_original_context(&context)?",
+                "LearningIterationCoordinatorV1::new(",
+                "context.decision().request.clone(), context.decision().owners.clone()",
+                "context.binding(started_at)?",
+                "Handle::try_current()",
+                "owner: Mutex::new(owner)",
+                "initial_head: initial.snapshot().head_digest",
+                "execution_requested: AtomicBool::new(readback_only)",
+                "Arc::new(Semaphore::new(4))"
+              ],
+              "top_level": [
+                "wire::require_selection_context(&context, started_at)?",
+                "live.require_original_context(&context)?"
+              ]
+            },
+            {
+              "function": "fn serve_command_channel(",
+              "sequence": [
+                "for request_id in 1..=128_u64",
+                "channel.exchange(|bytes|",
+                "self.command_response(bytes, request_id)",
+                "HostIssuerTransportError::InvalidRequest",
+                "Ok(request_id - 1)",
+                "Err(Error::Unavailable)"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn command_response(",
+              "sequence": [
+                "bytes.is_empty() || bytes.len() > 16_384",
+                "serde_json::from_slice(bytes)?",
+                "request.require_context(&self.context, self.binding, request_id)?",
+                "OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, now()?)?",
+                "match request.action",
+                "wire::Action::Execute",
+                "self.execution_requested.swap(        true, Ordering::AcqRel)",
+                "wire::CommandResult::ReadbackRequired",
+                "now()? >= self.context.decision().request.envelope.expiry_unix_seconds",
+                "wire::CommandResult::Expired",
+                "self.original_response(            true)?",
+                "wire::Action::Readback => self.original_response(            false)?",
+                "OriginalCircuitCandidateLearningReadContextV1::authenticate(&self.context, now()?)?",
+                "serde_json::to_vec(&wire::Response::from_request(&request, result))?",
+                "encoded.is_empty() || encoded.len() > 16_384",
+                "Ok(encoded)"
+              ],
+              "top_level": [
+                "request.require_context(&self.context, self.binding, request_id)?",
+                "let result = match request.action"
+              ]
+            },
+            {
+              "function": "fn original_response(",
+              "sequence": [
+                "let completed = {",
+                "self.owner.try_lock()",
+                "Err(_) => return Ok(wire::CommandResult::Busy)",
+                "&mut OriginalCircuitModelSelectionReceiptOwnerV1<W> = &mut owner",
+                "OriginalCircuitModelSelectionRemoteSourcesV1",
+                "context: &self.context",
+                "model: &self.model",
+                "live: &self.live",
+                "if execute",
+                "OriginalCircuitModelSelectionReceiptOwnerV1::attest_original_remote_selection(",
+                "original, source",
+                "OriginalCircuitModelSelectionReceiptOwnerV1::readback_remote(",
+                "original, source",
+                "match completed",
+                "wire::encode_completed(&self.context, receipt, signed, now()?)",
+                "Err(error) => Ok(original_state(error))"
+              ],
+              "top_level": [
+                "let completed = {",
+                "match completed"
+              ]
+            },
+            {
+              "function": "fn original_state(",
+              "sequence": [
+                "match error",
+                "Selection::Owner(Owner::Pending) => wire::CommandResult::Pending",
+                "Selection::Owner(Owner::Store(Store::Missing)) => wire::CommandResult::Missing",
+                "_ => wire::CommandResult::Uncertain"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn serve_commands(",
+              "sequence": [
+                "Arc::clone(&self.connections)",
+                ".try_acquire_owned()",
+                "tokio::task::spawn_blocking(move ||",
+                "let _permit = permit",
+                "original_owner_command_channel_v1(",
+                "stream",
+                "consumer",
+                "consumer_uid",
+                "original_consumer_pidfd",
+                "timeout",
+                "lifetime",
+                "self.serve_command_channel(&mut channel)",
+                ".map_err(|_| Error::CommitUncertain)"
+              ],
+              "top_level": []
+            },
+            {
+              "function": "fn serve_evidence_readback(",
+              "sequence": [
+                "timeout.is_zero() || timeout > Duration::from_millis(500)",
+                "Arc::clone(&self.connections)",
+                ".try_acquire_owned()",
+                "tokio::task::spawn_blocking(move ||",
+                "let _permit = permit",
+                "original_owner_command_channel_v1(",
+                "stream",
+                "consumer",
+                "consumer_uid",
+                "original_consumer_pidfd",
+                "timeout",
+                "lifetime",
+                "self.serve_evidence_channel(&mut channel)",
+                ".map_err(|_| Error::CommitUncertain)"
+              ],
+              "top_level": []
+            }
+          ]
+        }
+      }
+    ],
+    "protected_file_additions": [],
+    "boundary_changes": [],
+    "boundary_additions": [],
+    "byte_scope": "Exactly two marker strings in the existing one Selection service protected record change to match the two real UFCS calls; all other manifest bytes remain identical."
+  },
+  "qa_changes": [
+    {
+      "path": "qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py",
+      "before_blob": "8cbf737c8babd802b062ad88351ab7bb6c502edd",
+      "after_blob": "8474d6d18a5b374bcd2810aa0b8ebc9e3264e05c",
+      "scope": "Only the frozen CONTRACT_PATH literal changes; the six existing methods and all assertions retain their exact bytes.",
+      "historical_contract": {
+        "path": "qualification/learn-ordinary-ce434/positive-root-route-20261112/guard-contract.json",
+        "blob": "7bd8640208158a08e329a7f8ab852b09804c04fd",
+        "changed": false
+      },
+      "current_contract": {
+        "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/route-current-contract.json",
+        "blob": "398718743fa9e0b6fac6ccdc51cd136cf7f18948",
+        "complete_rows": 13,
+        "current_row_refreshes": 5,
+        "original_mutations": 69,
+        "private_injections": 12,
+        "existing_boundary_records": 32
+      }
+    }
+  ],
+  "source_projection": {
+    "report": {
+      "path": "qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/source-projection.json",
+      "blob": "2767cde3fe78d3da2ebcd1b9309b9f93370ed5bf"
+    },
+    "status": "V8 translation of pinned original source checks only; this is not execution of the original Python verifier or test runner.",
+    "verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "typed_scanner_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "source_marker_helper_blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c",
+    "typed_projection_helper_blob": "4fa990d8f32cb41e54677d9dff4c65d8a3d90db4",
+    "postimage_complete_records": 14,
+    "postimage_projection_errors": 0,
+    "marker_counts": {
+      "required": 107,
+      "order": 77,
+      "functions": 90,
+      "sequence": 1449,
+      "top": 234
+    },
+    "original_route_deletions_rejected": 69,
+    "original_private_injections_rejected": 12,
+    "both_service_authentication_deletions_rejected": 2,
+    "actual_typed_boundaries": 43,
+    "actual_typed_source_files": 32,
+    "preimage_typed_unresolved": 1,
+    "postimage_typed_unresolved": 0,
+    "postimage_missing_callers": 0,
+    "postimage_unexpected_callers": 0,
+    "unregistered_caller_controls_rejected": 43
+  },
+  "actual_failure_evidence": {
+    "tail_view_blob": "7ad04f1d65dffff63330d16b639eb8d32a2dfc23",
+    "complete_heading_view_blob": "3757fc47445359980935cec90fe98c319565bb56",
+    "raw_view_bundle_blob": "58cd9b8e19ee4e8cc854cc51fcd93c42c1c321f0",
+    "actual_source_run": {
+      "methods": 423,
+      "failures": 5,
+      "errors": 69,
+      "skipped": 0
+    },
+    "limits": "The five complete row-count failure traces and the Selection service unresolved-receiver trace are available. Attempts to retrieve the first Root subtest error stack timed out; this repair does not assert that all 69 original errors share these causes or have passed."
+  },
+  "runtime_validation": {
+    "original_python_executed": false,
+    "rust_or_native_executed": false,
+    "format_executed": false,
+    "ordinary_acceptance": 0,
+    "positive_gates_changed": false
+  },
+  "authority": {
+    "runtime_authority": false,
+    "production_caller": false,
+    "production_writer": false,
+    "external_effect": false,
+    "self_issued_acceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}
