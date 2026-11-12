@@ -42,7 +42,8 @@ impl HostAuthorityService {
                         ));
                     }
                     slot.require_profile()?;
-                    slot.require_genesis()?;
+                    // Reserve precedes the daemon's actual genesis writer.
+                    slot.require_target(/*fresh*/ true)?;
                     slot.require_selection(
                         self.clock
                             .refresh_projection()
@@ -87,7 +88,7 @@ impl HostAuthorityService {
                         ));
                     }
                     files.require_original_cell_baseline()?;
-                    slot.require_genesis()?;
+                    slot.require_target(/*fresh*/ true)?;
                     slot.require_profile()?;
                     slot.require_selection(
                         self.clock
