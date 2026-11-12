@@ -20,7 +20,8 @@ impl RootGenerationInitialClient {
         let response = stream.exchange(&ready::request(&binding)?)?;
         let acknowledged = ready::require_response(&response, &binding)?;
         connection.require_original_publication_session()?;
-        let client = Self::from_original_initial_stream(stream, bootstrap, connection)?;
+        let client: RootGenerationInitialClient =
+            Self::from_original_initial_stream(stream, bootstrap, connection)?;
         if client.profile.binding != acknowledged {
             return Err(uncertain());
         }
