@@ -100,6 +100,12 @@ impl OriginalCellQ24NoUpdateStageOwnersV1 {
         Ok(())
     }
 
+    /// Observe the origin fixed while consuming the original role channels.
+    /// This cannot install a gate or promote recovered channels to new work.
+    pub(crate) fn original_resident_readback_only(&self) -> bool {
+        self.origin == Origin::Recovered
+    }
+
     /// Only the resident fresh-CAS factory calls this while it owns Self by
     /// value. Neither a recovered adapter nor a second install can gain work.
     pub(crate) fn install_fresh_resident_gate(

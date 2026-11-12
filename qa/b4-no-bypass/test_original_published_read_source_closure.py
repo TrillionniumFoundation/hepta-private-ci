@@ -236,23 +236,29 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         ):
             self.rejects(SERVICE, "fn require_original_task_input(", marker)
         for marker in (
-            "self.cell.task.require_current()?",
+            "OriginalPublishedReadCurrent::require(&mut current, &self.cell)?",
             "self.require_original_task_input()?",
-            "cell.read_learning_selection(&coordinator)?",
+            "cell.read_learning_selection_with_current(&coordinator, &mut current)?",
             "self.require_original_selection(&selection)?",
             "(selection.clone(), selection, None)",
             "wire::Mode::NextUse",
             "PublishedCircuitCellOwnerV1::read_learning_next_use_set(",
             "(selection, observation, Some(publication))",
-            "cell.read_learning_selection(&coordinator)? != selection",
-            "self.require_original_task_input()?;\n        self.cell.task.require_current()?;\n        Ok(Readback",
+            "cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection",
+            "self.require_original_task_input()?;\n        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;\n        OriginalPublishedReadCurrent::finish(current)?;\n        Ok(Readback",
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
         for marker in (
-            "self.cell.task.require_current()?",
-            "self.require_original_task_input()?",
+            "OriginalPublishedReadCurrent::individual(&self.cell)",
+            "self.require_task_input_current_with_current(&mut current)",
         ):
             self.rejects(SERVICE, "fn require_task_input_current(", marker)
+        for marker in (
+            "OriginalPublishedReadCurrent::require(current, &self.cell)?",
+            "self.require_original_task_input()?",
+        ):
+            self.rejects(SERVICE, "fn require_task_input_current_with_current(", marker)
+        self.rejects(SERVICE, "fn read_original(", "OriginalPublishedReadCurrent::finish(current)?")
         for marker in (
             "self.context\n            .require_request(&request, self.binding, request_id)?",
             "let read = self.read_original()?;",
@@ -265,19 +271,23 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
     def test_same_call_set_keeps_native_source_and_cell_guards_before_consumption(self):
         self.rejects(
             CURRENT, "fn read_learning_next_use<",
-            ".read_learning_next_use_set(coordinator, source, identity)?",
+            "self.read_learning_next_use_with_current(coordinator, source, identity, &mut current)",
+        )
+        self.rejects(
+            CURRENT, "fn read_learning_next_use_with_current<",
+            ".read_learning_next_use_set(coordinator, source, identity, current)?",
         )
         for marker in (
             "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)",
-            "self.read_learning_selection(&prefix)?",
+            "self.read_learning_selection_with_current(&prefix, current)?",
             "actual_selection != selection.observation",
             "source\n            .read_run_publication(",
-            "self.committed(&before)?",
+            "PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?",
             "receipt.bundle_digest != candidate_bundle",
             "previous.source.input().scope.run_id != coordinator.snapshot().request.source_run_id",
             "if source\n            .read_run_publication(",
             "!= before",
-            "self.task.require_current()?",
+            "OriginalPublishedReadCurrent::require(current, self)?",
             "source_publication: before.publication_digest()",
         ):
             self.rejects(CURRENT, "fn read_learning_next_use_set(", marker)

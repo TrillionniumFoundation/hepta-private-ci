@@ -11,6 +11,7 @@ use codex_hepta_types::Digest32;
 
 use super::OriginalCellEvaluationQualificationErrorV1;
 use super::binding as original;
+use super::training_read_proof::OriginalPanelTrainingReadV1;
 #[path = "neuron_cell_evaluation_panel_binding.rs"]
 mod binding;
 #[path = "neuron_cell_evaluation_panel_contract.rs"]
@@ -83,11 +84,20 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         &mut self,
         mut clock: impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send,
     ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
+        self.read_current_with_training(&mut clock, &mut OriginalPanelTrainingReadV1::Individual)
+            .await
+    }
+
+    async fn read_current_with_training(
+        &mut self,
+        mut clock: impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send,
+        training: &mut OriginalPanelTrainingReadV1<'_>,
+    ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
         if self.fenced {
             return Err(Error::CommitUncertain);
         }
         self.fenced = true;
-        let result = self.read_original_panel(&mut clock).await;
+        let result = self.read_original_panel(&mut clock, training).await;
         if result.is_ok() {
             self.fenced = false;
         }
@@ -97,10 +107,11 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
     async fn read_original_panel(
         &mut self,
         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
+        training: &mut OriginalPanelTrainingReadV1<'_>,
     ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
         let started_at = clock()?;
-        let before = self.read_members(clock).await?;
-        let after = self.read_members(clock).await?;
+        let before = self.read_members(clock, training).await?;
+        let after = self.read_members(clock, training).await?;
         if before != after {
             return Err(Error::CommitUncertain);
         }
@@ -127,6 +138,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
     async fn read_members(
         &mut self,
         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
+        training: &mut OriginalPanelTrainingReadV1<'_>,
     ) -> Result<Vec<OriginalCellEvaluationPanelMemberReadbackV1>, Error> {
         let mut results = Vec::with_capacity(self.retention.len() + 1);
         results.push(
@@ -134,13 +146,16 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
                 &mut self.primary,
                 self.registration.primary(),
                 clock,
+                training,
             )
             .await?,
         );
         for (owner, task) in self.retention.iter_mut().zip(self.registration.retention()) {
             results.push(
-                OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock)
-                    .await?,
+                OriginalCellEvaluationPanelMemberOwnersV1::read_original(
+                    owner, task, clock, training,
+                )
+                .await?,
             );
         }
         Ok(results)

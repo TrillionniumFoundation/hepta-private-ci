@@ -501,3 +501,6 @@ async fn q24_remote_current_set_rejects_source_withdrawal_after_native_completio
 
 #[path = "circuit_selection_command_owner_tests.rs"]
 mod command_owner;
+
+#[path = "circuit_feature_current_read_tests.rs"]
+mod current_slots;

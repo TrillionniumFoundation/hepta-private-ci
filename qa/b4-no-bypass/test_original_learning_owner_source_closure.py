@@ -113,8 +113,25 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
         for marker in ("Arc::ptr_eq(&self.0, &cell.task.0)", "cell.committed(&before)?", "original.require_current()?", "original.drain()?", "original.is_drained()?", "self.require_current()?"):
             with self.subTest(marker=marker): self.rejects(path, "fn drain_completed_task<", marker)
         path = AGENT + "circuit_feature_current_learning.rs"
-        for marker in ("coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix.head_digest = selection.predecessor", "self.read_learning_selection(&prefix)?", "actual_selection != selection.observation", "source\n            .read_run_publication(", "self.committed(&before)?", "receipt.bundle_digest != candidate_bundle", "self.task.require_current()?"):
+        for marker in ("coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix.head_digest = selection.predecessor", "self.read_learning_selection_with_current(&prefix, current)?", "actual_selection != selection.observation", "source\n            .read_run_publication(", "PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?", "receipt.bundle_digest != candidate_bundle", "OriginalPublishedReadCurrent::require(current, self)?"):
             with self.subTest(marker=marker): self.rejects(path, "fn read_learning_next_use_set(", marker)
+        # The public entry still performs each CURRENT read individually and
+        # delegates to the same physical Source, Cell and version checks.
+        for marker in ("OriginalPublishedReadCurrent::individual(self)",
+                       "self.read_learning_next_use_with_current(coordinator, source, identity, &mut current)"):
+            with self.subTest(public_next_use=marker):
+                self.rejects(path, "fn read_learning_next_use<", marker)
+        for marker in (".read_learning_next_use_set(coordinator, source, identity, current)?",
+                       ".into_parts()"):
+            with self.subTest(same_call_next_use=marker):
+                self.rejects(path, "fn read_learning_next_use_with_current<", marker)
+        current = AGENT + "circuit_feature_current_read.rs"
+        for function, marker in (
+            ("fn individual(", "state: State::Individual"),
+            ("fn require(", "State::Individual => {\n                cell.task.require_current()?;"),
+        ):
+            with self.subTest(individual_next_use=marker):
+                self.rejects(current, function, marker)
 
     def test_historical_read_never_reactivates_or_repairs_previous_owner(self):
         path = AGENT + "circuit_feature_current_recovery.rs"

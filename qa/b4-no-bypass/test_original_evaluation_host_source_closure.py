@@ -115,12 +115,12 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
         ):
             self.rejects(HOST, "fn from_original_receipt_owner(", marker)
         for marker in (
-            "let before = self.read_panel().await?",
+            "let before = self.read_panel_with_training(&mut training).await?",
             "before.training_evidence() != &context.training_evidence",
             "qualification: before.primary().qualification()",
             "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(",
             "OriginalCellEvaluationReceiptOwnerV1::readback(",
-            "let after = self.read_panel().await?", "if before != after",
+            "let after = self.read_panel_with_training(&mut training).await?", "if before != after",
             "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
             "self.authenticate_panel(&after, current)?",
             "config.signing.verifier.require_signer_binding(",

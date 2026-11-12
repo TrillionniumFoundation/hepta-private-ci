@@ -13,6 +13,8 @@ use codex_hepta_types::Digest32;
 use tokio::sync::Semaphore;
 
 use super::super::Publication;
+use super::super::current_read::OriginalPublishedReadCurrent;
+use super::super::current_read::OriginalPublishedReadPurpose;
 use super::Error;
 use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
@@ -194,9 +196,17 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn require_task_input_current(&self) -> Result<(), Error> {
-        self.cell.task.require_current()?;
+        let mut current = OriginalPublishedReadCurrent::individual(&self.cell);
+        self.require_task_input_current_with_current(&mut current)
+    }
+
+    fn require_task_input_current_with_current(
+        &self,
+        current: &mut OriginalPublishedReadCurrent<'_, C>,
+    ) -> Result<(), Error> {
+        OriginalPublishedReadCurrent::require(current, &self.cell)?;
         self.require_original_task_input()?;
-        self.cell.task.require_current()?;
+        OriginalPublishedReadCurrent::require(current, &self.cell)?;
         Ok(())
     }
 
@@ -232,13 +242,23 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     fn read_original(&self) -> Result<Readback, Error> {
         // One no-effect window. The same original CURRENT and Source input
         // bracket all native reads below; each later request starts anew.
-        self.cell.task.require_current()?;
+        let mut current = OriginalPublishedReadCurrent::for_original_read(&self.cell);
+        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;
         self.require_original_task_input()?;
         let coordinator = self.context.decision()?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
-        let (selection, observation, source_publication) = match self.context.mode()? {
+        let mode = self.context.mode()?;
+        OriginalPublishedReadCurrent::select_purpose(
+            &mut current,
+            match mode {
+                wire::Mode::Selection => OriginalPublishedReadPurpose::Selection,
+                wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse,
+            },
+        )?;
+        let (selection, observation, source_publication) = match mode {
             wire::Mode::Selection => {
-                let selection = cell.read_learning_selection(&coordinator)?;
+                let selection =
+                    cell.read_learning_selection_with_current(&coordinator, &mut current)?;
                 (selection.clone(), selection, None)
             }
             wire::Mode::NextUse => {
@@ -250,6 +270,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
                         &prefix,
                         &self.source,
                         &self.identity,
+                        &mut current,
                     )?
                     .into_parts();
                 (selection, observation, Some(publication))
@@ -267,11 +288,12 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         // here, then independently check the original Selection and Source again.
         #[cfg(test)]
         self.fixture_read_tail()?;
-        if cell.read_learning_selection(&coordinator)? != selection {
+        if cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection {
             return Err(Error::Binding("original selection changed during read"));
         }
         self.require_original_task_input()?;
-        self.cell.task.require_current()?;
+        OriginalPublishedReadCurrent::require(&mut current, &self.cell)?;
+        OriginalPublishedReadCurrent::finish(current)?;
         Ok(Readback {
             observation,
             publication,

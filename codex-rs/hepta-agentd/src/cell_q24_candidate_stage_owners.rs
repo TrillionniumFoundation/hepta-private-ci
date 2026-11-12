@@ -116,6 +116,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         Ok(())
     }
 
+    pub(crate) fn original_resident_readback_only(&self) -> bool {
+        OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)
+    }
+
     pub(crate) fn install_fresh_resident_gate(
         &mut self,
         gate: Arc<RootResidentLearningEffectGateV3>,

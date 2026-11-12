@@ -5,6 +5,7 @@
 use codex_hepta_learning_artifacts::CellStatePartitionV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
 
+use super::current_read::OriginalPublishedReadCurrent;
 use super::*;
 
 /// Owned results of this one original read. No Clone, decoder or constructor
@@ -33,9 +34,18 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         &self,
         coordinator: &LearningIterationCoordinatorV1,
     ) -> Result<LearningIterationObservationV1, AgentdError> {
+        let mut current = OriginalPublishedReadCurrent::individual(self);
+        self.read_learning_selection_with_current(coordinator, &mut current)
+    }
+
+    pub(super) fn read_learning_selection_with_current(
+        &self,
+        coordinator: &LearningIterationCoordinatorV1,
+        current: &mut OriginalPublishedReadCurrent<'_, W>,
+    ) -> Result<LearningIterationObservationV1, AgentdError> {
         LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
             .map_err(invalid)?;
-        self.task.require_current()?;
+        OriginalPublishedReadCurrent::require(current, self)?;
         let Publication::Update { original, previous } = &self.task.0.publication else {
             return Err(invalid("initial Feature task is not a learning selection"));
         };
@@ -55,7 +65,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
             coordinator,
             &previous.manifest,
         )?;
-        self.task.require_current()?;
+        OriginalPublishedReadCurrent::require(current, self)?;
         Ok(result)
     }
 
@@ -67,8 +77,19 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         source: &CircuitTaskSourceReadbackV1<SW>,
         identity: &AgentdIdentity,
     ) -> Result<LearningIterationObservationV1, AgentdError> {
+        let mut current = OriginalPublishedReadCurrent::individual(self);
+        self.read_learning_next_use_with_current(coordinator, source, identity, &mut current)
+    }
+
+    pub(super) fn read_learning_next_use_with_current<SW: AnchorWitnessStore>(
+        &self,
+        coordinator: &LearningIterationCoordinatorV1,
+        source: &CircuitTaskSourceReadbackV1<SW>,
+        identity: &AgentdIdentity,
+        current: &mut OriginalPublishedReadCurrent<'_, W>,
+    ) -> Result<LearningIterationObservationV1, AgentdError> {
         let (_, observation, _) = self
-            .read_learning_next_use_set(coordinator, source, identity)?
+            .read_learning_next_use_set(coordinator, source, identity, current)?
             .into_parts();
         Ok(observation)
     }
@@ -80,6 +101,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         coordinator: &LearningIterationCoordinatorV1,
         source: &CircuitTaskSourceReadbackV1<impl AnchorWitnessStore>,
         identity: &AgentdIdentity,
+        current: &mut OriginalPublishedReadCurrent<'_, W>,
     ) -> Result<OriginalCircuitNextUseReadSet, AgentdError> {
         LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
             .map_err(invalid)?;
@@ -95,7 +117,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
             .ok_or_else(|| invalid("Feature selection missing"))?;
         prefix.head_digest = selection.predecessor;
         let prefix = LearningIterationCoordinatorV1::from_snapshot(prefix).map_err(invalid)?;
-        let actual_selection = self.read_learning_selection(&prefix)?;
+        let actual_selection = self.read_learning_selection_with_current(&prefix, current)?;
         if actual_selection != selection.observation {
             return Err(invalid(
                 "Feature selection differs from original version owner",
@@ -112,7 +134,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         let before = source
             .read_run_publication(identity, &self.task.source().scope.run_id)
             .map_err(invalid)?;
-        let receipt = self.committed(&before)?;
+        let receipt = PublishedCircuitCellOwnerV1::committed_with_current(self, &before, current)?;
         let Publication::Update { original, previous } = &self.task.0.publication else {
             return Err(invalid("Feature successor lacks original publication"));
         };
@@ -184,7 +206,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
                 "original Feature source changed across observation",
             ));
         }
-        self.task.require_current()?;
+        OriginalPublishedReadCurrent::require(current, self)?;
         Ok(OriginalCircuitNextUseReadSet {
             selection: selection_observation,
             observation: result,
