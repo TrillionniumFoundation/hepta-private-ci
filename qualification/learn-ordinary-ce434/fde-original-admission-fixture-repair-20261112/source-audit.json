@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.learn.same-original-admission-fixture-repair.v1",
+  "parent": {
+    "sha": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17"
+  },
+  "actual_evidence": {
+    "commit": "543542dcc8ff4e7c2d8c888ca836d749c52b7091",
+    "log_blob": "a63c88170a768f85e4e5fcec1eea76ec118c9691",
+    "log_bytes": 189143,
+    "log_sha256": "f87a4f1c5dfd62abbdebeac47a2a87a187f0cc45ce43e3b7a854f2878e78c63b",
+    "failures": [
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "diagnostics": [
+          "thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows' (1100668) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Digest32(\n<    \"66f450623a449dedaee744949a6f47ca0e78565399e1647dff09085efa7341e5\",\n>    \"7635f04046a76588024594942858c390cfd9bdfa8adc7e6fdf36014ee9df456d\",\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+        "diagnostics": [
+          "thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support' (1100919) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Digest32(\n<    \"389ada27e683b15cf09aa116027d55abf76a73742e4c1b09e5acfe1c4410df57\",\n>    \"eea536c1e7abb98ce9df925377bd608723b1d09d821840d1463342757519c072\",\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "diagnostics": [
+          "thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption' (1101101) panicked at hepta-agentd/src/circuit_original_evaluation_provider_tests.rs:37:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n Digest32(\n<    \"20b1d57405413f690bcab20d41715f820577a6c072510edb65f9c82f0f6fa418\",\n>    \"e60435f6e3e8049a006f1d05097d43cd0bff4c6c17005be7b692caaf009b5923\",\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        ]
+      }
+    ]
+  },
+  "cause": "preregistered compiled an objective from a discarded admission; PositiveFixture created a separate source envelope. Their actual semantic digests failed the retained objective equality assertion.",
+  "repair": "Move the original pre-registered Admission into PositiveFixture::ready_with_admission. ready_with_profile preserves its API by obtaining an Admission then delegating. The same original signed source envelope and admission profile are compiled before B registration and consumed for actual A; actual run id is still bound before the original decision and start.",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "before": "3f136713030d875865cc2bfb68e7f56a49eff471",
+      "after": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+      "bytes": 24531,
+      "edits": [
+        {
+          "before": "    async fn ready_with_profile(\n        evaluation_profile: Digest32,\n        trust_time: u64,\n    ) -> anyhow::Result<Self> {\n        let directory = tempfile::tempdir()?;\n        let root = directory.path().canonicalize()?;\n        let (baseline, bundle, definition_a) = support::model(&root)?;\n        let mut a = support::admission(\"positive-source-envelope-request\").await?;\n        let preview = support::source(&a, [Q, Q / 4])?;",
+          "after": "    async fn ready_with_profile(\n        evaluation_profile: Digest32,\n        trust_time: u64,\n    ) -> anyhow::Result<Self> {\n        let admission = support::admission(\"positive-source-envelope-request\").await?;\n        Self::ready_with_admission(admission, evaluation_profile, trust_time).await\n    }\n\n    async fn ready_with_admission(\n        mut a: support::Admission,\n        evaluation_profile: Digest32,\n        trust_time: u64,\n    ) -> anyhow::Result<Self> {\n        let directory = tempfile::tempdir()?;\n        let root = directory.path().canonicalize()?;\n        let (baseline, bundle, definition_a) = support::model(&root)?;\n        let preview = support::source(&a, [Q, Q / 4])?;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "before": "d67633cdef0fb00b2119b3f2839219eabf2b84fe",
+      "after": "35fbdac0b826f2de1b780ece31b64d34d29c379e",
+      "bytes": 14632,
+      "edits": [
+        {
+          "before": "    let preview = support::admission(\"original-B-profile-preview\").await?;\n    let objective = support::source(&preview, [Q, Q / 4])?.objective_digest;\n    drop(preview);",
+          "after": "    // Preregister against the very same signed source envelope that A uses.\n    // A second admission has its own request/time fields and semantic digest.\n    let admission = support::admission(\"positive-source-envelope-request\").await?;\n    let objective = support::source(&admission, [Q, Q / 4])?.objective_digest;"
+        },
+        {
+          "before": "    let original =\n        PositiveFixture::ready_with_profile(registration.evaluation_profile(), at).await?;",
+          "after": "    let original = PositiveFixture::ready_with_admission(\n        admission,\n        registration.evaluation_profile(),\n        at,\n    )\n    .await?;"
+        }
+      ]
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+      "blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+      "blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf"
+    }
+  ],
+  "preserved": {
+    "provider_test_bodies_after_first_tokio_attribute": "byte-exact",
+    "objective_equality_assertion": true,
+    "evaluation_profile_equality_assertion": true,
+    "nonempty_retention_assertion": true,
+    "original_start_execute_and_material_training_body": "byte-exact after helper split",
+    "private_visibility": true,
+    "owned_admission_no_clone": true,
+    "production_files": 0,
+    "all_role_credentials": "unchanged mechanism-only fixtures",
+    "callers_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+    "native_inventory_blob": "672a90aef6c8791265891fd31b9b2cadb8660952"
+  },
+  "review": {
+    "root_full_preimage_and_postimage_git_sha_verified": true,
+    "peer_audit_blob": "4da74218156c89823de5a3225ff69dcaa0a79076",
+    "exact_reversible_edits": true
+  },
+  "not_claimed": {
+    "compile_or_native_pass": false,
+    "ordinary_B_execution_authority": false,
+    "positive_adoption": false,
+    "fresh_C": false,
+    "daemon_root_restart": false
+  }
+}
