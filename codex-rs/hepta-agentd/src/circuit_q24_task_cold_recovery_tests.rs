@@ -4,6 +4,7 @@
 
 use crate::AgentdGenerationUpdateRecoveryV1;
 use crate::AgentdGenerationUpdateTargetV1;
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use std::io::Write;
 
@@ -42,7 +43,9 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
     let version = VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?;
     let task_a = support::publish_initial(&version, definition.clone(), source_a.clone())?;
     let mut a = support::start(a, task_a, Arc::clone(&model), bundle.clone()).await?;
-    let publication_a = execute(&a, /*request_id*/ 1).await?;
+    let publication_a = execute(&a, /*request_id*/ 1)
+        .await
+        .context("actual A execution")?;
     let completion =
         a.retirement
             .drain_completed_task(&a.cell, a.source.as_ref(), &a.runtime.identity)?;
@@ -84,12 +87,23 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
         completion,
     )?;
     let mut c = support::start(c, task_c, Arc::clone(&model), bundle.clone()).await?;
-    let publication_c = execute(&c, /*request_id*/ 1).await?;
+    let publication_c = execute(&c, /*request_id*/ 1)
+        .await
+        .context("actual C execution")?;
     let receipt_c = read_receipt(&c, &definition, &publication_c)?;
     let snapshot_c = c.cell.snapshot(&source_c.scope)?;
     let identity_c = c.runtime.identity.clone();
     let request_c = c.request.clone();
     let configuration_c = c.take_configuration();
+    #[cfg(target_os = "linux")]
+    let configuration_c = {
+        let mut original = configuration_c;
+        // The component has no Root capture selector. Retire its configured
+        // close-owner Arc as ordinary startup does; retaining it would keep
+        // the original Source file locked across this in-process reopen.
+        assert!(original.take_original_source_capture()?.is_none());
+        original
+    };
     let directory_c = std::mem::replace(&mut c.runtime._temp, tempfile::tempdir()?);
     c.stop().await?;
     drop(c); // No A/C task guard, native owner, Cell/source handle or completion token remains.
@@ -101,7 +115,8 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
     );
     let nonces = version.authority.capacity()?.used_nonces;
 
-    let original_source = reopen::original_source(&identity_a, &definition, &source_a)?;
+    let original_source = reopen::original_source(&identity_a, &definition, &source_a)
+        .context("reopen original A Source after all A owners exit")?;
     assert_eq!(
         original_source.read_run_publication(&identity_a, &source_a.scope.run_id)?,
         publication_a
@@ -124,7 +139,8 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
     let recovered = recovered.recover_circuit_feature_task(
         definition.clone(),
         source_c.clone(),
-        reopen::predecessor(&identity_a, &definition, &source_a, &config_a.manifest)?,
+        reopen::predecessor(&identity_a, &definition, &source_a, &config_a.manifest)
+            .context("reopen original A Cell and witness")?,
         &original_source.readback(),
         &identity_a,
     )?;
@@ -138,7 +154,8 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
         Arc::clone(&model),
         bundle,
     )
-    .await?;
+    .await
+    .context("reopen original completed C runtime")?;
     let response = recovered
         .runtime
         .state
@@ -191,7 +208,8 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
         .open(identity_a.home_root.join("q24-cell.journal"))?
         .write_all(&[1])?;
     let damaged = bytes(&identity_a)?;
-    let original_source = reopen::original_source(&identity_a, &definition, &source_a)?;
+    let original_source = reopen::original_source(&identity_a, &definition, &source_a)
+        .context("reopen original A Source after all A owners exit")?;
     let recovered = crate::recover_agentd_generation_update_v1(
         version.reopen_current()?,
         version.authorities()?,
@@ -212,7 +230,8 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
             .recover_circuit_feature_task(
                 definition.clone(),
                 source_c,
-                reopen::predecessor(&identity_a, &definition, &source_a, &config_a.manifest)?,
+                reopen::predecessor(&identity_a, &definition, &source_a, &config_a.manifest)
+                    .context("reopen original A Cell and witness")?,
                 &original_source.readback(),
                 &identity_a
             )
