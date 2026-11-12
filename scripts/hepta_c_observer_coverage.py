@@ -312,7 +312,23 @@ CANDIDATE_STAGE_CASES = tuple(
     )
 )
 
+RETAINED_PUBLICATION_PREFIX = INGRESS + "observer_support::retained_publication::"
+
+RETAINED_PUBLICATION_CASES = tuple(
+    RETAINED_PUBLICATION_PREFIX + name
+    for name in (
+        "retained_publication_uses_original_selection_and_real_distinct_task_c",
+        "retained_publication_refuses_changed_full_training_signature_before_prepare",
+        "retained_publication_rejects_same_content_even_with_a_new_run_and_task_digest",
+        "retained_publication_never_converts_candidate_training_into_no_update",
+        "retained_publication_refuses_another_final_use_purpose_and_only_reads_pending",
+        "retained_publication_refuses_actual_artifact_withdrawal_before_final_use",
+        "retained_publication_lost_ack_recovers_original_files_without_another_grant",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
     ("ordinary_candidate_material_route", PACKAGE, CANDIDATE_STAGE_CASES),
     ("original_evaluation_panel_registration", PACKAGE, EVALUATION_PANEL_CASES),
     ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),

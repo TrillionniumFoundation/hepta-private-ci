@@ -45,6 +45,17 @@ mod owner;
 mod recovery;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
+
+#[path = "circuit_learning_retained_publication.rs"]
+mod retained_publication;
+pub use retained_publication::OriginalCircuitRetainedPublicationContextV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationErrorV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationInputsV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationRecoveryV1;
+pub use retained_publication::OriginalCircuitRetainedPublicationSelectionV1;
+pub use retained_publication::PreparedOriginalCircuitRetainedPublicationV1;
+pub use retained_publication::prepare_original_circuit_retained_publication_v1;
+pub use retained_publication::recover_original_circuit_retained_publication_v1;
 pub use control::PublishedCircuitFeatureControlV1;
 pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;

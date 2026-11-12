@@ -475,3 +475,6 @@ impl ObserverFixture {
 
 #[path = "circuit_selection_receipt_owner_published_tests.rs"]
 mod selection_owner;
+
+#[path = "circuit_learning_retained_publication_tests.rs"]
+mod retained_publication;
