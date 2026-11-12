@@ -16,15 +16,24 @@ use crate::root_independent_b_protocol::SOCKET;
 #[path = "authority_host_q24_evaluation_serve.rs"]
 mod serve;
 pub(crate) use serve::serve_optional_until;
+#[path = "authority_host_q24_evaluation_source_route.rs"]
+mod source_route;
+use source_route::OriginalBSourceRoute;
 
 pub struct RootIndependentBEvaluationOfferV1 {
     pub(crate) bootstrap: File,
     pub(crate) candidate_data: File,
 }
 
+pub struct RootIndependentBSourceOfferV1 {
+    pub(crate) bootstrap: File,
+    pub(crate) source: Option<File>,
+}
+
 pub(crate) struct PreparedRootIndependentBEvaluationV1 {
     runtime: RootIndependentBEvaluationRuntimeV1,
     offer: RootIndependentBEvaluationOfferV1,
+    source_offer: Option<RootIndependentBSourceOfferV1>,
 }
 
 pub(crate) struct RootIndependentBEvaluationRuntimeV1 {
@@ -32,6 +41,7 @@ pub(crate) struct RootIndependentBEvaluationRuntimeV1 {
     bootstrap: Bootstrap,
     phase: AtomicU8,
     end: Instant,
+    source: OriginalBSourceRoute,
 }
 
 pub(crate) struct BoundRootIndependentBEvaluationV1 {
@@ -39,6 +49,8 @@ pub(crate) struct BoundRootIndependentBEvaluationV1 {
     listener: UnixListener,
     device: u64,
     inode: u64,
+    source_listener: Option<UnixListener>,
+    source_identity: Option<(u64, u64)>,
 }
 
 impl OriginalRootIndependentBEvaluationFilesV1 {
@@ -56,96 +68,113 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         }
         let end = request_end;
         self.require_original_learning(learning)?;
-        let (bootstrap, sealed, candidate_data) = self.record.inspect(end, |enrollment| {
-            let mut state = self
-                .state
-                .try_lock()
-                .map_err(|_| io::Error::other("B custody busy"))?;
-            let result = service.with_learning_profile(
-                config,
-                registration,
-                owner,
-                &self.profile,
-                |initial, writer| {
-                    owner_alive(owner, end)?;
-                    require_learning(&self.initial, &initial, learning)?;
-                    require_files(
-                        &state.files,
-                        enrollment,
-                        service.original_learning_unix_seconds()?,
-                    )?;
-                    state
-                        .files
-                        .admitted_protocol(&initial, service.original_learning_unix_seconds()?)?;
-                    let before = self
-                        .backend
-                        .restore(&initial.request)
-                        .map_err(io::Error::other)?;
-                    let scope = self.profile.require_cell_scope(&initial)?;
-                    if let Some(current) = &before {
-                        scope.validate_snapshot(current).map_err(io::Error::other)?;
-                    }
-                    let candidate_data = state.files.candidate_data.take_original_writer()?;
-                    let candidate_metadata = candidate_data.metadata()?;
-                    let bootstrap = Bootstrap {
-                        purpose: PURPOSE.into(),
-                        root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                            uid: 0,
-                            pid: std::process::id(),
-                            boot_id: registration.boot_id.clone(),
-                            process_start_ticks: root_start()?,
-                        },
-                        consumer: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                            uid: config.peer_uid,
-                            pid: registration.peer_pid,
-                            boot_id: registration.boot_id.clone(),
-                            process_start_ticks: registration.process_start_ticks,
-                        },
-                        identity: registration.registered_identity.clone(),
-                        initial: initial.head_digest.to_string(),
-                        scope: scope.binding().to_string(),
-                        writer,
-                        binding: self.original_binding().to_string(),
-                        candidate_data_device: candidate_metadata.dev(),
-                        candidate_data_inode: candidate_metadata.ino(),
-                        socket: config
-                            .sockets
-                            .observation
-                            .parent()
-                            .ok_or_else(|| io::Error::other("original B socket parent missing"))?
-                            .join(SOCKET),
-                    };
-                    let sealed = crate::authority_host_bootstrap_seal::seal_bytes(
-                        &serde_json::to_vec(&bootstrap).map_err(io::Error::other)?,
-                    )?;
-                    if self
-                        .backend
-                        .restore(&initial.request)
-                        .map_err(io::Error::other)?
-                        != before
-                    {
-                        return Err(io::Error::other(
-                            "original B checkpoint changed during route capture",
-                        ));
-                    }
-                    Ok((bootstrap, sealed, candidate_data))
-                },
-            )?;
-            owner_alive(owner, end)?;
-            require_files(
-                &state.files,
-                enrollment,
-                service.original_learning_unix_seconds()?,
-            )?;
-            Ok(result)
-        })?;
+        let (bootstrap, sealed, candidate_data, source, source_offer) =
+            self.record.inspect(end, |enrollment| {
+                let mut state = self
+                    .state
+                    .try_lock()
+                    .map_err(|_| io::Error::other("B custody busy"))?;
+                let result = service.with_learning_profile(
+                    config,
+                    registration,
+                    owner,
+                    &self.profile,
+                    |initial, writer| {
+                        owner_alive(owner, end)?;
+                        require_learning(&self.initial, &initial, learning)?;
+                        require_files(
+                            &state.files,
+                            enrollment,
+                            service.original_learning_unix_seconds()?,
+                        )?;
+                        state.files.admitted_protocol(
+                            &initial,
+                            service.original_learning_unix_seconds()?,
+                        )?;
+                        let before = self
+                            .backend
+                            .restore(&initial.request)
+                            .map_err(io::Error::other)?;
+                        let scope = self.profile.require_cell_scope(&initial)?;
+                        if let Some(current) = &before {
+                            scope.validate_snapshot(current).map_err(io::Error::other)?;
+                        }
+                        let candidate_data = state.files.candidate_data.take_original_writer()?;
+                        let candidate_metadata = candidate_data.metadata()?;
+                        let bootstrap = Bootstrap {
+                            purpose: PURPOSE.into(),
+                            root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
+                                uid: 0,
+                                pid: std::process::id(),
+                                boot_id: registration.boot_id.clone(),
+                                process_start_ticks: root_start()?,
+                            },
+                            consumer: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
+                                uid: config.peer_uid,
+                                pid: registration.peer_pid,
+                                boot_id: registration.boot_id.clone(),
+                                process_start_ticks: registration.process_start_ticks,
+                            },
+                            identity: registration.registered_identity.clone(),
+                            initial: initial.head_digest.to_string(),
+                            scope: scope.binding().to_string(),
+                            writer,
+                            binding: self.original_binding().to_string(),
+                            candidate_data_device: candidate_metadata.dev(),
+                            candidate_data_inode: candidate_metadata.ino(),
+                            socket: config
+                                .sockets
+                                .observation
+                                .parent()
+                                .ok_or_else(|| {
+                                    io::Error::other("original B socket parent missing")
+                                })?
+                                .join(SOCKET),
+                        };
+                        let sealed = crate::authority_host_bootstrap_seal::seal_bytes(
+                            &serde_json::to_vec(&bootstrap).map_err(io::Error::other)?,
+                        )?;
+                        let no_update = before
+                            .as_ref()
+                            .is_some_and(|current| current.training_no_update_v2().is_some());
+                        let (source, source_offer) = OriginalBSourceRoute::prepare(
+                            &mut state.files,
+                            enrollment,
+                            &bootstrap,
+                            config,
+                            self.end,
+                            no_update,
+                        )?;
+                        if self
+                            .backend
+                            .restore(&initial.request)
+                            .map_err(io::Error::other)?
+                            != before
+                        {
+                            return Err(io::Error::other(
+                                "original B checkpoint changed during route capture",
+                            ));
+                        }
+                        Ok((bootstrap, sealed, candidate_data, source, source_offer))
+                    },
+                )?;
+                owner_alive(owner, end)?;
+                require_files(
+                    &state.files,
+                    enrollment,
+                    service.original_learning_unix_seconds()?,
+                )?;
+                Ok(result)
+            })?;
         Ok(PreparedRootIndependentBEvaluationV1 {
             runtime: RootIndependentBEvaluationRuntimeV1 {
                 host: Arc::clone(self),
                 bootstrap,
                 phase: AtomicU8::new(0),
                 end: self.end,
+                source,
             },
+            source_offer: Some(source_offer),
             offer: RootIndependentBEvaluationOfferV1 {
                 bootstrap: sealed,
                 candidate_data,
@@ -200,6 +229,13 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
 }
 
 impl PreparedRootIndependentBEvaluationV1 {
+    pub(crate) fn take_original_source_offer(
+        &mut self,
+    ) -> io::Result<RootIndependentBSourceOfferV1> {
+        self.source_offer
+            .take()
+            .ok_or_else(|| io::Error::other("original B source offer already consumed"))
+    }
     pub(crate) fn original_custodian(&self) -> Arc<OriginalRootIndependentBEvaluationFilesV1> {
         Arc::clone(&self.runtime.host)
     }
@@ -235,14 +271,17 @@ impl RootIndependentBEvaluationRuntimeV1 {
             paths.push(path);
         }
         paths.push(&self.bootstrap.socket);
+        paths.push(&self.source.bootstrap.socket);
         crate::authority_host_runtime::validate_lane_paths(&paths, config.peer_gid)?;
         let listener = UnixListener::bind(&self.bootstrap.socket)?;
         let metadata = std::fs::symlink_metadata(&self.bootstrap.socket)?;
-        let bound = BoundRootIndependentBEvaluationV1 {
+        let mut bound = BoundRootIndependentBEvaluationV1 {
             runtime: self,
             listener,
             device: metadata.dev(),
             inode: metadata.ino(),
+            source_listener: None,
+            source_identity: None,
         };
         if metadata.uid() != 0 || metadata.gid() != config.peer_gid {
             return Err(io::Error::other("original B listener custody differs"));
@@ -252,6 +291,7 @@ impl RootIndependentBEvaluationRuntimeV1 {
             std::fs::Permissions::from_mode(0o660),
         )?;
         bound.listener.set_nonblocking(true)?;
+        bound.bind_original_source(config)?;
         Ok(bound)
     }
 }
@@ -263,6 +303,12 @@ impl Drop for BoundRootIndependentBEvaluationV1 {
             .is_ok_and(|entry| entry.dev() == self.device && entry.ino() == self.inode)
         {
             let _ = std::fs::remove_file(&self.runtime.bootstrap.socket);
+        }
+        if let Some((device, inode)) = self.source_identity
+            && std::fs::symlink_metadata(&self.runtime.source.bootstrap.socket)
+                .is_ok_and(|entry| entry.dev() == device && entry.ino() == inode)
+        {
+            let _ = std::fs::remove_file(&self.runtime.source.bootstrap.socket);
         }
     }
 }

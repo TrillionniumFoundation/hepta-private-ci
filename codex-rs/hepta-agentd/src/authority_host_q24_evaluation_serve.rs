@@ -14,6 +14,9 @@ use codex_hepta_contracts::HostIssuerTransportError;
 use super::*;
 use crate::root_independent_b_protocol::*;
 
+#[path = "authority_host_q24_evaluation_source_serve.rs"]
+mod source;
+
 pub(crate) fn serve_optional_until(
     bound: Option<&BoundRootIndependentBEvaluationV1>,
     service: &HostAuthorityService,
@@ -33,6 +36,20 @@ pub(crate) fn serve_optional_until(
         .phase
         .compare_exchange(0, 1, Ordering::AcqRel, Ordering::Acquire)
         .map_err(|_| io::Error::other("original B serving opportunity already consumed"))?;
+    source::serve_until(bound, service, config, registration, owner, end, || {
+        serve_evaluation_until(bound, service, config, registration, owner, end, original)
+    })
+}
+
+fn serve_evaluation_until(
+    bound: &BoundRootIndependentBEvaluationV1,
+    service: &HostAuthorityService,
+    config: &HostAuthorityServiceConfig,
+    registration: &HostAuthorityRegistration,
+    owner: &OwnedFd,
+    end: Instant,
+    original: impl FnOnce() -> io::Result<()>,
+) -> io::Result<()> {
     let stop = AtomicBool::new(false);
     let active = Mutex::new(None::<UnixStream>);
     std::thread::scope(|scope| {

@@ -36,6 +36,7 @@ pub(crate) use host::OriginalRootIndependentBEvaluationFilesV1;
 pub(crate) use host::PreparedRootIndependentBEvaluationV1;
 pub use host::RootIndependentBEvaluationOfferV1;
 pub(crate) use host::RootIndependentBEvaluationRuntimeV1;
+pub use host::RootIndependentBSourceOfferV1;
 pub(crate) use host::serve_optional_until;
 
 #[path = "authority_host_q24_evaluation_model_data.rs"]

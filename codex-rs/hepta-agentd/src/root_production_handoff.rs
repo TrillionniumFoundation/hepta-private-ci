@@ -34,6 +34,12 @@ pub use independent_b::RootIndependentBEvaluationHandoffV1;
 pub use independent_b::receive_root_independent_b_evaluation_handoff;
 pub use independent_b::send_root_independent_b_evaluation_handoff;
 
+#[path = "root_independent_b_source_handoff.rs"]
+mod independent_b_source;
+pub use independent_b_source::RootIndependentBSourceHandoffV1;
+pub use independent_b_source::receive_root_independent_b_source_handoff;
+pub use independent_b_source::send_root_independent_b_source_handoff;
+
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
 #[path = "root_historical_task_read_handoff.rs"]

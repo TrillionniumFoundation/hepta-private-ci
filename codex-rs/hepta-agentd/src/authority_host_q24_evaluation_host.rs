@@ -33,12 +33,12 @@ use super::execution::OriginalBExecution;
 use super::record::OriginalBEnrollment;
 use super::record::OriginalBRecord;
 
+#[path = "authority_host_q24_evaluation_ingress.rs"]
+mod ingress;
 #[path = "authority_host_q24_evaluation_operation.rs"]
 mod operation;
 #[path = "authority_host_q24_evaluation_prepare.rs"]
 mod prepare;
-#[path = "authority_host_q24_evaluation_ingress.rs"]
-mod ingress;
 
 #[path = "authority_host_q24_evaluation_registration.rs"]
 mod registration;
@@ -48,6 +48,7 @@ pub(crate) use route::BoundRootIndependentBEvaluationV1;
 pub(crate) use route::PreparedRootIndependentBEvaluationV1;
 pub use route::RootIndependentBEvaluationOfferV1;
 pub(crate) use route::RootIndependentBEvaluationRuntimeV1;
+pub use route::RootIndependentBSourceOfferV1;
 pub(crate) use route::serve_optional_until;
 
 pub(crate) struct OriginalRootIndependentBEvaluationFilesV1 {

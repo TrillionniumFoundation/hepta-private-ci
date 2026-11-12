@@ -159,6 +159,8 @@ pub use authority_host_runtime::RootIndependentBEvaluationOfferV1;
 #[cfg(target_os = "linux")]
 pub(crate) use authority_host_runtime::RootIndependentBEvaluationRuntimeV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootIndependentBSourceOfferV1;
+#[cfg(target_os = "linux")]
 pub(crate) use authority_host_runtime::serve_independent_b_until;
 #[cfg(target_os = "linux")]
 mod root_independent_b_protocol;
@@ -207,9 +209,15 @@ pub(crate) use root_generation_publication_connection::OriginalRootBEvaluationCo
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootIndependentBEvaluationHandoffV1;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootIndependentBSourceHandoffV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_independent_b_evaluation_handoff;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_independent_b_source_handoff;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_independent_b_evaluation_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_independent_b_source_handoff;
 #[cfg(target_os = "linux")]
 mod root_independent_b_client;
 #[cfg(target_os = "linux")]
