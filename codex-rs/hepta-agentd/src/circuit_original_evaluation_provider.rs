@@ -154,7 +154,7 @@ impl OriginalCircuitEvaluationCohortV1 {
         if started_at < self.last_observed_at {
             return Err(Error::Binding("system clock moved backwards"));
         }
-        let observed = self.read_original_material(started_at, &mut clock)?;
+        let observed = OriginalCircuitEvaluationCohortV1::read_original_material(self, started_at, &mut clock)?;
         if self.manifest.is_some_and(|expected| expected != observed.manifest)
             || self.dataset.as_ref().is_some_and(|expected| expected != &observed.dataset)
         {

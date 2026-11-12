@@ -112,14 +112,14 @@ impl OriginalCircuitEvaluationCohortV1 {
         if fresh_now < started_at {
             return Err(Error::Binding("system clock moved backwards"));
         }
-        let training = binding::authenticate_training(&self.config, fresh_now)?;
-        let evaluator = self.config.verifier.verify(
+        let fresh_training = binding::authenticate_training(&self.config, fresh_now)?;
+        let fresh_evaluator = self.config.verifier.verify(
             LearningEvidenceRoleV1::Evaluator,
             &self.config.freeze_evidence,
             &freeze_payload,
             fresh_now,
         )?;
-        verify_signed_role_separation(&training.generator, &evaluator, fresh_now)?;
+        verify_signed_role_separation(&fresh_training.generator, &fresh_evaluator, fresh_now)?;
         // Reverify the same complete freeze signature at the final wall clock.
         // Active-record lookup alone cannot replace signature-window checking.
         if LedgerWriter::freeze_dataset(

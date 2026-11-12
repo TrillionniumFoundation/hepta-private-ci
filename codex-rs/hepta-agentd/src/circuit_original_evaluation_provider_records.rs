@@ -140,8 +140,8 @@ pub(super) fn assemble(
         if candidate.input().operation_id == baseline.input().operation_id {
             return Err(Error::Binding("two distinct original arm executions"));
         }
-        let candidate_policy = candidate.original_policy()?;
-        let baseline_policy = baseline.original_policy()?;
+        let candidate_policy = CircuitTaskSourcePublicationV1::original_policy(candidate)?;
+        let baseline_policy = CircuitTaskSourcePublicationV1::original_policy(baseline)?;
         candidate_observations.push(observation(&row, &candidate_policy)?);
         baseline_observations.push(observation(&row, &baseline_policy)?);
         targets.push(HeldOutTarget {
@@ -190,7 +190,7 @@ fn read_episode<'a>(
         .ok_or(Error::Binding("original source identity"))?;
     let original_run = circuit_learning_run_id_v1(ledger, &owner.identity.agent_id, &requested.episode_id)
         .map_err(|_| Error::Binding("original ledger-bound execution identity"))?;
-    let policy = source.original_policy()?;
+    let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;
     let input = source.input();
     let admitted_at = source.original_record().admission.observed_at_unix_micros.div_ceil(1_000_000);
     let observed_at = outcome.observed_at.ok_or(Error::Binding("missing observed outcome time"))?;
