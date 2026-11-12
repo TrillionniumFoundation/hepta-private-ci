@@ -1,0 +1,36 @@
+test_exact_limit_accepted_without_adoption (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_exact_limit_accepted_without_adoption) ... ok
+test_raw_event_limit_one_shot_iterator (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_raw_event_limit_one_shot_iterator) ... FAIL
+test_untrusted_event_object_rejected_as_contract_error (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_untrusted_event_object_rejected_as_contract_error) ... ERROR
+
+======================================================================
+ERROR: test_untrusted_event_object_rejected_as_contract_error (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_untrusted_event_object_rejected_as_contract_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/neuro4-cadence-event-cap-20261112-t7/qualification/neuroscience-20261110/test_cadence_raw_event_budget.py", line 32, in test_untrusted_event_object_rejected_as_contract_error
+    cadence_gate([object()], GAPS)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/qq/neuro4-cadence-event-cap-20261112-t7/qualification/neuroscience-20261110/study.py", line 328, in cadence_gate
+    if (ev.lineage not in LINEAGES or type(ev.sequence) is not int
+        ^^^^^^^^^^
+AttributeError: 'object' object has no attribute 'lineage'
+
+======================================================================
+FAIL: test_raw_event_limit_one_shot_iterator (test_cadence_raw_event_budget.ClockRawAdmissionTests.test_raw_event_limit_one_shot_iterator)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/neuro4-cadence-event-cap-20261112-t7/qualification/neuroscience-20261110/test_cadence_raw_event_budget.py", line 20, in test_raw_event_limit_one_shot_iterator
+    cadence_gate(bounded_then_raise(event), GAPS)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/neuro4-cadence-event-cap-20261112-t7/qualification/neuroscience-20261110/study.py", line 327, in cadence_gate
+    for ev in events:
+              ^^^^^^
+  File "/home/qq/neuro4-cadence-event-cap-20261112-t7/qualification/neuroscience-20261110/test_cadence_raw_event_budget.py", line 14, in bounded_then_raise
+    raise AssertionError("clock admission consumed beyond limit plus one")
+AssertionError: clock admission consumed beyond limit plus one
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.068s
+
+FAILED (failures=1, errors=1)
+Command exited with non-zero status 1
+RED wall=0.10 user=0.08 sys=0.02 RSS_KiB=45712 exit=1
