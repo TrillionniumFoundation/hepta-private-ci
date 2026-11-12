@@ -1,0 +1,40 @@
+{
+  "active_target_users": [],
+  "bytes": 1717939795,
+  "copy": {
+    "command": [
+      "cp",
+      "-a",
+      "--reflink=auto",
+      "/home/qian-qi/hepta-learn-037c-target/.",
+      "/data/hepta-learn-037c-20261112/target-cache-v1"
+    ],
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "returncode": 0
+  },
+  "data_parent": {
+    "available_bytes": 193626857472,
+    "gid": 1000,
+    "mode": 493,
+    "uid": 1000,
+    "writable": true
+  },
+  "destination": "/data/hepta-learn-037c-20261112/target-cache-v1",
+  "destination_device": 2067,
+  "entries": 11657,
+  "files": 9815,
+  "finished_at": "2026-11-12T10:31:28.941616+00:00",
+  "inventory_sha256": "312300d6f202958bfca6c7c4374ca3245160f696793f4ad1850d6e7de4fd527b",
+  "kind": "copy inactive own native cache; preserve original",
+  "maintenance_terminal": {
+    "exit_code": 0,
+    "finished_at": "2026-11-12T10:16:10.014229+00:00",
+    "path": "/home/qian-qi/hepta-learn-037c-evidence/maintenance-8faf92e260e1-v2/result.json",
+    "sha256": "7940ccb8dde481e6c92fb9b1486c31d679ff0f9d92cae09d3031418089500344"
+  },
+  "source": "/home/qian-qi/hepta-learn-037c-target",
+  "source_device": 2050,
+  "source_preserved": true,
+  "started_at": "2026-11-12T10:30:55.824849+00:00",
+  "status": "COPIED"
+}

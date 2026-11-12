@@ -1,0 +1,249 @@
+{
+  "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "expected_inventory": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144",
+  "suite": "focused",
+  "started_at": "2026-11-12T10:43:16.398788+00:00",
+  "status": "failed",
+  "source_preflight": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+    "status": "",
+    "files": 14842,
+    "inventory_sha256": "89070a776816852bd4a8e3101a95ed789ddd8eb64660192467b88cfa6aa60144"
+  },
+  "maintenance_result_sha256": "d0aceec423ebd4333835630c5b51ebbe224d93e9b21c591b5aa01ff27a7e192f",
+  "driver_sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231",
+  "workflow_sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334",
+  "parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+    "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+    "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+    "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+    "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+    "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+    "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages"
+  ],
+  "packages": [
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-neuron"
+  ],
+  "command": [
+    "/usr/bin/python3",
+    "/home/qian-qi/hepta-learn-037c-evidence/native-exact-driver-3c318e8d.py",
+    "--repo",
+    "/home/qian-qi/hepta-learn-common-20261112-037c",
+    "--records",
+    "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1",
+    "--source",
+    "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "--suite",
+    "focused"
+  ],
+  "environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": null,
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/data/hepta-learn-037c-20261112/target-cache-v1",
+    "CARGO_TERM_COLOR": "never",
+    "CC": null,
+    "CMAKE": null,
+    "CODEX_REPO_ROOT": "/home/qian-qi/hepta-learn-common-20261112-037c",
+    "CXX": null,
+    "HEPTA_CI_LANE": "source-head",
+    "LANG": "zh_CN.UTF-8",
+    "LC_ALL": null,
+    "LIBCLANG_PATH": null,
+    "PATH": "/home/qian-qi/hepta-learn-037c-tools/nextest-0.9.103-e999c122:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "PROTOC": null,
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qian-qi/hepta-learn-common-20261112-037c/scripts",
+    "RUSTC": null,
+    "RUSTC_WORKSPACE_WRAPPER": null,
+    "RUSTC_WRAPPER": null,
+    "RUSTDOCFLAGS": null,
+    "RUSTFLAGS": null,
+    "RUSTUP_HOME": "/home/qian-qi/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTY_V8_ARCHIVE": "/home/qian-qi/hepta-learn-037c-tools/v8-private-pins-150.4.0-a35c75d1/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qian-qi/hepta-learn-037c-tools/v8-private-pins-150.4.0-a35c75d1/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "SOURCE_SHA": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "TEMP": null,
+    "TESTED_SHA": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "TMP": null,
+    "TMPDIR": null
+  },
+  "ambient_rust_min_stack": null,
+  "available_disk_bytes": 200575602688,
+  "mem_available": "MemAvailable:   75681720 kB",
+  "returncode": 1,
+  "driver_returncode": 1,
+  "named_case_coverage": {
+    "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "fresh_retained_junit": "/home/qian-qi/hepta-learn-037c-evidence/native-cc22a69972d0-focused-v1/focused.xml",
+    "junit_sha256": "ea7c874639254904e3491e4c6abc3f187cd3ce11bbd4cf05ddc49314c4b492fd",
+    "expected_count": 9,
+    "checks": [
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+        "observed_count": 1,
+        "passed": false,
+        "testcase_attributes": [
+          {
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:09:54.651-05:00",
+            "time": "1.206"
+          }
+        ]
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+        "observed_count": 1,
+        "passed": false,
+        "testcase_attributes": [
+          {
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:09:52.204-05:00",
+            "time": "1.223"
+          }
+        ]
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+        "observed_count": 1,
+        "passed": false,
+        "testcase_attributes": [
+          {
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:09:53.428-05:00",
+            "time": "1.223"
+          }
+        ]
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+        "observed_count": 1,
+        "passed": false,
+        "testcase_attributes": [
+          {
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:09:55.857-05:00",
+            "time": "1.216"
+          }
+        ]
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+        "observed_count": 1,
+        "passed": false,
+        "testcase_attributes": [
+          {
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:09:58.289-05:00",
+            "time": "1.230"
+          }
+        ]
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+        "observed_count": 1,
+        "passed": false,
+        "testcase_attributes": [
+          {
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:09:59.519-05:00",
+            "time": "1.204"
+          }
+        ]
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+        "observed_count": 1,
+        "passed": false,
+        "testcase_attributes": [
+          {
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:09:57.073-05:00",
+            "time": "1.216"
+          }
+        ]
+      },
+      {
+        "name": "circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1",
+        "observed_count": 1,
+        "passed": true,
+        "testcase_attributes": [
+          {
+            "name": "circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:06:50.574-05:00",
+            "time": "2.782"
+          }
+        ]
+      },
+      {
+        "name": "circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution",
+        "observed_count": 1,
+        "passed": true,
+        "testcase_attributes": [
+          {
+            "name": "circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution",
+            "classname": "codex-hepta-agentd",
+            "timestamp": "2026-11-12T06:06:51.686-05:00",
+            "time": "1.287"
+          }
+        ]
+      }
+    ],
+    "exact_pass_coverage": false,
+    "driver_returncode": 1,
+    "collector_unchanged": true
+  },
+  "finished_at": "2026-11-12T11:15:13.557351+00:00"
+}

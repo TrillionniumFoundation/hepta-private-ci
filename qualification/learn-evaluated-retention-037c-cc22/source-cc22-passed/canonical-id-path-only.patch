@@ -1,0 +1,19 @@
+--- canonical-726-source-driver.py
++++ source-driver.py
+@@ -1,11 +1,11 @@
+ from pathlib import Path
+ from datetime import datetime,timezone
+ import gzip,hashlib,json,os,subprocess,sys
+-repo=Path('/home/qian-qi/hepta-learn-caller-20261112-037c-726af8f4')
+-records=Path('/home/qian-qi/hepta-learn-037c-evidence/source-726af8f4a345-v1')
+-source='726af8f4a345a2ffb148b971f3fa16c71436862d'
+-tree='04c2cd46be5833568491ae02ca299f16ef622f7d'
+-key='learn-037c-source-726af8f4a345-v1'
++repo=Path('/home/qian-qi/hepta-learn-source-20261112-037c-cc22a699')
++records=Path('/home/qian-qi/hepta-learn-037c-evidence/source-cc22a69972d0-v1')
++source='cc22a69972d029d3ef28d49096f396eb5214c616'
++tree='827fb70ed75d30c48d4693cbd0d23ea04f5744da'
++key='learn-037c-source-cc22a69972d0-v1'
+ records.mkdir(mode=0o700,exist_ok=False)
+ def now(): return datetime.now(timezone.utc).isoformat()
+ def save(n,v):

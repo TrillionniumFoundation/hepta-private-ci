@@ -1,5 +1,7 @@
 //! Explicit same-process transport and future B clock for mechanisms only.
 //! All successful material bytes originate in the actual consumed Panel host.
+use std::os::fd::FromRawFd;
+
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
@@ -18,11 +20,19 @@ type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;
 type Pause = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver<()>);
 
 fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
+    // SAFETY: pidfd_open receives this retained test process and zero flags.
+    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+    if raw < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    // SAFETY: the successful syscall returned one fresh owned descriptor.
+    let pidfd = unsafe { OwnedFd::from_raw_fd(raw as i32) };
     Ok(HostAuthorityPeerChannel::from_stream(
         stream,
         HostAuthorityPeerPolicy {
             peer: HostIssuerPeer {
-                uid: rustix::process::geteuid().as_raw(),
+                // SAFETY: geteuid has no preconditions or borrowed memory.
+                uid: unsafe { libc::geteuid() },
                 pid: std::process::id(),
             },
             timeout: Duration::from_secs(/*secs*/ 30),
@@ -30,10 +40,7 @@ fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChanne
             request_bound: 16_384,
             response_bound: 16_384,
         },
-        rustix::process::pidfd_open(
-            rustix::process::getpid(),
-            rustix::process::PidfdFlags::empty(),
-        )?,
+        pidfd,
     )?)
 }
 
@@ -241,10 +248,12 @@ impl OriginalCellEvaluationModelMaterialV1 {
             serde_json::from_value(record["candidate"]["manifest"].clone())?;
         let baseline: CellBackendManifestV2 =
             serde_json::from_value(record["fixed_expert"]["manifest"].clone())?;
-        let candidate_cut: Digest32 =
-            serde_json::from_value(record["candidate"]["journal_cut"].clone())?;
-        let baseline_cut: Digest32 =
-            serde_json::from_value(record["fixed_expert"]["journal_cut"].clone())?;
+        let candidate_cut = Digest32::from_array(serde_json::from_value(
+            record["candidate"]["journal_cut"].clone(),
+        )?);
+        let baseline_cut = Digest32::from_array(serde_json::from_value(
+            record["fixed_expert"]["journal_cut"].clone(),
+        )?);
         let generator = self.context.authenticate(current)?;
         let original = super::super::member::verify(
             raw,

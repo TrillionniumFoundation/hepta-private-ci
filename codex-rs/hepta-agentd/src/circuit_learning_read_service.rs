@@ -13,10 +13,13 @@ use codex_hepta_types::Digest32;
 use tokio::sync::Semaphore;
 
 use super::super::Publication;
+use super::super::current_read::OriginalPublishedReadCurrent;
+use super::super::current_read::OriginalPublishedReadPurpose;
 use super::Error;
 use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
 use super::now;
+use super::profile::ReadProfile;
 use super::require_timing;
 use super::wire;
 use crate::AgentdIdentity;
@@ -26,6 +29,8 @@ use crate::PublishedCircuitCellOwnerV1;
 use crate::circuit_feature_task_digest_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "circuit_evaluated_completion_readiness_service.rs"]
+mod evaluated_readiness;
 #[path = "circuit_learning_completion_readiness_service.rs"]
 mod readiness;
 
@@ -33,7 +38,7 @@ pub struct OriginalCircuitLearningReadOwnerV1<C: AnchorWitnessStore, S: AnchorWi
     cell: PublishedCircuitCellOwnerV1<C>,
     source: CircuitTaskSourceReadbackV1<S>,
     identity: AgentdIdentity,
-    context: Context,
+    context: ReadProfile,
     binding: Digest32,
     connections: Semaphore,
 }
@@ -45,8 +50,22 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         identity: AgentdIdentity,
         context: Context,
     ) -> Result<Self, Error> {
+        Self::from_original_profile(
+            cell,
+            source,
+            identity,
+            ReadProfile::TrainingNoUpdate(context),
+        )
+    }
+
+    pub(super) fn from_original_profile(
+        cell: PublishedCircuitCellOwnerV1<C>,
+        source: CircuitTaskSourceReadbackV1<S>,
+        identity: AgentdIdentity,
+        context: ReadProfile,
+    ) -> Result<Self, Error> {
         let started_at = now()?;
-        let binding = wire::context_binding(&context, started_at)?;
+        let binding = context.binding(started_at)?;
         let owner = Self {
             cell,
             source,
@@ -56,13 +75,13 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             connections: Semaphore::new(4),
         };
         owner.require_task_input_current()?;
-        let coordinator = wire::decision(&owner.context)?;
+        let coordinator = owner.context.decision()?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &owner.cell;
         let observed = cell.read_learning_selection(&coordinator)?;
         owner.require_original_selection(&observed)?;
         owner.require_task_input_current()?;
         let fresh = now()?;
-        if fresh < started_at || wire::context_binding(&owner.context, fresh)? != binding {
+        if fresh < started_at || owner.context.binding(fresh)? != binding {
             return Err(Error::Binding("original published bootstrap clock"));
         }
         Ok(owner)
@@ -102,9 +121,28 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         &self,
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
-        if wire::mode(&self.context)? != wire::Mode::Selection {
+        if wire::mode(self.context.legacy()?)? != wire::Mode::Selection {
             return Err(Error::Binding(
                 "retained Version Selection-only read purpose",
+            ));
+        }
+        self.serve_channel(channel)
+    }
+
+    /// Same original channel, with an explicitly evaluated four-cut purpose.
+    /// It does not admit five-cut completion or the legacy three-cut profile.
+    pub(crate) fn serve_original_evaluated_retained_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
+        let ReadProfile::Evaluated(context) = &self.context else {
+            return Err(Error::Binding(
+                "evaluated Version Selection-only read profile",
+            ));
+        };
+        if context.mode() != wire::Mode::Selection {
+            return Err(Error::Binding(
+                "evaluated Version Selection-only read purpose",
             ));
         }
         self.serve_channel(channel)
@@ -134,13 +172,14 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         let started_at = now()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
-        request.require_context(&self.context, self.binding, request_id)?;
-        if wire::context_binding(&self.context, started_at)? != self.binding {
+        self.context
+            .require_request(&request, self.binding, request_id)?;
+        if self.context.binding(started_at)? != self.binding {
             return Err(Error::Binding("same original published context"));
         }
         let read = self.read_original()?;
         let fresh = now()?;
-        if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {
+        if fresh < started_at || self.context.binding(fresh)? != self.binding {
             return Err(Error::Binding("original read window after owner I/O"));
         }
         // read_original returned owned data; no Cell/Source mutex is held here.
@@ -153,9 +192,17 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn require_task_input_current(&self) -> Result<(), Error> {
-        self.cell.task.require_current()?;
+        let mut current = OriginalPublishedReadCurrent::individual(&self.cell);
+        self.require_task_input_current_with_current(&mut current)
+    }
+
+    fn require_task_input_current_with_current(
+        &self,
+        current: &mut OriginalPublishedReadCurrent<'_, C>,
+    ) -> Result<(), Error> {
+        OriginalPublishedReadCurrent::require(current, &self.cell)?;
         let input = self.cell.task.source();
-        let request = &self.context.prefix.request;
+        let request = &self.context.prefix().request;
         if self.identity.agent_id.as_str() != request.agent_id.as_str()
             || input.scope.agent_id != request.agent_id
             || input.scope.cell_id != request.cell_id
@@ -166,7 +213,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         }
         let source: &CircuitTaskSourceReadbackV1<_> = &self.source;
         source.require_original_input(&self.identity, input)?;
-        self.cell.task.require_current()?;
+        OriginalPublishedReadCurrent::require(current, &self.cell)?;
         Ok(())
     }
 
@@ -174,20 +221,19 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         &self,
         observed: &codex_hepta_learning_artifacts::LearningIterationObservationV1,
     ) -> Result<(), Error> {
-        self.context.scope.validate_observation(observed)?;
-        if wire::mode(&self.context)? == wire::Mode::NextUse
-            && self.context.prefix.receipts[3].observation != *observed
-        {
+        self.context.scope().validate_observation(observed)?;
+        if self.context.mode()? == wire::Mode::NextUse && self.context.selection()? != observed {
             return Err(Error::Binding("original Selector receipt and publication"));
         }
         Ok(())
     }
 
     fn read_original(&self) -> Result<Readback, Error> {
-        self.require_task_input_current()?;
-        let coordinator = wire::decision(&self.context)?;
+        let mut current = OriginalPublishedReadCurrent::for_original_read(&self.cell);
+        self.require_task_input_current_with_current(&mut current)?;
+        let coordinator = self.context.decision()?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
-        let selection = cell.read_learning_selection(&coordinator)?;
+        let selection = cell.read_learning_selection_with_current(&coordinator, &mut current)?;
         self.require_original_selection(&selection)?;
         let Publication::Update { original, .. } = &self.cell.task.0.publication else {
             return Err(Error::Binding("original successor publication"));
@@ -195,16 +241,28 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         let publication = original.publication_digest()?;
         let source_input =
             circuit_feature_task_digest_v1(self.cell.task.definition(), self.cell.task.source())?;
-        let (observation, source_publication) = match wire::mode(&self.context)? {
+        let mode = self.context.mode()?;
+        OriginalPublishedReadCurrent::select_purpose(
+            &mut current,
+            match mode {
+                wire::Mode::Selection => OriginalPublishedReadPurpose::Selection,
+                wire::Mode::NextUse => OriginalPublishedReadPurpose::NextUse,
+            },
+        )?;
+        let (observation, source_publication) = match mode {
             wire::Mode::Selection => (selection.clone(), None),
             wire::Mode::NextUse => {
                 let before = self
                     .source
                     .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?;
                 let prefix =
-                    LearningIterationCoordinatorV1::from_snapshot(self.context.prefix.clone())?;
-                let observed =
-                    cell.read_learning_next_use(&prefix, &self.source, &self.identity)?;
+                    LearningIterationCoordinatorV1::from_snapshot(self.context.prefix().clone())?;
+                let observed = cell.read_learning_next_use_with_current(
+                    &prefix,
+                    &self.source,
+                    &self.identity,
+                    &mut current,
+                )?;
                 if self
                     .source
                     .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?
@@ -215,11 +273,12 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
                 (observed, Some(before.publication_digest()))
             }
         };
-        self.require_task_input_current()?;
-        if cell.read_learning_selection(&coordinator)? != selection {
+        self.require_task_input_current_with_current(&mut current)?;
+        if cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection {
             return Err(Error::Binding("original selection changed during read"));
         }
-        self.require_task_input_current()?;
+        self.require_task_input_current_with_current(&mut current)?;
+        OriginalPublishedReadCurrent::finish(current)?;
         Ok(Readback {
             observation,
             publication,

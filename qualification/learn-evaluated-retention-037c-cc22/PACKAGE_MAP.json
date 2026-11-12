@@ -1,0 +1,1297 @@
+{
+  "status": "PACKAGED_CURRENT_SNAPSHOT",
+  "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "prior_frozen_evidence_commit": "b29869e856d08db1bfb066116a9c443376ccc57d",
+  "prior_frozen_index_and_progress_unchanged": true,
+  "copies": [
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/driver.raw.log",
+      "packaged_path": "source-8faf-failed/driver.raw.log",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 116135,
+      "sha256": "1eec26c9b0b30b68b54b92a209a19a99082b2a1570618b6296b8684ddcf18499",
+      "git_blob": "83b092d483ea980881859eb2558c535db32eaff2"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/source-closure.json",
+      "packaged_path": "source-8faf-failed/source-closure.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 1539,
+      "sha256": "d66667262bf2ecfc16700be0eb5e9e0819697b98563e27eaf470a2d81f044d4f",
+      "git_blob": "bd9154c0e5d121d0735a9452d0203c4e610b060e"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/result.json",
+      "packaged_path": "source-8faf-failed/result.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 1156,
+      "sha256": "8c56d0885d4f129ca82570f7c097092230d21ba286ad19af84675d5e63eda9d1",
+      "git_blob": "06a70b9e71dd4e9cc5406f998fa6ff64e9fd6d01"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/prepared-source.json",
+      "packaged_path": "source-8faf-failed/prepared-source.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 430,
+      "sha256": "a85813975abd294ed1276f5a9f0869a5fcf10f9cf34bcafe04299f16fe2baeba",
+      "git_blob": "3ef2d4608bc535df0b8cbe4e3000ae8ca4810a04"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/source-gate.json",
+      "packaged_path": "source-8faf-failed/source-gate.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 511,
+      "sha256": "5866f578463d21febbe1194bc60632397924a9cbfd7741a59bb6d933df2f37f0",
+      "git_blob": "816090648bd606ae0d008cfbde00457cbaa819f9"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/SOURCE_FAILURES.json",
+      "packaged_path": "source-8faf-failed/SOURCE_FAILURES.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 26637,
+      "sha256": "8ee56562e514a94601219684d9c0a4d0704699e5bf13e043c6b86cf6f26bf2b6",
+      "git_blob": "b9c0c250a0a43375907aaf4a0ff39dd817268572"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/original-log-prefix-recovery.json",
+      "packaged_path": "source-8faf-failed/original-log-prefix-recovery.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 823,
+      "sha256": "7858f0f1f72dcbe4b920027224e1117ed913a40eea2dac640d069014b66ca164",
+      "git_blob": "75b5d7c65f93859aad6b83e5b85c9e1fe1c16006"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/UNREFERENCED_BLOBS.json",
+      "packaged_path": "source-8faf-failed/UNREFERENCED_BLOBS.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 1779,
+      "sha256": "1c96cc5868eaad3a237344a3e813ee6c53caa8900932b97320bc65c9b4fc0a88",
+      "git_blob": "2642d482f182f49cac01c56c1279fb4560df4525"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/source-driver-raw-chunks.json",
+      "packaged_path": "source-8faf-failed/source-driver-raw-chunks.json",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 155756,
+      "sha256": "444cf384e9330fc4cb777a0f8025a2028ac10d72ef8741a0b72181e4f2c21afb",
+      "git_blob": "ba2e3396369ff225aad761607e6828afdab370e8"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/source-result/source-closure.json.f6e82df30f8745d2b00fc44700759335.log",
+      "packaged_path": "source-8faf-failed/source-closure.json.f6e82df30f8745d2b00fc44700759335.log",
+      "kind": "original or explicitly recorded original-byte recovery",
+      "bytes": 114758,
+      "sha256": "d5b6930010e52c89820cf507ec0a1ded39c13f78cfb54b350a427e42fe7516ff",
+      "git_blob": "095d9a2b8b78f8a169ccc5d6be3182543100cda4"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/CALLERS.delta.json",
+      "packaged_path": "repair-8faf/CALLERS.delta.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 41810,
+      "sha256": "98296c59a33e893709026c710cab5baa66750e47bce5d94fd08c12f47dbdd714",
+      "git_blob": "4bb8226d56c2d81dcafe3c145bf8f4fd54626121"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/CHANGE_SUMMARY.json",
+      "packaged_path": "repair-8faf/CHANGE_SUMMARY.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 2930,
+      "sha256": "7aac5669362c36c607cd96335d4aad5cfffa562b6a267ab3f4d9d51825bd5199",
+      "git_blob": "e49bc8ee2afd58060c32924ea1dd76566c1139b4"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/FAILURE_MAPPING.json",
+      "packaged_path": "repair-8faf/FAILURE_MAPPING.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 14838,
+      "sha256": "32bcad39004c6db6141bbee0858cd9d69dc6fb60f5c0b4c6b801191a64a2d3d9",
+      "git_blob": "a65317cb604a9f6d9ec7b974461f9ea03f08924c"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/FETCHED_EXACT_FILES.json",
+      "packaged_path": "repair-8faf/FETCHED_EXACT_FILES.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 963,
+      "sha256": "2d244c784dda48549dbfe8a441f46f1f1b7b84ba4594e973f48b10f51d1c2f31",
+      "git_blob": "db63b1f7974f88ef87573393e6f68f38c7182712"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/INVARIANTS.json",
+      "packaged_path": "repair-8faf/INVARIANTS.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 2165,
+      "sha256": "ea96b5b7691d4721cf8dad94e44bc260514218810fef44c2ff29b98ac3338cde",
+      "git_blob": "43c2f8ee20a4bbd6d1cf086fdcba3ad6355779d2"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/LOCAL_EXACT_POSTIMAGES.json",
+      "packaged_path": "repair-8faf/LOCAL_EXACT_POSTIMAGES.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 3014,
+      "sha256": "10dbd1bbc45076b48edfd34205168d776b285797a1b26e5464a028071ccad523",
+      "git_blob": "add96d90561f9e4de509957e6cea72c87c2d3775"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/MANIFEST.json",
+      "packaged_path": "repair-8faf/MANIFEST.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 7540,
+      "sha256": "96f46ee3b35b87f6e0799cf96edab9333cfef3da7b69103068c40684c99fd748",
+      "git_blob": "8fe9510cf190d7ff65ed33dc3233e5572bdf7c47"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/PATCH_CHECK.json",
+      "packaged_path": "repair-8faf/PATCH_CHECK.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 388,
+      "sha256": "64a37c57aafd31c8f7c43a8663c7203a2c973602d865b60af8de7633ae008d9e",
+      "git_blob": "d33b61fcbbb720c84dcb419b99dbc9d877f94399"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/REMOTE_EXACT_DEPENDENCIES.json",
+      "packaged_path": "repair-8faf/REMOTE_EXACT_DEPENDENCIES.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 11542,
+      "sha256": "bec246229f729f7127051e6164a0c10432ee388dcacd07b7361a757c47215645",
+      "git_blob": "86350ca7ef418f607d3faabda517eb2d95d20886"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/REPORT.md",
+      "packaged_path": "repair-8faf/REPORT.md",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 6261,
+      "sha256": "951f64873dd1d7e0e3d1e2c2587942357c357f09ddf9bd7539ad3e0a7fcd9578",
+      "git_blob": "9f0cbd8a68076c02d34b6542e86359cdc542fc01"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/REQUIRED_PATHS.json",
+      "packaged_path": "repair-8faf/REQUIRED_PATHS.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 9578,
+      "sha256": "e662c49dfa9ec19318c9351ac81c599d79aa03022d9cd9c01a5b77fd7dbb1bd3",
+      "git_blob": "3d1308a8d1d0ffdf2da3f68de40ca6d27f58018f"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/changes.patch",
+      "packaged_path": "repair-8faf/changes.patch",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 47125,
+      "sha256": "eb91c03b3cdd8847be5bf82415ac396ff7e07e471b858cf0eeb0bac65aef11c7",
+      "git_blob": "062dcd1560a4bad4ddbaabeb87007716ed297356"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/ORIGINAL_FAILURES.json",
+      "packaged_path": "repair-8faf/evidence/ORIGINAL_FAILURES.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 5074,
+      "sha256": "2d3871f6aaff486a208ac706e5b1acfb38d6f1aeb62bce9fc99dfdda46bef3c2",
+      "git_blob": "988d0a4166900c5986cc9bcb0eb1932f7891e664"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v2/result.json",
+      "packaged_path": "repair-8faf/evidence/local-after-v2/result.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 1002,
+      "sha256": "66a1ace3fbfff650b5878c97e40d2ec6da0a441ea4e0a09803e254f25c9230f3",
+      "git_blob": "a49f0eab3a310d5c49025e6f21438b2d45665bd8"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v2/source-after.json",
+      "packaged_path": "repair-8faf/evidence/local-after-v2/source-after.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17660,
+      "sha256": "9d95b9881058e32b944b1314a4b49660ce11b8e858af3631d0509f04a5a05493",
+      "git_blob": "99fd58d229a22687894cb969fd6caa66fc6a36f0"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v2/source-before.json",
+      "packaged_path": "repair-8faf/evidence/local-after-v2/source-before.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17660,
+      "sha256": "9d95b9881058e32b944b1314a4b49660ce11b8e858af3631d0509f04a5a05493",
+      "git_blob": "99fd58d229a22687894cb969fd6caa66fc6a36f0"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v2/tests.raw.log",
+      "packaged_path": "repair-8faf/evidence/local-after-v2/tests.raw.log",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 19843,
+      "sha256": "cee9f4b37f59e6fcf6164628c0231b58645553dfe745c7f8d027be5124505da1",
+      "git_blob": "24bf2e07e19d0dede9a66606c97572aba0b12463"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v3/result.json",
+      "packaged_path": "repair-8faf/evidence/local-after-v3/result.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 1002,
+      "sha256": "52cdaf8d8ec4397f8199b1fa35bbcc98f7d14a124a5bc3dc006302036f931a23",
+      "git_blob": "464d70d0c2cf30c9309ef142730e29b6d7c9066e"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v3/source-after.json",
+      "packaged_path": "repair-8faf/evidence/local-after-v3/source-after.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17660,
+      "sha256": "effac97ebcbc5ce76efbf6d0aef9969e52e2fa6fedbf4a658d0d23151a4fe5f1",
+      "git_blob": "12bf788596fa88f8b3e5dd54c143a8208dfbbd24"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v3/source-before.json",
+      "packaged_path": "repair-8faf/evidence/local-after-v3/source-before.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17660,
+      "sha256": "effac97ebcbc5ce76efbf6d0aef9969e52e2fa6fedbf4a658d0d23151a4fe5f1",
+      "git_blob": "12bf788596fa88f8b3e5dd54c143a8208dfbbd24"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after-v3/tests.raw.log",
+      "packaged_path": "repair-8faf/evidence/local-after-v3/tests.raw.log",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 15139,
+      "sha256": "e09f0b390002f3fc9ea573a7e9e9170887d42889a4a181451cb4ccd27cbcae6f",
+      "git_blob": "f86e09af887b97fa782d0b0c88ac6b3f9291a9ef"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after/result.json",
+      "packaged_path": "repair-8faf/evidence/local-after/result.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 1002,
+      "sha256": "aa5c5d26351f88c6d0b39058a93f62edcdd933f0a7e9ca75c6286e60c6e4cd21",
+      "git_blob": "ec545c96ae36966f1fc25e9e16f11f79c188d089"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after/source-after.json",
+      "packaged_path": "repair-8faf/evidence/local-after/source-after.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17660,
+      "sha256": "f691827df04ce094056458905addda5d4827fbe19e4cc7cf3712fe29b3d37c1d",
+      "git_blob": "294b7b1c174bf1b9cfa0acbc1835886b318f6567"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after/source-before.json",
+      "packaged_path": "repair-8faf/evidence/local-after/source-before.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17660,
+      "sha256": "f691827df04ce094056458905addda5d4827fbe19e4cc7cf3712fe29b3d37c1d",
+      "git_blob": "294b7b1c174bf1b9cfa0acbc1835886b318f6567"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-after/tests.raw.log",
+      "packaged_path": "repair-8faf/evidence/local-after/tests.raw.log",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 22028,
+      "sha256": "48de464c3cfab6db11c13f8c7767d531c8e5a38fadbbcca61d25129888088830",
+      "git_blob": "5742d231e8795c42fae3784e897f37615c126626"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-before/result.json",
+      "packaged_path": "repair-8faf/evidence/local-before/result.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 941,
+      "sha256": "be279d9e549466254faa23c3636c3057fe268dd89f3f6e3f21a4936683a12d05",
+      "git_blob": "4c28d8c21474e246dd1382f7dd40b12fe1aa7016"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-before/source-after.json",
+      "packaged_path": "repair-8faf/evidence/local-before/source-after.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17659,
+      "sha256": "f148a48a3fd7af86303d08a9d5ceba963415a8b52951c4d1d7983526629a3aa6",
+      "git_blob": "30392f73f54688fd13c9f867c5b2863185e15c79"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-before/source-before.json",
+      "packaged_path": "repair-8faf/evidence/local-before/source-before.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 17659,
+      "sha256": "f148a48a3fd7af86303d08a9d5ceba963415a8b52951c4d1d7983526629a3aa6",
+      "git_blob": "30392f73f54688fd13c9f867c5b2863185e15c79"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/local-before/tests.raw.log",
+      "packaged_path": "repair-8faf/evidence/local-before/tests.raw.log",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 35891,
+      "sha256": "c88ebe89a59e9bb4dbd3a421e468af6caedae686a29036909d4255c408ef9275",
+      "git_blob": "33b6460f28ee678c8958cb02ba22b6366d62a846"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/original-full-source-8faf/driver.raw.log",
+      "packaged_path": "source-8faf-failed/driver.raw.log",
+      "kind": "deduplicated exact original source-failure evidence",
+      "bytes": 116135,
+      "sha256": "1eec26c9b0b30b68b54b92a209a19a99082b2a1570618b6296b8684ddcf18499",
+      "git_blob": "83b092d483ea980881859eb2558c535db32eaff2"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/original-full-source-8faf/prepared-source.json",
+      "packaged_path": "source-8faf-failed/prepared-source.json",
+      "kind": "deduplicated exact original source-failure evidence",
+      "bytes": 430,
+      "sha256": "a85813975abd294ed1276f5a9f0869a5fcf10f9cf34bcafe04299f16fe2baeba",
+      "git_blob": "3ef2d4608bc535df0b8cbe4e3000ae8ca4810a04"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/original-full-source-8faf/result.json",
+      "packaged_path": "source-8faf-failed/result.json",
+      "kind": "deduplicated exact original source-failure evidence",
+      "bytes": 1156,
+      "sha256": "8c56d0885d4f129ca82570f7c097092230d21ba286ad19af84675d5e63eda9d1",
+      "git_blob": "06a70b9e71dd4e9cc5406f998fa6ff64e9fd6d01"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/evidence/original-full-source-8faf/source-closure.json",
+      "packaged_path": "source-8faf-failed/source-closure.json",
+      "kind": "deduplicated exact original source-failure evidence",
+      "bytes": 1539,
+      "sha256": "d66667262bf2ecfc16700be0eb5e9e0819697b98563e27eaf470a2d81f044d4f",
+      "git_blob": "bd9154c0e5d121d0735a9452d0203c4e610b060e"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/root-format-c-result.from-pty.json",
+      "packaged_path": "repair-8faf/root-format-c-result.from-pty.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 1196,
+      "sha256": "9bcd902b6d7e2236e03dc90a6167efd3084541b8c3d5edb3d8eabafe6c288430",
+      "git_blob": "fa31766d1ac73c52c95806471611bb30d6b0f210"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/root-format-c-terminal.json",
+      "packaged_path": "repair-8faf/root-format-c-terminal.json",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 4548,
+      "sha256": "a8cac11ea72a1760a052e6fb417517dc921fb6d50cb5df582e1fdddaeb8fae23",
+      "git_blob": "32f3fe490595243457593f6841b9967e4147212c"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/root-format-c-terminal.raw.log",
+      "packaged_path": "repair-8faf/root-format-c-terminal.raw.log",
+      "kind": "original repair artifact; see original manifest for local execution scope",
+      "bytes": 1097,
+      "sha256": "d29a93cec36bab03e6ee137b9e5f9877ac02fe075863f3431ff2a382d0996cf0",
+      "git_blob": "818b17752c14cef43758e2800337fa8f0bca170d"
+    },
+    {
+      "original_path": "source-8faf-repair-v1/ARTIFACTS.json",
+      "packaged_path": "repair-8faf/ARTIFACTS.json",
+      "kind": "unaltered original artifact index",
+      "bytes": 9928,
+      "sha256": "b4e79d2aadf064ffad89d929265d57392e9dabd53f38dd0dea4e723874724126",
+      "git_blob": "5aeda50c2aec8f5dd4738c23634a7e3703c7ee35"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/diagnostic-summary.json",
+      "packaged_path": "maintenance-8faf-v2-review/diagnostic-summary.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 445,
+      "sha256": "2661a6b509bb6f715f4fce722ff9393c77ed45dfc8cdc8c92562b998cd1ff64d",
+      "git_blob": "015f6bfa3db7d9ee9737d8067c3aa78dd6500d24"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/just-fix.raw.log",
+      "packaged_path": "maintenance-8faf-v2-review/just-fix.raw.log",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 115984,
+      "sha256": "bae92ef1daaa8bbe2a0dbd836636850002caa8992004cd237d4654fd688282dc",
+      "git_blob": "6c652d6f11a60099c0887925245ba45c7a9e57ed"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/maintenance.patch",
+      "packaged_path": "maintenance-8faf-v2-review/maintenance.patch",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1460,
+      "sha256": "e7ea05d3b1d9561cddfd864bc349579f3bcc54886ee3bb3a07b79cc634485842",
+      "git_blob": "1471fc3f4f3c9c8bf7cd1f24ef6f72f09f7d6795"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/native-environment.json",
+      "packaged_path": "maintenance-8faf-v2-review/native-environment.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 3076,
+      "sha256": "53ef49b2894ddb33150258a34952f00b745bd2760a1b7f2be85ba9320e13b161",
+      "git_blob": "a67850b3b50696c9ec44dde48397c1d0ae50c26d"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/originals-manifest.json",
+      "packaged_path": "maintenance-8faf-v2-review/originals-manifest.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1951,
+      "sha256": "85d576bcdee17c69e00b4fa772a4f38adc6c837f74afbe10688e2d2160d57d7f",
+      "git_blob": "f9e8139266df6996bd5a7b0b850ad61324cdab29"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/postimages.json",
+      "packaged_path": "maintenance-8faf-v2-review/postimages.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 401,
+      "sha256": "3c810864659529b6ac39ca8ed9eca35e77df020963cba54675787cb5276d64a5",
+      "git_blob": "cd3d08a8c3e6de5ecbec05588e358e48acbc0940"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/rawlog-transfer.json",
+      "packaged_path": "maintenance-8faf-v2-review/rawlog-transfer.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 155469,
+      "sha256": "6a94b76a5492fd52755b7ab6a0e5c21b513097e745bfa3ad6c26b460232e8e12",
+      "git_blob": "b04aa7a730ffc97840f719ed54c6bbd40571323d"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/result.json",
+      "packaged_path": "maintenance-8faf-v2-review/result.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1920,
+      "sha256": "7940ccb8dde481e6c92fb9b1486c31d679ff0f9d92cae09d3031418089500344",
+      "git_blob": "77a2231974b79297508dad8de97753943e709998"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/small-originals-readback.json",
+      "packaged_path": "maintenance-8faf-v2-review/small-originals-readback.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 10193,
+      "sha256": "f7cbf1372423dbd283324caa161427c8c126405346ff348510b88cb8598b4b6a",
+      "git_blob": "aed3dc571b5872eb4f19bc772e965a369ca90bb9"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/source-after.json",
+      "packaged_path": "maintenance-8faf-v2-review/source-after.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 416,
+      "sha256": "12e0746d69cf5ddb5e6b7b069b604cb2d65765a79e2d9a935b306630e4dffd45",
+      "git_blob": "022b0b0f89f9c7ae78038f5e747d809380c651d7"
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/source-before.json",
+      "packaged_path": "maintenance-8faf-v2-review/source-before.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 332,
+      "sha256": "3a2cc3dc341d98046c4239c0ec445280f660185f57e40b21470c3db40ce36511",
+      "git_blob": "3c10127d5725a96d3811f89d4d7f0efe68a93642"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/ORIGINAL_POSTIMAGE_SDK_PAYLOAD.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/ORIGINAL_POSTIMAGE_SDK_PAYLOAD.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 8478,
+      "sha256": "b3260a667276aa3e02fc3a43f4244b8633afc0d81227f8d6ea75781c8e3c8a77",
+      "git_blob": "6a4c67dcc50a849e15e297ab623aa8f1680e8954"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/ORIGINAL_SDK_PAYLOAD.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/ORIGINAL_SDK_PAYLOAD.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 4496,
+      "sha256": "fb64e0c604a21b7e20edc9334aed66fc22c16c1dbbb19c2949b6381d924ab6f7",
+      "git_blob": "9671823b2027bb3f82fd4748309a7aa4e69655c4"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/format-request.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/format-request.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 2172,
+      "sha256": "90e26caa79e1e6f7f7e558067875011f1aeb63efbadc24912d707e20305a7786",
+      "git_blob": "a9fb4659ba503d8f2167645dd986797f62a780af"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/format-result.from-pty.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/format-result.from-pty.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1357,
+      "sha256": "95e822d48d655d5d8f30d061637d21098e387ddbb82604b38ee14e611a9aeba0",
+      "git_blob": "1f7f4a95c1c40d7a9be458f44e88f0f2067d378f"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/format-terminal.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/format-terminal.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 23377,
+      "sha256": "f8b94722abdd38f379d9d5c267782149b974be6eb7eb3694e0afec31aa4e486e",
+      "git_blob": "f2b3b4fb6838d56b0f28cdfe01a0b9f8b65210ab"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/format-terminal.raw.log",
+      "packaged_path": "root-maintenance-8faf-v2-meta/format-terminal.raw.log",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 7148,
+      "sha256": "ecc4e97284d63dc3e5c5fe2a2a0fb9c17f01c92924a0f162df87ea1a4f11c2c6",
+      "git_blob": "d8ab17e4c3bc1ded4d5ed58d60a321b889c506b8"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/maintenance.patch",
+      "packaged_path": "root-maintenance-8faf-v2-meta/maintenance.patch",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1460,
+      "sha256": "e7ea05d3b1d9561cddfd864bc349579f3bcc54886ee3bb3a07b79cc634485842",
+      "git_blob": "1471fc3f4f3c9c8bf7cd1f24ef6f72f09f7d6795"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/operation-page0.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/operation-page0.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 6850,
+      "sha256": "9b6a064145dddc8c7b757d66697b7e88734a6cb6373ec806186e91faa5f7043c",
+      "git_blob": "4d8b247526e9efa23ad2e4c43a60e01f2b5e080f"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/postimage-operation-page0.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/postimage-operation-page0.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 12158,
+      "sha256": "7420a97588a4bb3f24ba77a38ce698244ac561861dd0f308cda80470a2b4a157",
+      "git_blob": "e38d50f8af67846eaae7c0ed5da19baa924b2294"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/postimages.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/postimages.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 401,
+      "sha256": "3c810864659529b6ac39ca8ed9eca35e77df020963cba54675787cb5276d64a5",
+      "git_blob": "cd3d08a8c3e6de5ecbec05588e358e48acbc0940"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/result.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/result.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1920,
+      "sha256": "7940ccb8dde481e6c92fb9b1486c31d679ff0f9d92cae09d3031418089500344",
+      "git_blob": "77a2231974b79297508dad8de97753943e709998"
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/source-after.json",
+      "packaged_path": "root-maintenance-8faf-v2-meta/source-after.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 416,
+      "sha256": "12e0746d69cf5ddb5e6b7b069b604cb2d65765a79e2d9a935b306630e4dffd45",
+      "git_blob": "022b0b0f89f9c7ae78038f5e747d809380c651d7"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/invocation.json",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/invocation.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 724,
+      "sha256": "7fabde321dacb3ab5ae1fb97492afe50ff43248790d01f7b40d3b667242bfe07",
+      "git_blob": "98fdd38719c2380ccdd3b660009bc9cc9387b763"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/just-fix.json",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/just-fix.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 514,
+      "sha256": "f169a549254c2463fc098db0e1783a5ed0d901fdc1e67c6b2c28072534a0f838",
+      "git_blob": "32f5c1e04157469738ecc1f3d56f4b4a58ed6a74"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/just-fix.raw.log",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/just-fix.raw.log",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 69896,
+      "sha256": "f36972fca43ae85dfb8286b9130e2a151fdb18dea2ec5fe16ec26001722af5bc",
+      "git_blob": "6bad3e394cc24441dfcdac5d5e230a883f7a0886"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/maintenance.patch",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/maintenance.patch",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/native-environment.json",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/native-environment.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 3087,
+      "sha256": "c9164993ad75a642198723b4c5ac59815e30588d6a1d84cea2cbbd2aaefc362e",
+      "git_blob": "5b0e5814982ae5567db086023b5a75ab39e8c644"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/postimages.json",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/postimages.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 124,
+      "sha256": "8d8e1c7a5c38e9ad82db7ed04822b5b38510a1e8deadf59e6461aaf9787ef02f",
+      "git_blob": "806aac9572712ba19891eb750855ae31ce286b2c"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/result.json",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/result.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1832,
+      "sha256": "d0aceec423ebd4333835630c5b51ebbe224d93e9b21c591b5aa01ff27a7e192f",
+      "git_blob": "d60e1138258b1a3bf77232292e83b77e5849b038"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/source-after.json",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/source-after.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 332,
+      "sha256": "61a5d7cf087621e1c47aaba9830fdaa827ba023f3b9ef4a7d85416cd489a3cc5",
+      "git_blob": "954cf85c46ff89a316b2e5fd517c36a41b53855b"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/source-before.json",
+      "packaged_path": "maintenance-cc22-v1-review/maintenance-cc22a69972d0-v1/source-before.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 332,
+      "sha256": "61a5d7cf087621e1c47aaba9830fdaa827ba023f3b9ef4a7d85416cd489a3cc5",
+      "git_blob": "954cf85c46ff89a316b2e5fd517c36a41b53855b"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/native-cache-copy-8faf-v1/result.json",
+      "packaged_path": "maintenance-cc22-v1-review/native-cache-copy-8faf-v1/result.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1293,
+      "sha256": "2c20846125376450713aaa812fd548b5882b867298789a34deff30bf495c30e3",
+      "git_blob": "1e81bd896177865d9333270c832fa21b1d367c83"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/fmt-result.json",
+      "packaged_path": "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/fmt-result.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 1343,
+      "sha256": "c8bf77cb722f3b3c4ff09e24a7fb0988a6a1875bcd44e37a72bb9482e5116bfc",
+      "git_blob": "03eb9f6ae0938788d205d5c91745172a5766a50c"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/just-fmt.raw.log",
+      "packaged_path": "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/just-fmt.raw.log",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "git_blob": "3c392c1e9260334291874d1c0eaad4cb4d7c054e"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/result.json",
+      "packaged_path": "maintenance-cc22-v1-review/native-source-cc22a69972d0-v1/result.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 6475,
+      "sha256": "fa312aa1fcd1803ca98e00503b73dd4e339641540f5fa325bb1e3a7032d61f0a",
+      "git_blob": "e2dea544393a8584ceb37b6f9833d2a4f962b1a0"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/originals-manifest.json",
+      "packaged_path": "maintenance-cc22-v1-review/originals-manifest.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 4199,
+      "sha256": "7d4a85bda31929c3ecd25f0049d4d6e6d4d8219eda76448771c9f81eac4380b8",
+      "git_blob": "dfec2303bce27092ad5780818575b654fe976960"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/rawlog-transfer.json",
+      "packaged_path": "maintenance-cc22-v1-review/rawlog-transfer.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 94012,
+      "sha256": "56207bd981334331b0d305c082888be9c3ed87fc9c3522dd2385991bc16a9c17",
+      "git_blob": "707a77a4618361944372939d603fcf0c6478c583"
+    },
+    {
+      "original_path": "maintenance-cc22-v1-review/transfer-readback.json",
+      "packaged_path": "maintenance-cc22-v1-review/transfer-readback.json",
+      "kind": "original/derived attribution retained from original filename and receipt",
+      "bytes": 21561,
+      "sha256": "54ac89ff8345e6b2faa5fbf4e648277678c5fed9369002c06897345effe09ede",
+      "git_blob": "e9b05c627024cc5484f5fb43dba2a7687ebcd405"
+    },
+    {
+      "original_path": "root-final-source-integration/PUBLISHED_REPAIR_COMPARE.json",
+      "packaged_path": "published-source/PUBLISHED_REPAIR_COMPARE.json",
+      "kind": "root independently retrieved GitHub comparison",
+      "bytes": 3421,
+      "sha256": "59ad255f5589707b6fc48b2b6d5cb8e8e88c6355cc4360e568b0cf6a5c6002d2",
+      "git_blob": "91f8d8696c5b7db390effefaebbe510164c621b5"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/final-source.json",
+      "packaged_path": "source-cc22-passed/preparation/final-source.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 769,
+      "sha256": "1b643321ae54e2ab391811e9fdb48cf88fa9f67e0894cea4201a10d77f33111c",
+      "git_blob": "8a781002c71bd61f54c53cabb0e6c76a867ccade"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/object-preparation-lock.json",
+      "packaged_path": "source-cc22-passed/preparation/object-preparation-lock.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 190,
+      "sha256": "9098b235d3c7e1d7fec3d1eb468ccca06fd965b70445d3a72ef84be14b9cf64f",
+      "git_blob": "85218f23837d2dd8ce8ccb9780ed347b6e100df9"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/parent-after-preparation.json",
+      "packaged_path": "source-cc22-passed/preparation/parent-after-preparation.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 717,
+      "sha256": "6d225fd87aa90d807e01526ee0ccf2f0d8fd5d95b8268d5d286c8a8d18acc8ab",
+      "git_blob": "c91f2e87b0e8ec0ed4e900430f0a14ecba4ba952"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/parent-before.json",
+      "packaged_path": "source-cc22-passed/preparation/parent-before.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 717,
+      "sha256": "6d225fd87aa90d807e01526ee0ccf2f0d8fd5d95b8268d5d286c8a8d18acc8ab",
+      "git_blob": "c91f2e87b0e8ec0ed4e900430f0a14ecba4ba952"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/parent-locks-after-preparation.json",
+      "packaged_path": "source-cc22-passed/preparation/parent-locks-after-preparation.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 341,
+      "sha256": "e2ba9865d1505d9adf3e14320a31297e6160730bf631491c25e36c2958eff812",
+      "git_blob": "8d69fec3ce8704f262cee1846d7edde20d4c4f57"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/parent-locks-before.json",
+      "packaged_path": "source-cc22-passed/preparation/parent-locks-before.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 341,
+      "sha256": "e2ba9865d1505d9adf3e14320a31297e6160730bf631491c25e36c2958eff812",
+      "git_blob": "8d69fec3ce8704f262cee1846d7edde20d4c4f57"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/preparation-environment.json",
+      "packaged_path": "source-cc22-passed/preparation/preparation-environment.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 346,
+      "sha256": "8c9514a2504aa4109e33e5ccec1c2b274ba310ede4a44ef19429472826d923e4",
+      "git_blob": "87003e65a58213189c8852caedf23a9ea58f853d"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/prepared-source.json",
+      "packaged_path": "source-cc22-passed/preparation/prepared-source.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 769,
+      "sha256": "1b643321ae54e2ab391811e9fdb48cf88fa9f67e0894cea4201a10d77f33111c",
+      "git_blob": "8a781002c71bd61f54c53cabb0e6c76a867ccade"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/result.json",
+      "packaged_path": "source-cc22-passed/preparation/result.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 2177,
+      "sha256": "e4cd0b97264daa96e90e5c7600ad69072af54cf1f666fad77247d60910db6999",
+      "git_blob": "0cc0ba90f095c671c14adffcc4032d64298676c3"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/source-driver.py",
+      "packaged_path": "source-cc22-passed/preparation/source-driver.py",
+      "kind": "exact original source-gate file readback",
+      "bytes": 4051,
+      "sha256": "94ab77e6f14fcae3237de2565b8a0c62ad04206e62e595a4406e25fd0dea905f",
+      "git_blob": "40c40a4e8bd1710da776c6cfb0739c39a3ca459f"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/source-fetch.json",
+      "packaged_path": "source-cc22-passed/preparation/source-fetch.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 548,
+      "sha256": "3e98f6055561a39e65e120b58dd797776e3f063af130d56d28444d251a7a2e8d",
+      "git_blob": "3fd187bd439e08cd0cee6fb5e90a707a89c4b2f7"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/source-fetch.raw.log",
+      "packaged_path": "source-cc22-passed/preparation/source-fetch.raw.log",
+      "kind": "exact original source-gate file readback",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/source-locks-before.json",
+      "packaged_path": "source-cc22-passed/preparation/source-locks-before.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 445,
+      "sha256": "ee9fe86653442fd54621375ae64bb99594a3e577153a2a8c8c5daa98be5094aa",
+      "git_blob": "62b42939b9da5aa692011847bcc6ec9713a2dbd8"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/source-worktree.json",
+      "packaged_path": "source-cc22-passed/preparation/source-worktree.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 558,
+      "sha256": "78c13edb507a580a6bb14edefd73b154bf6761a2095a833677f9ccce1cfeb39b",
+      "git_blob": "a58ac837757897bd7ff64af45b7a3580ca63ea7b"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/source-worktree.raw.log",
+      "packaged_path": "source-cc22-passed/preparation/source-worktree.raw.log",
+      "kind": "exact original source-gate file readback",
+      "bytes": 4122,
+      "sha256": "3e7a07e4aa46a52656aacdadc696620269a22f5c4a8489782a8981ce39e84e41",
+      "git_blob": "be5f174e9be7d1b8052a0b13ba36f0b29bec691a"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation/started.json",
+      "packaged_path": "source-cc22-passed/preparation/started.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 533,
+      "sha256": "0d1f56beac861f926cc811b7ef4e82b5bc04082d65734609a2d5401c52548684",
+      "git_blob": "acb44213e0010a9290d0661f63c701b49dc52736"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/invocation.json",
+      "packaged_path": "source-cc22-passed/source-result/invocation.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 1325,
+      "sha256": "9d98c575635ea6cf105e19f3132cd128929c6013e98befb3c08b240e09e8d74e",
+      "git_blob": "63109bdf2392068690ce7a12265cf6988d35e9ca"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/result.json",
+      "packaged_path": "source-cc22-passed/source-result/result.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 1155,
+      "sha256": "18a69a7336b53b7e0f0d08446f43cff85645b448a72659197d692b0912900ba4",
+      "git_blob": "5f5f4e73791f646cc7412e22bd209fcee85c6ad7"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/source-after.json",
+      "packaged_path": "source-cc22-passed/source-result/source-after.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 241,
+      "sha256": "12637f1cbdc9d2b7c3cc6f15967166e5f008ceea5f999e747c95a91440d1b9ec",
+      "git_blob": "591470040f9ac07b2bff94c742333baca5503d5f"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/source-before.json",
+      "packaged_path": "source-cc22-passed/source-result/source-before.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 241,
+      "sha256": "12637f1cbdc9d2b7c3cc6f15967166e5f008ceea5f999e747c95a91440d1b9ec",
+      "git_blob": "591470040f9ac07b2bff94c742333baca5503d5f"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/source-closure.json",
+      "packaged_path": "source-cc22-passed/source-result/source-closure.json",
+      "kind": "exact original source-gate file readback",
+      "bytes": 1481,
+      "sha256": "b79a5a8d610c475b5311ccdbe178ec2c383f8ff4e5027f5c69b4ccf72c9f8c2f",
+      "git_blob": "91873abc54af271632c3f440d4103a182aaeee4c"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/canonical-source-driver.py",
+      "packaged_path": "source-cc22-passed/canonical-source-driver.py",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 4051,
+      "sha256": "51715f75be05dadb3db1e9c7337e55a957f56b718b23890ee1ac717cd2b8492c",
+      "git_blob": "5177dd106f24363b771b34e78c1fcc062ab64c96"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/canonical-id-path-only.patch",
+      "packaged_path": "source-cc22-passed/canonical-id-path-only.patch",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 882,
+      "sha256": "0854e704ae98e2e1e3661c80e526c276f8ca6640c89394b32d203cda173659f0",
+      "git_blob": "783428a9d63b2e15607b8ea3a12a0e4ef0e0137d"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-driver.py",
+      "packaged_path": "source-cc22-passed/source-driver.py",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 4051,
+      "sha256": "94ab77e6f14fcae3237de2565b8a0c62ad04206e62e595a4406e25fd0dea905f",
+      "git_blob": "40c40a4e8bd1710da776c6cfb0739c39a3ca459f"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/preparation-and-source-driver.py",
+      "packaged_path": "source-cc22-passed/preparation-and-source-driver.py",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 11550,
+      "sha256": "8a359a712d4cf0bd2e83cb696005347be773c2c4e0ae24a4d7c86d7d9a8fc69c",
+      "git_blob": "eb2d23173da07de1db4587f7536c9feb13e200bd"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/request.json",
+      "packaged_path": "source-cc22-passed/request.json",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 11933,
+      "sha256": "91f671ca54ec3134ddc6d3275ff695ef84e6d2a979f9d65c82cf745941ed95bc",
+      "git_blob": "f627086e93d03c3b884876ee0f000965543cf197"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/PREPARATION_MANIFEST.json",
+      "packaged_path": "source-cc22-passed/PREPARATION_MANIFEST.json",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 1548,
+      "sha256": "9ab4975eb79112ddc2b36bdd2e49fbf602b15e044c11e8223c1aeb012a51e851",
+      "git_blob": "d95c93e339bac41ed15fecdff1422f6a282c43a0"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/launch-receipt.json",
+      "packaged_path": "source-cc22-passed/launch-receipt.json",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 13186,
+      "sha256": "faf98650baeac7f72ca481b154fa55b39b271e85bf0a07f690affb3d1b32219d",
+      "git_blob": "b526687c42663247f06c481caa9f671bf5e3414a"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/status-original-sdk-payload.json",
+      "packaged_path": "source-cc22-passed/status-original-sdk-payload.json",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 912,
+      "sha256": "95a44d83b25ad677a45298b2bd2471ae80eef3f95a6bdbb71ce81282b7060f1f",
+      "git_blob": "c300d24a7339c12d6af66a18ae132c4344db807d"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/terminal-files-original-sdk-payload.json",
+      "packaged_path": "source-cc22-passed/terminal-files-original-sdk-payload.json",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 8963,
+      "sha256": "3d72c83c8d5c27a09ec62df9f1e0654b84f38bef4954c732bec42b9a0288092f",
+      "git_blob": "9d6920b4265f8a10a7f05514fc3a603f8f7af7ce"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/read-transport-records.json",
+      "packaged_path": "source-cc22-passed/read-transport-records.json",
+      "kind": "canonical runner, original request/receipt, or immutable original native SDK payload",
+      "bytes": 1331,
+      "sha256": "630a25c1bade1c580571c7fdf1a0c0eac6b0294408ac8c59960ff8879f919e8b",
+      "git_blob": "f07013166eddae62cc3d27795a46e6c751173387"
+    },
+    {
+      "original_path": "root-caller-8faf-terminal-review/ORIGINALS.json",
+      "packaged_path": "root-caller-8faf-terminal-review/ORIGINALS.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1257,
+      "sha256": "fb65425fae0852479b0582700fbdc19741cf74c36fa8fe518324559d2417b902",
+      "git_blob": "fc25e5dbf2d999cc0ae78edde29ac375d61cb718"
+    },
+    {
+      "original_path": "root-caller-8faf-terminal-review/final-source.json",
+      "packaged_path": "root-caller-8faf-terminal-review/final-source.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 430,
+      "sha256": "a85813975abd294ed1276f5a9f0869a5fcf10f9cf34bcafe04299f16fe2baeba",
+      "git_blob": "3ef2d4608bc535df0b8cbe4e3000ae8ca4810a04"
+    },
+    {
+      "original_path": "root-caller-8faf-terminal-review/operation-original-sdk-payload.json",
+      "packaged_path": "root-caller-8faf-terminal-review/operation-original-sdk-payload.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 3033,
+      "sha256": "9e63c1accccfb15040ce57c21221045b5128131fd0a6424c8861534fb0f591c0",
+      "git_blob": "85ddc0d95fecdbdf41806494b82d78c9526c6d52"
+    },
+    {
+      "original_path": "root-caller-8faf-terminal-review/original-sdk-envelope.json",
+      "packaged_path": "root-caller-8faf-terminal-review/original-sdk-envelope.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 4797,
+      "sha256": "c91518a11abea9d8b546ded8c230149534d84d8a326ad51514050f5c38840df8",
+      "git_blob": "b5c500d7aea61bc0113523dcbca7abe0c1b9dc68"
+    },
+    {
+      "original_path": "root-caller-8faf-terminal-review/self-test.json",
+      "packaged_path": "root-caller-8faf-terminal-review/self-test.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 391,
+      "sha256": "5983f1925c1ee673fba787113149698b0b01f913c6c30f90a3ff548ea0e8f802",
+      "git_blob": "a6513f10b7e86147ba91075a4c47688f1071bc4c"
+    },
+    {
+      "original_path": "root-caller-8faf-terminal-review/source-locks-after.json",
+      "packaged_path": "root-caller-8faf-terminal-review/source-locks-after.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 341,
+      "sha256": "e2ba9865d1505d9adf3e14320a31297e6160730bf631491c25e36c2958eff812",
+      "git_blob": "8d69fec3ce8704f262cee1846d7edde20d4c4f57"
+    },
+    {
+      "original_path": "root-caller-8faf-terminal-review/verify.log",
+      "packaged_path": "root-caller-8faf-terminal-review/verify.log",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 192,
+      "sha256": "39ca8695a50ab0408e13e693c7bfb4563e989d3b1a13e07ec3a01c18fc8ca139",
+      "git_blob": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613"
+    },
+    {
+      "original_path": "native-cc22-focused-review/helper-large-artifact-info.json",
+      "packaged_path": "native-cc22-focused-review/helper-large-artifact-info.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1395,
+      "sha256": "d26ff087d6c86616ab369f163fea00cfa371c8ef57551a55b6fa4b14147688de",
+      "git_blob": "9d43a899154bcfa4ba22d49b20baa0a514c2e7ad"
+    },
+    {
+      "original_path": "native-cc22-focused-review/helper-originals-manifest.json",
+      "packaged_path": "native-cc22-focused-review/helper-originals-manifest.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1175,
+      "sha256": "b9c9a54fca4ebc55677181358fa55065b96e2b3b6bf5559472f6470af1c31dd5",
+      "git_blob": "92c82c5abec14cf20a338a30f86d66d22acca90d"
+    },
+    {
+      "original_path": "native-cc22-focused-review/helper-raw-originals-manifest.json",
+      "packaged_path": "native-cc22-focused-review/helper-raw-originals-manifest.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1271,
+      "sha256": "bde4fd5d8d5c94eb0418093094f50a761653acd85a5754f8c4a4e00654d503d6",
+      "git_blob": "cf6f11d9bc7d4d61f11bd7188ef8967d4d3a272e"
+    },
+    {
+      "original_path": "native-cc22-focused-review/helper-raw-readback.json",
+      "packaged_path": "native-cc22-focused-review/helper-raw-readback.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 62425,
+      "sha256": "34bfab16f59d6fbc398a816769b416fd39733185882f7d8b2714eb99df300c6f",
+      "git_blob": "dcfda4e1537d0aa842e3ece9c53b14d5abca8f4a"
+    },
+    {
+      "original_path": "native-cc22-focused-review/helper-readback.json",
+      "packaged_path": "native-cc22-focused-review/helper-readback.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 9304,
+      "sha256": "42b892bcfedad73700f28bc4140370649ab695f53aa2cd8606c9500c24f2a332",
+      "git_blob": "f115a48baa839a371671c9a5c9c61cb85066de27"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/focused-launch.json",
+      "packaged_path": "native-cc22-focused-review/originals/focused-launch.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1012,
+      "sha256": "654606a66a944343a7aa8cdf61bcfc008d8af5db1175c36c1b70d60b4c2fe2a2",
+      "git_blob": "587fe188ff7dfff4dcd69c996ad89c8faec64e47"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/helper-build.json",
+      "packaged_path": "native-cc22-focused-review/originals/helper-build.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1547,
+      "sha256": "a187ac573d18b2d0d3e3301a75cdb4b65cce7342768c41a79a3ad767e7a98e72",
+      "git_blob": "f27ffcc7c3abf77f76ab42eff30fcb18b80d6a3e"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/helper-build.json.10677d443c99412b998496ff0e70c24f.log",
+      "packaged_path": "native-cc22-focused-review/originals/helper-build.json.10677d443c99412b998496ff0e70c24f.log",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 196,
+      "sha256": "99d47d324b349bc0abce3dd8865f89bda8748b0d61cec52a5e901bc03546e5f3",
+      "git_blob": "82982ac4aad1179c98ede4c1ec84bb7c5d44beff"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/helper-verification-before.json",
+      "packaged_path": "native-cc22-focused-review/originals/helper-verification-before.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1585,
+      "sha256": "50942f934de5a5d686d6374f02ee13456f489f275ea112735b649f96cd6f581e",
+      "git_blob": "a9cfeda6c2178d16d37f08983965e20934814eea"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/helper-verification-before.json.2de2b98d72cc4b7fa3effa4b6ebd35e0.log",
+      "packaged_path": "native-cc22-focused-review/originals/helper-verification-before.json.2de2b98d72cc4b7fa3effa4b6ebd35e0.log",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1141,
+      "sha256": "0ec939face6e3652fb18295837e663400e9630563bfa3987bf4cb3ff57809acb",
+      "git_blob": "3e78caa6d8fc0225cbb4f15cde05b8ecd7a81de6"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "packaged_path": "native-cc22-focused-review/originals/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 56408,
+      "sha256": "d20c91019d74cfb89c696372c99ffae53899b5bf229f1792d76afe15745cc9b7",
+      "git_blob": "169644dddf563c288d3aa2460e55141b76ac2d24"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/helpers/env.json",
+      "packaged_path": "native-cc22-focused-review/originals/helpers/env.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 293,
+      "sha256": "0671a12604cd580e5145a7ca7b349a3139952fc34102ab02fcf01382f2c5de0d",
+      "git_blob": "365b31998505eae3b07645764aab31dd359738dd"
+    },
+    {
+      "original_path": "native-cc22-focused-review/originals/helpers/manifest.json",
+      "packaged_path": "native-cc22-focused-review/originals/helpers/manifest.json",
+      "kind": "original readback or transport artifact; original/derived status retained",
+      "bytes": 1877,
+      "sha256": "ca437cea08311d1ba5fdc237ff3e9c89261b78783c8a0f6eb06c98d02673072c",
+      "git_blob": "815cd00369145ae7e8e28f54748a1d7feb7fc23a"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/terminal-readback/VERIFIED_MANIFEST.json",
+      "packaged_path": "caller-8faf-terminal/VERIFIED_MANIFEST.json",
+      "kind": "original terminal record; SDK payload local LF normalization explicitly recorded in original manifest",
+      "bytes": 1908,
+      "sha256": "6d1ab7bfd74bc270647be3efe247f762d4b827ec6eeabd130eb53aee33fdde41",
+      "git_blob": "219572c1ad89c9d57f8d7bca798c82cecb751eb9"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/terminal-readback/final-gates-8faf92e260e1-v2/fullcaller-gate.json",
+      "packaged_path": "caller-8faf-terminal/final-gates-8faf92e260e1-v2/fullcaller-gate.json",
+      "kind": "original terminal record; SDK payload local LF normalization explicitly recorded in original manifest",
+      "bytes": 513,
+      "sha256": "e18809a323d07a81d3394a82f60acf9d1393ec2ea09518e939ce7e9a9544f78f",
+      "git_blob": "f398698d9c10379601da1651e2f66b52807923c5"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/terminal-readback/final-gates-8faf92e260e1-v2/result.json",
+      "packaged_path": "caller-8faf-terminal/final-gates-8faf92e260e1-v2/result.json",
+      "kind": "original terminal record; SDK payload local LF normalization explicitly recorded in original manifest",
+      "bytes": 1772,
+      "sha256": "64225c78c5aa5cac88208b9f83caa41ed132fd38ede0d1f656d2e8aeeb339576",
+      "git_blob": "ab92be3b49e3ec20b7384b5f328a18c7083062c9"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/terminal-readback/fullcaller-8faf92e260e1-v2/daemon-learning-caller-proof/verify.json",
+      "packaged_path": "caller-8faf-terminal/fullcaller-8faf92e260e1-v2/daemon-learning-caller-proof/verify.json",
+      "kind": "original terminal record; SDK payload local LF normalization explicitly recorded in original manifest",
+      "bytes": 389,
+      "sha256": "b0803d6468a6d7714386154380f04bc2aeb4939dec0bb520971e442e10fa803e",
+      "git_blob": "d7750cab485e1e9f61a250a7193d36647b9bb149"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/terminal-readback/fullcaller-8faf92e260e1-v2/result.json",
+      "packaged_path": "caller-8faf-terminal/fullcaller-8faf92e260e1-v2/result.json",
+      "kind": "original terminal record; SDK payload local LF normalization explicitly recorded in original manifest",
+      "bytes": 982,
+      "sha256": "395268c529a46fe828a551beea4b17876cacc30ba593abc94e48cdf074c9c1c6",
+      "git_blob": "8906fc348e4fb2ff9d4f25c0f188487e152b0bd9"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/terminal-readback/operation-original-payload.json",
+      "packaged_path": "caller-8faf-terminal/operation-original-payload.json",
+      "kind": "original terminal record; SDK payload local LF normalization explicitly recorded in original manifest",
+      "bytes": 5950,
+      "sha256": "e9819d3c19800b4a5c6706385e764105f1bcdb4dd4513d816d90148e84fd5b02",
+      "git_blob": "8f406a1b9ac9b86a89de41dc7c80794286a6a80a"
+    },
+    {
+      "original_path": "final-common-gates-8faf92e260e1-v2/terminal-readback/operation-original-sdk-payload.exact.json",
+      "packaged_path": "caller-8faf-terminal/operation-original-sdk-payload.exact.json",
+      "kind": "original terminal record; SDK payload local LF normalization explicitly recorded in original manifest",
+      "bytes": 5949,
+      "sha256": "509bd1262fa1f4b1868d28be012fc352948afc36b49b8eadc2ac977ebc6a745c",
+      "git_blob": "8c7f65ecff085a3ea9dc79ecb8835c8855d5610d"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/driver.raw.log",
+      "packaged_path": "source-cc22-passed/source-result/driver.raw.log",
+      "kind": "full original driver log assembled from immutable disk-read segments",
+      "bytes": 90825,
+      "sha256": "a0ec360b5ed15d45d0ce5dc40448617f666a57a81f192044442cbb5522b780e3",
+      "git_blob": "8d63cd7f12278d0b89279e2f146c5f8e63b0ce43"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/source-closure.json.e9b05119313842ad8b49fee49c1f4bce.log",
+      "packaged_path": "source-cc22-passed/source-result/source-closure.json.e9b05119313842ad8b49fee49c1f4bce.log",
+      "kind": "byte-exact original hepta log recovered from verified driver prefix; not independent full disk read",
+      "bytes": 89504,
+      "sha256": "9c0957c52f00b32ed36b9ec7144df744e763f918c2e37340966ac923092d2034",
+      "git_blob": "78db671604623630626f3133513ec61bc7c336ae"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/source-result/original-log-prefix-recovery.json",
+      "packaged_path": "source-cc22-passed/source-result/original-log-prefix-recovery.json",
+      "kind": "explicit derivation and independent segment crosscheck record",
+      "bytes": 984,
+      "sha256": "ebd05959ce24b70c9f4252c78c44fca98be925278b9284b9e662d0fab32dbbad",
+      "git_blob": "d4a0141491b601b8bfd73dd110abc1b2e9cf79e1"
+    },
+    {
+      "original_path": "source-cc22a69972d0-gate-v1/LOG_TRANSFER_VERIFICATION.json",
+      "packaged_path": "source-cc22-passed/LOG_TRANSFER_VERIFICATION.json",
+      "kind": "derived verification of original native SDK payload SHA and immutable log segments",
+      "bytes": 3609,
+      "sha256": "4a1b08f36d23e3dd4f472b64d76881ce0c0f64cf2e53bc5490dd3ddeeb8b7d3f",
+      "git_blob": "3208fdfd1d98087b4eb898294f34b5e81befb438"
+    }
+  ],
+  "omitted_source_postimages": [
+    {
+      "original_index": "repair-8faf/ARTIFACTS.json",
+      "original_path": "work/CALLERS.toml",
+      "reason": "independent source postimage omitted; exact bytes bound in original manifest and available through repair patch / published cc22 source",
+      "indexed_metadata": {
+        "path": "work/CALLERS.toml",
+        "bytes": 1102178,
+        "sha256": "7725f09680e6f63b9123f8c1ee51e19e8b9e54d169c8c34fc8c7c6165b8d5a22",
+        "git_blob": "1e2481ff4be46cdf8350bc6488e323a3fcbc8af0"
+      }
+    },
+    {
+      "original_index": "repair-8faf/ARTIFACTS.json",
+      "original_path": "work/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "reason": "independent source postimage omitted; exact bytes bound in original manifest and available through repair patch / published cc22 source",
+      "indexed_metadata": {
+        "path": "work/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "bytes": 24081,
+        "sha256": "aa0ba3925f51d51217cfd37a50ae6b4f2bba88a9d5fdb5b1c91cf3975d11d70e",
+        "git_blob": "23e8989ebd2644947b15c80ab9c641a70767de99"
+      }
+    },
+    {
+      "original_index": "repair-8faf/ARTIFACTS.json",
+      "original_path": "work/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "reason": "independent source postimage omitted; exact bytes bound in original manifest and available through repair patch / published cc22 source",
+      "indexed_metadata": {
+        "path": "work/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+        "bytes": 33501,
+        "sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+        "git_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234"
+      }
+    },
+    {
+      "original_index": "repair-8faf/ARTIFACTS.json",
+      "original_path": "work/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "reason": "independent source postimage omitted; exact bytes bound in original manifest and available through repair patch / published cc22 source",
+      "indexed_metadata": {
+        "path": "work/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "bytes": 10942,
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3",
+        "git_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9"
+      }
+    },
+    {
+      "original_index": "repair-8faf/ARTIFACTS.json",
+      "original_path": "work/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "reason": "independent source postimage omitted; exact bytes bound in original manifest and available through repair patch / published cc22 source",
+      "indexed_metadata": {
+        "path": "work/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "bytes": 20976,
+        "sha256": "44cf8bd7ab00c2bc4fa2870276ec12fef02a5610e09d371ffcee99cdc458ac0e",
+        "git_blob": "865411d2a6a90e79eb267874d3ba6464921a05fa"
+      }
+    },
+    {
+      "original_index": "repair-8faf/ARTIFACTS.json",
+      "original_path": "work/qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "reason": "independent source postimage omitted; exact bytes bound in original manifest and available through repair patch / published cc22 source",
+      "indexed_metadata": {
+        "path": "work/qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "bytes": 14384,
+        "sha256": "0e0bd35644f37754de7fb89380c90a869b7a64f47a966c5b9aa9bf32e8055baa",
+        "git_blob": "a4c6fc20d5e713dfbcca7a995951069ff4d0eb5d"
+      }
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/base/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "reason": "independent Rust source postimage omitted",
+      "metadata": {
+        "bytes": 5746,
+        "sha256": "7851baefc3c89ebf278369423609e6898176ab2a57c8afe1bc8ec0f0c5daeb91",
+        "git_blob": "27fbc11be9afac9a008fdfe08f2c29ed2b3f53df"
+      }
+    },
+    {
+      "original_path": "maintenance-8faf-v2-review/postimages/codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs",
+      "reason": "independent Rust source postimage omitted",
+      "metadata": {
+        "bytes": 5722,
+        "sha256": "a93abb8a3e51347696c666e47cdd0da6f34f48cf856d71f6baf5ca14f034aaff",
+        "git_blob": "abb48293df85dc2a71f5a9540e488da9159230bd"
+      }
+    },
+    {
+      "original_path": "root-maintenance-8faf-v2-meta/circuit_evaluated_selection_readback_support_tests.rs",
+      "reason": "independent Rust source postimage omitted",
+      "metadata": {
+        "bytes": 5722,
+        "sha256": "a93abb8a3e51347696c666e47cdd0da6f34f48cf856d71f6baf5ca14f034aaff",
+        "git_blob": "abb48293df85dc2a71f5a9540e488da9159230bd"
+      }
+    }
+  ],
+  "complete_source_logs": true
+}

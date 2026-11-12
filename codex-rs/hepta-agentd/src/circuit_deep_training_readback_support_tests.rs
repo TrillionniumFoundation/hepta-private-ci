@@ -28,12 +28,13 @@ use crate::OriginalCircuitSelectionReadbackConnectionV1;
 use crate::OriginalCircuitSelectionReceiptConfigV1;
 use crate::OriginalCircuitSelectionReceiptOwnerV1;
 use crate::circuit_feature_current::original_learning_read_fixture as publication;
-use crate::learning_iteration_evidence_client::material::bootstrap_ports as material_ports;
 use crate::learning_iteration_evidence_client::original_bootstrap_test_ports as trainer_ports;
+use crate::learning_iteration_evidence_client::original_material_bootstrap_test_ports as material_ports;
 use crate::learning_iteration_evidence_client::original_readback_test_ports as selector_ports;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_types::FixedQ32;
 use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 pub(super) type Trainer =
     OriginalCellQ24TrainingBootstrapOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
@@ -100,7 +101,6 @@ impl DeepFixture {
         a.request.body.run_id = run.to_string();
         let source_a = support::source(&a, [Q, Q / 4])?;
         assert_eq!(source_a.scope.run_id, run);
-        material::decision(&mut ledger, &credentials, &source_a)?;
         let config_a = support::configuration(
             &baseline,
             &bundle,
@@ -112,11 +112,13 @@ impl DeepFixture {
         let published = support::publish_initial(&version, definition.clone(), source_a.clone())?;
         let mut a = support::start(a, published, Arc::clone(&baseline), bundle.clone()).await?;
         let previous = execute(&a, /*request_id*/ 1).await?;
+        material::decision(&mut ledger, &credentials, &previous)?;
         // This label is an explicit independent test outcome. No observed
         // prediction is copied into it to force NoUpdate.
         material::terminal_outcome_with_value(
             &mut ledger,
             &credentials,
+            &previous,
             FixedQ32::from_raw(1_i64 << 32),
         )?;
         let (config, optimizer) = material::unstarted_material_with_profile(

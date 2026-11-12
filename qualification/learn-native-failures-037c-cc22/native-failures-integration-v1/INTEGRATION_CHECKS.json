@@ -1,0 +1,95 @@
+{
+  "checks_are_local_structural_not_rust_or_native": true,
+  "provider_shared_baseline_git_blob": "dff2786bc5c00635b8a93cfe029a7a7ae73cf908",
+  "provider_three_way_exit_zero": true,
+  "provider_three_way_stderr_empty": true,
+  "sequential_patch_result_exactly_equals_three_way_result": true,
+  "recovery_postimage_reverse_patch_exactly_recovers_shared_base": true,
+  "changed_function_regions_on_shared_base": [
+    {
+      "owner": "recovery_audit",
+      "first_line": 145,
+      "last_line": 258,
+      "function": "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "outside_prefix_and_suffix_identical": true
+    },
+    {
+      "owner": "candidate_audit",
+      "first_line": 259,
+      "last_line": 365,
+      "function": "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "outside_prefix_and_suffix_identical": true
+    }
+  ],
+  "provider_loop_body_identical_except_two_parameterized_loop_headers": true,
+  "provider_missing_and_wrong_unit_block_byte_identical": true,
+  "provider_zero_support_assertion_block_byte_identical": true,
+  "provider_unsorted_test_and_nested_module_tail_byte_identical": true,
+  "profile_postimages_exactly_equal_original_author_outputs": true,
+  "all_command_test_names_and_order_preserved": true,
+  "original_test_inventory": {
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs": [
+      "q24_next_use_command_attests_actual_different_c_and_shares_dispatch",
+      "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly",
+      "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+      "q24_next_use_command_pins_both_original_signatures_before_dispatch",
+      "q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "q24_next_use_command_preserves_original_expiry_and_external_custody"
+    ],
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs": [
+      "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+      "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes"
+    ],
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs": [
+      "q24_selector_command_binds_opaque_training_result_and_shared_dispatch",
+      "q24_selector_command_lost_ack_recovers_original_signature_readonly",
+      "q24_selector_command_recovered_missing_never_dispatches",
+      "q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch",
+      "q24_selector_command_evidence_readback_detects_live_withdrawal",
+      "q24_selector_command_keeps_original_expiry_and_external_custody"
+    ]
+  },
+  "final_test_inventory": {
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs": [
+      "q24_next_use_command_attests_actual_different_c_and_shares_dispatch",
+      "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly",
+      "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+      "q24_next_use_command_pins_both_original_signatures_before_dispatch",
+      "q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "q24_next_use_command_preserves_original_expiry_and_external_custody"
+    ],
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs": [
+      "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+      "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+      "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+      "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+      "original_evaluation_provider_refuses_renewed_original_signatures",
+      "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+      "original_evaluation_provider_zero_support_consumes_holdout_once",
+      "original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes"
+    ],
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs": [],
+    "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs": [
+      "q24_selector_command_binds_opaque_training_result_and_shared_dispatch",
+      "q24_selector_command_lost_ack_recovers_original_signature_readonly",
+      "q24_selector_command_recovered_missing_never_dispatches",
+      "q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch",
+      "q24_selector_command_evidence_readback_detects_live_withdrawal",
+      "q24_selector_command_keeps_original_expiry_and_external_custody"
+    ]
+  },
+  "exactly_four_rust_paths": [
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs"
+  ],
+  "runner_config_files_changed": [],
+  "runtime_budget_changes": false,
+  "rustfmt": "UNRUN",
+  "native": "UNRUN"
+}

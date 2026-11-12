@@ -1,0 +1,51 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+    "dirty": " M codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_support_tests.rs\n",
+    "file_count": 14749,
+    "inventory_sha256": "d1880db489ddb56b02611249b6313d1ec6c0c77c34087245b7bed4afa928c3a9",
+    "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+    "dirty": "",
+    "file_count": 14749,
+    "inventory_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+    "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+    "finished_at": "2026-11-12T10:16:04.251391+00:00",
+    "log_bytes": 115984,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "bae92ef1daaa8bbe2a0dbd836636850002caa8992004cd237d4654fd688282dc",
+    "returncode": 0,
+    "started_at": "2026-11-12T10:00:45.744326+00:00"
+  },
+  "exit_code": 0,
+  "finished_at": "2026-11-12T10:16:10.014229+00:00",
+  "kind": "exact-source-fix-only",
+  "postimages": {
+    "file_count": 1,
+    "patch_bytes": 1460,
+    "patch_sha256": "e7ea05d3b1d9561cddfd864bc349579f3bcc54886ee3bb3a07b79cc634485842"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-native-maintenance-8faf92e260e1-v2",
+  "source_sha": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+  "source_tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+  "started_at": "2026-11-12T10:00:21.218843+00:00",
+  "status": "passed"
+}

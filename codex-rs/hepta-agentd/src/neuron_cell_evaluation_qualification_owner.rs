@@ -49,6 +49,9 @@ mod readback;
 mod sources;
 pub use sources::OriginalCellEvaluationQualificationSourcesV1;
 
+#[path = "neuron_cell_evaluation_training_read_proof.rs"]
+mod training_read_proof;
+
 #[path = "neuron_cell_evaluation_panel.rs"]
 mod panel;
 pub use panel::OriginalCellEvaluationPanelErrorV1;
@@ -270,7 +273,6 @@ pub use panel::OriginalCellEvaluationCommandErrorV1;
 pub use panel::OriginalCellEvaluationCommandReceiptV1;
 pub use panel::OriginalCellEvaluationHostV1;
 
-pub(crate) use panel::OriginalCellEvaluationModelInputV1;
 pub use panel::OriginalCellEvaluationModelMaterialClientV1;
 pub use panel::OriginalCellEvaluationModelMaterialConnectionV1;
 pub use panel::OriginalCellEvaluationModelMaterialV1;

@@ -1,0 +1,66 @@
+{
+  "after": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "-E",
+    "test(cell_q24_dataset::tests::) | test(circuit_experience_intake::tests::) | test(original_execution_owner_) | test(neuron_cell_evaluation::tests::learning::) | test(holdout_current_completed_execution_readback_requires_physical_original) | test(runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::) | test(runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::)",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 1127.054710360011,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-12T11:15:08.494881+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 183732,
+  "log_file": "focused.json.1c762950bd3f4f64a8ef1957346020c3.log",
+  "log_sha256": "4e0f58f42e4abb056868ddfb2c041d8caa9e543c5694de1de8dad15a36d529e1",
+  "minimum_tests": 1,
+  "observed_failed_tests": 31,
+  "observed_passed_tests": 78,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "started_at": "2026-11-12T10:56:21.432612+00:00",
+  "status": "failed",
+  "tested_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-common-20261112-037c"
+}

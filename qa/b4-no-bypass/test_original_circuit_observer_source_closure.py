@@ -21,6 +21,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "circuit_next_use_receipt_owner.rs"
+BINDING = AGENT + "circuit_next_use_receipt_binding.rs"
 READERS = (
     AGENT + "learning_iteration_evaluation_evidence.rs",
     AGENT + "learning_iteration_generation_evidence.rs",
@@ -30,16 +31,23 @@ READERS = (
     AGENT + "cell_q24_training_source.rs",
         AGENT + "circuit_model_selection_receipt_sources.rs",
     AGENT + "neuron_cell_evaluation_qualification_sources.rs",
+    AGENT + "circuit_evaluated_version_commands.rs",
 )
 FUNCTIONS = {
-    "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",
-    "fn attest_source(", "fn readback_source(", "fn predecessors(",
-    "fn authenticate_completed(", "fn authenticate_predecessors(",
-    "fn receipt(", "fn require_new_attestation(", "fn sign_original(", "fn now(",
-    "fn attest_original_completion(", "fn attest_original_remote_completion(",
-    "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
-    "fn read_remote_next_use(", "fn remote_predecessors(",
-    "fn original_command_profile(", "fn into_command_owner(",
+    OWNER: {
+        "fn create(", "fn recover(", "fn prepare(", "fn attest_source(",
+        "fn readback_source(", "fn predecessors(", "fn finish_original_readback(",
+        "fn decode_completed(", "fn authenticate_completed(",
+        "fn attest_original_completion(", "fn attest_original_remote_completion(",
+        "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
+        "fn read_remote_next_use(", "fn original_command_profile(",
+        "fn into_command_owner(", "fn require_profile(", "fn evaluated_owners(",
+    },
+    BINDING: {
+        "fn validate_config(", "fn authenticate_predecessors(", "fn receipt(",
+        "fn receipt_with_domain(", "fn require_new_attestation(",
+        "fn sign_original(", "fn now(", "fn prior(", "fn evidence_id(",
+    },
 }
 
 
@@ -60,35 +68,51 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
         cls.sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
             (ROOT / path).read_text())) for path in paths}
 
-    def rejects(self, changed):
-        self.assertEqual(len(self.rows), 1)
-        self.assertNotEqual(self.source, changed)
+    def rejects(self, changed, *, path=OWNER):
+        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
+        self.assertEqual(len(rows), 1)
+        source = (ROOT / path).read_text()
+        self.assertNotEqual(source, changed)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            path = root / OWNER
-            path.parent.mkdir(parents=True)
-            path.write_text(self.source)
-            PROOF._verify_protected_files(root, {"protected_file": self.rows})
-            path.write_text(changed)
+            target = root / path
+            target.parent.mkdir(parents=True)
+            target.write_text(source)
+            PROOF._verify_protected_files(root, {"protected_file": rows})
+            target.write_text(changed)
             with self.assertRaises(PROOF.VerificationFailure):
-                PROOF._verify_protected_files(root, {"protected_file": self.rows})
+                PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def mutate_function(self, function, marker, replacement=""):
-        code = PROOF._strip_rust_non_code(self.source)
-        self.assertEqual(code.count(function), 1, function)
+    def mutate_function(self, function, marker, replacement="", *, path=OWNER, preceding=None):
+        source = (ROOT / path).read_text()
+        code = PROOF._strip_rust_non_code(source)
+        self.assertEqual(code.count(function), 1, (path, function))
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
         assert end is not None
-        body = self.source[start:end + 1]
-        self.assertIn(marker, body, (function, marker))
-        offset = start + body.index(marker)
-        self.rejects(self.source[:offset] + replacement + self.source[offset + len(marker):])
+        # Full ordered rules can protect consuming signatures; their preceding
+        # markers disambiguate later short arguments from parameter names.
+        # Standalone mutations still start in the body. Masking preserves offsets.
+        offset = start if preceding is not None else code.index("{", start, end + 1) + 1
+        for needle in (*(preceding or ()), marker):
+            candidates = [
+                text.find(needle, offset, end + 1) for text in (source, code)
+            ]
+            candidates = [position for position in candidates if position >= 0]
+            self.assertTrue(candidates, (path, function, needle))
+            matched = min(candidates)
+            offset = matched + len(needle)
+        offset = matched
+        self.rejects(source[:offset] + replacement + source[offset + len(marker):], path=path)
 
     def test_real_read_edges_are_registered_and_owner_constructors_remain_closed(self):
         expected = {
             "learning_evidence_original_owner_readback": READERS,
-            "circuit_feature_original_next_use_observation": (OWNER, AGENT + "circuit_learning_read_service.rs"),
+            "circuit_feature_original_next_use_observation": (
+                OWNER,
+                AGENT + "circuit_evaluated_next_use_receipt.rs",
+            ),
             **{"learning_original_circuit_next_use_receipt_" + suffix: ()
                for suffix in ("create", "recover", "attest", "readback")},
         }
@@ -114,14 +138,21 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
     def test_each_source_role_and_clock_constraint_remains_present_in_order(self):
-        self.assertEqual(len(self.rows), 1)
-        functions = self.rows[0]["required_function_order"]
-        self.assertEqual({row["function"] for row in functions}, FUNCTIONS)
-        self.assertGreater(sum(len(row["sequence"]) for row in functions), 100)
-        for row in functions:
-            for marker in row["sequence"]:
-                with self.subTest(function=row["function"], marker=marker):
-                    self.mutate_function(row["function"], marker)
+        marker_count = 0
+        for path, expected in FUNCTIONS.items():
+            rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
+            self.assertEqual(len(rows), 1)
+            functions = rows[0]["required_function_order"]
+            self.assertEqual({row["function"] for row in functions}, expected)
+            marker_count += sum(len(row["sequence"]) for row in functions)
+            for row in functions:
+                for index, marker in enumerate(row["sequence"]):
+                    with self.subTest(path=path, function=row["function"], marker=marker):
+                        self.mutate_function(
+                            row["function"], marker, path=path,
+                            preceding=row["sequence"][:index],
+                        )
+        self.assertGreater(marker_count, 100)
 
     def test_configuration_and_physical_read_guards_cannot_be_dead_branches(self):
         for function in ("fn create(", "fn recover("):
@@ -129,7 +160,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
             self.mutate_function(function, statement, "if false { " + statement + " }")
         for function, marker in (
             ("fn prepare(", "self.config.scope.validate_snapshot(source.snapshot())?;"),
-            ("fn authenticate_completed(", "let current = now()?;"),
+            ("fn finish_original_readback(", "let current = now()?;"),
         ):
             self.mutate_function(function, marker, "if false { " + marker + " }")
 
@@ -140,29 +171,31 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
             "&config.selection_evidence.signing_bytes()", "&config.selection_evidence.signature",
         ):
             with self.subTest(marker=marker):
-                self.mutate_function("fn validate_config(", marker)
+                self.mutate_function("fn validate_config(", marker, path=BINDING)
         for marker in (
             "evidence[0] != config.training_evidence",
             "evidence[1] != config.selection_evidence",
         ):
-            self.mutate_function("fn authenticate_predecessors(", marker)
-            self.mutate_function("fn authenticate_predecessors(", marker, marker.replace("!=", "=="))
+            self.mutate_function("fn authenticate_predecessors(", marker, path=BINDING)
+            self.mutate_function("fn authenticate_predecessors(", marker, marker.replace("!=", "=="), path=BINDING)
 
     def test_new_attestation_deadline_and_readback_window_are_distinct(self):
         self.mutate_function(
             "fn attest_source(",
-            "self.authenticate_completed(&source, &observed, &bytes, started_at, true)",
-            "self.authenticate_completed(&source, &observed, &bytes, started_at, false)",
+            "&source, &observed, &bytes, started_at, /*new_attestation*/ true,",
+            "&source, &observed, &bytes, started_at, /*new_attestation*/ false,",
         )
         for marker in (
             "if current < started_at", "if new_attestation",
             "require_new_attestation(&self.config, started_at, current)?",
-            "receipt(&self.config, observed, signed.issued_at)?",
         ):
             self.mutate_function("fn authenticate_completed(", marker)
+        self.mutate_function(
+            "fn decode_completed(", "evaluated::receipt(&self.config, &self.profile, observed, signed.issued_at)?"
+        )
         marker = "current >= config.selection.request.envelope.expiry_unix_seconds"
-        self.mutate_function("fn require_new_attestation(", marker, marker.replace(">=", ">"))
-        self.mutate_function("fn now(", "SystemTime::now()")
+        self.mutate_function("fn require_new_attestation(", marker, marker.replace(">=", ">"), path=BINDING)
+        self.mutate_function("fn now(", "SystemTime::now()", path=BINDING)
 
     def test_no_key_generation_execution_or_unbound_stage_assembly_is_added(self):
         for marker in (
@@ -172,8 +205,9 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
             "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(",
             "evaluate_or_readback(", "qualify_and_persist(", "unwrap_or", "permit_all",
         ):
-            with self.subTest(marker=marker):
-                self.rejects(self.source + "\n" + marker + "\n")
+            for path in (OWNER, BINDING):
+                with self.subTest(path=path, marker=marker):
+                    self.rejects((ROOT / path).read_text() + "\n" + marker + "\n", path=path)
 
 
 if __name__ == "__main__":

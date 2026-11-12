@@ -62,6 +62,15 @@ pub use training_command::OriginalCellQ24TrainingCommandOwnerV1;
 pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
 pub use training_command::OriginalCellQ24TrainingReadbackConnectionV1;
 
+#[path = "circuit_evaluated_selection_readback_owner.rs"]
+mod evaluated_selection_readback;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionCommandClientV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionCommandErrorV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionCommandOwnerV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackErrorV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionReadbackOwnerV1;
+pub use evaluated_selection_readback::OriginalCircuitEvaluatedSelectionRemoteReadbackOwnerV1;
+
 #[path = "circuit_selection_command.rs"]
 mod selection_command;
 pub use selection_command::OriginalCircuitSelectionCommandClientV1;
@@ -78,6 +87,12 @@ pub use next_use_command::OriginalCircuitNextUseCommandContextV1;
 pub use next_use_command::OriginalCircuitNextUseCommandErrorV1;
 pub use next_use_command::OriginalCircuitNextUseCommandOwnerV1;
 pub use next_use_command::OriginalCircuitNextUseCommandReceiptV1;
+
+#[path = "circuit_evaluated_next_use_command.rs"]
+mod evaluated_next_use_command;
+pub use evaluated_next_use_command::OriginalCircuitEvaluatedNextUseCommandClientV1;
+pub use evaluated_next_use_command::OriginalCircuitEvaluatedNextUseCommandErrorV1;
+pub use evaluated_next_use_command::OriginalCircuitEvaluatedNextUseCommandOwnerV1;
 
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
@@ -295,6 +310,8 @@ mod tests;
 pub(crate) use tests::fixture_original_receipt_client;
 
 #[cfg(test)]
+pub(crate) use material::bootstrap_ports as original_material_bootstrap_test_ports;
+#[cfg(test)]
 pub(crate) use material::retained_version_dataset_fixture;
 #[cfg(test)]
 pub(crate) use selection_command::original_readback_test_ports;
@@ -310,6 +327,12 @@ pub(crate) use selection_command::command_test_support as selection_command_test
 
 #[cfg(test)]
 pub(crate) use next_use_command::command_test_support as next_use_command_test_support;
+
+#[cfg(test)]
+pub(crate) use evaluated_selection_readback::command_test_support as evaluated_selection_command_test_support;
+
+#[cfg(test)]
+pub(crate) use evaluated_next_use_command::command_test_support as evaluated_next_use_command_test_support;
 
 #[cfg(test)]
 pub(crate) use ordinary_stage_owners::fresh_material_only;

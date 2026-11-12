@@ -1,0 +1,68 @@
+来自 https://github.com/TrillionniumFoundation/hepta-private-ci
+ * branch              8faf92e260e118508fc62f4f38f3816db24cd4cc -> FETCH_HEAD
+之前的 HEAD 位置是 a43bcfff fix(learn): compile original owner mechanisms with Rust 1.96
+HEAD 目前位于 8faf92e2 fix(learn): disambiguate original current journal readback
+{
+  "phase": "exact-source-ready",
+  "records": "/home/qian-qi/hepta-learn-037c-evidence/native-source-8faf92e260e1-v1",
+  "after": {
+    "head": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+    "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+    "status": "",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+    "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b"
+  },
+  "includes": [
+    {
+      "path": "docs/modules/MODULES.json",
+      "bytes": 60119,
+      "sha256": "468ce01963e5665ad0b39df7c69a0c630bb93e2168f4d669dd4f8dea55e17716",
+      "blob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d"
+    },
+    {
+      "path": "qualification/neuron-v13-generation/proposal_worker.py",
+      "bytes": 16818,
+      "sha256": "edd91e3ada420024afe3f2e4d4180de0ba8708e12f642b57d2aef882b6539501",
+      "blob": "a5845d8203bea1b9f17bb6abc917d01b06c9bea5"
+    }
+  ]
+}
+{
+  "phase": "fmt-terminal",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c/codex-rs",
+  "started_at": "2026-11-12T09:54:49.825115+00:00",
+  "finished_at": "2026-11-12T09:54:51.906971+00:00",
+  "returncode": 0,
+  "log": {
+    "bytes": 73,
+    "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "blob": "3c392c1e9260334291874d1c0eaad4cb4d7c054e"
+  },
+  "source_before_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+  "source_after_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+  "source_after": {
+    "head": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+    "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d",
+    "status": "",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+    "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b"
+  },
+  "patch": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "postimages": []
+}
+{"phase": "maintenance-start", "command": ["/usr/bin/python3", "/home/qian-qi/hepta-learn-037c-evidence/native-attempt-v2-78e64a86.py", "--mode", "fix", "--source", "8faf92e260e118508fc62f4f38f3816db24cd4cc", "--tree", "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d", "--records", "/home/qian-qi/hepta-learn-037c-evidence/maintenance-8faf92e260e1-v1", "--request-key", "learn-037c-native-maintenance-8faf92e260e1-v1"], "at": "2026-11-12T09:54:52.258854+00:00"}
+{"snapshot": "source-after", "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc", "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d", "dirty": "", "file_count": 14749, "inventory_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422", "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"}
+{"attempt_result": {"after": {"cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69", "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc", "dirty": "", "file_count": 14749, "inventory_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422", "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"}, "before": null, "error": "FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-c6a61dfb57cb-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz'", "exit_code": 1, "finished_at": "2026-11-12T09:54:55.517006+00:00", "kind": "exact-source-fix-only", "postimages": {"file_count": 0, "patch_bytes": 0, "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, "qualification": false, "request_key": "learn-037c-native-maintenance-8faf92e260e1-v1", "source_sha": "8faf92e260e118508fc62f4f38f3816db24cd4cc", "source_tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d", "started_at": "2026-11-12T09:54:52.329919+00:00", "status": "failed"}}
+{"phase": "maintenance-terminal", "returncode": 1, "records": "/home/qian-qi/hepta-learn-037c-evidence/maintenance-8faf92e260e1-v1", "at": "2026-11-12T09:54:55.532545+00:00"}

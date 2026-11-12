@@ -27,7 +27,7 @@ HOST = AGENT + "circuit_retained_version_host.rs"
 EFFECT = AGENT + "circuit_retained_version_effect.rs"
 SERVICE = AGENT + "circuit_retained_version_service.rs"
 EXPECTED = {
-    "learning_retained_version_original_issuer_attenuation": (HOST,),
+    "learning_retained_version_original_issuer_attenuation": ('codex-rs/hepta-agentd/src/circuit_retained_version_host.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs'),
     "learning_retained_version_original_issuer_request": (WORKER,),
     "learning_retained_version_original_issuer_worker": (SERVICE,),
     "learning_retained_version_original_final_use": (WORKER,),
@@ -174,8 +174,14 @@ class OriginalRetainedVersionIssuerClosureTests(unittest.TestCase):
             "state.final_use_issuer.is_some()",
             "signed.grant.binding != original.final_use_binding()",
             "self.publication_requested.swap(true, Ordering::AcqRel)",
-            "publish_and_retain_original_trainer(", "task\n                .install_original(published, cut, intent)",
+            "original.publish(signed)", "task\n                .install_original(published, cut, intent)",
             "self.final_use_outcome.store(\n                RetainedVersionFinalUseOutcomeV1::Published as u8,\n                Ordering::Release,\n            )",
+        ))
+        # The actual owned legacy publication moved into the private enum.
+        # Preserve the old consuming call attack at its new active location.
+        self.reject_each(AGENT + "circuit_retained_version_prepared.rs", "publish", (
+            "self,", "PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(",
+            "*original, signed,",
         ))
         self.reject_each(EFFECT, "run_original_c", (
             "owner.read_original(&state)?",

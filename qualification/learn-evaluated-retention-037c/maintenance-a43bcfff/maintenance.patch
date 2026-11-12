@@ -1,0 +1,269 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs
+index 2586448b..8b20df07 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_retention_auth_tests.rs
+@@ -93,7 +93,7 @@ impl Metadata {
+         })?;
+         owners.evidence_trust_digest = verifier.trust_digest();
+         let mut coordinator =
+-            LearningIterationCoordinatorV1::new(original.initial.request.clone(), owners)?;
++            LearningIterationCoordinatorV1::new(original.initial.request, owners)?;
+         let initial = coordinator.snapshot().clone();
+         let rule = digest("resident-fixture-frozen-rule");
+         let scope = FrozenLearningScopeV2::freeze(
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs
+index eef9ad02..22bb4108 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs
+@@ -159,7 +159,7 @@ impl ResidentRootFixture {
+         let mut config = HostAuthorityServiceConfig {
+             schema_version: 1,
+             issuer_record_profile: HostIssuerRecordProfile::Standard,
+-            state_dir: state.clone(),
++            state_dir: state,
+             required_bind,
+             signer_id: initialized.signer_id,
+             expected_verifying_key: initialized.verifying_key,
+diff --git a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
+index 0369b024..e16820f8 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs
+@@ -99,7 +99,7 @@ fn resident_root_formatter_and_original_registration_pin_both_scopes() -> anyhow
+             changed_rule_scope,
+             &metadata.verifier,
+             fixture.profile.intent.clone(),
+-            fixture.profile.lease.clone(),
++            fixture.profile.lease,
+         )
+         .is_err()
+     );
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs
+index 56ca7bd3..377d40bb 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs
+@@ -181,7 +181,7 @@ async fn original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_
+     assert_eq!(journal_bytes(&mut owners)?, before);
+     let prefix = binding::experience_prefix(&config, &experience.receipt)?;
+     let dataset = owners.attest_dataset(fixture.sources(&prefix))?;
+-    let mut foreign_experience = experience.receipt.clone();
++    let mut foreign_experience = experience.receipt;
+     foreign_experience.evidence_digest = support::d("foreign-experience-proof");
+     let foreign_prefix = binding::experience_prefix(&config, &foreign_experience)?;
+     let before = journal_bytes(&mut owners)?;
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs b/codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs
+index e5ab1f9e..d1d9dedd 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_readback_tests.rs
+@@ -9,7 +9,6 @@ use crate::OriginalCellQ24MaterialReceiptConfigV1;
+ use crate::OriginalCellQ24TrainingCommandReceiptV1;
+ use crate::OriginalCellQ24TrainingReadbackConnectionV1;
+ use crate::learning_iteration_evidence_client::wire as evidence_wire;
+-use codex_hepta_contracts::HostAuthorityPeerChannel;
+ use codex_hepta_contracts::HostIssuerTransportError;
+ use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
+ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+diff --git a/codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs b/codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs
+index 72431b08..36f18222 100644
+--- a/codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs
+@@ -56,7 +56,7 @@ async fn q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch()
+ 
+ #[tokio::test]
+ async fn q24_readiness_withdrawal_is_fatal_and_never_becomes_pending() -> anyhow::Result<()> {
+-    let mut f = CompletionFixture::ready(None).await?;
++    let f = CompletionFixture::ready(None).await?;
+     let context = next_use_context(&f.f.original.config);
+     let published = original(&f.f.original, context.clone())?;
+     let (wait, channel) = readiness::client(context)?;
+diff --git a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+index 91c4faa2..13d6b811 100644
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+@@ -421,11 +421,11 @@ pub(super) fn unstarted_material_with_profile(
+         update_rule,
+     )?;
+     let config = crate::OriginalCellQ24MaterialReceiptConfigV1 {
+-        initial: initial.clone(),
+-        scope: scope.clone(),
++        initial: initial,
++        scope: scope,
+         rule,
+-        freeze_plan: freeze_plan.clone(),
+-        freeze_evidence: freeze_evidence.clone(),
++        freeze_plan: freeze_plan,
++        freeze_evidence: freeze_evidence,
+         experience_signer: credentials.experience.clone(),
+         dataset_signer: credentials.dataset.clone(),
+         verifier: writer.verifier().clone(),
+diff --git a/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
+index a9382ae6..d00c554d 100644
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs
+@@ -12,11 +12,9 @@ use std::time::UNIX_EPOCH;
+ use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
+ use codex_hepta_learning_artifacts::*;
+ use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+ use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+ use codex_hepta_learning_ledger::LedgerWriter;
+ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+-use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+ use codex_hepta_learning_ledger::UnlearningLineageRequestV1;
+ use codex_hepta_learning_ledger::unlearning_signing_payload_v1;
+ use codex_hepta_types::AuthorityPosture;
+diff --git a/codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs b/codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs
+index 5f2b975e..191a74d4 100644
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs
+@@ -383,7 +383,7 @@ async fn q24_next_use_command_pins_both_original_signatures_before_dispatch() ->
+ #[tokio::test]
+ async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -> anyhow::Result<()>
+ {
+-    let mut f = CompletionFixture::ready(None).await?;
++    let f = CompletionFixture::ready(None).await?;
+     f.complete_c().await?;
+     let context = f.context()?;
+     let service = ObserverService::start(&f, f.f.original.create_owner()?)?;
+diff --git a/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs
+index 34dfaeb7..901c0a2f 100644
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs
+@@ -26,7 +26,6 @@ use super::super::Error;
+ use super::super::OriginalCircuitNextUseCommandClientV1;
+ use super::super::OriginalCircuitNextUseCommandContextV1;
+ use super::super::OriginalCircuitNextUseCommandReceiptV1;
+-use super::super::evidence_wire;
+ use super::super::now;
+ use super::super::wire;
+ use super::OriginalCircuitNextUseCommandOwnerV1;
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
+index c3cf87fd..c18766a6 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
+@@ -168,7 +168,7 @@ async fn original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effec
+     let counts = pending.finish().await?;
+     assert_eq!(counts, [10, 10]);
+ 
+-    let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
++    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+     let empty = fixture.original_files()?;
+     let (wrong, peer) = fixture.commands(
+         /*readback_only*/ false,
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs
+index 4fb7d83b..383991aa 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_ledger_support_tests.rs
+@@ -39,7 +39,7 @@ pub(in super::super) fn decision(
+         selected_candidate_id: policy.selected().clone(),
+         selected_propensity: ProbabilityQ32::ONE,
+         completeness: CandidateSetCompletenessReceiptV1 {
+-            set_id: id(&format!("B-actions:{}", episode)),
++            set_id: id(&format!("B-actions:{episode}")),
+             state_digest: d("explicit-original-B-decision-state"),
+             generator_id: credentials.generator.principal.principal_id.clone(),
+             generator_code_digest: d("explicit-original-B-generator"),
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
+index c414f700..0e7f3c90 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs
+@@ -13,7 +13,6 @@ use ed25519_dalek::SigningKey;
+ use pretty_assertions::assert_eq;
+ 
+ use super::*;
+-use crate::LearningIterationEvidenceClientV1;
+ use crate::OriginalCellEvaluationExecutionOwnerV1;
+ use crate::OriginalCellEvaluationExecutionStoreV1;
+ use crate::OriginalCellEvaluationPanelMemberOwnersV1;
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
+index 6961c34f..a2fefd96 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs
+@@ -2,10 +2,8 @@
+ //! keys, model responses and measurements are explicit mechanism fixtures.
+ //! The provider receives no caller-built OPE rows or cached publications.
+ use super::*;
+-use crate::circuit_original_evaluation_provider::*;
+ use crate::circuit_task::cell_q24_dataset_source_test_support as source_fixture;
+ use crate::circuit_task::source_test_support as source_support;
+-use codex_hepta_intelligence_eval::*;
+ use codex_hepta_learning_ledger::*;
+ use codex_hepta_types::FixedQ32;
+ use material::evaluation_provider::DecisionBinding;
+diff --git a/codex-rs/hepta-agentd/src/circuit_task_source_tests.rs b/codex-rs/hepta-agentd/src/circuit_task_source_tests.rs
+index a9c9ed4d..c446a687 100644
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_tests.rs
+@@ -76,7 +76,7 @@ pub(crate) fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
+         agent_id,
+         spawn_generation: 1,
+         fleet_root: fleet.as_path().to_path_buf(),
+-        workspace: root.to_path_buf(),
++        workspace: root,
+         resources: codex_hepta_fleet::ResourceBudget::local_default(),
+         home_root: layout.home_root().to_path_buf(),
+         run_root: layout.run_root().to_path_buf(),
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
+index 6ccae970..94d6c933 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs
+@@ -84,12 +84,11 @@ impl OriginalCellEvaluationHostV1 {
+             if !exchanged? {
+                 return Ok(request_id - 1);
+             }
+-            if request_id == 1 {
+-                if let Some((ready, release)) = pause.take() {
++            if request_id == 1
++                && let Some((ready, release)) = pause.take() {
+                     ready.send(())?;
+                     release.recv_timeout(Duration::from_secs(/*secs*/ 30))?;
+                 }
+-            }
+         }
+         anyhow::bail!("original material session exhausted");
+     }
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
+index 628f614d..ea8b12ae 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs
+@@ -163,7 +163,6 @@ pub use host::OriginalCellEvaluationCommandErrorV1;
+ pub use host::OriginalCellEvaluationCommandReceiptV1;
+ pub use host::OriginalCellEvaluationHostV1;
+ 
+-pub(crate) use host::OriginalCellEvaluationModelInputV1;
+ pub use host::OriginalCellEvaluationModelMaterialClientV1;
+ pub use host::OriginalCellEvaluationModelMaterialConnectionV1;
+ pub use host::OriginalCellEvaluationModelMaterialV1;
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs
+index 13160307..246bb075 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_tests.rs
+@@ -52,7 +52,7 @@ fn original_panel_registration_commits_full_nonempty_membership_before_any_resul
+         registered.evaluation_profile(),
+         changed_plan.evaluation_profile()
+     );
+-    let mut changed_rule = second.clone();
++    let mut changed_rule = second;
+     changed_rule.cohort_rule_digest = Digest32::of_bytes(b"changed-window-or-cluster-policy");
+     let changed_rule = Registration::new(
+         registered.primary().clone(),
+@@ -86,7 +86,7 @@ fn original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks() {
+         }],
+         vec![Task {
+             cohort_rule_digest: Digest32::ZERO,
+-            ..retained.clone()
++            ..retained
+         }],
+         (0..17)
+             .map(|index| task(&format!("retention-{index}"), &format!("input-{index}")))
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs
+index 6c263f47..b7f4bf79 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs
+@@ -270,7 +270,6 @@ pub use panel::OriginalCellEvaluationCommandErrorV1;
+ pub use panel::OriginalCellEvaluationCommandReceiptV1;
+ pub use panel::OriginalCellEvaluationHostV1;
+ 
+-pub(crate) use panel::OriginalCellEvaluationModelInputV1;
+ pub use panel::OriginalCellEvaluationModelMaterialClientV1;
+ pub use panel::OriginalCellEvaluationModelMaterialConnectionV1;
+ pub use panel::OriginalCellEvaluationModelMaterialV1;

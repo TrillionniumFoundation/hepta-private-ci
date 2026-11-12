@@ -1,6 +1,7 @@
 //! Current original role evidence at the resident coordinator and consumer.
 //! This authenticates observations; it neither dispatches nor re-signs them.
 
+use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
@@ -38,22 +39,37 @@ pub(super) async fn original_attestations(
         .receipts
         .iter()
         .any(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal);
-    if !has_model {
-        stages.validate_recovery(snapshot).await?;
-    }
-    let mut signatures = Vec::with_capacity(snapshot.receipts.len());
-    for receipt in snapshot
-        .receipts
-        .iter()
-        .filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)
-    {
-        let (_, now) = owner.read(cancellation).await?;
-        signatures.push(
-            stages
-                .receipt_attestation(snapshot, receipt, now / 1_000)
-                .await?,
-        );
-    }
+    // This private concrete route reads the entire evaluated prefix once for
+    // this checkpoint. All other profiles retain their original role protocol.
+    // No cached signature set can substitute for this invocation's original I/O.
+    owner.read(cancellation).await?;
+    let evaluated =
+        ResidentOriginalStageOwnersV3::read_original_evaluated_attestations(stages, snapshot)
+            .await?;
+    let signatures = if let Some(original) = evaluated {
+        if has_model {
+            return Err(Error::WrongScope);
+        }
+        original
+    } else {
+        if !has_model {
+            stages.validate_recovery(snapshot).await?;
+        }
+        let mut signatures = Vec::with_capacity(snapshot.receipts.len());
+        for receipt in snapshot
+            .receipts
+            .iter()
+            .filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)
+        {
+            let (_, now) = owner.read(cancellation).await?;
+            signatures.push(
+                stages
+                    .receipt_attestation(snapshot, receipt, now / 1_000)
+                    .await?,
+            );
+        }
+        signatures
+    };
     // Model has no LearningEvidence role. This last actual Model read performs
     // its own D/T/E before/after reads and final original journal CURRENT.
     let original_model = if has_model {
@@ -157,7 +173,58 @@ fn verify_non_model_attestations(
         .require_verifier(verifier)
         .map_err(|_| Error::WrongScope)?;
     profile.scope.validate_snapshot(snapshot)?;
-    LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+    let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+    // Authenticate this distinct negative Candidate branch without changing
+    // stage admission. Its actual Selector/C owners are still required by the
+    // concrete continuation; these signed observations grant no execution.
+    let evaluated_retention = matches!(
+        snapshot.receipts.get(3).map(|receipt| &receipt.observation),
+        Some(LearningIterationObservationV1::Evaluation {
+            disposition: LearningEvaluationDispositionV1::NoUpdate,
+            ..
+        })
+    );
+    if evaluated_retention {
+        let candidate = coordinator
+            .candidate()
+            .ok_or(Error::WrongScope)?
+            .digest()
+            .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
+        let baseline = snapshot
+            .request
+            .selected_bundle
+            .digest()
+            .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
+        let stages = [
+            LearningIterationStageV1::Experience,
+            LearningIterationStageV1::Dataset,
+            LearningIterationStageV1::Training,
+            LearningIterationStageV1::Evaluation,
+            LearningIterationStageV1::Selection,
+            LearningIterationStageV1::NextUse,
+        ];
+        if !(4..=6).contains(&snapshot.receipts.len())
+            || !snapshot
+                .receipts
+                .iter()
+                .zip(stages)
+                .all(|(receipt, stage)| receipt.observation.stage() == stage)
+            || !matches!(
+                snapshot.receipts[2].observation,
+                LearningIterationObservationV1::Training { .. }
+            )
+            || candidate == baseline
+            || coordinator.next_task_bundle() != Some(&snapshot.request.selected_bundle)
+            || snapshot.receipts.get(5).is_some_and(|receipt| {
+                !matches!(
+                    receipt.observation,
+                    LearningIterationObservationV1::RetainedModelNextUse { .. }
+                )
+            })
+        {
+            return Err(Error::WrongScope);
+        }
+    }
     let proposal_count = snapshot
         .receipts
         .iter()
@@ -170,7 +237,7 @@ fn verify_non_model_attestations(
             && (snapshot.receipts.len() != 5
                 || snapshot.receipts[4].observation.stage() != LearningIterationStageV1::Proposal)
         || signatures.len() + proposal_count != snapshot.receipts.len()
-        || signatures.len() > 5
+        || signatures.len() > 5 && (!evaluated_retention || signatures.len() != 6)
         || verifier.trust_digest() != snapshot.owners.evidence_trust_digest
     {
         return Err(Error::WrongScope);
@@ -234,6 +301,7 @@ fn verify_non_model_attestations(
             || &receipt.actor_id != snapshot.owners.owner(stage)
             || evidence.trust_digest() != snapshot.owners.evidence_trust_digest
             || evidence.objective_digest() != snapshot.request.envelope.objective_digest
+            || evaluated_retention && receipt.observed_unix_seconds > signature.issued_at
         {
             return Err(Error::Evidence(SignedEvidenceError::ContextMismatch));
         }
@@ -243,11 +311,23 @@ fn verify_non_model_attestations(
         let independent: &[LearningIterationStageV1] = match stage {
             LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training],
             LearningIterationStageV1::Selection => {
-                if snapshot.training_no_update_v2().is_none() {
+                if snapshot.training_no_update_v2().is_none() && !evaluated_retention {
                     return Err(Error::WrongScope);
                 }
-                &[LearningIterationStageV1::Training]
+                if evaluated_retention {
+                    &[
+                        LearningIterationStageV1::Training,
+                        LearningIterationStageV1::Evaluation,
+                    ]
+                } else {
+                    &[LearningIterationStageV1::Training]
+                }
             }
+            LearningIterationStageV1::NextUse if evaluated_retention => &[
+                LearningIterationStageV1::Training,
+                LearningIterationStageV1::Evaluation,
+                LearningIterationStageV1::Selection,
+            ],
             LearningIterationStageV1::NextUse => &[
                 LearningIterationStageV1::Training,
                 LearningIterationStageV1::Selection,

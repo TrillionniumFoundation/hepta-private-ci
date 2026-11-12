@@ -13,7 +13,6 @@ use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
 use super::*;
-use crate::LearningIterationEvidenceClientV1;
 use crate::OriginalCellEvaluationExecutionOwnerV1;
 use crate::OriginalCellEvaluationExecutionStoreV1;
 use crate::OriginalCellEvaluationPanelMemberOwnersV1;
@@ -201,8 +200,10 @@ impl PanelMemberFixture {
             verifier,
             training_evidence,
         )?;
-        let qualification = qualification_owner
-            .qualify_or_readback(OriginalCellEvaluationQualificationSourcesV1 {
+        // Do not inline the original Qualification readback state into the
+        // surrounding member setup, which owns both physical runner journals.
+        let qualification = Box::pin(qualification_owner.qualify_or_readback(
+            OriginalCellEvaluationQualificationSourcesV1 {
                 runner: &mut fixture.runner,
                 journals: CellEvaluationJournalsV1 {
                     candidate: &fixture.candidate,
@@ -212,8 +213,9 @@ impl PanelMemberFixture {
                 baseline_plan: &fixture.baseline_temporal,
                 executions: &mut executions,
                 trainer: &trainer,
-            })
-            .await?;
+            },
+        ))
+        .await?;
         // The original evaluator computes this negative result from the equal
         // supported policies. It is never rewritten to fabricate improvement.
         assert_eq!(

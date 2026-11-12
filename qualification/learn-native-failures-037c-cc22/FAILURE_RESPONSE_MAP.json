@@ -1,0 +1,567 @@
+{
+  "schema": 1,
+  "failed_execution_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "failed_execution_tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "original_counts": {
+    "TIMEOUT": 2,
+    "FAIL": 5,
+    "SIGABRT": 24
+  },
+  "original_raw_log": "native-cc22-focused-review/focused.raw.log",
+  "full_original_failure_records": "native-cc22-focused-review/failed-cases-complete.json",
+  "cases": [
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "original_kind": "TIMEOUT",
+      "original_elapsed_seconds": 60.012,
+      "original_raw_byte_range_half_open": [
+        114363,
+        114642
+      ],
+      "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "response": "Add test-only stage timing markers; no established timeout fix and no increase to original timeout.",
+      "response_state": "PUBLISHED_DIAGNOSTIC_ONLY_UNRESOLVED",
+      "artifacts": [
+        "native-deep-stage-markers-521-v1/actual-format/deep-stage-markers-formatted.patch"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_accepts_unsorted_source_policy_without_reordering_its_bytes",
+      "original_kind": "FAIL",
+      "original_elapsed_seconds": 18.114,
+      "original_raw_byte_range_half_open": [
+        114642,
+        115568
+      ],
+      "original_stderr_sha256": "4784c52371cdbf061236c25a1eafdcf89fadc0bcd095f5bc6a83c97e1e1e4fd5",
+      "response": "Bind the intentionally noncanonical candidate order before actual Cell/registry/Source creation; preserve IDs and activations; no signed-record rewrite.",
+      "response_state": "PUBLISHED_V2_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "candidate-provider-native-failures-521-v2/REPORT.md",
+        "candidate-provider-native-failures-521-v2/provider-fixture-and-expiry-v2.patch"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "original_kind": "TIMEOUT",
+      "original_elapsed_seconds": 60.143,
+      "original_raw_byte_range_half_open": [
+        115568,
+        115866
+      ],
+      "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "response": "Partition six independent real fixture scenarios into three tests; retain branch bodies/assertions and original time budget.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-timeout-split-v1/provider-timeout-only.patch"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "original_kind": "FAIL",
+      "original_elapsed_seconds": 57.206,
+      "original_raw_byte_range_half_open": [
+        115866,
+        117152
+      ],
+      "original_stderr_sha256": "d9a61f2107d54591e2d042557ee88519d8080998db1ade32cd034df15bca5222",
+      "response": "Keep all real scenarios and split their setup; assert original signature validity at expires_at and exact refusal at expires_at+1 while work window is live. V1 expiry hunk withdrawn.",
+      "response_state": "PUBLISHED_V2_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "candidate-provider-native-failures-521-v2/MANIFEST.json",
+        "candidate-provider-native-failures-521-v2/provider-fixture-and-expiry-v2.patch"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.237,
+      "original_raw_byte_range_half_open": [
+        117152,
+        117872
+      ],
+      "original_stderr_sha256": "9427e547fc36e18cd3c78ea81f2519455f648a040295f7b9a8b50e48368bd735",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.221,
+      "original_raw_byte_range_half_open": [
+        117872,
+        118596
+      ],
+      "original_stderr_sha256": "53cc4d39ffa59632c44b8f838018caa8ff09635831d359da8958de33ad7188c3",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.217,
+      "original_raw_byte_range_half_open": [
+        118596,
+        119324
+      ],
+      "original_stderr_sha256": "e7f880348f7ef742c1b2ece5259302ad84c68a0022b1537e61fadd534a4ef9cd",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.213,
+      "original_raw_byte_range_half_open": [
+        119324,
+        120040
+      ],
+      "original_stderr_sha256": "c34200443ff0ec96ec400d8bb73c0739ffffb606e7a9f60ae5dd4080950324f3",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_readback_context_cannot_prepare_even_with_current_original_owners",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.246,
+      "original_raw_byte_range_half_open": [
+        120040,
+        120772
+      ],
+      "original_stderr_sha256": "88472be43e98d8996cb583b71cb6594faec408056a689f0eb03d3f44c26dea4e",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_wrong_grant_keeps_original_intent_pending_without_redispatch",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.215,
+      "original_raw_byte_range_half_open": [
+        120772,
+        121494
+      ],
+      "original_stderr_sha256": "3e13183b1c6d5d748c3978c1c71f9e9872a034d38efb2a228cf4474202f732fd",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.223,
+      "original_raw_byte_range_half_open": [
+        121494,
+        122280
+      ],
+      "original_stderr_sha256": "79d97952f0ce3eee25e43bc22d97b797a0c5c0096c4ef55dfd10553af00f7e85",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.223,
+      "original_raw_byte_range_half_open": [
+        122280,
+        123058
+      ],
+      "original_stderr_sha256": "dc4e293509c8ecac01f3d78749b37e031a48f87b2605946650926658e79669b7",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.206,
+      "original_raw_byte_range_half_open": [
+        123058,
+        123838
+      ],
+      "original_stderr_sha256": "ada873ee5b0dea86e2db617c726b3f79e38ae2b278d42ce74075894b6016e60b",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.216,
+      "original_raw_byte_range_half_open": [
+        123838,
+        124646
+      ],
+      "original_stderr_sha256": "9ec4b645f44b996c33dcd0de394d323e494bbf5c53a465f44f71cf57580d86e8",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.216,
+      "original_raw_byte_range_half_open": [
+        124646,
+        125434
+      ],
+      "original_stderr_sha256": "0f0de90336a3d644b974c7bfb5fd270a5895e5269493bdc4b6d0442e116989c6",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.23,
+      "original_raw_byte_range_half_open": [
+        125434,
+        126232
+      ],
+      "original_stderr_sha256": "3266417f0987e042379d9102ade47b3bc9b995d9810f6e5816404484442b9a14",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.204,
+      "original_raw_byte_range_half_open": [
+        126232,
+        127018
+      ],
+      "original_stderr_sha256": "6fe256e191b1414996c68a0cbaced3643424e8fb949c4f6edb307f23a34cb907",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_preserves_actual_ineligible_candidate_and_four_stage_cut",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.243,
+      "original_raw_byte_range_half_open": [
+        127018,
+        127728
+      ],
+      "original_stderr_sha256": "7902bd21c221069d6a6b0ac3e54c4e07c5aec97d5734ad8d9b05869635a9ca8f",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_retention::evaluated_retention_refuses_validly_renewed_training_signature",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.213,
+      "original_raw_byte_range_half_open": [
+        127728,
+        128410
+      ],
+      "original_stderr_sha256": "63bb4ef224d9b6670214196d894e3a82c7ce94a464b158b1238f13c6e66b695f",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.221,
+      "original_raw_byte_range_half_open": [
+        128410,
+        129114
+      ],
+      "original_stderr_sha256": "948db967ffa3ac6b829a6d7d4e0468ee596394bea9c1e1b8f1fc7b302188b88a",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 1.21,
+      "original_raw_byte_range_half_open": [
+        129114,
+        129822
+      ],
+      "original_stderr_sha256": "dc6bd4c325c099a8a61709a2fc024c70385f6291b0fc6c645ec77cc8b5057c31",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 2.086,
+      "original_raw_byte_range_half_open": [
+        129822,
+        130532
+      ],
+      "original_stderr_sha256": "ec451fb59a134c79d9269c37f78dc0b3d742e3eee7b4dce0df88f6f986e7eacd",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 2.064,
+      "original_raw_byte_range_half_open": [
+        130532,
+        131192
+      ],
+      "original_stderr_sha256": "3236266bcc96857eb2e45ae833fac9ee0831c6b48e25a566f4d289eff318bd7d",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 2.062,
+      "original_raw_byte_range_half_open": [
+        131192,
+        131850
+      ],
+      "original_stderr_sha256": "b44fa2eae362200ac8fbabce8eb3b72fa537cf962341f373ec0c5bab43551ce2",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 2.062,
+      "original_raw_byte_range_half_open": [
+        131850,
+        132510
+      ],
+      "original_stderr_sha256": "727ecb59197a0f665c6897b10212d358305e191176d0180ab268fc5921594a75",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 2.067,
+      "original_raw_byte_range_half_open": [
+        132510,
+        133138
+      ],
+      "original_stderr_sha256": "57c5a976bc012e7a672f4986e4d57c692bafff046c699562101345782fd82b59",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 3.083,
+      "original_raw_byte_range_half_open": [
+        133138,
+        133782
+      ],
+      "original_stderr_sha256": "b701646c1b845d1f820aa7719b6c9669737aac3a7b647f696eb836e40e30018e",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "original_kind": "SIGABRT",
+      "original_elapsed_seconds": 3.078,
+      "original_raw_byte_range_half_open": [
+        133782,
+        134420
+      ],
+      "original_stderr_sha256": "573b8ca79eb3bd986b7f317bc56bf36625d78a819d4854a0279becad9dfec5f7",
+      "response": "Three shared fixture child-future Box cuts in two test support files; actual GDB enters initial Admission before completed_member; sufficient frame reduction remains unproven.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+        "native-cc22-stack-diagnostic-v1/REPORT.json"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody",
+      "original_kind": "FAIL",
+      "original_elapsed_seconds": 20.608,
+      "original_raw_byte_range_half_open": [
+        134420,
+        135445
+      ],
+      "original_stderr_sha256": "3c05cfc1d268f63b83cb8655f0b345fcd9eb933675a4fb36f7aa3c70c724bc97",
+      "response": "Wait strictly beyond the original inclusive expires_at second; preserve original signatures, complete journal/witness comparisons, custody and frame assertions.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-command-failures-cc22-v1/expiry-window-tests.patch"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+      "original_kind": "FAIL",
+      "original_elapsed_seconds": 13.792,
+      "original_raw_byte_range_half_open": [
+        135445,
+        136438
+      ],
+      "original_stderr_sha256": "0baf23c55282610a52ac189591008b088e2721dcd17015e33135b066c9e144c7",
+      "response": "Original positive pre-withdrawal read failed OwnerUnavailable; preserve assertions and add original client/server diagnostic context without retry or new request.",
+      "response_state": "PUBLISHED_DIAGNOSTIC_ONLY_UNRESOLVED",
+      "artifacts": [
+        "native-command-failures-cc22-v1/withdrawal-diagnostic-after-expiry.patch"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    },
+    {
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody",
+      "original_kind": "FAIL",
+      "original_elapsed_seconds": 20.143,
+      "original_raw_byte_range_half_open": [
+        136438,
+        183732
+      ],
+      "original_stderr_sha256": "fa351b64653821688c24beac0bcddec61e9cf29358c325f4e74f5d473c39c69e",
+      "response": "Wait strictly beyond the original inclusive expires_at second; preserve original signatures, complete journal/witness comparisons, custody and frame assertions.",
+      "response_state": "PUBLISHED_DRAFT_FIX_NATIVE_UNVERIFIED",
+      "artifacts": [
+        "native-command-failures-cc22-v1/expiry-window-tests.patch"
+      ],
+      "published_source": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+      "new_native_result_in_this_snapshot": null
+    }
+  ]
+}

@@ -30,7 +30,7 @@ SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 OBSERVER = AGENT + "circuit_next_use_receipt_owner.rs"
 EXPECTED = {
     "learning_original_published_read_client_create": (),
-    "learning_original_published_read_client_current": (SELECTOR, OBSERVER),
+    "learning_original_published_read_client_current": (SELECTOR, OBSERVER, AGENT + "circuit_evaluated_selection_remote.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs"),
     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"),
     "learning_original_published_read_owner_create": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',),
     "learning_original_published_read_owner_serve": (),
@@ -162,8 +162,8 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "channel.next_request_id > 128",
             "channel.peer.request(&bytes)?",
             "response.require_request(&request)?",
-            "response.read.decode(&self.context)?",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.decode(response.read)?",
+            "self.context.binding(fresh)? != self.binding",
             "retained.as_ref().is_some_and(|prior| prior != &current)",
             "channel.peer.check_peer_lifetime()?",
         ):
@@ -182,38 +182,60 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "input.scope.principal_digest.to_string() != request.principal_id.as_str()",
             "source.require_original_input(&self.identity, input)?",
         ):
-            self.rejects(SERVICE, "fn require_task_input_current(", marker)
+            self.rejects(SERVICE, "fn require_task_input_current_with_current(", marker)
         for marker in (
-            "cell.read_learning_selection(&coordinator)?",
+            "cell.read_learning_selection_with_current(&coordinator, &mut current)?",
             "self.require_original_selection(&selection)?",
             "wire::Mode::Selection => (selection.clone(), None)",
             "wire::Mode::NextUse",
-            "cell.read_learning_next_use(",
+            "cell.read_learning_next_use_with_current(",
             "before.publication_digest()",
-            "cell.read_learning_selection(&coordinator)? != selection",
+            "cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection",
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
+        self.rejects(SERVICE, "fn require_task_input_current(", "OriginalPublishedReadCurrent::individual(&self.cell)")
+        self.rejects(SERVICE, "fn require_task_input_current(", "self.require_task_input_current_with_current(&mut current)")
+        self.rejects(SERVICE, "fn read_original(", "OriginalPublishedReadCurrent::finish(current)?")
         for marker in (
-            "request.require_context(&self.context, self.binding, request_id)?",
+            "self.context\n            .require_request(&request, self.binding, request_id)?",
             "let read = self.read_original()?;",
-            "wire::context_binding(&self.context, fresh)? != self.binding",
+            "self.context.binding(fresh)? != self.binding",
             "wire::OriginalRead::from_original(read)?",
             "bytes.is_empty() || bytes.len() > 16_384",
         ):
             self.rejects(SERVICE, "fn response(", marker)
 
     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
-        for path, function, verifier in (
-            (SELECTOR, "fn read_remote_selection(", "authenticate_training"),
-            (OBSERVER, "fn read_remote_next_use(", "authenticate_predecessors"),
+        for path, function, predecessor, verifier in (
+            (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
+            (OBSERVER, "fn read_remote_next_use(", "predecessors", "evaluated::authenticate_predecessors"),
         ):
             for marker in (
                 "live.require_original_context(",
                 "live.read_current().await?",
-                f"{verifier}(config, &before, now()?)?",
-                f"{verifier}(config, &after, now()?)?",
             ):
                 self.rejects(path, function, marker)
+            for marker in (
+                "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+                f"self.{predecessor}(&source).await?",
+                f"{verifier}(&self.config, &self.profile, &before, now()?)?",
+                "let bytes = self.journal.read(&self.saved)?;",
+            ):
+                self.rejects(path, "fn readback_source(", marker)
+            for replacement in ("ObservationLocation::RemoteOwner", "ObservationLocation::EvaluatedOwner"):
+                self.rejects(
+                    path, "fn readback_source(",
+                    "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+                    replacement,
+                )
+            for marker in (
+                "if self.prepare(source).await? != *observed",
+                f"self.{predecessor}(source).await?",
+                "if self.journal.read(&self.saved)? != bytes",
+                "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
+            ):
+                self.rejects(path, "fn finish_original_readback(", marker)
+            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, &self.profile, evidence, current)?")
             for marker in (
                 "self.config.scope.validate_snapshot(source.snapshot())?",
                 "source.observe(&self.config).await?",
@@ -232,11 +254,11 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         for marker in (
             "digest(&bundle)? != baseline",
             "source_publication.is_none()",
-            "state_partition.run_id == context.prefix.request.source_run_id",
+            "state_partition.run_id == prefix.request.source_run_id",
             "*candidate_bundle == baseline && *selection_digest == selection",
-            "context.scope.validate_observation(&observation)?",
+            "scope.validate_observation(&observation)?",
         ):
-            self.rejects(WIRE, "fn decode(", marker)
+            self.rejects(WIRE, "fn decode_original(", marker)
         self.rejects(WIRE, "fn digest(", "digest.is_zero() || digest.to_string() != text")
         for path in (MAIN, SERVICE, WIRE):
             source = (ROOT / path).read_text()

@@ -10,6 +10,7 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
 
+use super::super::super::candidate_current;
 use super::super::super::candidate_wire;
 use super::Error;
 use super::OriginalCellQ24TrainingBootstrapOwnerV1;
@@ -84,10 +85,18 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         request_id: u64,
         session: &mut candidate_wire::Session,
     ) -> Result<(Vec<u8>, candidate_wire::SessionDisposition), Error> {
-        let request: candidate_wire::Request =
+        let request: candidate_current::ReadRequest =
             serde_json::from_slice(bytes).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-        request.require_initial(&self.config.material, request_id)?;
-        session.require_request(&request)?;
+        match &request {
+            candidate_current::ReadRequest::Page(request) => {
+                request.require_initial(&self.config.material, request_id)?;
+                session.require_request(request)?;
+            }
+            candidate_current::ReadRequest::Current(request) => {
+                request.require_initial(&self.config.material, request_id)?;
+                session.require_current(request)?;
+            }
+        }
         if let Some(original) = self.ready()? {
             return Ok(
                 OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(
@@ -100,6 +109,12 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         }
         // No Material read, writer recovery or initialization is reachable.
         // This does not pretend to have read a Missing native journal.
-        Ok(session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)?)
+        Ok(match request {
+            candidate_current::ReadRequest::Page(request) => session
+                .encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)?,
+            candidate_current::ReadRequest::Current(request) => {
+                session.encode_current(request, candidate_wire::MaterialResult::ReadbackRequired)?
+            }
+        })
     }
 }

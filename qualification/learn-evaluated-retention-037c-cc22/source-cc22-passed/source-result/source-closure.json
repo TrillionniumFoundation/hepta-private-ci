@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "dirty": false,
+    "parents": [
+      "f526387acd44bd04b2df3c3957d85797bbb6501e"
+    ],
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*source_closure.py",
+    "-v"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 255.5251119658351,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T10:44:59.139186+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 89504,
+  "log_file": "source-closure.json.e9b05119313842ad8b49fee49c1f4bce.log",
+  "log_sha256": "9c0957c52f00b32ed36b9ec7144df744e763f918c2e37340966ac923092d2034",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 397,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "started_at": "2026-11-12T10:40:43.607222+00:00",
+  "status": "passed",
+  "tested_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-source-20261112-037c-cc22a699"
+}

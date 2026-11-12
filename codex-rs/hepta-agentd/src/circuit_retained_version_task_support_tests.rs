@@ -1,6 +1,66 @@
 //! Consume an actual separate ordinary C admission, without creating RunStart.
 use super::*;
 
+/// Test-only handoff of the already installed C bootstrap. It consumes the
+/// same configuration returned by actual Version FinalUse; it never calls a
+/// task factory again or reconstructs a PublishedTask/RunStart from metadata.
+pub(in super::super) async fn start_installed_retained_version(
+    runtime: RuntimeFixture,
+    mut request: AuthBusObjectiveIngress,
+    mut config: AgentdConfig,
+    cell: Cell,
+    source: Arc<Source>,
+    retirement: PublishedCircuitFeatureTaskV1,
+    bundle: &CellCompatibilityBundleV1,
+) -> anyhow::Result<Session> {
+    let identity = config.identity();
+    anyhow::ensure!(
+        identity.agent_id == runtime.identity.agent_id
+            && identity.spawn_generation == runtime.identity.spawn_generation
+            && identity.home_root == runtime.identity.home_root
+            && identity.run_root == runtime.identity.run_root,
+        "same admitted C runtime"
+    );
+    let definition = retirement.definition();
+    request.body.runtime_body_digest = definition.runtime.runtime_digest.to_string();
+    request.body.model_tuple_digest = definition.semantic_digest()?.to_string();
+    request.body.artifact_set_digest = bundle.digest()?.to_string();
+    // This is the existing explicit AuthBus fixture issuer, applied to the
+    // real original admission request and actual installed publication.
+    request.signature_hex = SigningKey::from_bytes(&[91; 32])
+        .sign(&crate::authbus_objective_claims(&runtime.identity, &request)?.signing_bytes())
+        .to_bytes()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    let (bootstrap, invocation) = config
+        .take_circuit_task_bootstrap()?
+        .ok_or_else(|| anyhow::anyhow!("same installed Version bootstrap once"))?;
+    runtime
+        .state
+        .attach_automation_store(AutomationStore::open(&runtime.identity.layout).await?)?;
+    assert!(runtime.state.circuit_task.set(bootstrap.handle()).is_ok());
+    assert!(
+        runtime
+            .state
+            .circuit_task_invocation
+            .set(invocation)
+            .is_ok()
+    );
+    let cancellation = CancellationToken::new();
+    let worker = tokio::spawn(bootstrap.run(Arc::clone(&runtime.state), cancellation.clone()));
+    Ok(Session {
+        runtime,
+        config: Some(config),
+        request,
+        source,
+        cell,
+        retirement,
+        cancellation,
+        worker: Some(worker),
+    })
+}
+
 pub(in super::super) fn retained_version_task_inputs(
     admission: Admission,
     definition: CellDefinitionV1,

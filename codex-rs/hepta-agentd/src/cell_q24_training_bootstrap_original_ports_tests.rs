@@ -7,6 +7,9 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use std::thread::JoinHandle;
 use std::time::Duration;
 
+pub(crate) use connection::fresh_peer as fresh_command_channel;
+pub(crate) use connection::recovered_peer as recovered_command_channel;
+
 pub(crate) fn command<
     TW: AnchorWitnessStore + Send + 'static,
     RW: AnchorWitnessStore + Send + 'static,

@@ -56,7 +56,9 @@ async fn completed_member(
         BFixture::original_manifests(original),
     )?;
     let provider = cohort.consume(runner.plan.clone())?;
-    PanelMemberFixture::complete(
+    // Keep the owned runner/provider setup out of this enclosing member
+    // future; the original inputs and the retention-first order are unchanged.
+    Box::pin(PanelMemberFixture::complete(
         runner,
         provider,
         &original.initial,
@@ -67,22 +69,47 @@ async fn completed_member(
         &original.credentials.evaluator,
         original.config.verifier.clone(),
         retention_receipt_digests,
-    )
+    ))
     .await
 }
 
 impl PanelFixture {
-    async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
-        let (original, mut primary_b, mut retention_b, registration) = preregistered().await?;
+    fn completed(
+        peer: TrainingPeer,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<Self>>>> {
+        // Construct the child future before polling it. The old async bridge
+        // itself reserved 533,064 stack bytes in the measured debug binary.
+        Box::pin(Self::completed_for_publication(
+            peer,
+            PublicationMode::AdoptCandidate,
+        ))
+    }
+
+    async fn completed_for_publication(
+        peer: TrainingPeer,
+        publication: PublicationMode,
+    ) -> anyhow::Result<Self> {
+        let (original, mut primary_b, mut retention_b, registration) =
+            Box::pin(preregistered_for_publication(publication)).await?;
         assert_eq!(primary_b.at, retention_b.at);
         let at = primary_b.at;
         // Actual retention completes first. Only its original publication
         // digest enters the primary B's signed product declaration.
-        let mut retention =
-            completed_member(&mut retention_b, &original, &registration, Vec::new()).await?;
+        let mut retention = Box::pin(completed_member(
+            &mut retention_b,
+            &original,
+            &registration,
+            Vec::new(),
+        ))
+        .await?;
         let retained = retention.qualification.product().evidence_digest;
-        let mut primary =
-            completed_member(&mut primary_b, &original, &registration, vec![retained]).await?;
+        let mut primary = Box::pin(completed_member(
+            &mut primary_b,
+            &original,
+            &registration,
+            vec![retained],
+        ))
+        .await?;
         if matches!(peer, TrainingPeer::RenewedRetention) {
             let renewed = original.evaluation.renewed_qualification_training()?;
             assert_ne!(renewed, retention.config.training_evidence);
@@ -104,10 +131,21 @@ impl PanelFixture {
         })
     }
 
-    async fn read(
+    fn read(
         &mut self,
-    ) -> Result<OriginalCellEvaluationPanelReadbackV1, OriginalCellEvaluationPanelErrorV1> {
-        self.panel.fixture_current(self.at).await
+    ) -> std::pin::Pin<
+        Box<
+            impl std::future::Future<
+                Output = Result<
+                    OriginalCellEvaluationPanelReadbackV1,
+                    OriginalCellEvaluationPanelErrorV1,
+                >,
+            > + '_,
+        >,
+    > {
+        // Keep the large real panel read future out of every enclosing test
+        // frame, including the initial Admission poll before this branch runs.
+        Box::pin(self.panel.fixture_current(self.at))
     }
 
     fn bytes(&mut self) -> anyhow::Result<Vec<Vec<u8>>> {
@@ -119,13 +157,17 @@ impl PanelFixture {
         Ok(bytes)
     }
 
-    async fn finish(self) -> anyhow::Result<[usize; 2]> {
-        drop(self.panel);
-        let counts = [self.primary.finish()?, self.retention.finish()?];
-        drop(self.primary_b);
-        drop(self.retention_b);
-        self.original.finish().await?;
-        Ok(counts)
+    fn finish(
+        self,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<[usize; 2]>>>> {
+        Box::pin(async move {
+            drop(self.panel);
+            let counts = [self.primary.finish()?, self.retention.finish()?];
+            drop(self.primary_b);
+            drop(self.retention_b);
+            self.original.finish().await?;
+            Ok(counts)
+        })
     }
 }
 

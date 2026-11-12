@@ -12,6 +12,7 @@ use serde::Serialize;
 
 use super::Error;
 use super::OriginalCellQ24TrainingCommandContextV1;
+use super::candidate_current;
 use crate::OriginalCellQ24CandidateMaterialV1;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
 
@@ -133,6 +134,11 @@ pub(super) enum MaterialResult {
         total: u32,
         heads: String,
     },
+    Current {
+        completion: String,
+        heads: String,
+        total: u32,
+    },
     NoCandidate,
     Missing,
     Pending,
@@ -151,6 +157,8 @@ pub(super) enum SessionDisposition {
 pub(super) struct Session {
     next_page: u8,
     completion: Option<String>,
+    pages: Vec<u8>,
+    current: Option<candidate_current::Pin>,
 }
 
 impl Session {
@@ -158,6 +166,8 @@ impl Session {
         Self {
             next_page: 0,
             completion: None,
+            pages: Vec::new(),
+            current: None,
         }
     }
 
@@ -171,6 +181,50 @@ impl Session {
             return Err(Error::Binding("same Candidate session and next page"));
         }
         Ok(())
+    }
+
+    pub(super) fn require_current(
+        &self,
+        request: &candidate_current::Request,
+    ) -> Result<(), Error> {
+        if self.next_page != 0
+            || !self.pages.is_empty()
+            || self.current.as_ref() != Some(&request.pin())
+        {
+            return Err(Error::Binding(
+                "complete original Candidate pages before Current",
+            ));
+        }
+        Ok(())
+    }
+
+    pub(super) fn encode_current(
+        &self,
+        request: candidate_current::Request,
+        result: MaterialResult,
+    ) -> Result<(Vec<u8>, SessionDisposition), Error> {
+        self.require_current(&request)?;
+        let disposition = match &result {
+            MaterialResult::Current {
+                completion,
+                heads,
+                total,
+            } if *completion == request.completion
+                && *heads == request.heads
+                && *total == request.total =>
+            {
+                SessionDisposition::ContinueReadback
+            }
+            MaterialResult::Current { .. } | MaterialResult::Page { .. } => {
+                return Err(Error::Binding("exact original Candidate Current response"));
+            }
+            _ => SessionDisposition::CloseReadback,
+        };
+        let bytes = serde_json::to_vec(&candidate_current::Response { request, result })?;
+        if bytes.len() > FRAME_BYTES {
+            return Err(Error::Binding("existing Candidate frame bound"));
+        }
+        Ok((bytes, disposition))
     }
 
     pub(super) fn encode_response(
@@ -199,6 +253,23 @@ impl Session {
                 || end > *total as usize
             {
                 return Err(Error::Binding("original Candidate page total"));
+            }
+            if self.pages.len() != *offset as usize {
+                return Err(Error::Binding("complete Candidate pages before Current"));
+            }
+            self.pages.extend_from_slice(&bytes);
+            if end == *total as usize {
+                let pin =
+                    candidate_current::Pin::from_heads(request.completion.clone(), &self.pages)?;
+                if self
+                    .current
+                    .as_ref()
+                    .is_some_and(|original| original != &pin)
+                {
+                    return Err(Error::Binding("immutable original Candidate Current pin"));
+                }
+                self.current = Some(pin);
+                self.pages.clear();
             }
             self.next_page = if end == *total as usize {
                 0

@@ -1,0 +1,24 @@
+{
+  "kind": "exact-original-log-byte-recovery-from-complete-driver-prefix",
+  "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+  "input": "driver.raw.log",
+  "input_bytes": 90825,
+  "input_sha256": "a0ec360b5ed15d45d0ce5dc40448617f666a57a81f192044442cbb5522b780e3",
+  "output": "source-closure.json.e9b05119313842ad8b49fee49c1f4bce.log",
+  "output_bytes": 89504,
+  "output_sha256": "9c0957c52f00b32ed36b9ec7144df744e763f918c2e37340966ac923092d2034",
+  "original_expected_sha256_from": "source-closure.json",
+  "prefix_bytes": 89504,
+  "independent_full_disk_read": false,
+  "independent_disk_segment_crosscheck": {
+    "offset": 16384,
+    "length": 65536,
+    "native_operation_id": "58614680b7c5bfb3902f283056500a7851c20623c4ffbfadbb64887d48c18426",
+    "all_bytes_equal": true
+  },
+  "tests_from_original_log": 397,
+  "test_seconds_from_original_log": 253.726,
+  "test_footer": "OK",
+  "no_gate_or_read_restarted": true
+}

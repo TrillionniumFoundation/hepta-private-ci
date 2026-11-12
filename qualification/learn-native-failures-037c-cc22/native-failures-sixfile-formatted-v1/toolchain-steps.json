@@ -1,0 +1,36 @@
+[
+  {
+    "command": [
+      "/home/qian-qi/.cargo/bin/rustup",
+      "which",
+      "--toolchain",
+      "1.96.0",
+      "rustfmt"
+    ],
+    "returncode": 0,
+    "stdout": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/home/qian-qi/.cargo/bin/rustup",
+      "run",
+      "1.96.0",
+      "rustc",
+      "--version",
+      "--verbose"
+    ],
+    "returncode": 0,
+    "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "--version"
+    ],
+    "returncode": 0,
+    "stdout": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\n",
+    "stderr": ""
+  }
+]

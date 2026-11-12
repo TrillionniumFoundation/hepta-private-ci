@@ -1,0 +1,54 @@
+{
+  "source_sha": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "source_unchanged": true,
+  "terminal": {
+    "session_id": "dpty-a7e817407fb8ec5757b12733648d266e231783c59982274d8b0a97f66d1be055",
+    "exit_code": 100,
+    "natural_inferior_exit": true,
+    "manual_kill": false,
+    "acceptance_pass": false,
+    "diagnostic_only": true
+  },
+  "binary": {
+    "bytes": 282306816,
+    "mtime_ns": 1794481578996358532,
+    "path": "/data/hepta-learn-037c-20261112/target-cache-v1/debug/deps/codex_hepta_agentd-0bb720b95785b5fd",
+    "sha256": "670f90e41e4313efdf00d5452e23ea1b0359c9942b0d7c6092b332416136ba04"
+  },
+  "original_rust_min_stack": 8388608,
+  "original_case_timeout_seconds": 60,
+  "first_signal": "SIGSEGV",
+  "first_test_thread_backtrace_raw_lines": [
+    164,
+    205
+  ],
+  "observed_poll_chain": [
+    "flume::async::SendFut::poll",
+    "sqlx_sqlite worker ping",
+    "sqlx pool acquire/begin",
+    "CognitiveStore::open",
+    "runtime::tests::attach_runtime_prerequisites",
+    "q24_tests::support::admission",
+    "evaluation_provider::preregistered_for_publication",
+    "PanelFixture::completed_for_publication",
+    "PanelFixture::completed",
+    "original_panel_reads_actual_b_and_retention_with_full_original_signatures"
+  ],
+  "subsequent_observation": "Original SIGSEGV delivered; Rust stack_overflow signal_handler aborts; original SIGABRT delivered; inferior terminates naturally.",
+  "subsequent_test_thread_backtrace_raw_lines": [
+    387,
+    437
+  ],
+  "direct_evidence": "The active poll path is initial preregistration Admission, before completed_member execution.",
+  "limits": [
+    "No per-frame stack size or future type size was collected.",
+    "The crash site alone does not establish a flume or SQLx defect.",
+    "A shared fixture boxing change still requires fresh exact-source native validation."
+  ],
+  "raw_gdb_log": {
+    "bytes": 37601,
+    "path": "/home/qian-qi/hepta-learn-037c-evidence/stack-diagnostic-cc22-v1/gdb.raw.log",
+    "sha256": "ea1d93ec5431ac88bab34a78b1cea509089531f4a2f0e1ba1682c2686b7d37b4"
+  },
+  "originals_manifest": "originals-manifest.json"
+}

@@ -99,7 +99,7 @@ fn resident_root_formatter_and_original_registration_pin_both_scopes() -> anyhow
             changed_rule_scope,
             &metadata.verifier,
             fixture.profile.intent.clone(),
-            fixture.profile.lease.clone(),
+            fixture.profile.lease,
         )
         .is_err()
     );
@@ -424,3 +424,9 @@ mod evaluation;
 
 #[path = "authority_host_learning_resident_model_tests.rs"]
 mod original_model;
+
+#[path = "authority_host_learning_resident_retention_auth_tests.rs"]
+mod retention_auth;
+
+#[path = "authority_host_learning_resident_origin_tests.rs"]
+mod origin;

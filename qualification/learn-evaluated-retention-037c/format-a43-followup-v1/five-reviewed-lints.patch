@@ -1,0 +1,28 @@
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs
+@@ -290,7 +290,6 @@
+ 
+ #[path = "neuron_cell_evaluation_model_material.rs"]
+ mod model_material;
+-pub(crate) use model_material::OriginalCellEvaluationModelInputV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialClientV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialConnectionV1;
+ pub use model_material::OriginalCellEvaluationModelMaterialV1;
+--- a/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs
+@@ -421,11 +421,11 @@
+         update_rule,
+     )?;
+     let config = crate::OriginalCellQ24MaterialReceiptConfigV1 {
+-        initial: initial,
+-        scope: scope,
++        initial,
++        scope,
+         rule,
+-        freeze_plan: freeze_plan,
+-        freeze_evidence: freeze_evidence,
++        freeze_plan,
++        freeze_evidence,
+         experience_signer: credentials.experience.clone(),
+         dataset_signer: credentials.dataset.clone(),
+         verifier: writer.verifier().clone(),

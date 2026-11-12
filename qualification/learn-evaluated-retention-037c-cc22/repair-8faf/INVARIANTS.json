@@ -1,0 +1,51 @@
+{
+  "product_changes": "One original C legacy Trainer call rewritten with explicit original client borrow and UFCS. No new role, capability, source, receipt, factory, effect or authentication path.",
+  "manifest_changes": {
+    "protected_rows": 1,
+    "required_function_order_functions": [
+      "fn predecessors("
+    ],
+    "boundary_rows_changed": 0,
+    "privileged_inventory_changed": false,
+    "authority_changed": false,
+    "verifier_changed": false
+  },
+  "exact_changed_physical_paths": [
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+    "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+    "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+    "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+    "qa/b4-no-bypass/test_original_published_read_source_closure.py"
+  ],
+  "protected_function_counts": {
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": 17,
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs": 9
+  },
+  "attacked_ordered_marker_counts": {
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": 102,
+    "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs": 86
+  },
+  "verifier_sources": [
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "git_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    }
+  ],
+  "preserved_attacks": [
+    "consuming self in into_command_owner signature",
+    "complete pinned predecessor signatures and signing bytes",
+    "pre/post original owner reads and final clock/current checks",
+    "deletion of either RemoteOwner or EvaluatedOwner branch",
+    "unregistered caller and removing all registered callers",
+    "all original forbidden key/trust/authority creation markers in both owner and private binding"
+  ]
+}

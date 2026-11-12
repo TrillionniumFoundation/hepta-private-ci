@@ -177,21 +177,24 @@ pub(super) fn ledger_at(
 pub(super) fn decision(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
-    source: &crate::CircuitTaskSourceInputV1,
+    publication: &CircuitTaskSourcePublicationV1,
 ) -> anyhow::Result<()> {
-    let candidates = source
-        .candidates
+    let source = publication.input();
+    let policy = publication.original_policy()?;
+    let mut candidates = policy
+        .entries()
         .iter()
         .map(|item| item.candidate_id.clone())
         .collect::<Vec<_>>();
+    candidates.sort();
     let record = ProductionDecisionV2 {
         record_id: source.scope.run_id.clone(),
         episode_id: id("positive-original-episode"),
         run_snapshot_digest: source.ndu_snapshot_digest,
         objective_digest: source.objective_digest,
-        policy_digest: d("explicit-positive-policy"),
+        policy_digest: Digest32::of_bytes(publication.output()),
         candidate_ids: candidates.clone(),
-        selected_candidate_id: candidates[0].clone(),
+        selected_candidate_id: policy.selected().clone(),
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
             set_id: id("explicit-positive-candidates"),
@@ -207,7 +210,7 @@ pub(super) fn decision(
             canonical_order_digest: candidate_order_digest_v2(&candidates),
             complete_for_generator: true,
         },
-        support_digest: d("explicit-positive-original-decision-support"),
+        support_digest: publication.publication_digest(),
     };
     let at = now()?;
     let evidence = sign(
@@ -224,8 +227,14 @@ pub(super) fn decision(
 pub(super) fn terminal_outcome(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
+    publication: &CircuitTaskSourcePublicationV1,
 ) -> anyhow::Result<()> {
-    terminal_outcome_with_value(writer, credentials, FixedQ32::from_raw(2_i64 << 32))
+    terminal_outcome_with_value(
+        writer,
+        credentials,
+        publication,
+        FixedQ32::from_raw(2_i64 << 32),
+    )
 }
 
 // The caller fixes this explicit test measurement before material or Training.
@@ -233,9 +242,26 @@ pub(super) fn terminal_outcome(
 pub(super) fn terminal_outcome_with_value(
     writer: &mut LedgerWriter,
     credentials: &Credentials,
+    publication: &CircuitTaskSourcePublicationV1,
     value: FixedQ32,
 ) -> anyhow::Result<()> {
+    let admitted_at = publication
+        .original_record()
+        .admission
+        .observed_at_unix_micros
+        .div_ceil(1_000_000);
+    let before = now()?;
+    if admitted_at > before {
+        anyhow::ensure!(
+            admitted_at - before == 1,
+            "fixture admission is in the future"
+        );
+        // The signed Outcome has second precision. Wait for the real clock
+        // rather than inventing a future timestamp or rounding admission down.
+        std::thread::sleep(std::time::Duration::from_secs(1));
+    }
     let at = now()?;
+    anyhow::ensure!(at >= admitted_at, "clock moved before source admission");
     // Explicit independent terminal target, fixed before any material read.
     let outcome = AuthenticatedOutcomeV1 {
         record_id: id("positive-original-outcome-record"),
@@ -395,11 +421,11 @@ pub(super) fn unstarted_material_with_profile(
         update_rule,
     )?;
     let config = crate::OriginalCellQ24MaterialReceiptConfigV1 {
-        initial: initial.clone(),
-        scope: scope.clone(),
+        initial,
+        scope,
         rule,
-        freeze_plan: freeze_plan.clone(),
-        freeze_evidence: freeze_evidence.clone(),
+        freeze_plan,
+        freeze_evidence,
         experience_signer: credentials.experience.clone(),
         dataset_signer: credentials.dataset.clone(),
         verifier: writer.verifier().clone(),
@@ -419,7 +445,7 @@ pub(super) fn material_with_profile(
     publication: &CircuitTaskSourcePublicationV1,
     evaluation_profile: Digest32,
 ) -> anyhow::Result<Material> {
-    let (config, optimizer) = unstarted_material_with_profile(
+    material_with_profile_and_observer(
         root,
         writer,
         credentials,
@@ -430,6 +456,34 @@ pub(super) fn material_with_profile(
         publication,
         evaluation_profile,
         id("unused-positive-next-use-role"),
+    )
+}
+
+// Choose C's original enrolled actor before the first material receipt is
+// signed. No completed cut or predecessor signature is rewritten for C.
+pub(super) fn material_with_profile_and_observer(
+    root: &std::path::Path,
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+    identity: &crate::AgentdIdentity,
+    baseline: &LoadedCellQ24ModelV1,
+    bundle: &CellCompatibilityBundleV1,
+    publication: &CircuitTaskSourcePublicationV1,
+    evaluation_profile: Digest32,
+    next_use_observer: StableId,
+) -> anyhow::Result<Material> {
+    let (config, optimizer) = unstarted_material_with_profile(
+        root,
+        writer,
+        credentials,
+        source,
+        identity,
+        baseline,
+        bundle,
+        publication,
+        evaluation_profile,
+        next_use_observer,
     )?;
     let input = publication.input();
     let initial = config.initial.clone();

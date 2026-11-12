@@ -1,0 +1,26 @@
+--- a/codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_model_current_owner.rs
+@@ -85,7 +85,10 @@
+             material,
+             started,
+         )?;
+-        match self.journal.readback(&admission.key(self.binding)) {
++        match <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(
++            &mut self.journal,
++            &admission.key(self.binding),
++        ) {
+             Ok(state) => {
+                 let receipt = self.decode_current(&admission, state)?;
+                 require_material(material, started, self.now()?)?;
+@@ -123,7 +126,10 @@
+             material,
+             started,
+         )?;
+-        let state = self.journal.readback(&admission.key(self.binding))?;
++        let state = <LockedFileProductEvaluationExecutionStoreV1 as ProductEvaluationExecutionStoreV1>::readback(
++            &mut self.journal,
++            &admission.key(self.binding),
++        )?;
+         let receipt = self.decode_current(&admission, state)?;
+         require_material(material, started, self.now()?)?;
+         Ok(receipt)

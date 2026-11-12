@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "status": "DRAFT_REPAIRS_AWAITING_ORIGINAL_NATIVE_QUEUE",
+  "published_source_at_review": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "actual_failed_execution": {
+    "source": "cc22a69972d029d3ef28d49096f396eb5214c616",
+    "tree": "827fb70ed75d30c48d4693cbd0d23ea04f5744da",
+    "focused": {
+      "run": 109,
+      "passed": 78,
+      "failed": 29,
+      "timed_out": 2
+    },
+    "raw_log_bytes": 183732,
+    "raw_log_sha256": "4e0f58f42e4abb056868ddfb2c041d8caa9e543c5694de1de8dad15a36d529e1"
+  },
+  "expiry_findings": {
+    "verifier_blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+    "verifier_refusal": "now > evidence.expires_at",
+    "old_wait": "expires_at.saturating_sub(now()) seconds +100 ms",
+    "defect": "Old wait may return within the last valid expiry second; original owner may correctly commit before subsequent checks see expiry.",
+    "original_s_byte_diff": "../native-cc22-focused-review/selector-expiry-byte-diff-summary.json",
+    "observed_append": {
+      "journal_before": 72,
+      "journal_after": 2220,
+      "witness_before": 224,
+      "witness_after": 448,
+      "prefixes_unchanged": true,
+      "new_actual_selection_signature_issued_at": 1794482028,
+      "new_actual_selection_signature_expires_at": 1794482328
+    },
+    "repair": "Wait for real system now > original expiry. Preserve original 10-second expiry and all custody, journal/witness equality, channel-invalidation, and request-count assertions. Strengthen expired request error to Evidence(ValidityWindow)."
+  },
+  "withdrawal_findings": {
+    "actual_error": "OwnerUnavailable(\"original learning evidence owner\")",
+    "stage": "The only propagated raw EvidenceClient failure is the first positive C evidence read, before withdrawal.",
+    "static_binding_review": "Request initial binding, receipt predecessor, actor, and receipt digest match original fixed C context; no mismatched field found.",
+    "unresolved": "Original error erases transport cause; no justified production fix or timeout claim yet.",
+    "diagnostic": "On failure only: record actual client elapsed and original server terminal result. Drop the same client, join on spawn_blocking so the existing runtime can drive pending original I/O. No new request, retry, replacement peer, deadline change, or fabricated result. Successful positive exact attestation equality and withdrawal refusal checks unchanged."
+  },
+  "patch_order": [
+    "expiry-window-tests.patch",
+    "withdrawal-diagnostic-after-expiry.patch"
+  ],
+  "validation": {
+    "rustfmt": "UNRUN by this agent",
+    "native_retest": "NOT_STARTED by this agent; root/recovery own the only queue",
+    "production_files_changed": 0,
+    "verifier_changed": false,
+    "source_guards_changed": false,
+    "caller_permissions_changed": false
+  },
+  "exact_retest_cases": [
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal"
+  ],
+  "ordinary_qualification": {
+    "adopt": 0,
+    "no_update": 0,
+    "daemon_root_cold_recovery": 0
+  },
+  "frozen_prior_evidence": "153-file phase package and b29893-file package left byte-for-byte untouched"
+}

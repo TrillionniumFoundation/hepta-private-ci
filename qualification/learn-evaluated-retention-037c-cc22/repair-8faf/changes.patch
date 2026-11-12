@@ -1,0 +1,286 @@
+--- a/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs
++++ b/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs
+@@ -476,14 +476,15 @@
+     ) -> Result<[SignedLearningEvidenceV1; 2], Error> {
+         let training = match &self.profile {
+             Profile::Legacy => {
+-                source
++                let trainer: &LearningIterationEvidenceClientV1 = source
+                     .trainer()
+-                    .ok_or(OwnerError::Binding("original C Trainer source"))?
+-                    .readback(
+-                        source.snapshot(),
+-                        prior(&self.config, LearningIterationStageV1::Training)?,
+-                    )
+-                    .await?
++                    .ok_or(OwnerError::Binding("original C Trainer source"))?;
++                LearningIterationEvidenceClientV1::readback(
++                    trainer,
++                    source.snapshot(),
++                    prior(&self.config, LearningIterationStageV1::Training)?,
++                )
++                .await?
+             }
+             Profile::Evaluated(selection) => {
+                 let (trainer, evaluator) = source
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -8069,7 +8069,7 @@
+ required = ["trait NextUseSources {", "for OriginalCircuitNextUseRemoteSourcesV1", "pub struct OriginalCircuitNextUseReceiptOwnerV1", "command_origin: CommandOrigin", "enum CommandOrigin {", "enum ObservationLocation {", "completion_fenced: bool,", "profile: Profile,", "#[path = \"circuit_next_use_receipt_binding.rs\"]", "mod binding;"]
+ forbidden = ["pub trait NextUseSources", "pub(crate) trait NextUseSources", "dyn NextUseSources", "SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(", "evaluate_or_readback(", "qualify_and_persist(", "unwrap_or", "permit_all", "if false", "pub fn sign_original", "pub(crate) fn sign_original", "pub fn receipt(", "pub(crate) fn receipt(", "pub journal:", "pub key:", "pub command_origin:", "pub enum CommandOrigin", "pub enum ObservationLocation", "pub(crate) enum ObservationLocation", "pub completion_fenced:", "pub(crate) completion_fenced:", "self.completion_fenced = false", "pub profile:", "pub(crate) profile:", "Profile::Evaluated(())"]
+ required_order = [["pub struct OriginalCircuitNextUseReceiptSourcesV1", "pub snapshot: &'a LearningIterationSnapshotV1", "pub cell: &'a PublishedCircuitCellOwnerV1<C>", "pub source: &'a CircuitTaskSourceReadbackV1<S>", "pub identity: &'a AgentdIdentity", "pub trainer: &'a LearningIterationEvidenceClientV1", "pub selector: &'a LearningIterationEvidenceClientV1", "pub struct OriginalCircuitNextUseReceiptOwnerV1", "journal: LearningOwnerJournalV1<W>", "config: OriginalCircuitNextUseReceiptConfigV1", "key: SigningKey", "saved: ProductEvaluationExecutionKeyV1"], ["for OriginalCircuitNextUseReceiptSourcesV1", "fn location(&self) -> ObservationLocation", "ObservationLocation::LocalOwner", "async fn observe(", "read_local_next_use(self, config)"], ["impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1", "fn location(&self) -> ObservationLocation", "ObservationLocation::RemoteOwner", "async fn observe(", "read_remote_next_use(self, config).await"], ["mod binding;", "use binding::authenticate_predecessors;", "use binding::evidence_id;", "use binding::now;", "use binding::prior;", "use binding::receipt;", "use binding::receipt_with_domain;", "use binding::require_new_attestation;", "use binding::sign_original;", "use binding::validate_config;"]]
+-required_function_order = [{ function = "fn create(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::FreshCreate", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn recover(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::Recovered", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn prepare(", sequence = ["match (&self.profile, source.location()) {\n            (\n                Profile::Legacy,\n                ObservationLocation::LocalOwner | ObservationLocation::RemoteOwner,\n            )\n            | (Profile::Evaluated(_), ObservationLocation::EvaluatedOwner) => {}\n            _ => return Err(OwnerError::Binding(                                ).into()),\n        }", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request\n            || source.snapshot().owners != self.config.selection.owners\n            || !source\n                .snapshot()\n                .receipts\n                .starts_with(&self.config.selection.receipts)\n        {\n            return Err(OwnerError::Binding(                           ).into());\n        }", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"], top_level = ["match (&self.profile, source.location())", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"] }, { function = "fn attest_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len() {\n            return self.readback_source(source).await;\n        }", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let config = &self.config;", "let profile = &self.profile;", "let key = &self.key;", "let identity = self.saved.binding_digest;", "let bytes = self.journal.commit_once(&self.saved, || {\n            let issued_at = now()?;\n            profile.require_new(issued_at)?;\n            require_new_attestation(config, started_at, issued_at)?;\n            let predecessors =\n                evaluated::authenticate_predecessors(config, profile, &evidence, issued_at)\n                    .map_err(|_| OwnerError::Binding(                                    ))?;\n            let receipt = evaluated::receipt(config, profile, &observed, issued_at)\n                .map_err(|_| OwnerError::Binding(                    ))?;\n            let payload = learning_iteration_receipt_signing_bytes_v1(&receipt)\n                .map_err(|_| OwnerError::Binding(                          ))?;\n            let signed = sign_original(config, key, &payload, identity, issued_at)?;\n            let verified = config.verifier.verify(\n                LearningEvidenceRoleV1::Observer,\n                &signed,\n                &payload,\n                issued_at,\n            )?;\n            profile\n                .require_signed_separation(&verified, issued_at)\n                .map_err(|_| OwnerError::Binding(                                      ))?;\n            for predecessor in &predecessors {\n                verify_signed_actor_separation(predecessor, &verified, issued_at)?;\n            }\n            learning_owner_evidence::encode(&payload, &signed)\n        })?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "true", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len()", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed", "let bytes = self.journal.commit_once(&self.saved, ||", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn readback_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        ) {\n            let before = self.predecessors(&source).await?;\n            evaluated::authenticate_predecessors(&self.config, &self.profile, &before, now()?)?;\n        }", "let bytes = self.journal.read(&self.saved)?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "false", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        )", "let bytes = self.journal.read(&self.saved)?;", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn predecessors(", sequence = ["let training = match &self.profile {\n            Profile::Legacy => {\n                source\n                    .trainer()\n                    .ok_or(OwnerError::Binding(                           ))?\n                    .readback(\n                        source.snapshot(),\n                        prior(&self.config, LearningIterationStageV1::Training)?,\n                    )\n                    .await?\n            }\n            Profile::Evaluated(selection) => {\n                let (trainer, evaluator) = source\n                    .evaluated_owners()\n                    .ok_or(OwnerError::Binding(                              ))?;\n                selection\n                    .original_context()\n                    .require_original_receipt_owners(trainer, evaluator)\n                    .await?;\n                self.config.training_evidence.clone()\n            }\n        }", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(\n                source.snapshot(),\n                prior(&self.config, LearningIterationStageV1::Selection)?,\n            )\n            .await?;", "Ok([training, selection])"], top_level = ["let training = match &self.profile", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(", "Ok([training, selection])"] }, { function = "fn finish_original_readback(", sequence = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location() {\n            ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {\n                let evidence = self.predecessors(source).await?;\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                evidence\n            }\n            ObservationLocation::RemoteOwner => {\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                self.predecessors(source).await?\n            }\n        }", "if self.journal.read(&self.saved)? != bytes {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"], top_level = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location()", "if self.journal.read(&self.saved)? != bytes", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"] }, { function = "fn decode_completed(", sequence = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(&self.config, &self.profile, observed, signed.issued_at)?;", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\n            || source\n                .snapshot()\n                .receipts\n                .get(self.config.selection.receipts.len())\n                .is_some_and(|saved| saved != &receipt)\n        {\n            return Err(OwnerError::Binding(                            ).into());\n        }", "Ok((receipt, payload, signed))"], top_level = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "Ok((receipt, payload, signed))"] }, { function = "fn authenticate_completed(", sequence = ["let (receipt, payload, signed) = completed;", "if current < started_at {\n            return Err(OwnerError::Binding(                                         ).into());\n        }", "if new_attestation {\n            self.profile.require_new(current)?;\n            require_new_attestation(&self.config, started_at, current)?;\n        }", "let predecessors =\n            evaluated::authenticate_predecessors(&self.config, &self.profile, evidence, current)?;", "let verified = self.config.verifier.verify(\n            LearningEvidenceRoleV1::Observer,\n            &signed,\n            &payload,\n            current,\n        )?;", "if verified.principal() != &self.config.signer.principal\n            || verified.controller_id() != &self.config.signer.controller_id\n            || signed.evidence_id != evidence_id(self.saved.binding_digest)?\n        {\n            return Err(OwnerError::Binding(                              ).into());\n        }", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors {\n            verify_signed_actor_separation(predecessor, &verified, current)?;\n        }", "Ok((receipt, signed))"], top_level = ["let (receipt, payload, signed) = completed;", "if current < started_at", "if new_attestation", "let predecessors =\n            evaluated::authenticate_predecessors(", "let verified = self.config.verifier.verify(", "if verified.principal() != &self.config.signer.principal", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors", "Ok((receipt, signed))"] }, { function = "fn attest_original_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn attest_original_remote_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn readback(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn readback_remote(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn read_local_next_use(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?", "let cell: &PublishedCircuitCellOwnerV1<_> = source.cell;", "cell.read_learning_next_use(", "&coordinator", "source.source", "source.identity"], top_level = [] }, { function = "fn read_remote_next_use(", sequence = ["let live: &OriginalCircuitLearningReadClientV1 = source.live;", "live.require_original_context(", "&config.selection", "&config.scope", "&config.verifier", "&config.training_evidence", "Some(&config.selection_evidence)", "let original = live.read_current().await?;", "Ok(original.observation().clone())"], top_level = ["live.require_original_context(", "let original = live.read_current().await?;", "Ok(original.observation().clone())"] }, { function = "fn original_command_profile(", sequence = ["&self.config", "matches!(self.command_origin, CommandOrigin::Recovered)"] }, { function = "fn into_command_owner(", sequence = ["\n        self,\n", "crate::OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(", "self, live, trainer, selector,"] }]
++required_function_order = [{ function = "fn create(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::FreshCreate", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn recover(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self", "profile: Profile::Legacy", "command_origin: CommandOrigin::Recovered", "completion_fenced: false"], top_level = ["let saved = validate_config(&config, &key)?"] }, { function = "fn prepare(", sequence = ["match (&self.profile, source.location()) {\n            (\n                Profile::Legacy,\n                ObservationLocation::LocalOwner | ObservationLocation::RemoteOwner,\n            )\n            | (Profile::Evaluated(_), ObservationLocation::EvaluatedOwner) => {}\n            _ => return Err(OwnerError::Binding(                                ).into()),\n        }", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request\n            || source.snapshot().owners != self.config.selection.owners\n            || !source\n                .snapshot()\n                .receipts\n                .starts_with(&self.config.selection.receipts)\n        {\n            return Err(OwnerError::Binding(                           ).into());\n        }", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"], top_level = ["match (&self.profile, source.location())", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?", "self.config.scope.validate_snapshot(source.snapshot())?", "if source.snapshot().request != self.config.selection.request", "let observation = source.observe(&self.config).await?;", "self.config.scope.validate_observation(&observation)?", "Ok(observation)"] }, { function = "fn attest_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len() {\n            return self.readback_source(source).await;\n        }", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let config = &self.config;", "let profile = &self.profile;", "let key = &self.key;", "let identity = self.saved.binding_digest;", "let bytes = self.journal.commit_once(&self.saved, || {\n            let issued_at = now()?;\n            profile.require_new(issued_at)?;\n            require_new_attestation(config, started_at, issued_at)?;\n            let predecessors =\n                evaluated::authenticate_predecessors(config, profile, &evidence, issued_at)\n                    .map_err(|_| OwnerError::Binding(                                    ))?;\n            let receipt = evaluated::receipt(config, profile, &observed, issued_at)\n                .map_err(|_| OwnerError::Binding(                    ))?;\n            let payload = learning_iteration_receipt_signing_bytes_v1(&receipt)\n                .map_err(|_| OwnerError::Binding(                          ))?;\n            let signed = sign_original(config, key, &payload, identity, issued_at)?;\n            let verified = config.verifier.verify(\n                LearningEvidenceRoleV1::Observer,\n                &signed,\n                &payload,\n                issued_at,\n            )?;\n            profile\n                .require_signed_separation(&verified, issued_at)\n                .map_err(|_| OwnerError::Binding(                                      ))?;\n            for predecessor in &predecessors {\n                verify_signed_actor_separation(predecessor, &verified, issued_at)?;\n            }\n            learning_owner_evidence::encode(&payload, &signed)\n        })?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "true", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "self.profile.require_new(started_at)?;", "require_new_attestation(&self.config, started_at, started_at)?;", "let observed = self.prepare(&source).await?;", "if source.snapshot().receipts.len() > self.config.selection.receipts.len()", "let evidence = self.predecessors(&source).await?;", "evaluated::authenticate_predecessors(&self.config, &self.profile, &evidence, now()?)?;", "if self.prepare(&source).await? != observed", "let bytes = self.journal.commit_once(&self.saved, ||", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn readback_source(", sequence = ["let started_at = now()?;", "if self.completion_fenced {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        ) {\n            let before = self.predecessors(&source).await?;\n            evaluated::authenticate_predecessors(&self.config, &self.profile, &before, now()?)?;\n        }", "let bytes = self.journal.read(&self.saved)?;", "let result = self", ".finish_original_readback(", "&source, &observed, &bytes, started_at", "false", ".await;", "if result.is_err() {\n            self.completion_fenced = true;\n        }", "result\n    }"], top_level = ["let started_at = now()?;", "if self.completion_fenced", "let observed = self.prepare(&source).await?;", "if matches!(\n            source.location(),\n            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n        )", "let bytes = self.journal.read(&self.saved)?;", "let result = self", "if result.is_err()", "result\n    }"] }, { function = "fn predecessors(", sequence = ["let training = match &self.profile {\n            Profile::Legacy => {\n                let trainer: &LearningIterationEvidenceClientV1 = source\n                    .trainer()\n                    .ok_or(OwnerError::Binding(                           ))?;\n                LearningIterationEvidenceClientV1::readback(\n                    trainer,\n                    source.snapshot(),\n                    prior(&self.config, LearningIterationStageV1::Training)?,\n                )\n                .await?\n            }\n            Profile::Evaluated(selection) => {\n                let (trainer, evaluator) = source\n                    .evaluated_owners()\n                    .ok_or(OwnerError::Binding(                              ))?;\n                selection\n                    .original_context()\n                    .require_original_receipt_owners(trainer, evaluator)\n                    .await?;\n                self.config.training_evidence.clone()\n            }\n        }", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(\n                source.snapshot(),\n                prior(&self.config, LearningIterationStageV1::Selection)?,\n            )\n            .await?;", "Ok([training, selection])"], top_level = ["let training = match &self.profile", "let selector: &LearningIterationEvidenceClientV1 = source.selector();", "let selection = selector\n            .readback(", "Ok([training, selection])"] }, { function = "fn finish_original_readback(", sequence = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location() {\n            ObservationLocation::LocalOwner | ObservationLocation::EvaluatedOwner => {\n                let evidence = self.predecessors(source).await?;\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                evidence\n            }\n            ObservationLocation::RemoteOwner => {\n                if self.prepare(source).await? != *observed {\n                    return Err(OwnerError::CommitUncertain.into());\n                }\n                self.predecessors(source).await?\n            }\n        }", "if self.journal.read(&self.saved)? != bytes {\n            return Err(OwnerError::CommitUncertain.into());\n        }", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"], top_level = ["let completed = self.decode_completed(source, observed, bytes)?;", "let evidence = match source.location()", "if self.journal.read(&self.saved)? != bytes", "let current = now()?;", "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)"] }, { function = "fn decode_completed(", sequence = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(&self.config, &self.profile, observed, signed.issued_at)?;", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?\n            || source\n                .snapshot()\n                .receipts\n                .get(self.config.selection.receipts.len())\n                .is_some_and(|saved| saved != &receipt)\n        {\n            return Err(OwnerError::Binding(                            ).into());\n        }", "Ok((receipt, payload, signed))"], top_level = ["let (payload, signed) = learning_owner_evidence::decode(bytes)?;", "let receipt = evaluated::receipt(", "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?", "Ok((receipt, payload, signed))"] }, { function = "fn authenticate_completed(", sequence = ["let (receipt, payload, signed) = completed;", "if current < started_at {\n            return Err(OwnerError::Binding(                                         ).into());\n        }", "if new_attestation {\n            self.profile.require_new(current)?;\n            require_new_attestation(&self.config, started_at, current)?;\n        }", "let predecessors =\n            evaluated::authenticate_predecessors(&self.config, &self.profile, evidence, current)?;", "let verified = self.config.verifier.verify(\n            LearningEvidenceRoleV1::Observer,\n            &signed,\n            &payload,\n            current,\n        )?;", "if verified.principal() != &self.config.signer.principal\n            || verified.controller_id() != &self.config.signer.controller_id\n            || signed.evidence_id != evidence_id(self.saved.binding_digest)?\n        {\n            return Err(OwnerError::Binding(                              ).into());\n        }", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors {\n            verify_signed_actor_separation(predecessor, &verified, current)?;\n        }", "Ok((receipt, signed))"], top_level = ["let (receipt, payload, signed) = completed;", "if current < started_at", "if new_attestation", "let predecessors =\n            evaluated::authenticate_predecessors(", "let verified = self.config.verifier.verify(", "if verified.principal() != &self.config.signer.principal", "self.profile.require_signed_separation(&verified, current)?;", "for predecessor in &predecessors", "Ok((receipt, signed))"] }, { function = "fn attest_original_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn attest_original_remote_completion(", sequence = ["self.attest_source(source)", ".await"], top_level = ["self.attest_source(source).await"] }, { function = "fn readback(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn readback_remote(", sequence = ["self.readback_source(source)", ".await"], top_level = ["self.readback_source(source).await"] }, { function = "fn read_local_next_use(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?", "let cell: &PublishedCircuitCellOwnerV1<_> = source.cell;", "cell.read_learning_next_use(", "&coordinator", "source.source", "source.identity"], top_level = [] }, { function = "fn read_remote_next_use(", sequence = ["let live: &OriginalCircuitLearningReadClientV1 = source.live;", "live.require_original_context(", "&config.selection", "&config.scope", "&config.verifier", "&config.training_evidence", "Some(&config.selection_evidence)", "let original = live.read_current().await?;", "Ok(original.observation().clone())"], top_level = ["live.require_original_context(", "let original = live.read_current().await?;", "Ok(original.observation().clone())"] }, { function = "fn original_command_profile(", sequence = ["&self.config", "matches!(self.command_origin, CommandOrigin::Recovered)"] }, { function = "fn into_command_owner(", sequence = ["\n        self,\n", "crate::OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(", "self, live, trainer, selector,"] }]
+ 
+ [[protected_file]]
+ path = "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs"
+--- a/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py
++++ b/qa/b4-no-bypass/test_original_circuit_observer_source_closure.py
+@@ -21,6 +21,7 @@
+ SPEC.loader.exec_module(PROOF)
+ AGENT = "codex-rs/hepta-agentd/src/"
+ OWNER = AGENT + "circuit_next_use_receipt_owner.rs"
++BINDING = AGENT + "circuit_next_use_receipt_binding.rs"
+ READERS = (
+     AGENT + "learning_iteration_evaluation_evidence.rs",
+     AGENT + "learning_iteration_generation_evidence.rs",
+@@ -32,15 +33,20 @@
+     AGENT + "neuron_cell_evaluation_qualification_sources.rs",
+ )
+ FUNCTIONS = {
+-    "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",
+-    "fn attest_source(", "fn readback_source(", "fn predecessors(",
+-    "fn finish_original_readback(", "fn decode_completed(",
+-    "fn authenticate_completed(", "fn authenticate_predecessors(",
+-    "fn receipt(", "fn require_new_attestation(", "fn sign_original(", "fn now(",
+-    "fn attest_original_completion(", "fn attest_original_remote_completion(",
+-    "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
+-    "fn read_remote_next_use(",
+-    "fn original_command_profile(", "fn into_command_owner(",
++    OWNER: {
++        "fn create(", "fn recover(", "fn prepare(", "fn attest_source(",
++        "fn readback_source(", "fn predecessors(", "fn finish_original_readback(",
++        "fn decode_completed(", "fn authenticate_completed(",
++        "fn attest_original_completion(", "fn attest_original_remote_completion(",
++        "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
++        "fn read_remote_next_use(", "fn original_command_profile(",
++        "fn into_command_owner(",
++    },
++    BINDING: {
++        "fn validate_config(", "fn authenticate_predecessors(", "fn receipt(",
++        "fn receipt_with_domain(", "fn require_new_attestation(",
++        "fn sign_original(", "fn now(", "fn prior(", "fn evidence_id(",
++    },
+ }
+ 
+ 
+@@ -61,35 +67,51 @@
+         cls.sources = {path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
+             (ROOT / path).read_text())) for path in paths}
+ 
+-    def rejects(self, changed):
+-        self.assertEqual(len(self.rows), 1)
+-        self.assertNotEqual(self.source, changed)
++    def rejects(self, changed, *, path=OWNER):
++        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
++        self.assertEqual(len(rows), 1)
++        source = (ROOT / path).read_text()
++        self.assertNotEqual(source, changed)
+         with tempfile.TemporaryDirectory() as directory:
+             root = Path(directory)
+-            path = root / OWNER
+-            path.parent.mkdir(parents=True)
+-            path.write_text(self.source)
+-            PROOF._verify_protected_files(root, {"protected_file": self.rows})
+-            path.write_text(changed)
++            target = root / path
++            target.parent.mkdir(parents=True)
++            target.write_text(source)
++            PROOF._verify_protected_files(root, {"protected_file": rows})
++            target.write_text(changed)
+             with self.assertRaises(PROOF.VerificationFailure):
+-                PROOF._verify_protected_files(root, {"protected_file": self.rows})
+-
+-    def mutate_function(self, function, marker, replacement=""):
+-        code = PROOF._strip_rust_non_code(self.source)
+-        self.assertEqual(code.count(function), 1, function)
++                PROOF._verify_protected_files(root, {"protected_file": rows})
++
++    def mutate_function(self, function, marker, replacement="", *, path=OWNER, preceding=None):
++        source = (ROOT / path).read_text()
++        code = PROOF._strip_rust_non_code(source)
++        self.assertEqual(code.count(function), 1, (path, function))
+         start = code.index(function)
+         end = PROOF._rust_item_end(code, start)
+         self.assertIsNotNone(end)
+         assert end is not None
+-        body = self.source[start:end + 1]
+-        self.assertIn(marker, body, (function, marker))
+-        offset = start + body.index(marker)
+-        self.rejects(self.source[:offset] + replacement + self.source[offset + len(marker):])
++        # Full ordered rules can protect consuming signatures; their preceding
++        # markers disambiguate later short arguments from parameter names.
++        # Standalone mutations still start in the body. Masking preserves offsets.
++        offset = start if preceding is not None else code.index("{", start, end + 1) + 1
++        for needle in (*(preceding or ()), marker):
++            candidates = [
++                text.find(needle, offset, end + 1) for text in (source, code)
++            ]
++            candidates = [position for position in candidates if position >= 0]
++            self.assertTrue(candidates, (path, function, needle))
++            matched = min(candidates)
++            offset = matched + len(needle)
++        offset = matched
++        self.rejects(source[:offset] + replacement + source[offset + len(marker):], path=path)
+ 
+     def test_real_read_edges_are_registered_and_owner_constructors_remain_closed(self):
+         expected = {
+             "learning_evidence_original_owner_readback": READERS,
+-            "circuit_feature_original_next_use_observation": (OWNER, AGENT + "circuit_learning_read_service.rs"),
++            "circuit_feature_original_next_use_observation": (
++                OWNER, AGENT + "circuit_learning_read_service.rs",
++                AGENT + "circuit_evaluated_next_use_receipt.rs",
++            ),
+             **{"learning_original_circuit_next_use_receipt_" + suffix: ()
+                for suffix in ("create", "recover", "attest", "readback")},
+         }
+@@ -115,14 +137,21 @@
+         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
+ 
+     def test_each_source_role_and_clock_constraint_remains_present_in_order(self):
+-        self.assertEqual(len(self.rows), 1)
+-        functions = self.rows[0]["required_function_order"]
+-        self.assertEqual({row["function"] for row in functions}, FUNCTIONS)
+-        self.assertGreater(sum(len(row["sequence"]) for row in functions), 100)
+-        for row in functions:
+-            for marker in row["sequence"]:
+-                with self.subTest(function=row["function"], marker=marker):
+-                    self.mutate_function(row["function"], marker)
++        marker_count = 0
++        for path, expected in FUNCTIONS.items():
++            rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
++            self.assertEqual(len(rows), 1)
++            functions = rows[0]["required_function_order"]
++            self.assertEqual({row["function"] for row in functions}, expected)
++            marker_count += sum(len(row["sequence"]) for row in functions)
++            for row in functions:
++                for index, marker in enumerate(row["sequence"]):
++                    with self.subTest(path=path, function=row["function"], marker=marker):
++                        self.mutate_function(
++                            row["function"], marker, path=path,
++                            preceding=row["sequence"][:index],
++                        )
++        self.assertGreater(marker_count, 100)
+ 
+     def test_configuration_and_physical_read_guards_cannot_be_dead_branches(self):
+         for function in ("fn create(", "fn recover("):
+@@ -141,13 +170,13 @@
+             "&config.selection_evidence.signing_bytes()", "&config.selection_evidence.signature",
+         ):
+             with self.subTest(marker=marker):
+-                self.mutate_function("fn validate_config(", marker)
++                self.mutate_function("fn validate_config(", marker, path=BINDING)
+         for marker in (
+             "evidence[0] != config.training_evidence",
+             "evidence[1] != config.selection_evidence",
+         ):
+-            self.mutate_function("fn authenticate_predecessors(", marker)
+-            self.mutate_function("fn authenticate_predecessors(", marker, marker.replace("!=", "=="))
++            self.mutate_function("fn authenticate_predecessors(", marker, path=BINDING)
++            self.mutate_function("fn authenticate_predecessors(", marker, marker.replace("!=", "=="), path=BINDING)
+ 
+     def test_new_attestation_deadline_and_readback_window_are_distinct(self):
+         self.mutate_function(
+@@ -161,11 +190,11 @@
+         ):
+             self.mutate_function("fn authenticate_completed(", marker)
+         self.mutate_function(
+-            "fn decode_completed(", "receipt(&self.config, observed, signed.issued_at)?"
++            "fn decode_completed(", "evaluated::receipt(&self.config, &self.profile, observed, signed.issued_at)?"
+         )
+         marker = "current >= config.selection.request.envelope.expiry_unix_seconds"
+-        self.mutate_function("fn require_new_attestation(", marker, marker.replace(">=", ">"))
+-        self.mutate_function("fn now(", "SystemTime::now()")
++        self.mutate_function("fn require_new_attestation(", marker, marker.replace(">=", ">"), path=BINDING)
++        self.mutate_function("fn now(", "SystemTime::now()", path=BINDING)
+ 
+     def test_no_key_generation_execution_or_unbound_stage_assembly_is_added(self):
+         for marker in (
+@@ -175,8 +204,9 @@
+             "LearningIterationStageOwnerPortsV1 for", "fit_or_readback(",
+             "evaluate_or_readback(", "qualify_and_persist(", "unwrap_or", "permit_all",
+         ):
+-            with self.subTest(marker=marker):
+-                self.rejects(self.source + "\n" + marker + "\n")
++            for path in (OWNER, BINDING):
++                with self.subTest(path=path, marker=marker):
++                    self.rejects((ROOT / path).read_text() + "\n" + marker + "\n", path=path)
+ 
+ 
+ if __name__ == "__main__":
+--- a/qa/b4-no-bypass/test_original_published_read_source_closure.py
++++ b/qa/b4-no-bypass/test_original_published_read_source_closure.py
+@@ -205,7 +205,7 @@
+     def test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides(self):
+         for path, function, predecessor, verifier in (
+             (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
+-            (OBSERVER, "fn read_remote_next_use(", "predecessors", "authenticate_predecessors"),
++            (OBSERVER, "fn read_remote_next_use(", "predecessors", "evaluated::authenticate_predecessors"),
+         ):
+             for marker in (
+                 "live.require_original_context(",
+@@ -213,12 +213,18 @@
+             ):
+                 self.rejects(path, function, marker)
+             for marker in (
+-                "if matches!(source.location(), ObservationLocation::RemoteOwner)",
++                "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
+                 f"self.{predecessor}(&source).await?",
+-                f"{verifier}(&self.config, &before, now()?)?",
++                f"{verifier}(&self.config, &self.profile, &before, now()?)?",
+                 "let bytes = self.journal.read(&self.saved)?;",
+             ):
+                 self.rejects(path, "fn readback_source(", marker)
++            for replacement in ("ObservationLocation::RemoteOwner", "ObservationLocation::EvaluatedOwner"):
++                self.rejects(
++                    path, "fn readback_source(",
++                    "ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner",
++                    replacement,
++                )
+             for marker in (
+                 "if self.prepare(source).await? != *observed",
+                 f"self.{predecessor}(source).await?",
+@@ -226,7 +232,7 @@
+                 "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
+             ):
+                 self.rejects(path, "fn finish_original_readback(", marker)
+-            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, evidence, current)?")
++            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, &self.profile, evidence, current)?")
+             for marker in (
+                 "self.config.scope.validate_snapshot(source.snapshot())?",
+                 "source.observe(&self.config).await?",
+--- a/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
++++ b/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py
+@@ -32,7 +32,7 @@
+ READINESS_OWNER = AGENT + "circuit_learning_completion_readiness_service.rs"
+ EXPECTED = {
+     "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs", "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs", "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",),
+-    "circuit_feature_original_selection_observation": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'),
++    "circuit_feature_original_selection_observation": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs'),
+     "learning_original_material_command_client_from_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+     "learning_original_material_command_client_from_original_dataset_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+     "learning_original_material_command_client_recover_original_experience_stream": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",),
+--- a/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py
++++ b/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py
+@@ -257,7 +257,10 @@
+     def test_both_live_predecessors_and_readonly_original_s_are_mandatory(self):
+         for marker in (
+             "let training = match &self.profile", "Profile::Legacy =>",
+-            "source.trainer()", "prior(&self.config, LearningIterationStageV1::Training)?",
++            "let trainer: &LearningIterationEvidenceClientV1 = source.trainer()",
++            '.ok_or(OwnerError::Binding("original C Trainer source"))?',
++            "LearningIterationEvidenceClientV1::readback(trainer,",
++            "prior(&self.config, LearningIterationStageV1::Training)?",
+             "Profile::Evaluated(selection) =>", "source.evaluated_owners()",
+             ".require_original_receipt_owners(trainer, evaluator)",
+             "let selector: &LearningIterationEvidenceClientV1 = source.selector();",

@@ -43,6 +43,9 @@ use evaluation::EvaluationLane;
 #[path = "cell_q24_candidate_stage_model.rs"]
 mod model;
 use model::ModelLane;
+#[path = "cell_q24_candidate_stage_retention.rs"]
+pub(super) mod retention;
+use retention::EvaluatedLane;
 
 /// All endpoints are original connected streams delivered at the same initial
 /// handoff. There is no future Training receipt, B result, panel or model DTO.
@@ -62,6 +65,7 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     candidate: Mutex<CandidateLane>,
     evaluation: Mutex<EvaluationLane>,
     model: Mutex<ModelLane>,
+    retention: Mutex<EvaluatedLane>,
     end: Instant,
 }
 
@@ -112,6 +116,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         Ok(())
     }
 
+    pub(crate) fn original_resident_readback_only(&self) -> bool {
+        OriginalCellQ24NoUpdateStageOwnersV1::original_resident_readback_only(&self.common)
+    }
+
     pub(crate) fn install_fresh_resident_gate(
         &mut self,
         gate: Arc<RootResidentLearningEffectGateV3>,
@@ -129,7 +137,9 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
             tokio::time::timeout_at(self.end.into(), async {
                 self.require_live_deadline()?;
                 let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-                if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
+                if coordinator.candidate().is_some() && retention::is_evaluated_retention(snapshot) {
+                    self.read_original_evaluated_retention(snapshot).await
+                } else if coordinator.candidate().is_some() && snapshot.receipts.len() == 5 {
                     OriginalCellQ24CandidateStageOwnersV1::read_original_model(self, snapshot).await?;
                     Ok(())
                 } else if coordinator.candidate().is_some() && snapshot.receipts.len() >= 4 {
@@ -176,8 +186,13 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
                 if stage == Stage::Proposal {
                     return self.execute_original_model(snapshot).await;
                 }
-                // A real NoUpdate follows the same existing Selector/C route.
-                // Candidate must not reach those retained-baseline commands.
+                if matches!(stage, Stage::Selection | Stage::NextUse)
+                    && retention::is_evaluated_retention(snapshot)
+                {
+                    return self.execute_original_evaluated_retention(snapshot, stage).await;
+                }
+                // Training NoUpdate keeps its original three-cut route. A
+                // qualified Candidate still needs Model and adoption custody.
                 if matches!(stage, Stage::Selection | Stage::NextUse)
                     && snapshot.training_no_update_v2().is_none()
                 {
@@ -225,6 +240,11 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24CandidateStageOwnersV
                             &self.common, &training, receipt, now_unix_seconds,
                         ).await;
                     }
+                    if retention::is_evaluated_retention(snapshot)
+                        && matches!(receipt.observation.stage(), Stage::Selection | Stage::NextUse)
+                    {
+                        return self.evaluated_retention_attestation(snapshot, receipt).await;
+                    }
                     return Err(Error::OwnerUnavailable(
                         "original Candidate Model and adoption attestation capabilities are required",
                     ));
@@ -254,6 +274,7 @@ pub(crate) fn fixture_from_original_clients(
         candidate: Mutex::new(CandidateLane::new(initial)),
         evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
         model: Mutex::new(ModelLane::fixture_unavailable()),
+        retention: Mutex::new(EvaluatedLane::new()),
         end,
     };
     owners.require_initial(

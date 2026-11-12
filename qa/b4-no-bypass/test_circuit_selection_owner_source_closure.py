@@ -82,7 +82,7 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             row.identifier,
             self.manifest["privileged_inventory"]["required_boundary_ids"],
         )
-        self.assertEqual(row.product_callers, ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs'))
+        self.assertEqual(row.product_callers, ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs', 'codex-rs/hepta-agentd/src/circuit_learning_read_service.rs', 'codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs'))
         sources = {
             path: PROOF._strip_rust_non_code((ROOT / path).read_text())
             for path in (row.definition_path, *row.product_callers)
@@ -98,19 +98,19 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             ("fn authenticate_training(", "if evidence != &config.training_evidence"),
             ("fn validate_config(", "&config.training_evidence.signature"),
             ("fn training_evidence(", "training_receipt(&self.config)?"),
-            ("fn authenticate_completed(", "if self.prepare(source).await? != *observed"),
-            ("fn authenticate_completed(", "if self.journal.read(&self.saved)? != bytes"),
-            ("fn authenticate_completed(", "signed.issued_at"),
+            ("fn finish_original_readback(", "if self.prepare(source).await? != *observed"),
+            ("fn finish_original_readback(", "if self.journal.read(&self.saved)? != bytes"),
+            ("fn decode_completed(", "signed.issued_at"),
         ):
             self.rejects(function, marker)
 
     def test_missing_pending_deadline_and_role_separation_remain_distinct(self):
         for function, marker in (
             ("fn attest_source(", "let started_at = now()?;"),
-            ("fn attest_source(", "require_new_attestation(&self.config, started_at, now()?)?"),
-            ("fn attest_source(", "require_new_attestation(&self.config, started_at, claim_at)?"),
+            ("fn attest_source(", "require_new_attestation(&self.config, &self.profile, started_at, now()?)?"),
+            ("fn attest_source(", "require_new_attestation(&self.config, &self.profile, started_at, claim_at)?"),
             ("fn attest_source(", "ProductEvaluationExecutionStoreErrorV1::Missing"),
-            ("fn attest_source(", "require_new_attestation(config, started_at, issued_at)?"),
+            ("fn attest_source(", "require_new_attestation(config, profile, started_at, issued_at)?"),
             ("fn require_new_attestation(", "current >= config.decision.request.envelope.expiry_unix_seconds"),
             ("fn authenticate_completed(", "if current < started_at"),
             ("fn authenticate_training(", "verify_independent_roles(verified.principal(), &config.signer.principal, current)"),

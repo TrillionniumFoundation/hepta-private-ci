@@ -113,7 +113,9 @@ pub(super) fn decode_current(
             _ => Error::Unavailable,
         });
     };
-    if evidence.len() > 5 {
+    // Six signatures are legal only for the exact evaluated-retention branch
+    // authenticated below. TrainingNoUpdate and Model keep their own bounds.
+    if evidence.len() > 6 {
         return Err(Error::WrongScope);
     }
     let snapshot = snapshot

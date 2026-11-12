@@ -55,8 +55,8 @@ EXPECTED = {
     "root_resident_final_observation": [
         "codex-rs/hepta-agentd/src/resident_learning_delivery.rs"
     ],
-    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"],
-    "root_resident_gate_training_cancel": ["codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs"],
+    "root_resident_gate_effect_current": ["codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_next_use.rs"],
+    "root_resident_gate_training_cancel": ["codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs"],
     "root_resident_original_intent_fence": [
         "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
     ],
@@ -106,6 +106,11 @@ ROOT_CASES = [
     "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
     "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
     "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "authority_host_service::resident::authority::tests::origin::resident_root_consuming_origins_match_before_cas_issuance_and_dispatch",
 ]
 ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
@@ -366,7 +371,8 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         filename = "authority_host_learning_resident_auth.rs"
         for function, marker in (
             ("fn original_attestations(", "stages.validate_recovery(snapshot).await?"),
-            ("fn original_attestations(", "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?"),
+            ("fn original_attestations(", "stages\n                    .receipt_attestation(snapshot, receipt, now / 1_000)\n                    .await?"),
+            ("fn original_attestations(", "ResidentOriginalStageOwnersV3::read_original_evaluated_attestations(stages, snapshot)"),
             ("fn original_attestations(", "let (_, fresh) = owner.read(cancellation).await?"),
             ("fn verify_non_model_attestations(", "signatures.len() + proposal_count != snapshot.receipts.len()"),
             ("fn verify_non_model_attestations(", "verifier\n            .verify(role, signature, &payload, now)"),
@@ -398,13 +404,25 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             '#[path = "authority_host_learning_resident_model_tests.rs"]\nmod original_model;',
             roots,
         )
+        retention = (ROOT / (AGENT + "authority_host_learning_resident_retention_auth_tests.rs")).read_text()
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_retention_auth_tests.rs"]\nmod retention_auth;',
+            roots,
+        )
+        origin = (ROOT / (AGENT + "authority_host_learning_resident_origin_tests.rs")).read_text()
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_origin_tests.rs"]\nmod origin;',
+            roots,
+        )
         for name in ROOT_CASES:
-            source = model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
+            source = origin if "::origin::" in name else retention if "::retention_auth::" in name else model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
             self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
         self.assertEqual(
             roots.count('#[ignore = "explicit actual Root')
             + evaluation.count('#[ignore = "explicit actual Root')
-            + model.count('#[ignore = "explicit actual Root'),
+            + model.count('#[ignore = "explicit actual Root')
+            + retention.count('#[ignore = "explicit actual Root')
+            + origin.count('#[ignore = "explicit actual Root'),
             len(ROOT_CASES),
         )
         for marker in (

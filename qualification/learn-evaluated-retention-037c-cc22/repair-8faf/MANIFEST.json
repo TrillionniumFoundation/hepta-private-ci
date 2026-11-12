@@ -1,0 +1,215 @@
+{
+  "schema": "learn-source-8faf-repair-v1",
+  "status": "SCOPED_SOURCE_QA_PASS_READY_FOR_PARENT_REVIEW",
+  "created_at": "2026-11-12T10:23:12.455519+00:00",
+  "base_source": {
+    "commit": "8faf92e260e118508fc62f4f38f3816db24cd4cc",
+    "tree": "d26b9398ffe6ed269c1d018a7e4e043bbe0a2b9d"
+  },
+  "scope": "Six exact file postimages over exact 8faf; physical local subset, not a materialized full source tree.",
+  "source_postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "added": 8,
+      "removed": 7,
+      "base": {
+        "bytes": 23987,
+        "sha256": "eb2ec69731639bd7d6a6669024738640fd698007898ce75ce8db6189f633c088",
+        "git_blob": "821125b04b65cb63d79ac7d5d1285fbaf3155204"
+      },
+      "post": {
+        "bytes": 24081,
+        "sha256": "aa0ba3925f51d51217cfd37a50ae6b4f2bba88a9d5fdb5b1c91cf3975d11d70e",
+        "git_blob": "23e8989ebd2644947b15c80ab9c641a70767de99"
+      }
+    },
+    {
+      "path": "CALLERS.toml",
+      "added": 1,
+      "removed": 1,
+      "base": {
+        "bytes": 1102083,
+        "sha256": "a1fe445e3656787397731f83beb005d4454bb60b043a7f3846f15613658b74ce",
+        "git_blob": "16bd8058a19ef09b84a667cbd15a09f444ca67f8"
+      },
+      "post": {
+        "bytes": 1102178,
+        "sha256": "7725f09680e6f63b9123f8c1ee51e19e8b9e54d169c8c34fc8c7c6165b8d5a22",
+        "git_blob": "1e2481ff4be46cdf8350bc6488e323a3fcbc8af0"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+      "added": 73,
+      "removed": 43,
+      "base": {
+        "bytes": 9270,
+        "sha256": "b9a52627b97d94d730fe7ea8b1a74b9f772e7c42381d92877d515e38f3fafb2b",
+        "git_blob": "4ce9ba792705d505309d88464fbc2ce552483602"
+      },
+      "post": {
+        "bytes": 10942,
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3",
+        "git_blob": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "added": 10,
+      "removed": 4,
+      "base": {
+        "bytes": 14005,
+        "sha256": "762a23ae7fe51a017a255a79c6eb07d8a2c9cdae95ecdbba8291e06cef5a9575",
+        "git_blob": "54f37ffc8a7a562a379f04298eca608b00dfbcea"
+      },
+      "post": {
+        "bytes": 14384,
+        "sha256": "0e0bd35644f37754de7fb89380c90a869b7a64f47a966c5b9aa9bf32e8055baa",
+        "git_blob": "a4c6fc20d5e713dfbcca7a995951069ff4d0eb5d"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "added": 1,
+      "removed": 1,
+      "base": {
+        "bytes": 20908,
+        "sha256": "73b49af7306ac0d941cbcb30e081eaeb323d9190b31e08b5af3f718805674ca7",
+        "git_blob": "c93314182a274f08a16820936ad5e4bc65182b26"
+      },
+      "post": {
+        "bytes": 20976,
+        "sha256": "44cf8bd7ab00c2bc4fa2870276ec12fef02a5610e09d371ffcee99cdc458ac0e",
+        "git_blob": "865411d2a6a90e79eb267874d3ba6464921a05fa"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "added": 4,
+      "removed": 1,
+      "base": {
+        "bytes": 33298,
+        "sha256": "af0b4ebc268c07a7b5133256545392ab59fcea7ca1648e27e029b7186f07fd9e",
+        "git_blob": "e038407ef642191d77b1185f1e826f16540e5270"
+      },
+      "post": {
+        "bytes": 33501,
+        "sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+        "git_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234"
+      }
+    }
+  ],
+  "patch": {
+    "path": "changes.patch",
+    "bytes": 47125,
+    "sha256": "eb91c03b3cdd8847be5bf82415ac396ff7e07e471b858cf0eeb0bac65aef11c7",
+    "git_blob": "062dcd1560a4bad4ddbaabeb87007716ed297356"
+  },
+  "caller_delta": {
+    "path": "CALLERS.delta.json",
+    "bytes": 41810,
+    "sha256": "98296c59a33e893709026c710cab5baa66750e47bce5d94fd08c12f47dbdd714",
+    "git_blob": "4bb8226d56c2d81dcafe3c145bf8f4fd54626121"
+  },
+  "original_full_source_gate": {
+    "status": "FAILED_PRESERVED",
+    "tests_run": 397,
+    "observed_passes": 381,
+    "failure_or_error_subtests": 16,
+    "log_path": "evidence/original-full-source-8faf/driver.raw.log",
+    "log": {
+      "bytes": 116135,
+      "sha256": "1eec26c9b0b30b68b54b92a209a19a99082b2a1570618b6296b8684ddcf18499",
+      "git_blob": "83b092d483ea980881859eb2558c535db32eaff2"
+    }
+  },
+  "local_attempts": [
+    {
+      "name": "local-before",
+      "result_path": "evidence/local-before/result.json",
+      "log_path": "evidence/local-before/tests.raw.log",
+      "returncode": 1,
+      "tests_run": 44,
+      "failure_subtests": 11,
+      "error_subtests": 5,
+      "source_files": 95,
+      "source_before_after_equal": true,
+      "started_at": "2026-11-12T10:14:27.687986+00:00",
+      "finished_at": "2026-11-12T10:14:37.469722+00:00",
+      "log": {
+        "bytes": 35891,
+        "sha256": "c88ebe89a59e9bb4dbd3a421e468af6caedae686a29036909d4255c408ef9275",
+        "git_blob": "33b6460f28ee678c8958cb02ba22b6366d62a846"
+      }
+    },
+    {
+      "name": "local-after",
+      "result_path": "evidence/local-after/result.json",
+      "log_path": "evidence/local-after/tests.raw.log",
+      "returncode": 1,
+      "tests_run": 66,
+      "failure_subtests": 4,
+      "error_subtests": 0,
+      "source_files": 95,
+      "source_before_after_equal": true,
+      "started_at": "2026-11-12T10:16:17.988153+00:00",
+      "finished_at": "2026-11-12T10:16:43.247543+00:00",
+      "log": {
+        "bytes": 22028,
+        "sha256": "48de464c3cfab6db11c13f8c7767d531c8e5a38fadbbcca61d25129888088830",
+        "git_blob": "5742d231e8795c42fae3784e897f37615c126626"
+      }
+    },
+    {
+      "name": "local-after-v2",
+      "result_path": "evidence/local-after-v2/result.json",
+      "log_path": "evidence/local-after-v2/tests.raw.log",
+      "returncode": 1,
+      "tests_run": 66,
+      "failure_subtests": 3,
+      "error_subtests": 0,
+      "source_files": 95,
+      "source_before_after_equal": true,
+      "started_at": "2026-11-12T10:18:27.441046+00:00",
+      "finished_at": "2026-11-12T10:18:47.909257+00:00",
+      "log": {
+        "bytes": 19843,
+        "sha256": "cee9f4b37f59e6fcf6164628c0231b58645553dfe745c7f8d027be5124505da1",
+        "git_blob": "24bf2e07e19d0dede9a66606c97572aba0b12463"
+      }
+    },
+    {
+      "name": "local-after-v3",
+      "result_path": "evidence/local-after-v3/result.json",
+      "log_path": "evidence/local-after-v3/tests.raw.log",
+      "returncode": 0,
+      "tests_run": 66,
+      "failure_subtests": 0,
+      "error_subtests": 0,
+      "source_files": 95,
+      "source_before_after_equal": true,
+      "started_at": "2026-11-12T10:21:42.337341+00:00",
+      "finished_at": "2026-11-12T10:22:02.462475+00:00",
+      "log": {
+        "bytes": 15139,
+        "sha256": "e09f0b390002f3fc9ea573a7e9e9170887d42889a4a181451cb4ccd27cbcae6f",
+        "git_blob": "f86e09af887b97fa782d0b0c88ac6b3f9291a9ef"
+      }
+    }
+  ],
+  "native_format": {
+    "status": "PASS_UNCHANGED",
+    "result_path": "root-format-c-result.from-pty.json",
+    "scope": "One exact product file, actual parent-run Rust 1.96 rustfmt; not compile/test."
+  },
+  "full_source_on_repaired_candidate": "UNRUN",
+  "fullcaller_on_repaired_candidate": "UNRUN",
+  "native_compile_or_tests_on_repaired_candidate": "UNRUN",
+  "ordinary_qualification": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "daemon_plus_root_cold_recovery": 0,
+    "multigeneration_improver": 0
+  },
+  "frozen_publication_modified": false
+}

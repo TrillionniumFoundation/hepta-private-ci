@@ -1,0 +1,38 @@
+{
+  "source_commit": "521283379701cca53987cf5c3fe85b85fdda04e6",
+  "failed_execution_commit": "cc22a69972d029d3ef28d49096f396eb5214c616",
+  "scope": "test-only; original inclusive expiry semantics and all byte/custody/frame assertions preserved; native and fmt UNRUN",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "before": {
+        "bytes": 15632,
+        "sha256": "1e88352e7772386890d722077d42fdbcd44b96cec0e6ceb58c4223959464d1d0",
+        "git_blob": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b"
+      },
+      "after": {
+        "bytes": 16278,
+        "sha256": "bd866a688d4a501ba7d427bc36fb999b51b49cc789220a636513635c6399a0de",
+        "git_blob": "139596784fcb0c337392ed9ed86174582a58de34"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "before": {
+        "bytes": 19866,
+        "sha256": "c4c61e035f641cd2715af7ee074c46176bfd5c4003f25e7be812c17ec79eb894",
+        "git_blob": "191a74d44cfda509b24919a89144a93ec90b4f70"
+      },
+      "after": {
+        "bytes": 19917,
+        "sha256": "27be19e595d656d7dc38b44e65874c454d1b79d6c7ae2cebc77b5558ff6ebaf5",
+        "git_blob": "3ab5e01325c422f834fad607fabb877e01b9d6ae"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 2606,
+    "sha256": "e075bfd4d7d205e7940457910f2afcad8057968625f043a69d10635251248597",
+    "git_blob": "71832610dec19e6ea608edbe6ad010262d80e4de"
+  }
+}

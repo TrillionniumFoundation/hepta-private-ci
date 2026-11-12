@@ -28,6 +28,7 @@ READ = AGENT + "circuit_original_evaluation_provider_read.rs"
 POLICY = AGENT + "circuit_task_source_policy.rs"
 SOURCE = AGENT + "circuit_task_source.rs"
 INTAKE = AGENT + "circuit_experience_intake.rs"
+DATASET = AGENT + "cell_q24_dataset.rs"
 CURRENT = AGENT + "circuit_original_evaluation_cohort_readback.rs"
 PANEL_MEMBER = AGENT + "neuron_cell_evaluation_panel_member.rs"
 PANEL_BINDING = AGENT + "neuron_cell_evaluation_panel_binding.rs"
@@ -35,7 +36,7 @@ EXPECTED = {
     "learning_original_evaluation_cohort_capture": (),
     "learning_original_evaluation_holdout_provider": (),
     "learning_original_evaluation_material_current": (CORE,),
-    "learning_original_source_policy_projection": (RECORDS, INTAKE),
+    "learning_original_source_policy_projection": (RECORDS, INTAKE, DATASET),
     "learning_original_evaluation_cohort_readback_retain": (CORE,),
     "learning_original_evaluation_cohort_readback_after_release": (),
     "learning_original_evaluation_cohort_readback_cold": (),
@@ -78,7 +79,7 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             self.verifies(path, changed)
 
     def test_exact_cohort_capture_provider_and_original_policy_edges(self):
-        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE, INTAKE, CURRENT, PANEL_MEMBER, PANEL_BINDING}
+        paths = {CORE, CONTRACT, BINDING, RECORDS, READ, POLICY, SOURCE, INTAKE, DATASET, CURRENT, PANEL_MEMBER, PANEL_BINDING}
         sources = {path: self.code((ROOT / path).read_text()) for path in paths}
         for identifier, expected in EXPECTED.items():
             with self.subTest(boundary=identifier):
@@ -214,6 +215,20 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
             "decision.candidate_ids != canonical_candidates",
         ):
             self.rejects(RECORDS, "fn read_episode(", marker)
+
+    def test_decision_joins_exact_source_while_outcome_keeps_independent_measurement_support(self):
+        for marker in (
+            "decision.policy_digest != Digest32::of_bytes(source.output())",
+            "decision.support_digest != source.publication_digest()",
+        ):
+            self.rejects(RECORDS, "fn read_episode(", marker)
+            self.rejects(RECORDS, "fn read_episode(", marker, marker.replace(" != ", " == "))
+        marker = "outcome.support_digest.is_zero()"
+        self.rejects(RECORDS, "fn read_episode(", marker)
+        self.rejects(RECORDS, "fn read_episode(", marker, "!" + marker)
+        for operator in ("!=", "=="):
+            wrong = f"outcome.support_digest {operator} source.publication_digest()"
+            self.rejects(RECORDS, "fn read_episode(", marker, wrong)
 
     def test_two_actual_arms_preserve_inputs_lineage_and_unsupported_actions(self):
         for marker in (

@@ -1,0 +1,179 @@
+[
+  {
+    "label": "recover exact recovery common ancestor",
+    "dry_run": true,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-timeout-split-v1/provider-timeout-only.patch",
+      "--reverse",
+      "--dry-run"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/checks/recovery-reverse",
+    "exit_code": 0,
+    "stdout": "checking file codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "recover exact recovery common ancestor",
+    "dry_run": false,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-timeout-split-v1/provider-timeout-only.patch",
+      "--reverse"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/checks/recovery-reverse",
+    "exit_code": 0,
+    "stdout": "patching file codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "candidate provider fixture and expiry v2",
+    "dry_run": true,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/candidate-provider-native-failures-521-v2/provider-fixture-and-expiry-v2.patch",
+      "--dry-run"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "checking file codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\nchecking file codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "candidate provider fixture and expiry v2",
+    "dry_run": false,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/candidate-provider-native-failures-521-v2/provider-fixture-and-expiry-v2.patch"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "patching file codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\npatching file codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "recovery provider timeout split",
+    "dry_run": true,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-timeout-split-v1/provider-timeout-only.patch",
+      "--dry-run"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "checking file codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "recovery provider timeout split",
+    "dry_run": false,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-timeout-split-v1/provider-timeout-only.patch"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "patching file codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "profile original inclusive expiry",
+    "dry_run": true,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-command-failures-cc22-v1/expiry-window-tests.patch",
+      "--dry-run"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "checking file codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs\nchecking file codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "profile original inclusive expiry",
+    "dry_run": false,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-command-failures-cc22-v1/expiry-window-tests.patch"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "patching file codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs\npatching file codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "profile withdrawal diagnostic after expiry",
+    "dry_run": true,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-command-failures-cc22-v1/withdrawal-diagnostic-after-expiry.patch",
+      "--dry-run"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "checking file codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n",
+    "stderr": ""
+  },
+  {
+    "label": "profile withdrawal diagnostic after expiry",
+    "dry_run": false,
+    "argv": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "--no-backup-if-mismatch",
+      "-p1",
+      "--input",
+      "/workspace/scratch/037c0371c195/native-failures-integration-v1/inputs/native-command-failures-cc22-v1/withdrawal-diagnostic-after-expiry.patch"
+    ],
+    "cwd": "/workspace/scratch/037c0371c195/native-failures-integration-v1/postimages",
+    "exit_code": 0,
+    "stdout": "patching file codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs\n",
+    "stderr": ""
+  }
+]

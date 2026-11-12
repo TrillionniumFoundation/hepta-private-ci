@@ -12,7 +12,7 @@ use super::super::context::PublicationAccess;
 use super::Error;
 use super::OriginalCircuitRetainedVersionPublicationV1;
 use super::OriginalCircuitRetainedVersionReadbackV1;
-use super::context::OriginalVersionCut;
+use super::profile::VersionCut;
 use crate::AgentdConfig;
 use crate::AgentdIdentity;
 use crate::CircuitCellRouteV1;
@@ -80,11 +80,11 @@ impl OriginalCircuitRetainedTaskInputsV1 {
     pub(super) fn install_original(
         self,
         task: PublishedCircuitFeatureTaskV1,
-        cut: &OriginalVersionCut,
+        cut: &VersionCut,
         intent: Digest32,
     ) -> Result<(RetainedVersionInstalledTaskV1, AgentdConfig), Error> {
         cut.require_fresh(super::now()?, PublicationAccess::NewWork)?;
-        task.require_bundle(&cut.training.training.request.selected_bundle)?;
+        task.require_bundle(&cut.snapshot().request.selected_bundle)?;
         let crate::circuit_feature_current::Publication::Update { previous, .. } =
             &task.0.publication
         else {
@@ -107,7 +107,7 @@ impl OriginalCircuitRetainedTaskInputsV1 {
                 fence: self.fence,
                 circuit: self.circuit,
                 routes: self.routes,
-                bundle: cut.training.training.request.selected_bundle.clone(),
+                bundle: cut.snapshot().request.selected_bundle.clone(),
                 model: self.model,
                 worker_generation: self.worker_generation,
                 maximum_cell_records: self.maximum_cell_records,
@@ -138,11 +138,9 @@ impl OriginalCircuitRetainedTaskInputsV1 {
 impl RetainedVersionInstalledTaskV1 {
     pub(super) fn observe(
         &self,
-        cut: &OriginalVersionCut,
+        cut: &VersionCut,
     ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
-        let coordinator = cut
-            .training
-            .authenticate(super::now()?, PublicationAccess::Readback)?;
+        let coordinator = cut.decision(super::now()?, PublicationAccess::Readback)?;
         let task = &self.cell.task;
         task.require_current()?;
         CircuitTaskSourceReadbackV1::require_original_input(
@@ -177,14 +175,13 @@ impl RetainedVersionInstalledTaskV1 {
             ));
         };
         let baseline = cut
-            .training
-            .training
+            .snapshot()
             .request
             .selected_bundle
             .digest()
             .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
         if candidate_bundle != baseline
-            || task.source().scope.run_id == cut.training.training.request.source_run_id
+            || task.source().scope.run_id == cut.snapshot().request.source_run_id
         {
             return Err(Error::Binding("actual retained bundle and distinct C run"));
         }
@@ -195,7 +192,7 @@ impl RetainedVersionInstalledTaskV1 {
             &self.identity,
             task.source(),
         )?;
-        task.require_bundle(&cut.training.training.request.selected_bundle)?;
+        task.require_bundle(&cut.snapshot().request.selected_bundle)?;
         let after = PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?;
         if after
             != (LearningIterationObservationV1::Selection {

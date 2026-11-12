@@ -14,6 +14,12 @@ mod fixture;
 use fixture::HostFixture;
 use fixture::finish;
 
+#[path = "circuit_evaluated_retention_context_tests.rs"]
+mod evaluated_retention;
+
+#[path = "circuit_evaluated_retention_publication_tests.rs"]
+mod evaluated_publication;
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_evaluation_host_reads_actual_panel_and_cold_original_signature()
 -> anyhow::Result<()> {
@@ -162,7 +168,7 @@ async fn original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effec
     let counts = pending.finish().await?;
     assert_eq!(counts, [10, 10]);
 
-    let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
     let empty = fixture.original_files()?;
     let (wrong, peer) = fixture.commands(
         /*readback_only*/ false,

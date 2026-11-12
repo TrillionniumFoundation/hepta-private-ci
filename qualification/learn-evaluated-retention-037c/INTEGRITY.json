@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-12T09:57:34.660016+00:00",
+  "status": "PASS_ARTIFACT_INTEGRITY_ONLY",
+  "initial_originals_unchanged": 28,
+  "new_originals_copied_without_transformation": 55,
+  "source_copies_added": 0,
+  "qualification": false,
+  "checks": [
+    {
+      "check": "initial originals",
+      "files": 28,
+      "result": "ALL_IDENTICAL"
+    },
+    {
+      "check": "complete original maintenance logs",
+      "files": 3,
+      "result": "ALL_IDENTICAL"
+    },
+    {
+      "check": "726 recovered raw log and postimages",
+      "log_bytes": 147766,
+      "chunks": 4,
+      "physical_postimages": 10,
+      "original_file_readbacks": 9,
+      "lib": "exact base Git blob plus original patch reconstruction; RECOVERY attribution preserved",
+      "result": "ALL_IDENTICAL"
+    },
+    {
+      "check": "726 fullcaller original result and complete logs",
+      "gate_exit": 1,
+      "timed_out": false,
+      "files": 7,
+      "result": "ALL_IDENTICAL"
+    },
+    {
+      "check": "a43 raw command result and postimages",
+      "raw_status": "passed",
+      "command_exit": 0,
+      "dirty_files": 19,
+      "clean_gate_pass": false,
+      "physical_postimages": 19,
+      "native_tests": false,
+      "result": "ARTIFACT_IDENTITY_ONLY"
+    },
+    {
+      "check": "actual format followup and merge evidence",
+      "physical_file_versions": 60,
+      "rustfmt_exit": 0,
+      "three_way_merges": 2,
+      "original_native_source_unchanged": true,
+      "result": "ARTIFACT_IDENTITY_ONLY"
+    },
+    {
+      "check": "local source QA and exact postimages",
+      "details": [
+        {
+          "version": "v2",
+          "tests": 72,
+          "log_sha256": "1b1dcfa3c937a224041395af154fef58113c149b52bba4961ee44682142c80d1",
+          "returncode": 0
+        },
+        {
+          "version": "v3",
+          "tests": 72,
+          "log_sha256": "71ea07ac9153b8aec00d040c083f8a1f8005f614ea58a436a5899efdfbb72034",
+          "returncode": 0
+        },
+        {
+          "manifest": "C_POSTIMAGES_NO_LIB.json",
+          "physical_files_checked": 14,
+          "mismatches": []
+        },
+        {
+          "manifest": "MAINTENANCE_FOLLOWUP_POSTIMAGES.json",
+          "physical_files_checked": 20,
+          "mismatches": []
+        },
+        {
+          "manifest": "MATERIALIZED_QA_INPUTS.json",
+          "physical_files_checked": 25,
+          "mismatches": []
+        },
+        {
+          "manifest": "COMPLETE_SOURCE_POSTIMAGES.json",
+          "physical_files_checked": 36,
+          "mismatches": []
+        }
+      ],
+      "complete_git_tree_verified": false,
+      "result": "LOCAL_FILE_EVIDENCE_ONLY"
+    },
+    {
+      "check": "native filter case-name consistency",
+      "ordinary": 9,
+      "root": 4,
+      "extra_filters": 0,
+      "extra_root_parents": 0,
+      "native_executed": false,
+      "result": "STATIC_COVERAGE_ONLY"
+    },
+    {
+      "check": "UFCS complete PTY original bytes and derived result",
+      "raw_bytes": 4850,
+      "normalization": "UTF-8 CRLF to LF only",
+      "source_index_rust_files": 6588,
+      "single_boundary_only": true,
+      "before_rejected": true,
+      "after_accepted": true,
+      "real_unregistered_caller_rejected": true,
+      "whole_candidate_fullcaller_pass": false,
+      "result": "ARTIFACT_IDENTITY_ONLY"
+    },
+    {
+      "check": "ordinary producer exact-source audit",
+      "source_files": 47,
+      "boundary_rows": 22,
+      "source_files_copied": 0,
+      "native_executed": false,
+      "result": "IDENTITY_ONLY"
+    },
+    {
+      "check": "actual final lib formatting",
+      "exit_code": 0,
+      "changed": false,
+      "postimage": {
+        "bytes": 70644,
+        "git_blob": "c9261c39e0b208b5abc309c0c174c706e8c97343",
+        "sha256": "df0331bb909b10cd6edf7db3108cac71b67ed05c81bcfe444682b6afd0e7fa95"
+      },
+      "native_tests": false,
+      "result": "FORMATTING_ONLY"
+    },
+    {
+      "check": "UFCS independent disk-result readback",
+      "result_json_matches_original_complete_PTY_result": true,
+      "source_after_matches_before": true,
+      "result_sha256": "4b17f67ee493d431de9cebe6a5f4ffb2ab81dcb531ed84a37ac86c46585a22b7",
+      "original_tool_receipt": "caller-ufcs-fix-v1/original-result-readback.json",
+      "result": "ALL_IDENTICAL"
+    },
+    {
+      "check": "8faf format and maintenance-preparation terminal",
+      "terminal_output_complete": true,
+      "terminal_exit": 1,
+      "fmt_exit": 0,
+      "fmt_changed_postimages": 0,
+      "inventory_before_after_equal": true,
+      "inventory_sha256": "0be12c4cd7cfb08312f699793cdff380fcba02150d38f1cfa02f4fb8e11d7422",
+      "maintenance_before_snapshot": null,
+      "maintenance_error_kind": "missing V8 archive before cargo launch",
+      "rust_compile_failure": false,
+      "native_test_pass": false,
+      "result": "ORIGINAL_FAILURE_PRESERVED"
+    }
+  ]
+}

@@ -99,6 +99,62 @@ class Q24DatasetSourceClosureTests(unittest.TestCase):
                 self.assertEqual(self.source.count(marker), 1)
                 self.rejects(self.source.replace(marker, "", 1))
 
+    def test_consumer_requires_the_exact_original_source_profile_and_policy(self):
+        for marker in (
+            "terminal_target(&records, request, &source, rule.unit_profile_digest)?",
+            "let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;",
+            "candidates.sort();",
+            ".div_ceil(1_000_000)",
+        ):
+            with self.subTest(marker=marker):
+                self.assertEqual(self.source.count(marker), 1)
+                self.rejects(self.source.replace(marker, "", 1))
+
+        for marker in (
+            "decision.run_snapshot_digest != source.input().ndu_snapshot_digest",
+            "decision.policy_digest != Digest32::of_bytes(source.output())",
+            "decision.support_digest != source.publication_digest()",
+            "decision.candidate_ids != candidates",
+            "decision.selected_candidate_id != *policy.selected()",
+            "decision.selected_propensity != ProbabilityQ32::ONE",
+            "admitted_at == 0",
+            "outcome.observed_at.is_some_and(|at| at < admitted_at)",
+            ".is_some_and(|at| at < outcome.latest_observable_at)",
+        ):
+            with self.subTest(marker=marker):
+                self.assertEqual(self.source.count(marker), 1)
+                self.rejects(self.source.replace(marker, "", 1))
+                if " != " in marker:
+                    reversed_marker = marker.replace(" != ", " == ")
+                elif " == " in marker:
+                    reversed_marker = marker.replace(" == ", " != ")
+                else:
+                    reversed_marker = marker.replace(" < ", " >= ")
+                self.rejects(self.source.replace(marker, reversed_marker, 1))
+
+        for marker, replacement in (
+            ("original-dataset.v3", "original-dataset.v1"),
+            ("original-dataset.v3", "original-dataset.v2"),
+            ("run-snapshot=source-input-ndu", "run-snapshot=full-run-start"),
+            ("decision-support=source-publication", "decision-support=unbound"),
+            ("outcome-support=observer-measurement", "outcome-support=source-publication"),
+            ("observed-at-or-after-ceil-source-admission", "unbound-source-age"),
+        ):
+            with self.subTest(marker=marker):
+                self.assertEqual(self.source.count(marker), 1)
+                self.rejects(self.source.replace(marker, replacement, 1))
+
+    def test_outcome_support_preserves_the_observers_independent_measurement_reference(self):
+        marker = "outcome.support_digest.is_zero()"
+        self.assertEqual(self.source.count(marker), 1)
+        self.rejects(self.source.replace(marker, "", 1))
+        self.rejects(self.source.replace(marker, "!" + marker, 1))
+        # Neither equality nor inequality with Source is a measurement rule.
+        # A valid independent Observer may sign any nonzero support digest.
+        for operator in ("!=", "=="):
+            wrong = f"outcome.support_digest {operator} source.publication_digest()"
+            self.rejects(self.source.replace(marker, wrong, 1))
+
     def test_material_cannot_acquire_signing_training_or_publication_effects(self):
         for statement in (
             "owner.sign(value);",
