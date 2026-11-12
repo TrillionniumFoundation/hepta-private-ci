@@ -84,3 +84,13 @@ zero new model calls. Independent future B, ordinary A→learn→B→C, native o
 authorization, old capability adequacy, content-core×NDU 2×2, and production
 adoption remain separate gates. Four seeds and synthetic development records
 cannot establish a broad generalization or neuroscience claim.
+
+## Preexecution review correction
+
+Prepared source `878faaba7388bc679027c0af34203192e8a3f319` was never used for
+model execution. A separate reviewer found that the initial content template
+parity predicted the color-task label. The successor switches template parity
+to `floor(pair/4) mod 2`, and every group/template now contains eight YES and
+eight NO prompts. An adversarial source-builder check rejects the original
+confound. Both prepared histories and their source artifacts are retained;
+this correction used zero model outputs or evaluation outcomes.

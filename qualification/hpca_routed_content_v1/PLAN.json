@@ -35,7 +35,7 @@
   "custody": "Operator-authored synthetic development task worlds, labels visible to investigators; no sealed curator/independent evaluator.",
   "data_sha256": {
     "EVAL_LABELS.json": "7eb030572f8dccc0b9728966dc29307efed00d4424104e02aea916851018bdb1",
-    "TASKS.json": "087dd447e0e4f3c2dcd3788635786fc6711eb1a6758b4507335b3bdf167bb8c7",
+    "TASKS.json": "87a8caa9539642d7c0e0e0cd0b400b134a456e4565d01bf06521618471b31756",
     "TRAIN_FEEDBACK.json": "6eb1856e01ad94462b44d1fdcc6ee2a32d93801da45652eaef642d3d2e756de7"
   },
   "decay": 0.95,
@@ -84,6 +84,8 @@
     23,
     29
   ],
+  "supersedes_unexecuted_source": "878faaba7388bc679027c0af34203192e8a3f319 had content template/label confounding; zero model execution on that source, preserved as preparation history.",
+  "template_balance": "Within each content group and each of two paraphrase templates: eight YES and eight NO; template index floor(pair/4)%2 is independent of both label parities.",
   "threads": 4,
   "tokenizer_material": "Only fast tokenizer, with vocabulary and merges contained in pinned tokenizer.json. No separate vocab.json/merges.txt are present or used in this native model directory."
 }

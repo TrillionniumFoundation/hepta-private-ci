@@ -1,10 +1,33 @@
 """Build one frozen operator-authored development panel, before model execution."""
 
 from hashlib import sha256
+from collections import Counter
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+
+
+def audit_templates(tasks, labels):
+    counts = Counter()
+    prefixes = {"assigned": "The ", "read-fact": "Read this fact:"}
+    for task in tasks:
+        if task["split"] != "content":
+            continue
+        template = task["template_id"]
+        if template not in prefixes or not task["question"].startswith(
+            prefixes[template]
+        ):
+            raise ValueError("template metadata disagrees with actual prompt")
+        counts[(task["group"], template, labels[task["id"]])] += 1
+    for group in (0, 1):
+        for template in prefixes:
+            yes, no = (counts[(group, template, label)] for label in ("yes", "no"))
+            if not yes or yes != no:
+                raise ValueError(
+                    "template and label are confounded within content group"
+                )
+    return counts
 
 
 def main():
@@ -29,7 +52,7 @@ def main():
                         f"Record: {obj} has {feature} {value}. "
                         f"Does {obj} have {feature} {wanted}?"
                     )
-                elif pair % 2:
+                elif (pair // 4) % 2:
                     question = (
                         f"The {feature} assigned to {obj} is {value}. "
                         f"Is the statement '{obj} has {feature} {wanted}' true?"
@@ -45,6 +68,9 @@ def main():
                     "group": group,
                     "pair": pair,
                     "source_cluster": obj,
+                    "template_id": "record"
+                    if split == "train"
+                    else ("assigned" if (pair // 4) % 2 else "read-fact"),
                     "question": question,
                 }
                 tasks.append(row)
@@ -64,6 +90,7 @@ def main():
         row["pair"] = i // 2
         tasks.append(row)
         evaluation[row["id"]] = task["truth"]
+    audit_templates(tasks, evaluation)
     for name, value in (
         ("TASKS.json", {"tasks": tasks}),
         ("TRAIN_FEEDBACK.json", train),

@@ -1,0 +1,146 @@
+{
+  "schema": "hpca-independent-static-source-data-review-v1",
+  "scope": "Read-only source and frozen data review, zero model calls; no independent future-task qualification",
+  "source_sha256": {
+    "TASKS.json": "87a8caa9539642d7c0e0e0cd0b400b134a456e4565d01bf06521618471b31756",
+    "TRAIN_FEEDBACK.json": "6eb1856e01ad94462b44d1fdcc6ee2a32d93801da45652eaef642d3d2e756de7",
+    "EVAL_LABELS.json": "7eb030572f8dccc0b9728966dc29307efed00d4424104e02aea916851018bdb1",
+    "PLAN.json": "b60ba8b2c4adc6556ef35d3115c5099b1a60f4d6f8a91634538c10e2b250fbdf",
+    "run.py": "cbb81cee166ce42c5caac5f560521945dfb7feefd7e480deb735255335e80cde",
+    "credit.py": "551e5a07ef22a0da0710223af163feb97ee6cb16055229a4584ba98b9be7684b",
+    "build_data.py": "bd9313c17ba980f8652c2dbd3719cb07461271ff8a84cf4126c0618554d272cd"
+  },
+  "data_hashes_match_plan": true,
+  "tasks": 160,
+  "unique_ids": 160,
+  "unique_questions": 160,
+  "cross_split_clusters": [],
+  "cross_table": [
+    {
+      "split": "content",
+      "group": 0,
+      "template": "assigned",
+      "label": "no",
+      "n": 8
+    },
+    {
+      "split": "content",
+      "group": 0,
+      "template": "assigned",
+      "label": "yes",
+      "n": 8
+    },
+    {
+      "split": "content",
+      "group": 0,
+      "template": "read_fact",
+      "label": "no",
+      "n": 8
+    },
+    {
+      "split": "content",
+      "group": 0,
+      "template": "read_fact",
+      "label": "yes",
+      "n": 8
+    },
+    {
+      "split": "content",
+      "group": 1,
+      "template": "assigned",
+      "label": "no",
+      "n": 8
+    },
+    {
+      "split": "content",
+      "group": 1,
+      "template": "assigned",
+      "label": "yes",
+      "n": 8
+    },
+    {
+      "split": "content",
+      "group": 1,
+      "template": "read_fact",
+      "label": "no",
+      "n": 8
+    },
+    {
+      "split": "content",
+      "group": 1,
+      "template": "read_fact",
+      "label": "yes",
+      "n": 8
+    },
+    {
+      "split": "retention",
+      "group": 0,
+      "template": "retention",
+      "label": "no",
+      "n": 8
+    },
+    {
+      "split": "retention",
+      "group": 0,
+      "template": "retention",
+      "label": "yes",
+      "n": 8
+    },
+    {
+      "split": "retention",
+      "group": 1,
+      "template": "retention",
+      "label": "no",
+      "n": 8
+    },
+    {
+      "split": "retention",
+      "group": 1,
+      "template": "retention",
+      "label": "yes",
+      "n": 8
+    },
+    {
+      "split": "train",
+      "group": 0,
+      "template": "record",
+      "label": "no",
+      "n": 16
+    },
+    {
+      "split": "train",
+      "group": 0,
+      "template": "record",
+      "label": "yes",
+      "n": 16
+    },
+    {
+      "split": "train",
+      "group": 1,
+      "template": "record",
+      "label": "no",
+      "n": 16
+    },
+    {
+      "split": "train",
+      "group": 1,
+      "template": "record",
+      "label": "yes",
+      "n": 16
+    }
+  ],
+  "content_group_template_balance": true,
+  "cold_subset_templates": [
+    "read_fact",
+    "retention"
+  ],
+  "notes": [
+    "Group routing comes from color/shape domain, not target label; retention group is fixed within related-fact cluster.",
+    "Entity names have split-only Lumo/Neri prefixes; unique salted suffixes. Model input excludes IDs, pair indices, labels, and source-cluster metadata except the declared entity within the question.",
+    "All four ordered feedback label tuples have eight training and eight content pairs. Same-vector digest is checked across all four arms.",
+    "Scalar changes information content; no_eligibility is explicitly a zero-update ablation.",
+    "Cold replay is the declared 12-task subset, not full96-task replay; token IDs, feature hashes and first-token head displacement are compared to the bound original result."
+  ],
+  "new_model_calls": 0,
+  "status": "STATIC_REVIEW_PASS_AFTER_TEMPLATE_FIX"
+}

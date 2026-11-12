@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import credit
+import build_data
 
 
 class DelayedCreditTests(unittest.TestCase):
@@ -115,6 +116,34 @@ class DelayedCreditTests(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             credit.generation_counts([{"status": "unknown"}])
+
+    def test_template_audit_rejects_label_confounded_prompts(self):
+        tasks, labels = [], {}
+        for group in (0, 1):
+            for template, prefix in (
+                ("assigned", "The "),
+                ("read-fact", "Read this fact:"),
+            ):
+                for label in ("yes", "no"):
+                    key = f"{group}-{template}-{label}"
+                    tasks.append(
+                        {
+                            "id": key,
+                            "split": "content",
+                            "group": group,
+                            "template_id": template,
+                            "question": prefix + key,
+                        }
+                    )
+                    labels[key] = label
+        build_data.audit_templates(tasks, labels)
+        # Reproduce the old parity confound: YES uses one template, NO the other.
+        for row in tasks:
+            yes = labels[row["id"]] == "yes"
+            row["template_id"] = "read-fact" if yes else "assigned"
+            row["question"] = ("Read this fact:" if yes else "The ") + row["id"]
+        with self.assertRaisesRegex(ValueError, "confounded"):
+            build_data.audit_templates(tasks, labels)
 
 
 if __name__ == "__main__":
