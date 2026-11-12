@@ -29,8 +29,8 @@ async fn original_bound_middle_receipt_rejects_wrong_order_reuse_and_cancellatio
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn original_bound_readback_keeps_last_training_and_actual_source_tail()
--> anyhow::Result<()> {
+async fn original_bound_readback_keeps_last_training_and_actual_source_tail() -> anyhow::Result<()>
+{
     let (entered, reached) = tokio::sync::oneshot::channel();
     let (resume, proceed) = std::sync::mpsc::channel();
     let fixture = Box::pin(TrainingFixture::new(Control::PauseAt {
@@ -64,7 +64,8 @@ async fn original_bound_readback_keeps_last_training_and_actual_source_tail()
         Err(CommandError::CommitUncertain)
     ));
     assert_eq!(fixture.requests(), 6);
-    let client = Arc::try_unwrap(client).map_err(|_| anyhow::anyhow!("completed Bound readback"))?;
+    let client =
+        Arc::try_unwrap(client).map_err(|_| anyhow::anyhow!("completed Bound readback"))?;
     assert_eq!(finish(client, peer)?, 3);
     assert_eq!(fixture.host.original_files()?, original);
     assert_eq!(fixture.finish().await?.0, 6);

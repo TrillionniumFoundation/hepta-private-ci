@@ -40,7 +40,9 @@ async fn check_middle(
 
     // An Execute proof cannot borrow its middle receipt, even at the real 4m
     // boundary. The original Execute continues to perform all four T reads.
-    let call = owners.training_source.call(owners.panel.retention.len() + 1)?;
+    let call = owners
+        .training_source
+        .call(owners.panel.retention.len() + 1)?;
     let mut proof = call.begin()?;
     Box::pin(owners.read_panel_with_training(&mut proof)).await?;
     assert!(matches!(
@@ -92,7 +94,9 @@ async fn check_middle(
     changed.qualification_namespace = Digest32::ZERO;
     assert!(matches!(
         proof.receipt_read(&trainer, &changed),
-        Err(QualificationError::Binding("same original readonly panel member"))
+        Err(QualificationError::Binding(
+            "same original readonly panel member"
+        ))
     ));
     assert!(matches!(
         proof.finish(&call, owners.current_time()?),
@@ -158,7 +162,11 @@ async fn check_middle(
     let call = readonly_call(owners)?;
     let mut proof = call.begin()?;
     Box::pin(owners.read_panel_with_training(&mut proof)).await?;
-    assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());
+    assert!(
+        Box::pin(owners.read_panel_with_training(&mut proof))
+            .await
+            .is_err()
+    );
     assert!(matches!(
         proof.finish(&call, owners.current_time()?),
         Err(QualificationError::CommitUncertain)
