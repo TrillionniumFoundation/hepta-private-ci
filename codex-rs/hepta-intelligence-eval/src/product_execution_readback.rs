@@ -29,45 +29,14 @@ impl ReadOnlyProductEvaluationExecutionStoreV1 {
             return Err(FileError::Binding);
         }
         let bytes = snapshot(&mut file)?;
-        if bytes.len() < HEADER {
-            return Err(FileError::MissingHeader);
-        }
-        if &bytes[..8] != MAGIC
-            || &bytes[8..40] != binding.as_array()
-            || &bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()
-        {
-            return Err(FileError::Corrupt);
-        }
-        let mut anchor = ProductEvaluationExecutionAnchorV1 {
-            sequence: 0,
-            history_digest: Digest32::of_bytes(&bytes[..HEADER]),
-        };
-        let mut records = BTreeMap::new();
-        let mut remaining = &bytes[HEADER..];
-        while !remaining.is_empty() {
-            let raw: [u8; 4] = take(&mut remaining, 4)?
-                .try_into()
-                .map_err(|_| FileError::Corrupt)?;
-            let count = u32::from_be_bytes(raw) as usize;
-            if !(36..=MAX_FRAME).contains(&count) {
-                return Err(FileError::Capacity);
-            }
-            let payload = take(&mut remaining, count)?;
-            let checksum = take(&mut remaining, 32)?;
-            let next = next_anchor(anchor, payload)?;
-            if checksum != next.history_digest.as_array() {
-                return Err(FileError::Corrupt);
-            }
-            replay(&mut records, payload)?;
-            anchor = next;
-        }
-        if anchor != exact {
+        let replayed = physical::replay_image(&bytes, binding, exact)?;
+        if replayed.anchor != exact {
             return Err(FileError::Rollback);
         }
         Ok(Self {
             file,
-            records,
-            anchor,
+            records: replayed.records,
+            anchor: replayed.anchor,
             bytes_digest: Digest32::of_bytes(&bytes),
             poisoned: false,
         })
@@ -106,26 +75,7 @@ fn snapshot(file: &mut File) -> Result<Vec<u8>, FileError> {
         TryLockError::WouldBlock => FileError::Busy,
         TryLockError::Error(error) => io_error(error),
     })?;
-    let result = (|| {
-        let metadata = file.metadata().map_err(io_error)?;
-        if !metadata.is_file() {
-            return Err(FileError::NotRegular);
-        }
-        let length = metadata.len();
-        if length > MAX_FILE_BYTES {
-            return Err(FileError::Capacity);
-        }
-        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        let mut bytes = Vec::new();
-        (&mut *file)
-            .take(MAX_FILE_BYTES + 1)
-            .read_to_end(&mut bytes)
-            .map_err(io_error)?;
-        if bytes.len() as u64 != length || file.metadata().map_err(io_error)?.len() != length {
-            return Err(FileError::Corrupt);
-        }
-        Ok(bytes)
-    })();
+    let result = physical::read_stable_image(file);
     let unlocked = file.unlock().map_err(io_error);
     let bytes = result?;
     unlocked?;

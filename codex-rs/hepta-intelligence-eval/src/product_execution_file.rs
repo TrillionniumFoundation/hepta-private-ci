@@ -8,8 +8,9 @@
 //! Transfer exclusive ownership of the open file description: do not retain or
 //! rewrap writable duplicates (including `File::try_clone`) or modify it outside
 //! this store. A shared open description can make the OS lock reentrant.
-//! Live readback uses the fsynced cache and detects length changes; full history
-//! validation occurs on recovery, not on every read.
+//! Every live operation compares two complete physical images and the original
+//! canonical replay against the retained state. Observed uncertainty poisons
+//! this handle, even after old bytes are restored; this is not a cold fence.
 //! All writers must honor the held lock. Cross-host use requires filesystem
 //! locking and fsync semantics that are linearizable across those hosts.
 
@@ -35,6 +36,9 @@ use crate::ProductEvaluationExecutionKeyV1;
 use crate::ProductEvaluationExecutionStateV1;
 use crate::ProductEvaluationExecutionStoreErrorV1;
 use crate::ProductEvaluationExecutionStoreV1;
+
+#[path = "product_execution_physical.rs"]
+mod physical;
 
 #[path = "product_execution_readback.rs"]
 mod readback;
@@ -80,6 +84,8 @@ type State = ProductEvaluationExecutionStateV1;
 
 pub struct LockedFileProductEvaluationExecutionStoreV1 {
     file: HeldFile,
+    binding: Digest32,
+    image_digest: Digest32,
     records: BTreeMap<StableId, (Digest32, State)>,
     anchor: ProductEvaluationExecutionAnchorV1,
     length: u64,
@@ -122,8 +128,10 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         file.write_all(&header)
             .and_then(|()| file.sync_all())
             .map_err(|_| FileError::Indeterminate)?;
-        Ok(Self {
+        let mut store = Self {
             file,
+            binding,
+            image_digest: Digest32::of_bytes(&header),
             records: BTreeMap::new(),
             anchor: ProductEvaluationExecutionAnchorV1 {
                 sequence: 0,
@@ -131,7 +139,9 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
             },
             length: HEADER as u64,
             poisoned: false,
-        })
+        };
+        store.ensure_ready().map_err(|_| FileError::Indeterminate)?;
+        Ok(store)
     }
 
     /// Require a witnessed external prefix, including for an empty journal.
@@ -142,66 +152,21 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         minimum: ProductEvaluationExecutionAnchorV1,
     ) -> Result<Self, FileError> {
         let mut file = acquire(file, binding)?;
-        let length = file.metadata().map_err(io_error)?.len();
-        if length > MAX_FILE_BYTES {
-            return Err(FileError::Capacity);
+        let bytes = physical::read_stable_image(&mut file)?;
+        let replayed = physical::replay_image(&bytes, binding, minimum)?;
+        file.sync_all().map_err(|_| FileError::Indeterminate)?;
+        if physical::read_stable_image(&mut file)? != bytes {
+            return Err(FileError::Indeterminate);
         }
-        file.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        let mut bytes = Vec::new();
-        (&mut *file)
-            .take(MAX_FILE_BYTES + 1)
-            .read_to_end(&mut bytes)
-            .map_err(io_error)?;
-        if bytes.len() as u64 != length {
-            return Err(FileError::Corrupt);
-        }
-        if bytes.len() < HEADER {
-            return Err(FileError::MissingHeader);
-        }
-        if &bytes[..8] != MAGIC
-            || &bytes[8..40] != binding.as_array()
-            || &bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()
-        {
-            return Err(FileError::Corrupt);
-        }
-        let mut store = Self {
+        Ok(Self {
             file,
-            records: BTreeMap::new(),
-            anchor: ProductEvaluationExecutionAnchorV1 {
-                sequence: 0,
-                history_digest: Digest32::of_bytes(&bytes[..HEADER]),
-            },
-            length,
+            binding,
+            image_digest: Digest32::of_bytes(&bytes),
+            records: replayed.records,
+            anchor: replayed.anchor,
+            length: bytes.len() as u64,
             poisoned: false,
-        };
-        let mut witnessed = store.anchor == minimum;
-        let mut remaining = &bytes[HEADER..];
-        while !remaining.is_empty() {
-            let raw: [u8; 4] = take(&mut remaining, 4)?
-                .try_into()
-                .map_err(|_| FileError::Corrupt)?;
-            let count = u32::from_be_bytes(raw) as usize;
-            if !(36..=MAX_FRAME).contains(&count) {
-                return Err(FileError::Capacity);
-            }
-            let payload = take(&mut remaining, count)?;
-            let checksum = take(&mut remaining, 32)?;
-            let next = next_anchor(store.anchor, payload)?;
-            if checksum != next.history_digest.as_array() {
-                return Err(FileError::Corrupt);
-            }
-            replay(&mut store.records, payload)?;
-            store.anchor = next;
-            witnessed |= store.anchor == minimum;
-        }
-        if !witnessed {
-            return Err(FileError::Rollback);
-        }
-        store
-            .file
-            .sync_all()
-            .map_err(|_| FileError::Indeterminate)?;
-        Ok(store)
+        })
     }
 
     #[must_use]
@@ -209,17 +174,24 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         self.anchor
     }
 
-    fn ensure_ready(&mut self) -> Result<(), StoreError> {
+    fn ensure_ready(&mut self) -> Result<Vec<u8>, StoreError> {
         if self.poisoned {
             return Err(StoreError::Indeterminate);
         }
-        match self.file.metadata() {
-            Ok(metadata) if metadata.len() == self.length => Ok(()),
-            Ok(_) | Err(_) => {
-                self.poisoned = true;
-                Err(StoreError::Indeterminate)
-            }
+        self.poisoned = true;
+        let bytes =
+            physical::read_stable_image(&mut self.file).map_err(|_| StoreError::Indeterminate)?;
+        let replayed = physical::replay_image(&bytes, self.binding, self.anchor)
+            .map_err(|_| StoreError::Indeterminate)?;
+        if bytes.len() as u64 != self.length
+            || Digest32::of_bytes(&bytes) != self.image_digest
+            || replayed.anchor != self.anchor
+            || replayed.records != self.records
+        {
+            return Err(StoreError::Indeterminate);
         }
+        self.poisoned = false;
+        Ok(bytes)
     }
 
     fn append(&mut self, payload: &[u8]) -> Result<(), StoreError> {
@@ -229,9 +201,12 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
             .filter(|length| *length <= MAX_FILE_BYTES)
             .ok_or(StoreError::Rejected)?;
         let next = next_anchor(self.anchor, payload).map_err(|_| StoreError::Rejected)?;
+        let mut expected = self.ensure_ready()?;
         let mut frame = (payload.len() as u32).to_be_bytes().to_vec();
         frame.extend_from_slice(payload);
         frame.extend_from_slice(next.history_digest.as_array());
+        expected.extend_from_slice(&frame);
+        self.poisoned = true;
         if self
             .file
             .seek(SeekFrom::Start(self.length))
@@ -242,8 +217,17 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
             self.poisoned = true;
             return Err(StoreError::Indeterminate);
         }
+        let observed =
+            physical::read_stable_image(&mut self.file).map_err(|_| StoreError::Indeterminate)?;
+        let replayed = physical::replay_image(&observed, self.binding, next)
+            .map_err(|_| StoreError::Indeterminate)?;
+        if observed != expected || replayed.anchor != next {
+            return Err(StoreError::Indeterminate);
+        }
         self.length = next_length;
         self.anchor = next;
+        self.image_digest = Digest32::of_bytes(&observed);
+        self.poisoned = false;
         Ok(())
     }
 }
