@@ -1,0 +1,12 @@
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs
+@@ -73,7 +73,7 @@
+ 
+ impl PanelFixture {
+     async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
+-        let (original, mut primary_b, mut retention_b, registration) = preregistered().await?;
++        let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;
+         assert_eq!(primary_b.at, retention_b.at);
+         let at = primary_b.at;
+         // Actual retention completes first. Only its original publication

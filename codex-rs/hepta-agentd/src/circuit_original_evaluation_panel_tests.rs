@@ -73,7 +73,7 @@ async fn completed_member(
 
 impl PanelFixture {
     async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
-        let (original, mut primary_b, mut retention_b, registration) = preregistered().await?;
+        let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;
         assert_eq!(primary_b.at, retention_b.at);
         let at = primary_b.at;
         // Actual retention completes first. Only its original publication
