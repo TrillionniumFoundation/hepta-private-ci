@@ -1,6 +1,7 @@
 //! All C files must exist before opening their explicit new owners. The
 //! predecessor and target locations come only from the same sealed Root offer.
 
+use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -22,7 +23,7 @@ use crate::CircuitQ24TaskFilesV1;
 use crate::CircuitQ24TaskOpenModeV1;
 use crate::OriginalQ24SuccessorExecutionInputsV1;
 use crate::OriginalSingleQ24SourceConfigurationV1;
-use crate::authority_host_runtime::PublicationInputData;
+use crate::authority_host_runtime::PreparedPublicationData;
 use crate::authority_host_runtime::publication_data::Mode;
 
 #[derive(Deserialize)]
@@ -54,7 +55,7 @@ impl ExecutionFilesData {
 }
 
 pub(super) fn open_original_new_files(
-    fixed: &PublicationInputData,
+    prepared: &PreparedPublicationData,
     target: &CellGenerationObserverConfigV1,
     source: &OriginalSingleQ24SourceConfigurationV1,
     data: &ExecutionFilesData,
@@ -68,6 +69,8 @@ pub(super) fn open_original_new_files(
     AgentdError,
 > {
     data.require_bounds()?;
+    require_original_paths(prepared, source, data)?;
+    let fixed = &prepared.inputs;
     if !matches!(fixed.mode, Mode::Reserve) {
         return Err(refused(
             "original new C requires the explicit Root Reserve route",
@@ -83,6 +86,33 @@ pub(super) fn open_original_new_files(
     let cell_journal = files.write(&data.cell_journal)?;
     let cell_witness = files.write(&data.cell_witness)?;
     let inference_file = files.append(&data.inference_control)?;
+    for (file, expected) in [
+        (&source_journal, &prepared.successor.source_journal),
+        (&source_witness, &prepared.successor.source_witness),
+        (&cell_journal, &prepared.successor.cell_journal),
+        (&cell_witness, &prepared.successor.cell_witness),
+        (&inference_file, &prepared.successor.inference_control),
+    ] {
+        let physical = file.metadata()?;
+        if (
+            physical.dev(),
+            physical.ino(),
+            physical.uid(),
+            physical.gid(),
+            physical.mode(),
+        ) != (
+            expected.device,
+            expected.inode,
+            expected.uid,
+            expected.gid,
+            expected.mode,
+        ) || physical.nlink() != 1
+        {
+            return Err(refused(
+                "actual C descriptor differs from original Root custody",
+            ));
+        }
+    }
     if previous.metadata()?.len() == 0
         || previous_witness.metadata()?.len() == 0
         || next_witness.metadata()?.len() == 0
@@ -179,4 +209,30 @@ pub(super) fn open_original_new_files(
             clock: Arc::new(super::super::super::initial_q24::clock::sample),
         },
     ))
+}
+
+fn require_original_paths(
+    prepared: &PreparedPublicationData,
+    source: &OriginalSingleQ24SourceConfigurationV1,
+    data: &ExecutionFilesData,
+) -> Result<(), AgentdError> {
+    let original = &prepared.successor;
+    if source.source_journal != original.source_journal.path
+        || source.source_witness != original.source_witness.path
+        || data.cell_journal != original.cell_journal.path
+        || data.cell_witness != original.cell_witness.path
+        || data.inference_control != original.inference_control.path
+        || data.cell_witness_scope != original.cell_witness_scope
+        || data.cell_witness_objective != original.cell_witness_objective
+        || data.cell_witness_generation != original.cell_witness_generation
+        || data.cell_witness_records != original.cell_witness_records
+        || data.maximum_cell_records != original.maximum_cell_records
+        || data.inference_capacity != original.inference_capacity
+        || data.worker_generation != original.worker_generation
+    {
+        return Err(refused(
+            "C execution differs from original fixed Root input",
+        ));
+    }
+    Ok(())
 }

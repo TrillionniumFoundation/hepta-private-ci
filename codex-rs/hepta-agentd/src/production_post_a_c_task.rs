@@ -126,6 +126,26 @@ impl OriginalCTaskPlan {
                 "an existing C requires explicit original cold recovery",
             ));
         }
+        route.with_original_data(|fixed| {
+            for (input, expected) in [
+                (&self.source, &fixed.successor.source_configuration),
+                (&self.target, &fixed.successor.target_configuration),
+                (&self.ingress, &fixed.successor.signed_ingress),
+            ] {
+                OriginalLateInput::require_original_pin(
+                    input,
+                    &expected.path,
+                    (
+                        expected.device,
+                        expected.inode,
+                        expected.uid,
+                        expected.gid,
+                        expected.mode,
+                    ),
+                )?;
+            }
+            Ok(())
+        })?;
         route.require_current()?;
         let source = self.source.wait_original_value(cancelled).await?;
         let original = OriginalLateValue::with_original_bytes(&source, |bytes| {
@@ -153,13 +173,7 @@ impl OriginalCTaskPlan {
         })?;
         let model = actual_model(owners, decision, baseline).await?;
         let (predecessor, new_target, execution) = route.with_original_data(|fixed| {
-            files::open_original_new_files(
-                &fixed.inputs,
-                &target_data,
-                &original,
-                &self.execution,
-                files,
-            )
+            files::open_original_new_files(fixed, &target_data, &original, &self.execution, files)
         })?;
         let previous = route.with_original_data(|fixed| {
             PublishedCircuitFeatureCompletionV1::read_original_historical_completion(
