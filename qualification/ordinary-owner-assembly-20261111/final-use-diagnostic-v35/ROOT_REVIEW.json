@@ -1,0 +1,184 @@
+{
+  "schema": "hepta.v34-only-retained-final-use-diagnostic-root-review.v1",
+  "reviewer": "/root",
+  "base": {
+    "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_diagnostic.rs",
+      "preimage": null,
+      "postimage": {
+        "blob": "f045720cc85590a9f750f8c976088b797a2df29f",
+        "bytes": 4390,
+        "sha256": "cec96b5a5fb70863aca252358aeef9393e09a6a0bd7cbe10fe12402d56de505f"
+      },
+      "exact_unique_reversible_operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "preimage": {
+        "blob": "ebbf7799623fd8993a6135f5ede63d00a8012b06",
+        "bytes": 37740,
+        "sha256": "ced4c5ba23310633726f254a1cef1ea239eb5694adfe54c837d05ae89f34bc62"
+      },
+      "postimage": {
+        "blob": "fe558c9b64c4ed047a9d8320ee48d0b8f2c13d2c",
+        "bytes": 37803,
+        "sha256": "a0f08a08c56e821196ccefc7b30f31babec3fa6f0f555998f43532bd4edd6c30"
+      },
+      "exact_unique_reversible_operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "preimage": {
+        "blob": "9bd9466142c8575a9cf875cc83c9cfd0fc3587bb",
+        "bytes": 5560,
+        "sha256": "c90e1bd0263dbac80dcefaa4e745b3f25e18e80352f5828adb71648ec6f4f35e"
+      },
+      "postimage": {
+        "blob": "60b6ec963cfcaaa6277fad7d6ba01feb1723f539",
+        "bytes": 6190,
+        "sha256": "a667f3360d5560229583f4e1bb28ecdd8578082f00b3e55f2055afddefc1cbaf"
+      },
+      "exact_unique_reversible_operations": 2
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "preimage": {
+        "blob": "ed96ac3966a20a7aab1c5138c7493464b6d8b2a8",
+        "bytes": 3225,
+        "sha256": "f5b087e6705416770624bf640316526eebd23ebedb3d7930e9cb945a83fdd754"
+      },
+      "postimage": {
+        "blob": "3bcc3fe813ffaecf3c97067eb7ba1474b29281ec",
+        "bytes": 3864,
+        "sha256": "8b666c07e2482b20644b71ec71eeba9faf94b6111e67b9b45510d36f7357503b"
+      },
+      "exact_unique_reversible_operations": 4
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "preimage": {
+        "blob": "9dae7caa808e31b3415116ae94c10c1a9c0c6a63",
+        "bytes": 22305,
+        "sha256": "8ae9a5af5ecccd5fcc803a0c54ea272632a26a0455040b9846b753f07bacc188"
+      },
+      "postimage": {
+        "blob": "4a7f6e9f585a6d4d3a6bf83f43a78081c2e9c602",
+        "bytes": 23757,
+        "sha256": "f850e108301e953617d29513ded91200f638d17f50579b78f1b8b4c26e5dd059"
+      },
+      "exact_unique_reversible_operations": 2
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "preimage": {
+        "blob": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+        "bytes": 8315,
+        "sha256": "cd0b581fc4b3421d2184b7f6d4999c1f6cfdf32c144a7358537f2c0b6ca12ead"
+      },
+      "postimage": {
+        "blob": "ec72272b48b41c27230110290c95904a95536f6d",
+        "bytes": 13180,
+        "sha256": "3037831b13a6a822d1fd88d743452289e3dc97a197ded48bef5cacc58b517327"
+      },
+      "exact_unique_reversible_operations": 1
+    }
+  ],
+  "actual_Git_contents_source_preimages_verified": true,
+  "unchanged_metadata": {
+    "CALLERS": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "allowlist": "8fd9bd5dde2f4b57fd7c3d44c41c47c46d93059b",
+    "boundaries": 504,
+    "protected_files": 366,
+    "reason": "The V34 CALLERS has no authority_root_frontier row. That protection is added by the separate future-until foundation cut; importing its cumulative metadata would import unrelated scope. Existing touched protected rows retain their exact required/function-order/forbidden markers."
+  },
+  "current_protected_projection": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "required": 16,
+      "forbidden": 2,
+      "orders": []
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "required": 2,
+      "forbidden": 3,
+      "orders": [
+        {
+          "function": "fn verify_retained_use(",
+          "markers": 6,
+          "matched": true
+        },
+        {
+          "function": "fn authenticate(",
+          "markers": 18,
+          "matched": true
+        },
+        {
+          "function": "fn verify_state(",
+          "markers": 6,
+          "matched": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "required": 1,
+      "forbidden": 0,
+      "orders": [
+        {
+          "function": "fn decode_claims(",
+          "markers": 8,
+          "matched": true
+        }
+      ]
+    }
+  ],
+  "source_scope": {
+    "existing_files": 5,
+    "new_files": 1,
+    "exact_operations": 11,
+    "frontier_without_until": "ec72272b48b41c27230110290c95904a95536f6d",
+    "future_until_or_phase_included": false,
+    "original_frontier_functions_unchanged": true,
+    "new_tests": 0
+  },
+  "diagnostic_contract": [
+    "Private debug-only TLS scope is declared before the original retained-use state lock; the outermost scope emits after original state guards drop.",
+    "Nested scope retains the first refusal and merges into its parent without emitting under that parent's lock.",
+    "Existing callees record fixed stage, original error, and optional original IO ErrorKind only; the original result/mapping/lock/slot/latch behavior is preserved.",
+    "At most 64 records per process; release has no diagnostic state/output; stderr failure cannot replace the original failure.",
+    "No nonce, payload, grant, owner identity or path is included in a diagnostic record."
+  ],
+  "unchanged": {
+    "freshness_ns": 500000000,
+    "freshness_origin": "request_started_ns",
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "ordinary_packages": 7,
+    "root_exact_parents": 17,
+    "retries": 0,
+    "caller_timeout_seconds": 3600,
+    "overall_timeout_seconds": 27000
+  },
+  "independent_source_review": "a69001e868eac58adf3244b77f25de609915c43d",
+  "qualification": {
+    "compiled": false,
+    "formatted": false,
+    "original_checker_executed": false,
+    "native_executed": false,
+    "inherited_PASS": false,
+    "business": [
+      0,
+      0,
+      0
+    ]
+  },
+  "method": "Git-byte and unique forward/reverse source replay plus original-rule bounded JS lexical/function-order projection. No Python checker/typed helper/native execution is represented by this static review.",
+  "independent_current_metadata_review": "a5a711a9f62d8f27e8c6f40afa8d87768a6611ef",
+  "independent_metadata_note": "This supersedes a690's conditional metadata suggestion; current d947 has no Frontier row and stays byte-identical."
+}

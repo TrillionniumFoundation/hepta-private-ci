@@ -107,15 +107,42 @@ impl ClaimJournal {
         let retained = self
             .file
             .metadata()
+            .inspect_err(|error| {
+                super::diagnostic::record(
+                    "journal.retained-metadata",
+                    FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
             .map_err(|_| FinalUseError::Unavailable)?;
-        let named = open_private(root, "authority.claims", Access::Read)?
+        let named = open_private(root, "authority.claims", Access::Read)
+            .inspect_err(|error| {
+                super::diagnostic::record("journal.open-original-name", *error, None);
+            })?
             .metadata()
+            .inspect_err(|error| {
+                super::diagnostic::record(
+                    "journal.named-metadata",
+                    FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
             .map_err(|_| FinalUseError::Unavailable)?;
         if retained.dev() != named.dev()
             || retained.ino() != named.ino()
             || retained.len() != self.durable_length
             || named.len() != self.durable_length
         {
+            let stage = if retained.dev() != named.dev() {
+                "journal.device-mismatch"
+            } else if retained.ino() != named.ino() {
+                "journal.inode-mismatch"
+            } else if retained.len() != self.durable_length {
+                "journal.retained-length-mismatch"
+            } else {
+                "journal.named-length-mismatch"
+            };
+            super::diagnostic::record(stage, FinalUseError::Unavailable, None);
             return Err(FinalUseError::Unavailable);
         }
         Ok(())
@@ -126,8 +153,19 @@ impl Store {
     /// Permanently fence a replaced or resized live journal.
     #[cfg(unix)]
     pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
-        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
-        let journal = claims.take().ok_or(FinalUseError::Unavailable)?;
+        let mut claims = self
+            .claims
+            .lock()
+            .inspect_err(|_| {
+                super::diagnostic::record("journal.claims-lock", FinalUseError::Unavailable, None);
+            })
+            .map_err(|_| FinalUseError::Unavailable)?;
+        let journal = claims
+            .take()
+            .ok_or(FinalUseError::Unavailable)
+            .inspect_err(|error| {
+                super::diagnostic::record("journal.claims-slot-empty", *error, None);
+            })?;
         journal.revalidate(&self.root)?;
         *claims = Some(journal);
         Ok(())

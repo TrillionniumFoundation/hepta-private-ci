@@ -25,12 +25,20 @@ impl Inner {
         state: MutexGuard<'state, State>,
     ) -> Result<MutexGuard<'state, State>, FinalUseError> {
         if state.failed {
+            super::diagnostic::record("live.already-fenced", FinalUseError::Unavailable, None);
             return Err(FinalUseError::Unavailable);
         }
         #[cfg(unix)]
         {
             let mut state = state;
-            if self.store.revalidate_owner().is_err() {
+            if self
+                .store
+                .revalidate_owner()
+                .inspect_err(|error| {
+                    super::diagnostic::record("live.owner-revalidation", *error, None);
+                })
+                .is_err()
+            {
                 state.failed = true;
                 return Err(FinalUseError::Unavailable);
             }
@@ -52,11 +60,18 @@ impl Inner {
                 Ok(trusted) => trusted,
                 Err(error) => {
                     state.failed = true;
-                    return Err(map_trust_error(error));
+                    let mapped = map_trust_error(error);
+                    super::diagnostic::record("live.external-frontier-load", mapped, None);
+                    return Err(mapped);
                 }
             };
             if trusted != frontier_for_state(&state) {
                 state.failed = true;
+                super::diagnostic::record(
+                    "live.external-frontier-mismatch",
+                    FinalUseError::AntiRollbackViolation,
+                    None,
+                );
                 return Err(FinalUseError::AntiRollbackViolation);
             }
         }

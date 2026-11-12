@@ -23,6 +23,7 @@ impl FinalUseAuthority {
     /// Require the existing independent frontier and compare it with this
     /// exact live owner. Compatibility owners without that frontier fail.
     pub fn current_external_frontier(&self) -> Result<FinalUseFrontier, FinalUseError> {
+        let _diagnostic = super::diagnostic::RefusalScope::new("current-external-frontier");
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
@@ -30,6 +31,13 @@ impl FinalUseAuthority {
             .0
             .state
             .lock()
+            .inspect_err(|_| {
+                super::diagnostic::record(
+                    "retained.state-lock",
+                    FinalUseError::Unavailable,
+                    None,
+                );
+            })
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
         Ok(frontier_for_state(&state))
@@ -46,6 +54,7 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         witness: &VerifiedUseTokenWitnessV1,
     ) -> Result<FinalUseRevocations, FinalUseError> {
+        let _diagnostic = super::diagnostic::RefusalScope::new("verify-retained-use");
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
@@ -60,6 +69,13 @@ impl FinalUseAuthority {
             .0
             .state
             .lock()
+            .inspect_err(|_| {
+                super::diagnostic::record(
+                    "retained.state-lock",
+                    FinalUseError::Unavailable,
+                    None,
+                );
+            })
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
         retained.verify_state(&state)

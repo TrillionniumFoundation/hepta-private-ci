@@ -112,11 +112,40 @@ impl RootFinalUseFrontierClient {
         }
         // Concurrent original-owner misuse never queues an unbounded wait or
         // interleaves bytes. It emits no request and grants no authority.
-        let mut slot = self.channel.try_lock().map_err(unavailable)?;
-        let mut channel = slot.take().ok_or(AuthorityTrustError::Unavailable)?;
+        let mut slot = self.channel.try_lock().inspect_err(|error| {
+                let kind = match error {
+                    std::sync::TryLockError::WouldBlock => std::io::ErrorKind::WouldBlock,
+                    std::sync::TryLockError::Poisoned(_) => std::io::ErrorKind::Other,
+                };
+                crate::final_use::diagnostic::record(
+                    "frontier.channel-admission",
+                    crate::final_use::FinalUseError::Unavailable,
+                    Some(kind),
+                );
+            })
+            .map_err(unavailable)?;
+        let mut channel = slot
+            .take()
+            .ok_or(AuthorityTrustError::Unavailable)
+            .inspect_err(|_| {
+                crate::final_use::diagnostic::record(
+                    "frontier.channel-closed",
+                    crate::final_use::FinalUseError::Unavailable,
+                    None,
+                );
+            })?;
         let result = (|| {
             let id = channel.next_request_id;
-            channel.next_request_id = id.checked_add(1).ok_or(AuthorityTrustError::Unavailable)?;
+            channel.next_request_id = id
+                .checked_add(1)
+                .ok_or(AuthorityTrustError::Unavailable)
+                .inspect_err(|_| {
+                    crate::final_use::diagnostic::record(
+                        "frontier.request-id-overflow",
+                        crate::final_use::FinalUseError::Unavailable,
+                        None,
+                    );
+                })?;
             let request = match update {
                 Some((expected, next)) => Request::CompareAndSet {
                     schema_version: 1,
@@ -129,49 +158,141 @@ impl RootFinalUseFrontierClient {
                     request_id: id,
                 },
             };
-            let bytes = serde_json::to_vec(&request).map_err(unavailable)?;
+            let bytes = serde_json::to_vec(&request).inspect_err(|_error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.encode-request",
+                    crate::final_use::FinalUseError::Unavailable,
+                    None,
+                );
+            })
+            .map_err(unavailable)?;
             if bytes.is_empty() || bytes.len() > FRAME_LIMIT {
+                crate::final_use::diagnostic::record(
+                    "frontier.request-frame-length",
+                    crate::final_use::FinalUseError::Unavailable,
+                    None,
+                );
                 return Err(AuthorityTrustError::Unavailable);
             }
             let deadline = self.root.deadline(self.timeout);
-            self.root.check(deadline).map_err(unavailable)?;
+            self.root.check(deadline).inspect_err(|error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.owner-before",
+                    crate::final_use::FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
+            .map_err(unavailable)?;
             self.root
                 .write_until(
                     &mut channel.stream,
                     &(bytes.len() as u32).to_be_bytes(),
                     deadline,
                 )
-                .map_err(unavailable)?;
+                .inspect_err(|error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.write-prefix",
+                    crate::final_use::FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
+            .map_err(unavailable)?;
             self.root
                 .write_until(&mut channel.stream, &bytes, deadline)
-                .map_err(unavailable)?;
+                .inspect_err(|error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.write-body",
+                    crate::final_use::FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
+            .map_err(unavailable)?;
             let mut prefix = [0; 4];
             self.root
                 .read_until(&mut channel.stream, &mut prefix, deadline)
-                .map_err(unavailable)?;
+                .inspect_err(|error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.read-prefix",
+                    crate::final_use::FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
+            .map_err(unavailable)?;
             let length = u32::from_be_bytes(prefix) as usize;
             if length == 0 || length > FRAME_LIMIT {
+                crate::final_use::diagnostic::record(
+                    "frontier.response-frame-length",
+                    crate::final_use::FinalUseError::Unavailable,
+                    None,
+                );
                 return Err(AuthorityTrustError::Unavailable);
             }
             let mut bytes = vec![0; length];
             self.root
                 .read_until(&mut channel.stream, &mut bytes, deadline)
-                .map_err(unavailable)?;
-            let response: Response = serde_json::from_slice(&bytes).map_err(unavailable)?;
-            self.root.check(deadline).map_err(unavailable)?;
+                .inspect_err(|error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.read-body",
+                    crate::final_use::FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
+            .map_err(unavailable)?;
+            let response: Response = serde_json::from_slice(&bytes).inspect_err(|_error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.decode-response",
+                    crate::final_use::FinalUseError::Unavailable,
+                    None,
+                );
+            })
+            .map_err(unavailable)?;
+            self.root.check(deadline).inspect_err(|error| {
+                crate::final_use::diagnostic::record(
+                    "frontier.owner-after",
+                    crate::final_use::FinalUseError::Unavailable,
+                    Some(error.kind()),
+                );
+            })
+            .map_err(unavailable)?;
             if response.schema_version != 1 || response.request_id != id {
+                crate::final_use::diagnostic::record(
+                    "frontier.response-binding",
+                    crate::final_use::FinalUseError::Unavailable,
+                    None,
+                );
                 return Err(AuthorityTrustError::Unavailable);
             }
             match response.status {
                 Status::Ack => {
-                    let frontier = response.frontier.ok_or(AuthorityTrustError::Unavailable)?;
+                    let frontier = response
+                        .frontier
+                        .ok_or(AuthorityTrustError::Unavailable)
+                        .inspect_err(|_| {
+                            crate::final_use::diagnostic::record(
+                                "frontier.ack-without-state",
+                                crate::final_use::FinalUseError::Unavailable,
+                                None,
+                            );
+                        })?;
                     if update.is_some_and(|(_, next)| *next != frontier) {
+                        crate::final_use::diagnostic::record(
+                            "frontier.ack-state-mismatch",
+                            crate::final_use::FinalUseError::Unavailable,
+                            None,
+                        );
                         return Err(AuthorityTrustError::Unavailable);
                     }
                     Ok(frontier)
                 }
                 Status::Conflict if update.is_some() => Err(AuthorityTrustError::Conflict),
-                Status::Conflict | Status::Unknown => Err(AuthorityTrustError::Unavailable),
+                Status::Conflict | Status::Unknown => {
+                    crate::final_use::diagnostic::record(
+                        "frontier.load-conflict-or-unknown",
+                        crate::final_use::FinalUseError::Unavailable,
+                        None,
+                    );
+                    Err(AuthorityTrustError::Unavailable)
+                }
             }
         })();
         if result.is_ok() || result == Err(AuthorityTrustError::Conflict) {

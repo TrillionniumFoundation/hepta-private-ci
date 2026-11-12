@@ -1,0 +1,254 @@
+{
+  "schema": "hepta.independent-v34-final-use-diagnostic-replay-review.v2",
+  "reviewer": "/root/hepta_audit",
+  "verdict": "The original eleven diagnostic operations can be applied uniquely to actual V34 sources without the future until/phase slice. No source replay blocker found. Diagnostic-only, no execution/qualification.",
+  "source": {
+    "head": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea",
+    "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"
+  },
+  "inputs": {
+    "operations": "3ad08bb760c6e87c6457f1f89dad5c08c29f1405",
+    "diagnosticV2Manifest": "b370fe162fb83b0901ec869d17e67181c832916b",
+    "priorIndependentSourceReview": "110346a53db49f0c246526203c145026e300f6cd"
+  },
+  "verification": {
+    "actualPreimages": "All five existing files independently GET by full d973 commit/path. Returned UTF-8/Git/SHA values checked; four are exactly the original v2 preimages, Frontier is actual 210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0.",
+    "sourceOperations": 11,
+    "uniqueForwardReverse": true,
+    "postimages": "All five non-Frontier diagnostic postimages are byte-identical to the already-reviewed v2 slice, including the corrected nested-scope helper. Frontier has the different explicit postimage listed below because its future until constructor was excluded.",
+    "frontier": {
+      "original": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+      "originalBytes": 8315,
+      "futureUntilBaseNotUsed": "ea360605daafec088a2f3891d11622bd2edfc010",
+      "originalOpsTargetBytes": 10540,
+      "computedPostimage": "ec72272b48b41c27230110290c95904a95536f6d",
+      "computedPostimageBytes": 13180,
+      "computedPostimageSHA256": "3037831b13a6a822d1fd88d743452289e3dc97a197ded48bef5cacc58b517327",
+      "changedRange": "Exactly the existing fn exchange function; its original whole-body literal matches once in 210040d and the diagnostic replacement matches once afterward. Prefix and suffix outside that function are byte-identical.",
+      "unchangedFunctionNames": [
+        "from_stream",
+        "from_stream_for_uid",
+        "exchange",
+        "load",
+        "compare_and_set",
+        "bounded_text",
+        "unavailable"
+      ],
+      "futureSymbolsAbsent": [
+        "from_stream_until",
+        "from_stream_for_uid_until",
+        "OwnerChannel::new_until"
+      ],
+      "excludedBytes": 2225,
+      "qualification": "This computed postimage is from exact in-memory source-operation replay, not a native formatter/runtime file read. The reviewer did not modify any ref or source tree."
+    }
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_diagnostic.rs",
+      "operations": 1,
+      "preimage": null,
+      "postimage": {
+        "blob": "f045720cc85590a9f750f8c976088b797a2df29f",
+        "bytes": 4390,
+        "sha256": "cec96b5a5fb70863aca252358aeef9393e09a6a0bd7cbe10fe12402d56de505f"
+      },
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "operations": 1,
+      "preimage": {
+        "blob": "ebbf7799623fd8993a6135f5ede63d00a8012b06",
+        "bytes": 37740,
+        "sha256": "ced4c5ba23310633726f254a1cef1ea239eb5694adfe54c837d05ae89f34bc62"
+      },
+      "postimage": {
+        "blob": "fe558c9b64c4ed047a9d8320ee48d0b8f2c13d2c",
+        "bytes": 37803,
+        "sha256": "a0f08a08c56e821196ccefc7b30f31babec3fa6f0f555998f43532bd4edd6c30"
+      },
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "operations": 2,
+      "preimage": {
+        "blob": "9bd9466142c8575a9cf875cc83c9cfd0fc3587bb",
+        "bytes": 5560,
+        "sha256": "c90e1bd0263dbac80dcefaa4e745b3f25e18e80352f5828adb71648ec6f4f35e"
+      },
+      "postimage": {
+        "blob": "60b6ec963cfcaaa6277fad7d6ba01feb1723f539",
+        "bytes": 6190,
+        "sha256": "a667f3360d5560229583f4e1bb28ecdd8578082f00b3e55f2055afddefc1cbaf"
+      },
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "operations": 4,
+      "preimage": {
+        "blob": "ed96ac3966a20a7aab1c5138c7493464b6d8b2a8",
+        "bytes": 3225,
+        "sha256": "f5b087e6705416770624bf640316526eebd23ebedb3d7930e9cb945a83fdd754"
+      },
+      "postimage": {
+        "blob": "3bcc3fe813ffaecf3c97067eb7ba1474b29281ec",
+        "bytes": 3864,
+        "sha256": "8b666c07e2482b20644b71ec71eeba9faf94b6111e67b9b45510d36f7357503b"
+      },
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "operations": 2,
+      "preimage": {
+        "blob": "9dae7caa808e31b3415116ae94c10c1a9c0c6a63",
+        "bytes": 22305,
+        "sha256": "8ae9a5af5ecccd5fcc803a0c54ea272632a26a0455040b9846b753f07bacc188"
+      },
+      "postimage": {
+        "blob": "4a7f6e9f585a6d4d3a6bf83f43a78081c2e9c602",
+        "bytes": 23757,
+        "sha256": "f850e108301e953617d29513ded91200f638d17f50579b78f1b8b4c26e5dd059"
+      },
+      "forward": true,
+      "reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+      "operations": 1,
+      "preimage": {
+        "blob": "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+        "bytes": 8315,
+        "sha256": "cd0b581fc4b3421d2184b7f6d4999c1f6cfdf32c144a7358537f2c0b6ca12ead"
+      },
+      "postimage": {
+        "blob": "ec72272b48b41c27230110290c95904a95536f6d",
+        "bytes": 13180,
+        "sha256": "3037831b13a6a822d1fd88d743452289e3dc97a197ded48bef5cacc58b517327"
+      },
+      "forward": true,
+      "reverse": true
+    }
+  ],
+  "reusedSourceConclusions": [
+    "The corrected helper f045 emits only from the outermost synchronous RefusalScope; nested scopes merge the first refusal into their outer predecessor. Scope declarations precede original state guards so emission follows their release.",
+    "The other five source postimages are exactly the already-reviewed diagnostic v2 bytes. The existing stage/error/IO-kind records do not introduce owner reads, refresh, retry, nonce/claim changes or authority decisions.",
+    "Original locks, Slot take/restore/shutdown, failed state, return classes, 500ms timing, absolute ends and attempted exchange count remain.",
+    "No diagnosis is treated as a repair or proof of the unknown V34 refusal leaf."
+  ],
+  "metadata": {
+    "actualParent": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "bytes": 669225,
+    "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd",
+    "retrievedByReviewer": true,
+    "boundaries": 504,
+    "protectedFiles": 366,
+    "actualFrontierPathOccurrences": 0,
+    "actualLiveOwnerPathOccurrences": 0,
+    "disposition": "Keep the actual current CALLERS bytes unchanged for this diagnostic-only replay. Do not introduce the future Frontier protection table, until constructors, extra closed callers or the future cumulative 522/372 or 524/374 table.",
+    "applicableProtectedPaths": [
+      "codex-rs/hepta-contracts/src/final_use.rs",
+      "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "codex-rs/hepta-contracts/src/final_use_store.rs"
+    ],
+    "boundedProjection": {
+      "implementationBlob": "61315f918e0130f9b165f1265941635acc9a7493",
+      "originalCheckerReference": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "kind": "Independent V8 lexical/function-scope projection following the previously read original masking/order rules, not original checker execution",
+      "rawRequiredAllPresent": true,
+      "forbiddenAllAbsent": true,
+      "all4SequencesOrdered": true,
+      "rows": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "blob": "fe558c9b64c4ed047a9d8320ee48d0b8f2c13d2c",
+          "requiredCount": 16,
+          "forbiddenCount": 2,
+          "missing": [],
+          "forbidden": [],
+          "functions": []
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+          "blob": "60b6ec963cfcaaa6277fad7d6ba01feb1723f539",
+          "requiredCount": 2,
+          "forbiddenCount": 3,
+          "missing": [],
+          "forbidden": [],
+          "functions": [
+            {
+              "function": "fn verify_retained_use(",
+              "bounds": [
+                2067,
+                3145
+              ],
+              "ok": true,
+              "markers": 6
+            },
+            {
+              "function": "fn authenticate(",
+              "bounds": [
+                3498,
+                5390
+              ],
+              "ok": true,
+              "markers": 18
+            },
+            {
+              "function": "fn verify_state(",
+              "bounds": [
+                5408,
+                6110
+              ],
+              "ok": true,
+              "markers": 6
+            }
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+          "blob": "4a7f6e9f585a6d4d3a6bf83f43a78081c2e9c602",
+          "requiredCount": 1,
+          "forbiddenCount": 0,
+          "missing": [],
+          "forbidden": [],
+          "functions": [
+            {
+              "function": "fn decode_claims(",
+              "bounds": [
+                18060,
+                18999
+              ],
+              "ok": true,
+              "markers": 8
+            }
+          ]
+        }
+      ]
+    },
+    "allowlist": "Root states the existing allowlist stays byte-identical. This review checks the relevant source/CALLERS paths and does not newly inspect or authorize an allowlist change.",
+    "originalCheckerExecuted": false
+  },
+  "limits": {
+    "originalCheckerExecuted": false,
+    "compilerExecuted": false,
+    "formatterExecuted": false,
+    "nativeExecuted": false,
+    "hOrPtyCalled": false,
+    "refsChanged": false,
+    "repositoryTreeModified": false,
+    "fullBusinessCounts": "0 / 0 / 0",
+    "evidence": "V34 remains ordinary 1950/1950 but Root17 16/1 and overall failed-native-components. This static replay does not change or inherit those results."
+  },
+  "supersedes": {
+    "blob": "a69001e868eac58adf3244b77f25de609915c43d",
+    "scope": "Source replay findings unchanged. Replaces the earlier conditional metadata-next-step advice: actual d947 has no Frontier row, so no current metadata edit is needed."
+  }
+}
