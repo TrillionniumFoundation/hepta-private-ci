@@ -1,0 +1,35 @@
+{
+  "schema": "full-v2-finite-execution-receipt-v1",
+  "complete_attempt_exit_code": 0,
+  "source_head": "62f392a0ed953f2d04e9c62b4b243f5cceed2a98",
+  "new_neural_model_executions": 0,
+  "new_training_executions": 0,
+  "earlier_attempt": {
+    "stage": "mkdir output evidence directory",
+    "outcome": "ENOSPC",
+    "numerical_execution_started": false,
+    "raw_stderr": "finite-ATTEMPT001-ENOSPC.stderr"
+  },
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "qualification.hcsn_finite_review.run",
+    "--input-root",
+    "/workspace/scratch/c06d659c1e72/visited-originals/training-domain-original/run/audit",
+    "--pilot-root",
+    "/workspace/scratch/c06d659c1e72/visited-originals/factorial-13904346161/experiment",
+    "--dde-evidence",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/evidence/actual-graded-migration-attempt001",
+    "--format-witness",
+    "/workspace/scratch/c06d659c1e72/graded-v2/qualification/hcsn_graded/evidence/final-checks/FORMAT.json",
+    "--output-dir",
+    "qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002"
+  ],
+  "environment": {
+    "PYTHONPATH": "/workspace/scratch/c06d659c1e72/graded-v2:/workspace/scratch/c06d659c1e72/joint-dde",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "receipt_observed_at_utc": "2026-11-12T07:24:00.574791+00:00"
+}
