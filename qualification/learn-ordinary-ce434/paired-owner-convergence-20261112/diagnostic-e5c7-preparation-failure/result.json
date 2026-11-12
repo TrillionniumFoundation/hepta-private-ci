@@ -1,0 +1,44 @@
+{
+  "state": "failed",
+  "source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "source_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+  "purpose": "three exact diagnostics; no acceptance suite or ordinary credit",
+  "native_cases_expected": 3,
+  "steps": [
+    {
+      "name": "fetch-exact-source",
+      "exit_code": 0,
+      "seconds": 3.882034230977297,
+      "bytes": 144,
+      "sha256": "b360d92e121187758666b0119cec8b0b16662f30836c24d6c0ce7ef29c5b7795"
+    },
+    {
+      "name": "fast-forward-original-worktree",
+      "exit_code": 0,
+      "seconds": 5.434630321105942,
+      "bytes": 889,
+      "sha256": "009b20172ee416947828ffe493855e5ced88d96e1061204d553f6ae04b4bf1e2"
+    },
+    {
+      "name": "original-full-native",
+      "exit_code": 1,
+      "seconds": 0.531492801848799,
+      "bytes": 679,
+      "sha256": "c3c859a3cc6f803e9cb7fda625a48d52c97c6d96445a792d7bdcc49960bc9a9f"
+    }
+  ],
+  "native_result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-e5c7dbd90938-diagnostic-v1/result.json",
+  "formatter_executed": false,
+  "full_caller_executed": false,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "started_unix_ms": 1794488617087,
+  "tracked_rust_files": 6766,
+  "native_runner_sha256": "5238825f1dabd9cde26524d89c643ecf3f3c344ac02b03507ea4559c9e9d8e31",
+  "source_after": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "source_status_after": ""
+}
