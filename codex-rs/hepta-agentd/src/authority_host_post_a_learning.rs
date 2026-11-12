@@ -2,9 +2,12 @@
 //! It contains original file identities and the training policy, never peer
 //! projected rows, a prepared batch digest, private signer or update authority.
 
+use std::fs::File;
 use std::io;
+use std::os::fd::OwnedFd;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::Instant;
 
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
@@ -13,15 +16,23 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 
 use super::super::generation_publication::deployment::files::MetadataFile;
+use super::learning_trust::RootHistoricalLearningTrustV1;
 use super::post_a_files::PostABaselineData;
 use super::post_a_files::PostABaselineFiles;
 use super::post_a_freeze::PostAFreezeData;
 use super::post_a_freeze::PostAFreezeFiles;
+use super::require_end;
 use crate::CellQ24DatasetProjectionV1;
 use crate::CellQ24PrivateHeadV1;
 use crate::CellQ24SgdRuleV1;
 use crate::HostAuthorityQ24ModelFactoryReservationV1;
+use crate::HostAuthorityRegistration;
+use crate::HostAuthorityService;
+use crate::HostAuthorityServiceConfig;
+use crate::RootQ24ModelFactoryOfferV1;
 use crate::authority_host_service::OriginalDerivedLearningMode;
+use crate::authority_host_service::RegisteredHostLearningCheckpointV1;
+use crate::authority_host_service::generation_initial::historical_source_pin::RootOriginalHistoricalCompleteTaskObservationV1;
 use crate::authority_host_service::generation_initial::original_root;
 
 #[path = "authority_host_post_a_derive.rs"]
@@ -72,7 +83,90 @@ pub(super) struct PostALearningRuntime {
     plan: PostALearningPlan,
 }
 
+/// Original owners and sealed rights produced by this Root service. Only the
+/// enclosing physical historical read may release them to the one-shot worker.
+pub(super) struct PostALearningInstallation {
+    pub(super) learning: RegisteredHostLearningCheckpointV1,
+    pub(super) learning_bootstrap: File,
+    pub(super) model_offer: RootQ24ModelFactoryOfferV1,
+    pub(super) publication: Option<super::super::generation_publication::PublicationRuntime>,
+    pub(super) frozen_scope: String,
+}
+
 impl PostALearningRuntime {
+    pub(super) fn prepare_original_installation(
+        &self,
+        service: &HostAuthorityService,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        owner: &OwnedFd,
+        proof: &str,
+        initial: &LearningIterationSnapshotV1,
+        observed: &RootOriginalHistoricalCompleteTaskObservationV1,
+        trust: &RootHistoricalLearningTrustV1,
+        end: Instant,
+    ) -> io::Result<PostALearningInstallation> {
+        original_root()?;
+        let identity = registration.registered_identity.identity()?;
+        self.with_original_derived_profile(
+            service,
+            &identity,
+            proof,
+            initial,
+            observed,
+            trust,
+            end,
+            |profile| {
+                require_end(end)?;
+                let frozen_scope = profile.require_cell_scope(initial)?.binding().to_string();
+                let mut learning = service.prepare_original_derived_learning_checkpoint(
+                    config,
+                    registration,
+                    owner,
+                    profile,
+                    self.original_mode(),
+                    end,
+                )?;
+                if self.register {
+                    service.reserve_q24_model_factory_for_profile(
+                        config,
+                        registration,
+                        owner,
+                        &learning.profile,
+                        &self.reservation,
+                        end,
+                    )?;
+                }
+                require_end(end)?;
+                let mut factory = service.open_q24_model_factory(
+                    config,
+                    registration,
+                    owner,
+                    &learning.profile,
+                    &self.reservation_path,
+                )?;
+                let learning_bootstrap =
+                    service.seal_learning_checkpoint(config, registration, owner, &learning)?;
+                let model_offer = service.seal_q24_model_factory_offer(
+                    config,
+                    registration,
+                    owner,
+                    &mut factory,
+                )?;
+                learning.q24_model = Some(factory);
+                self.require_original_metadata()?;
+                require_end(end)?;
+                Ok(PostALearningInstallation {
+                    learning,
+                    learning_bootstrap,
+                    model_offer,
+                    publication: None,
+                    frozen_scope,
+                })
+            },
+        )
+    }
+
     pub(super) fn retain_original_plan(
         path: &Path,
         initial: &LearningIterationSnapshotV1,

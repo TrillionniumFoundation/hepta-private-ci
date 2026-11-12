@@ -21,10 +21,11 @@ DERIVED = A + "authority_host_derived_learning_registration.rs"
 LEARNING = A + "authority_host_learning_registration.rs"
 MODEL = A + "authority_host_q24_model_registration.rs"
 SERVICE = A + "authority_host_service.rs"
+POST_A = A + "authority_host_post_a_learning.rs"
 CALLERS = {
-    "root_learning_derived_checkpoint": (),
+    "root_learning_derived_checkpoint": (POST_A,),
     "root_learning_original_store_core": (DERIVED,),
-    "root_q24_factory_reserve_same_service": (),
+    "root_q24_factory_reserve_same_service": (POST_A,),
 }
 
 
@@ -70,7 +71,7 @@ class DerivedLearningSourceTests(unittest.TestCase):
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
         cls.sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
-            for path in (DERIVED, LEARNING, MODEL, SERVICE)
+            for path in (DERIVED, LEARNING, MODEL, SERVICE, POST_A)
         }
 
     def mutate(self, path, change):
