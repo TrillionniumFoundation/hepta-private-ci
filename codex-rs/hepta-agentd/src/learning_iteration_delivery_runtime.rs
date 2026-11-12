@@ -136,7 +136,13 @@ impl CircuitLearningDeliveryRuntimeV1 {
     ) -> Result<(), AgentdError> {
         #[cfg(target_os = "linux")]
         if let Some(delivery) = self.historical_delivery {
-            return delivery.run(self.handle, state, cancellation).await;
+            return super::historical_source::OriginalHistoricalLearningDeliveryV1::run(
+                delivery,
+                self.handle,
+                state,
+                cancellation,
+            )
+            .await;
         }
         #[cfg(target_os = "linux")]
         let store = if let Some(source) = &self.retained_source {
