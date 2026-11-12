@@ -501,11 +501,22 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     ));
     let bytes = f.f.original.bytes()?;
     let expires = f.selected.attestation().expires_at;
+    // Original evidence remains valid throughout its expiry second. Wait
+    // beyond that inclusive bound before testing refusal without an effect.
+    let invalid_from = expires
+        .checked_add(1)
+        .ok_or_else(|| anyhow::anyhow!("original evidence expiry overflow"))?;
     tokio::time::sleep(
-        Duration::from_secs(expires.saturating_sub(now()?)) + Duration::from_millis(100),
+        Duration::from_secs(invalid_from.saturating_sub(now()?)) + Duration::from_millis(100),
     )
     .await;
-    assert!(client.attest_completed_task().await.is_err());
+    assert!(now()? > expires);
+    assert!(matches!(
+        client.attest_completed_task().await,
+        Err(OriginalCircuitNextUseCommandErrorV1::Evidence(
+            codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
+        ))
+    ));
     assert!(matches!(
         client.readback().await,
         Err(OriginalCircuitNextUseCommandErrorV1::Unavailable)
