@@ -258,12 +258,9 @@ impl GenerationState {
         if cost.identity() != self.cost.identity() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        for entry in cost.entries() {
-            self.cost
-                .record(entry.clone())
-                .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
-        }
-        Ok(())
+        self.cost
+            .record_all(cost.entries())
+            .map_err(|_| CellGenerationErrorV2::InvalidBinding)
     }
 
     fn commit(

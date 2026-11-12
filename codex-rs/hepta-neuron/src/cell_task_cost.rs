@@ -272,6 +272,41 @@ impl CellTaskCostV2 {
         Ok(CellCostRecordV2::Inserted)
     }
 
+    /// Apply an ordered reducer batch with the same first error and successful
+    /// prefix as repeated `record` calls. Revalidate history once per batch.
+    pub(crate) fn record_all(
+        &mut self,
+        entries: &[CellCostEntryV2],
+    ) -> Result<(), CellTaskCostErrorV2> {
+        if entries.is_empty() {
+            return Ok(());
+        }
+        let mut totals = self.validated_totals()?;
+        // Borrow the immutable history and input, so each accepted entry can be
+        // appended immediately without retaining references into the output.
+        let history = self.entries.clone();
+        let mut earlier: BTreeMap<_, _> =
+            history.iter().map(|entry| (entry.event_id, entry)).collect();
+        for entry in entries {
+            if let Some(existing) = earlier.get(&entry.event_id) {
+                if *existing != entry {
+                    return Err(CellTaskCostErrorV2::EventConflict);
+                }
+                continue;
+            }
+            if self.entries.len() == MAX_ENTRIES {
+                return Err(CellTaskCostErrorV2::CapacityExceeded);
+            }
+            validate_entry(self.identity, entry, &earlier)?;
+            if matches!(entry.accounting, CellCostAccountingV2::Exclusive) {
+                add_metrics(&mut totals, entry.metrics)?;
+            }
+            self.entries.push(entry.clone());
+            earlier.insert(entry.event_id, entry);
+        }
+        Ok(())
+    }
+
     pub fn summary(&self) -> Result<CellTaskCostSummaryV2, CellTaskCostErrorV2> {
         let [
             wall_work_micros,
