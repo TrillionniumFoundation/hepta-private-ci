@@ -204,6 +204,11 @@ def record_host(output):
         timeout_seconds=5,
     )
     kernel_audit = _kernel_audit(started)
+    kernel_audit_evidence_retained = (
+        kernel_audit.get("state") == "OBSERVED"
+        and kernel_audit.get("returncode") == 0
+        and kernel_audit["stdout"]["bytes"] > 0
+    )
     report = {
         "schema": "hepta.mem11.isolation-host-observation.v1",
         "started_at_unix_ns": started,
@@ -221,15 +226,10 @@ def record_host(output):
             "receipt": _pin((output / "probe" / "RECEIPT.json").read_bytes()),
         },
         "kernel_audit": kernel_audit,
+        "kernel_audit_evidence_retained": kernel_audit_evidence_retained,
         "probe_counts_as_required_test": False,
         "host_policy_mutation_requested": False,
-        "apparmor_audit_attribution": (
-            "EVIDENCE_RETAINED"
-            if kernel_audit.get("state") == "OBSERVED"
-            and kernel_audit.get("returncode") == 0
-            and kernel_audit["stdout"]["bytes"] > 0
-            else "UNKNOWN"
-        ),
+        "apparmor_audit_attribution": "UNKNOWN",
         "scientific_acceptance": "HOLD",
         "model_calls_observed": 0,
     }
@@ -249,6 +249,9 @@ def main():
             {
                 "probe_status": report["probe"]["status"],
                 "apparmor_audit_attribution": report["apparmor_audit_attribution"],
+                "kernel_audit_evidence_retained": report[
+                    "kernel_audit_evidence_retained"
+                ],
             }
         )
     )

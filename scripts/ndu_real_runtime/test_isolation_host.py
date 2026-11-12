@@ -46,6 +46,7 @@ class IsolationHostTests(unittest.TestCase):
             {"bytes": len(probe), "sha256": hashlib.sha256(probe).hexdigest()},
         )
         self.assertEqual(report["apparmor_audit_attribution"], "UNKNOWN")
+        self.assertFalse(report["kernel_audit_evidence_retained"])
         self.assertEqual(
             report["kernel_audit"],
             {"state": "UNAVAILABLE", "error": "FileNotFoundError", "errno": 2},
