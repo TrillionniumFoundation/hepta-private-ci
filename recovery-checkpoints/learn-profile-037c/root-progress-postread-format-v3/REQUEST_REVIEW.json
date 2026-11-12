@@ -1,0 +1,152 @@
+{
+  "state": "NOT_SUBMITTED",
+  "first_start_owner": "/root",
+  "records": "/home/qian-qi/hepta-learn-037c-evidence/format-root-progress-postread-v3",
+  "stable_key": "learn-037c-format-root-progress-postread-v3",
+  "request": {
+    "bytes": 25190,
+    "sha256": "84fd23fbb8077da2f3cc810e5dc72fc22d0c008aab5c1a9f4c46ba0e999d6287",
+    "blob": "8fdd30cf9683b4a2c3d4743e14eeabe83fce2dd3"
+  },
+  "driver": {
+    "bytes": 9128,
+    "sha256": "d119f7392fba426f8a616c233007bf68fafc6ff46f34101f172fb7bded2eacca",
+    "blob": "c6cc688c7d2fbf5308e233c82d34f3b29cc9d8fb"
+  },
+  "payload": {
+    "bytes": 93902,
+    "sha256": "ea6808d3f0313f58dcdb0db4567bbd3b7046a96fe126a886b7268cccfa4eccb0",
+    "blob": "95953504052b9760fc4c19bd318c0e5329f9f128"
+  },
+  "compressed": {
+    "bytes": 11449,
+    "sha256": "7f82de528e2ba82aceeb7e2c397a005cf22efcbf5ff31ced90964afc1c6f000e",
+    "blob": "609c35fbd3476f79a179cd029c7fdc070298a250"
+  },
+  "source_binding": {
+    "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+    "description": "Only the Root progress selection increment and Candidate postread batching two-file increment. Selection and retention bases are verified actual Root12 formatted postimages; evaluation is exact a96. This is an isolated three-file formatter, not a full tree, compilation or execution.",
+    "actual_root12_manifest": {
+      "bytes": 15921,
+      "sha256": "cbe3f63d93e14d2cc835dd8fb38e4f63e923822fed36af98f7d93e40fc82f972",
+      "blob": "31f0b3e46015d1f4eb632ffe3f04ee8dae030f51"
+    },
+    "progress_manifest": {
+      "bytes": 853,
+      "sha256": "b713c13ab2ff65d97ac0f37defae8e9482fe726f808dd55b39f435ab46d7b6fd",
+      "blob": "2279ac5e9b3c790be5347645d2fa06d41fb904f9"
+    },
+    "postread_manifest": {
+      "bytes": 2572,
+      "sha256": "9b5edd88b595a41a048db559c347ee2c4dfb400cf7d30d39b6abdf8f30d658b5",
+      "blob": "90a10ab26f8aa20928532147cb3bdd6fe8d50bc8"
+    },
+    "per_file_base": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "base": {
+          "bytes": 14188,
+          "sha256": "652ec9786c053305e39c3df0e43de461c34b2b90953264edece796f394bef2dd",
+          "blob": "089a57d500eda46aa92bfe110722b9a4183732d3"
+        },
+        "origin": {
+          "base_kind": "exact a96 original evaluation source",
+          "base_proof": {
+            "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+            "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+            "git_blob": "089a57d500eda46aa92bfe110722b9a4183732d3"
+          },
+          "input_manifest_path": "/workspace/scratch/037c0371c195/candidate-root-postread-batch-a96-v1/MANIFEST.json",
+          "input_manifest": {
+            "bytes": 2572,
+            "sha256": "9b5edd88b595a41a048db559c347ee2c4dfb400cf7d30d39b6abdf8f30d658b5",
+            "blob": "90a10ab26f8aa20928532147cb3bdd6fe8d50bc8"
+          }
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention.rs",
+        "base": {
+          "bytes": 10987,
+          "sha256": "03df98712e7ab4c52b4ee6b8c7170fc110292993552c49501a3ca06cddeb7029",
+          "blob": "b43686825c730186d29362ebb404d370f0b940e2"
+        },
+        "origin": {
+          "base_kind": "actual Root12 formatted postimage; not a bare a96 path",
+          "base_proof": {
+            "actual_root12_manifest": {
+              "bytes": 15921,
+              "sha256": "cbe3f63d93e14d2cc835dd8fb38e4f63e923822fed36af98f7d93e40fc82f972",
+              "blob": "31f0b3e46015d1f4eb632ffe3f04ee8dae030f51"
+            },
+            "actual_root12_after": {
+              "bytes": 10987,
+              "sha256": "03df98712e7ab4c52b4ee6b8c7170fc110292993552c49501a3ca06cddeb7029",
+              "blob": "b43686825c730186d29362ebb404d370f0b940e2"
+            }
+          },
+          "input_manifest_path": "/workspace/scratch/037c0371c195/candidate-root-postread-batch-a96-v1/MANIFEST.json",
+          "input_manifest": {
+            "bytes": 2572,
+            "sha256": "9b5edd88b595a41a048db559c347ee2c4dfb400cf7d30d39b6abdf8f30d658b5",
+            "blob": "90a10ab26f8aa20928532147cb3bdd6fe8d50bc8"
+          }
+        }
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_selection.rs",
+        "base": {
+          "bytes": 9660,
+          "sha256": "b5a121c61a824da4d38d4c85698d1a0545ac8d185d5d7ff46e09da6dde290f87",
+          "blob": "cc462011038d67c8c2d5c3683b5ab7514e79ffe4"
+        },
+        "origin": {
+          "base_kind": "actual Root12 formatted postimage; not a bare a96 path",
+          "base_proof": {
+            "actual_root12_manifest": {
+              "bytes": 15921,
+              "sha256": "cbe3f63d93e14d2cc835dd8fb38e4f63e923822fed36af98f7d93e40fc82f972",
+              "blob": "31f0b3e46015d1f4eb632ffe3f04ee8dae030f51"
+            },
+            "actual_root12_after": {
+              "bytes": 9660,
+              "sha256": "b5a121c61a824da4d38d4c85698d1a0545ac8d185d5d7ff46e09da6dde290f87",
+              "blob": "cc462011038d67c8c2d5c3683b5ab7514e79ffe4"
+            }
+          },
+          "input_manifest_path": "/workspace/scratch/037c0371c195/root-evaluated-candidate-progress-v3/MANIFEST.json",
+          "input_manifest": {
+            "bytes": 853,
+            "sha256": "b713c13ab2ff65d97ac0f37defae8e9482fe726f808dd55b39f435ab46d7b6fd",
+            "blob": "2279ac5e9b3c790be5347645d2fa06d41fb904f9"
+          }
+        }
+      }
+    ],
+    "excluded": [
+      "already-formatted Root caller V2 binding postimage",
+      "Version V4 product files"
+    ],
+    "dependency_not_executed": "Version V4 evaluated-only publication_progress API"
+  },
+  "files": 3,
+  "normalized_ast_equal_to_approved_actual_v3_driver": true,
+  "normalized_ast_sha256": "6c5902b7ee628e84f7680c88478e1c9880a7b7255b7c5b7ed2fd5e5a5f4e7ad8",
+  "argument_sizes": [
+    16,
+    2,
+    2,
+    9128,
+    15268
+  ],
+  "argument_total_bytes_with_nuls": 24421,
+  "local_SC_ARG_MAX": 2097152,
+  "reserved_environment_and_pointer_bytes": 65536,
+  "remote_ARG_MAX": "not probed",
+  "create_only_records": true,
+  "checkout_access": false,
+  "target_access": false,
+  "cargo_or_native_tests": false,
+  "ordinary_qualification": 0
+}

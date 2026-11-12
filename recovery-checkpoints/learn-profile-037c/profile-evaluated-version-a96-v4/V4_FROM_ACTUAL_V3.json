@@ -1,0 +1,253 @@
+{
+  "status": "FROZEN_PREFMT_V4_ON_VERIFIED_ACTUAL_V3",
+  "source_commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "source_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "base_actual_v3_manifest": {
+    "bytes": 49981,
+    "sha256": "0fa8571788642ae6a6f3e2cec81788a8a014915a920b79c2f2ad75fa647823d2",
+    "blob": "adb287f8a8faa81652dc5b0ca0d2a657773beb65"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 10400,
+        "sha256": "80a9394da92278299837b3332526dcbbc2decd886eea73168b3482cb9676c487",
+        "blob": "8f849a5248dcbede84fd6b9394d78beccae2464f"
+      },
+      "postimage": {
+        "bytes": 10460,
+        "sha256": "629ed2a81f74193696ed9fd6a69c5c590ee4564fc8f4712b64f0c32763196a88",
+        "blob": "c09af8045788a82ff53b3824e0521acb2e98e066"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 8540,
+        "sha256": "35378672494d461b3ca8d7b2b7bf98899737f05eabb66fe899a33d04db8a9af5",
+        "blob": "396dd77999f1465afc381410fe69c86006a7e32c"
+      },
+      "postimage": {
+        "bytes": 9322,
+        "sha256": "415ae906a10aa6b3f64a09ded2975b1422407d985b41d71eefb20c60d23adb13",
+        "blob": "54e7be946e3f594beea473ed3a437f03419e47db"
+      },
+      "merge": "reviewed format-only overlap resolution"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_progress_support_tests.rs",
+      "base_exists": false,
+      "base": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "postimage": {
+        "bytes": 6121,
+        "sha256": "88ca65a99b37dd23ffb24ba2418fe0b96d19fbdec3b5e5d1a4e612e383e132b4",
+        "blob": "a1f7f16e3b0f27104206c982c153420215d72502"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 8824,
+        "sha256": "5b79817574ad4b8036a70ad791905ae3fea77e1c42a8ad54dbb26a3eaf46387b",
+        "blob": "03bbc13187f6690042035a47b272a0a22ecbdd37"
+      },
+      "postimage": {
+        "bytes": 9838,
+        "sha256": "7e981c3ff6914c7ece0357774ce68861ad2951295b0d164b30e2383fdb8bdb27",
+        "blob": "1a45b51337e6f76f267480860e05323dc2a8a073"
+      },
+      "merge": "reviewed format-only overlap resolution"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 9192,
+        "sha256": "dc2732c65fbf9320d4681df45f16a6458c5418573b89be96a20bddb352f97f5e",
+        "blob": "f49ea412ab7f7a17b7ee50b1e119e73348fb3820"
+      },
+      "postimage": {
+        "bytes": 13112,
+        "sha256": "9e369ce6162d0a390ad40d628b97a6e60cafa9f9c865e18697f63aab6bbb0501",
+        "blob": "9f91424d880c1215721d404d86877932f5e68390"
+      },
+      "merge": "reviewed format-only overlap resolution"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 16521,
+        "sha256": "338df668c1d241a0ad905f8cf19884d44b25f02430edcf6d0dd501f744695ad6",
+        "blob": "1779ad06b16dfc1e187704595d5c06f86567c0d6"
+      },
+      "postimage": {
+        "bytes": 16610,
+        "sha256": "57ff15b9bd9e4aaa4164ecb1c8f0f2686a552457cadc9db3518f075ab83727f2",
+        "blob": "db8c303c3b6293594e77b8f9d44817abf9685256"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 6534,
+        "sha256": "a47014c8670c1c358f6c96ae46d87b292946fbc387cc4e3e13102494f00eca04",
+        "blob": "9b7bb5a8d3d96aedde1666ef8664ea20e5b9a6ad"
+      },
+      "postimage": {
+        "bytes": 6911,
+        "sha256": "5f09e3c2c20217d9ca9e813fb40658edd878a7180c30c3d6dfc01a5ff313edc3",
+        "blob": "dd3a3b3b464a20bf91ace3edd587ae696edba37b"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 11958,
+        "sha256": "63843ebf34dc5461f52f160d418514fb0be168d82ffa1c7453e40628b6869f10",
+        "blob": "42d3dfb874fe2833989e9996c750873880239435"
+      },
+      "postimage": {
+        "bytes": 14715,
+        "sha256": "96ed7e9c2de110282b12fcf9297d59bcf9bb7b4ffd8ba198a9e7f390fdce1f67",
+        "blob": "d01fc97897b408632446e131418388d28a8afe9f"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 3855,
+        "sha256": "21d382f4649e0024cd082422f9626fe888c360799185189dec06ea87e4e347ea",
+        "blob": "253423c9b026c049209b4ac9812745263645bbed"
+      },
+      "postimage": {
+        "bytes": 3944,
+        "sha256": "5d642bf73a74f1ea9404c819c5ac4c767cc1122a5ad83667a59a313d3168d696",
+        "blob": "a965ac46377211d037bf49ba602e3986330861eb"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 13320,
+        "sha256": "cc97850439c80aacee411bc02b2de5474d8dd57053c71acd4d81786466ed8b67",
+        "blob": "e06439f92e28bf48bfd07768cde7eb92a092abd2"
+      },
+      "postimage": {
+        "bytes": 17273,
+        "sha256": "76a90b08f09c9e2b05473da952fd6b1fc9601ed750efff6f1581772e53813616",
+        "blob": "6fa0bb61ec9b4f5c5864386d79c014050878c66a"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 12530,
+        "sha256": "feb0d6cca8bd29ac70f6d85b59312f7a00cfaeb5c902750887ddf53145720d12",
+        "blob": "edb8b997a6b24ca6e632349b13186ae2cebcbad2"
+      },
+      "postimage": {
+        "bytes": 13208,
+        "sha256": "a3965af0689e48ca3560b39c7297eca4446977e7a67a8dd3f8212f6809c514a5",
+        "blob": "131c52a5713d5407ced90b16bca2c9a559379ea5"
+      },
+      "merge": "clean three-way replay"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_exists": true,
+      "base": {
+        "bytes": 71201,
+        "sha256": "4f9b4afa5c95371937af19b9d785d0c048c185aba190c11a8ad57cfea8a11725",
+        "blob": "2133a284ec740223e6f8050058638b3686038a09"
+      },
+      "postimage": {
+        "bytes": 71312,
+        "sha256": "b02eca19cb0afe8e537ccfe2592d6bf7e4bc7a4c0bd50f5cca778a66f75d0122",
+        "blob": "6fbbcd5fd9063aa70651557c19d01bedef44d282"
+      },
+      "merge": "clean three-way replay"
+    }
+  ],
+  "patch": {
+    "bytes": 37330,
+    "sha256": "40df9cf560ed62c510c53da196a6952f84e0dff2468b3bf260febab103c22195",
+    "blob": "04fab8bc7e7ed998d5f775190efdf5c39621dff7"
+  },
+  "unchanged_original_physical_functions": {
+    "read_original": {
+      "bytes": 1050,
+      "sha256": "72188bad135558a449d12b95ce68379cb0f5f82849e079ba77a37d0b17578468",
+      "blob": "a8f24da12dee294bc21633348b82fd00e28e12d3"
+    },
+    "require_cut_current": {
+      "bytes": 2586,
+      "sha256": "9d00a366da247fe0542a2dc079b6121a7bcd5ede61cb72237e478392059a7e47",
+      "blob": "7e03342d98126c71df4a549720034841c85659e5"
+    },
+    "observe_phase": {
+      "bytes": 1621,
+      "sha256": "a012c31ecc9936546210cecee10b68911d368c2ec106d1dad2527b4c431d6ac0",
+      "blob": "6e80d73b6c473d877827aa84c7d8db41985384a8"
+    },
+    "install_original_selection_reader": {
+      "bytes": 1447,
+      "sha256": "831afb9308d6e5439e9e6d2ee9288a6f16c0cf7520fa286cf13763e8bfc971fe",
+      "blob": "0d866f7f3ab7ebefc796c8630695cc5415cedda7"
+    }
+  },
+  "manual_resolutions": [
+    "wire new(): preserve Rustfmt's original match-arm blocks, apply only evaluated action.into()",
+    "recovery test: preserve original formatted before-bytes tuple, then add actual progress client checks",
+    "issuer test: preserve original formatted Root peer join, then require progress and complete readback"
+  ],
+  "strict_replay": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "--check",
+        "/workspace/scratch/037c0371c195/profile-evaluated-version-a96-v4/V4_FROM_ACTUAL_V3.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/workspace/scratch/037c0371c195/profile-evaluated-version-a96-v4/V4_FROM_ACTUAL_V3.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "h": "NOT_SUBMITTED",
+  "actual_v4_rustfmt": "UNRUN",
+  "native": "UNRUN",
+  "ordinary_qualification": 0
+}

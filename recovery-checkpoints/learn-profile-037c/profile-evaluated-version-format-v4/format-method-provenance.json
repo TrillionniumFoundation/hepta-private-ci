@@ -1,0 +1,27 @@
+{
+  "original_driver_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-format-v3-argv-v1/format-driver.py",
+  "original_driver": {
+    "bytes": 11807,
+    "sha256": "c9896a4dd81550b0670b4fb0d86182dbcb37905038c6397293e129936531a7ca",
+    "blob": "651f06948e8642b43834748d89f6393aa91a6ccb"
+  },
+  "original_actual_manifest": {
+    "bytes": 49981,
+    "sha256": "0fa8571788642ae6a6f3e2cec81788a8a014915a920b79c2f2ad75fa647823d2",
+    "blob": "adb287f8a8faa81652dc5b0ca0d2a657773beb65"
+  },
+  "allowed_changes": [
+    "records directory and artifact qualification labels",
+    "exact 12 paths and file count",
+    "exact payload hashes and input/source-binding data"
+  ],
+  "unchanged": [
+    "single argv-chunk input transport and create-only record directory",
+    "Rust 1.96 toolchain and exact Rustfmt binary SHA",
+    "edition 2024, imports_granularity=Item, skip_children=true",
+    "no checkout, Cargo, target, or native-test operations",
+    "source ancestor commit and tree"
+  ],
+  "first_start_owner": "/root",
+  "state": "NOT_SUBMITTED"
+}

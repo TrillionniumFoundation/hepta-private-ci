@@ -1,0 +1,726 @@
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs
+@@ -64,7 +64,8 @@
+             if before != after {
+                 return Err(Error::Binding("Version publication changed during Selector binding"));
+             }
+-            remote.require_original_evaluated_version_selection(
++            crate::OriginalCircuitLearningReadbackV1::require_original_evaluated_version_selection(
++                &remote,
+                 after.publication().ok_or(Error::ReadbackRequired)?,
+             )?;
+             self.require_evaluated_command_context(&state, &context)?;
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs
+@@ -83,6 +83,16 @@
+     )?);
+     let prepared = VersionHost::prepare_original_version_fixture(Arc::clone(&host)).await?;
+     assert!(prepared.publication().is_none());
++    use crate::OriginalCircuitEvaluatedVersionProgressV1 as Progress;
++    assert_eq!(VersionHost::verify_original_progress_protocol_fixture(Arc::clone(&host)).await?, Progress::Pending);
++    let (progress, progress_peer) = VersionHost::original_evaluated_version_fixture_client(
++        Arc::clone(&host), &config, &dataset, &f.training, &f.evaluation,
++    )?;
++    for _ in 0..4 {
++        assert_eq!(progress.publication_progress().await?, Progress::Pending);
++    }
++    assert!(matches!(progress.prepare_original_version(Arc::new(std::sync::atomic::AtomicBool::new(false))).await,
++        Err(VersionError::ReadbackRequired)));
+     let binding = VersionHost::read_original_final_use_binding(Arc::clone(&host)).await?;
+     assert_eq!(binding.destination_id, "agentd.cell-generation.next-task-same-model");
+     let before = f.publication_bytes()?;
+@@ -91,7 +101,8 @@
+     let root_peer = root_reply(root, binding.clone(), f.host.original.version.sign(&binding)?);
+     VersionHost::run_original_issuer_fixture(Arc::clone(&host)).await?;
+     root_peer.join().expect("actual original Root issuer frame")?;
+-    let actual = VersionHost::read_original_version_fixture(Arc::clone(&host)).await?;
++    assert_eq!(progress.publication_progress().await?, Progress::ReadbackAvailable);
++    let actual = progress.readback().await?;
+     assert_eq!(actual.intent_digest(), prepared.intent_digest());
+     let publication = actual.publication().expect("actual original C factory");
+     assert_eq!(publication.bundle_digest(), f.bundle.digest()?);
+@@ -125,6 +136,8 @@
+     for served in occupied_peers {
+         assert_eq!(served.join().expect("original occupied Trainer command session")?, 2);
+     }
++    drop(progress);
++    assert_eq!(progress_peer.join().expect("same original Version progress channel")?, 6);
+     drop(host);
+     let counts = peers.finish()?;
+     assert_eq!(counts[0], counts[1]);
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_progress_support_tests.rs
+@@ -0,0 +1,108 @@
++//! Same-process Version framing only. Commands still enter the actual host;
++//! no fixture constructs a phase, grant, signed cut or publication result.
++use super::*;
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_contracts::HostAuthorityPeerPolicy;
++use codex_hepta_contracts::HostIssuerPeer;
++use crate::OriginalCellEvaluationCommandReceiptV1;
++use crate::OriginalCellQ24MaterialCommandReceiptV1;
++use crate::OriginalCellQ24MaterialReceiptConfigV1;
++use crate::OriginalCellQ24TrainingCommandReceiptV1;
++use crate::OriginalCircuitRetainedVersionClientV1;
++use crate::OriginalCircuitEvaluatedVersionProgressV1 as Progress;
++use super::super::super::super::RetainedVersionOriginV1;
++use crate::learning_iteration_evidence_client::command_test_support;
++
++fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
++    Ok(HostAuthorityPeerChannel::from_stream(
++        stream,
++        HostAuthorityPeerPolicy {
++            // SAFETY: only the live test process is admitted by this fixture.
++            peer: HostIssuerPeer { uid: unsafe { libc::geteuid() }, pid: std::process::id() },
++            timeout: Duration::from_secs(30),
++            lifetime: Duration::from_secs(300),
++            request_bound: 16_384,
++            response_bound: 16_384,
++        }, command_test_support::pidfd()?,
++    )?)
++}
++
++impl OriginalCircuitRetainedVersionHostV1 {
++    pub(crate) fn original_evaluated_version_fixture_client(
++        self: Arc<Self>,
++        material: &OriginalCellQ24MaterialReceiptConfigV1,
++        dataset: &OriginalCellQ24MaterialCommandReceiptV1,
++        training: &OriginalCellQ24TrainingCommandReceiptV1,
++        evaluation: &OriginalCellEvaluationCommandReceiptV1,
++    ) -> anyhow::Result<(OriginalCircuitRetainedVersionClientV1, std::thread::JoinHandle<Result<u64, Error>>)> {
++        let (consumer, provider) = UnixStream::pair()?;
++        let client = match self.origin {
++            RetainedVersionOriginV1::Fresh => OriginalCircuitRetainedVersionClientV1::bind_original_evaluated_stage_channel(
++                channel(consumer)?, material, dataset, training, evaluation,
++            ),
++            RetainedVersionOriginV1::Recovered => OriginalCircuitRetainedVersionClientV1::recover_original_evaluated_stage_channel(
++                channel(consumer)?, material, dataset, training, evaluation,
++            ),
++        }?;
++        let mut server = channel(provider)?;
++        let permit = Arc::clone(&self.connections).try_acquire_owned()?;
++        let peer = std::thread::spawn(move || {
++            let _permit = permit;
++            for request_id in 1..=128 {
++                self.require_lifetime()?;
++                let mut failure = None;
++                let exchanged = server.exchange(|bytes| self.command_response(bytes, request_id).map_err(|error| {
++                    failure = Some(error);
++                    HostIssuerTransportError::InvalidRequest
++                }));
++                match exchanged {
++                    Ok(true) => {}
++                    Ok(false) => return Ok(request_id - 1),
++                    Err(error) => return Err(failure.unwrap_or(Error::Transport(error))),
++                }
++            }
++            Err(Error::Unavailable)
++        });
++        Ok((client, peer))
++    }
++
++    /// Exercise the codec with the actual already-bound four-cut. Corrupt
++    /// correlation and state values are attack inputs, never original evidence.
++    pub(crate) async fn verify_original_progress_protocol_fixture(
++        self: Arc<Self>,
++    ) -> anyhow::Result<Progress> {
++        tokio::task::spawn_blocking(move || {
++            let (progress, full_read) = {
++                let state = self.state.try_lock().map_err(|_| Error::Busy)?;
++                let cut = state.cut.as_ref().ok_or(Error::ReadbackRequired)?;
++                (VersionRequest::publication_progress(cut, 1)?, VersionRequest::new(cut, 1, wire::Action::Readback))
++            };
++            let request = progress.encode()?;
++            anyhow::ensure!(serde_json::from_slice::<wire::Request>(&request).is_err(), "legacy request accepted evaluated progress");
++            anyhow::ensure!(progress.action().is_err(), "progress became a full-readback action");
++            let response = self.command_response(&request, 1)?;
++            anyhow::ensure!(progress.decode_response(&response).is_err(), "progress became original readback");
++            anyhow::ensure!(full_read.decode_progress_response(&response).is_err(), "readback accepted progress response");
++            for field in ["purpose", "initial_binding", "binding", "operation_id", "evaluation_head", "action"] {
++                let mut bad: serde_json::Value = serde_json::from_slice(&request)?;
++                bad[field] = serde_json::json!("changed-original-correlation");
++                anyhow::ensure!(self.command_response(&serde_json::to_vec(&bad)?, 1).is_err(), "changed request {field} accepted");
++                let mut bad: serde_json::Value = serde_json::from_slice(&response)?;
++                bad["request"][field] = serde_json::json!("changed-original-correlation");
++                anyhow::ensure!(progress.decode_progress_response(&serde_json::to_vec(&bad)?).is_err(), "changed response {field} accepted");
++            }
++            for request_id in [0, 2, 129] {
++                let mut bad: serde_json::Value = serde_json::from_slice(&request)?;
++                bad["request_id"] = serde_json::json!(request_id);
++                anyhow::ensure!(self.command_response(&serde_json::to_vec(&bad)?, 1).is_err(), "changed request id accepted");
++            }
++            for state in ["prepared", "installed"] {
++                let mut bad: serde_json::Value = serde_json::from_slice(&response)?;
++                bad["result"] = serde_json::json!({"state":state,"intent":"not-an-authority"});
++                anyhow::ensure!(progress.decode_progress_response(&serde_json::to_vec(&bad)?).is_err(), "publication state accepted as progress");
++            }
++            let result = progress.decode_progress_response(&response)?.decode()?;
++            Ok::<_, anyhow::Error>(result)
++        }).await?
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs
+@@ -31,7 +31,15 @@
+         }, Duration::from_secs(300),
+     )?);
+     let before = (f.publication_bytes()?, files.bytes()?, f.host.original.predecessor_bytes()?);
+-    let observed = VersionHost::read_original_version_fixture(Arc::clone(&host)).await?;
++    use crate::OriginalCircuitEvaluatedVersionProgressV1 as Progress;
++    let (progress, progress_peer) = VersionHost::original_evaluated_version_fixture_client(
++        Arc::clone(&host), &config, &receipt, &f.training, &f.evaluation,
++    )?;
++    let observed = progress.readback().await?;
++    for _ in 0..4 {
++        assert_eq!(progress.publication_progress().await?, Progress::ReadbackAvailable);
++    }
++    assert_eq!(VersionHost::verify_original_progress_protocol_fixture(Arc::clone(&host)).await?, Progress::ReadbackAvailable);
+     assert_eq!(observed.intent_digest(), intent);
+     let publication = observed.publication().expect("same actual held C");
+     assert_eq!(publication.bundle_digest(), f.bundle.digest()?);
+@@ -117,11 +125,19 @@
+     )?);
+     let completed_bytes = (c_bytes(&c)?, files.bytes()?);
+     f.host.original.version.withdraw()?;
++    // The worker still finished its publication. This hint deliberately says
++    // nothing about CURRENT; the mandatory actual read must detect withdrawal.
++    assert_eq!(progress.publication_progress().await?, Progress::ReadbackAvailable);
++    assert!(progress.readback().await.is_err());
++    assert!(matches!(progress.prepare_original_version(Arc::new(std::sync::atomic::AtomicBool::new(false))).await,
++        Err(VersionError::ReadbackRequired)));
+     assert!(client.read_current().await.is_err());
+     assert!(matches!(client.read_current().await, Err(ReadError::Unavailable)));
+     assert_eq!((c_bytes(&c)?, files.bytes()?), completed_bytes);
+     drop(client);
+     assert!(server.await?.is_err());
++    drop(progress);
++    assert_eq!(progress_peer.join().expect("same original cold Version progress channel")?, 7);
+     drop(host);
+     let counts = peers.finish()?;
+     assert_eq!(counts[0], counts[1]);
+--- a/codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs
++++ b/codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs
+@@ -8,6 +8,7 @@
+ use serde::Serialize;
+ 
+ use super::Error;
++use super::OriginalCircuitEvaluatedVersionProgressV1;
+ use super::OriginalCircuitRetainedVersionPublicationV1;
+ use super::OriginalCircuitRetainedVersionReadbackV1;
+ use super::evaluated_context::OriginalEvaluatedVersionCut;
+@@ -16,6 +17,23 @@
+ use super::wire;
+ 
+ const EVALUATED_OPERATION: &str = "runtime.learning.original-evaluated-version.command.v1";
++
++#[derive(Clone, Copy, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++enum EvaluatedAction {
++    Prepare,
++    Readback,
++    PublicationProgress,
++}
++
++impl From<wire::Action> for EvaluatedAction {
++    fn from(action: wire::Action) -> Self {
++        match action {
++            wire::Action::Prepare => Self::Prepare,
++            wire::Action::Readback => Self::Readback,
++        }
++    }
++}
+ 
+ #[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
+ #[serde(deny_unknown_fields)]
+@@ -27,11 +45,11 @@
+     binding: String,
+     operation_id: String,
+     evaluation_head: String,
+-    action: wire::Action,
++    action: EvaluatedAction,
+ }
+ 
+ impl EvaluatedRequest {
+-    fn new(cut: &OriginalEvaluatedVersionCut, request_id: u64, action: wire::Action) -> Self {
++    fn new(cut: &OriginalEvaluatedVersionCut, request_id: u64, action: EvaluatedAction) -> Self {
+         Self {
+             schema: 1,
+             purpose: EVALUATED_OPERATION.into(),
+@@ -52,6 +70,39 @@
+     result: wire::OriginalResult,
+ }
+ 
++#[derive(Deserialize, Serialize)]
++#[serde(deny_unknown_fields)]
++struct EvaluatedProgressResponse {
++    request: EvaluatedRequest,
++    result: EvaluatedProgressResult,
++}
++
++#[derive(Deserialize, Serialize)]
++#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
++pub(super) enum EvaluatedProgressResult {
++    Pending,
++    ReadbackAvailable,
++    Busy,
++    ReadbackRequired,
++    FinalUseDenied,
++    Uncertain,
++    Unavailable,
++}
++
++impl EvaluatedProgressResult {
++    pub(super) fn decode(self) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {
++        match self {
++            Self::Pending => Ok(OriginalCircuitEvaluatedVersionProgressV1::Pending),
++            Self::ReadbackAvailable => Ok(OriginalCircuitEvaluatedVersionProgressV1::ReadbackAvailable),
++            Self::Busy => Err(Error::Busy),
++            Self::ReadbackRequired => Err(Error::ReadbackRequired),
++            Self::FinalUseDenied => Err(Error::FinalUseDenied),
++            Self::Uncertain => Err(Error::CommitUncertain),
++            Self::Unavailable => Err(Error::Unavailable),
++        }
++    }
++}
++
+ pub(super) enum VersionRequest {
+     TrainingNoUpdate(wire::Request),
+     Evaluated(EvaluatedRequest),
+@@ -61,8 +112,21 @@
+     pub(super) fn new(cut: &VersionCut, request_id: u64, action: wire::Action) -> Self {
+         match cut {
+             VersionCut::TrainingNoUpdate(original) => Self::TrainingNoUpdate(wire::Request::new(original, request_id, action)),
+-            VersionCut::Evaluated(original) => Self::Evaluated(EvaluatedRequest::new(original, request_id, action)),
+-        }
++            VersionCut::Evaluated(original) => Self::Evaluated(EvaluatedRequest::new(original, request_id, action.into())),
++        }
++    }
++
++    pub(super) fn publication_progress(cut: &VersionCut, request_id: u64) -> Result<Self, Error> {
++        let VersionCut::Evaluated(original) = cut else {
++            return Err(Error::Binding("evaluated-only Version progress purpose"));
++        };
++        Ok(Self::Evaluated(EvaluatedRequest::new(
++            original, request_id, EvaluatedAction::PublicationProgress,
++        )))
++    }
++
++    pub(super) fn is_publication_progress(&self) -> bool {
++        matches!(self, Self::Evaluated(request) if request.action == EvaluatedAction::PublicationProgress)
+     }
+ 
+     pub(super) fn decode(bytes: &[u8], purpose: VersionPurpose) -> Result<Self, Error> {
+@@ -79,10 +143,14 @@
+         })
+     }
+ 
+-    pub(super) fn action(&self) -> wire::Action {
++    pub(super) fn action(&self) -> Result<wire::Action, Error> {
+         match self {
+-            Self::TrainingNoUpdate(original) => original.action,
+-            Self::Evaluated(original) => original.action,
++            Self::TrainingNoUpdate(original) => Ok(original.action),
++            Self::Evaluated(original) => match original.action {
++                EvaluatedAction::Prepare => Ok(wire::Action::Prepare),
++                EvaluatedAction::Readback => Ok(wire::Action::Readback),
++                EvaluatedAction::PublicationProgress => Err(Error::Binding("progress is not an original Version readback")),
++            },
+         }
+     }
+ 
+@@ -138,6 +206,9 @@
+     }
+ 
+     pub(super) fn decode_response(&self, raw: &[u8]) -> Result<wire::OriginalResult, Error> {
++        if self.is_publication_progress() {
++            return Err(Error::Binding("progress cannot decode original Version publication"));
++        }
+         match self {
+             Self::TrainingNoUpdate(request) => {
+                 let response: wire::Response = serde_json::from_slice(raw)?;
+@@ -157,10 +228,37 @@
+     }
+ 
+     pub(super) fn encode_response(self, result: wire::OriginalResult) -> Result<Vec<u8>, Error> {
++        if self.is_publication_progress() {
++            return Err(Error::Binding("progress cannot encode original Version publication"));
++        }
+         Ok(match self {
+             Self::TrainingNoUpdate(request) => serde_json::to_vec(&wire::Response { request, result })?,
+             Self::Evaluated(request) => serde_json::to_vec(&EvaluatedResponse { request, result })?,
+         })
++    }
++
++    pub(super) fn decode_progress_response(&self, raw: &[u8]) -> Result<EvaluatedProgressResult, Error> {
++        let Self::Evaluated(request) = self else {
++            return Err(Error::Binding("evaluated-only Version progress response"));
++        };
++        if request.action != EvaluatedAction::PublicationProgress {
++            return Err(Error::Binding("original Version action is not progress"));
++        }
++        let response: EvaluatedProgressResponse = serde_json::from_slice(raw)?;
++        if &response.request != request {
++            return Err(Error::Binding("exact original evaluated Version progress response"));
++        }
++        Ok(response.result)
++    }
++
++    pub(super) fn encode_progress_response(self, result: EvaluatedProgressResult) -> Result<Vec<u8>, Error> {
++        let Self::Evaluated(request) = self else {
++            return Err(Error::Binding("evaluated-only Version progress response"));
++        };
++        if request.action != EvaluatedAction::PublicationProgress {
++            return Err(Error::Binding("original Version action is not progress"));
++        }
++        Ok(serde_json::to_vec(&EvaluatedProgressResponse { request, result })?)
+     }
+ }
+ 
+--- a/codex-rs/hepta-agentd/src/circuit_feature_current.rs
++++ b/codex-rs/hepta-agentd/src/circuit_feature_current.rs
+@@ -80,6 +80,7 @@
+ pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+ pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
+ pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
++pub(crate) use retained_publication::version::OriginalCircuitEvaluatedVersionProgressV1;
+ pub use retained_publication::version::OriginalCircuitRetainedVersionErrorV1;
+ pub use retained_publication::version::OriginalCircuitRetainedVersionHostV1;
+ pub use retained_publication::version::OriginalCircuitRetainedVersionPublicationV1;
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version.rs
+@@ -34,6 +34,15 @@
+ pub use host::OriginalCircuitRetainedVersionRecoveryV1;
+ pub use host::OriginalCircuitEvaluatedVersionRecoveryV1;
+ pub use host::OriginalCircuitEvaluatedReadinessChannelV1;
++
++/// A scheduling hint from the original evaluated Version session. Neither
++/// variant attests CURRENT, FinalUse, publication identity or a fresh right.
++/// ReadbackAvailable must be followed by the original full readback operation.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(crate) enum OriginalCircuitEvaluatedVersionProgressV1 {
++    Pending,
++    ReadbackAvailable,
++}
+ 
+ #[derive(Debug, thiserror::Error)]
+ pub enum OriginalCircuitRetainedVersionErrorV1 {
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs
+@@ -10,12 +10,14 @@
+ 
+ use super::super::context::PublicationAccess;
+ use super::Error;
++use super::OriginalCircuitEvaluatedVersionProgressV1;
+ use super::OriginalCircuitRetainedVersionPublicationV1;
+ use super::OriginalCircuitRetainedVersionReadbackV1;
+ use super::RetainedVersionOriginV1;
+ use super::context::OriginalVersionCut;
+ use super::evaluated_context::OriginalEvaluatedVersionCut;
+ use super::evaluated_wire::VersionRequest;
++use super::evaluated_wire::EvaluatedProgressResult;
+ use super::evaluated_wire::decode_result;
+ use super::profile::VersionCut;
+ use super::now;
+@@ -56,6 +58,17 @@
+ enum RequestMode {
+     Prepare(Arc<AtomicBool>),
+     Readback,
++    PublicationProgress,
++}
++
++enum OriginalVersionResponse {
++    Readback(wire::OriginalResult),
++    Progress(EvaluatedProgressResult),
++}
++
++enum OriginalVersionValue {
++    Readback(OriginalCircuitRetainedVersionReadbackV1),
++    Progress(OriginalCircuitEvaluatedVersionProgressV1),
+ }
+ 
+ pub struct OriginalCircuitRetainedVersionClientV1 {
+@@ -180,14 +193,39 @@
+         self.exchange(RequestMode::Readback).await
+     }
+ 
++    /// Wait only for this session's publication worker. A successful hint is
++    /// never CURRENT, a FinalUse result, or an executable Fresh capability.
++    /// The caller must obtain full original readback before it advances S/C.
++    pub(crate) async fn publication_progress(
++        &self,
++    ) -> Result<OriginalCircuitEvaluatedVersionProgressV1, Error> {
++        if !matches!(self.cut.as_ref(), VersionCut::Evaluated(_)) {
++            return Err(Error::Binding("evaluated-only Version progress purpose"));
++        }
++        match self.exchange_original(RequestMode::PublicationProgress).await? {
++            OriginalVersionValue::Progress(value) => Ok(value),
++            OriginalVersionValue::Readback(_) => Err(Error::Binding("original Version progress response type")),
++        }
++    }
++
+     async fn exchange(
+         &self,
+         mode: RequestMode,
+     ) -> Result<OriginalCircuitRetainedVersionReadbackV1, Error> {
++        match self.exchange_original(mode).await? {
++            OriginalVersionValue::Readback(value) => Ok(value),
++            OriginalVersionValue::Progress(_) => Err(Error::Binding("original Version readback response type")),
++        }
++    }
++
++    async fn exchange_original(
++        &self,
++        mode: RequestMode,
++    ) -> Result<OriginalVersionValue, Error> {
+         let started = now()?;
+         let access = match &mode {
+             RequestMode::Prepare(_) => PublicationAccess::NewWork,
+-            RequestMode::Readback => PublicationAccess::Readback,
++            RequestMode::Readback | RequestMode::PublicationProgress => PublicationAccess::Readback,
+         };
+         self.cut.require_fresh(started, access)?;
+         let action = match &mode {
+@@ -195,14 +233,15 @@
+                 if cancelled.load(Ordering::Acquire) {
+                     return Err(Error::Cancelled);
+                 }
+-                wire::Action::Prepare
+-            }
+-            RequestMode::Readback => wire::Action::Readback,
++                Some(wire::Action::Prepare)
++            }
++            RequestMode::Readback => Some(wire::Action::Readback),
++            RequestMode::PublicationProgress => None,
+         };
+         let mut channel = {
+             let mut slot = self.channel.try_lock().map_err(|_| Error::Busy)?;
+             let original = slot.as_mut().ok_or(Error::Unavailable)?;
+-            if action == wire::Action::Prepare && original.preparation_requested {
++            if action == Some(wire::Action::Prepare) && original.preparation_requested {
+                 return Err(Error::ReadbackRequired);
+             }
+             // Even an initial read permanently attenuates this client. Existing
+@@ -213,7 +252,10 @@
+         if !(1..=128).contains(&channel.next_request_id) {
+             return Err(Error::Unavailable);
+         }
+-        let request = VersionRequest::new(&self.cut, channel.next_request_id, action);
++        let request = match action {
++            Some(action) => VersionRequest::new(&self.cut, channel.next_request_id, action),
++            None => VersionRequest::publication_progress(&self.cut, channel.next_request_id)?,
++        };
+         let encoded = request.encode()?;
+         if encoded.is_empty() || encoded.len() > 16_384 {
+             return Err(Error::Binding("bounded Version request"));
+@@ -247,27 +289,43 @@
+         .await
+         .map_err(|_| Error::CommitUncertain)??;
+         drop(queued);
+-        let response = request.decode_response(&raw)?;
++        let response = if request.is_publication_progress() {
++            OriginalVersionResponse::Progress(request.decode_progress_response(&raw)?)
++        } else {
++            OriginalVersionResponse::Readback(request.decode_response(&raw)?)
++        };
+         channel.peer.check_peer_lifetime()?;
+         self.cut
+             .require_fresh(started, access)
+             .map_err(|_| Error::CommitUncertain)?;
+-        // Structured Pending/Busy/Uncertain may keep only this original read
+-        // channel. No bit is reset and no second preparation becomes possible.
+-        let structured_error = matches!(
+-            &response,
+-            wire::OriginalResult::Busy
+-                | wire::OriginalResult::ReadbackRequired
+-                | wire::OriginalResult::Uncertain
+-                | wire::OriginalResult::Unavailable
+-                | wire::OriginalResult::FinalUseDenied
+-        );
+-        let decoded = decode_result(response, &self.cut);
+-        match &decoded {
+-            Ok(value) => self.pin(value)?,
+-            Err(_) if structured_error => {}
+-            Err(_) => return decoded,
+-        }
++        let decoded = match response {
++            OriginalVersionResponse::Progress(response) => match response.decode() {
++                Ok(value) => Ok(OriginalVersionValue::Progress(value)),
++                Err(Error::Busy) => Err(Error::Busy),
++                // A progress hint never repairs denial, missing custody or
++                // uncertainty. Those results consume this original channel.
++                Err(error) => return Err(error),
++            },
++            OriginalVersionResponse::Readback(response) => {
++                // Keep the original full-readback contract unchanged. No bit
++                // is reset and no second preparation becomes possible.
++                let structured_error = matches!(
++                    &response,
++                    wire::OriginalResult::Busy
++                        | wire::OriginalResult::ReadbackRequired
++                        | wire::OriginalResult::Uncertain
++                        | wire::OriginalResult::Unavailable
++                        | wire::OriginalResult::FinalUseDenied
++                );
++                let decoded = decode_result(response, &self.cut);
++                match &decoded {
++                    Ok(value) => self.pin(value)?,
++                    Err(_) if structured_error => {}
++                    Err(_) => return decoded.map(OriginalVersionValue::Readback),
++                }
++                decoded.map(OriginalVersionValue::Readback)
++            }
++        };
+         *self
+             .channel
+             .try_lock()
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs
+@@ -4,6 +4,9 @@
+ use super::super::super::evaluated_wire::VersionRequest;
+ use super::super::super::evaluated_wire::decode_result;
+ use super::*;
++
++#[path = "circuit_evaluated_version_progress_support_tests.rs"]
++mod evaluated_progress;
+ 
+ impl OriginalCircuitRetainedVersionHostV1 {
+     pub(crate) async fn prepare_original_version_fixture(
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs
+@@ -12,11 +12,13 @@
+ use super::super::super::context::PublicationAccess;
+ use super::super::Error;
+ use super::super::evaluated_wire::VersionRequest;
++use super::super::evaluated_wire::EvaluatedProgressResult;
+ use super::super::profile::VersionCut;
+ use super::super::profile::VersionPurpose;
+ use super::super::wire;
+ use super::OriginalCircuitRetainedVersionHostV1;
+ use super::RetainedVersionFinalUseOutcomeV1;
++use super::RetainedVersionHostPhaseV1;
+ use crate::AgentdRootAuthorityPeer;
+ use crate::OriginalCellQ24MaterialReceiptConfigV1;
+ use crate::OriginalCircuitLearningReadOwnerV1;
+@@ -222,6 +224,9 @@
+         if current != self.initial_binding || fresh < started {
+             return Err(Error::Binding("same original Version material clock"));
+         }
++        if request.is_publication_progress() {
++            return self.publication_progress_response(request, request_id, started);
++        }
+         let (result, pin) = {
+             let mut state = match self.state.try_lock() {
+                 Ok(state) => state,
+@@ -243,7 +248,7 @@
+                 (wire::OriginalResult::Uncertain, None)
+             } else {
+                 request.require_cut(state.cut.as_ref().ok_or(Error::Unavailable)?, request_id)?;
+-                let original = match request.action() {
++                let original = match request.action()? {
+                     wire::Action::Prepare => self.prepare_original(&mut state),
+                     wire::Action::Readback => {
+                         self.preparation_requested.store(true, Ordering::Release);
+@@ -289,6 +294,68 @@
+         self.encode_response(request, result, started, pin)
+     }
+ 
++    fn publication_progress_response(
++        &self,
++        request: VersionRequest,
++        request_id: u64,
++        started: u64,
++    ) -> Result<Vec<u8>, Error> {
++        if self.purpose != VersionPurpose::Evaluated || !request.is_publication_progress() {
++            return Err(Error::Binding("evaluated-only Version progress purpose"));
++        }
++        let (result, pin) = {
++            match self.state.try_lock() {
++                Ok(state) => match state.cut.as_ref() {
++                    None => (EvaluatedProgressResult::ReadbackRequired, None),
++                    Some(cut) => {
++                        if !matches!(cut, VersionCut::Evaluated(_)) {
++                            return Err(Error::Binding("original evaluated Version progress cut"));
++                        }
++                        request.require_cut(cut, request_id)?;
++                        cut.require_fresh(started, PublicationAccess::Readback)?;
++                        // This is only the private worker's scheduling state.
++                        // No peer read, owner binding, CURRENT observation or
++                        // phase/issuer mutation is performed by this action.
++                        let result = match (self.original_final_use_outcome(), state.phase.as_ref()) {
++                            (RetainedVersionFinalUseOutcomeV1::Denied, _) => EvaluatedProgressResult::FinalUseDenied,
++                            (RetainedVersionFinalUseOutcomeV1::Uncertain, _) | (_, None) => EvaluatedProgressResult::Uncertain,
++                            (RetainedVersionFinalUseOutcomeV1::Awaiting, Some(RetainedVersionHostPhaseV1::Awaiting { .. })) => {
++                                if self.preparation_requested.load(Ordering::Acquire) {
++                                    // A failed admitted prepare is not a worker
++                                    // still running behind this held mutex.
++                                    EvaluatedProgressResult::Uncertain
++                                } else {
++                                    EvaluatedProgressResult::Pending
++                                }
++                            }
++                            (RetainedVersionFinalUseOutcomeV1::Awaiting | RetainedVersionFinalUseOutcomeV1::Requested,
++                                Some(RetainedVersionHostPhaseV1::Prepared { .. })) => EvaluatedProgressResult::Pending,
++                            (RetainedVersionFinalUseOutcomeV1::Published,
++                                Some(RetainedVersionHostPhaseV1::Installed { .. } | RetainedVersionHostPhaseV1::Recovered(_))) => EvaluatedProgressResult::ReadbackAvailable,
++                            _ => EvaluatedProgressResult::Uncertain,
++                        };
++                        (result, Some(cut.duplicate_response_pin()))
++                    }
++                },
++                Err(std::sync::TryLockError::WouldBlock) => (EvaluatedProgressResult::Busy, None),
++                Err(std::sync::TryLockError::Poisoned(_)) => return Err(Error::Unavailable),
++            }
++        };
++        let (binding, fresh) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;
++        if binding != self.initial_binding || fresh < started {
++            return Err(Error::Binding("original Version progress final clock"));
++        }
++        self.require_lifetime()?;
++        let bytes = request.encode_progress_response(result)?;
++        if bytes.is_empty() || bytes.len() > 16_384 {
++            return Err(Error::Binding("bounded original Version progress response"));
++        }
++        if let Some(pin) = pin {
++            pin.require_fresh(started, PublicationAccess::Readback)?;
++        }
++        Ok(bytes)
++    }
++
+     fn encode_response(
+         &self,
+         request: VersionRequest,
+--- a/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
++++ b/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs
+@@ -29,8 +29,19 @@
+         state: &mut RetainedVersionHostStateV1,
+     ) -> Result<(), Error> {
+         self.require_lifetime()?;
+-        if state.cut.is_some() {
+-            return state.require_cut_current(&self.runtime);
++        if let Some(cut) = state.cut.as_ref() {
++            if cut.purpose() != self.purpose || cut.initial_binding() != self.initial_binding {
++                return Err(Error::Binding("same original Version bound predecessor"));
++            }
++            return match cut {
++                VersionCut::TrainingNoUpdate(_) => state.require_cut_current(&self.runtime),
++                // Binding is not CURRENT. Every evaluated caller immediately
++                // performs its own complete before/after owner transaction.
++                // Do not spend a third live read before that same transaction.
++                VersionCut::Evaluated(_) => cut.require_fresh(
++                    super::super::now()?, PublicationAccess::Readback,
++                ),
++            };
+         }
+         let dataset = self
+             .runtime
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -895,6 +895,8 @@
+ pub use circuit_feature_current::OriginalCircuitRetainedTaskInputsV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitRetainedVersionClientV1;
++#[cfg(target_os = "linux")]
++pub(crate) use circuit_feature_current::OriginalCircuitEvaluatedVersionProgressV1;
+ #[cfg(target_os = "linux")]
+ pub use circuit_feature_current::OriginalCircuitRetainedVersionErrorV1;
+ #[cfg(target_os = "linux")]

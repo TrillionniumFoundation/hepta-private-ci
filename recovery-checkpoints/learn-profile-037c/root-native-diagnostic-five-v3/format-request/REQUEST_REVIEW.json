@@ -1,0 +1,59 @@
+{
+  "status": "NOT_SUBMITTED",
+  "first_start_owner": "/root",
+  "idempotency_key": "learn-037c-format-native-diagnostic-five-v3",
+  "create_only_records": "/home/qian-qi/hepta-learn-037c-evidence/format-native-diagnostic-five-v3",
+  "source_commit": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+  "source_tree": "f947d38de96534b3882fba023e51ecd0476c809d",
+  "canonical": {
+    "bytes": 51862,
+    "sha256": "d1c37f4373a1b762a9173917bb7d30609df81eb6ecb745c5516c477b5e1388b4",
+    "blob": "1189a4f1acf85e736802b4aaffa56e92a71ed803"
+  },
+  "driver": {
+    "bytes": 8943,
+    "sha256": "9c137da91d4d651f22672df69b4d6f254e518564e32f8c45ab5295cc4f34065e",
+    "blob": "36863a567cd65c37e968281a1322e662f819b160"
+  },
+  "payload": {
+    "bytes": 171873,
+    "sha256": "6342826638b1d60ece4d2adbc6dd5de5a4bfcbfd99a1ebd8c9e0fe8c6913e344",
+    "blob": "31a7c1ad231d46d3a5761ccd3661fca916968ca7"
+  },
+  "payload_gzip": {
+    "bytes": 31637,
+    "sha256": "0ce85aed909d6a7ccb9495b42d2a1646a2c8e52b21d61ac9f51c33d2f835973b",
+    "blob": "30013f1d9ce83799b93126b42330d255f8a69fd2"
+  },
+  "path_count": 5,
+  "paths": [
+    "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs"
+  ],
+  "base_and_before_full_bytes_sha_gitblob_checked": true,
+  "driver_ast_equal_after_only_approved_substitutions": true,
+  "normalized_driver_ast_sha256": "609ba11c5f87019c7d6eecec2dfa7b0d05b349a26b2b875f19c091646f05f109",
+  "argv_count": 5,
+  "base64_chunks": 2,
+  "argument_lengths_bytes": [
+    2,
+    2,
+    8943,
+    32768,
+    9416
+  ],
+  "argument_total_bytes_with_nul": 51153,
+  "local_SC_ARG_MAX": 2097152,
+  "environment_reserve_bytes": 65536,
+  "remote_ARG_MAX_not_probed": true,
+  "old_deep_request_preserved": true,
+  "old_deep_request_not_submitted": true,
+  "checkout_access": false,
+  "target_access": false,
+  "cargo_access": false,
+  "native_tests_run": false,
+  "actual_rustfmt_run": false
+}

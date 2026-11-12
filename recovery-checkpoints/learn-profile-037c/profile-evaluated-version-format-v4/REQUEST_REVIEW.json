@@ -1,0 +1,87 @@
+{
+  "state": "NOT_SUBMITTED",
+  "first_start_owner": "/root",
+  "source_binding": {
+    "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+    "description": "Exact a96 ancestor plus verified actual Version V3 40-file formatted overlay; this request formats only the V4 12-file dependency increment. The 11 existing base files are actual V3 postimages, not blobs claimed to exist in bare a96. No full materialized Git tree, compilation, or ordinary execution is claimed.",
+    "actual_v3_manifest": {
+      "bytes": 49981,
+      "sha256": "0fa8571788642ae6a6f3e2cec81788a8a014915a920b79c2f2ad75fa647823d2",
+      "blob": "adb287f8a8faa81652dc5b0ca0d2a657773beb65"
+    },
+    "actual_v3_postimage_gzip": {
+      "bytes": 134052,
+      "sha256": "85e099f3d30f79c8fd98fa326e86a58e1e97679bfc6b1d7c5c3ea7cdce6b6e06",
+      "blob": "2a5ccfa41b213e0c503caf2ecc20a3d72958c5bd"
+    },
+    "independent_v3_replay": {
+      "bytes": 31815,
+      "sha256": "ad01755556b3416b21badce8f1329743783770f508a3a7b8538740fccaf0ace7",
+      "blob": "0649312d671faee563c88a4f18eedc8895eeaab3"
+    },
+    "v4_replay_manifest": {
+      "bytes": 9089,
+      "sha256": "80e16f95c462606050da1a946bf32f65b5c9caceae5c3a52b7e80aa6a1673688",
+      "blob": "d275be5438da15bdf805e3c253a7f5257daf8d51"
+    },
+    "v4_dependency_patch": {
+      "bytes": 37330,
+      "sha256": "40df9cf560ed62c510c53da196a6952f84e0dff2468b3bf260febab103c22195",
+      "blob": "04fab8bc7e7ed998d5f775190efdf5c39621dff7"
+    },
+    "dependency_blocks_not_executed": [
+      "candidate C14 actual formatted remote-read block",
+      "candidate S12 actual formatted command block",
+      "candidate C11 actual formatted command block",
+      "Root actual Candidate block plus independent publication-progress consumer"
+    ]
+  },
+  "records": "/home/qian-qi/hepta-learn-037c-evidence/format-evaluated-version-v4",
+  "stable_key": "learn-037c-format-evaluated-version-v4",
+  "request": {
+    "bytes": 77346,
+    "sha256": "d5c4f27633468eab7b8221f3fc853a3282d1a6025c412ef45619f0e77bffd694",
+    "blob": "5f433eef4825b907dfcdfe034502f3b165fd5a23"
+  },
+  "driver": {
+    "bytes": 9704,
+    "sha256": "50ad8b508127d8033576bf2348d4d7b778f44660e561431714fbcbf8f8767c17",
+    "blob": "69917d7e3399860065736d78ccc4f75b65dabf20"
+  },
+  "payload": {
+    "bytes": 412307,
+    "sha256": "51813570322d9eaac675c01b5a5f43d22ded416b70d8ab5bab3aacde7eba6cd1",
+    "blob": "cc3cb2e48749fff17115877e3b1c8fcb7bb214f2"
+  },
+  "compressed": {
+    "bytes": 50120,
+    "sha256": "d10e6073a72ecf40751a6e92e15300e9af47b2556d26640ea6897ca3962d4918",
+    "blob": "7e83aff8a23d6530c1d9cf9e5f696eab320f4268"
+  },
+  "files": 12,
+  "production": 8,
+  "fixtures": 4,
+  "normalized_ast_equal_to_approved_actual_v3_driver": true,
+  "normalized_ast_sha256": "6c5902b7ee628e84f7680c88478e1c9880a7b7255b7c5b7ed2fd5e5a5f4e7ad8",
+  "argument_sizes": [
+    16,
+    2,
+    2,
+    9704,
+    32768,
+    32768,
+    1292
+  ],
+  "argument_total_bytes_with_nuls": 76559,
+  "local_SC_ARG_MAX": 2097152,
+  "reserved_environment_and_pointer_bytes": 65536,
+  "remote_ARG_MAX": "not probed",
+  "exact_base_after_payload_checked": true,
+  "base64_join_exact": true,
+  "create_only_records": true,
+  "checkout_access": false,
+  "target_access": false,
+  "cargo_or_native_tests": false,
+  "ordinary_qualification": 0
+}

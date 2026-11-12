@@ -1,0 +1,516 @@
+{
+  "schema": "learn-profile-recovery-checkpoint-v1",
+  "source_parent": {
+    "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451"
+  },
+  "purpose": "Immutable recovery checkpoint from complete functions.store originals after the scratch executor became unavailable. No product source path or global CALLERS/allowlist is changed.",
+  "status": "RECOVERY_INPUTS_PRESERVED_ACTUAL_AFTER_RETRIEVAL_PENDING",
+  "original_snapshot_states": "NOT_SUBMITTED labels inside original request snapshots describe when those snapshots were saved. They are preserved byte for byte and are not claims about later formatter execution.",
+  "known_later_actual_formatter_reports": {
+    "version_v4": {
+      "reported_exit_code": 0,
+      "files": 12,
+      "format_changed": 9,
+      "manifest_sha256": "cabe1d4baa76eeef490db21181f935988da28950610be26625cbaa94cb05a35e",
+      "format_patch_sha256": "719250f816e43288c8eae48090c89990dad5fa71ea9a2c1c950cb8db9ac3303d",
+      "actual_after_in_this_checkpoint": false
+    },
+    "root_progress_postread": {
+      "reported_exit_code": 0,
+      "files": 3,
+      "format_changed": 1,
+      "manifest_sha256": "26c3583464c150f8bb7bd1ab52bc2465cce7a7e56f22967f765142984f604322",
+      "actual_after_in_this_checkpoint": false
+    }
+  },
+  "validation": {
+    "all_stored_original_sizes_sha256_verified": true,
+    "sha1_sha256_implementation_self_tests": true,
+    "source_qa_final_57": "UNRUN",
+    "native": "NOT_RUN_FOR_THIS_COHORT",
+    "full_caller": "NOT_RUN_FOR_THIS_COHORT"
+  },
+  "qualification": {
+    "ordinary_adopt": 0,
+    "ordinary_no_update": 0,
+    "daemon_and_root_cold_recovery": 0,
+    "multi_generation_improvement": 0
+  },
+  "unavailable_at_checkpoint": [
+    "Actual V4 after files and actual formatter patch/manifest: parent is recovering immutable remote result payloads.",
+    "Complete Version actual V3 40 after files: candidate is preserving the actual central source cohort independently.",
+    "Latest actual-format Version QA/delta and central CALLERS proposal v1: no complete matching functions.store key found; currently only lost scratch paths and recorded metadata.",
+    "Final actual-input 57-test source QA: not executed."
+  ],
+  "artifacts": [
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-format-v4/h-pty-start-request.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-format-v4/h-pty-start-request.json",
+      "encoding": "utf-8",
+      "bytes": 77346,
+      "sha256": "d5c4f27633468eab7b8221f3fc853a3282d1a6025c412ef45619f0e77bffd694",
+      "git_blob": "5f433eef4825b907dfcdfe034502f3b165fd5a23"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-format-v4/format-driver.py",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-format-v4/format-driver.py",
+      "encoding": "utf-8",
+      "bytes": 9704,
+      "sha256": "50ad8b508127d8033576bf2348d4d7b778f44660e561431714fbcbf8f8767c17",
+      "git_blob": "69917d7e3399860065736d78ccc4f75b65dabf20"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-format-v4/REQUEST_REVIEW.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-format-v4/REQUEST_REVIEW.json",
+      "encoding": "utf-8",
+      "bytes": 3364,
+      "sha256": "a1a89d3e848f15a5c2f3a2306848ae0f574606f555fc349c318fa3b89efbb4c8",
+      "git_blob": "05cd30c4acc148486f15d0b04bdaa67347b36ec1"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-format-v4/input-manifest.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-format-v4/input-manifest.json",
+      "encoding": "utf-8",
+      "bytes": 16041,
+      "sha256": "c8629daf0f5f9fbef819a93b36bbcf4ffeabfc6666f787be9e0dc33faba9b702",
+      "git_blob": "bbef16ff987a3451f2f6b699baa08c3ea24a8470"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-format-v4/format-method-provenance.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-format-v4/format-method-provenance.json",
+      "encoding": "utf-8",
+      "bytes": 1062,
+      "sha256": "9ef94f1f5f84b5f6a5b08a4884b6addf3c9c89fc1e4d7886bd9d9ff821df0a51",
+      "git_blob": "e4b429eee94dddad5bcf689531b85b9fc05d8b06"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-format-v4/prepare_canonical.py",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-format-v4/prepare_canonical.py",
+      "encoding": "utf-8",
+      "bytes": 12257,
+      "sha256": "cb813f4a5be0bbdb76cfab8a73f65662f954e37363e93604941e66bfe27f2939",
+      "git_blob": "346b6eff1f22c5df7522f4fec11b50e91b32a427"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-a96-v4/V4_FROM_ACTUAL_V3.patch",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-a96-v4/V4_FROM_ACTUAL_V3.patch",
+      "encoding": "utf-8",
+      "bytes": 37330,
+      "sha256": "40df9cf560ed62c510c53da196a6952f84e0dff2468b3bf260febab103c22195",
+      "git_blob": "04fab8bc7e7ed998d5f775190efdf5c39621dff7"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-a96-v4/V4_FROM_ACTUAL_V3.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-a96-v4/V4_FROM_ACTUAL_V3.json",
+      "encoding": "utf-8",
+      "bytes": 9089,
+      "sha256": "80e16f95c462606050da1a946bf32f65b5c9caceae5c3a52b7e80aa6a1673688",
+      "git_blob": "d275be5438da15bdf805e3c253a7f5257daf8d51"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "/workspace/scratch/037c0371c195/profile-evaluated-version-formatted-v3-audit/INDEPENDENT_VERIFICATION.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-formatted-v3-audit/INDEPENDENT_VERIFICATION.json",
+      "encoding": "utf-8",
+      "bytes": 31815,
+      "sha256": "ad01755556b3416b21badce8f1329743783770f508a3a7b8538740fccaf0ace7",
+      "git_blob": "0649312d671faee563c88a4f18eedc8895eeaab3"
+    },
+    {
+      "source_key": "version_v4_exact_actual_v3_canonical_not_submitted_v1",
+      "source_path": "profile-evaluated-version-format-v4/input-payload.json.gz",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-format-v4/input-payload.json.gz",
+      "encoding": "base64",
+      "bytes": 50120,
+      "sha256": "d10e6073a72ecf40751a6e92e15300e9af47b2556d26640ea6897ca3962d4918",
+      "git_blob": "7e83aff8a23d6530c1d9cf9e5f696eab320f4268"
+    },
+    {
+      "source_key": "root_progress_postread_v3_canonical_not_submitted",
+      "source_path": "/workspace/scratch/037c0371c195/root-progress-postread-format-v3/h-pty-start-request.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-progress-postread-format-v3/h-pty-start-request.json",
+      "encoding": "utf-8",
+      "bytes": 25190,
+      "sha256": "84fd23fbb8077da2f3cc810e5dc72fc22d0c008aab5c1a9f4c46ba0e999d6287",
+      "git_blob": "8fdd30cf9683b4a2c3d4743e14eeabe83fce2dd3"
+    },
+    {
+      "source_key": "root_progress_postread_v3_canonical_not_submitted",
+      "source_path": "/workspace/scratch/037c0371c195/root-progress-postread-format-v3/format-driver.py",
+      "path": "recovery-checkpoints/learn-profile-037c/root-progress-postread-format-v3/format-driver.py",
+      "encoding": "utf-8",
+      "bytes": 9128,
+      "sha256": "d119f7392fba426f8a616c233007bf68fafc6ff46f34101f172fb7bded2eacca",
+      "git_blob": "c6cc688c7d2fbf5308e233c82d34f3b29cc9d8fb"
+    },
+    {
+      "source_key": "root_progress_postread_v3_canonical_not_submitted",
+      "source_path": "/workspace/scratch/037c0371c195/root-progress-postread-format-v3/REQUEST_REVIEW.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-progress-postread-format-v3/REQUEST_REVIEW.json",
+      "encoding": "utf-8",
+      "bytes": 6275,
+      "sha256": "4c69f1014fe870da4c342b99748acf1194ad91707e2287787fe286b91ec3bdfe",
+      "git_blob": "de207ecd367b08c4347eb924e2866d707556ecdf"
+    },
+    {
+      "source_key": "root_progress_postread_v3_canonical_not_submitted",
+      "source_path": "/workspace/scratch/037c0371c195/root-progress-postread-format-v3/input-manifest.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-progress-postread-format-v3/input-manifest.json",
+      "encoding": "utf-8",
+      "bytes": 9047,
+      "sha256": "41e838505e52d7abb703974d1aa1902e931e28e1cb121b2c34f80e6032cebd25",
+      "git_blob": "03cf7a8f2ff6ad7f664ee9234b563e8d2ad35b9a"
+    },
+    {
+      "source_key": "root_progress_postread_v3_canonical_not_submitted",
+      "source_path": "/workspace/scratch/037c0371c195/root-progress-postread-format-v3/format-method-provenance.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-progress-postread-format-v3/format-method-provenance.json",
+      "encoding": "utf-8",
+      "bytes": 762,
+      "sha256": "0a608aaf70f1fca6bf67de793fbe15c37924932bd7915ae125f959ce677d8055",
+      "git_blob": "1b56730c29e004d68ea3e7a91c3466dca1c3eb47"
+    },
+    {
+      "source_key": "root_progress_postread_v3_canonical_not_submitted",
+      "source_path": "/workspace/scratch/037c0371c195/root-progress-postread-format-v3/prepare_canonical.py",
+      "path": "recovery-checkpoints/learn-profile-037c/root-progress-postread-format-v3/prepare_canonical.py",
+      "encoding": "utf-8",
+      "bytes": 11845,
+      "sha256": "944d48d6f62c379535073343cdb61fc7c5e6f4cf5a34d82ab190e34786fa6447",
+      "git_blob": "6bf8939b54ed173c7c9b2d1a2e4f49711aa0528f"
+    },
+    {
+      "source_key": "root_progress_postread_v3_canonical_not_submitted",
+      "source_path": "root-progress-postread-format-v3/input-payload.json.gz",
+      "path": "recovery-checkpoints/learn-profile-037c/root-progress-postread-format-v3/input-payload.json.gz",
+      "encoding": "base64",
+      "bytes": 11449,
+      "sha256": "7f82de528e2ba82aceeb7e2c397a005cf22efcbf5ff31ced90964afc1c6f000e",
+      "git_blob": "609c35fbd3476f79a179cd029c7fdc070298a250"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "DESIGN.md",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/DESIGN.md",
+      "encoding": "utf-8",
+      "bytes": 6939,
+      "sha256": "b7a097a06955bbc0ec68c391c9ba057aa695dc25e358e5c0e8339c05f81a9701",
+      "git_blob": "17038765ff12fa3b2f0a6c1db92b9965712c62b0"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "DESIGN_BASE.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/DESIGN_BASE.json",
+      "encoding": "utf-8",
+      "bytes": 2972,
+      "sha256": "a10987d6199435e0e7b8a2a13a2dc543b97123aaddd9ab124ab749ecaaf30ce9",
+      "git_blob": "b4f07961ebd833890917282959679d43e585f19e"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "V4_PREFMT_DESIGN.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/V4_PREFMT_DESIGN.json",
+      "encoding": "utf-8",
+      "bytes": 6085,
+      "sha256": "59122d6753ad7d9c0f7e23f03081154c4f1dda871654e6b2504f1e954aa738d4",
+      "git_blob": "61e624436a11f014ea6c1f35a8b7a7bc0ea575cd"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "V4_PREFMT_DESIGN.patch",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/V4_PREFMT_DESIGN.patch",
+      "encoding": "utf-8",
+      "bytes": 35154,
+      "sha256": "5b24b882d3c28665b49687e5b6048d04043398d64af40666c2eb2c5321efae8a",
+      "git_blob": "c603711aa9eb9ef400bb109eb3cf2688abba53e6"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+      "encoding": "utf-8",
+      "bytes": 9568,
+      "sha256": "acb758aba7375a6027df88d7b78dfd312bff9055d982e10bfb8e6659d6ef67ee",
+      "git_blob": "fc562c44b3671b92eb85958e761855f56e3f471e"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 7742,
+      "sha256": "119ba7fc8221085809f393e94b90aa5d4e3188708d8b752f1e1e2d12f02d1f9f",
+      "git_blob": "ab3888e5eeae120573f76cc458173bd7c6828dc0"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 7891,
+      "sha256": "b549861480a58c29e971799d59be4f103ed8465adee6e42d9305043852b76393",
+      "git_blob": "49e191c4a6f0afe0cb274083cb7168c6907aa5cf"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "encoding": "utf-8",
+      "bytes": 8583,
+      "sha256": "093e9feaa6a40f7d33cad500646d9dd0df45fb70b64936d3e589ac0b7da7b136",
+      "git_blob": "86c83240d5df770240bc1fc3fdca1fb2e6b3482a"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "encoding": "utf-8",
+      "bytes": 16521,
+      "sha256": "f86f9e5d473a41a2ae918d2586a4390a6413bd8c8273e94a4938eaa2cb6874d1",
+      "git_blob": "5765726069d4067b807537dff9741b16b7b29cb9"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "encoding": "utf-8",
+      "bytes": 6534,
+      "sha256": "d66bd1e70d191dafc0ad2a246e0c7eff958e23661062cff20604426880e2ecd2",
+      "git_blob": "bd4d35f2b6a5a2c85dc8206eb24fbf9403670272"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "encoding": "utf-8",
+      "bytes": 11708,
+      "sha256": "d86c16c05f65de2dd98f5fc9830677d64a96b177e0961c294cd02e20c1fd34b5",
+      "git_blob": "a8f7d6b5ab69a383f5047dfe1007ee4d0cd92cfd"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 3637,
+      "sha256": "98a631d9e8c19178024f6eba0b26576fae42572f92967be01a5e214ccf3620ea",
+      "git_blob": "37601baf5fa908f3424b6028f546f9266c22cebd"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "encoding": "utf-8",
+      "bytes": 13084,
+      "sha256": "55e8c5ad671185ed05c6fa44b71c9aa8f6214e42864368b6f71d79906950e016",
+      "git_blob": "91299245bfa8fcac6c9b4426de438e044b24e818"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "encoding": "utf-8",
+      "bytes": 12026,
+      "sha256": "7eb698c9f1f37dd0931f89cd941e67819cdc3fce4cc2754355684859d3584ce6",
+      "git_blob": "3f4d45384605a117d2ec4c8cd052297dc8b690d1"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "base-prefmt/codex-rs/hepta-agentd/src/lib.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/base-prefmt/codex-rs/hepta-agentd/src/lib.rs",
+      "encoding": "utf-8",
+      "bytes": 71201,
+      "sha256": "a172500c7da5561a5946286ee0aecfb4620bc16d83be0de990ff38caead5ed17",
+      "git_blob": "d549316f180de567cb19f12a1bc2b768ea893f02"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "evidence/ROOT_GATE_EXACT_A96.json",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/evidence/ROOT_GATE_EXACT_A96.json",
+      "encoding": "utf-8",
+      "bytes": 1285,
+      "sha256": "ddfc65e75118ba4554a883abba55c098bda1fb22d0cea1e8837f873fc7bdb4c9",
+      "git_blob": "9868c5ec5edcdd7ef2e3699bb0907007991e5ff1"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_commands.rs",
+      "encoding": "utf-8",
+      "bytes": 9628,
+      "sha256": "71e17a44116309e0ac757f3e2b9db02f6ae9a27ac9fdcc7087d0077438cfa383",
+      "git_blob": "52ae778055ea217041910b50c8481f7dddc59909"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_issuer_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 8524,
+      "sha256": "e05f33bd7818763f6c3f868f9d1a971f1e69786b39548a456b787725b6b067da",
+      "git_blob": "de088fc464237b2a6aae116fbda82b91a478eaa5"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_progress_support_tests.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_progress_support_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 6121,
+      "sha256": "88ca65a99b37dd23ffb24ba2418fe0b96d19fbdec3b5e5d1a4e612e383e132b4",
+      "git_blob": "a1f7f16e3b0f27104206c982c153420215d72502"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 8905,
+      "sha256": "0c2d9f23cea9de983c5d9fa32382c4cc1fdea45bb9e9c38725f53796091e81eb",
+      "git_blob": "78223adf758f2061a45b3d6c9892b9dfd90e618a"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_evaluated_version_wire.rs",
+      "encoding": "utf-8",
+      "bytes": 12503,
+      "sha256": "3196831562082b0a4b03d268af26a30a82fdbdbc9f18762fc2436f7e6aa58cb2",
+      "git_blob": "b38f89d2f5ce7542bf57658551ce2689c35571ac"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "encoding": "utf-8",
+      "bytes": 16610,
+      "sha256": "8caf90cb4c7c1216a74d6af219d95b709cf6304a2dfe220f7b0da7b5666721b6",
+      "git_blob": "b95ad8a432a7658a1f7f6b850c1f6ec6ae5f6ce3"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "encoding": "utf-8",
+      "bytes": 6911,
+      "sha256": "2c497a968e7e7d69e44cc2cac16b6720ddd29e4e4f4afa06de94dc7e00e57da1",
+      "git_blob": "c8acbd63a8f962c1273ec0b85d85fac3d406ddf7"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "encoding": "utf-8",
+      "bytes": 14465,
+      "sha256": "4c8ce7e70a4ea9d38b85e2f7da44f795dace0250f4135f7186bfc7c2c49be0bf",
+      "git_blob": "389bee72f2adba9e19d4d2c9cf90fb9300ba2eee"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 3726,
+      "sha256": "a8c27ab37470c57aa3b0a658a3ef3801f182d971e0dae785eb7c5cc57d9143fc",
+      "git_blob": "8a49a08931c83c1d5e54ee9b803cd25bcd219630"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "encoding": "utf-8",
+      "bytes": 17037,
+      "sha256": "93696873c5b1f2549bb2d5a7ad391b1519327218de335ec25a3cd79fe789bb45",
+      "git_blob": "74402b16ece71638f0dd37e5f37fb1a8619c00a6"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "encoding": "utf-8",
+      "bytes": 12704,
+      "sha256": "8d222cde8b3a55adc8e9ea3cec541cf32f1ff7a986a92c52a5cf52e257782d86",
+      "git_blob": "f98f8cbdce62431416ca2a760aa4c702d21592b8"
+    },
+    {
+      "source_key": "version_v4_prefmt_design_files_v1",
+      "source_path": "work-prefmt/codex-rs/hepta-agentd/src/lib.rs",
+      "path": "recovery-checkpoints/learn-profile-037c/profile-evaluated-version-early-prefmt-design/work-prefmt/codex-rs/hepta-agentd/src/lib.rs",
+      "encoding": "utf-8",
+      "bytes": 71312,
+      "sha256": "4827d2d35991796b6895b95b7405452cd684cf16303857a85693688a6565379f",
+      "git_blob": "e664bc4c3da0122d75d9d92e56e14f470d31f1e5"
+    },
+    {
+      "source_key": "native_diagnostic_five_v3_format_canonical_not_submitted",
+      "source_path": "root-native-diagnostic-five-v3/format-request/REQUEST_REVIEW.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-native-diagnostic-five-v3/format-request/REQUEST_REVIEW.json",
+      "encoding": "utf-8",
+      "bytes": 2183,
+      "sha256": "ac747bd5fea346363883e4cbf93fbce27bee05ce4b6788bee7c746fd8d745be3",
+      "git_blob": "7e748ca9b4487a3e412c6efe4befcac134a2d6a5"
+    },
+    {
+      "source_key": "native_diagnostic_five_v3_format_canonical_not_submitted",
+      "source_path": "root-native-diagnostic-five-v3/format-request/format-driver.py",
+      "path": "recovery-checkpoints/learn-profile-037c/root-native-diagnostic-five-v3/format-request/format-driver.py",
+      "encoding": "utf-8",
+      "bytes": 8943,
+      "sha256": "9c137da91d4d651f22672df69b4d6f254e518564e32f8c45ab5295cc4f34065e",
+      "git_blob": "36863a567cd65c37e968281a1322e662f819b160"
+    },
+    {
+      "source_key": "native_diagnostic_five_v3_format_canonical_not_submitted",
+      "source_path": "root-native-diagnostic-five-v3/format-request/format-method-provenance.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-native-diagnostic-five-v3/format-request/format-method-provenance.json",
+      "encoding": "utf-8",
+      "bytes": 1259,
+      "sha256": "eb0ebfafccb64d2adb7dc4d7a896694ed9523cc1cc69c0fee1934ad7cc2ceb9b",
+      "git_blob": "cb8d62b9eaf626f7e45008c5bfbeed239266c98c"
+    },
+    {
+      "source_key": "native_diagnostic_five_v3_format_canonical_not_submitted",
+      "source_path": "root-native-diagnostic-five-v3/format-request/h-pty-start-request.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-native-diagnostic-five-v3/format-request/h-pty-start-request.json",
+      "encoding": "utf-8",
+      "bytes": 51862,
+      "sha256": "d1c37f4373a1b762a9173917bb7d30609df81eb6ecb745c5516c477b5e1388b4",
+      "git_blob": "1189a4f1acf85e736802b4aaffa56e92a71ed803"
+    },
+    {
+      "source_key": "native_diagnostic_five_v3_format_canonical_not_submitted",
+      "source_path": "root-native-diagnostic-five-v3/format-request/input-manifest.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-native-diagnostic-five-v3/format-request/input-manifest.json",
+      "encoding": "utf-8",
+      "bytes": 3470,
+      "sha256": "76f671c1bf72b123814d535627794244aba1174231d19ad5c1afd64a916b6680",
+      "git_blob": "2fb94436b383c13456e5354b99e314818ae80005"
+    },
+    {
+      "source_key": "native_diagnostic_five_v3_format_canonical_not_submitted",
+      "source_path": "root-native-diagnostic-five-v3/format-request/input-payload.json",
+      "path": "recovery-checkpoints/learn-profile-037c/root-native-diagnostic-five-v3/format-request/input-payload.json",
+      "encoding": "utf-8",
+      "bytes": 171873,
+      "sha256": "6342826638b1d60ece4d2adbc6dd5de5a4bfcbfd99a1ebd8c9e0fe8c6913e344",
+      "git_blob": "31a7c1ad231d46d3a5761ccd3661fca916968ca7"
+    },
+    {
+      "source_key": "native_diagnostic_five_v3_format_canonical_not_submitted",
+      "source_path": "root-native-diagnostic-five-v3/format-request/prepare_canonical.py",
+      "path": "recovery-checkpoints/learn-profile-037c/root-native-diagnostic-five-v3/format-request/prepare_canonical.py",
+      "encoding": "utf-8",
+      "bytes": 11254,
+      "sha256": "625e90386cf1f8bdcf950acbab8b7c9c2edc38df9d3a596b200f43c3fccc6c0d",
+      "git_blob": "092acb7234037c5449b2adf124fd43565d64a6f5"
+    }
+  ]
+}
