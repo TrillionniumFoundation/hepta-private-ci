@@ -141,8 +141,14 @@ pub use cell_joint_protocol::JointGenerationModalityV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_protocol::JointGenerationSamplerV1;
 pub use cell_journal::CellJournalPartitionV1;
+#[cfg(target_os = "linux")]
+pub use cell_journal::CellOriginalJournalFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_journal::CellOriginalJournalObservationV1;
 pub use cell_journal::CellOwnerJournalReadbackV1;
 pub use cell_journal::CellOwnerJournalV1;
+#[cfg(target_os = "linux")]
+pub use cell_journal::observe_original_guarded_cell_v1;
 pub use cell_owner::CellPartitionOwnerV1;
 pub use cell_task_cost::CellCostAccountingV2;
 pub use cell_task_cost::CellCostEntryV2;

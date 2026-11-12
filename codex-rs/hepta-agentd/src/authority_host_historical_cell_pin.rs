@@ -111,7 +111,7 @@ impl PendingOriginalCellCaptureV1<'_> {
         inputs: &RootHistoricalSourceInputsV1,
         source: &crate::HistoricalCircuitTaskSourceObservationV1,
         retained: &RetainedSourcePinRecordV1,
-    ) -> io::Result<()> {
+    ) -> io::Result<codex_hepta_neuron::CellDecisionReceiptV1> {
         original_root()?;
         let original = self.original;
         let baseline = &original.baseline;
@@ -177,7 +177,7 @@ impl PendingOriginalCellCaptureV1<'_> {
             ));
         }
         self.captured = Some(next);
-        Ok(())
+        Ok(observed.decision)
     }
 }
 
