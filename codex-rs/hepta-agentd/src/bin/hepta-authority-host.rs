@@ -153,6 +153,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let post_a_deployment = options
             .remove(std::ffi::OsStr::new("--post-a-learning-deployment"))
             .map(PathBuf::from);
+        let post_a_publication_deployment = options
+            .remove(std::ffi::OsStr::new("--post-a-publication-deployment"))
+            .map(PathBuf::from);
         let publication_deployment = options
             .remove(std::ffi::OsStr::new("--generation-publication-deployment"))
             .map(PathBuf::from);
@@ -186,7 +189,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             return Err("unknown option or missing pre-held owner pidfd".into());
         }
         if (initial_deployment.is_some() || initial_handoff.is_some())
-            && (publication_deployment.is_some() || publication_handoff.is_some())
+            && (publication_deployment.is_some()
+                || publication_handoff.is_some()
+                || post_a_publication_deployment.is_some())
         {
             return Err(
                 "initial and learned publication require separate original Root sessions".into(),
@@ -220,13 +225,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 || root_fd.is_none()
                 || learning_profile.is_some()
                 || model_reservation.is_some()
-                || publication_deployment.is_some()
-                || publication_handoff.is_some())
+                || publication_deployment.is_some())
         {
             return Err("post-A serving requires its fixed Root plan, original historical route and two late handoffs without eager owner profiles".into());
         }
-        if publication_deployment.is_some() != publication_handoff.is_some()
-            || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())
+        if post_a_publication_deployment.is_some() && post_a_deployment.is_none()
+            || post_a_deployment.is_some()
+                && post_a_publication_deployment.is_some() != publication_handoff.is_some()
+        {
+            return Err("post-A publication requires its fixed Root plan and original late handoff in the post-A session".into());
+        }
+        if post_a_deployment.is_none()
+            && (publication_deployment.is_some() != publication_handoff.is_some()
+                || publication_deployment.is_some()
+                    && (learning_profile.is_none() || root_fd.is_none()))
         {
             return Err("publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd".into());
         }
@@ -249,7 +261,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
-        let publication_handoff = publication_handoff
+        let mut publication_handoff = publication_handoff
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
@@ -347,7 +359,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Some(reservation) => prepared.with_registered_q24_model_factory(&reservation)?,
             None => prepared,
         };
-        let (deployment, publication_offer) = match (publication_deployment, publication_handoff) {
+        let eager_publication_handoff = if post_a_deployment.is_some() {
+            None
+        } else {
+            publication_handoff.take()
+        };
+        let (deployment, publication_offer) = match (
+            publication_deployment,
+            eager_publication_handoff,
+        ) {
             (Some(path), Some(handoff)) => {
                 let (capability, offer) = prepared.enable_generation_publication()?;
                 let capability: codex_hepta_agentd::RootGenerationPublicationEnrollmentCapabilityV1 = capability;
@@ -394,12 +414,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .as_ref()
                         .ok_or("original post-A Root pidfd missing")?
                         .try_clone()?;
+                    let publication = match (
+                        post_a_publication_deployment.as_deref(),
+                        publication_handoff.take(),
+                    ) {
+                        (Some(path), Some(handoff)) => {
+                            Some((path, std::os::unix::net::UnixDatagram::from(handoff)))
+                        }
+                        (None, None) => None,
+                        _ => return Err("original post-A publication inputs differ".into()),
+                    };
                     codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_post_a_learning_from_deployment(
                         &mut prepared,
                         post_a_path,
                         std::os::unix::net::UnixDatagram::from(learning),
                         std::os::unix::net::UnixDatagram::from(model),
                         root,
+                        publication,
                     )?;
                 }
                 Some((handoff, codex_hepta_agentd::PreparedHostAuthoritySession::seal_original_historical_task_read(&prepared)?))

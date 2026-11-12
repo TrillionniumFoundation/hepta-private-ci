@@ -7,6 +7,7 @@ use std::io;
 use std::os::fd::OwnedFd;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Instant;
 
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
@@ -16,6 +17,9 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 
 use super::super::generation_publication::deployment::files::MetadataFile;
+use super::super::generation_publication::deployment::post_a::OriginalPostAPublicationDeployment;
+use super::super::generation_publication::deployment::post_a::OriginalPostAPublicationFiles;
+use super::super::generation_publication::prepare_original_publication_route;
 use super::learning_trust::RootHistoricalLearningTrustV1;
 use super::post_a_files::PostABaselineData;
 use super::post_a_files::PostABaselineFiles;
@@ -80,6 +84,7 @@ pub(super) struct PostALearningRuntime {
     register: bool,
     baseline: PostABaselineFiles,
     freeze: PostAFreezeFiles,
+    publication: Option<Arc<OriginalPostAPublicationFiles>>,
     plan: PostALearningPlan,
 }
 
@@ -90,6 +95,8 @@ pub(super) struct PostALearningInstallation {
     pub(super) learning_bootstrap: File,
     pub(super) model_offer: RootQ24ModelFactoryOfferV1,
     pub(super) publication: Option<super::super::generation_publication::PublicationRuntime>,
+    pub(super) publication_offer: Option<crate::RootGenerationPublicationOfferV1>,
+    pub(super) publication_deployment: Option<OriginalPostAPublicationDeployment>,
     pub(super) frozen_scope: String,
 }
 
@@ -105,8 +112,14 @@ impl PostALearningRuntime {
         observed: &RootOriginalHistoricalCompleteTaskObservationV1,
         trust: &RootHistoricalLearningTrustV1,
         end: Instant,
+        session_end: Instant,
     ) -> io::Result<PostALearningInstallation> {
         original_root()?;
+        if end > session_end {
+            return Err(io::Error::other(
+                "original post-A request exceeds its session",
+            ));
+        }
         let identity = registration.registered_identity.identity()?;
         self.with_original_derived_profile(
             service,
@@ -154,13 +167,33 @@ impl PostALearningRuntime {
                     &mut factory,
                 )?;
                 learning.q24_model = Some(factory);
+                let (publication, publication_offer, publication_deployment) =
+                    match &self.publication {
+                        Some(files) => {
+                            let (runtime, capability, offer) = prepare_original_publication_route(
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                &learning,
+                                Some(session_end),
+                            )?;
+                            let deployment = OriginalPostAPublicationFiles::attach_original_route(
+                                files, initial, capability,
+                            )?;
+                            (Some(runtime), Some(offer), Some(deployment))
+                        }
+                        None => (None, None, None),
+                    };
                 self.require_original_metadata()?;
                 require_end(end)?;
                 Ok(PostALearningInstallation {
                     learning,
                     learning_bootstrap,
                     model_offer,
-                    publication: None,
+                    publication,
+                    publication_offer,
+                    publication_deployment,
                     frozen_scope,
                 })
             },
@@ -173,6 +206,7 @@ impl PostALearningRuntime {
         target: &CellGenerationOwnerBindingV1,
         peer_uid: u32,
         peer_gid: u32,
+        publication_path: Option<&Path>,
     ) -> io::Result<Self> {
         original_root()?;
         let (metadata, bytes) = MetadataFile::open_metadata(path)?;
@@ -238,6 +272,13 @@ impl PostALearningRuntime {
         let (reservation_metadata, bytes) = MetadataFile::open_metadata(&data.model_reservation)?;
         let reservation: HostAuthorityQ24ModelFactoryReservationV1 =
             serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+        let publication = publication_path
+            .map(|path| {
+                OriginalPostAPublicationFiles::retain_original_publication(
+                    path, initial, peer_uid, peer_gid,
+                )
+            })
+            .transpose()?;
         let held = Self {
             metadata,
             reservation_metadata,
@@ -249,6 +290,7 @@ impl PostALearningRuntime {
             register,
             baseline,
             freeze,
+            publication,
             plan: PostALearningPlan {
                 snapshot_id: StableId::new(data.snapshot_id).map_err(io::Error::other)?,
                 head,
