@@ -330,3 +330,7 @@ fn normalized_original(raw: i64) -> io::Result<FixedQ32> {
     }
     Ok(original)
 }
+
+#[cfg(test)]
+#[path = "authority_host_q24_evaluation_source_tests.rs"]
+mod tests;
