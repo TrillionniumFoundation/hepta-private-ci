@@ -371,7 +371,9 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn original_attestations(", "let (_, fresh) = owner.read(cancellation).await?"),
             ("fn verify_non_model_attestations(", "signatures.len() + proposal_count != snapshot.receipts.len()"),
             ("fn verify_non_model_attestations(", "verifier\n            .verify(role, signature, &payload, now)"),
-            ("fn verify_non_model_attestations(", "snapshot.training_no_update_v2().is_none()"),
+            ("fn verify_non_model_attestations(", "snapshot.training_no_update_v2().is_some()"),
+            ("fn verify_non_model_attestations(", "proposal_count != 1 || snapshot.receipts.len() < 6"),
+            ("fn verify_non_model_attestations(", "proposal_count != 1 || snapshot.receipts.len() != 7"),
             ("fn verify_non_model_attestations(", "verify_signed_actor_separation(&previous.1, current, now)"),
         ):
             with self.subTest(function=function, marker=marker):

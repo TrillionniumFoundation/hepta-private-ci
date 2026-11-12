@@ -201,8 +201,10 @@ impl Owners {
         self.require_adoption_cut(snapshot, Stage::Selection, action)?;
         let operation = CandidateOriginalOperation::begin(self, snapshot).await?;
         self.begin_adoption()?;
-        let completed = self.read_model_for_adoption(&operation).await?;
-        let context = publication_context(self, &operation, &completed)?;
+        let completed: OriginalCellQ24ModelReadCompletionV1 =
+            self.read_model_for_adoption(&operation).await?;
+        let context: OriginalCircuitModelPublicationContextV1 =
+            publication_context(self, &operation, &completed)?;
         let (selector, version) = self.bind_adoption_selection(
             &operation, &completed,
             self.common.origin == Origin::Recovered || action == Action::Readback,

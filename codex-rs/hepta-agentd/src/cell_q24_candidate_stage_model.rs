@@ -22,6 +22,9 @@ use crate::OriginalCellQ24ModelCommandClientV1;
 use crate::OriginalCellQ24ModelCommandConnectionV1;
 use crate::OriginalCellQ24ModelCommandErrorV1;
 use crate::OriginalCellQ24ModelCommandReceiptV1;
+use crate::OriginalCellQ24ModelReadV1;
+use crate::OriginalCellQ24ModelReadCompletionV1;
+use crate::OriginalCircuitModelPublicationContextV1;
 use crate::RootResidentLearningEffectGateV3;
 
 pub(super) struct ModelLane {
@@ -154,7 +157,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         };
         // The Candidate Model mutex is released here. The Model host also
         // releases every native Training permit before its E network reads.
-        let original = match action {
+        let original: OriginalCellQ24ModelReadV1<'_> = match action {
             Action::Execute => {
                 let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
                 OriginalCellQ24ModelCommandClientV1::begin_original_model_commit(
@@ -176,9 +179,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             .await.map_err(|_| Error::CommitUncertain)?;
         // Finish reads the original E/retention and then the final native
         // Model/T. There is no second whole Model or outer E transfer.
-        let completed = original.finish().await.map_err(|_| Error::CommitUncertain)?;
+        let completed: OriginalCellQ24ModelReadCompletionV1 =
+            original.finish().await.map_err(|_| Error::CommitUncertain)?;
         let after = completed.material().original_evaluation();
-        let current = completed.model();
+        let current: &OriginalCellQ24ModelCommandReceiptV1 = completed.model();
         if &before != after {
             return Err(Error::CommitUncertain);
         }
@@ -257,20 +261,22 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
             Arc::clone(lane.client.as_ref().ok_or(Error::CommitUncertain)?)
         };
-        let original = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(
+        let original: OriginalCellQ24ModelReadV1<'_> = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(
             client.as_ref(),
         ).await.map_err(|_| Error::CommitUncertain)?;
         if original.model().snapshot() != &expected {
             return Err(Error::CommitUncertain);
         }
         let before = original.model().clone();
-        let completed = original.finish().await.map_err(|_| Error::CommitUncertain)?;
+        let completed: OriginalCellQ24ModelReadCompletionV1 =
+            original.finish().await.map_err(|_| Error::CommitUncertain)?;
         if completed.model() != &before {
             return Err(Error::CommitUncertain);
         }
         // The complete opaque D/T/E context is compared before any adoption
         // dispatch. This pure factory does not turn the pin into a CURRENT.
-        let context = super::adoption::publication_context(self, operation, &completed)?;
+        let context: OriginalCircuitModelPublicationContextV1 =
+            super::adoption::publication_context(self, operation, &completed)?;
         context.authenticate_material(
             completed.material(), super::super::auth::now()?, false,
         ).map_err(|_| Error::CommitUncertain)?;

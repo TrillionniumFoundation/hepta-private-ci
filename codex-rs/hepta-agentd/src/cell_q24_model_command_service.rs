@@ -86,16 +86,20 @@ impl OriginalCellQ24ModelCommandHostV1 {
                     if operation.is_some() {
                         return Err(Error::Binding("one original Model operation per channel"));
                     }
-                    let original = self.begin_original_read(&request)?;
-                    let outcome = original.started()?;
+                    let original: OriginalModelReadHostOperation<'_> = self.begin_original_read(&request)?;
+                    let outcome = OriginalModelReadHostOperation::started(&original)?;
                     *operation = Some(original);
                     Ok(outcome)
                 }
                 wire::Action::ReadOriginalPage { .. } => {
-                    operation.as_mut().ok_or(Error::ReadbackRequired)?.page(&request)
+                    OriginalModelReadHostOperation::page(
+                        operation.as_mut().ok_or(Error::ReadbackRequired)?, &request,
+                    )
                 }
                 wire::Action::FinishOriginalRead { .. } => {
-                    operation.take().ok_or(Error::ReadbackRequired)?.finish(&request)
+                    OriginalModelReadHostOperation::finish(
+                        operation.take().ok_or(Error::ReadbackRequired)?, &request,
+                    )
                 }
                 wire::Action::Execute | wire::Action::Readback => {
                     if operation.is_some() {

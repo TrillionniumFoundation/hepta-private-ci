@@ -32,6 +32,7 @@ use crate::OriginalCellEvaluationCommandErrorV1;
 use crate::OriginalCellQ24ModelCommandClientV1;
 use crate::OriginalCellQ24ModelCommandErrorV1;
 use crate::OriginalCellQ24ModelReadV1;
+use crate::OriginalCellQ24ModelReadCompletionV1;
 use crate::PreparedAgentdGenerationUpdateV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::PublishedCircuitFeatureTaskV1;
@@ -132,8 +133,9 @@ where
     New: AnchorWitnessStore + Send + 'static,
 {
     let started = now()?;
-    let observation = model.begin_original_model_read().await?;
-    let context = predecessors.with_original_model(observation.model().clone())?;
+    let observation: OriginalCellQ24ModelReadV1<'_> = model.begin_original_model_read().await?;
+    let context: OriginalCircuitModelPublicationContextV1 =
+        predecessors.with_original_model(observation.model().clone())?;
     prepare_in_original_model_operation(context, observation, inputs, started).await
 }
 
@@ -209,6 +211,8 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         let Self {
             context, observation, prepared, definition, source, completed, started_at,
         } = self;
+        let context: OriginalCircuitModelPublicationContextV1 = context;
+        let observation: OriginalCellQ24ModelReadV1<'_> = observation;
         observation.require_current(started_at)?;
         let original_expiry = context.authenticate_material(
             observation.material(), started_at, /*new_work*/ true,
@@ -229,7 +233,8 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         drop(queued);
         // Finish performs actual E/retention and last native Model/Training
         // reads. Every post-publication error preserves the original effect.
-        let completed = observation.finish().await.map_err(uncertain)?;
+        let completed: OriginalCellQ24ModelReadCompletionV1 =
+            observation.finish().await.map_err(uncertain)?;
         if completed.model() != context.model() {
             return Err(uncertain(Error::Binding("same complete original Model after publication")));
         }

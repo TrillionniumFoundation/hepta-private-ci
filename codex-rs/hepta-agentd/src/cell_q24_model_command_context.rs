@@ -59,7 +59,7 @@ impl Context {
             training_cut: coordinator.snapshot().clone(),
             initial_binding,
         };
-        original.authenticate(started)?;
+        Self::authenticate(&original, started)?;
         Ok(original)
     }
 

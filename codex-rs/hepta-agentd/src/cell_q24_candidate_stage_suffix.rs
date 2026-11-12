@@ -35,10 +35,13 @@ impl OriginalCandidateOperationEvidence<'_> {
             }
             return Ok(());
         };
+        let selection: &crate::OriginalCircuitModelSelectionCommandReceiptV1 = selection;
         let operation = &self.operation.0;
         let material = &operation.owners.common.material;
-        let context = selection.original_publication_context();
-        let publication = self.publication.as_ref().ok_or(Error::WrongScope)?;
+        let context: &crate::OriginalCircuitCandidateLearningReadContextV1 =
+            selection.original_publication_context();
+        let publication: &crate::OriginalCircuitModelVersionPublicationV1 =
+            self.publication.as_ref().ok_or(Error::WrongScope)?;
         let mut selected = LearningIterationCoordinatorV1::from_snapshot(model.snapshot().clone())?;
         selected.record(selection.receipt().clone(), selection.receipt().observed_unix_seconds)?;
         if selection.model() != model
@@ -82,7 +85,9 @@ impl OriginalCandidateOperationEvidence<'_> {
             }
             return Ok(());
         };
-        let completed = self.completion_read.as_ref().ok_or(Error::WrongScope)?;
+        let next_use: &crate::OriginalCircuitCandidateNextUseCommandReceiptV1 = next_use;
+        let completed: &crate::OriginalCircuitCandidateLearningReadbackV1 =
+            self.completion_read.as_ref().ok_or(Error::WrongScope)?;
         selected.record(next_use.receipt().clone(), next_use.receipt().observed_unix_seconds)?;
         if next_use.model() != model
             || next_use.training_attestation() != operation.training.attestation()
