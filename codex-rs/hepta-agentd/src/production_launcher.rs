@@ -31,6 +31,9 @@ pub(crate) mod source_capture;
 #[path = "production_launcher_inputs.rs"]
 mod inputs;
 
+#[path = "production_initial_q24.rs"]
+mod initial_q24;
+
 #[path = "production_launcher_late_writer.rs"]
 mod late_writer;
 
@@ -77,6 +80,7 @@ pub struct AgentdProductionLaunch {
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
     initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
     original_source_capture: Option<source_capture::OriginalSourceCaptureRequestV1>,
+    session_end: Instant,
 }
 
 struct RuntimeInputs {
@@ -293,6 +297,7 @@ impl AgentdProductionStartup {
                         publication,
                         initial_publication,
                         original_source_capture: None,
+                        session_end,
                     }),
                 ))
             }
@@ -418,7 +423,20 @@ impl AgentdProductionLaunch {
                 .as_mut()
                 .and_then(|(deployment, _, _)| deployment.startup_release.take());
             let mut desktop_attachment = None;
+            let mut initial_attachment = None;
             let (attachment, android_deadline) = match primary {
+                PrimaryInputs::InitialQ24 { deployment } => {
+                    if deployment.is_some() || notes.is_some() || notes_ui.is_some() {
+                        return Err(AgentdError::GenerationFenced(
+                            "Initial Q24 must consume its deployment before run".into(),
+                        ));
+                    }
+                    let (configured, retained) =
+                        initial_q24::writer::attach(config, self.root, self.session_end).await?;
+                    config = configured;
+                    initial_attachment = Some(retained);
+                    (None, None)
+                }
                 PrimaryInputs::Android {
                     server,
                     environment,
@@ -610,7 +628,7 @@ impl AgentdProductionLaunch {
             let result = crate::run(config, arg0_paths).await;
             // Keep the authenticated Root feed and original checkpoint/grant
             // handles alive until all original runtime workers have stopped.
-            drop((attachment, desktop_attachment));
+            drop((attachment, desktop_attachment, initial_attachment));
             result
         }
         .await;
