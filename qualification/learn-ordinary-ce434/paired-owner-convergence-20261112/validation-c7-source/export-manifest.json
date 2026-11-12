@@ -1,0 +1,57 @@
+{
+  "schema": "original-c7-source-checkpoint-export-v1",
+  "source_sha": "c7f5d1950713e592a120807a06b700cd229c35b0",
+  "source_tree": "2f6faa8fc5a3bf2a8e923748a45ec8d56a4a3d1b",
+  "observed_unix_ms": 1794484638587,
+  "source_result": {
+    "expected_methods": 423,
+    "tests_run": 423,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 312.8671604571864,
+    "passed": true
+  },
+  "source_step": {
+    "name": "source-suite",
+    "exit_code": 0,
+    "seconds": 313.9205593331717,
+    "bytes": 95266,
+    "sha256": "f5efc5e888a0ab93ea79a2b88547bc930ef50c03ac0abab5392f96cbcf923bad"
+  },
+  "native_state_as_observed": "helper-build",
+  "native_finished": false,
+  "files": [
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/outer-as-observed.json",
+      "bytes": 1626,
+      "sha256": "a30631b0f5e0e3c14989077ea083c199fd05b4ee3233091f7210b01c7945a218",
+      "git_blob": "f4176bdf318467b4eafbb7fb034381e67617ed90"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/source-suite.json",
+      "bytes": 85802,
+      "sha256": "96157deb03e58d739f45d26b3a742977004c5c187c4d3bc8bfbae2f1856dc898",
+      "git_blob": "e1983d873a1edbe9afda4ba3996a021a2ec7d5b7"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/source-suite.log",
+      "bytes": 95266,
+      "sha256": "f5efc5e888a0ab93ea79a2b88547bc930ef50c03ac0abab5392f96cbcf923bad",
+      "git_blob": "faade9e50a400eed8c367252b7dafe4788140cc1"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-c7-source/native-as-observed.json",
+      "bytes": 1677,
+      "sha256": "918446074084e55eb2f7fa187856388668c7c688ab2b281240d0f6c18fd00122",
+      "git_blob": "753697ea7477ac0c80081de660c30ed78867f6f0"
+    }
+  ],
+  "scope": "Complete finished original source-suite files; native JSON is an independent point-in-time observation and cannot be treated as final if not terminal. No test rerun, source edit, daemon stop or new authority.",
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  }
+}
