@@ -2,6 +2,13 @@
 
 Status at source freeze: **HOLD / INTENT_NOT_EXECUTED**.
 
+The first remote source, `b7596b6a06ef6af2fe4fc8d1647f6ec8eedc80bc`,
+was rejected before numerical imports in Actions run `43316938536`, job
+`131527292274`: its source inventory named two pre-final roster hashes. It
+executed 0 matrix exponentials. That RED and its original logs remain intact.
+The successor uses a new key ending in `002-after-preimport-red`; it does not
+retry or overwrite the terminal first key.
+
 This successor is based on exact #6264 head
 `4dfa569b213d02859f76128ed09cacd7a829b91e`. It adds the three previously
 published N128 input blobs without changing their bytes, materializes the

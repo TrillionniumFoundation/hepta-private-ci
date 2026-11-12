@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 IDENTITY = "hcsn-n128-expm-resource-profile-20261112-c06d"
-KEY = IDENTITY + "-001"
+KEY = IDENTITY + "-002-after-preimport-red"
 
 
 def digest(path):

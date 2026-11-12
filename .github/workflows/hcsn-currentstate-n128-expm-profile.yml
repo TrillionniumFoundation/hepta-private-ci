@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: hcsn-n128-expm-resource-profile-20261112-c06d-001
+  group: hcsn-n128-expm-resource-profile-20261112-c06d-002-after-preimport-red
   cancel-in-progress: false
 jobs:
   actual-n128-operator-profile:
@@ -271,6 +271,6 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: hcsn-n128-expm-resource-profile-originals
+          name: hcsn-n128-expm-resource-profile-attempt002-originals
           path: ${{ runner.temp }}/hcsn-n128-expm-profile
           if-no-files-found: error
