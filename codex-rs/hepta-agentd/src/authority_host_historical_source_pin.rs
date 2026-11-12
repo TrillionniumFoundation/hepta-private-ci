@@ -26,6 +26,8 @@ mod inputs;
 pub(crate) use inputs::RetainedRootHistoricalSourceInputsV1;
 #[path = "authority_host_historical_cell_pin.rs"]
 pub(crate) mod cell;
+#[path = "authority_host_historical_ledger_pin.rs"]
+pub(crate) mod ledger;
 
 /// Original single-published-task Q24 configuration and Root-held descriptors.
 /// There is no serialized observation, generic witness or caller-authored pin.
