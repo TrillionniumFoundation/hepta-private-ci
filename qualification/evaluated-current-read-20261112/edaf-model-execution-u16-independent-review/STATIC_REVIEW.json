@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.model-material-execution-u16-independent-review.v1",
+  "classification": "NO_NEW_STATIC_BLOCKER_FOUND_NOT_COMPILED_NOT_FORMATTED_NOT_RUN",
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "candidate_tree": "9e2d278785507f42eb5e39e60e275656dacf2151",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "base_blob": "2faee4cacb7f58b63efc46e821ee36a744a59751",
+      "base_bytes": 8815,
+      "base_sha256": "923b9c75463b3f548b50411fa71334ff23d01af298dc8dbab5f10d091cab3e8b",
+      "post_blob": "687cbbd159614b19a55eaac864902f7c89bccec0",
+      "post_bytes": 9493,
+      "post_sha256": "2bc416aa3516909293fd9438dec1192e2e6f816231738f3aca0748ef8e535933"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "base_blob": "b0fe2b873db6158978e64d69fe686e3a1692fc2f",
+      "base_bytes": 23184,
+      "base_sha256": "869d03336ccd4cd6e66bdd4dfaad2fe76677ca8c5149bd7f02f05fd991c31193",
+      "post_blob": "7180072fe87063749d5526588bb52389b6e798e6",
+      "post_bytes": 25226,
+      "post_sha256": "09e474d44c106e1c397a866b5535b43cc8a7fd073401f62236f8209ef76815d2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "base_blob": "9992b28138dd4e3f57debd9852f7d2ac4a255b51",
+      "base_bytes": 15316,
+      "base_sha256": "14a71d5b0cdaab5643acb2d30f878962923dccefa98bec97f3a7e9a930fa0b7b",
+      "post_blob": "10555aff14e92067dc746247de068dac6658499a",
+      "post_bytes": 15324,
+      "post_sha256": "d71b7dc3372c7793cbffa3e0b4c8aa41b52c75b99ebe560c7573e25c24ef4823"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "base_blob": "8e93d95c099a6cd433dfe0277bb86663400e8163",
+      "base_bytes": 8506,
+      "base_sha256": "46e51e113254ae4482019a243098bed661aa063e94aa4724d3bf281773091c22",
+      "post_blob": "25be7a897554634a3b3ec19fafc59e049af7b4e9",
+      "post_bytes": 8630,
+      "post_sha256": "39081cce64d5911af8f9c6a189f9348dcffbb0469d2a0bd3f6b8e5d6d1879690"
+    }
+  ],
+  "deltas": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "additions": 14,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "additions": 36,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      "additions": 2,
+      "deletions": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "additions": 2,
+      "deletions": 0
+    }
+  ],
+  "original_producer": {
+    "path": "codex-rs/hepta-intelligence-eval/src/product_execution_codec.rs",
+    "blob": "95004dcb72d74b0b42c80c5d56b2c134f7883d52",
+    "bytes": 12154,
+    "sha256": "251a7d4eae37dbb95077b08008571ea341444db1a59c032e06b6300a0c944529"
+  },
+  "findings": [
+    "The exact original HPEXEV01 encoder writes two StableId fields with a two-byte big-endian length. Its own decoder explicitly permits length 1..=128. The old material proof decoder consumed both with its separate u32-length id() parser; this is a concrete format mismatch, independent of native timing symptoms.",
+    "The added private Reader::id_u16 consumes exactly two bytes for length, checks 1..=128, uses checked/bounded Reader::take, validates UTF-8, and reuses StableId::new. It does not alter id(), ids(), ids_u64(), count(), principal(), request/decision parsing or the envelope producer.",
+    "The execution proof changes exactly the evidence_id and principal_id calls. The remainder of the original full signed evidence comparison, body-length bound, exact payload and namespace/plan/body binding, tail digests, and complete-reader finish remains byte for byte unchanged.",
+    "The additional regression checks independently walk the actual consumed original execution_record fields rather than synthesizing a replacement successful envelope. Both actual IDs must equal the original signed IDs and round-trip through the new bounded parser. Truncated lengths/data and zero, actual+1, 129, max and inserted-u32 prefixes are rejected. Whole-material mutations use fresh copies; existing full original preimages and earlier u64 count tests remain.",
+    "The diagnostic service addition is cfg(test) only, after the three existing imports. The original Error-to-wire outcome mapping, context authentication and return are unchanged; no production tokens, retries, authority, deadline, capacity or transfer lifecycle are changed.",
+    "All four complete postimages have independent byte length, SHA-256 and Git blob verification against the fixed candidate tree. The relevant original producer is bound to the exact source commit. In the fixed 56 QA files plus current CALLERS, these files only participate through the existing original-owner-command-channel source registration; that call and all tuples are unchanged."
+  ],
+  "limits": [
+    "No Rust formatter, compiler, test, workflow or actor was run in this review.",
+    "The patch fixes a demonstrated two-field encoding mismatch. It does not prove that all three observed Model material failures, cancellation/transport outcomes or other future decoding constraints are resolved.",
+    "No checker, protected row, allowlist, minimum count, original test method or release authority is changed."
+  ]
+}

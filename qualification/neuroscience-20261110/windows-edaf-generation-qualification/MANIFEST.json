@@ -1,0 +1,241 @@
+{
+  "schema": "hepta.windows-generation-owned-byte-qualification.candidate.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "base_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "status": "STATIC_CANDIDATE_NOT_RUN",
+  "first_fixture_fix": {
+    "tree": "73f66df8308e553a2c7f990cd19df9e221395c5a",
+    "manifest": "e4dadf908a13e79052ebf7108807e94f27a92689",
+    "overlap": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+    "preserved_first_fix": "completed typed intent final byte read remains after original Serving.finish(); final postimage includes that hunk"
+  },
+  "bazel_overlap": {
+    "path": "codex-rs/hepta-agentd/BUILD.bazel",
+    "parallel_post": "eb09a036e49d1c85cd247f05b9b4b2c17b5dd022",
+    "instruction": "Compose only independent dependency-mapping hunks; retain original approved 8 shards / 2 threads / flaky=False."
+  },
+  "code": [
+    {
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "base_blob": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+      "post_blob": "a4b0e50fd6f5433ae2f9572f243f1b02d59fb108",
+      "bytes": 556,
+      "sha256": "a4243d4cc007435a7bbe73d18635bda5d5595622951a56e384e05cc1304ee509"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "base_blob": "462ea23f7f3e01be9b04cf90f8431b561fb7cd83",
+      "post_blob": "91907700270d60c1e33191887705608fcc76de13",
+      "bytes": 16967,
+      "sha256": "9a9d501c9217a79d9b3d2099f3a3c1cc49ec5f9c98efbe29000988856d24064a"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "base_blob": "710afcbeeb7bb05d2ab2cff1ad0e51c990bd6473",
+      "post_blob": "94ac6624d9fbd5d6c7856aa78380bacaed70ef49",
+      "bytes": 22379,
+      "sha256": "0ad1bcd9e489a7fcfd4a4c142cca4520f6da438afcbe476fcf7ef9d810a660df"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "base_blob": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4",
+      "post_blob": "62d66127ef1d5bdcbdfdbabc0e05df54e7a0d1cf",
+      "bytes": 21527,
+      "sha256": "878d028f12f43928f8f4dddda222771703d216cd8b8f72ee63f40faf5e7f3852"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "base_blob": "180ddadf5bcc463513305f252358ab3b032b0c75",
+      "post_blob": "099141dafd5877c8687d764c3bbe1ef5ae75922c",
+      "bytes": 12656,
+      "sha256": "cb79cb66e203566220e06b50819df40743eb3ce8c4ed4100c53205c01880eb66"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/qualification_file.rs",
+      "base_blob": null,
+      "post_blob": "c86ef5b2b5824f5d643dd8c0f1724ae1b01f8f65",
+      "bytes": 1695,
+      "sha256": "74d89a736fe1eb54b371e8bc5d32f21f34f326778f08faa0afac46fceccedd26"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness_qualification.rs",
+      "base_blob": null,
+      "post_blob": "9fe02f88aaa7b6a778e04456ec098dd3c2b6c848",
+      "bytes": 1075,
+      "sha256": "9c03d2ef02762ee589173fd33127dbe5f1a387b92651290b208013448bbfb301"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification.rs",
+      "base_blob": null,
+      "post_blob": "95126f5c455c9674b8aefb6e51d63f57276bdddd",
+      "bytes": 1634,
+      "sha256": "9cc79dda9ca5fa698b8e9e08b9673f34ca75218a8e191749088aff7a1c000221"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "base_blob": "aee1f3d06c1e92ebcf08baefc6377a56bc36b5aa",
+      "post_blob": "edaca64612927bfd04a41faac7331f4965acc623",
+      "bytes": 17455,
+      "sha256": "43a176e7756c3a226bcb13d61d1795cc6fee83809ece7414193e3dc650c41cf9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "base_blob": "85a81e56298275e41082fc2927fa818cb91ac4f6",
+      "post_blob": "ab02a9b94418d1a8b15b0f41827d2907a8bbffbe",
+      "bytes": 15006,
+      "sha256": "9158c3dd954da3fd571b7ca6d05b2b34bc718910c08db229bf1e974d732b5b9a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "base_blob": "5533c2a59c0fb70b5ce7435f1a96d9e496b5b875",
+      "post_blob": "734b249c7cc0ac37209ed9d47f53072ca58a956e",
+      "bytes": 14187,
+      "sha256": "e2f144c13a0ba40a9fb6bf82f12a3506851bc735ad0ab36177932b211df7995e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+      "base_blob": "3539e427ed1228ef45de299a98a476d62c3fd192",
+      "post_blob": "7448eda3aa00aef148b2f0b43acd1523f686e043",
+      "bytes": 18538,
+      "sha256": "f0c45f8694b36b89d4faa5a66fc8e09d33bf52c20599aeabb91b099912461a59"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_tests.rs",
+      "base_blob": "b3bda78690f39b40bcb943bf304199c691734787",
+      "post_blob": "ce209f98537b2d29d85ac458acfcc6defa14049a",
+      "bytes": 14865,
+      "sha256": "bad9cf4a4d2c3c3a1928fed8e44857898f84f9a2a5740e68571fa91d8cc0a419"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "base_blob": "2b353726ad4b53277bf51c50b2d1a51d714c5a3a",
+      "post_blob": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+      "bytes": 26175,
+      "sha256": "2af7ed8d0524e7cf90df1d3501c8943800450e3a2dab830836184fdefcc2e88c"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs",
+      "base_blob": null,
+      "post_blob": "d7d42e80feae8069ab09a7107d1800dc12ce7a4f",
+      "bytes": 4361,
+      "sha256": "ddd457d31a040c72b91029364a729cce65c0c066f4a77f5ba2b2ec0b14a568ec"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "base_blob": "935a1addd32da00f7ace31107885954f479532c3",
+      "post_blob": "d94191cacd31772a435d52cce0c2a3bd545ae865",
+      "bytes": 5121,
+      "sha256": "10ec1f12cf8b228db3fc81d1422233bead25d8078db0cd4e43a4f3291c2069f8"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/Cargo.toml",
+      "base_blob": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "post_blob": "0d3b2432f617a9c546f7d9b655aeb2707a4b20f5",
+      "bytes": 1533,
+      "sha256": "269ec4938f672779aef60c7d036fb1f410e9a0ed115d49709b568aa156fd1033"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/BUILD.bazel",
+      "base_blob": "bfed7a0d6697e1a5c9cb3ca417ac7efe45f16cb9",
+      "post_blob": "2c21b406d557e136eee87fcb88450654325a91b7",
+      "bytes": 631,
+      "sha256": "f5cd12c62fb8613a11f06d63e2ad6a909fa75dec4eed82892846d7d6fe64b9c1"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/BUILD.bazel",
+      "base_blob": "e1dd35a3698a0dd9d25e08cccf99cd462e04e850",
+      "post_blob": "2e171e637eecb1ce168036ce870f1586a1669ad8",
+      "bytes": 623,
+      "sha256": "eeaed366da09a961918704c3437150c1ba7fe5d57c679ffbb7357d843bebc7eb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "base_blob": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "post_blob": "079c0f358013e97b27ad1aed31d87d7a27c9a9cc",
+      "bytes": 8013,
+      "sha256": "b83fddf2d3ebd20c10195548c6464973d12ee847f5a383e8954767bbd57aa886"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs",
+      "base_blob": "c768097933877b664ca3c2a149b828a0264f7ab4",
+      "post_blob": "9172c02b394661d77375cce81b13003040409be1",
+      "bytes": 15252,
+      "sha256": "0da05bf8f3622897f0e0ded36717cdfdef23faa851883796ea5d17b986d49a0e"
+    }
+  ],
+  "new_test_methods": 4,
+  "removed_test_methods": 0,
+  "existing_methods_retained": 7,
+  "read_capability": {
+    "feature": "qualification-file-observation",
+    "default_enabled": false,
+    "max_bytes_per_file": 8388608,
+    "files": [
+      "original locked generation journal",
+      "original locked witness"
+    ],
+    "agentd_transport": "cfg(test) private GenerationCommand / existing bounded queue / WeakSender upgrade; no external protocol change",
+    "unsupported_witness": "Unavailable; no cached/empty bytes",
+    "failure": "original cursor restore on success/read error; restore failure and actual I/O error remain fail-closed; locks never released or cloned"
+  },
+  "control_scope": {
+    "completed_cold_seams": [
+      "fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+      "fenced_live_stack_and_cold_missing_control_record_remain_pending",
+      "contacted_unknown_worker_remains_unresolved_through_drain_and_reopen"
+    ],
+    "first_method_setup": "create_new actual file with original append/read flags and Unix mode 0600; close preparation handle, then actual full fs::read baseline before first original start; no Control owner is replaced or unlocked.",
+    "comparisons": "Original generation/witness hot time points retained. Complete Control bytes compared after existing shutdowns across a strictly wider interval; no fake empty/sentinel substitution.",
+    "open_original_pin": {
+      "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+      "blob": "bb7366e8045a0fb009c28a6de150df829e999e9f",
+      "finding": "open uses create+append+read; replay_file of a 0-byte regular file returns empty maps without header/record append. Preparing the same new empty input does not change owner identity or initial logical state."
+    },
+    "remaining": "Windows runtime validation is still NOT_RUN. Independent original replay_file try_clone risk remains unmodified. The original recorded no_contact panic text is raw std::io Os33; this candidate does not claim that the production replay path has passed a new run."
+  },
+  "static_source_guard_scan": {
+    "tree": "8f03bdd5c3977a57a67e96d26bf0505aeec6ee22",
+    "scan_blob": "be26aad01fe2981d2ddbff74c7472e4dfc425449",
+    "callers_blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+    "scope": "56 QA Python originals / 57 directory leaves / two original protected-file rows. Original four witness guard functions and three generation guard functions are unchanged; no checker execution.",
+    "contract": "SOURCE_GUARD_CONTRACT.json",
+    "frozen_agentd_rust_scan": "SOURCE_SCAN.json",
+    "frozen_agentd_rust_files": 906
+  },
+  "dependency_scope": {
+    "workspace_resolver": "2",
+    "workspace_members_read": 187,
+    "manifest_read_errors": 0,
+    "direct_neuron_dependers": [
+      "hepta-agentd",
+      "hepta-intelligence"
+    ],
+    "cargo": "qualification feature only on dev dependency entries; normal dependency entries unchanged",
+    "bazel": "test-only neuron library and both direct consumers map to same identity, including explicit agentd cognitive test binary/harness dependency graph",
+    "lock_regeneration": "NOT_RUN; no lock bytes hand-edited",
+    "detail": "BUILD_GRAPH.json"
+  },
+  "validation": {
+    "rustfmt": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "cargo_tests": "NOT_RUN",
+    "bazel": "NOT_RUN",
+    "source_checker": "NOT_RUN",
+    "windows": "NOT_RUN"
+  },
+  "owner_decision": null,
+  "science": "HOLD",
+  "revision": 2,
+  "previous_candidate": {
+    "tree": "cb4436a3d6cdd3a84706363d46468519f0f2b4fa",
+    "manifest": "c4baf6bbe299f9f3418c6b7398d5e9e4406e7908",
+    "superseded": true
+  },
+  "new_test_method_names": [
+    "cell_generation_journal::tests::qualification::qualification_bytes_match_both_original_files_without_releasing_either_lock",
+    "cell_generation_journal::tests::qualification::qualification_byte_bounds_leave_the_same_owner_and_cursor_usable",
+    "cell_generation_journal::tests::qualification::unsupported_witness_observation_returns_unavailable_without_cached_bytes",
+    "cell_generation_journal::tests::qualification::failed_read_restores_the_original_cursor_and_keeps_contenders_excluded"
+  ]
+}

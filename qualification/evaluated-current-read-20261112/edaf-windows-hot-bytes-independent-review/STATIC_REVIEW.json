@@ -1,0 +1,290 @@
+{
+  "schema": "hepta.windows-owned-file-independent-review.v2",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "base_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "candidate_tree": "da550deef7456ed1015796b0c5773a51d25fff68",
+  "author_manifest": "80d07ddc028324fb177886f97b040513fa56f46a",
+  "result": "NO_NEW_STATIC_BLOCKER_FOUND",
+  "execution": "NOT_RUN_NOT_FMT",
+  "reviewed_postimages": [
+    {
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "base_blob": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+      "post_blob": "a4b0e50fd6f5433ae2f9572f243f1b02d59fb108",
+      "bytes": 556,
+      "sha256": "a4243d4cc007435a7bbe73d18635bda5d5595622951a56e384e05cc1304ee509",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 495,
+      "base_sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "base_blob": "462ea23f7f3e01be9b04cf90f8431b561fb7cd83",
+      "post_blob": "91907700270d60c1e33191887705608fcc76de13",
+      "bytes": 16967,
+      "sha256": "9a9d501c9217a79d9b3d2099f3a3c1cc49ec5f9c98efbe29000988856d24064a",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 16892,
+      "base_sha256": "f4d5225c0a6555c8f9bc2518008bdfe6bab51855255ef3aac94e273dd24e5ec8"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "base_blob": "710afcbeeb7bb05d2ab2cff1ad0e51c990bd6473",
+      "post_blob": "94ac6624d9fbd5d6c7856aa78380bacaed70ef49",
+      "bytes": 22379,
+      "sha256": "0ad1bcd9e489a7fcfd4a4c142cca4520f6da438afcbe476fcf7ef9d810a660df",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 22263,
+      "base_sha256": "eb6a628839b8c5497a47dce89c28a83778b3bd03b474f243810a9477ca35b37d"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "base_blob": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4",
+      "post_blob": "62d66127ef1d5bdcbdfdbabc0e05df54e7a0d1cf",
+      "bytes": 21527,
+      "sha256": "878d028f12f43928f8f4dddda222771703d216cd8b8f72ee63f40faf5e7f3852",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 21134,
+      "base_sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "base_blob": "180ddadf5bcc463513305f252358ab3b032b0c75",
+      "post_blob": "099141dafd5877c8687d764c3bbe1ef5ae75922c",
+      "bytes": 12656,
+      "sha256": "cb79cb66e203566220e06b50819df40743eb3ce8c4ed4100c53205c01880eb66",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 12305,
+      "base_sha256": "61f07a52e2a833a6786cb9cf2e666e6dfa03aafeb9bcce9069cc3aadbe1f84a7"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/qualification_file.rs",
+      "base_blob": null,
+      "post_blob": "c86ef5b2b5824f5d643dd8c0f1724ae1b01f8f65",
+      "bytes": 1695,
+      "sha256": "74d89a736fe1eb54b371e8bc5d32f21f34f326778f08faa0afac46fceccedd26",
+      "base_read_and_hashed": false,
+      "post_read_and_hashed": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness_qualification.rs",
+      "base_blob": null,
+      "post_blob": "9fe02f88aaa7b6a778e04456ec098dd3c2b6c848",
+      "bytes": 1075,
+      "sha256": "9c03d2ef02762ee589173fd33127dbe5f1a387b92651290b208013448bbfb301",
+      "base_read_and_hashed": false,
+      "post_read_and_hashed": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification.rs",
+      "base_blob": null,
+      "post_blob": "95126f5c455c9674b8aefb6e51d63f57276bdddd",
+      "bytes": 1634,
+      "sha256": "9cc79dda9ca5fa698b8e9e08b9673f34ca75218a8e191749088aff7a1c000221",
+      "base_read_and_hashed": false,
+      "post_read_and_hashed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "base_blob": "aee1f3d06c1e92ebcf08baefc6377a56bc36b5aa",
+      "post_blob": "edaca64612927bfd04a41faac7331f4965acc623",
+      "bytes": 17455,
+      "sha256": "43a176e7756c3a226bcb13d61d1795cc6fee83809ece7414193e3dc650c41cf9",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 17386,
+      "base_sha256": "187a596c3eeafdadcb05cbf7f6e639c27b415e15ffbd8c1b86972ec27a1fa234"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "base_blob": "85a81e56298275e41082fc2927fa818cb91ac4f6",
+      "post_blob": "ab02a9b94418d1a8b15b0f41827d2907a8bbffbe",
+      "bytes": 15006,
+      "sha256": "9158c3dd954da3fd571b7ca6d05b2b34bc718910c08db229bf1e974d732b5b9a",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 14671,
+      "base_sha256": "f41b8d52fa819d3e47191f9167f5536bd74fcbdeac1f438c6e4ca61061d0ca59"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "base_blob": "5533c2a59c0fb70b5ce7435f1a96d9e496b5b875",
+      "post_blob": "734b249c7cc0ac37209ed9d47f53072ca58a956e",
+      "bytes": 14187,
+      "sha256": "e2f144c13a0ba40a9fb6bf82f12a3506851bc735ad0ab36177932b211df7995e",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 12808,
+      "base_sha256": "42675d790d00256a42d1d5b0bb4c36b2e8e6557d85988b63b7953c9fbb9d46a5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+      "base_blob": "3539e427ed1228ef45de299a98a476d62c3fd192",
+      "post_blob": "7448eda3aa00aef148b2f0b43acd1523f686e043",
+      "bytes": 18538,
+      "sha256": "f0c45f8694b36b89d4faa5a66fc8e09d33bf52c20599aeabb91b099912461a59",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 18425,
+      "base_sha256": "19fb4754ea607a4301855f5b31c8bc2a3a3ee392d956d9e0eb5069d408be315c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_tests.rs",
+      "base_blob": "b3bda78690f39b40bcb943bf304199c691734787",
+      "post_blob": "ce209f98537b2d29d85ac458acfcc6defa14049a",
+      "bytes": 14865,
+      "sha256": "bad9cf4a4d2c3c3a1928fed8e44857898f84f9a2a5740e68571fa91d8cc0a419",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 14451,
+      "base_sha256": "75c2c85cf4c878ccf6bdeb2088f12b5043b95941dcc241283d0c5a796576111d"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "base_blob": "2b353726ad4b53277bf51c50b2d1a51d714c5a3a",
+      "post_blob": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+      "bytes": 26175,
+      "sha256": "2af7ed8d0524e7cf90df1d3501c8943800450e3a2dab830836184fdefcc2e88c",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 26054,
+      "base_sha256": "a53cdc3f400adbe56df854a8eeebe07a44efa3991c2e14fad3b4cf114a2efa4e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs",
+      "base_blob": null,
+      "post_blob": "d7d42e80feae8069ab09a7107d1800dc12ce7a4f",
+      "bytes": 4361,
+      "sha256": "ddd457d31a040c72b91029364a729cce65c0c066f4a77f5ba2b2ec0b14a568ec",
+      "base_read_and_hashed": false,
+      "post_read_and_hashed": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "base_blob": "935a1addd32da00f7ace31107885954f479532c3",
+      "post_blob": "d94191cacd31772a435d52cce0c2a3bd545ae865",
+      "bytes": 5121,
+      "sha256": "10ec1f12cf8b228db3fc81d1422233bead25d8078db0cd4e43a4f3291c2069f8",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 5024,
+      "base_sha256": "90924116cceb5ab4b2620beda64b30fdbe5dfce983157033850f5593a5f67ca7"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/Cargo.toml",
+      "base_blob": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "post_blob": "0d3b2432f617a9c546f7d9b655aeb2707a4b20f5",
+      "bytes": 1533,
+      "sha256": "269ec4938f672779aef60c7d036fb1f410e9a0ed115d49709b568aa156fd1033",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 1486,
+      "base_sha256": "65121f9be6609bb7613d917348875b6b24b33c25545b4d895f6eeb7733dc3dc9"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/BUILD.bazel",
+      "base_blob": "bfed7a0d6697e1a5c9cb3ca417ac7efe45f16cb9",
+      "post_blob": "2c21b406d557e136eee87fcb88450654325a91b7",
+      "bytes": 631,
+      "sha256": "f5cd12c62fb8613a11f06d63e2ad6a909fa75dec4eed82892846d7d6fe64b9c1",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 570,
+      "base_sha256": "30c98d5e945d3b9817828fc69ec8731957880fb8c7d09f71fbb3138b3d176a89"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/BUILD.bazel",
+      "base_blob": "e1dd35a3698a0dd9d25e08cccf99cd462e04e850",
+      "post_blob": "2e171e637eecb1ce168036ce870f1586a1669ad8",
+      "bytes": 623,
+      "sha256": "eeaed366da09a961918704c3437150c1ba7fe5d57c679ffbb7357d843bebc7eb",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 539,
+      "base_sha256": "845c544657adff3adf179d64538559642a78428727de481e391a68842e3ca802"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "base_blob": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "post_blob": "079c0f358013e97b27ad1aed31d87d7a27c9a9cc",
+      "bytes": 8013,
+      "sha256": "b83fddf2d3ebd20c10195548c6464973d12ee847f5a383e8954767bbd57aa886",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 7929,
+      "base_sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs",
+      "base_blob": "c768097933877b664ca3c2a149b828a0264f7ab4",
+      "post_blob": "9172c02b394661d77375cce81b13003040409be1",
+      "bytes": 15252,
+      "sha256": "0da05bf8f3622897f0e0ded36717cdfdef23faa851883796ea5d17b986d49a0e",
+      "base_read_and_hashed": true,
+      "post_read_and_hashed": true,
+      "base_bytes": 13925,
+      "base_sha256": "9c84e1006a9cf9f74b64036fcef6184582a0e292962e5b8fe8908846559d8735"
+    }
+  ],
+  "findings": [
+    "All 21 final postimages and all 17 existing base files were read and independently checked against their Git blob identities. The four v2 changes were separately compared to v1.",
+    "qualification_file::file_bytes borrows the original &mut File, validates a nonzero bound <=8MiB and original metadata, reads at most bound+1 actual bytes, checks final file length, and attempts to restore the exact original cursor on success or read failure. Restore errors are not acknowledged as successful reads. No clone/reopen/unlock/write occurs.",
+    "FileAnchorWitnessStore accesses the same WitnessLockedFile through Mutex::get_mut. Capacity refusal does not poison; I/O/poisoned mutex is fail-closed. Existing poison is never cleared.",
+    "CellGenerationJournalV2 checks require_healthy before and after reading both originals; require_healthy includes the original physical current validation. Unsupported witness implementations return Unavailable, not cached or empty bytes. Uncertain errors mark the original owner unhealthy.",
+    "GenerationCommand::QualificationFileBytes and its sole matching service arm are cfg(test), private to the original crate. The normal external protocol, runtime variant set and all non-test command paths remain unchanged.",
+    "GenerationFiles lives under the original runtime's test descendants, so private sender access is valid. It retains only WeakSender; upgrade exists only around try_send and ends before await. It cannot keep the original service alive. Full/closed/response-lost cases return existing typed failures.",
+    "The read uses the original bounded command queue, original begin_command and original recovery checks before processing and before response. Drained healthy owners may still be inspected, as other original read commands permit. Fenced/closed/retired/unhealthy paths gain no bypass or replacement owner.",
+    "Cargo normal dependency entries and default feature sets remain unchanged. Only explicit dev dependencies enable the new opt-in read capability. Existing Bazel macros create test-only neuron library/harness features; both direct consumer test graphs plus explicit cognitive qualification binary/harness are mapped consistently. No product normal dependency graph replacement was introduced.",
+    "All old test method names in changed files remain. Existing control/generation test assertion counts remain 66/51/103; the three no-contact methods retain their names and gain actual Control comparisons, 59 to 62 assertions. Four new original-handle tests cover complete bytes and contention, capacity/cursor preservation, unsupported witnesses and real I/O failure with cursor restoration.",
+    "v2 removes all hot dynamic Control path reads from the no-contact fixture. Its first case creates a new regular empty input with original append/read flags and Unix0600 before first owner acquisition, closes that preparatory handle, and reads the actual baseline. The original Control open/replay implementation confirms 0-byte input creates no header or record; no empty bytes are fabricated.",
+    "Generation and witness equality checks remain at their original hot time points. Complete Control files are compared across the wider original service lifetimes after existing shutdown and handle drop. Original host cancellation does not append Drain; DurableInferenceControl::drop only releases the lock. No original effect, deadline, dispatch or worker-contact assertion was removed.",
+    "Existing witness and generation protected function bodies remain byte-identical outside feature-gated additions. The current root CALLERS blob and 56-source-QA scope were inspected separately; no checker execution is claimed."
+  ],
+  "original_dependency_source_pins": {
+    "journal_lock": {
+      "sha": "8cf8324008b4fdc4e50fbb2e3dfd65e2d26d9722",
+      "bytes": 1270,
+      "sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252"
+    },
+    "state_projection": {
+      "sha": "210bd8761a920b420ed81336b127a8cd7cd11b5d",
+      "bytes": 11389,
+      "sha256": "9ab8501380c70c1ffd238a6beeb4220bf3d092ac209973ab913ced42b9be369a"
+    },
+    "runtime_test_module": {
+      "sha": "30d620356c2922a5282850afa0f801b860116b12",
+      "bytes": 23103,
+      "sha256": "399eafc471da9ec9279e93fc0783f7bed6af8dd9fdced2e0bdd7b56b60c1e451"
+    },
+    "test_dependency_resolver": {
+      "sha": "140bde6995e31f11dcafaee0484e01baecb99d6c",
+      "bytes": 1590,
+      "sha256": "b64c9972a9e8d75f3442ed79e1095db1e45c84a62e96c05c7356c04521178074"
+    },
+    "durable_control": {
+      "sha": "bb7366e8045a0fb009c28a6de150df829e999e9f",
+      "bytes": 33210,
+      "sha256": "3d37b1ceb0bdd22d7dbb463f65e65342da0c70bbe8569dcd56a1100ca2cc22e3"
+    },
+    "caller_manifest": {
+      "sha": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+      "bytes": 1129169,
+      "sha256": "d67c2f5595286ddc49c03f7a763d2a8734166060d6cf016d10271194de51419f"
+    }
+  },
+  "integration_requirements": [
+    "Compose agentd BUILD dependency-map hunks with the independently prepared eight shards / two threads / flaky=False configuration; do not replace the entire combined BUILD with this edaf-based overlay.",
+    "Preserve the earlier six-file Windows fixture candidate; the overlapping neuron_generation_control_tests final hunk is already included, while other independent files must remain in the root assembly."
+  ],
+  "limits": [
+    "Source review is not compiler, rustfmt, Cargo/Bazel, source-checker or Windows execution evidence.",
+    "New qualification tests are feature-gated; their actual selected counts must be observed in the final combined suite.",
+    "The existing production Control replay_file descriptor clone remains outside this patch and has not been qualified by this review.",
+    "This qualification feature exports bounded owned bytes only when explicitly enabled; it does not authorize new publication, signing, grant, or scientific/Root qualification."
+  ]
+}

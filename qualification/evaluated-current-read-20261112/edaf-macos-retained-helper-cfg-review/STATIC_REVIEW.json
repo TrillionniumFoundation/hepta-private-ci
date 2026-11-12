@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.static-macos-retained-helper-cfg-review.v1",
+  "classification": "STATIC_ONLY_NOT_COMPILED_NOT_FORMATTED_NOT_RUN",
+  "source": {
+    "commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+    "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+    "actual_bazel_checkout_commit": "0b2238e70dfcbdb47635e454aea0f39ab25d7c0d",
+    "actual_bazel_checkout_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52"
+  },
+  "actual_failure": {
+    "run_id": 43267839274,
+    "job_id": 131356685650,
+    "status": "completed",
+    "conclusion": "failure",
+    "log": {
+      "bytes": 1273163,
+      "sha256": "22d16281d9dc9c5bcd75f0ecc0dcc4b8eff0659fc4bf35e40d3eb922fd8866c9",
+      "git_sha1": "f65d2a0f371a304a454ab2f999da423f9a61ca9a"
+    },
+    "error_counts_per_compiler_invocation": {
+      "E0425": 4,
+      "E0422": 2
+    },
+    "targets": [
+      "//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin",
+      "//codex-rs/hepta-agentd:cognitive-write-qualification-test-bin"
+    ],
+    "excerpt_byte_start": 848080,
+    "excerpt_byte_end": 854984
+  },
+  "code_tree": "85ae884dc35c674307c9c15967f4d67804214cdc",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+      "base_blob": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+      "post_blob": "ebcc914b779fc9418314a6bfc44df4ed48d60c79",
+      "base_bytes": 24067,
+      "post_bytes": 24131,
+      "base_sha256": "328455e9cfe08fca6a2e1e1fe05d6a36246b66f456c76d4371ee455b5cbaca68",
+      "post_sha256": "5aa496f11d66e331ca832548e8ed88cbb2dd45621e948c2d6d3cbbe2865d2e33",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+      "base_blob": "24b7907d7bbd635352da19503e78aa71de710c64",
+      "post_blob": "2ff51712f5bc973519c4bf3a9abcfb91c21f64c4",
+      "base_bytes": 21368,
+      "post_bytes": 21432,
+      "base_sha256": "eeba761266a1b733f7ad2182c5b237a95f03f1abaa88b0912045b2ffc22fcd19",
+      "post_sha256": "753f1a3e81893c2746ac52236d1036a8a896d4fd90773f8e7b97cc989b8f0bf2",
+      "additions": 2,
+      "deletions": 0
+    }
+  ],
+  "original_type_definition": {
+    "path": "codex-rs/hepta-agentd/src/lib.rs",
+    "blob": "3806a3e4d961bf8fd4a46cb0ebb779a6d521869a",
+    "bytes": 70871,
+    "sha256": "72a347216216c7fd8c8c0a7bd1faa72bd81783b4eb8b6ee840f213e7e4466004",
+    "linux_module_line": 322,
+    "linux_export_lines": [
+      880,
+      890
+    ],
+    "unix_generation_module_line": 686
+  },
+  "change": "Four matching #[cfg(target_os = \"linux\")] attributes, one on each helper declaration. No method body, assertion, normal Unix module, runtime implementation, timeout, authority or test name is changed.",
+  "reverse_postimages_to_original": "Removing only the four exact newly inserted declaration attributes recovers both full original files byte for byte.",
+  "caller_scope": "The original retained helpers expose Linux-only crate types; ordinary generation fixtures remain Unix. Positive actual fixture callers and the original circuit_task_ingress_tests.rs Linux root are separately checked. No complete repository-wide new symbol scan is claimed.",
+  "static_guard_scope": {
+    "manifest_blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+    "qa_files": 56,
+    "qa_scan_blob": "9c133311525bf3662e9ca71890ab6c6285c800c3",
+    "helper_or_path_matches_in_manifest": 0,
+    "helper_name_matches_in_qa": 0
+  },
+  "limitations": [
+    "No formatter, Rust compiler, Bazel test or runtime was invoked for this candidate.",
+    "This addresses the six observed missing Linux-only type diagnostics. Independent Mac MATRIX/app-server failures remain separate.",
+    "Only immutable blobs and bare trees are created; no commit, ref, branch or workflow is changed."
+  ]
+}

@@ -1,9 +1,9 @@
 {
   "schema": "hepta.terminal-evidence-publication.v1",
-  "created_at_utc": "2026-11-12 17:35:16 UTC",
-  "parent_commit": "f22459f2dcbe4184cf63ae2e5b480acad7334fae",
-  "base_tree": "6e2b69e0e4bf4a89563b18df9dbbb94649a44fa1",
-  "scope": "Qualification-only original evidence, source repair audit and exact current statuses; no implementation, actor, authority or deployment change.",
+  "created_at_utc": "2026-11-12 18:54:30 UTC",
+  "parent_commit": "f4098255d01cce4af15f6564cbb07a352e116528",
+  "base_tree": "973e64c99e8388e9b79366d3c3cfe5c216c43fef",
+  "scope": "Qualification-only original evidence and exact source/integration audit; no implementation/actor/authority/deployment change.",
   "implementation_changes": false,
   "owner_decision": null,
   "status": "HOLD",
@@ -1888,9 +1888,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/BLOCKER_CLOSURE_NEXT.md",
-      "bytes": 32793,
-      "sha256": "8459cc8df1d29eeb86b64c4b5f4a4f3958318e5e3bbce3cc5605a82c5fe0238a",
-      "git_blob": "b24d96b412857216b14a1eb679debd1d6b422102"
+      "bytes": 18345,
+      "sha256": "5d561b0278da1c321f613bf3b77f614744ce9bd9fd7534187b31c92499765a19",
+      "git_blob": "b7094e72670abfe33a3c5819182c6f928b349a3f"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/act2-upstream-20261112/BLOCKERS.ba7.original.json",
@@ -2962,9 +2962,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/README.md",
-      "bytes": 8958,
-      "sha256": "6ac43ff43334b4998e4c7ff60f4377ef4545eb2577b7f937e86c44a948aed071",
-      "git_blob": "44f675be1246b511cf329266b49701c5e57a0b18"
+      "bytes": 2224,
+      "sha256": "ba6609ddf3c1efccc7ca37dbebbd0486d2aa78b12c127365e6ae71ee711db2b3",
+      "git_blob": "6652705d8d244318b3158710a58e6a85636fe562"
     },
     {
       "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_ORIGINAL_VERIFICATION.json",
@@ -2998,9 +2998,9 @@
     },
     {
       "path": "qualification/neuroscience-20261110/TERMINAL_EVIDENCE.json",
-      "bytes": 85633,
-      "sha256": "d1673dfed195e00aafc985ae211f588cb27076cee417a3a6df57dbd04c996805",
-      "git_blob": "3cdcfe38f2d78ccbb7926ec4fe55910cc3e92298"
+      "bytes": 98541,
+      "sha256": "d78897ffca84e730db010584cfabc72da7759fa3598a651a4b10231ffe542c8b",
+      "git_blob": "8dfb17c25b87f7630a812571012a1cf3ba3f2f13"
     },
     {
       "path": "qualification/notes-seed-profile-20261112/bb8-format-fix/JOBS_1408_ORIGINAL.json",
@@ -4099,6 +4099,42 @@
       "bytes": 4394,
       "sha256": "dc04aa8fc6a2147f3fd368217f22c1dfe6c1faef241c353a388f484071b5fa2b",
       "git_blob": "7dbd5cc7d9306c6f053b7d80b1427f1c867e0b97"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
+      "bytes": 72459,
+      "sha256": "4bac4a9b2dc301b257c41618c7f9fa6eb48f94e044e8eb49729fbb743d8bbce3",
+      "git_blob": "236e5c6e59ae14e95aa5551f6ebad7633f3618b8"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/repair-872b-review/ROOT_SOURCE_REVIEW.json",
+      "bytes": 18486,
+      "sha256": "288bec89c04e9fd8f38fd40e716491fc42889a841cf84f648d1726c1d434187c",
+      "git_blob": "30dd66e69ae3380f36ee9c3862d77ce341de12d8"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-d397-review/ROOT_PRODUCTION_REVIEW.json",
+      "bytes": 5467,
+      "sha256": "fa2e444055e2d2c45b13bab9322a7148f10b9bbb4b0f013b7a4365627c243a0c",
+      "git_blob": "8ef02610c72a65caecc48408b943178d2298831d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/ROOT_FULL_LOG_VERIFICATION.json",
+      "bytes": 4258,
+      "sha256": "b321e9d94d261b13b81cd411f572856ad9c0cd3b7b0c8f5fe3d390f8a5e3db46",
+      "git_blob": "89563bbd093fb9e38688d06bf7627f5c20b9b434"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-d397-review/ACTUAL_REF_READBACK.json",
+      "bytes": 2195,
+      "sha256": "1f96059e9dcd336623057c926a17cf66c5461e39f4769d6489ac5c28c0b91aab",
+      "git_blob": "8f12ab9d675a797539525f95ae0196fa19e2f77d"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/terminal-20261112/EVIDENCE_IMPORT_MAPPING.json",
+      "bytes": 88059,
+      "sha256": "07f1c4b394a3b3e81ded57c8531d251489dd0a310f6305c141243b171fcb56c0",
+      "git_blob": "b4590894f2155fb30d3023410a2a97cfbccd04d5"
     }
   ],
   "artifacts_existing_git_blobs": [
@@ -6370,6 +6406,610 @@
     {
       "path": "qualification/runtime-validation-20261112/PR6240_PR6221_EVIDENCE_MANIFEST.json",
       "git_blob": "9a885d7a51619dadd5ee044e0e50f1f94b320dba"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/MANIFEST.json",
+      "git_blob": "f8570d4c78bb38740311f05638330a814be386c1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/failure-tail.original.log",
+      "git_blob": "f97364dc3003de9afadbb9d3fbe428049c39573e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/jobs.original.json",
+      "git_blob": "59da38a4ca84524f80cfee4a296167eb4c2ec58b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part00",
+      "git_blob": "2ccfa47d8b8216fe6d296ff18210c750e8247615"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part01",
+      "git_blob": "5a5ef99a5605cdd25d1587184aa929b5c5104170"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part02",
+      "git_blob": "da629b7fb0824558d85d2d0de4f0736d48a49493"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part03",
+      "git_blob": "49ba9d9ce32a08e315e3147f6cbe020b26d75547"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part04",
+      "git_blob": "19acbb7da53fa9db3ee6609162e62e646bf0ff3c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part05",
+      "git_blob": "95b6259fa4cf5cd4437a65d91b959b44ea9637bc"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part06",
+      "git_blob": "dbc6a3321256084becb1b3bab1185bff1cc2b908"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part07",
+      "git_blob": "e4d8a014a5539023d23c7fc713580ea0c83cc9a7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part08",
+      "git_blob": "5a49eaf852600055618c476db8e64ab74428865a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part09",
+      "git_blob": "601ea12002cfed40891e18b737b6a8dd5384e517"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part10",
+      "git_blob": "0dfc2c0c08c66657164a832c0ac9be8a39d17eb3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part11",
+      "git_blob": "4a17fa04116edffc506f12f7343a11a83acf1651"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/ordinary-records.original.jsonl",
+      "git_blob": "be9546898e3729d51651c9a7f6c4b59e2a39e076"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/MANIFEST.json",
+      "git_blob": "1da6b496c41fa3aa101cce198dc151cd08b6f7a8"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/execution-records.original.jsonl",
+      "git_blob": "b7886e17bed4b592ca040a6b66675a5af3ba7b9e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/failure-tail.original.log",
+      "git_blob": "48c873e78aa594816c87537a45c7188ffdf577ea"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/jobs.original.json",
+      "git_blob": "ee54eeed2eb2a465060ea3d65cce674656e11663"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part00",
+      "git_blob": "76d384db7c52b8fb900b2dce6faa7946e18a922b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part01",
+      "git_blob": "55b8ab9f78db4a72f842e014191ec4b99906ea2d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part02",
+      "git_blob": "08f1c3e7e9dc33db0ada494c0f96a51b0d531c76"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part03",
+      "git_blob": "785933a143e5189eae7943d65f8441cf47e415c7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part04",
+      "git_blob": "c81f0b27b8bfb7a26c66c6e4b4258f1a443193e5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part05",
+      "git_blob": "30bf5656728da3a4bffb3fab271d008d88344089"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part06",
+      "git_blob": "2c00fcb7d6005b4f3383646b50f7ae790233f537"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part07",
+      "git_blob": "25a7ca1b7f77c37bbdbd6b8edcca2f6731e591b6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part08",
+      "git_blob": "a6653b6a60a9904d2d171d677eced0b91cd3ea44"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part09",
+      "git_blob": "3d8301eba6578b1eb938f0247664228fb04aa730"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part10",
+      "git_blob": "b2557172d4af79799080a16c688f50b74a59e262"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-native-failure/native.job.log.part11",
+      "git_blob": "0b15c54f48de24df46e4bee729127af934ee7c14"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/MANIFEST.json",
+      "git_blob": "cf152a66d423b7e4cb2cb5989a0d321a9c75eac9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/jobs.original.json",
+      "git_blob": "8971ebf3511b24fc105f81107c2da45b21d4ae6a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/windows.job.log.part00",
+      "git_blob": "271277604c76cc8b0607ba798ae2b87953a438ac"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/windows.job.log.part01",
+      "git_blob": "671a346139e99d7182fb4cfb313a2e80614b6acc"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-private-pass/windows36-records.original.jsonl",
+      "git_blob": "ae6ed87765a8945584aebe3c47fa39bcc6044cfb"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/AUDIT.md",
+      "git_blob": "ceddbda40bc993738c65edf4094aa99c5b09668b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/MANIFEST.json",
+      "git_blob": "cb79d5b4f2481bf1016a7a56ca3e9c6ab9ff9939"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/RELEASE_FEATURES.json",
+      "git_blob": "18487b4acddd5778b21f6416ac86ce46bdafc7ef"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/UNCHANGED_VERIFIER.rs.txt",
+      "git_blob": "7dead9c85d00c457217f8705afa855f70f943c9f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/WORKFLOW.diff",
+      "git_blob": "1c02ab2d1b555433a45edae643e86e478238d8b5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/logs/official-129393561886.job.log",
+      "git_blob": "33400ebf0705bca38519883fcc30ac40ec396a9f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/logs/official-131183598570.job.log",
+      "git_blob": "0e3d94a565b0216705e614c776d2e4f9dfbc1e00"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/logs/official-131183598903.job.log",
+      "git_blob": "93d0fd726781a5c55fcf2041e9d6e709a8eae2a4"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/logs/original-edaf-fence.job.log",
+      "git_blob": "51fe55903ee5f24b0e138a265602732fd64324b2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/official/canary43218455499-jobs.json",
+      "git_blob": "053e539dfcee592a80b8b99ae2ac49be8c9cb02f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/official/issue223-comments.json",
+      "git_blob": "15bc155fe04de682691b81beed1c9e8119243727"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/official/issue223.json",
+      "git_blob": "06fbc5344b6e5b616e81808a5ad842fa3db1f523"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/official/release42684760545-jobs.json",
+      "git_blob": "ba697806b440a9abefeb10279a2564365880faab"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/official/v0.13.0-distribution-commit.json",
+      "git_blob": "0fde652c8e0177b4c5fa2a47b5e64e50145f914d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/official/v0.13.0-release.json",
+      "git_blob": "375130603be09d19ceb37ea1d6a953aad1e9a1fc"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/official/v0.13.0-source-commit.json",
+      "git_blob": "3fc0b08f593bf47a0861a59fdf9b4f7a72bd1ed9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/action.yml.txt",
+      "git_blob": "97e91823b99e6b549291901818ebb918116c06d6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/v0.10.0-local_control.rs.txt",
+      "git_blob": "491baa1c3b9ee9131b4f36775f44190787935269"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/v0.11.1-local_control.rs.txt",
+      "git_blob": "9946488c42373d4e1cfe27793f74aa3e8ffa2ada"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/v0.12.4-local_control.rs.txt",
+      "git_blob": "254cd5c1decf965c20de7364bbe47af3b7343c69"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/v0.12.6-local_control.rs.txt",
+      "git_blob": "f5152707ff3daacd7bc091153d137cd3467ddbd6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/v0.13.0-bundle-manifest.json",
+      "git_blob": "3f0b00d990f9eca9b630feae63f5b6803379bb03"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/v0.13.0-local_control.rs.txt",
+      "git_blob": "cc867eb4cec7f59f5c700cf0fab1007e1c1a7ac2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-upgrade-review/source/v0.13.0-main.cts.txt",
+      "git_blob": "01364e676225b40748f2d9d6b815c012b52dcb76"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/AUDIT.md",
+      "git_blob": "9b8550efedb3e85542132cccce32a1a62e887835"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/DERIVE.js.txt",
+      "git_blob": "8347d0204fb30b2dd393f50d1c4585b20932e4f2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/MANIFEST.json",
+      "git_blob": "eb04a192fba2897bfaae235d36764f05a8f9cb03"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/NATIVE_METHODS.part00.jsonl",
+      "git_blob": "3d9db1b87561c66815c962d642c34a5cd959bb48"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/NATIVE_METHODS.part01.jsonl",
+      "git_blob": "f70756bd0a1919fd44061de240ee025437403fe7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/NATIVE_METHODS.part02.jsonl",
+      "git_blob": "af5944a47f4ef794b434ae4a2387e77ef8573955"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/PATCH.diff",
+      "git_blob": "7dbf95fafad14a7478a8ff1699703daedd3117d4"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-review/STATIC_NATIVE_SHARDS.json",
+      "git_blob": "19f204ad118d38cb56ab0ce25e0f5c6f0849a846"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-hot-bytes-independent-review/MANIFEST.json",
+      "git_blob": "3944d5224bd837e51aa6dfa026c203b93d3febc1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-hot-bytes-independent-review/STATIC_REVIEW.json",
+      "git_blob": "f92dc93acca2f4f3f9195a6cd11e1eaf9ab8533c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-pin-independent-review/MANIFEST.json",
+      "git_blob": "0a96b8148119680b20be5dcfc0a0fa4434f8150b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-fence-pin-independent-review/STATIC_REVIEW.json",
+      "git_blob": "645c2cf08c373694a27d81c7b749323b6fadb134"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-locked-bytes-independent-review/MANIFEST.json",
+      "git_blob": "f94aa3a57165253a8715cc910891f986b0607368"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-windows-locked-bytes-independent-review/STATIC_REVIEW.json",
+      "git_blob": "5ec0d6eeab857955fb5d43c1be1455527724b642"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-independent-review/DIFF_REVIEW.txt",
+      "git_blob": "767d2b028ec9ddcec4fd2d6179cb8c1e28a664ab"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-independent-review/MANIFEST.json",
+      "git_blob": "28c61eb2ec75b67c935cda31e3836422bb0103f7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-sharding-independent-review/STATIC_REVIEW.json",
+      "git_blob": "608f47fe8141246188da703730cc0e9b80482f52"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/MANIFEST.json",
+      "git_blob": "7c63af069cdaa15a1881e08c574f1230cf7db89a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/QA_LITERAL_SCAN.json",
+      "git_blob": "9c133311525bf3662e9ca71890ab6c6285c800c3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/STATIC_REVIEW.json",
+      "git_blob": "992e2b46f99e8bf825e5d0d246f03e9bf34225de"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/compiler-errors.original.log",
+      "git_blob": "ceaf1a5279d147b64e7715ac9a5703fa68108dd8"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-macos-retained-helper-cfg-review/minimal.patch",
+      "git_blob": "81c43eca83d5a5e08a2d70f41e7e55a16b2755fe"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-model-execution-u16-independent-review/MANIFEST.json",
+      "git_blob": "0824b126fb5ad7f9771d4cb88a18deb8e3ac7f03"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-model-execution-u16-independent-review/STATIC_REVIEW.json",
+      "git_blob": "fb9418282272b035864f372467fb94f6f157e7d4"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/FAILURE_INDEX.derived.json",
+      "git_blob": "c99d0f040c110d984d95e10a82e5c4a9dc93e518"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/MANIFEST.json",
+      "git_blob": "edd715dd86075ead5b8c828609f3c27cf0936eee"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/blocking-jobs.original.json",
+      "git_blob": "8d7f9d5bef24474659f81608c3a392e8e20beb05"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part00.log",
+      "git_blob": "8c386a959f79cd31d308b474de6795e8c393d0e3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part01.log",
+      "git_blob": "80b395f649df6d38ba3cb9972ba8a4e0dac530dd"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part02.log",
+      "git_blob": "e66744f4d3406031d8e4d0e70827bf23d8efda54"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/mac_intel.job.original.part03.log",
+      "git_blob": "061d10c62c14f1abb594bc7a932c3e4889d07b26"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard1.job.original.part00.log",
+      "git_blob": "13eb90cceb9b881bd112194c6dba09686f239e94"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard1.job.original.part01.log",
+      "git_blob": "d88426c7089f027ceec40bf069db9cc309cdbc06"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard2.job.original.part00.log",
+      "git_blob": "7d300dcde51de3edc0dc90ff4f8e616dfa0cabfd"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard2.job.original.part01.log",
+      "git_blob": "2589a1242bbabc7a726663ff4cee8a7feb4d8f50"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard2.job.original.part02.log",
+      "git_blob": "241149db6ce81f332584581c7b3e432ec2c1269f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard3.job.original.part00.log",
+      "git_blob": "44487db3410f409f4a6bd96800566ce290449510"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard3.job.original.part01.log",
+      "git_blob": "5967652ec109ed16282b9d48dc9a28bb769d3d28"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/windows_shard3.job.original.part02.log",
+      "git_blob": "28c74be514438025a99c3db249c2a07057c86625"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/legacy-c-same-read-candidate/CHANGE.diff",
+      "git_blob": "a5d976c469f1e6a8a8bfcc6faa6ec3489d83580a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/legacy-c-same-read-candidate/MANIFEST.json",
+      "git_blob": "3377a1473511639a6ab64523df17add91577ebf5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/legacy-c-same-read-candidate/REVIEW.md",
+      "git_blob": "814b7004a1f7ea62c77bacc9221ad7a9ea717f21"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/legacy-c-same-read-candidate/SOURCE_BINDINGS.json",
+      "git_blob": "75542c0480f2b01ceb91f6dffff9e9581f3e0b6b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/legacy-c-same-read-candidate/STATIC_COUNTS.json",
+      "git_blob": "7c08a95c4e24214f9a2caf87b129c823ba4b018b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/legacy-c-same-read-candidate/edaf-original-native-failures.log",
+      "git_blob": "48c873e78aa594816c87537a45c7188ffdf577ea"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-current-readset-independent-review/C_FAULT_SPLIT_REVIEW.json",
+      "git_blob": "84aecdcfe41696d77e6749362b2226d30d4a205a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-current-readset-independent-review/MANIFEST.json",
+      "git_blob": "0ade100ba0a693460e3cf37f7664ee86de02d39a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-current-readset-independent-review/STATIC_REVIEW.json",
+      "git_blob": "5f73e479f908e2ca7de8e97afa70750aff3c9809"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/MANIFEST.json",
+      "git_blob": "1c7e5576cc086fd34dbc2fb68608b1e53b4e4fb0"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part00.log",
+      "git_blob": "32b1991899ecbb994bd756ad8b94f2efca9148b3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part01.log",
+      "git_blob": "b030c32783bb9992b03b19e49a8c99df6ca07c0e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part02.log",
+      "git_blob": "fab5eead1668b68c503726c2457a1d52f2b30f94"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part03.log",
+      "git_blob": "01a6026e999fd814dce8098c5250f1922e3451f9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part04.log",
+      "git_blob": "65ee172fa0110ffafecdeb270aae9c1dfe8d1861"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part05.log",
+      "git_blob": "485a10f995cc76765cc87192a70603998b7cfbd5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/job.original.part06.log",
+      "git_blob": "8faccf0d0d2948941c2bce8377aff2df986927e3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/jobs.original.json",
+      "git_blob": "7daae65c7720e9d5bb85b4a2a400314187a15eb7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-caller-success/receipt.original.log",
+      "git_blob": "f545959c213d7f892f88b4f7b60eaf3286ba6da4"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-generation-qualification/BUILD_GRAPH.json",
+      "git_blob": "952217a48669148e100240ca63734eb0450533b6"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-generation-qualification/MANIFEST.json",
+      "git_blob": "80d07ddc028324fb177886f97b040513fa56f46a"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-generation-qualification/PATCH.diff",
+      "git_blob": "5a0b6ca481071e2cc54ab7d15299d0e504d3af17"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-generation-qualification/SOURCE_GUARD_CONTRACT.json",
+      "git_blob": "c3549f51172dd8b5a17a667f73f6298d1f57bea6"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-generation-qualification/SOURCE_SCAN.json",
+      "git_blob": "91c70eb7c67c1d112867618d32462e5488dbbfd9"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-generation-qualification/V1_TO_V2.diff",
+      "git_blob": "31624189669c189ab7e89553307a159040791b49"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-locked-bytes-fixtures/DIAGNOSIS.md",
+      "git_blob": "8028d8e99425708d129434e6bc1ced643c8ed772"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-locked-bytes-fixtures/FAILURES.json",
+      "git_blob": "5fbcc7cbeafb5e3756763510a5ba6f5bc3a487dd"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-locked-bytes-fixtures/MANIFEST.json",
+      "git_blob": "e4dadf908a13e79052ebf7108807e94f27a92689"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/windows-edaf-locked-bytes-fixtures/PATCH.diff",
+      "git_blob": "9ff4fab1b2610e814e2e7f59ed06f73f9637c4c4"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evaluated-c-edaf-predecessor-case-split/DIAGNOSIS.json",
+      "git_blob": "5f0005f604133d3767a7b56dffe71679c0ee75c0"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evaluated-c-edaf-predecessor-case-split/MANIFEST.json",
+      "git_blob": "f2c8e3c10fc1535ea04923c447c1166f41694dce"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evaluated-c-edaf-predecessor-case-split/PATCH.diff",
+      "git_blob": "268030370eba3b061c6f968f06f3f92328262f25"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evaluated-c-edaf-predecessor-case-split/SCOPE_SCAN.json",
+      "git_blob": "b95e201e5753459780d93ad05242a0b9942f4eb2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/d397-recursive-material-budget/IN_PROGRESS.json",
+      "git_blob": "b7f32c5a91973c54940aefbde299c32dddc7ee71"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-d397-review/ORIGINAL_THREE_WAY_OVERLAP.json",
+      "git_blob": "596b73c607cb6044d00179eec52727e8a0d815d9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-d397-review/PRODUCTION_MERGE_MANIFEST.json",
+      "git_blob": "ded2662c3c3668ef17c49a6f6dcaa8a6af40539e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-d397-review/FULL_CHANGED_RUST_LANE_SCAN.json",
+      "git_blob": "2dfe12433a9f013b904c093c0911b0f8c901c37a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part00.log",
+      "git_blob": "1bd9be196cf7da8fce379f1fb69ca42ebb4f1353"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part01.log",
+      "git_blob": "177c22574bddd57e54c7672cebde2626aa77d2c1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part02.log",
+      "git_blob": "13f5718b8119e3f6cbddfba2051f62d6d0197618"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part03.log",
+      "git_blob": "9167306720b20d9ae38b482ed3e169eb4100b2ee"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part04.log",
+      "git_blob": "d2bfbfc74dedee60680f268aae4f95fc95a4013d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part05.log",
+      "git_blob": "5050c2817235782bfdd97d7d87813d3e8b48b2cd"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part06.log",
+      "git_blob": "957aa01464f1b88c0527d1421824f802fb3c3a27"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/receipt.original.log",
+      "git_blob": "0218a16d94867d109bf08f5d882000bac4a399da"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/jobs.original.json",
+      "git_blob": "5003cdafd8d916b95619d3e736f2e95c4d56ca11"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/MANIFEST.json",
+      "git_blob": "a3dd9c63af4067e9381c3c25837722ba0d015370"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_EVIDENCE-f409.json",
+      "git_blob": "3cdcfe38f2d78ccbb7926ec4fe55910cc3e92298"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/PUBLICATION_MANIFEST-f409.json",
+      "git_blob": "d4d95423908de07903f984c5f148255d1cfca96c"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/BLOCKER_CLOSURE_NEXT-f409.md",
+      "git_blob": "b24d96b412857216b14a1eb679debd1d6b422102"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evidence/history-20261112/TERMINAL_README-f409.md",
+      "git_blob": "44f675be1246b511cf329266b49701c5e57a0b18"
     }
   ],
   "original_mapping": "EVIDENCE_PATH_MAPPING.json",
@@ -6377,9 +7017,9 @@
   "github_binary_readback_status": "COMPLETE_FOR_ALL_31_NEW_BINARY_OBJECTS_AND_SEVEN_FULL_JOB_LOG_REASSEMBLIES",
   "manifest_excludes_itself": true,
   "github_binary_readback_record": "GIT_PERSISTENCE_VERIFIED.json",
-  "followup_parent": "f22459f2dcbe4184cf63ae2e5b480acad7334fae",
-  "followup_observed_at_utc": "2026-11-12 17:35:16 UTC",
-  "previous_manifest_snapshot": "evidence/history-20261112/PUBLICATION_MANIFEST-f224.json",
+  "followup_parent": "f4098255d01cce4af15f6564cbb07a352e116528",
+  "followup_observed_at_utc": "2026-11-12 18:54:30 UTC",
+  "previous_manifest_snapshot": "evidence/history-20261112/PUBLICATION_MANIFEST-f409.json",
   "additional_binary_readback_records": [
     "qualification/ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/ROOT_COMPLETE_VALIDATION.json",
     "qualification/evaluated-current-read-20261112/source-closure-088aada/ROOT_INVENTORY_VERIFICATION.json",
@@ -6419,32 +7059,23 @@
       "root_verified": true
     }
   },
-  "new_original_blob_mapping": {
-    "native": "../evaluated-current-read-20261112/9fac-native-failure/MANIFEST.json",
-    "caller": "../evaluated-current-read-20261112/9fac-caller-pass/MANIFEST.json",
-    "fence_clippy": "../evaluated-current-read-20261112/9fac-fence-clippy-pass/MANIFEST.json",
-    "bazel_timeout": "../evaluated-current-read-20261112/9fac-bazel-timeout/MANIFEST.json",
-    "windows_private": "../evaluated-current-read-20261112/9fac-windows-private-pass/MANIFEST.json",
-    "windows_failures": "../evaluated-current-read-20261112/9fac-windows-original-failures/MANIFEST.json"
-  },
-  "additional_text_readback_record": "evidence/terminal-20261112/GIT_READBACK_1735.json",
+  "new_original_blob_mapping": "evidence/terminal-20261112/EVIDENCE_IMPORT_MAPPING.json",
+  "additional_text_readback_record": "evidence/terminal-20261112/GIT_READBACK_EDAF_TERMINAL.json",
   "latest_text_readback": {
-    "status": "ORIGINALS_AND_STAGED_GIT_PATHS_VERIFIED",
-    "imported_blobs": 79,
-    "new_text_files": 24,
-    "full_original_logs": 8,
-    "originals": [
-      "286c Rustfmt",
-      "286c Fence",
-      "edaf Rustfmt",
-      "edaf Fence",
-      "edaf GNU Clippy",
-      "edaf GNU Bazel timeout",
-      "edaf musl Bazel timeout",
-      "edaf Windows Bazel shard4"
-    ],
+    "status": "ORIGINAL_IMMUTABLE_EVIDENCE_BYTES_VERIFIED_PREPUBLICATION",
+    "imported_blobs": 147,
+    "additional_source_blobs_verified_not_imported": 11,
+    "full_original_log_reconstructions": 9,
     "all_verified": true,
-    "record": "evidence/terminal-20261112/GIT_READBACK_1735.json",
-    "readback_at_utc": "2026-11-12 17:41:15 UTC"
-  }
+    "record": "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
+    "readback_at_utc": "2026-11-12 18:41:30 UTC",
+    "does_not_claim_current_source_execution": true,
+    "source_only_verified_not_imported": 11,
+    "records": [
+      "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
+      "../evaluated-current-read-20261112/edaf-caller-success/ROOT_FULL_LOG_VERIFICATION.json"
+    ],
+    "new_original": "edaf caller exact2150402B reconstructed from7parts and direct-job hash"
+  },
+  "new_readback_notes": "All147 qualification import objects were read by immutable Git identity;144 initial records include11 source-only verified leaves excluded from this branch. Ten edaf caller objects and4 additional source/audit manifests are separate."
 }

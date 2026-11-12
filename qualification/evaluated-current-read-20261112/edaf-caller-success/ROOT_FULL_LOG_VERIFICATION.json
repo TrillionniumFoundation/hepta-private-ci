@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.root-caller-original-verification.v1",
+  "observed_at_utc": "2026-11-12 18:53:30 UTC",
+  "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "run": 43267838695,
+  "job": 131356097229,
+  "archive_tree": "a41d42836314e2e06fe20e928a012ca3cdb4b958",
+  "direct_original_previously_read": {
+    "bytes": 2150402,
+    "sha256": "389af548e9411691dec7700c7e959f77dedb612889f4d72b6acbf5cc0d6fa1bf",
+    "git_blob": "c300ff4df2bf05fce9bdbcd4133b2dfcfed23f7d"
+  },
+  "git_reassembled": {
+    "bytes": 2150402,
+    "sha256": "389af548e9411691dec7700c7e959f77dedb612889f4d72b6acbf5cc0d6fa1bf",
+    "git_blob": "c300ff4df2bf05fce9bdbcd4133b2dfcfed23f7d"
+  },
+  "original_equal_all_seven_parts": true,
+  "leaf_readbacks": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/MANIFEST.json",
+      "bytes": 4441,
+      "sha256": "305f48100fe00ec4f0ec71abe28aeada2e4d7cadace12d828fab44c61e376678",
+      "git_blob": "a3dd9c63af4067e9381c3c25837722ba0d015370"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part00.log",
+      "bytes": 340000,
+      "sha256": "96549b01b26c4e2ab81670b9918416ea29ae688d02ba2e0bcde0f1ff6b189e3f",
+      "git_blob": "1bd9be196cf7da8fce379f1fb69ca42ebb4f1353"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part01.log",
+      "bytes": 340000,
+      "sha256": "96183c3013b9ba1a0db55c624c95a0d066963c099cc428904f0ebb97ffa2f673",
+      "git_blob": "177c22574bddd57e54c7672cebde2626aa77d2c1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part02.log",
+      "bytes": 340000,
+      "sha256": "34cee33f0e85e2db40ccb5a5562686e90a8399956f3346f97aa1318f488d9c35",
+      "git_blob": "13f5718b8119e3f6cbddfba2051f62d6d0197618"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part03.log",
+      "bytes": 340000,
+      "sha256": "c7370a4c927b609ed6c3140abb2404b7b869cc54f3398d4da8680f9e80e0b6ad",
+      "git_blob": "9167306720b20d9ae38b482ed3e169eb4100b2ee"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part04.log",
+      "bytes": 340000,
+      "sha256": "af760fe9559f1e6433decee5b919a47cbdac3407d3f71386b0dabb57760bbbc2",
+      "git_blob": "d2bfbfc74dedee60680f268aae4f95fc95a4013d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part05.log",
+      "bytes": 340000,
+      "sha256": "129c03d035c81c3564b37521dabfda167abdc091f9bc30c1ed286bea49f84822",
+      "git_blob": "5050c2817235782bfdd97d7d87813d3e8b48b2cd"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part06.log",
+      "bytes": 110402,
+      "sha256": "aef02419286a2856e6cc17c5574b3a49b8da841f8c2fe22fb602f5cd311700db",
+      "git_blob": "957aa01464f1b88c0527d1421824f802fb3c3a27"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/jobs.original.json",
+      "bytes": 6619,
+      "sha256": "ab8a3854302cefeb067206ce0e90f17f35c879792123c3d1e3ceb00b678008dd",
+      "git_blob": "5003cdafd8d916b95619d3e736f2e95c4d56ca11"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/receipt.original.log",
+      "bytes": 435516,
+      "sha256": "8e0b904806677e21f9d12cb27b11be9f8d573a2ca9bde8cccb0024ecfda4ccdf",
+      "git_blob": "0218a16d94867d109bf08f5d882000bac4a399da"
+    }
+  ],
+  "actual_receipt_summary": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "authorityGranted": false,
+    "boundaries": 541,
+    "boundaries_count": 541,
+    "privilegedInventory_count": 541,
+    "protectedFiles_count": 390,
+    "rustFilesScanned": 6604,
+    "schema": "hepta.caller-proof-receipt.v2"
+  },
+  "limits": [
+    "Only the exact edaf source; no pass transfer to872b or subsequent integration.",
+    "Original artifact ZIP and undisplayed inventories have not been separately downloaded.",
+    "Source caller proof does not establish ordinary/Root execution or scientific qualification."
+  ]
+}

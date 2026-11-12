@@ -1,0 +1,56 @@
+Static context excerpts; this file is a review view, not an executable patch.
+--- defs.bzl (ab9b8e8153e3813cbbc068932bf626a0699cd9f2)
++++ defs.bzl (6e1c3955b8dc345bd0cc5a4f1659e1e56f285cc8)
+         integration_test_extra_srcs = {},
+         extra_binaries = [],
+         extra_binaries_non_windows = [],
+-        run_tests_with_wine_exec = False):
++        run_tests_with_wine_exec = False,
++        unit_test_threads = 0,
++        unit_test_flaky = None):
+     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
+ 
+     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
+         test_threads: Optional Rust test thread limit for sharded integration tests.
+         unit_test_timeout: Optional Bazel timeout for the unit-test target
+             generated from `src/**/*.rs`.
++        unit_test_threads: Optional library unit-test thread limit, passed via
++            RUST_TEST_THREADS so the workspace-root launcher still shards.
++        unit_test_flaky: Optional library unit-test flaky attribute override.
++            None preserves the existing default for sharded and unsharded tests.
+         unit_test_extra_binaries: Additional binary labels to surface as
+             unit-test runfiles and `CARGO_BIN_EXE_*` environment variables.
+         unit_test_extra_srcs: Additional source files required only by the
+         if unit_test_shard_count:
+             unit_test_kwargs["shard_count"] = unit_test_shard_count
+             unit_test_kwargs["flaky"] = True
++        if unit_test_flaky != None:
++            unit_test_kwargs["flaky"] = unit_test_flaky
+ 
+         workspace_root_test(
+             name = unit_test_name,
+             env = test_env,
+             runfile_env = unit_test_cargo_env_runfiles,
+             test_bin = ":" + unit_test_binary,
++            test_threads = unit_test_threads,
+             workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+             tags = test_tags,
+             **unit_test_kwargs
+--- codex-rs/hepta-agentd/BUILD.bazel (679f0f86e3c01a1ca3638199ff2e8286519823f9)
++++ codex-rs/hepta-agentd/BUILD.bazel (eb09a036e49d1c85cd247f05b9b4b2c17b5dd022)
+     # Cargo unifies the qualification-only dev dependency for integration tests.
+     # Keep the complete existing test graph without changing product binaries.
+     integration_test_use_unit_test_dependencies = True,
++    # Partition the complete libtest roster using the existing outer launcher.
++    # Keep the default 300-second shard timeout and never retry a failed shard.
++    test_shard_counts = {
++        "hepta-agentd-unit-tests": 8,
++    },
+     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+     unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+     unit_test_extra_srcs = ["tests/support/terminal_cell_owner.rs"],
++    unit_test_flaky = False,
++    unit_test_threads = 2,
+ )
+ 
+ v13_acceptance_example()

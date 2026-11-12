@@ -1,0 +1,136 @@
+{
+  "schema": "hepta.static-native-method-sharding-estimate.v1",
+  "execution_source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "native_run": 43254705812,
+  "native_job": 131309678676,
+  "native_manifest_blob": "b81b0f3318f970567e70738e75cc45f9d77cc100",
+  "native_full_log_bytes": 3745971,
+  "native_full_log_sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+  "observed_status_lines": 3470,
+  "unique_native_methods": 1738,
+  "native_tests_wall_seconds": 845.718,
+  "original_native_execution": {
+    "test_threads": 2,
+    "retries": 0,
+    "crates": 5,
+    "passed": 1726,
+    "failed": 11,
+    "timed_out": 1,
+    "skipped_outside_run": 98
+  },
+  "agentd_timed_methods": 1094,
+  "other_crates_timed_methods": 644,
+  "assignment": "FNV-1a 32-bit of exact UTF-8 libtest method name modulo 8, matching the unchanged shell/Windows launchers.",
+  "deduplication": "Source crate + exact method name identifies one original execution. Streaming/final duplicate terminal lines must agree and are retained as source_log_lines, never counted twice.",
+  "estimator": "Assign fixed observed durations to two independent workers in ordinal method-name order. This is arithmetic on the old native log, not a Bazel timing measurement or an upper bound.",
+  "buckets": [
+    {
+      "index": 0,
+      "native_methods": 141,
+      "pass": 139,
+      "fail": 2,
+      "timeout": 0,
+      "sum_reported_milliseconds": 238342,
+      "maximum_reported_milliseconds": 52916,
+      "simulated_two_worker_milliseconds": 119352
+    },
+    {
+      "index": 1,
+      "native_methods": 143,
+      "pass": 142,
+      "fail": 1,
+      "timeout": 0,
+      "sum_reported_milliseconds": 180043,
+      "maximum_reported_milliseconds": 41816,
+      "simulated_two_worker_milliseconds": 95824
+    },
+    {
+      "index": 2,
+      "native_methods": 118,
+      "pass": 118,
+      "fail": 0,
+      "timeout": 0,
+      "sum_reported_milliseconds": 102417,
+      "maximum_reported_milliseconds": 20404,
+      "simulated_two_worker_milliseconds": 55609
+    },
+    {
+      "index": 3,
+      "native_methods": 138,
+      "pass": 137,
+      "fail": 1,
+      "timeout": 0,
+      "sum_reported_milliseconds": 296108,
+      "maximum_reported_milliseconds": 53580,
+      "simulated_two_worker_milliseconds": 148902
+    },
+    {
+      "index": 4,
+      "native_methods": 133,
+      "pass": 130,
+      "fail": 2,
+      "timeout": 1,
+      "sum_reported_milliseconds": 329889,
+      "maximum_reported_milliseconds": 60007,
+      "simulated_two_worker_milliseconds": 165506
+    },
+    {
+      "index": 5,
+      "native_methods": 133,
+      "pass": 133,
+      "fail": 0,
+      "timeout": 0,
+      "sum_reported_milliseconds": 88295,
+      "maximum_reported_milliseconds": 10604,
+      "simulated_two_worker_milliseconds": 46232
+    },
+    {
+      "index": 6,
+      "native_methods": 146,
+      "pass": 143,
+      "fail": 3,
+      "timeout": 0,
+      "sum_reported_milliseconds": 264977,
+      "maximum_reported_milliseconds": 37040,
+      "simulated_two_worker_milliseconds": 133570
+    },
+    {
+      "index": 7,
+      "native_methods": 142,
+      "pass": 140,
+      "fail": 2,
+      "timeout": 0,
+      "sum_reported_milliseconds": 143767,
+      "maximum_reported_milliseconds": 29848,
+      "simulated_two_worker_milliseconds": 72161
+    }
+  ],
+  "original_bazel_evidence": {
+    "manifest_blob": "2ffdb720c28de123dbea2b22fdded792db18bfb6",
+    "partial_observations_blob": "4910a412e2f553ed9956448d1bb4a8eef2b7c698",
+    "jobs": [
+      131310622854,
+      131310622804
+    ],
+    "each": {
+      "announced": 1190,
+      "explicit_ok": 917,
+      "explicit_failed": 15,
+      "explicit_ignored": 87,
+      "terminal_status_unknown": 171,
+      "all_observed_unique_names": 1022,
+      "unobserved_names": 168
+    },
+    "native_agentd_names_confirmed_in_partial_bazel_output": 935,
+    "native_agentd_membership_unconfirmed": 159
+  },
+  "cautions": [
+    "Only the 1094 executed agentd native methods inform this target's estimate. The other 644 native methods belong to four other crates.",
+    "The 87 existing ignored methods and nine-count arithmetic difference cannot fill in the missing Bazel roster. Complete same-binary Bazel --list is still required.",
+    "The timeout duration 60.007s is censored, and failed methods may have ended before the successful path. Neither is a bound on future successful execution.",
+    "Bazel build features, RBE contention, Windows batching and the new corrected source can change durations and rosters.",
+    "Two libtest test bodies per process is not two OS threads total. Eight shards may execute simultaneously; fixture/Tokio threads remain unchanged.",
+    "All original 15 Bazel failures and 171 missing terminal statuses remain evidence of an incomplete failed run.",
+    "This candidate does not dispatch Bazel. Validation remains the existing same-source just test gate plus the existing automatic Bazel workflow after a parent-controlled source commit."
+  ]
+}

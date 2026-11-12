@@ -1,19 +1,15 @@
 {
   "schema": "hepta.neuroscience-terminal-evidence.v1",
-  "observed_at_utc": "2026-11-12 17:35:16 UTC",
+  "observed_at_utc": "2026-11-12 18:54:30 UTC",
   "repository": "TrillionniumFoundation/hepta-private-ci",
-  "publication_parent": "f22459f2dcbe4184cf63ae2e5b480acad7334fae",
+  "publication_parent": "f4098255d01cce4af15f6564cbb07a352e116528",
   "scope": "Evidence and documentation only. Published 16-path native repair and exact formatter follow-up; complete original early CI. Original 9fac, 286c and edaf failures remain; native/caller outcomes pending. No new research actor dispatch, adoption or authority decision.",
   "status": "HOLD",
   "owner_decision": null,
   "owner_evaluation": "not_authenticated",
   "adoption": "NOT_REQUESTED",
   "all_blockers_closed": false,
-  "historical_snapshot": {
-    "initial_snapshot": "NEXT_STEP_EVIDENCE.json",
-    "previous_full_snapshot": "evidence/history-20261112/TERMINAL_EVIDENCE-016511.json",
-    "previous_commit": "01651139cf72fa3e310357c7637b38d05958b5d7"
-  },
+  "historical_snapshot": "evidence/history-20261112/TERMINAL_EVIDENCE-f409.json",
   "original_campaign": {
     "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
     "host": "ai395",
@@ -395,26 +391,23 @@
       "original_source_log_sha256": "2cbbebf1c1dfb55cec47339f1bcf42bd5800376d4f01cf95014acb6b460bc1ed",
       "full_inventory_payload_archive": "COMPLETE: three original gzip parts reassembled from GitHub, CRC32/ISIZE and full SHA256 independently verified by root; 14,753 original tracked-file records parsed.",
       "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
-      "current_head": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
-      "current_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
-      "current_native_status": "IN_PROGRESS_ORDINARY_PHASE_AFTER_SAME_SOURCE_HELPER",
-      "current_source_gate_status": "SOURCE_PARSER_HELPER_STEPS_SUCCESS_COUNTS_NOT_YET_ARCHIVED",
+      "current_head": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+      "current_tree": "5a22d17b8d21f2b9843d508ec4ef21f8045a0c66",
+      "current_native_status": "NO_ADMITTED_RUN_OBSERVED_FOR_EXACT_872B",
+      "current_source_gate_status": "STATIC_REVIEW_ONLY_NOT_RUN",
       "previous_source_results_transferred": false,
       "full_inventory_original_gzip_bytes": 762747,
       "full_inventory_original_gzip_sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
       "full_inventory_root_verification": "../evaluated-current-read-20261112/source-closure-088aada/ROOT_INVENTORY_VERIFICATION.json",
       "current_validation": {
-        "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
-        "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
-        "run": 43267838695,
-        "native_job": 131356096885,
-        "caller_job": 131356097229,
-        "status": "in_progress",
-        "conclusion": null,
-        "source_gate": "success",
-        "parser_gate": "success",
-        "same_source_helper_build": "success",
-        "native_phase": "Run ordinary and Root suites then scoped maintenance",
+        "source": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+        "tree": "5a22d17b8d21f2b9843d508ec4ef21f8045a0c66",
+        "status": "NOT_STARTED_NO_ADMITTED_RUN_OBSERVED",
+        "actual_workflow_runs": 0,
+        "observed_at_utc": "2026-11-12 18:54:30 UTC",
+        "run": null,
+        "native_job": null,
+        "caller_job": null,
         "source_test_count": null,
         "parser_test_count": null,
         "native_test_count": null,
@@ -422,18 +415,12 @@
         "native_failed": null,
         "native_timed_out": null,
         "retries": null,
-        "root_suite": "NOT_YET_OBSERVED",
-        "scoped_fix_and_fmt": "NOT_YET_OBSERVED",
-        "caller_status": "in_progress",
+        "root_suite": "NOT_RUN",
+        "scoped_fix_and_fmt": "NOT_RUN",
+        "caller_status": "NOT_RUN",
         "caller_conclusion": null,
-        "caller_boundaries": null,
-        "caller_inventory": null,
-        "caller_protected": null,
-        "caller_rust_files": null,
         "authority_granted": false,
-        "previous_results_transferred": false,
-        "counts_require_complete_original_log": true,
-        "observed_jobs_record": "../evaluated-current-read-20261112/edaf-early-ci/edaf_latest_daemon.original.json"
+        "previous_results_transferred": false
       },
       "previous_0e_validation": {
         "source": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
@@ -488,14 +475,12 @@
         "root_independent_inventory_decode": true
       },
       "current_caller_closure_fix": {
-        "boundary_rows": 12,
-        "actual_caller_edges_added": 21,
-        "qa_files": 11,
-        "expected_tuples_updated": 26,
-        "production_Rust_changed": false,
-        "checker_changed": false,
-        "classes_tests_rejection_mutations_unchanged": true,
-        "root_review": "../evaluated-current-read-20261112/caller-closure-639f894/ROOT_REVIEW.json"
+        "static_872b_boundaries": 542,
+        "static_872b_protected_records": 390,
+        "status": "NOT_RUN_FOR_872B",
+        "prior_edaf_caller_success_transferred": false,
+        "new_private_original_same_read_set_boundary": true,
+        "d397_merge_manifest_in_progress": true
       },
       "prepared_native": {
         "key": "owner6213-ai395-1026bd0-ordinary-native-862531d11598-v1",
@@ -504,17 +489,14 @@
         "hold": "Not dispatched. Original hosted 1026 native compile failure is now known; next candidate must include the minimal import fix and the fixed a96 upstream integration, then receive new exact-source validation."
       },
       "current_native_validation": {
-        "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
-        "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
-        "run": 43267838695,
-        "native_job": 131356096885,
-        "caller_job": 131356097229,
-        "status": "in_progress",
-        "conclusion": null,
-        "source_gate": "success",
-        "parser_gate": "success",
-        "same_source_helper_build": "success",
-        "native_phase": "Run ordinary and Root suites then scoped maintenance",
+        "source": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+        "tree": "5a22d17b8d21f2b9843d508ec4ef21f8045a0c66",
+        "status": "NOT_STARTED_NO_ADMITTED_RUN_OBSERVED",
+        "actual_workflow_runs": 0,
+        "observed_at_utc": "2026-11-12 18:54:30 UTC",
+        "run": null,
+        "native_job": null,
+        "caller_job": null,
         "source_test_count": null,
         "parser_test_count": null,
         "native_test_count": null,
@@ -522,81 +504,47 @@
         "native_failed": null,
         "native_timed_out": null,
         "retries": null,
-        "root_suite": "NOT_YET_OBSERVED",
-        "scoped_fix_and_fmt": "NOT_YET_OBSERVED",
-        "caller_status": "in_progress",
+        "root_suite": "NOT_RUN",
+        "scoped_fix_and_fmt": "NOT_RUN",
+        "caller_status": "NOT_RUN",
         "caller_conclusion": null,
-        "caller_boundaries": null,
-        "caller_inventory": null,
-        "caller_protected": null,
-        "caller_rust_files": null,
         "authority_granted": false,
         "previous_results_transferred": false,
-        "counts_require_complete_original_log": true,
-        "observed_jobs_record": "../evaluated-current-read-20261112/edaf-early-ci/edaf_latest_daemon.original.json",
-        "old_methods_removed": 0,
-        "new_methods_in_repair": 0
+        "static_expected_source_methods_before_d397_integration": 415,
+        "static_expected_ordinary_methods_before_d397_integration": 1745,
+        "static_method_additions": {
+          "held_file_regressions": 4,
+          "legacy_c_withdrawal": 1,
+          "predecessor_case_split": 2
+        },
+        "old_method_coverage_removed": 0,
+        "warning": "Expected counts describe only872b relative toedaf. They are not executed counts and must be recomputed for the integration."
       },
       "pending_integration": {
-        "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
-        "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
-        "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-        "status": "A96_INTEGRATION_PUBLISHED; ALL_PRIOR_RESULTS_RETAINED; CURRENT_EDAF_NATIVE_AND_CALLER_IN_PROGRESS",
-        "canonical_upstream": "Opaque Evaluated read profile for original 4-cut Selection / 5-cut NextUse; independent wire operation/domain; read profiles actively attenuate to Readback.",
-        "retain": "Actual T/E and 2x2 CURRENT positive observations, original bytes unchanged, equivalent original refusal conditions, exact source-bound caller registration.",
-        "minimal_compile_fix_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
-        "collector_fix_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
-        "previous_4ab_candidate_not_executed": true,
-        "prior_source_results_transferred": false,
-        "candidate_commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
-        "candidate_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
-        "code_tree": "9281fae831d016aec213e95341bf0788ae1ffd0b",
-        "root_static_review": "../evaluated-current-read-20261112/merge-a96-review/ROOT_INTEGRATION_REVIEW.json",
-        "static_boundaries": 541,
-        "static_privileged_entries": 541,
-        "static_protected_files": 389,
-        "actual_source_bound_edges_added": 22,
-        "first_short_attempt": {
-          "job": "1a1d00fef8b-2564-1b19",
-          "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v1",
-          "status": "FAILED_PREPARATION_UNSUPPORTED_ORIGIN_TRANSPORT",
-          "fetch_started": false,
-          "stages": [],
-          "source_changes": false
+        "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+        "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+        "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+        "actual_target_branch": "codex/learn-common-profile-20261112-037c",
+        "actual_target_tree": "57558558841da4a3209164d0033b903a553205d6",
+        "pr_api_base_sha_is_stale": true,
+        "actual_branch_ref_used": true,
+        "status": "THREE_WAY_INTEGRATION_IN_PROGRESS",
+        "mergeable_at_observation": false,
+        "overlap_files": 31,
+        "overlap_partition": {
+          "production": 8,
+          "fixtures_and_tests": 8,
+          "qa": 13,
+          "manifests": 2
         },
-        "second_short_attempt": {
-          "job": "1a1d01383ed-2564-1b22",
-          "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v2",
-          "digest": "997e54fb636ae7913372b84dbacaf6d58eb883a0561cd11534aa1a02e25a32a7",
-          "status": "DRIVER_FAILED_FETCH_TIMEOUT_REGISTRY_READBACK_UNKNOWN",
-          "request_blob": "b73248a78526fc0d0adfbb6be64686742f5ce0d3",
-          "changed_only": "original object mirror path and isolated checkout/evidence/key",
-          "rust_tests_requested": false,
-          "driver_exit": 2,
-          "finished_at": "2026-11-12T14:15:04.611014+00:00",
-          "error_type": "TimeoutExpired",
-          "fetch_original": "fatal: early EOF\n",
-          "gates_started": 0,
-          "evidence": "../evaluated-current-read-20261112/ebe6723-format-source-v2-failure/RESULT.original.json"
-        },
+        "necessary_new_retention_interface_adaptations": 5,
+        "upstream_commits": 2,
+        "upstream_changed_paths": 140,
+        "review": "../evaluated-current-read-20261112/merge-d397-review/ORIGINAL_THREE_WAY_OVERLAP.json",
         "new_source_gates_proven": false,
-        "third_short_attempt": {
-          "request_blob": "0ed989b1d8db82218153fc67efaca78337892635",
-          "runner_blob": "f244442aaceb05e5f34b0263affc68fa90089548",
-          "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v3",
-          "status": "FAILED_FETCH_TIMEOUT_ZERO_GATES",
-          "change": "Clone validated1026 local objects and separately resolve the same original network origin; one runner key substitution; all source/tool/gate/resource pins unchanged",
-          "root_review": "../evaluated-current-read-20261112/ebe6723-format-source-v3/ROOT_TRANSPORT_REVIEW.json",
-          "job": "1a1d0221d7d-2564-1b37",
-          "request_digest": "655f564e59550c5828104bb5e8d4bdbf269d23fe42a31794fbfb6daf49a10613",
-          "driver_exit": 2,
-          "stages": [],
-          "fetch_original": "fatal: early EOF\n",
-          "finished_at": "2026-11-12T14:31:17.505422+00:00",
-          "evidence": "../evaluated-current-read-20261112/ebe6723-format-source-v3-failure/MANIFEST.json"
-        }
+        "prior_source_results_transferred": false
       },
-      "record_scope": "The initial source field and its 376-method source record remain historical 088aada evidence. Current-head fields below refer to the latest published source.",
+      "record_scope": "Historical source fields and old observations remain bound to their exact versions. Current_* fields describe only the exact published head.",
       "previous_exact_1026_validation": {
         "job": "1a1cfb4675b-2564-1a8e",
         "key": "owner6213-ai395-1026bd0-source-caller-862531d11598-v2",
@@ -701,27 +649,15 @@
         "core_originals_root_verification": "../evaluated-current-read-20261112/hosted-1026-original-artifacts/ROOT_CORE_VERIFICATION.json"
       },
       "latest_published_correction": {
-        "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
-        "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
-        "parent": "286c567593ca6bb5e8cf4ee03602155526bf47ec",
-        "prior_fix_parent": "b649baef1967d582b328df1023922a45aa196ab3",
-        "diagnosis_source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
-        "cumulative_paths": 16,
-        "additions": 269,
-        "deletions": 44,
-        "product_changes": "Two Qualification v4 verifier counts use original producer u64; independent request/decision v1 u32 remains unchanged.",
-        "test_changes": "Exact first-refusal variants; shared completed Candidate fixture only for pure wire faults with fresh real readouts; malformed actual preimage regressions; post-exchange actual-result diagnostics.",
-        "formatter_followup": {
-          "paths": 2,
-          "hunks": 3,
-          "nonwhitespace_and_strings_unchanged": true,
-          "actual_rustfmt": "success"
-        },
-        "root_review": "../evaluated-current-read-20261112/repair-286c-review/ROOT_SOURCE_REVIEW.json",
-        "workflow_changed": false,
-        "CALLERS_changed": false,
-        "deadlines_or_caps_increased": false,
-        "owner_decision": null
+        "source": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+        "tree": "5a22d17b8d21f2b9843d508ec4ef21f8045a0c66",
+        "parent": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "paths": 46,
+        "additions": 901,
+        "deletions": 214,
+        "new_files": 4,
+        "status": "PUBLISHED_STATICALLY_REVIEWED_NOT_EXECUTED",
+        "review": "../evaluated-current-read-20261112/repair-872b-review/ROOT_SOURCE_REVIEW.json"
       },
       "original_ebe_hosted": {
         "source": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
@@ -1283,7 +1219,9 @@
           "error": "local_control_inventory_unavailable"
         },
         "results_do_not_transfer": true,
-        "archive": "../evaluated-current-read-20261112/286c-early-ci/MANIFEST.json"
+        "archive": "../evaluated-current-read-20261112/286c-early-ci/MANIFEST.json",
+        "historical_observation": true,
+        "superseded_current_status_by": "original_286c_terminal"
       },
       "original_edaf_early_ci": {
         "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
@@ -1359,7 +1297,417 @@
           "retries_do_not_overwrite_first_attempt": true
         },
         "original_log_verification": "../evaluated-current-read-20261112/edaf-early-ci/ROOT_ORIGINAL_LOG_VERIFICATION.json",
-        "prior_passes_not_transferred": true
+        "prior_passes_not_transferred": true,
+        "historical_observation": true
+      },
+      "previous_exact_edaf_checkpoint_1735": {
+        "current_head": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "current_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+        "current_validation": {
+          "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+          "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+          "run": 43267838695,
+          "native_job": 131356096885,
+          "caller_job": 131356097229,
+          "status": "in_progress",
+          "conclusion": null,
+          "source_gate": "success",
+          "parser_gate": "success",
+          "same_source_helper_build": "success",
+          "native_phase": "Run ordinary and Root suites then scoped maintenance",
+          "source_test_count": null,
+          "parser_test_count": null,
+          "native_test_count": null,
+          "native_passed": null,
+          "native_failed": null,
+          "native_timed_out": null,
+          "retries": null,
+          "root_suite": "NOT_YET_OBSERVED",
+          "scoped_fix_and_fmt": "NOT_YET_OBSERVED",
+          "caller_status": "in_progress",
+          "caller_conclusion": null,
+          "caller_boundaries": null,
+          "caller_inventory": null,
+          "caller_protected": null,
+          "caller_rust_files": null,
+          "authority_granted": false,
+          "previous_results_transferred": false,
+          "counts_require_complete_original_log": true,
+          "observed_jobs_record": "../evaluated-current-read-20261112/edaf-early-ci/edaf_latest_daemon.original.json"
+        },
+        "current_native_validation": {
+          "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+          "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+          "run": 43267838695,
+          "native_job": 131356096885,
+          "caller_job": 131356097229,
+          "status": "in_progress",
+          "conclusion": null,
+          "source_gate": "success",
+          "parser_gate": "success",
+          "same_source_helper_build": "success",
+          "native_phase": "Run ordinary and Root suites then scoped maintenance",
+          "source_test_count": null,
+          "parser_test_count": null,
+          "native_test_count": null,
+          "native_passed": null,
+          "native_failed": null,
+          "native_timed_out": null,
+          "retries": null,
+          "root_suite": "NOT_YET_OBSERVED",
+          "scoped_fix_and_fmt": "NOT_YET_OBSERVED",
+          "caller_status": "in_progress",
+          "caller_conclusion": null,
+          "caller_boundaries": null,
+          "caller_inventory": null,
+          "caller_protected": null,
+          "caller_rust_files": null,
+          "authority_granted": false,
+          "previous_results_transferred": false,
+          "counts_require_complete_original_log": true,
+          "observed_jobs_record": "../evaluated-current-read-20261112/edaf-early-ci/edaf_latest_daemon.original.json",
+          "old_methods_removed": 0,
+          "new_methods_in_repair": 0
+        },
+        "pending_integration": {
+          "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+          "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+          "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+          "status": "A96_INTEGRATION_PUBLISHED; ALL_PRIOR_RESULTS_RETAINED; CURRENT_EDAF_NATIVE_AND_CALLER_IN_PROGRESS",
+          "canonical_upstream": "Opaque Evaluated read profile for original 4-cut Selection / 5-cut NextUse; independent wire operation/domain; read profiles actively attenuate to Readback.",
+          "retain": "Actual T/E and 2x2 CURRENT positive observations, original bytes unchanged, equivalent original refusal conditions, exact source-bound caller registration.",
+          "minimal_compile_fix_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+          "collector_fix_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+          "previous_4ab_candidate_not_executed": true,
+          "prior_source_results_transferred": false,
+          "candidate_commit": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+          "candidate_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+          "code_tree": "9281fae831d016aec213e95341bf0788ae1ffd0b",
+          "root_static_review": "../evaluated-current-read-20261112/merge-a96-review/ROOT_INTEGRATION_REVIEW.json",
+          "static_boundaries": 541,
+          "static_privileged_entries": 541,
+          "static_protected_files": 389,
+          "actual_source_bound_edges_added": 22,
+          "first_short_attempt": {
+            "job": "1a1d00fef8b-2564-1b19",
+            "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v1",
+            "status": "FAILED_PREPARATION_UNSUPPORTED_ORIGIN_TRANSPORT",
+            "fetch_started": false,
+            "stages": [],
+            "source_changes": false
+          },
+          "second_short_attempt": {
+            "job": "1a1d01383ed-2564-1b22",
+            "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v2",
+            "digest": "997e54fb636ae7913372b84dbacaf6d58eb883a0561cd11534aa1a02e25a32a7",
+            "status": "DRIVER_FAILED_FETCH_TIMEOUT_REGISTRY_READBACK_UNKNOWN",
+            "request_blob": "b73248a78526fc0d0adfbb6be64686742f5ce0d3",
+            "changed_only": "original object mirror path and isolated checkout/evidence/key",
+            "rust_tests_requested": false,
+            "driver_exit": 2,
+            "finished_at": "2026-11-12T14:15:04.611014+00:00",
+            "error_type": "TimeoutExpired",
+            "fetch_original": "fatal: early EOF\n",
+            "gates_started": 0,
+            "evidence": "../evaluated-current-read-20261112/ebe6723-format-source-v2-failure/RESULT.original.json"
+          },
+          "new_source_gates_proven": false,
+          "third_short_attempt": {
+            "request_blob": "0ed989b1d8db82218153fc67efaca78337892635",
+            "runner_blob": "f244442aaceb05e5f34b0263affc68fa90089548",
+            "key": "owner6213-ai395-ebe6723-format-qa-862531d11598-v3",
+            "status": "FAILED_FETCH_TIMEOUT_ZERO_GATES",
+            "change": "Clone validated1026 local objects and separately resolve the same original network origin; one runner key substitution; all source/tool/gate/resource pins unchanged",
+            "root_review": "../evaluated-current-read-20261112/ebe6723-format-source-v3/ROOT_TRANSPORT_REVIEW.json",
+            "job": "1a1d0221d7d-2564-1b37",
+            "request_digest": "655f564e59550c5828104bb5e8d4bdbf269d23fe42a31794fbfb6daf49a10613",
+            "driver_exit": 2,
+            "stages": [],
+            "fetch_original": "fatal: early EOF\n",
+            "finished_at": "2026-11-12T14:31:17.505422+00:00",
+            "evidence": "../evaluated-current-read-20261112/ebe6723-format-source-v3-failure/MANIFEST.json"
+          }
+        },
+        "current_caller_closure_fix": {
+          "boundary_rows": 12,
+          "actual_caller_edges_added": 21,
+          "qa_files": 11,
+          "expected_tuples_updated": 26,
+          "production_Rust_changed": false,
+          "checker_changed": false,
+          "classes_tests_rejection_mutations_unchanged": true,
+          "root_review": "../evaluated-current-read-20261112/caller-closure-639f894/ROOT_REVIEW.json"
+        },
+        "latest_published_correction": {
+          "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+          "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+          "parent": "286c567593ca6bb5e8cf4ee03602155526bf47ec",
+          "prior_fix_parent": "b649baef1967d582b328df1023922a45aa196ab3",
+          "diagnosis_source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+          "cumulative_paths": 16,
+          "additions": 269,
+          "deletions": 44,
+          "product_changes": "Two Qualification v4 verifier counts use original producer u64; independent request/decision v1 u32 remains unchanged.",
+          "test_changes": "Exact first-refusal variants; shared completed Candidate fixture only for pure wire faults with fresh real readouts; malformed actual preimage regressions; post-exchange actual-result diagnostics.",
+          "formatter_followup": {
+            "paths": 2,
+            "hunks": 3,
+            "nonwhitespace_and_strings_unchanged": true,
+            "actual_rustfmt": "success"
+          },
+          "root_review": "../evaluated-current-read-20261112/repair-286c-review/ROOT_SOURCE_REVIEW.json",
+          "workflow_changed": false,
+          "CALLERS_changed": false,
+          "deadlines_or_caps_increased": false,
+          "owner_decision": null
+        }
+      },
+      "original_edaf_terminal": {
+        "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+        "run": 43267838695,
+        "native_job": 131356096885,
+        "conclusion": "failure",
+        "completed_at": "2026-11-12T17:51:55Z",
+        "source_tests": 414,
+        "source_failures": 0,
+        "source_errors": 0,
+        "parser_tests": 16,
+        "parser_failures": 0,
+        "parser_errors": 0,
+        "same_source_helper": "success",
+        "ordinary": {
+          "tests": 1738,
+          "passed": 1730,
+          "failed": 7,
+          "timed_out": 1,
+          "filtered_out": 98,
+          "retries": 0,
+          "summary_elapsed_seconds": 828.757,
+          "original_failures": [
+            {
+              "method": "evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+              "result": "FAILED",
+              "elapsed_seconds": 29.466
+            },
+            {
+              "method": "evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+              "result": "FAILED",
+              "elapsed_seconds": 29.324
+            },
+            {
+              "method": "evaluated_c_rereads_actual_source_after_the_final_s_response",
+              "result": "FAILED",
+              "elapsed_seconds": 30.523
+            },
+            {
+              "method": "evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+              "result": "TIMEOUT",
+              "elapsed_seconds": 60.012
+            },
+            {
+              "method": "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+              "result": "FAILED",
+              "elapsed_seconds": 13.752
+            },
+            {
+              "method": "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+              "result": "FAILED",
+              "elapsed_seconds": 30.246
+            },
+            {
+              "method": "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+              "result": "FAILED",
+              "elapsed_seconds": 42.711
+            },
+            {
+              "method": "q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+              "result": "FAILED",
+              "elapsed_seconds": 4.073
+            }
+          ]
+        },
+        "full_original_log": {
+          "bytes": 3746884,
+          "sha256": "ef3dd7e9a41f5c7c6007a5331344af64d94c6664f0258b327a57f527b9a3e9f8",
+          "git_sha1": "05959d7ae1d58248d9d234770327a0cf7ef15a1f"
+        },
+        "archive": "../evaluated-current-read-20261112/edaf-native-failure/MANIFEST.json",
+        "root_suite": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+        "scoped_fix_and_fmt": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+        "full_junit_separately_fetched": false,
+        "full_inventory_payload_separately_fetched": false,
+        "full_artifact_zip_separately_fetched": false,
+        "results_transferred_to_current_source": false,
+        "candidate_previous_timeout": {
+          "status": "PASS",
+          "elapsed_seconds": 40.992,
+          "actual_material_counts": [
+            1,
+            76,
+            76,
+            76
+          ],
+          "scope": "Exact edaf original method only; not a pass for current source or new full bridge."
+        },
+        "caller": {
+          "job": 131356097229,
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-12T18:13:57Z",
+          "boundaries": 541,
+          "inventory": 541,
+          "protected_files": 390,
+          "rust_files": 6604,
+          "authority_granted": false,
+          "full_original_log": {
+            "bytes": 2150402,
+            "sha256": "389af548e9411691dec7700c7e959f77dedb612889f4d72b6acbf5cc0d6fa1bf",
+            "git_sha1": "c300ff4df2bf05fce9bdbcd4133b2dfcfed23f7d"
+          },
+          "archive": "../evaluated-current-read-20261112/edaf-caller-success/MANIFEST.json",
+          "full_artifact_zip_separately_fetched": false,
+          "root_full_log_verification": "../evaluated-current-read-20261112/edaf-caller-success/ROOT_FULL_LOG_VERIFICATION.json",
+          "full_original_git_parts_root_verified": true
+        }
+      },
+      "original_286c_terminal": {
+        "source": "286c567593ca6bb5e8cf4ee03602155526bf47ec",
+        "tree": "65269d8d380a4e0e772c8f0b726fbe8cdf5190ba",
+        "run": 43266970494,
+        "native_job": 131353000746,
+        "conclusion": "failure",
+        "completed_at": "2026-11-12T17:47:17Z",
+        "source_tests": 414,
+        "source_failures": 0,
+        "source_errors": 0,
+        "parser_tests": 16,
+        "parser_failures": 0,
+        "parser_errors": 0,
+        "same_source_helper": "success",
+        "ordinary": {
+          "tests": 1738,
+          "passed": 1730,
+          "failed": 7,
+          "timed_out": 1,
+          "filtered_out": 98,
+          "retries": 0,
+          "summary_elapsed_seconds": 819.799
+        },
+        "full_original_log": {
+          "bytes": 3745736,
+          "sha256": "9828bba3caf921719de67eece6a312b7d69a6076bd4b5ab6b8eeae761668f233",
+          "git_sha1": "75d97740b3b6ff1a70ef839b6931aabd25c3b7a3"
+        },
+        "archive": "../evaluated-current-read-20261112/286c-native-failure/MANIFEST.json",
+        "root_suite": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+        "scoped_fix_and_fmt": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+        "full_junit_separately_fetched": false,
+        "full_inventory_payload_separately_fetched": false,
+        "full_artifact_zip_separately_fetched": false,
+        "results_transferred_to_current_source": false,
+        "caller": {
+          "job": 131353001352,
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-12T18:06:09Z",
+          "boundaries": 541,
+          "inventory": 541,
+          "protected_files": 390,
+          "rust_files": 6604,
+          "authority_granted": false,
+          "full_original_log": {
+            "bytes": 2149098,
+            "sha256": "d2b7ae553c550dc16821a38b9ea69ee0ddb32e5739649effadc3b8fdb37771f6",
+            "git_sha1": "b19b58d27aacd453de2ca09d0a8bb6ea5cd5a0a5"
+          },
+          "archive": "../evaluated-current-read-20261112/286c-caller-success/MANIFEST.json",
+          "full_artifact_zip_separately_fetched": false
+        }
+      },
+      "original_edaf_platform_terminal": {
+        "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+        "run": 43267839274,
+        "actual_checkout": "0b2238e70dfcbdb47635e454aea0f39ab25d7c0d",
+        "checkout_tree_equal_source": true,
+        "final_required_conclusion": "failure",
+        "repo_build_test": "cancelled",
+        "rustfmt": "success",
+        "gnu_clippy": "success",
+        "windows_clippy": "success",
+        "gnu_release": "success",
+        "windows_release": "success",
+        "fence": {
+          "job": 131356473762,
+          "conclusion": "failure",
+          "checkout_reached": false,
+          "checker_result": null,
+          "error": "local_control_inventory_unavailable"
+        },
+        "gnu_musl": {
+          "jobs": [
+            131356685942,
+            131356685850
+          ],
+          "conclusion": "failure",
+          "target_timeout_seconds": 300.1,
+          "announced": 1190,
+          "explicit_passed": 915,
+          "explicit_failed": 15,
+          "ignored": 87,
+          "no_observed_terminal": 173,
+          "normalized_outputs_equal": true,
+          "independent_replicates_claimed": false,
+          "complete_method_roster": false
+        },
+        "windows_shard4": {
+          "job": 131356685648,
+          "conclusion": "failure",
+          "file_system": {
+            "passed": 40,
+            "failed": 17,
+            "ignored": 2
+          },
+          "core_distinct_failures": 3,
+          "original_isolation_refusals_preserved": true
+        },
+        "windows_shards123_mac": {
+          "jobs": [
+            131356685730,
+            131356685786,
+            131356686486,
+            131356685650
+          ],
+          "conclusions": [
+            "failure",
+            "failure",
+            "failure",
+            "failure"
+          ],
+          "complete_originals_archived": true,
+          "archive": "../evaluated-current-read-20261112/edaf-bazel-windows123-mac-failures/MANIFEST.json",
+          "windows_shard3_hepta_lock_failures": 14,
+          "mac_linux_only_retained_type_compile_errors": 6,
+          "non_hepta_failures_separate": true
+        },
+        "windows_private": {
+          "run": 43267838959,
+          "job": 131356183446,
+          "conclusion": "success",
+          "completed_at": "2026-11-12T17:44:27Z",
+          "selected": 36,
+          "passed": 36,
+          "failed": 0,
+          "errors": 0,
+          "xml_skipped": 0,
+          "filtered_out": 597,
+          "retries": 0,
+          "complete_original_log_archived": true,
+          "full_xml_and_zip_separately_fetched": false,
+          "archive": "../evaluated-current-read-20261112/edaf-windows-private-pass/MANIFEST.json"
+        },
+        "results_transferred_to_current_source": false
       }
     }
   ],
@@ -1659,19 +2007,18 @@
     }
   },
   "moving_bases": {
-    "observed_at_utc": "2026-11-12 17:35:16 UTC",
-    "owner_current_head": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
-    "owner_current_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
-    "fixed_upstream_integration_target": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
-    "status": "EDAF_REPAIR_PUBLISHED_VALIDATION_IN_PROGRESS",
+    "observed_at_utc": "2026-11-12 18:54:30 UTC",
+    "owner_current_head": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+    "owner_current_tree": "5a22d17b8d21f2b9843d508ec4ef21f8045a0c66",
+    "fixed_common_ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "actual_target_branch": "codex/learn-common-profile-20261112-037c",
+    "fixed_upstream_integration_target": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "upstream_tree": "57558558841da4a3209164d0033b903a553205d6",
+    "status": "D397_THREE_WAY_INTEGRATION_REQUIRED",
     "pr_api_base_sha_is_stale": true,
     "actual_branch_ref_used": true,
-    "previous_completed_integration": "620235b + 639f894 -> 1026bd09",
-    "original_21_edge_diagnostic_fix_retained": true,
-    "cumulative_ours_vs_639_caller_edges": 22,
-    "cumulative_count_explanation": "21 actual edges fixed after the 620 diagnostic plus one earlier readback_owner edge; do not rewrite the historical 21-edge fix count.",
-    "source_results_do_not_transfer": true,
-    "candidate_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da"
+    "overlap_files": 31,
+    "source_results_do_not_transfer": true
   },
   "remaining_gates": [
     "Original source/exposure custody",
@@ -1836,7 +2183,7 @@
     "root_completed_review": "evidence/rv-bc-wrapper-development-20261112/ROOT_COMPLETED_B_C_REVIEW.json"
   },
   "current_source_results_transfer": false,
-  "latest_followup_observed_at_utc": "2026-11-12 17:35:16 UTC",
+  "latest_followup_observed_at_utc": "2026-11-12 18:54:30 UTC",
   "wrapper_completed_macro_executions": 4,
   "latest_binary_readback": {
     "staged_commits": [
@@ -1862,53 +2209,60 @@
     "scope": "Concrete source/custody/data requirements. Engineering gaps actively implemented; scientific outcome, original custody and new independent data are not fabricated."
   },
   "active_engineering_work": {
-    "current_lint": "Exact edaf Rustfmt/GNU Clippy complete originals and equal synthetic execution tree verified. Windows Clippy and GNU/Windows release success from original job metadata; their full logs not separately archived.",
-    "evaluated_selection": "Initial original S command and resident continuation; client and server permanently attenuate after Readback; single original owner shared with purpose-fixed readonly evidence.",
-    "evaluated_version_c": "Real evaluated preparation -> original task factory -> exact Root FinalUse issuer transport -> fresh opaque five-cut S -> original C; explicit initial streams under implementation.",
-    "candidate_tests_and_format": "All old methods retained in16 published paths. Two Qualification v4 counts match original u64 producer; four exact first-refusal errors; actual preimage regressions; Candidate pure-wire setup reuse retains fresh real readouts. Diagnostics after exchange preserve caps. Actual edaf Rustfmt success. Full bridge drafts uncompiled/unexecuted.",
+    "current_lint": "872b has no admitted run observed. Exact edaf Rustfmt/GNU Clippy originals succeeded; no transfer.",
+    "evaluated_selection": "Actual upstreamd397 has retained S/Version/C and Trainer/Candidate read transactions; three-way integration in progress.",
+    "evaluated_version_c": "New upstream implementation is being integrated with872b. Independent original custody and exact-tree full bridge/Root validation remainOPEN.",
+    "candidate_tests_and_format": "Exact edaf previous Candidate timeout becamePASS40.992s with[1,76,76,76].872b Modelu16 fix, C same-read result and3case predecessor split remain static-only.",
     "qualified_adoption": "DENIED",
     "no_owner_or_socket_from_report_fields": true,
-    "current_native": "Exact edaf source/parser/helper steps succeeded; ordinary/Root/scoped-maintenance step and full caller running. Final counts/Root remain unknown. Exact 286c also continues separately; no result transfer.",
-    "fence": "Exact edaf and 286c failed before checkout: local_control_inventory_unavailable. Original action/native source reviewed; precise unavailable input absent. Published-release diagnostic upgrade is an unpublished candidate, not a proven root-cause fix.",
-    "observer_initialization": "Purpose-fixed once-only original Root-to-Observer Fresh-S receiver and ten ordinary framing/owner regressions are drafted. True distinct-process UID-0 factory coverage and all integrated format/compile/native validation remain pending.",
-    "full_frame_budget": "OPEN. Same-call batch upper-layer E/D/T count [112,110,106] for one mandatory final readback does not include shared downstream Material. Each actual Trainer readback performs four reads on each retained Material source; each Candidate page performs six. The proposed common T alone implies 424 downstream reads; R=1 Candidate requires 32*P pages and 192*P further reads, hence a lower bound of 616 at P=1 before other owners. This is a source-derived draft budget, not a measured successful run. Original full fixture Material peers have a 128-frame limit and cannot validate this flow. Production legacy readonly Material loops use monotonic request IDs plus original deadlines rather than the same 128 check; this distinction does not prove throughput, cost or completion within the original 300-second lifetime. No test cap, endpoint, cache or source identity is substituted.",
-    "windows_fixture_correction": "Original b649 three-path repair published through 286c/edaf. Next six-file/seven-original-method locked-byte candidate independently reviewed but unpublished/NOT_RUN; seven true hot generation checks under development.",
+    "current_native": "Original edaf and286c each completed1738 ordinary methods:1730PASS/7FAIL/1TIMEOUT/98filtered/0retry. Root and scoped maintenance not reached. Separate original callers succeeded. Current872b NOT_RUN.",
+    "fence": "872b pins officialv0.13.0 c7675fea986c29f1d655753a7a61fd6b4141be8f. Original audit/debug/allowlist/checker failure retained. Different-host vendor canary does not prove current runner repair.",
+    "observer_initialization": "New bridge and once-only initialization exist at exactd397; integrated format/compile/native and ordinary independent custody are not proven.",
+    "full_frame_budget": "OPEN. Historical edaf lower bound616/P1 is source/topology specific. Exactd397 transactions locally reduce Trainer Material4to2 and Candidate6to2 per actual callback; complete per-endpoint recursive graph, deduplication, frame/time budgets and execution remain unproven.",
+    "windows_fixture_correction": "First6-file/7-method plus hot21-file corrections and4new held-file regressions published in872b. Original locked File/cursor/owner lifetime and comparisons retained. NOT_RUN.",
     "current_failure_repairs": [
       {
-        "kind": "candidate_material",
-        "methods": 1,
-        "result": "TIMEOUT_60_SECONDS"
-      },
-      {
-        "kind": "evaluated_publication_s_c",
-        "methods": 7,
-        "result": "FAILED"
+        "kind": "evaluated_C",
+        "exact_edaf_failed": 3,
+        "exact_edaf_timed_out": 1,
+        "status": "STATIC_872B_REPAIRS_NOT_RUN"
       },
       {
         "kind": "model_material",
-        "methods": 3,
-        "result": "FAILED"
+        "exact_edaf_failed": 3,
+        "status": "U16_FIX_STATIC_NOT_RUN"
       },
       {
-        "kind": "legacy_next_use_evidence",
-        "methods": 1,
-        "result": "FAILED_500MS_DEADLINE"
+        "kind": "legacy_next_use",
+        "exact_edaf_failed": 1,
+        "status": "SAME_CALL_READSET_STATIC_NOT_RUN"
       }
     ],
     "local_environment": "Managed executor returned; direct read-only probes found no verified checkout and no rustfmt/rustc/cargo/just in PATH. No new local Git materialization or toolchain installation was attempted. Hosted original results remain the validation source.",
-    "bazel": "Exact edaf GNU/musl each300.1s timeout,1190 announced/915 explicitpass/15fail/87ignored/173 unknown. Two-file eight-shard/two-thread/flakyFalse candidate unpublished/NOT_RUN. Native1094 does not establish fullBazel1190 roster."
+    "bazel": "8shards/RUST_TEST_THREADS2/flakyFalse published in872b;300sunchanged. At most16 test bodies across8shards, not global2. No manual Bazel dispatch; actual old timeout preserved.",
+    "source_integration": {
+      "status": "IN_PROGRESS",
+      "overlap_files": 31,
+      "additional_interface_paths": 5,
+      "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+      "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+      "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf"
+    }
   },
   "latest_text_readback": {
-    "observed_at_utc": "2026-11-12 17:35:16 UTC",
-    "status": "ORIGINALS_AND_STAGED_GIT_PATHS_VERIFIED",
-    "record": "evidence/terminal-20261112/GIT_READBACK_1735.json",
+    "status": "ORIGINAL_IMMUTABLE_EVIDENCE_BYTES_VERIFIED_PREPUBLICATION",
+    "imported_blobs": 147,
+    "additional_source_blobs_verified_not_imported": 11,
+    "full_original_log_reconstructions": 9,
     "all_verified": true,
-    "previous_record": "evidence/terminal-20261112/GIT_READBACK_1700.json",
-    "root_fetched_originals": true,
-    "old_results_preserved": true,
-    "readback_at_utc": "2026-11-12 17:41:15 UTC",
-    "imported_blobs": 79,
-    "new_staged_text_files": 24,
-    "original_full_logs_new": 8
+    "record": "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
+    "readback_at_utc": "2026-11-12 18:41:30 UTC",
+    "does_not_claim_current_source_execution": true,
+    "source_only_verified_not_imported": 11,
+    "records": [
+      "evidence/terminal-20261112/ROOT_IMPORTED_BYTE_READBACK.json",
+      "../evaluated-current-read-20261112/edaf-caller-success/ROOT_FULL_LOG_VERIFICATION.json"
+    ],
+    "new_original": "edaf caller exact2150402B reconstructed from7parts and direct-job hash"
   }
 }

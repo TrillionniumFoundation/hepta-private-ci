@@ -1,0 +1,12 @@
+diff --git a/.github/workflows/blob-size-policy.yml b/.github/workflows/blob-size-policy.yml
+--- a/.github/workflows/blob-size-policy.yml
++++ b/.github/workflows/blob-size-policy.yml
+@@ -14,7 +14,7 @@
+     permissions:
+       contents: read
+     steps:
+-      - uses: openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63 # pin@v0.10.0
++      - uses: openai/fence@c7675fea986c29f1d655753a7a61fd6b4141be8f # pin@v0.13.0
+         env:
+           ACTIONS_STEP_DEBUG: "true"
+         with:

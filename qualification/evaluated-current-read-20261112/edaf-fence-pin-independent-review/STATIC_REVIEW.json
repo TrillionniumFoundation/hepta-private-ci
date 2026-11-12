@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.fence-pin-independent-static-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "candidate_tree": "eb9de9b1495bc747b37326b0d8fd98c11825d6bf",
+  "base_blob": "d867cbc5cae69837bbcaf4646b41da387d0a49f4",
+  "post_blob": "fb50b3579ad793aae702528c0e7bc5976e182151",
+  "result": "NO_NEW_STATIC_BLOCKER_FOUND",
+  "execution": "NOT_RUN",
+  "pin_only_exact": true,
+  "reviewed_sources": [
+    {
+      "key": "action",
+      "sha": "97e91823b99e6b549291901818ebb918116c06d6",
+      "bytes": 1520,
+      "sha256": "26aa17917f78b69320d412e5d4c42617bc458e4f9787afe93055f18e3931430b"
+    },
+    {
+      "key": "main_new",
+      "sha": "01364e676225b40748f2d9d6b815c012b52dcb76",
+      "bytes": 30803,
+      "sha256": "5613a1cb18d1e2ca412160a167963742fb191e585011e7bf0eacf2d6cfb7529f"
+    },
+    {
+      "key": "lib_new",
+      "sha": "61fdf3a2a5561fb8810eb01270c693f7ce5f7859",
+      "bytes": 112721,
+      "sha256": "386fa3848d8cf62c3a3874963d3089f48a7992fc7e17555769e1531cbb20eb46"
+    },
+    {
+      "key": "local_old",
+      "sha": "491baa1c3b9ee9131b4f36775f44190787935269",
+      "bytes": 139437,
+      "sha256": "6c2df9563957e1230057a9a5315ecf63d9b854836625e3cc89315309202b0eec"
+    },
+    {
+      "key": "local_new",
+      "sha": "cc867eb4cec7f59f5c700cf0fab1007e1c1a7ac2",
+      "bytes": 219013,
+      "sha256": "3f9058e1479bec467d070616ba6c5aad40bd8edd51d4ade1024c36ff384c6d80"
+    }
+  ],
+  "checks": [
+    "Only the complete immutable Fence pin and release comment change; all other workflow bytes are identical.",
+    "Existing audit mode, debug environment, first step before checkout, contents:read at workflow/job levels and no user network allowlist remain unchanged.",
+    "Actual action.yml accepts the unchanged inputs; no continue-on-error, new permissions, bypass or mode change was introduced.",
+    "main.cts validates source runtime before and after reads; copies exact runtime into root-owned read-only files, checks runtime digest and bundled manifest, validates path guards and effective read-only/no-device/no-suid mount identities, then launches the protected binary.",
+    "lib.cts explicitly validates root ownership, modes, regular non-symlink file types, exact launcher-integrity fields, binary manifest schema/source/sha256 and actual binary checksum.",
+    "main.cts catches errors with process.exitCode=1 and does not turn readiness failure into success.",
+    "verify_complete_local_control_observation is byte-identical between old and new official sources, 1611 bytes, and equals the archived original excerpt.",
+    "Eleven public inventory/time constants are byte-identical. The ownerless retry path only permits bounded resampling; it never marks an incomplete snapshot complete.",
+    "Reviewed snapd/uuidd activation transitions require matching socket identity and fully observed exact executable/cgroup/UID owners; arbitrary owner omission is not a final accepted state.",
+    "Official canary original logs show both audit and block success with the exact new pin, complete verified post evidence, on image 20261101.360.1.",
+    "Audit canary explicitly reports protection_available=false / ready_observation_only; it is not evidence of enforcement in this audit workflow."
+  ],
+  "unresolved": [
+    "The failed repository job used image 20261111.370.1, so the official older-image canaries do not establish compatibility on that image.",
+    "The original unavailable_inputs detail remains unobserved and the original failure cause is not established.",
+    "This bounded review does not recertify every upstream Fence commit or its full security model.",
+    "The candidate workflow has not been executed in this review; no rerun, dispatch, ref mutation or h process occurred."
+  ],
+  "canary_logs": [
+    {
+      "sha": "0e3d94a565b0216705e614c776d2e4f9dfbc1e00",
+      "bytes": 23457,
+      "sha256": "09548aeb5247607ca41716e5044ecb80cc5e2826ae9cfce399c1329a1659da3d"
+    },
+    {
+      "sha": "93d0fd726781a5c55fcf2041e9d6e709a8eae2a4",
+      "bytes": 23507,
+      "sha256": "4ae43d1fb7043eef9830045b7e73af62d9a381d6adb7b45ee3af4c1638acb63e"
+    }
+  ]
+}

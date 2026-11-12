@@ -1,0 +1,32 @@
+name: Fence
+description: Launch the bundled Fence Linux x64 agent on a supported GitHub-hosted runner
+inputs:
+  config:
+    description: Advanced inline strict JSON Fence configuration; if set, no other Fence config inputs may be used
+    required: false
+  mode:
+    description: Fence mode, either block or audit
+    required: false
+  invocation_id:
+    description: Optional lowercase slug override; omission derives fence-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}
+    required: false
+  container_policy:
+    description: Container handling for block mode, either disable or unsafe_preserve
+    required: false
+  platform_profile:
+    description: Optional platform profile; only github_hosted_workflow_bootstrap_v5 is supported
+    required: false
+  disable_broad_github_domains:
+    description: Set true to remove github.com, api.github.com, release-assets.githubusercontent.com, the optional hosted-runner watchdog, and new platform-origin *.githubapp.com authorizations from the default GitHub compatibility profile
+    required: false
+  allow_github_artifacts:
+    description: Set true to allow bounded GitHub artifact uploads in block mode; artifacts become an intentional data-egress channel
+    required: false
+  allowlist:
+    description: Optional multiline allowlist entries such as example.com, exact-depth *.example.com or *.*.example.com patterns, example.com:8443, or cidr 192.0.2.0/24 udp 123
+    required: false
+runs:
+  using: node24
+  main: action/main.cts
+  post: action/post.cts
+  post-if: always()

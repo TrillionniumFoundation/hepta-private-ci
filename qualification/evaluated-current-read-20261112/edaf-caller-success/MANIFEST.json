@@ -1,0 +1,104 @@
+{
+  "schema": "hepta.raw-caller-success-archive.v1",
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "source_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "run_id": 43267838695,
+  "job_id": 131356097229,
+  "completed_at": "2026-11-12T18:13:57Z",
+  "status": "completed",
+  "conclusion": "success",
+  "original": {
+    "bytes": 2150402,
+    "sha256": "389af548e9411691dec7700c7e959f77dedb612889f4d72b6acbf5cc0d6fa1bf",
+    "git_sha1": "c300ff4df2bf05fce9bdbcd4133b2dfcfed23f7d"
+  },
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part00.log",
+      "blob_sha": "1bd9be196cf7da8fce379f1fb69ca42ebb4f1353",
+      "bytes": 340000,
+      "sha256": "96549b01b26c4e2ab81670b9918416ea29ae688d02ba2e0bcde0f1ff6b189e3f",
+      "byte_start": 0,
+      "byte_end": 340000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part01.log",
+      "blob_sha": "177c22574bddd57e54c7672cebde2626aa77d2c1",
+      "bytes": 340000,
+      "sha256": "96183c3013b9ba1a0db55c624c95a0d066963c099cc428904f0ebb97ffa2f673",
+      "byte_start": 340000,
+      "byte_end": 680000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part02.log",
+      "blob_sha": "13f5718b8119e3f6cbddfba2051f62d6d0197618",
+      "bytes": 340000,
+      "sha256": "34cee33f0e85e2db40ccb5a5562686e90a8399956f3346f97aa1318f488d9c35",
+      "byte_start": 680000,
+      "byte_end": 1020000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part03.log",
+      "blob_sha": "9167306720b20d9ae38b482ed3e169eb4100b2ee",
+      "bytes": 340000,
+      "sha256": "c7370a4c927b609ed6c3140abb2404b7b869cc54f3398d4da8680f9e80e0b6ad",
+      "byte_start": 1020000,
+      "byte_end": 1360000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part04.log",
+      "blob_sha": "d2bfbfc74dedee60680f268aae4f95fc95a4013d",
+      "bytes": 340000,
+      "sha256": "af760fe9559f1e6433decee5b919a47cbdac3407d3f71386b0dabb57760bbbc2",
+      "byte_start": 1360000,
+      "byte_end": 1700000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part05.log",
+      "blob_sha": "5050c2817235782bfdd97d7d87813d3e8b48b2cd",
+      "bytes": 340000,
+      "sha256": "129c03d035c81c3564b37521dabfda167abdc091f9bc30c1ed286bea49f84822",
+      "byte_start": 1700000,
+      "byte_end": 2040000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/job.original.part06.log",
+      "blob_sha": "957aa01464f1b88c0527d1421824f802fb3c3a27",
+      "bytes": 110402,
+      "sha256": "aef02419286a2856e6cc17c5574b3a49b8da841f8c2fe22fb602f5cd311700db",
+      "byte_start": 2040000,
+      "byte_end": 2150402
+    }
+  ],
+  "concat": "Concatenate original part bytes in listed order with no separators or normalization.",
+  "receipt": {
+    "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/receipt.original.log",
+    "blob_sha": "0218a16d94867d109bf08f5d882000bac4a399da",
+    "bytes": 435516,
+    "sha256": "8e0b904806677e21f9d12cb27b11be9f8d573a2ca9bde8cccb0024ecfda4ccdf",
+    "line_start": 9617,
+    "line_end": 15901,
+    "extraction": "Exact contiguous original timestamped log lines, preserving BOM and newline bytes. Derived JSON parsing strips prefix BOM before or after timestamp; original bytes remain unchanged."
+  },
+  "jobs": {
+    "path": "qualification/evaluated-current-read-20261112/edaf-caller-success/jobs.original.json",
+    "blob_sha": "5003cdafd8d916b95619d3e736f2e95c4d56ca11",
+    "bytes": 6619,
+    "sha256": "ab8a3854302cefeb067206ce0e90f17f35c879792123c3d1e3ceb00b678008dd"
+  },
+  "actual_receipt_summary": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "authorityGranted": false,
+    "boundaries": 541,
+    "boundaries_count": 541,
+    "privilegedInventory_count": 541,
+    "protectedFiles_count": 390,
+    "rustFilesScanned": 6604,
+    "schema": "hepta.caller-proof-receipt.v2"
+  },
+  "limits": [
+    "Only the exact edaf source; no pass transfer to872b or subsequent integration.",
+    "Original artifact ZIP and undisplayed inventories have not been separately downloaded.",
+    "Source caller proof does not establish ordinary/Root execution or scientific qualification."
+  ]
+}

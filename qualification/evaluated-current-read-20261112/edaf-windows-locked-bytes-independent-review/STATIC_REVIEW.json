@@ -1,0 +1,227 @@
+{
+  "schema": "hepta-independent-static-review-v1",
+  "candidate_tree": "73f66df8308e553a2c7f990cd19df9e221395c5a",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "candidate_manifest": "e4dadf908a13e79052ebf7108807e94f27a92689",
+  "candidate_patch": "9ff4fab1b2610e814e2e7f59ed06f73f9637c4c4",
+  "status": "No static blocker identified; no build, formatter, tests, workflow rerun, or dispatch performed.",
+  "source_checks": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "base": {
+        "sha": "8e2da640dd33e8a480413878dc8d929e30663d1b",
+        "bytes": 23937,
+        "sha256": "c3634101ad10bd8e7f6f2a2a29c5b920392113ac22ee23cfd5b4668b16787361"
+      },
+      "post": {
+        "sha": "7698284e6f92a5045b0341113f13ceea22622691",
+        "bytes": 24174,
+        "sha256": "aa528545b7d58c1ab91ae671ee368a906a57cc9c6ff196c099090c49e26ab775"
+      },
+      "test_names_equal": true,
+      "test_names": [
+        "mismatched_admission_cannot_write_unreplayable_history",
+        "shared_file_recovers_independent_checkpoints_and_exact_policy_receipts",
+        "lost_witness_ack_fences_new_work_until_original_log_is_read_back",
+        "acknowledged_rollback_is_rejected_before_any_tail_repair",
+        "incomplete_unacknowledged_tail_is_trimmed_after_witness_validation",
+        "persisted_frontier_fence_resets_state_and_rejects_prepared_writer",
+        "journal_lock_excludes_a_second_owner_before_it_reads_or_repairs",
+        "pending_dispatch_survives_reopen_and_recovery_only_reads_original_model_result",
+        "uncertain_admission_never_dispatches_and_recovery_does_not_assume_no_contact",
+        "admission_reserves_room_for_its_eventual_atomic_state_commit",
+        "batch_admission_sync_crossing_deadline_never_dispatches_and_reopens_pending",
+        "batch_dispatch_filters_expired_members_and_counts_durable_admission_queue_time"
+      ],
+      "assertion_counts": [
+        63,
+        63
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_current_journal_tests.rs",
+      "base": {
+        "sha": "819731fe4771dc56d2241f33a31cd8cb14a75e6c",
+        "bytes": 7907,
+        "sha256": "2069aa31be2b225805da69603c0d7f7763d3eac652c498555ff8306ccba1eef0"
+      },
+      "post": {
+        "sha": "c3866666a169c9286a4211646d64aa31b347c476",
+        "bytes": 7956,
+        "sha256": "8a579f9c762d723617d46b0df0a97c3460886920305a14e563d0a38a6e01706c"
+      },
+      "test_names_equal": true,
+      "test_names": [
+        "published_feature_journal_requires_same_current_on_reopen_and_every_read",
+        "published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes",
+        "published_feature_revoked_admission_does_not_create_pending_work"
+      ],
+      "assertion_counts": [
+        21,
+        21
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+      "base": {
+        "sha": "3539e427ed1228ef45de299a98a476d62c3fd192",
+        "bytes": 18425,
+        "sha256": "19fb4754ea607a4301855f5b31c8bc2a3a3ee392d956d9e0eb5069d408be315c"
+      },
+      "post": {
+        "sha": "0e0a42c8ec07be14fd2f1f1f2a5139a64ba1ca00",
+        "bytes": 18438,
+        "sha256": "a2c62a0e3aabecd7c46d0fee1d91e3cf74abc9eab7d08b3fd121df165b69abd4"
+      },
+      "test_names_equal": true,
+      "test_names": [
+        "private_socket_pages_acknowledges_and_reopens_exact_original_operation",
+        "stale_generation_changed_content_and_oversized_input_do_not_mutate_owner",
+        "uncertain_dispatch_cancels_and_reads_original_without_second_execution",
+        "simultaneous_steps_compare_predecessors_inside_one_owner",
+        "typed_generation_bootstrap_does_not_implicitly_expose_control",
+        "typed_operation_with_same_derived_id_cannot_impersonate_control_intent",
+        "pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback"
+      ],
+      "assertion_counts": [
+        66,
+        66
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_test_support.rs",
+      "base": {
+        "sha": "4fbae00ccbfe232df2672a3b00bc04beca677cba",
+        "bytes": 17250,
+        "sha256": "83c1150d0960f92fe70fc3235822ae2855a588d974e72c954ecdeeb8c997a1fc"
+      },
+      "post": {
+        "sha": "110912f493316afe4c3f5836358b707152ae7cbd",
+        "bytes": 17190,
+        "sha256": "d8dc3527dfceb9c9044c39580126051bd36f98a5d50bd70d9b279a43357d3053"
+      },
+      "test_names_equal": true,
+      "test_names": [],
+      "assertion_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_tests.rs",
+      "base": {
+        "sha": "d31d0788b1aeb84171cec763693b972cd360ae8c",
+        "bytes": 7753,
+        "sha256": "45456c2217dac875e0cfdd5e4a4dac8af1c1abf76b6c69d0489ff9f99ea18e5f"
+      },
+      "post": {
+        "sha": "0897fd2d97c8ede8fdad9705bfc17aa2e0c10871",
+        "bytes": 7819,
+        "sha256": "b20947dd93040bbfe60236ed8ebeb459c9d8ebbff4e98834379dadbcb38f5c30"
+      },
+      "test_names_equal": true,
+      "test_names": [
+        "real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome",
+        "fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation"
+      ],
+      "assertion_counts": [
+        26,
+        26
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_credit_tests.rs",
+      "base": {
+        "sha": "e311709460ab84d929213ed5532ba9d471edd04f",
+        "bytes": 8484,
+        "sha256": "a84ca0e67183e7e24548f146476c55741bac49f98ef79bd294fd1288555583b8"
+      },
+      "post": {
+        "sha": "ec89e501a471bfb5c42640e026c3feb7b01c00d4",
+        "bytes": 8523,
+        "sha256": "a721f83380042ea90f34a91aed78a92dc289f9a42a3daf183e67f03b6ebce980"
+      },
+      "test_names_equal": true,
+      "test_names": [
+        "actor_terminal_credit_recovers_partial_commit_without_executing_again",
+        "actor_terminal_credit_rejects_stale_owner_cut_before_both_appends"
+      ],
+      "assertion_counts": [
+        22,
+        22
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "topic": "CellOwnerJournalV1",
+      "details": "The new test-module-only method delegates to the existing journal_bytes on the original lock-owning file. On successful read it restores the prior cursor. It does not clone, reopen, unlock, replace data or bypass CURRENT checks. The existing CellGenerationJournalV2 helper has the same method name on a different type and is not a duplicate inherent method."
+    },
+    {
+      "topic": "Original byte domain",
+      "details": "Actual cell_generation_current_tests.rs::Files::bytes reads only the journal path. Replacing these hot reads with owner.locked_bytes_for_test preserves that exact full byte domain; it does not silently drop a witness comparison. The final reopened-owner read now occurs after its last use and drop."
+    },
+    {
+      "topic": "Ledger and witness",
+      "details": "ledger_bytes(&mut LedgerWriter) uses the already available qualification_file_bytes method. It reads both original live files under an exclusive mutable borrow and restores their cursors. The existing method rejects unsupported backends, zero/over-8MiB bounds, oversized content and read/restore errors. The candidate adds no feature or production API and does not substitute records, hashes, metadata or empty bytes for full bytes."
+    },
+    {
+      "topic": "Shutdown placement",
+      "details": "The two generation-journal baseline/readback pairs move across the existing host shutdown and drop only. The original service 85a81e56 returns on host cancellation without durable Drain; explicit service retirement is separate. Control's existing Serving.finish waits for the original control server and then the original RuntimeTasks shutdown. No new lifecycle, reconnection, retry or retirement request is added."
+    },
+    {
+      "topic": "Runtime state assertions",
+      "details": "Original calls-count assertions remain before shutdown; full journal/ledger/witness equalities, append dispositions, signed stale-cut errors, original cold reopening and original actor behavior remain. The modified six files retain all 26 detected test-method names and their existing assertion macro counts (63/21/66/0/26/22). This syntactic count is only corroboration of the inspected actual changes, not execution coverage."
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+      "git_blob_sha": "2582fe8da1e64d63adca463f21337316ba560cf6",
+      "bytes": 8533,
+      "sha256": "c294eed8cddfa256218f6d3d9efd2a137810cd7fdc3cc5f95ee795055aded95d"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "git_blob_sha": "0db16e687c9c04862fecd15b21321ea94dd929e5",
+      "bytes": 8346,
+      "sha256": "a2bf94c1e26ce96e61fb33dc359a95e6ddfb6237299666955791dfb6bcae4e6f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "git_blob_sha": "85a81e56298275e41082fc2927fa818cb91ac4f6",
+      "bytes": 14671,
+      "sha256": "f41b8d52fa819d3e47191f9167f5536bd74fcbdeac1f438c6e4ca61061d0ca59"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "git_blob_sha": "5533c2a59c0fb70b5ce7435f1a96d9e496b5b875",
+      "bytes": 12808,
+      "sha256": "42675d790d00256a42d1d5b0bb4c36b2e8e6557d85988b63b7953c9fbb9d46a5"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "git_blob_sha": "af3990dfed96acafa7ea8a874c3d416c80a730c4",
+      "bytes": 50534,
+      "sha256": "bd2dccb81b16ff6dd78b439e95259801a6441a78565ff00ada5c2eab1f972e25"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_lock.rs",
+      "git_blob_sha": "e37cc330a1644e6b5877bd86b926fb2329f90b67",
+      "bytes": 2553,
+      "sha256": "6642777340e2d947ceaf7064248bfd930fec004770ff5b5cb3a47eb483858239"
+    }
+  ],
+  "limits": [
+    "The existing neuron journal_bytes helper panics on a read error before its subsequent restore. The candidate reuses this existing test-only behavior; the inspected production ledger helper separately restores on error. Neither should be described as a new infallible observation API.",
+    "Seven additional hot generation-journal Windows cases listed by the author remain OPEN and are not resolved by this six-file candidate.",
+    "The old observed Windows failure source is not a successful test of these new postimages. Cross-platform compilation, format and runtime success require the exact future CI."
+  ],
+  "execution": {
+    "format": "NOT_RUN",
+    "rust_compile": "NOT_RUN",
+    "windows_tests": "NOT_RUN",
+    "linux_native": "NOT_RUN",
+    "source_guards": "NOT_RUN"
+  }
+}

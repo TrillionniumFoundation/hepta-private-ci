@@ -1,0 +1,84 @@
+2026-11-12T17:33:58.5778000Z error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root
+2026-11-12T17:33:58.5780540Z    --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:192:32
+2026-11-12T17:33:58.5782490Z     |
+2026-11-12T17:33:58.5784420Z 192 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {
+2026-11-12T17:33:58.5787090Z     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root
+2026-11-12T17:33:58.5788940Z     |
+2026-11-12T17:33:58.5790690Z note: found an item that was configured out
+2026-11-12T17:33:58.5792660Z    --> hepta-agentd/src/lib.rs:881:34
+2026-11-12T17:33:58.5794150Z     |
+2026-11-12T17:33:58.5796000Z 880 | #[cfg(target_os = "linux")]
+2026-11-12T17:33:58.5813300Z     |       ------------------- the item is gated behind the `linux` feature
+2026-11-12T17:33:58.5815880Z 881 | pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
+2026-11-12T17:33:58.5818260Z     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T17:33:58.5836040Z 
+2026-11-12T17:33:58.5840040Z error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root
+2026-11-12T17:33:58.5845030Z    --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:193:19
+2026-11-12T17:33:58.5868930Z     |
+2026-11-12T17:33:58.5877260Z 193 |         Ok(crate::OriginalCircuitRetainedArtifactCheckpointV1 {
+2026-11-12T17:33:58.5980680Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root
+2026-11-12T17:33:58.5982860Z     |
+2026-11-12T17:33:58.5984730Z note: found an item that was configured out
+2026-11-12T17:33:58.5989590Z    --> hepta-agentd/src/lib.rs:881:34
+2026-11-12T17:33:58.5990470Z     |
+2026-11-12T17:33:58.5991300Z 880 | #[cfg(target_os = "linux")]
+2026-11-12T17:33:58.5992180Z     |       ------------------- the item is gated behind the `linux` feature
+2026-11-12T17:33:58.5993550Z 881 | pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
+2026-11-12T17:33:58.5994820Z     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T17:33:58.5995550Z 
+2026-11-12T17:33:58.5996300Z error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root
+2026-11-12T17:33:58.5999340Z    --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:202:32
+2026-11-12T17:33:58.6000410Z     |
+2026-11-12T17:33:58.6001280Z 202 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {
+2026-11-12T17:33:58.6002600Z     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root
+2026-11-12T17:33:58.6003500Z     |
+2026-11-12T17:33:58.6004460Z note: found an item that was configured out
+2026-11-12T17:33:58.6005270Z    --> hepta-agentd/src/lib.rs:891:34
+2026-11-12T17:33:58.6005920Z     |
+2026-11-12T17:33:58.6006390Z 890 | #[cfg(target_os = "linux")]
+2026-11-12T17:33:58.6007230Z     |       ------------------- the item is gated behind the `linux` feature
+2026-11-12T17:33:58.6009050Z 891 | pub use circuit_feature_current::OriginalCircuitRetainedPublicationSelectionV1;
+2026-11-12T17:33:58.6010470Z     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T17:33:58.6011130Z 
+2026-11-12T17:33:58.6012130Z error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root
+2026-11-12T17:33:58.6014220Z    --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:208:19
+2026-11-12T17:33:58.6015190Z     |
+2026-11-12T17:33:58.6015950Z 208 |         Ok(crate::OriginalCircuitRetainedPublicationSelectionV1 {
+2026-11-12T17:33:58.6017080Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root
+2026-11-12T17:33:58.6019140Z     |
+2026-11-12T17:33:58.6019810Z note: found an item that was configured out
+2026-11-12T17:33:58.6020730Z    --> hepta-agentd/src/lib.rs:891:34
+2026-11-12T17:33:58.6021370Z     |
+2026-11-12T17:33:58.6021850Z 890 | #[cfg(target_os = "linux")]
+2026-11-12T17:33:58.6022680Z     |       ------------------- the item is gated behind the `linux` feature
+2026-11-12T17:33:58.6024070Z 891 | pub use circuit_feature_current::OriginalCircuitRetainedPublicationSelectionV1;
+2026-11-12T17:33:58.6025500Z     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T17:33:58.6026130Z 
+2026-11-12T17:33:58.6026910Z error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root
+2026-11-12T17:33:58.6029170Z    --> hepta-agentd/src/neuron_generation_update_test_support.rs:342:32
+2026-11-12T17:33:58.6030130Z     |
+2026-11-12T17:33:58.6031000Z 342 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {
+2026-11-12T17:33:58.6032350Z     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root
+2026-11-12T17:33:58.6033280Z     |
+2026-11-12T17:33:58.6045920Z note: found an item that was configured out
+2026-11-12T17:33:58.6046590Z    --> hepta-agentd/src/lib.rs:891:34
+2026-11-12T17:33:58.6047050Z     |
+2026-11-12T17:33:58.6047360Z 890 | #[cfg(target_os = "linux")]
+2026-11-12T17:33:58.6047970Z     |       ------------------- the item is gated behind the `linux` feature
+2026-11-12T17:33:58.6049040Z 891 | pub use circuit_feature_current::OriginalCircuitRetainedPublicationSelectionV1;
+2026-11-12T17:33:58.6049950Z     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T17:33:58.6050510Z 
+2026-11-12T17:33:58.6051260Z error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root
+2026-11-12T17:33:58.6052650Z    --> hepta-agentd/src/neuron_generation_update_test_support.rs:349:32
+2026-11-12T17:33:58.6053370Z     |
+2026-11-12T17:33:58.6053980Z 349 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {
+2026-11-12T17:33:58.6054900Z     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root
+2026-11-12T17:33:58.6055550Z     |
+2026-11-12T17:33:58.6055900Z note: found an item that was configured out
+2026-11-12T17:33:58.6056450Z    --> hepta-agentd/src/lib.rs:881:34
+2026-11-12T17:33:58.6057020Z     |
+2026-11-12T17:33:58.6058030Z 880 | #[cfg(target_os = "linux")]
+2026-11-12T17:33:58.6058640Z     |       ------------------- the item is gated behind the `linux` feature
+2026-11-12T17:33:58.6060000Z 881 | pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
+2026-11-12T17:33:58.6061420Z     |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T17:33:58.6061990Z 
