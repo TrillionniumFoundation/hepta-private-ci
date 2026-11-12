@@ -27,7 +27,9 @@ impl AgentdConfig {
                 "original Source close owner was already installed".into(),
             ));
         }
-        self.original_source_close = Some(OriginalCircuitSourceCloseV1::retain(source));
+        self.original_source_close = Some(
+            OriginalCircuitSourceCloseV1::retain_original_source_close(source),
+        );
         Ok(self)
     }
 

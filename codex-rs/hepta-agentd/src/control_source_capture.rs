@@ -21,7 +21,7 @@ pub(super) fn original_control_join_v1() -> (OriginalControlCompletionV1, Origin
 }
 
 impl OriginalControlCompletionV1 {
-    pub(super) fn complete(self) -> Result<(), AgentdError> {
+    pub(super) fn acknowledge_original_control_completion(self) -> Result<(), AgentdError> {
         self.0.send(()).map_err(|_| {
             AgentdError::Protocol("original control join receiver was released".into())
         })

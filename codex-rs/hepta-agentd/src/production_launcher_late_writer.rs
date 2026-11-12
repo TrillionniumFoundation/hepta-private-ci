@@ -145,6 +145,7 @@ impl AgentdProductionLaunch {
                 q24_model: model_factory,
                 publication,
                 initial_publication,
+                original_source_capture: None,
                 session_end,
             },
             ordinary,

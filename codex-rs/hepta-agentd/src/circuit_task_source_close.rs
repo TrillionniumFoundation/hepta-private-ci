@@ -21,7 +21,9 @@ pub(crate) struct OriginalCircuitSourceClosedV1 {
 }
 
 impl OriginalCircuitSourceCloseV1 {
-    pub(crate) fn retain<W>(source: Arc<DurableCircuitTaskSourceV1<W>>) -> Self
+    pub(crate) fn retain_original_source_close<W>(
+        source: Arc<DurableCircuitTaskSourceV1<W>>,
+    ) -> Self
     where
         W: AnchorWitnessStore + Send + 'static,
     {
