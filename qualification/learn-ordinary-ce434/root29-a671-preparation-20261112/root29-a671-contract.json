@@ -1,0 +1,1750 @@
+{
+  "schema": "hepta.learn.root29-fixed-source-append-contract.v5",
+  "source_commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+  "state": "PREPARED ONLY; dispatch BLOCKED until this exact a671 main201 result is actually terminal passed. No H invocation or native result is claimed here.",
+  "preceding_runner_blob": "ae520f1a4e73590a4023a946fb9be61706d9bccb",
+  "preceding_contract_blob": "8405a697a9d13475193cdadf818bcaec2b309d0d",
+  "original_contract_blob": "cff41f573eaa1328a1b555edbb3e5d32a2d71286",
+  "original_list_blob": "88664e8ecc545a7fcb14726204eae67b70475565",
+  "runner": {
+    "suggested_filename": "root29-a671-runner.py",
+    "sha": "4965822f1d0d65badd007a454ff1f1dc563a2429",
+    "bytes": 35031,
+    "sha256": "f8f23aee9abe5bae7c150e72ddd57751436f8e08831004260b3a837a6c86e9dd",
+    "full_readback_equal": true,
+    "python_syntax_execution_performed": false
+  },
+  "parent_list": {
+    "suggested_filename": "root29-a671-parents.json",
+    "sha": "ca34ea80fbc61aee41eebf7b9a996e95b5daa518",
+    "bytes": 4918,
+    "sha256": "403bcf8824c8eada78194415e91b9c020ba674ac474383b6914610b20223cb87",
+    "full_readback_equal": true,
+    "count": 29,
+    "original_order_and_names_unchanged": true
+  },
+  "original_CI": {
+    "workflow": {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+      "exact_original_parent_count": 29
+    },
+    "ci_pins": [
+      {
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+        "unchanged": true,
+        "current_a671_blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+        "current_blob_unchanged": true
+      },
+      {
+        "path": "justfile",
+        "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "unchanged": true,
+        "current_a671_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "current_blob_unchanged": true
+      },
+      {
+        "path": "scripts/hepta_cell_test_helpers.py",
+        "blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+        "unchanged": true,
+        "current_a671_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+        "current_blob_unchanged": true
+      },
+      {
+        "path": "scripts/hepta_ci_exec.py",
+        "blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "unchanged": true,
+        "current_a671_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "current_blob_unchanged": true
+      },
+      {
+        "path": "scripts/hepta_ci_junit.py",
+        "blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+        "unchanged": true,
+        "current_a671_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+        "current_blob_unchanged": true
+      },
+      {
+        "path": "scripts/run-nextest.py",
+        "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+        "unchanged": true,
+        "current_a671_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+        "current_blob_unchanged": true
+      },
+      {
+        "path": "scripts/hepta_ci_v8.py",
+        "blob": "088b737c0cca7386161e06b254c794bf972380ad",
+        "unchanged": true,
+        "current_a671_blob": "088b737c0cca7386161e06b254c794bf972380ad",
+        "current_blob_unchanged": true
+      },
+      {
+        "path": "codex-rs/.config/nextest.toml",
+        "blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+        "unchanged": true,
+        "current_a671_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+        "current_blob_unchanged": true
+      }
+    ],
+    "all_eight_actual_a671_blobs_equal_original": true
+  },
+  "source_comparison": {
+    "base": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "current": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "current_agentd_tree": "09414ae2522657e19528088ec3de2d2d91e0e01b",
+    "all_trees_non_truncated": true,
+    "fixture_and_transitive_records": 38,
+    "module_records": 19,
+    "complete_records": 57,
+    "unique_paths": 53,
+    "pins": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+        "original_441_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+        "C7_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+        "FDE_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+        "unchanged": true,
+        "a671_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff_tests.rs",
+        "original_441_blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+        "C7_blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+        "FDE_blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+        "unchanged": true,
+        "a671_blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_service_root_tests.rs",
+        "original_441_blob": "e0cf7800c256b260256dbbe9433b5165b56f8093",
+        "C7_blob": "e0cf7800c256b260256dbbe9433b5165b56f8093",
+        "FDE_blob": "e0cf7800c256b260256dbbe9433b5165b56f8093",
+        "unchanged": true,
+        "a671_blob": "e0cf7800c256b260256dbbe9433b5165b56f8093",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_root_tests.rs",
+        "original_441_blob": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+        "C7_blob": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+        "FDE_blob": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+        "unchanged": true,
+        "a671_blob": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+        "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+        "C7_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+        "FDE_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+        "unchanged": true,
+        "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_checkpoint_expiry_tests.rs",
+        "original_441_blob": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+        "C7_blob": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+        "FDE_blob": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+        "unchanged": true,
+        "a671_blob": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_evaluation_tests.rs",
+        "original_441_blob": "fbe96b2bff6c10f4eec173aee547cf88fa6494ad",
+        "C7_blob": "fbe96b2bff6c10f4eec173aee547cf88fa6494ad",
+        "FDE_blob": "fbe96b2bff6c10f4eec173aee547cf88fa6494ad",
+        "unchanged": true,
+        "a671_blob": "fbe96b2bff6c10f4eec173aee547cf88fa6494ad",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+        "original_441_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+        "C7_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+        "FDE_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+        "unchanged": true,
+        "a671_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs",
+        "original_441_blob": "eef9ad021ea4e4b8efe0d1c7c1f348444f295ab3",
+        "C7_blob": "eef9ad021ea4e4b8efe0d1c7c1f348444f295ab3",
+        "FDE_blob": "eef9ad021ea4e4b8efe0d1c7c1f348444f295ab3",
+        "unchanged": true,
+        "a671_blob": "eef9ad021ea4e4b8efe0d1c7c1f348444f295ab3",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+        "original_441_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+        "C7_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+        "FDE_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+        "unchanged": false,
+        "change_review": "Only explicit AuthorityPosture import; six case names, attributes and bodies unchanged.",
+        "a671_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_support_tests.rs",
+        "original_441_blob": "dc183494a30a3d8c5d99171d7c8f870e2241927d",
+        "C7_blob": "dc183494a30a3d8c5d99171d7c8f870e2241927d",
+        "FDE_blob": "dc183494a30a3d8c5d99171d7c8f870e2241927d",
+        "unchanged": true,
+        "a671_blob": "dc183494a30a3d8c5d99171d7c8f870e2241927d",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_metadata_tests.rs",
+        "original_441_blob": "6d9a3c2fc80e15fc372930ccd8229d565aa365c1",
+        "C7_blob": "6d9a3c2fc80e15fc372930ccd8229d565aa365c1",
+        "FDE_blob": "6d9a3c2fc80e15fc372930ccd8229d565aa365c1",
+        "unchanged": true,
+        "a671_blob": "6d9a3c2fc80e15fc372930ccd8229d565aa365c1",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs",
+        "original_441_blob": "af2a90caddcc4ef972d9af8434e963e503123a06",
+        "C7_blob": "af2a90caddcc4ef972d9af8434e963e503123a06",
+        "FDE_blob": "dd031f845a02cbb94f250b9566c6b66ee6816c1d",
+        "unchanged": false,
+        "change_review": "cfg(test) helper moved under private service; import and three result type paths rebound, actual request/response/pin-check body unchanged.",
+        "a671_blob": "dd031f845a02cbb94f250b9566c6b66ee6816c1d",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_service_root_support.rs",
+        "original_441_blob": "ff211a8cac92d046657a8c58b13c3ee842920c1d",
+        "C7_blob": "ff211a8cac92d046657a8c58b13c3ee842920c1d",
+        "FDE_blob": "ff211a8cac92d046657a8c58b13c3ee842920c1d",
+        "unchanged": true,
+        "a671_blob": "ff211a8cac92d046657a8c58b13c3ee842920c1d",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_resident_model_support_tests.rs",
+        "original_441_blob": "74ae0e122ec5264cf3c858b31bb802e93a45d138",
+        "C7_blob": "74ae0e122ec5264cf3c858b31bb802e93a45d138",
+        "FDE_blob": "74ae0e122ec5264cf3c858b31bb802e93a45d138",
+        "unchanged": true,
+        "a671_blob": "74ae0e122ec5264cf3c858b31bb802e93a45d138",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_root_support_tests.rs",
+        "original_441_blob": "3966455f65c97dfb71749e85a497cb6336e555e4",
+        "C7_blob": "3966455f65c97dfb71749e85a497cb6336e555e4",
+        "FDE_blob": "3966455f65c97dfb71749e85a497cb6336e555e4",
+        "unchanged": true,
+        "a671_blob": "3966455f65c97dfb71749e85a497cb6336e555e4",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "original_441_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "C7_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "FDE_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "unchanged": true,
+        "a671_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+        "original_441_blob": "3f136713030d875865cc2bfb68e7f56a49eff471",
+        "C7_blob": "3f136713030d875865cc2bfb68e7f56a49eff471",
+        "FDE_blob": "3f136713030d875865cc2bfb68e7f56a49eff471",
+        "unchanged": true,
+        "a671_blob": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+        "same_as_FDE": false,
+        "current_comparison_status": "current fixed postimage read in full",
+        "current_change_review": "The current support takes one existing admission in ready_with_profile, then delegates to ready_with_admission. Its original body below model creation is retained, so provider preregistration can use that same admission. This is the earlier Root original-source-envelope repair, not a new Root29 edit."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+        "original_441_blob": "468f8f6839da381cd7e94791c09b8d3c4dbea1ca",
+        "C7_blob": "468f8f6839da381cd7e94791c09b8d3c4dbea1ca",
+        "FDE_blob": "468f8f6839da381cd7e94791c09b8d3c4dbea1ca",
+        "unchanged": true,
+        "a671_blob": "468f8f6839da381cd7e94791c09b8d3c4dbea1ca",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+        "original_441_blob": "4afd556d729875e5e9e1a415535118ce26714266",
+        "C7_blob": "4afd556d729875e5e9e1a415535118ce26714266",
+        "FDE_blob": "4afd556d729875e5e9e1a415535118ce26714266",
+        "unchanged": true,
+        "a671_blob": "4afd556d729875e5e9e1a415535118ce26714266",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+        "original_441_blob": "2e18e74b68c39313a5f4be9417208a9e28cd89a9",
+        "C7_blob": "2e18e74b68c39313a5f4be9417208a9e28cd89a9",
+        "FDE_blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+        "unchanged": false,
+        "change_review": "Experience/Dataset signers read from original command_config clones of the same Credentials, verified against original material support; no new signer.",
+        "a671_blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+        "original_441_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+        "C7_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+        "FDE_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+        "unchanged": true,
+        "a671_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+        "original_441_blob": "b2255aca51d8262e2cf10131e6496947578cd7d9",
+        "C7_blob": "b2255aca51d8262e2cf10131e6496947578cd7d9",
+        "FDE_blob": "b2255aca51d8262e2cf10131e6496947578cd7d9",
+        "unchanged": true,
+        "a671_blob": "b2255aca51d8262e2cf10131e6496947578cd7d9",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+        "original_441_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+        "C7_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+        "FDE_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+        "unchanged": true,
+        "a671_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs",
+        "original_441_blob": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+        "C7_blob": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+        "FDE_blob": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+        "unchanged": true,
+        "a671_blob": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication_support_tests.rs",
+        "original_441_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "C7_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "FDE_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "unchanged": true,
+        "a671_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+        "original_441_blob": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+        "C7_blob": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+        "FDE_blob": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+        "unchanged": true,
+        "a671_blob": "c46beab25b849632a6b5dd37abd05c7ee2fd6181",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_task_support_tests.rs",
+        "original_441_blob": "f7d91db074584423b57ff6f8e2cc057f89791341",
+        "C7_blob": "f7d91db074584423b57ff6f8e2cc057f89791341",
+        "FDE_blob": "f7d91db074584423b57ff6f8e2cc057f89791341",
+        "unchanged": true,
+        "a671_blob": "f7d91db074584423b57ff6f8e2cc057f89791341",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+        "original_441_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "C7_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "FDE_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "unchanged": true,
+        "a671_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+        "original_441_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "C7_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "FDE_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "unchanged": true,
+        "a671_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+        "original_441_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+        "C7_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+        "FDE_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+        "unchanged": true,
+        "a671_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+        "original_441_blob": "2a55f1171c4e23f7f995a8d4f54ec015df1ecbcc",
+        "C7_blob": "2a55f1171c4e23f7f995a8d4f54ec015df1ecbcc",
+        "FDE_blob": "2a55f1171c4e23f7f995a8d4f54ec015df1ecbcc",
+        "unchanged": true,
+        "a671_blob": "2a55f1171c4e23f7f995a8d4f54ec015df1ecbcc",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_material_support_tests.rs",
+        "original_441_blob": "e6971b94517b6e68d3edd0f48dcdd2a34df89174",
+        "C7_blob": "e6971b94517b6e68d3edd0f48dcdd2a34df89174",
+        "FDE_blob": "e6971b94517b6e68d3edd0f48dcdd2a34df89174",
+        "unchanged": true,
+        "a671_blob": "e6971b94517b6e68d3edd0f48dcdd2a34df89174",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_initial_test_support.rs",
+        "original_441_blob": "3d8040204911925a9c847bb4bbae2fa52b059214",
+        "C7_blob": "3d8040204911925a9c847bb4bbae2fa52b059214",
+        "FDE_blob": "3d8040204911925a9c847bb4bbae2fa52b059214",
+        "unchanged": true,
+        "a671_blob": "3d8040204911925a9c847bb4bbae2fa52b059214",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs",
+        "original_441_blob": "24b7907d7bbd635352da19503e78aa71de710c64",
+        "C7_blob": "24b7907d7bbd635352da19503e78aa71de710c64",
+        "FDE_blob": "24b7907d7bbd635352da19503e78aa71de710c64",
+        "unchanged": true,
+        "a671_blob": "24b7907d7bbd635352da19503e78aa71de710c64",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_artifacts.rs",
+        "original_441_blob": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+        "C7_blob": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+        "FDE_blob": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+        "unchanged": true,
+        "a671_blob": "26a56dfa61d3184adb061aca22496094eae9a8bf",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_test_store.rs",
+        "original_441_blob": "f086e8d54f9ae64e6937b4dae5524410075ccb1d",
+        "C7_blob": "f086e8d54f9ae64e6937b4dae5524410075ccb1d",
+        "FDE_blob": "f086e8d54f9ae64e6937b4dae5524410075ccb1d",
+        "unchanged": true,
+        "a671_blob": "f086e8d54f9ae64e6937b4dae5524410075ccb1d",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "original_441_blob": "8de64259fdf7a5d8cdfcee41f7a92bd859f2c217",
+        "C7_blob": "8de64259fdf7a5d8cdfcee41f7a92bd859f2c217",
+        "FDE_blob": "8de64259fdf7a5d8cdfcee41f7a92bd859f2c217",
+        "unchanged": true,
+        "a671_blob": "8de64259fdf7a5d8cdfcee41f7a92bd859f2c217",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "original_441_blob": "3847fb705928cfe116470cc115a56f110513d495",
+        "C7_blob": "3847fb705928cfe116470cc115a56f110513d495",
+        "FDE_blob": "3847fb705928cfe116470cc115a56f110513d495",
+        "unchanged": true,
+        "a671_blob": "3847fb705928cfe116470cc115a56f110513d495",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+        "original_441_blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+        "C7_blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+        "FDE_blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+        "unchanged": true,
+        "a671_blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+        "original_441_blob": "0e76ccfbe2b1bfa9cb48fb876128d2ab0220ae2a",
+        "C7_blob": "0e76ccfbe2b1bfa9cb48fb876128d2ab0220ae2a",
+        "FDE_blob": "0e76ccfbe2b1bfa9cb48fb876128d2ab0220ae2a",
+        "unchanged": true,
+        "a671_blob": "0e76ccfbe2b1bfa9cb48fb876128d2ab0220ae2a",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+        "original_441_blob": "dbf7af0bfc0fef0351aa7f883128d4e7823cea88",
+        "C7_blob": "dbf7af0bfc0fef0351aa7f883128d4e7823cea88",
+        "FDE_blob": "dbf7af0bfc0fef0351aa7f883128d4e7823cea88",
+        "unchanged": true,
+        "a671_blob": "dbf7af0bfc0fef0351aa7f883128d4e7823cea88",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+        "original_441_blob": "3bd185a92a2e44f61634a553f10f5f6dba44c2b1",
+        "C7_blob": "3bd185a92a2e44f61634a553f10f5f6dba44c2b1",
+        "FDE_blob": "3bd185a92a2e44f61634a553f10f5f6dba44c2b1",
+        "unchanged": true,
+        "a671_blob": "3bd185a92a2e44f61634a553f10f5f6dba44c2b1",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "original_441_blob": "2d056831d85260c201a638e57ca1ed63731d3fb5",
+        "C7_blob": "2d056831d85260c201a638e57ca1ed63731d3fb5",
+        "FDE_blob": "a951a3ffee5928c3ccee848033b0d071603d5798",
+        "unchanged": false,
+        "change_review": "Only cfg(test) re-export of existing private Material bootstrap ports; production module stays private.",
+        "a671_blob": "83e76788acc7e65a912d9507a11afb2a6117e5bf",
+        "same_as_FDE": false,
+        "current_comparison_status": "current fixed postimage read in full",
+        "current_change_review": "One public export for existing OriginalCellQ24TrainingBootstrapConfigV2 is added. All preimage lines remain an ordered subsequence; no preimage line is removed."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_tests.rs",
+        "original_441_blob": "fad19dc616d4cbededbb3263e7fe4f5572fcc1b2",
+        "C7_blob": "fad19dc616d4cbededbb3263e7fe4f5572fcc1b2",
+        "FDE_blob": "fad19dc616d4cbededbb3263e7fe4f5572fcc1b2",
+        "unchanged": true,
+        "a671_blob": "fad19dc616d4cbededbb3263e7fe4f5572fcc1b2",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "original_441_blob": "ef238d12a2ad92d805786049525b22ac9b69b52b",
+        "C7_blob": "ef238d12a2ad92d805786049525b22ac9b69b52b",
+        "FDE_blob": "ef238d12a2ad92d805786049525b22ac9b69b52b",
+        "unchanged": true,
+        "a671_blob": "fdc0fe8119ffe832e73e7543be686aecabdf43bf",
+        "same_as_FDE": false,
+        "current_comparison_status": "current fixed postimage read in full",
+        "current_change_review": "Sixteen lines add Linux-gated V2 metadata/config/freeze exports. All preimage lines remain an ordered subsequence; no old module or export line is removed."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+        "original_441_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+        "C7_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+        "FDE_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+        "unchanged": true,
+        "a671_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "original_441_blob": "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6",
+        "C7_blob": "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6",
+        "FDE_blob": "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6",
+        "unchanged": true,
+        "a671_blob": "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "original_441_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "C7_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "FDE_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "unchanged": true,
+        "a671_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication_support_tests.rs",
+        "original_441_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "C7_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "FDE_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "unchanged": true,
+        "a671_blob": "c74ab747fabffd955cbe9aa7ceb043b8f5cf111b",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication_tests.rs",
+        "original_441_blob": "5480c4b27015923727ff55c234cd4a74679f2339",
+        "C7_blob": "5480c4b27015923727ff55c234cd4a74679f2339",
+        "FDE_blob": "5480c4b27015923727ff55c234cd4a74679f2339",
+        "unchanged": true,
+        "a671_blob": "5480c4b27015923727ff55c234cd4a74679f2339",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_next_use_observer_support_tests.rs",
+        "original_441_blob": "6b01cabdbbdc9616f7ca8e6a2e4673be1f756726",
+        "C7_blob": "6b01cabdbbdc9616f7ca8e6a2e4673be1f756726",
+        "FDE_blob": "6b01cabdbbdc9616f7ca8e6a2e4673be1f756726",
+        "unchanged": true,
+        "a671_blob": "6b01cabdbbdc9616f7ca8e6a2e4673be1f756726",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_next_use_observer_tests.rs",
+        "original_441_blob": "1fb9549b0e0a79a339fff8b3627bb4d08ff004e6",
+        "C7_blob": "1fb9549b0e0a79a339fff8b3627bb4d08ff004e6",
+        "FDE_blob": "1fb9549b0e0a79a339fff8b3627bb4d08ff004e6",
+        "unchanged": true,
+        "a671_blob": "1fb9549b0e0a79a339fff8b3627bb4d08ff004e6",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+        "original_441_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "C7_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "FDE_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "unchanged": true,
+        "a671_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+        "original_441_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "C7_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "FDE_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "unchanged": true,
+        "a671_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+        "original_441_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+        "C7_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+        "FDE_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+        "unchanged": true,
+        "a671_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+        "original_441_blob": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+        "C7_blob": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+        "FDE_blob": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+        "unchanged": true,
+        "a671_blob": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+        "same_as_FDE": true,
+        "current_comparison_status": "entire Git blob unchanged from FDE",
+        "current_change_review": null
+      }
+    ],
+    "case_definition_file_changes_from_FDE": 0,
+    "current_case_definitions_equal_FDE": 29,
+    "other_changed_paths": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+        "review": "The current support takes one existing admission in ready_with_profile, then delegates to ready_with_admission. Its original body below model creation is retained, so provider preregistration can use that same admission. This is the earlier Root original-source-envelope repair, not a new Root29 edit."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+        "review": "One public export for existing OriginalCellQ24TrainingBootstrapConfigV2 is added. All preimage lines remain an ordered subsequence; no preimage line is removed."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "review": "Sixteen lines add Linux-gated V2 metadata/config/freeze exports. All preimage lines remain an ordered subsequence; no old module or export line is removed."
+      }
+    ],
+    "current_inventory_scope": {
+      "source_suite_methods": 443,
+      "default_native_cases": 201,
+      "default_native_groups": 43,
+      "root_ignored_parents": 29,
+      "qualification": "The original Root29 list is independently compared to actual a671 CI and case file pins. The broader 443/201 inventory is the separate fixed main request; this script does not run it again or claim it passed."
+    },
+    "no_source_changes_made_by_this_preparation": true
+  },
+  "cases": [
+    {
+      "name": "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+      "sha": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "line": 128,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root registered learning CAS qualification\"]"
+      ],
+      "original_441_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+      "sha": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "line": 210,
+      "attributes": [
+        "#[tokio::test]",
+        "#[ignore = \"explicit actual Root sealed learning handoff and registered CAS qualification\"]"
+      ],
+      "original_441_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+      "sha": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "line": 313,
+      "attributes": [
+        "#[tokio::test]",
+        "#[ignore = \"explicit actual Root scoped learning CAS and UDS qualification\"]"
+      ],
+      "original_441_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+      "sha": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "line": 414,
+      "attributes": [
+        "#[tokio::test]",
+        "#[ignore = \"explicit actual Root scoped learning handoff and cold CAS qualification\"]"
+      ],
+      "original_441_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "3b4f84ae595d49fdfd5ac48105b3c89e3a244520",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff_tests.rs",
+      "sha": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+      "line": 80,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root to dedicated-UID sealed learning handoff qualification\"]"
+      ],
+      "original_441_blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_service_root_tests.rs",
+      "sha": "e0cf7800c256b260256dbbe9433b5165b56f8093",
+      "line": 59,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "e0cf7800c256b260256dbbe9433b5165b56f8093",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "e0cf7800c256b260256dbbe9433b5165b56f8093",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_root_tests.rs",
+      "sha": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+      "line": 14,
+      "attributes": [
+        "#[tokio::test]",
+        "#[ignore = \"explicit actual-Root external evidence UID 60001 qualification\"]"
+      ],
+      "original_441_blob": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 31,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 113,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 155,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 227,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 289,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 334,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 384,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "line": 408,
+      "attributes": [
+        "#[test]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "a539c9c712494f4137fa38740951f3b5d5300277",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_checkpoint_expiry_tests.rs",
+      "sha": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+      "line": 109,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "b90acee84cc6d0058221348fc03f4df03aa6a850",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_evaluation_tests.rs",
+      "sha": "fbe96b2bff6c10f4eec173aee547cf88fa6494ad",
+      "line": 360,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "fbe96b2bff6c10f4eec173aee547cf88fa6494ad",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "fbe96b2bff6c10f4eec173aee547cf88fa6494ad",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "line": 9,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"requires the original UID-0 issuer fixture\"]"
+      ],
+      "original_441_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "line": 77,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"requires the original UID-0 issuer fixture\"]"
+      ],
+      "original_441_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "line": 111,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"requires the original UID-0 issuer fixture\"]"
+      ],
+      "original_441_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "line": 144,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"requires the original UID-0 issuer fixture\"]"
+      ],
+      "original_441_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "line": 181,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"requires the original UID-0 issuer fixture\"]"
+      ],
+      "original_441_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer_tests.rs",
+      "sha": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "line": 206,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"requires the original UID-0 issuer fixture\"]"
+      ],
+      "original_441_blob": "43810dcec3f16e8cb67f926ff301b2e2a23c30c3",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "e282f95d5d7e9bb02810983eaa35ad5824d95584",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+      "sha": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "line": 24,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+      "sha": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "line": 101,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+      "sha": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "line": 151,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+      "sha": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "line": 249,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+      "sha": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "line": 330,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "current_definition_file_equal_FDE": true
+    },
+    {
+      "name": "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+      "sha": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "line": 457,
+      "attributes": [
+        "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+        "#[ignore = \"explicit actual Root and pre-existing protected bind qualification\"]"
+      ],
+      "original_441_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "definition_name_and_attributes_unchanged": true,
+      "a671_blob": "818208e9d7e68983a8617de9949d1c4326f3f866",
+      "current_definition_file_equal_FDE": true
+    }
+  ],
+  "groups": [
+    {
+      "category": "registration_and_transport",
+      "count": 7,
+      "names": [
+        "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+        "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+        "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+        "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+        "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+        "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+        "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd"
+      ],
+      "claim": "Root file/UDS/pidfd/UID custody and original registration persistence; explicit synthetic checkpoint or pre-signed test evidence; not an ordinary learning run."
+    },
+    {
+      "category": "resident_root_gates",
+      "count": 8,
+      "names": [
+        "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+        "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+        "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+        "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+        "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+        "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+        "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+        "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback"
+      ],
+      "claim": "Actual protected Root checkpoint/grant/lease/one-live-continuation/uncertain/recovery mechanisms over temporary fixture authority."
+    },
+    {
+      "category": "post_cas_expiry",
+      "count": 1,
+      "names": [
+        "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes"
+      ],
+      "claim": "Actual fixture CAS followed by real-clock expiry; persisted bytes remain read-only and next stage is stopped."
+    },
+    {
+      "category": "original_evaluation_checkpoint",
+      "count": 1,
+      "names": [
+        "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature"
+      ],
+      "claim": "Actual original E owner reads real fixture B/retention sources and signed Outcomes; both are Ineligible; fixture credentials/measurement declarations/time remain test inputs."
+    },
+    {
+      "category": "retained_version_issuer",
+      "count": 6,
+      "names": [
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+        "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once"
+      ],
+      "claim": "Actual original same-model Prepared/Artifact/Control/FinalUse/C-factory path with fixture D/T/E and Root response credentials; not changed-model positive adoption."
+    },
+    {
+      "category": "original_model_checkpoint",
+      "count": 6,
+      "names": [
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+        "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate"
+      ],
+      "claim": "Actual SourceBound Training/Candidate and Model journal combined with explicit qualified Evaluation/Product metadata and fixture Root authority; no actual independent positive B/retention or completed C claimed."
+    }
+  ],
+  "source_bound_inputs": {
+    "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "main_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1",
+    "helpers": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/helpers",
+    "target": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+    "generic_runner": {
+      "blob": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+      "sha256": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1",
+      "H_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1/native-runner.py",
+      "source_input_read_in_full": true
+    },
+    "dependency_recovery": {
+      "evidence_commit": "6f0f7f4997b8811daf2249088a87b70fdb42d220",
+      "blob": "fac86c2e14425cba99758bd9952983d06b9d2a49",
+      "sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+      "source_441_is_dependency_provenance_only": true,
+      "original_record_environment_target": "/data/hepta-learn-ce434-runtime-20261112-v1/target",
+      "unchanged_preimage_required": true,
+      "not_relabelled_for_v2": true
+    },
+    "target_creation": {
+      "blob": "344a692e8ccf9cdb3262b1b8404a995d525c6ba2",
+      "sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb",
+      "bytes": 2506,
+      "H_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-e5c7-v2/result.json",
+      "original_source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+      "original_source_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+      "creation_is_provenance_only": true,
+      "creation_source_is_not_tested_source": true,
+      "root_identity": {
+        "device": 2067,
+        "inode": 26345747,
+        "mode": "0o40700",
+        "uid": 1000,
+        "nlink": 3
+      },
+      "target_identity": {
+        "device": 2067,
+        "inode": 26345748,
+        "mode": "0o40700",
+        "uid": 1000,
+        "nlink": 2
+      },
+      "verification": "Stable bounded regular file under original initiating UID, NOFOLLOW/CLOEXEC/NONBLOCK FD, complete before/open/after/path identity, exact SHA256 and old provenance. Separate current lstat/canonical checks for both runtime root and target pin dev/inode/uid/mode. Directory nlink is not treated as constant after build."
+    },
+    "readiness": [
+      "Actual same-a671 main result is terminal passed, executed exact201 with no failed/skipped case and exact original observer coverage.",
+      "Both native_exit_code and collection_exit_code are exact int0, original helper-build/helper-verify steps passed, and focused-native/focused-junit steps match those original exits.",
+      "Actual clean checkout HEAD/tree equals a671 before and after, and again immediately before Root dispatch.",
+      "Original helper --verify-only succeeds before and after for the exact a671 source; full helpers/env.json and manifest bytes remain unchanged.",
+      "The original V8 manifest/recovery retain their original hashes, v1 target provenance and v1 private artifact paths. The newly introduced v2 target proof is independently checked.",
+      "The original main result bytes must remain unchanged throughout; no old source receipt or partial/unknown/failed result may pass."
+    ],
+    "no_old_helper_manifest_relabel": true,
+    "no_automatic_replay": true
+  },
+  "command": {
+    "launch": [
+      "/usr/bin/python3",
+      "-B",
+      "<the exact frozen root29-a671-runner.py>",
+      "vN"
+    ],
+    "attempt_rule": "vN must be a new explicit attempt; both evidence and isolated /run fixture must be new. No automatic replay.",
+    "fixture_base": "/run/hepta-learn-root29-a6717d722804-vN",
+    "evidence_base": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/root-uid-29-a6717d722804-vN",
+    "native_test_argv": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "--run-ignored",
+      "only",
+      "-E",
+      "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes) | test(=authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace) | test(=authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation) | test(=authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect) | test(=authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch) | test(=authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent) | test(=authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel) | test(=authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback) | test(=authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes) | test(=authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes) | test(=authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate)",
+      "--test-threads",
+      "1",
+      "--retries",
+      "0",
+      "--status-level",
+      "pass",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "root_boundary": "sudo -n env -i only around the unchanged original UID0 assertion and original hepta_ci_exec; never sudo the default-user 201 runner or the whole new script.",
+    "original_recorder": {
+      "timeout_seconds": 7200,
+      "minimum_tests": 1,
+      "test_threads": 1,
+      "test_retries": 0
+    },
+    "required_parent_names": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+      "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+      "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+      "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+      "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes",
+      "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate"
+    ],
+    "fresh_junit": "Exclude the prior report by preserving it in this new evidence directory; original collect() enforces source/interval/log-count consistency. Require all29 package+name entries with multiplicity exactly, no failures/errors/skips/retries.",
+    "no_cargo_test": true,
+    "no_helper_build_in_append": true,
+    "no_main201_reexecution": true
+  },
+  "environment": {
+    "origin_table": [
+      {
+        "fields": [
+          "PATH"
+        ],
+        "source": "a671 generic native-runner blobdd7d0f74 prefixes the existing normal-user PATH; the Root wrapper uses only that allowlisted child value."
+      },
+      {
+        "fields": [
+          "SOURCE_SHA",
+          "TESTED_SHA",
+          "HEPTA_CI_LANE"
+        ],
+        "source": "Exact a671/source-head identity required by the original hepta_ci_exec and hepta_ci_junit."
+      },
+      {
+        "fields": [
+          "CARGO_TARGET_DIR",
+          "CARGO_BUILD_JOBS",
+          "CARGO_INCREMENTAL",
+          "CARGO_PROFILE_TEST_DEBUG",
+          "CARGO_PROFILE_DEV_DEBUG",
+          "PYTHONDONTWRITEBYTECODE"
+        ],
+        "source": "Exact current 201-runner constants: owned v2 /data target, 4, 0, 0, 0, 1."
+      },
+      {
+        "fields": [
+          "RUSTY_V8_ARCHIVE",
+          "RUSTY_V8_SRC_BINDING_PATH"
+        ],
+        "source": "Original successful dependency recovery ledger 8db2c096..., original manifest9969b385..., all artifact bytes/size/owner/hash rechecked, no download/copy."
+      },
+      {
+        "fields": [
+          "CARGO_HOME",
+          "RUSTUP_HOME"
+        ],
+        "source": "Original workflow test(root=True): preserve existing explicit variables, else use initiating normal user's Path.home()/.cargo and /.rustup; directories must already exist. Their actual values are recorded at dispatch, not guessed or created by this audit."
+      },
+      {
+        "fields": [
+          "RUSTUP_TOOLCHAIN",
+          "LIBCLANG_PATH",
+          "BINDGEN_EXTRA_CLANG_ARGS"
+        ],
+        "source": "Original workflow allowlist: preserve only existing inherited values if present; never synthesize a toolchain or flag."
+      },
+      {
+        "fields": [
+          "GITHUB_RUN_ID",
+          "GITHUB_RUN_ATTEMPT",
+          "GITHUB_JOB"
+        ],
+        "source": "Original workflow optional CI correlation values if already present; not authority."
+      },
+      {
+        "fields": [
+          "GIT_CONFIG_COUNT",
+          "GIT_CONFIG_KEY_0",
+          "GIT_CONFIG_VALUE_0"
+        ],
+        "source": "Original per-process safe.directory setting for this exact checkout, no global git config write."
+      },
+      {
+        "fields": [
+          "CARGO_BIN_EXE_hepta-joint-propose",
+          "CARGO_BIN_EXE_hepta_joint_propose"
+        ],
+        "source": "Exact same-a671 helpers/env.json after successful original verify-only; keys and values must equal the verified pinned hepta-joint-propose artifact."
+      },
+      {
+        "fields": [
+          "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT",
+          "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE",
+          "HEPTA_CHECKPOINT_TEST_ROOT"
+        ],
+        "source": "Only this invocation's new root-owned source/bind/checkpoints directories."
+      },
+      {
+        "fields": [
+          "TARGET_CREATION proof (not an environment authority)"
+        ],
+        "source": "Actual original v2 creation record344a692e/hashcbd5597a is stable-FD/hash verified separately; its e5c source remains provenance only. Actual runtime-root/target device,inode,uid,mode must still match."
+      }
+    ],
+    "root_allowlist": "\"PATH\", \"SOURCE_SHA\", \"TESTED_SHA\", \"HEPTA_CI_LANE\",\n                 \"GITHUB_RUN_ID\", \"GITHUB_RUN_ATTEMPT\", \"GITHUB_JOB\",\n                 \"PYTHONDONTWRITEBYTECODE\", \"CARGO_INCREMENTAL\", \"CARGO_BUILD_JOBS\",\n                 \"CARGO_PROFILE_TEST_DEBUG\", \"CARGO_PROFILE_DEV_DEBUG\", \"CARGO_TARGET_DIR\",\n                 \"RUSTY_V8_ARCHIVE\", \"RUSTY_V8_SRC_BINDING_PATH\", \"LIBCLANG_PATH\",\n                 \"RUSTUP_TOOLCHAIN\", \"BINDGEN_EXTRA_CLANG_ARGS\"",
+    "HOME_reassigned": false,
+    "root_TMPDIR_inherited": false,
+    "root_CARGO_NET_OFFLINE_extra_not_added": true,
+    "offline_is_enforced_by_original_argv": true,
+    "new_dependencies_or_authority_added": false
+  },
+  "ownership": {
+    "only_restored_paths": [
+      "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+      "<this new Root29 evidence directory>",
+      "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/target/nextest"
+    ],
+    "source": "Exact scoped restore_ownership paths of the original CI workflow; target/evidence/nextest only.",
+    "before_restore": "Verify original dedicated target device/inode and canonical path; nextest output must be its original real directory.",
+    "Cargo_and_Rustup_trees_chowned": false,
+    "global_cache_scan_added": false,
+    "global_permissions_changed": false,
+    "cache_limit": "just test still invokes Cargo, so prebuilt artifacts and identical child environment reduce but cannot prove absence of Cargo/Rustup cache writes or incremental rebuilding. This preparation makes no zero-write claim and never repairs or changes permissions outside the original three scoped paths.",
+    "mount": "Create a fresh root-owned0700 source/bind/checkpoints tree; mount only new source on new bind. Unmount only the same recorded mount id, root device/inode and source device/inode, never force/lazy unmount.",
+    "fixture_bytes_deleted": false,
+    "uncertain_root_command": "Wrapper completion never proves original just-test completion. Before any chown or unmount, read this exclusive invocation's actual original terminal record and require matching source/tree/command, clean original before identity, passed/failed status, finished_at, and actual integer command_exit_code equal to returncode. Missing, unreadable, partial or mismatched records retain owned mount and files, without chown, signal or retry."
+  },
+  "process_scope": {
+    "inherited_source_review": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_service_root_support.rs",
+        "blob": "ff211a8cac92d046657a8c58b13c3ee842920c1d",
+        "finding": "ChildOwner holds only the Child returned by its own setpriv Command::spawn; successful finish waits, Drop conditionally child.kill then wait. UID60001 child executable is the retained current_exe FD; Root pin originates from this test process."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff_tests.rs",
+        "blob": "93565cd5b6078f0710a9240d2b4d528f7520df02",
+        "finding": "Only its own setpriv UID60001 current-test child is spawned; successful path wait_with_output, original anonymous FD and current parent pidfd. No external PID killing. Raw Child has no separate custom kill-on-drop guard."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_root_tests.rs",
+        "blob": "d4be4a6227bed43d40b832e44d207a932e20c1d3",
+        "finding": "Only its own setpriv UID60001 Python child is spawned; pidfd/identity use child.id; successful path releases stdin then wait_with_output. Temporary socket under new TempDir. No external PID killing. Raw Child has no separate custom kill-on-drop guard."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+        "blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+        "finding": "Session.stop cancels its own CancellationToken and waits for its own Tokio JoinHandle, created by tokio::spawn(bootstrap.run). Drop only cancels that token. It is not an OS daemon process handle."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "finding": "runtime_fixture creates new TempDir, FleetRegistry, workspace, identity and state; RuntimeFixture has no Child and no process termination Drop."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+        "blob": "b2255aca51d8262e2cf10131e6496947578cd7d9",
+        "finding": "Owner runtime uses cancellation.child_token and spawn_blocking runtime.block_on; no external process termination."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs",
+        "blob": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+        "finding": "CellQ24FeatureWorkerV1 computes hidden/native Q24 head in-process; no infer helper subprocess in this audited path."
+      },
+      {
+        "path": "scripts/hepta_ci_exec.py",
+        "blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "finding": "Recorder Popen(start_new_session=True) creates this invocation's own process group; timeout/output-limit/error cleanup killpg(process.pid,SIGKILL) targets that newly created group, then waits direct child. It does not enumerate or signal pre-existing daemon/Rust PIDs. Original doc explicitly does not claim cleanup of escaped sessions."
+      }
+    ],
+    "retained_fixture_peer_review_blob": "b560cc074f3fb274578f67bc2bb605f9d53dab12",
+    "wrapper_signal_calls_added": false,
+    "recorder_scope": "The unchanged original recorder may terminate only the new just-test process group it created for this invocation on its original timeout/output failure. No existing daemon or unrelated Rust PID is enumerated or signalled.",
+    "root_fixture_cleanup_scope": "Existing tests only wait/terminate their own spawned fixture children or cancel their own Tokio tasks; reviewed source ownership remains the same apart from explicit compile repairs.",
+    "no_daemon_or_Rust_restart": true
+  },
+  "preserved_actual_terminal_gate": {
+    "original_recorder_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+    "preceding_safety_review_blob": "41e5cf2c20bbbea084d73327a0b374ed6d1068ea",
+    "wrapper_and_original_execution_distinct": true,
+    "terminal_block_byte_identical_to_ae520": true,
+    "before_any_chown_or_unmount": "Require this exclusive invocation's actual root.json matching source/tree/command/clean before identity, passed-or-failed terminal status, finished_at and integer command_exit_code equal to returncode. A returned sudo/Python wrapper alone is insufficient.",
+    "missing_unreadable_partial_or_mismatch": "Remain uncertain; retain owned mount/files; no chown, unmount, process signal or substituted receipt.",
+    "raw_terminal_bytes_compared_before_after_chown": true
+  },
+  "static_preparation_checks": {
+    "blocks": [
+      {
+        "name": "parents",
+        "equal": true
+      },
+      {
+        "name": "CI pins",
+        "equal": true
+      },
+      {
+        "name": "allowlist",
+        "equal": true
+      },
+      {
+        "name": "V8 digests",
+        "equal": true
+      },
+      {
+        "name": "root unmount",
+        "equal": true
+      },
+      {
+        "name": "record-terminal-before-cleanup",
+        "equal": true
+      },
+      {
+        "name": "strict root JUnit and original gates",
+        "equal": true
+      },
+      {
+        "name": "uncertain cleanup",
+        "equal": true
+      },
+      {
+        "name": "test invocation",
+        "equal": true
+      },
+      {
+        "name": "root env",
+        "equal": true
+      }
+    ],
+    "original29Exact": true,
+    "rootSetupOnlyOwnedPrefixChange": true,
+    "exact_reversible_edit_count": 24,
+    "original_runner_reconstructed_from_postimage": true,
+    "old_v1_recovery_target_literal_preserved": true,
+    "new_v2_creation_provenance_separate": true,
+    "all_29_actual_definition_blobs_unchanged": true,
+    "all_eight_CI_blobs_unchanged": true,
+    "main_driver_sha256_verified": true,
+    "target_creation_sha256_verified": true,
+    "main_gate_201_and_int_zero_preserved": true,
+    "no_direct_cargo_test": true,
+    "no_HOME_assignment": true,
+    "no_global_chown": true,
+    "no_wrapper_signal_calls_added": true
+  },
+  "exact_reversible_edits": [
+    {
+      "before": "\"\"\"Prepared FDE-only Root29 append. Not dispatched by the preparing agent.",
+      "after": "\"\"\"Prepared a671-only Root29 append. Not dispatched by the preparing agent.",
+      "count": 1
+    },
+    {
+      "before": "helpers, repeats the 190-case suite, changes HOME, or signals an existing process.",
+      "after": "helpers, repeats the 201-case suite, changes HOME, or signals an existing process.",
+      "count": 1
+    },
+    {
+      "before": "SOURCE = \"fde0086022ab2d877ef7d8aae19e07ad17a8593f\"",
+      "after": "SOURCE = \"a6717d7228045e6cb60532966f06e6e02c4a6abe\"",
+      "count": 1
+    },
+    {
+      "before": "TREE = \"291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17\"",
+      "after": "TREE = \"647b9e78151299c1e7de455eae9c530ca93b28c9\"",
+      "count": 1
+    },
+    {
+      "before": "\"live-owners-full-fde0086022ab-v1\"",
+      "after": "\"live-owners-full-a6717d722804-v1\"",
+      "count": 1
+    },
+    {
+      "before": "TARGET = Path(\"/data/hepta-learn-ce434-runtime-20261112-v1/target\")",
+      "after": "TARGET = Path(\"/data/hepta-learn-ce434-runtime-20261112-v2/target\")\nTARGET_CREATION = EVIDENCE / \"build-root-recovery-e5c7-v2/result.json\"\nTARGET_CREATION_SHA256 = \"cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb\"",
+      "count": 1
+    },
+    {
+      "before": "\"unified-fde0086022ab-validation-v1/native-runner.py\"",
+      "after": "\"unified-a6717d722804-validation-v1/native-runner.py\"",
+      "count": 1
+    },
+    {
+      "before": "NATIVE_DRIVER_SHA256 = \"9cadb7c661f20f8f196ae31aff42717e6e0b3b8bdf6f96d41e1bdd63eabdd43c\"",
+      "after": "NATIVE_DRIVER_SHA256 = \"af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1\"",
+      "count": 1
+    },
+    {
+      "before": "\"Root29 requires the same clean FDE checkout\"",
+      "after": "\"Root29 requires the same clean a671 checkout\"",
+      "count": 1
+    },
+    {
+      "before": "\"original helper verifier did not certify this clean FDE source\"",
+      "after": "\"original helper verifier did not certify this clean a671 source\"",
+      "count": 1
+    },
+    {
+      "before": "and recovery[\"environment\"][\"CARGO_TARGET_DIR\"] == str(TARGET)",
+      "after": "and recovery[\"environment\"][\"CARGO_TARGET_DIR\"]\n            == \"/data/hepta-learn-ce434-runtime-20261112-v1/target\"",
+      "count": 1
+    },
+    {
+      "before": "\"hepta-learn-root29-fde0086022ab-\"",
+      "after": "\"hepta-learn-root29-a6717d722804-\"",
+      "count": 2
+    },
+    {
+      "before": "usage: root29-fde-runner.py vN",
+      "after": "usage: root29-a671-runner.py vN",
+      "count": 1
+    },
+    {
+      "before": "\"root-uid-29-fde0086022ab-\"",
+      "after": "\"root-uid-29-a6717d722804-\"",
+      "count": 1
+    },
+    {
+      "before": "\"frozen original FDE native driver differs\"",
+      "after": "\"frozen original a671 native driver differs\"",
+      "count": 1
+    },
+    {
+      "before": "and main.get(\"native_tests_executed\") == 190",
+      "after": "and main.get(\"native_tests_executed\") == 201",
+      "count": 1
+    },
+    {
+      "before": "\"wait for the original same-SHA full 190-case main run to pass; never overlap its target or JUnit\"",
+      "after": "\"wait for the original same-SHA full 201-case main run to pass; never overlap its target or JUnit\"",
+      "count": 1
+    },
+    {
+      "before": "\"schema\": \"hepta.learn.root29-fde-original-ci-append.v1\"",
+      "after": "\"schema\": \"hepta.learn.root29-a671-original-ci-append.v1\"",
+      "count": 1
+    },
+    {
+      "before": "\"resource_values_and_path_prefix\": \"fixed original FDE native-runner.py 22fd228a5e5f2bb829180628466788e43268ff36\"",
+      "after": "\"resource_values_and_path_prefix\": \"fixed original a671 native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260\"",
+      "count": 1
+    },
+    {
+      "before": "\"helper\": \"same-FDE original helper --verify-only and exact env.json\"",
+      "after": "\"helper\": \"same-a671 original helper --verify-only and exact env.json\"",
+      "count": 1
+    },
+    {
+      "before": "\"same fixed FDE fixture mechanisms only; no ordinary daemon cold-start or adoption claim\"",
+      "after": "\"same fixed a671 fixture mechanisms only; no ordinary daemon cold-start or adoption claim\"",
+      "count": 1
+    },
+    {
+      "before": "ROOT_SETUP = r\"\"\"",
+      "after": "def verify_target_v2():\n    # e5c is immutable creation provenance, not this run's tested source.\n    before = TARGET_CREATION.lstat()\n    require(stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()\n            and before.st_nlink == 1 and before.st_size <= 16_384,\n            \"original target-v2 creation record differs\")\n    fd = os.open(TARGET_CREATION, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)\n    with os.fdopen(fd, \"rb\") as stream:\n        opened = os.fstat(stream.fileno())\n        data = stream.read(16_385)\n        after = os.fstat(stream.fileno())\n    fields = (\"st_dev\", \"st_ino\", \"st_mode\", \"st_nlink\", \"st_uid\", \"st_size\",\n              \"st_mtime_ns\", \"st_ctime_ns\")\n    require(len(data) == before.st_size\n            and all(getattr(before, key) == getattr(opened, key) == getattr(after, key)\n                    == getattr(TARGET_CREATION.lstat(), key) for key in fields),\n            \"original target-v2 creation record changed while reading\")\n    require(digest_bytes(data) == TARGET_CREATION_SHA256,\n            \"original target-v2 creation record hash differs\")\n    created = json.loads(data)\n    require(created[\"state\"] == \"isolated-build-target-created-original-pins-retained\"\n            and created[\"source_sha\"] == created[\"source_after\"]\n            == \"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\"\n            and created[\"source_tree\"] == \"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\"\n            and created[\"source_status_after\"] == \"\"\n            and created[\"uid\"] == os.getuid()\n            and created[\"target\"] == str(TARGET)\n            and created[\"runtime_root\"] == str(TARGET.parent)\n            and created[\"original_manifest_sha256\"] == MANIFEST_SHA256\n            and created[\"original_recovery_sha256\"] == RECOVERY_SHA256,\n            \"original target-v2 creation provenance differs\")\n    actual_identities = {}\n    for path, field in ((TARGET.parent, \"root_identity\"), (TARGET, \"target_identity\")):\n        actual = path.lstat()\n        original = created[field]\n        require(stat.S_ISDIR(actual.st_mode) and path.resolve(strict=True) == path\n                and actual.st_uid == os.getuid() and stat.S_IMODE(actual.st_mode) == 0o700\n                and (actual.st_dev, actual.st_ino, actual.st_uid, oct(actual.st_mode))\n                == (original[\"device\"], original[\"inode\"], original[\"uid\"], original[\"mode\"]),\n                \"original target-v2 directory was replaced\")\n        actual_identities[field] = {\"device\": actual.st_dev, \"inode\": actual.st_ino,\n                                    \"uid\": actual.st_uid, \"mode\": oct(actual.st_mode)}\n    return {\"record_path\": str(TARGET_CREATION), \"record_sha256\": digest_bytes(data),\n            \"creation_source_sha\": created[\"source_sha\"],\n            \"creation_source_tree\": created[\"source_tree\"],\n            \"creation_is_provenance_only\": True, \"tested_source_sha\": SOURCE,\n            \"target\": str(TARGET), \"actual_identities\": actual_identities}\n\n\nROOT_SETUP = r\"\"\"",
+      "count": 1
+    },
+    {
+      "before": "        and target_stat.st_uid == os.getuid(), \"same original owned target required\")\n",
+      "after": "        and target_stat.st_uid == os.getuid(), \"same original owned target required\")\ntarget_creation = verify_target_v2()\n",
+      "count": 1
+    },
+    {
+      "before": "    \"helper_directory\": str(HELPERS), \"target\": str(TARGET),",
+      "after": "    \"helper_directory\": str(HELPERS), \"target\": str(TARGET),\n    \"target_initialization\": target_creation,",
+      "count": 1
+    }
+  ],
+  "diff": {
+    "hunks": 11,
+    "removed": 22,
+    "added": 76,
+    "oldLines": 528,
+    "newLines": 582,
+    "exactFullReconstruction": true,
+    "sha256": "95b54d8702895647290e633996b8b445e88a77386baa58d933329ee8f9ab50f2",
+    "replay": "Apply the exact ordered before/after replacements to original ae520; reverse them in reverse order restores all original bytes. The compact unified diff also reconstructs both complete line streams."
+  },
+  "preparation_validation": {
+    "Git_API_full_readback": true,
+    "original_python_run": false,
+    "Rust_or_native_run": false,
+    "H_dispatched": false,
+    "independent_delta_review": "Requested from the original terminal-cleanup peer; no completed new review claimed in this artifact."
+  },
+  "claims": {
+    "Root29_pass": false,
+    "main201_pass": false,
+    "ordinary_A_B_C_acceptance": 0,
+    "daemon_Root_cold_restart": 0,
+    "production_authority_created": false
+  },
+  "historical_non_pass": {
+    "FDE_main190": "166 passed, 23 failed, 1 timed out. That failed result cannot qualify this a671 append.",
+    "a671_main201": "No terminal result has been consumed by the preparing agent. The runner remains blocked until its original same-source pass gate is satisfied."
+  }
+}
