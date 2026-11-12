@@ -1,6 +1,7 @@
 """Real owner/file boundaries with a stub encoder; no task-benefit claim."""
 
 import copy
+import json
 import os
 import tempfile
 import unittest
@@ -8,10 +9,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from perc1.acquisition import train_head
-from perc1.active_capture import observe, observed_prefix
+from perc1.active_capture import observe, observed_prefix, read_decision
 from perc1.capture_entry import OwnedProducer, model_sha256
 from perc1.owner import Owner
-from perc1.schema import Invalid, sha
+from perc1.schema import Invalid, canonical, sha
 from test_perc1_acquisition import pair
 
 
@@ -180,8 +181,11 @@ class ActiveCaptureTests(unittest.TestCase):
         self.producer = self.make_producer()
         same = self.run_choice("stop", [self.candidate(-1.0)])
         self.assertEqual(same["decision"], stopped["decision"])
+        self.assertEqual(read_decision(self.owner, "stop"), stopped["decision"])
         with self.assertRaises(Invalid):
             self.run_choice("stop")
+        with self.assertRaises(Invalid):
+            self.producer.observe("stop", self.candidate()["request"], self.capture)
         self.assertEqual(self.calls, [])
         self.assertEqual(self.owner.status()["reserved_units"], 1)
 
@@ -216,6 +220,33 @@ class ActiveCaptureTests(unittest.TestCase):
             after_reopen = self.run_choice("unknown")
         self.assertEqual(after_reopen["outcome"], "unknown")
         self.assertEqual(after_reopen["new_attempt_reservations"], 0)
+        self.assertEqual(read_decision(self.owner, "unknown")["selection"]["action"], "ACQUIRE")
+
+    def test_stop_refuses_an_existing_ordinary_capture_token(self):
+        self.owner.execute("ordinary", {}, dispatch=lambda _: {"value": "observed"})
+        before = self.owner.status()
+        with self.assertRaises(Invalid):
+            self.run_choice("ordinary", [self.candidate(-1.0)])
+        self.assertEqual(self.owner.status(), before)
+        self.assertEqual(self.calls, [])
+
+    def test_decision_read_requires_original_head_and_recomputes_choice(self):
+        result = self.run_choice("stop", [self.candidate(-1.0)])
+        head_path = self.owner.root / "active-heads" / (sha(self.head) + ".json")
+        head_bytes = head_path.read_bytes()
+        head_path.write_bytes(head_bytes.replace(b'"cost_value":0.1', b'"cost_value":0.2'))
+        with self.assertRaises(Invalid):
+            read_decision(self.owner, "stop")
+        head_path.write_bytes(head_bytes)
+        self.assertEqual(read_decision(self.owner, "stop"), result["decision"])
+        path = self.owner.root / "active-decisions" / (sha(b"stop") + ".json")
+        altered = json.loads(path.read_bytes())
+        altered["catalog"][0]["features"]["task_goal"] = [1.0]
+        altered["catalog_sha256"] = sha(altered["catalog"])
+        path.write_bytes(canonical(altered))
+        with self.assertRaises(Invalid):
+            read_decision(self.owner, "stop")
+        self.assertEqual(self.calls, [])
 
     def test_prefix_requires_original_owner_receipts_and_retained_latents(self):
         for key, value in (

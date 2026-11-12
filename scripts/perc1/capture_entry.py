@@ -200,6 +200,7 @@ class OwnedProducer:
         Capture returns image bytes, or {image_bytes, exact_text}; exact_text is
         None or {kind, bytes, engine}. It is retained with the image identity.
         """
+        identifier(operation_id)
         exact(request, "source_id representation regions")
         require(
             request["source_id"] in self.grant["source_ids"],
@@ -238,6 +239,17 @@ class OwnedProducer:
             "producer source/model changed",
         )
         require(callable(capture), "configured capture callback required")
+        decision_path = self.owner.root / "active-decisions" / (sha(operation_id.encode()) + ".json")
+        if decision_sha256 is not None or decision_path.exists() or decision_path.is_symlink():
+            from .active_capture import read_decision
+
+            decision = read_decision(self.owner, operation_id)
+            require(
+                decision["selection"]["action"] == "ACQUIRE"
+                and decision["request"] == request
+                and digest(decision_sha256) == sha(decision),
+                "capture conflicts with retained active decision",
+            )
         admitted_request = {"capture": request, "adapter_sha256": self.code_sha256}
         if decision_sha256 is not None:
             require(digest(decision_sha256) != "0" * 64, "empty decision binding")
