@@ -1,0 +1,7 @@
+{
+  "reason": "First h.pty_start returned MCP timeout without an acknowledged session. Reconcile only the byte-identical stored request using the same advertised idempotency key. No new attempt, work path, native gate retry, timeout, deadline or source change. Previous session-list API exposes IDs only and cannot map this key; unrelated sessions are not inspected.",
+  "prepared_at": "2026-11-12 14:58:49 UTC",
+  "byte_identical_request": true,
+  "same_idempotency_key": true,
+  "native_retries": 0
+}

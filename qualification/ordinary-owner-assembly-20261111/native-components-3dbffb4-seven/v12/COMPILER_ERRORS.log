@@ -1,0 +1,40 @@
+error[E0599]: no method named `kind` found for reference `&authority_host_issuer_transport::HostIssuerTransportError` in the current scope
+   --> hepta-contracts/src/authority_root_frontier.rs:248:36
+    |
+248 |                         Some(error.kind()),
+    |                                    ^^^^ method not found in `&authority_host_issuer_transport::HostIssuerTransportError`
+
+error[E0599]: no method named `kind` found for reference `&authority_host_issuer_transport::HostIssuerTransportError` in the current scope
+   --> hepta-contracts/src/authority_root_frontier.rs:262:36
+    |
+262 |                         Some(error.kind()),
+    |                                    ^^^^ method not found in `&authority_host_issuer_transport::HostIssuerTransportError`
+
+error[E0599]: no method named `kind` found for reference `&authority_host_issuer_transport::HostIssuerTransportError` in the current scope
+   --> hepta-contracts/src/authority_root_frontier.rs:272:36
+    |
+272 |                         Some(error.kind()),
+    |                                    ^^^^ method not found in `&authority_host_issuer_transport::HostIssuerTransportError`
+
+error[E0599]: no method named `kind` found for reference `&authority_host_issuer_transport::HostIssuerTransportError` in the current scope
+   --> hepta-contracts/src/authority_root_frontier.rs:283:36
+    |
+283 |                         Some(error.kind()),
+    |                                    ^^^^ method not found in `&authority_host_issuer_transport::HostIssuerTransportError`
+
+error[E0599]: no method named `kind` found for reference `&authority_host_issuer_transport::HostIssuerTransportError` in the current scope
+   --> hepta-contracts/src/authority_root_frontier.rs:303:36
+    |
+303 |                         Some(error.kind()),
+    |                                    ^^^^ method not found in `&authority_host_issuer_transport::HostIssuerTransportError`
+
+error[E0599]: no method named `kind` found for reference `&authority_host_issuer_transport::HostIssuerTransportError` in the current scope
+   --> hepta-contracts/src/authority_root_frontier.rs:322:36
+    |
+322 |                         Some(error.kind()),
+    |                                    ^^^^ method not found in `&authority_host_issuer_transport::HostIssuerTransportError`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `codex-hepta-contracts` (lib) due to 6 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: recipe `fix` failed on line 58 with exit code 101

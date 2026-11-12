@@ -1,0 +1,65 @@
+{
+  "file": {
+    "bytes": 3721,
+    "sha256": "cc1d55e8bf88b28600153782a3c0e7f258cc1f32fc38af4b7b3a0b5d68c24474",
+    "exit_code": 1
+  },
+  "chunks": [
+    {
+      "read": 0,
+      "offset": 0,
+      "next_offset": 1062,
+      "bytes": 1062,
+      "sha256": "2a0ac5ab88c782d421da3558387fc7dc1bca325076a0cd31203d857707a62138",
+      "capture_error": null,
+      "dropped_prefix": false,
+      "state": "running",
+      "output_complete": false
+    },
+    {
+      "read": 1,
+      "offset": 1062,
+      "next_offset": 1062,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "capture_error": null,
+      "dropped_prefix": false,
+      "state": "running",
+      "output_complete": false
+    },
+    {
+      "offset": 1062,
+      "next_offset": 3721,
+      "bytes": 2659,
+      "sha256": "fd6d274df1a55ada2f18a6bb5bd9d80963282a5c8316142ca0e5fd9590df95c7",
+      "output_complete": true,
+      "status": {
+        "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+        "bytes_seen": 3721,
+        "bytes_stored": 3721,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1794495539248,
+        "exit_code": 1,
+        "output_complete": true,
+        "owner_pid": 508534,
+        "pid": 508535,
+        "state": "exited"
+      }
+    }
+  ],
+  "terminal_complete": true,
+  "native_status": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 3721,
+    "bytes_stored": 3721,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794495539248,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 508534,
+    "pid": 508535,
+    "state": "exited"
+  }
+}

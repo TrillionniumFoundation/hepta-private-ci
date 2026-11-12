@@ -1,0 +1,347 @@
+{
+  "schema": "hepta.fixed-source-failure-evidence.v1",
+  "classification": "COMPONENT_QUALIFICATION_NOT_ORDINARY_BUSINESS_ACCEPTANCE",
+  "source_sha": "3dbffb487de65a7c598a92510d081855d8b052dc",
+  "source_tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4",
+  "native_attempt": "ordinary-3dbffb4-seven-final-v12",
+  "status": "failed",
+  "terminal_exit": 1,
+  "terminal_complete": true,
+  "failure": "RuntimeError: fix-seven-crates failed; original execution and raw log retained",
+  "reached_steps": [
+    {
+      "elapsed_seconds": 0.033049788093194366,
+      "exit_code": 0,
+      "log": {
+        "bytes": 47,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/original-rust-idle-preflight.launch.log",
+        "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.815118219004944,
+      "exit_code": 0,
+      "log": {
+        "bytes": 105,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/isolated-clone.launch.log",
+        "sha256": "be6734ef8eaa7a018fdea64981109513c0b52a14399e38b0752f69a2420874d0"
+      },
+      "name": "isolated-clone",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 438.0954257850535,
+      "exit_code": 0,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/fetch-exact-source.launch.log",
+        "sha256": "eb6ba61b74141f261838b22ad29f14c22b46e951babe38492f3f5f69dda5ecd5"
+      },
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.5704383039847016,
+      "exit_code": 0,
+      "log": {
+        "bytes": 193,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/checkout-exact-source.launch.log",
+        "sha256": "9599136551b29691b7df0c3935f6ee8ee28f85e20c6b8f22962098eeb14930a4"
+      },
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.0019035239238291979,
+      "exit_code": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/format-base-ancestry.launch.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 0.4658806079532951,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1504,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/operator-toolchain.launch.log",
+        "sha256": "1ed9505cf4cb814a3c2454300bec0c8435730ee5ba85315644337348151ce164"
+      },
+      "name": "operator-toolchain",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 3.769908546935767,
+      "exit_code": 0,
+      "log": {
+        "bytes": 1322,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/fmt-before.launch.log",
+        "sha256": "926b798fa85ce818e2f77d782193560d796b9b25b75961be9f7f11fe50a5e998"
+      },
+      "name": "fmt-before",
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "elapsed_seconds": 91.32105494802818,
+      "exit_code": 101,
+      "log": {
+        "bytes": 26719,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/fix-seven-crates.launch.log",
+        "sha256": "fda9aff5e4fae6de9c320a4000020c59d40efe40d75da02a72b71381bd463612"
+      },
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "execution_records": [
+    {
+      "name": "operator-toolchain.execution.json",
+      "data": {
+        "after": {
+          "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+          "dirty": false,
+          "parents": [
+            "b4960fe4a0577bd69a5341934bb38cb2715601d8"
+          ],
+          "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+          "dirty": false,
+          "parents": [
+            "b4960fe4a0577bd69a5341934bb38cb2715601d8"
+          ],
+          "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+        },
+        "command": [
+          "/home/qq/.cargo/bin/rustc",
+          "-Vv"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 0.4146734229288995,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T15:06:20.585053+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 196,
+        "log_file": "operator-toolchain.execution.json.8e1df866a1e3487bb35bedaf1934cd3e.log",
+        "log_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "3dbffb487de65a7c598a92510d081855d8b052dc",
+        "started_at": "2026-11-12T15:06:20.168951+00:00",
+        "status": "passed",
+        "tested_sha": "3dbffb487de65a7c598a92510d081855d8b052dc",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/source/codex-rs"
+      }
+    },
+    {
+      "name": "fmt-before.execution.json",
+      "data": {
+        "after": {
+          "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+          "dirty": false,
+          "parents": [
+            "b4960fe4a0577bd69a5341934bb38cb2715601d8"
+          ],
+          "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+          "dirty": false,
+          "parents": [
+            "b4960fe4a0577bd69a5341934bb38cb2715601d8"
+          ],
+          "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+        },
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 3.6909386690240353,
+        "exit_code": 0,
+        "finished_at": "2026-11-12T15:06:24.361750+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 0,
+        "log_file": "fmt-before.execution.json.35c919820146466cbc67b247372f857f.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "3dbffb487de65a7c598a92510d081855d8b052dc",
+        "started_at": "2026-11-12T15:06:20.669615+00:00",
+        "status": "passed",
+        "tested_sha": "3dbffb487de65a7c598a92510d081855d8b052dc",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/source"
+      }
+    },
+    {
+      "name": "fix-seven-crates.execution.json",
+      "data": {
+        "after": {
+          "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+          "dirty": false,
+          "parents": [
+            "b4960fe4a0577bd69a5341934bb38cb2715601d8"
+          ],
+          "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "3dbffb487de65a7c598a92510d081855d8b052dc",
+          "dirty": false,
+          "parents": [
+            "b4960fe4a0577bd69a5341934bb38cb2715601d8"
+          ],
+          "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+        },
+        "command": [
+          "just",
+          "fix",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "-p",
+          "codex-hepta-contracts",
+          "-p",
+          "codex-hepta-neuron",
+          "-p",
+          "codex-hepta-learning-ledger",
+          "-p",
+          "codex-hepta-fleet"
+        ],
+        "command_exit_code": 101,
+        "elapsed_seconds": 91.27595647308044,
+        "exit_code": 101,
+        "finished_at": "2026-11-12T15:07:55.752699+00:00",
+        "job": null,
+        "lane": "source-head",
+        "log_bytes": 25181,
+        "log_file": "fix-seven-crates.execution.json.f8ea1b79579b4436b846e2a16dee1c93.log",
+        "log_sha256": "d446a47ff516fcb0b7282b44746dc2b08ac6efa3a34d23fa67fcc1929d880e3b",
+        "minimum_tests": 0,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 101,
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "source_sha": "3dbffb487de65a7c598a92510d081855d8b052dc",
+        "started_at": "2026-11-12T15:06:24.475933+00:00",
+        "status": "failed",
+        "tested_sha": "3dbffb487de65a7c598a92510d081855d8b052dc",
+        "timed_out": false,
+        "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/source"
+      }
+    }
+  ],
+  "diagnosis": {
+    "crate": "codex-hepta-contracts",
+    "rust_error": "E0599",
+    "actual_error": "HostIssuerTransportError has no method kind",
+    "path": "codex-rs/hepta-contracts/src/authority_root_frontier.rs",
+    "lines": [
+      248,
+      262,
+      272,
+      283,
+      303,
+      322
+    ],
+    "compiler_log": {
+      "bytes": 25181,
+      "sha256": "d446a47ff516fcb0b7282b44746dc2b08ac6efa3a34d23fa67fcc1929d880e3b"
+    }
+  },
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "final_source": {
+    "head": "3dbffb487de65a7c598a92510d081855d8b052dc",
+    "status": "",
+    "tree": "8ad6fd006dbe6b514e5f014e2a12bb50334c08c4"
+  },
+  "maintenance_patch": {
+    "bytes": 0,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-3dbffb4-seven-final-v12/records/maintenance.patch",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_checkers_unchanged": true,
+  "all_reached_launch_execution_and_command_logs_acquired": true,
+  "not_reached": [
+    "fmt-after",
+    "bins-check",
+    "four-QA-entrances",
+    "caller-self-test",
+    "caller-full-verify",
+    "same-source-helper",
+    "ordinary-seven-package-native",
+    "Root17-UID0-native"
+  ],
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_consumer_accepted": false,
+  "physical_daemon_root_restart_accepted": false,
+  "predecessor_results_used": false,
+  "native_retries": 0,
+  "source_repaired_in_this_attempt": false,
+  "main_merged": false
+}
