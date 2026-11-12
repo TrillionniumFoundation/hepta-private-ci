@@ -67,6 +67,7 @@ CALLERS = {
         AGENT + "authority_host_generation_initial_enrollment.rs",
         AGENT + "authority_host_generation_initial_transport.rs",
         AGENT + "root_generation_initial_client.rs", PIN, TRANSPORT,
+        AGENT + "root_generation_initial_source_capture.rs",
     ),
 }
 
