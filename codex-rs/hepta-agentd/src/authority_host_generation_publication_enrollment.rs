@@ -496,6 +496,7 @@ impl HostAuthorityService {
                     selected: Mutex::new(selected),
                     consumer,
                     successor: None,
+                    grant: None,
                 };
                 enrolled.require_profile()?;
                 enrolled.require_history(learning, &scope)?;

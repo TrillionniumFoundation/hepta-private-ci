@@ -43,6 +43,13 @@ impl HostAuthorityService {
                     version,
                     refusal,
                 )?;
+                if version == PublicationVersion::DurableV2 {
+                    enrolled.grant = Some(RegisteredPublicationGrant::enroll(
+                        Arc::clone(&root),
+                        &enrolled.reserved,
+                        mode,
+                    )?);
+                }
                 if let Some(files) = successor {
                     let retained = self.with_learning_profile(
                         config,

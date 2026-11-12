@@ -67,6 +67,10 @@ mod successor;
 use successor::RegisteredSuccessorData;
 pub(crate) use successor::RootCompletedSuccessorDataV1;
 
+#[path = "authority_host_publication_grant_store.rs"]
+mod grant_store;
+use grant_store::RegisteredPublicationGrant;
+
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct PublicationProfile {
@@ -152,6 +156,7 @@ pub(crate) struct RegisteredGenerationPublication {
     selected: Mutex<AgentdSelectedGenerationV1>,
     consumer: RootFinalUseObserverV1,
     successor: Option<RegisteredSuccessorData>,
+    grant: Option<RegisteredPublicationGrant>,
 }
 
 impl RegisteredGenerationPublication {
