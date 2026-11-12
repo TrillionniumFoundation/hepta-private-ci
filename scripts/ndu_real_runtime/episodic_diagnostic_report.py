@@ -11,14 +11,24 @@ import sqlite3
 from collections import Counter
 
 from .episodic_diagnostic_bindings import verify_actor, verify_admission, verify_writer
+from .episodic_diagnostic_protocol import (
+    FOLLOWUP_SCHEMA,
+    hoeffding_lower,
+    selected_v2,
+    selector_version,
+)
 from .episodic_local_worker import verify_returned_generation
 from .episodic_memory import canonical_bytes, digest
 from .episodic_provider_handoff import _pin as pin, _read_regular
 from .episodic_retrieval import verify_read_receipt
 
 
-def selected_text(value):
+def selected_text(value, *, version="v1"):
     """Frozen public full-output parser; it never receives expected labels."""
+    if version == "v2":
+        return selected_v2(value)
+    if version != "v1":
+        raise ValueError("unknown public selector version")
     if not isinstance(value, str):
         return None
     match = re.fullmatch(
@@ -30,6 +40,7 @@ def selected_text(value):
 
 def build_report(output, plan, plan_sha):
     """Every planned row remains; bounds concern missing labels, not confidence."""
+    version = selector_version(plan)
     rows, writers = [], []
     for case in plan["cases"]:
         try:
@@ -165,12 +176,23 @@ def build_report(output, plan, plan_sha):
                         row["model_input_pin"] = pin(model_raw)
                         row["physical_generations"] = 1
                         row["correct"] = (
-                            selected_text(provider["result"].get("text"))
+                            selected_text(
+                                provider["result"].get("text"), version=version
+                            )
                             == case["truth"]
                         )
                         row["selected_text"] = selected_text(
-                            provider["result"].get("text")
+                            provider["result"].get("text"), version=version
                         )
+                        if version == "v2":
+                            row["v1_format_accepted"] = (
+                                selected_text(provider["result"].get("text"))
+                                is not None
+                            )
+                            row["v1_correct"] = (
+                                selected_text(provider["result"].get("text"))
+                                == case["truth"]
+                            )
                         row["prompt_tokens"] = provider["result"].get("prompt_tokens")
                         row["output_tokens"] = len(provider["result"].get("tokens", []))
                         row["provider_usage"] = {
@@ -186,6 +208,8 @@ def build_report(output, plan, plan_sha):
                 row.update(
                     status="EVIDENCE_INVALID", correct=None, physical_generations=None
                 )
+                if version == "v2":
+                    row.update(v1_format_accepted=None, v1_correct=None)
             rows.append(row)
     panels, contrasts = {}, {}
     for arm in plan["arms"]:
@@ -203,6 +227,19 @@ def build_report(output, plan, plan_sha):
                 (successes + len(group) - known) / len(group),
             ],
         }
+        if version == "v2":
+            panels[arm]["v1_descriptive"] = {
+                "scored": known,
+                "missing": len(group) - known,
+                "successes": sum(
+                    row["correct"] is not None and row.get("v1_correct") is True
+                    for row in group
+                ),
+                "format_accepted": sum(
+                    row["correct"] is not None and row.get("v1_format_accepted") is True
+                    for row in group
+                ),
+            }
         if arm == "on_bm25":
             continue
         pairs = [
@@ -231,13 +268,31 @@ def build_report(output, plan, plan_sha):
             "planned_pairs": len(pairs),
             "missing_label_difference_bounds": [lower / len(pairs), upper / len(pairs)],
         }
+        if plan["schema"] == FOLLOWUP_SCHEMA:
+            contrasts[arm]["paired_mean_difference"] = (
+                lower / len(pairs) if lower == upper else None
+            )
+            contrasts[arm]["bonferroni_hoeffding_lower_95"] = hoeffding_lower(
+                lower / len(pairs), len(pairs), family_size=9
+            )
+            if arm == "off":
+                contrasts[arm]["primary_hoeffding_lower_95"] = hoeffding_lower(
+                    lower / len(pairs), len(pairs)
+                )
     return {
-        "schema": "hepta.mem12.controlled-diagnostic-report.v1",
+        **(
+            {"analysis": plan["analysis"], "selector_version": version}
+            if plan["schema"] == FOLLOWUP_SCHEMA
+            else {}
+        ),
+        "schema": "hepta.mem14.controlled-diagnostic-report.v1"
+        if plan["schema"] == FOLLOWUP_SCHEMA
+        else "hepta.mem12.controlled-diagnostic-report.v1",
         "protocol_sha256": plan_sha,
-        "planned_rows": 80,
+        "planned_rows": len(plan["cases"]) * len(plan["arms"]),
         "rows": rows,
         "writer_receipts": writers,
-        "generated_sources": 8,
+        "generated_sources": len(plan["cases"]),
         "shared_task_templates": 1,
         "scored_controlled_rows": sum(row["correct"] is not None for row in rows),
         "panels": panels,
