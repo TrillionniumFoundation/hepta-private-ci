@@ -1,0 +1,334 @@
+{
+  "C_exit_interpretation": "All four C processes exited 1. Three received the intentional capture-only 409 response; tombstone retained native AbortBeforeEffect/canonical-head-changed. The capture Rust cases passed because those are the expected capture and revocation outcomes. No successful inference is claimed.",
+  "C_namespace_isolated": false,
+  "archives": {
+    "continuation02/capture-bbbcc630-02.tar.xz": {
+      "bytes": 48456,
+      "sha256": "f01514d24b24efc457ddda28dec880c5f292293b71ac4b534f4d5403d7b80fe4"
+    },
+    "continuation02/recovery-complete.tar.xz": {
+      "bytes": 228216,
+      "sha256": "80290e8f0be939947a07cc73f63fc95207150f80369bea5bb9f35894a81cd794"
+    },
+    "continuation03/capture-bbbcc630-03.tar.xz": {
+      "bytes": 83100,
+      "sha256": "147bd82bd791c0df8376fc14678a892313de3403884b54be2c176f112917beac"
+    },
+    "continuation03/recovery-complete.tar.xz": {
+      "bytes": 276736,
+      "sha256": "d5fda68d52cc7b75866781520f811e8538d4a8ec022320a0d34677f83fc9bbe8"
+    },
+    "formatter-originals-complete.tar.xz": {
+      "bytes": 26956,
+      "sha256": "8fdb746ca344281d0373d028e8227aa5d87f5900410a4392577f3102617d5e79"
+    },
+    "initial-recovery-complete.tar.xz": {
+      "bytes": 302732,
+      "sha256": "4cb32730561c0f7876dbca3c015048507492ec8cf574195be3aaf3824bd2bbad"
+    },
+    "initial-run-original.tar.xz": {
+      "bytes": 68348,
+      "sha256": "7ccd0c04afabd3faa37a21f8431b3791235e3a1f963bb658cc4e29e729276b8d"
+    },
+    "session-originals.tar.xz": {
+      "bytes": 61484,
+      "sha256": "b8950c34a1d05aff8881eedf7c8287dfb35c63f0c71891086d19e320390c0832"
+    },
+    "terminal-recovery/originals.tar.xz": {
+      "bytes": 19328,
+      "sha256": "903b3fa53d9bad537bb05ca7e696da47a787f05631940e96e2deaa8eb1e088a0"
+    }
+  },
+  "arms": [
+    {
+      "A_exit_code": 0,
+      "A_exit_precedes_C_start": true,
+      "A_pid": 296752,
+      "C_exit_code": 1,
+      "C_namespace_isolated": false,
+      "C_pid": 297201,
+      "arm": "attach",
+      "capture_side_model_generation_count": 0,
+      "gap_seconds": 8.198998469,
+      "listener_window_seconds": 16.431766891,
+      "native_revocation_rejected": false,
+      "nonce_in_http_body": true,
+      "original_native_model_and_provider_counts_remain_null": true,
+      "physical_native_http_count": 1,
+      "process_outcome": "observed failed 409 capture terminal; no successful inference",
+      "request_id": "mem15-bbbcc630-attach-ef0c-v1",
+      "source_read_delta": 4
+    },
+    {
+      "A_exit_code": 0,
+      "A_exit_precedes_C_start": true,
+      "A_pid": 297684,
+      "C_exit_code": 1,
+      "C_namespace_isolated": false,
+      "C_pid": 297743,
+      "arm": "reader-off",
+      "capture_side_model_generation_count": 0,
+      "gap_seconds": 8.114178881,
+      "listener_window_seconds": 16.268825645,
+      "native_revocation_rejected": false,
+      "nonce_in_http_body": false,
+      "original_native_model_and_provider_counts_remain_null": true,
+      "physical_native_http_count": 1,
+      "process_outcome": "observed failed 409 capture terminal; no successful inference",
+      "request_id": "mem15-bbbcc630-reader-off-ef0c-v1",
+      "source_read_delta": 0
+    },
+    {
+      "A_exit_code": 0,
+      "A_exit_precedes_C_start": true,
+      "A_pid": 298228,
+      "C_exit_code": 1,
+      "C_namespace_isolated": false,
+      "C_pid": 298245,
+      "arm": "withhold",
+      "capture_side_model_generation_count": 0,
+      "gap_seconds": 8.157452955,
+      "listener_window_seconds": 16.323056081,
+      "native_revocation_rejected": false,
+      "nonce_in_http_body": false,
+      "original_native_model_and_provider_counts_remain_null": true,
+      "physical_native_http_count": 1,
+      "process_outcome": "observed failed 409 capture terminal; no successful inference",
+      "request_id": "mem15-bbbcc630-withhold-ef0c-v1",
+      "source_read_delta": 4
+    },
+    {
+      "A_exit_code": 0,
+      "A_exit_precedes_C_start": true,
+      "A_pid": 298753,
+      "C_exit_code": 1,
+      "C_namespace_isolated": false,
+      "C_pid": 298785,
+      "arm": "tombstone",
+      "capture_side_model_generation_count": 0,
+      "gap_seconds": 8.132516032,
+      "listener_window_seconds": 120.093767174,
+      "native_revocation_rejected": true,
+      "nonce_in_http_body": null,
+      "original_native_model_and_provider_counts_remain_null": true,
+      "physical_native_http_count": 0,
+      "process_outcome": "native final-use abort before turn; no successful inference",
+      "request_id": "mem15-bbbcc630-tombstone-ef0c-v1",
+      "source_read_delta": 3
+    }
+  ],
+  "artifact_verification": {
+    "bytes": 22564,
+    "sha256": "5c9b6c0af37a8357c89ab937bfe81c0e755afe405219cd6656fdd767fb2363e1"
+  },
+  "capture_side_model_generation_count": 0,
+  "final_format_passed": true,
+  "full_memory_off_demonstrated": false,
+  "independent_process_review": {
+    "bytes": 64730,
+    "checks": 447,
+    "failures": 0,
+    "sha256": "55393a3b83aa00a823284fa8187f9ed2a22bbf5ac7a88d70f96e654164d96706"
+  },
+  "mapping": {
+    "constructed_mapped_request_is_not_a_model_generation_request_that_was_sent": true,
+    "discarded_fields": [],
+    "exact_native_body_utf8_preserved_in_mapped_request_input": true,
+    "native_role_semantics_preserved": false
+  },
+  "native_capture_attempts": [
+    {
+      "attempt": "initial",
+      "exit_code": 1,
+      "job_id": "1a1cf155b58-2564-197e",
+      "original_physical_counts": null,
+      "outer_state": "failed",
+      "reason": "just test --no-run conflicts with injected --no-fail-fast; binaries built, no tests/captures executed"
+    },
+    {
+      "attempt": "continuation02",
+      "capture_tests_executed": 4,
+      "capture_tests_failed": 4,
+      "exit_code": 1,
+      "job_id": "1a1cf2a93ea-2564-19b5",
+      "new_controls_passed": 3,
+      "original_physical_counts": null,
+      "outer_state": "failed",
+      "reason": "worker binary metadata NotFound before A/C; original evidence proves these A/C paths unstarted"
+    },
+    {
+      "attempt": "continuation03",
+      "capture_tests_executed": 4,
+      "capture_tests_failed": 0,
+      "capture_tests_passed": 4,
+      "exit_code": 0,
+      "job_id": "1a1cf45943f-2564-19d9",
+      "new_controls_executed": 0,
+      "outer_state": "succeeded",
+      "reason": "existing underscore metadata aliases supplied through original recipe shell; no source/budget/timeout changes"
+    }
+  ],
+  "native_new_software_controls": {
+    "executed_in": "continuation02",
+    "failed": 0,
+    "not_repeated_in_03": true,
+    "passed": 3
+  },
+  "native_paired_benefit_cohort_executed": false,
+  "observer_authenticated": false,
+  "original_native_null_counts_preserved": true,
+  "original_operation_key": "mem15-native-unstarted-ac-continuation03-bbbcc630-20261112-ef0c-v1",
+  "outer_terminal": {
+    "at_unix_ms": 1794479019260,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1cf45943f-2564-19d9",
+    "launch_nonce": "5fcd2e440c3d618ea0523cdc197a17e4",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 340,
+        "stored": 340
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "physical_native_http_count": 3,
+  "production_adoption": "HOLD",
+  "readable_details": "continuation03/RESULTS.md",
+  "reader_off_vs_withhold": {
+    "differing_top_level_fields": [
+      "client_metadata",
+      "input",
+      "prompt_cache_key"
+    ],
+    "left": {
+      "bytes": 26576,
+      "sha256": "0caa5271bfbda34be46cfd243ef4c782e6d5440c384a3c32312ef0e8b46b4e84"
+    },
+    "normalization_or_dynamic_field_removal": false,
+    "parsed_json_equal": false,
+    "raw_body_equal": false,
+    "right": {
+      "bytes": 26576,
+      "sha256": "1d2040122f59fc4068d0b17b3193d22f329d4b38e384e047575cbfe27bce3089"
+    }
+  },
+  "remaining_gates": "NATIVE_REMAINING_GATES.md",
+  "schema": "hepta.mem15.completed-native-capture-evidence.v1",
+  "scientific_acceptance": "HOLD",
+  "scoped_fix_passed": true,
+  "scored_memory_benefit_episodes": 0,
+  "separate_scored_study": {
+    "BM25_v2_correct": 31,
+    "actual_generations": 320,
+    "all_new_v1_scores_zero": true,
+    "fresh_sources": 32,
+    "full_off_v2_correct": 0,
+    "no_cross_cohort_or_native_benefit_inference": true,
+    "result": "../memory-cell-mem14-preregistered-20261112/RESULTS.md",
+    "source_commit": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+    "uses_research_python_SQLite_not_native_owner": true
+  },
+  "source": {
+    "before_after_clean": true,
+    "codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+    "commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+    "postimage_bytes_not_repeated_in_this_archive": true,
+    "recorded_postimage_pins_match_prior_verified_source_files": 14,
+    "rewrite_patch_bytes": 0,
+    "source_unchanged_recorded": true,
+    "tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892"
+  },
+  "source_and_recorded_binaries_unchanged": true,
+  "status": "CAPTURE_DIAGNOSTIC_COMPLETE; GENERATION_ADMISSION_REJECTED; SCIENTIFIC_HOLD",
+  "terminal_recovery": {
+    "controller_private_idempotency_binding_independently_verified": false,
+    "executable_args_nice_timeout_exactly_match": true,
+    "historical_unknown_checkpoint_and_timeout_bytes_preserved": true,
+    "identity_scope": "Unique selected-scope marker match, complete submitted payload/explicit arguments, and matching request/status launch nonce; worker request does not expose controller private key binding.",
+    "launch_nonce_matches_status": true,
+    "method": "Read-only bounded retained-job search, exact submitted-payload and typed-argument comparison, then authoritative status and complete stdout/stderr readback.",
+    "no_new_native_start_or_reconcile_after_observed_effects": true,
+    "request": {
+      "bytes": 21988,
+      "sha256": "61c527a9d2644f23768e8390fb7c50dee8145ebee6685ab982d7b594b935b7c2"
+    },
+    "request_digest": "9acd5bdc50ae5dae3e63321fb81d54febf301a3d656981bf6a8aaaf7ec75e023",
+    "status_original_sdk": {
+      "bytes": 952,
+      "sha256": "c5c872fc548c054b3e8b10a6f6693b50197e67894a57e9e217ce54b499b44acb"
+    },
+    "stderr_original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout_original": {
+      "bytes": 340,
+      "sha256": "174cc18ef78924b71d07db3a4dca34a530e54616368bee60d0837675aced8546"
+    },
+    "stdout_parsed_publication_matches_recovered_original": true,
+    "submitted_payload": {
+      "bytes": 20152,
+      "sha256": "10d77f4370d025703245434b07088e91a09e02da6cc84c264316b0994d0c8d31"
+    },
+    "supersedes_only_current_terminal_knowledge": true,
+    "verification": {
+      "bytes": 6987,
+      "file": "terminal-recovery/VERIFICATION.json",
+      "sha256": "cf674a1a0e22460105b857621e9f09a1065193e933edf4cdd4d3077b75979c85"
+    }
+  },
+  "token_only_preflight": {
+    "arms": [
+      "attach",
+      "reader-off",
+      "withhold"
+    ],
+    "budget_admitted": [
+      false,
+      false,
+      false
+    ],
+    "complete_original_outputs_and_tensors_preserved": true,
+    "input_limit": 1024,
+    "model_generation_count": 0,
+    "model_weights_loaded": false,
+    "prompt_tokens": [
+      7565,
+      7007,
+      7029
+    ],
+    "scope": "Post-capture tokenizer-only preflight, not generation-entry validation.",
+    "statuses": [
+      "REJECTED_INPUT_TOKEN_BUDGET",
+      "REJECTED_INPUT_TOKEN_BUDGET",
+      "REJECTED_INPUT_TOKEN_BUDGET"
+    ],
+    "tombstone": "NOT_EXECUTED_NO_MAPPED_REQUEST",
+    "truncation": false
+  },
+  "weight_update": false
+}

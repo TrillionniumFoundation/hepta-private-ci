@@ -22,11 +22,28 @@ use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde::Deserialize;
+use serde::Serialize;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixListener;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+#[derive(Clone, Copy, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum SourceReadPolicy {
+    ReaderOff,
+    Context,
+}
+
+impl SourceReadPolicy {
+    fn before_claim(self) -> usize {
+        match self {
+            Self::ReaderOff => 0,
+            Self::Context => 2,
+        }
+    }
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -65,13 +82,36 @@ pub(super) async fn start_with_withdrawal(
     UnixFinalUseAuthorizer,
     tokio::task::JoinHandle<Result<serde_json::Value>>,
 )> {
+    let (config, task) = start_config(
+        root,
+        subject_id,
+        source_reads,
+        reads_before_run,
+        SourceReadPolicy::Context,
+        withdrawal,
+    )
+    .await?;
+    Ok((UnixFinalUseAuthorizer::from_config(config)?, task))
+}
+
+pub(super) async fn start_config(
+    root: &Path,
+    subject_id: String,
+    source_reads: Arc<AtomicUsize>,
+    reads_before_run: usize,
+    policy: SourceReadPolicy,
+    withdrawal: Option<super::diagnostic::Withdrawal>,
+) -> Result<(
+    FinalUseAuthorizerConfig,
+    tokio::task::JoinHandle<Result<serde_json::Value>>,
+)> {
     std::fs::create_dir(root)?;
     std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))?;
     let socket = root.join("fixture.sock");
     let listener = UnixListener::bind(&socket)?;
     std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o660))?;
     let signer = SigningKey::from_bytes(&[73; 32]);
-    let authorizer = UnixFinalUseAuthorizer::from_config(FinalUseAuthorizerConfig {
+    let config = FinalUseAuthorizerConfig {
         issuer_uid: std::fs::metadata(&socket)?.uid(),
         issuer_socket: socket,
         signer_id: "fixture-only-memory-context".to_string(),
@@ -81,7 +121,7 @@ pub(super) async fn start_with_withdrawal(
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
-    })?;
+    };
     let task = tokio::spawn(async move {
         tokio::time::timeout(Duration::from_secs(30), async move {
             let (mut stream, _) = listener.accept().await?;
@@ -99,7 +139,7 @@ pub(super) async fn start_with_withdrawal(
                 || request.operation != "runtime.codex.turn_start"
                 || request.binding.subject_id != subject_id
                 || !request.binding.destination_id.starts_with("codex-app-server:")
-                || reads_at_claim != reads_before_run + 2
+                || reads_at_claim != reads_before_run + policy.before_claim()
             {
                 return Err("fixture claim did not follow the exact owner context read".into());
             }
@@ -131,6 +171,7 @@ pub(super) async fn start_with_withdrawal(
             stream.flush().await?;
             Ok(serde_json::json!({
                 "fixture_only": true,
+                "source_read_policy": policy,
                 "claim_count": 1,
                 "source_checks_before_run": reads_before_run,
                 "source_checks_at_claim": reads_at_claim,
@@ -142,5 +183,5 @@ pub(super) async fn start_with_withdrawal(
         .await
         .map_err(|_| "fixture issuer timed out before its only claim")?
     });
-    Ok((authorizer, task))
+    Ok((config, task))
 }

@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.mem14.completed-metadata-readback.v1",
+  "status": "ORIGINAL_METADATA_VERIFIED_FULL_ARCHIVE_AND_INDEPENDENT_AUDIT_PENDING",
+  "job_id": "1a1ced26052-2564-186f",
+  "outer_state": "succeeded",
+  "outer_exit_code": 0,
+  "outer_timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "raw_summary_declares": {
+    "planned": 320,
+    "returned": 320,
+    "scored": 320,
+    "missing": 0
+  },
+  "source_commit": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+  "source_tree": "491484a45e05d05d2b72fec472f96405c37decac",
+  "archive_declares": {
+    "bytes": 597704,
+    "sha256": "36c1526898eb7c117e013c0235cfa322fcc46790f984fa330302cbbf0be4821b",
+    "indexed_members": 5597
+  },
+  "files": {
+    "RUN_SUMMARY.json": {
+      "bytes": 13664,
+      "sha256": "42124808fbf7367d8802ae1f1b57a4174eeecc8498e8132e05850eda5d3476ac"
+    },
+    "ARCHIVE.json": {
+      "bytes": 165,
+      "sha256": "b9bed58355f0e5d9f6deb614f115ea1b32a8589244ab02ded56dc631b59f5ca4"
+    },
+    "summary-read.original-sdk.json": {
+      "bytes": 18238,
+      "sha256": "3ff4988caf3ef2b6dad62d8666fd17aee2168d89f8fe5cbd013523ef1acf10bc"
+    },
+    "terminal.original-sdk.json": {
+      "bytes": 914,
+      "sha256": "c50ac7cc52fabb6216d08dff7a51d19c594a8c507a49e0449d8bfb315a534a62"
+    }
+  },
+  "scientific_acceptance": "HOLD"
+}

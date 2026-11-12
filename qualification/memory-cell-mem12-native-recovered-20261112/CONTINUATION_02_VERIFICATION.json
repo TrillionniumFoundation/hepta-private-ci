@@ -1,0 +1,406 @@
+{
+  "schema": "hepta.mem12.native-continuation02-final-verification.v1",
+  "qualification_status": "software_controls_passed",
+  "adoption_decision": "HOLD",
+  "tested_source": {
+    "commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+    "tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+    "clean_before_and_after": true,
+    "unchanged": true,
+    "postimages": 25,
+    "all_archived_postimages_verified": true,
+    "same_postimages_as_original_attempt": true,
+    "rewrite_patch_bytes": 0,
+    "scope": "811e0e27 only; does not qualify the evidence-branch tree or MEM13/MEM14/MEM15"
+  },
+  "archive": {
+    "file": "native-continuation-811e0e27-02.tar.xz",
+    "bytes": 166532,
+    "sha256": "2a46e59a61c6b4afc94cb2bca2d5fa5847484705d9b6ade4672fd4365a2e702c"
+  },
+  "tar_safety": {
+    "members": 82,
+    "regular_files": 66,
+    "directories": 16,
+    "safe_relative_paths": true,
+    "links": 0,
+    "special_files": 0,
+    "duplicate_paths": 0
+  },
+  "original_manifest": {
+    "file": "continuation-811e0e27-02/MEMBER_MANIFEST.json",
+    "bytes": 10621,
+    "sha256": "4f240c78e3281baa7f2dcd37ae400de008084acc0f43ba10c39bc0696960592e",
+    "entries": 65,
+    "covers_all_other_regular_files": true,
+    "all_member_hashes_verified": true
+  },
+  "result": {
+    "bytes": 42212,
+    "sha256": "6350c2cf293438473e606f1b616650713176bc2ef87510901f23a8061817496d"
+  },
+  "terminal": {
+    "job_id": "1a1cedb0568-2564-18ae",
+    "state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "terminal_original_sdk": {
+    "bytes": 908,
+    "sha256": "4d7af7be5519a5904deadebc082d8ef3bfec182e65d665145d38f4dc76636c43"
+  },
+  "source_sdk_readbacks": [
+    {
+      "operation_id": "43b3bee1dfbcae0f746007b8c0ecadef6bc523530cdc7f3d07b4fd60c15bfe6b",
+      "file": "terminal.original-sdk-payload.json",
+      "bytes": 908,
+      "sha256": "4d7af7be5519a5904deadebc082d8ef3bfec182e65d665145d38f4dc76636c43",
+      "pages": 1,
+      "complete": true
+    },
+    {
+      "operation_id": "649168f503447ada90b109bca086bf87ee3afc16c65392d0685b4481251e7571",
+      "file": "publication.original-sdk-payload.json",
+      "bytes": 933,
+      "sha256": "d1184770228b6774b815de49699e7ea2ca266ece302c1ef30a944a27b61e5197",
+      "pages": 1,
+      "complete": true
+    },
+    {
+      "operation_id": "657ebe96f7420f37c19c8204bc98cf27b1d60a28578f77981111d3833c25fff6",
+      "file": "final.original-sdk-payload.json",
+      "bytes": 52079,
+      "sha256": "dc6da8974ac5bdb12071488144f74033346e72408eafe8e4f0a0d89c8028b345",
+      "pages": 4,
+      "complete": true
+    },
+    {
+      "operation_id": "a3e3756cd190dffba564cdbf1e6b699c6c2a8a25d447649f7ea1de35cde7e31a",
+      "file": "junits.original-sdk-payload.json",
+      "bytes": 22582,
+      "sha256": "147f13b88cd3e7fb63bc7361b47a7b9eabd9a58c1ee255bc3459c15f5399cc2a",
+      "pages": 2,
+      "complete": true
+    },
+    {
+      "operation_id": "ac0c78596ab16578012364e571d54a963ecba49e8ecbfdf2b13d91f0542fd95c",
+      "file": "progress03.original-sdk-payload.json",
+      "bytes": 41021,
+      "sha256": "43b67574f2b92ab4f9e6e95c47b6b732e0cf01f10a10aebd8a2ca8560a6e1876",
+      "pages": 3,
+      "complete": true
+    },
+    {
+      "operation_id": "d5107b2ce00ab94f19c759667d3e6e3d2c515401f0da9a169eb66f5319330653",
+      "file": "progress02.original-sdk-payload.json",
+      "bytes": 27107,
+      "sha256": "bb7358fda3b21276617bea2c4664f87ea44a07ade1f98f1805c243c3eb0bf5e5",
+      "pages": 2,
+      "complete": true
+    },
+    {
+      "operation_id": "eb43783466ce5c4d21f5bf4cc1f0ff703b89cdd0d24a3ed3377e637371d6987d",
+      "file": "progress01.original-sdk-payload.json",
+      "bytes": 19163,
+      "sha256": "43fc7a8c58b34bb4c1f1840e70ea52075643f30e50d4105a5757fb126cc0c3a2",
+      "pages": 2,
+      "complete": true
+    }
+  ],
+  "archive_sdk_download": {
+    "bytes": 166532,
+    "sha256": "2a46e59a61c6b4afc94cb2bca2d5fa5847484705d9b6ade4672fd4365a2e702c",
+    "chunks": [
+      {
+        "chunk_sha256": "df0d130a62b6687dc64756c4616dcfbeb876148296f7b46892aebad6fcacd2ef",
+        "eof": false,
+        "next_offset": 65536,
+        "offset": 0,
+        "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/native-continuation-811e0e27-02.tar.xz",
+        "size": 166532,
+        "version": "66306:75807523:166532:1794472729931345246:1794472729931345246",
+        "operation_id": "d5151daf1af15a9d7075e7a474b79412c4c1fd0ee230ef23659e78a82114168f",
+        "native_sdk_bytes": 87821,
+        "native_sdk_sha256": "654a5387b8e9da68500677d9e966e2142cf262c29d7e05e9fca7db7bba2d4536",
+        "sdk_pages": [
+          {
+            "offset": 0,
+            "bytes": 16384,
+            "sha256": "f722c9670b3ee8d53decb5affd031e49e91963c5048af63a0ae20415ffefc454"
+          },
+          {
+            "offset": 16384,
+            "bytes": 16384,
+            "sha256": "fd289e26ac80a00c03bd7471cb4161a4e22af89c4bace28d4721c0d8fc0791a7"
+          },
+          {
+            "offset": 32768,
+            "bytes": 16384,
+            "sha256": "0560f99bb76b292741a9b6f5873f515bb56a811f9c9b58979bd5230dd02b0866"
+          },
+          {
+            "offset": 49152,
+            "bytes": 16384,
+            "sha256": "d707b247081a51db7392ba243e06b26b512d4aa7dfacafbc21a0f587984303ed"
+          },
+          {
+            "offset": 65536,
+            "bytes": 16384,
+            "sha256": "aadd8a888ae7a611e5f19bf0ea2aebc77ec65aa561a3b655ee4d325ff314829d"
+          },
+          {
+            "offset": 81920,
+            "bytes": 5901,
+            "sha256": "511aff96878ab4743d9ae164fb63250bbd96a8a94702802d91bd91ed628d29e4"
+          }
+        ]
+      },
+      {
+        "chunk_sha256": "bca80a9f243ffc88c55ff4cea60400f89cb819b9d0665bab4c4163b8ab27124d",
+        "eof": false,
+        "next_offset": 131072,
+        "offset": 65536,
+        "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/native-continuation-811e0e27-02.tar.xz",
+        "size": 166532,
+        "version": "66306:75807523:166532:1794472729931345246:1794472729931345246",
+        "operation_id": "56c2fe180b9186c7a9903390514a0bc1e977adee0b9160b1cabca011be9e2d6b",
+        "native_sdk_bytes": 87826,
+        "native_sdk_sha256": "7b9442f23940fdbea17c487eec52aa6f8d1c2a30892040381dd3b49c0e1a8c2b",
+        "sdk_pages": [
+          {
+            "offset": 0,
+            "bytes": 16384,
+            "sha256": "421b9e23cc4fa101868ecf0179c15472dc58aeafc04ec0fa40c5b93141f9c0d8"
+          },
+          {
+            "offset": 16384,
+            "bytes": 16384,
+            "sha256": "138ef18717039798cd18467d7ebd214e2bca6a4aa834bfe1bfda659e0789800d"
+          },
+          {
+            "offset": 32768,
+            "bytes": 16384,
+            "sha256": "36fb87d847cd950ec30ebd6f802c1bbe3c0e00e6dad3506c4c4b2308074417f7"
+          },
+          {
+            "offset": 49152,
+            "bytes": 16384,
+            "sha256": "5413658c0aaeb6e6ac28094b9647baafafce9ac7e7918b989075d2587aa2783b"
+          },
+          {
+            "offset": 65536,
+            "bytes": 16384,
+            "sha256": "f8471b37fb66c00e42ec9657fe9215b7454bf9939964b19fef90d3d8fde2d432"
+          },
+          {
+            "offset": 81920,
+            "bytes": 5906,
+            "sha256": "ba7c87ad14b82de3306f33d131fab351242fc1257e942e5ebdbfbb8922a655c2"
+          }
+        ]
+      },
+      {
+        "chunk_sha256": "439846b5614557214f3e6a026a9915bf9a30cd36c6077885a8baa4464be7f3ec",
+        "eof": true,
+        "next_offset": 166532,
+        "offset": 131072,
+        "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/native-continuation-811e0e27-02.tar.xz",
+        "size": 166532,
+        "version": "66306:75807523:166532:1794472729931345246:1794472729931345246",
+        "operation_id": "27bc582bec86704ca557884c3eb9dc34beba05b30ebef1bd66b836888d2a98a0",
+        "native_sdk_bytes": 47722,
+        "native_sdk_sha256": "ba74bffdd414f32f82da963e9939ba4a47824cf53c41918ca31d9a3e085f48a9",
+        "sdk_pages": [
+          {
+            "offset": 0,
+            "bytes": 16384,
+            "sha256": "a4a645cb55d35599a363b6bb50d8c0eb394f152f2ce1d1c7791f028530cd13f3"
+          },
+          {
+            "offset": 16384,
+            "bytes": 16384,
+            "sha256": "bacf39bb31864f75b5cbb3f0c8e340d7722a7019ec9f1ed72b2b01389d114100"
+          },
+          {
+            "offset": 32768,
+            "bytes": 14954,
+            "sha256": "e32dd1816ec7712f70333feef873d7017c13df112b96ddb345e61cf61b808586"
+          }
+        ]
+      }
+    ]
+  },
+  "stages": [
+    {
+      "phase": "agentd-episodic",
+      "executed": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "uuid": "ab1fd908-c549-40c2-98c0-c4475142c98d",
+      "previous_uuid": "372c4563-0ab7-41df-ac66-f2a8d9c87bb8",
+      "uuid_fresh_from_previous_report": true,
+      "uuid_in_original_log": true,
+      "all_case_timestamps_within_original_receipt": true,
+      "junit": {
+        "bytes": 1895,
+        "sha256": "6daa7c2b3fbc78fcc20781cb16a6827027fdd53d9dacc3542e5b62390b06ad6b"
+      },
+      "receipt": {
+        "bytes": 1551,
+        "sha256": "414c6c4825adf4a3fadc97a1c0e74c26f08912ea54033b641a27c143ea5b1a77"
+      },
+      "log": {
+        "bytes": 59163,
+        "sha256": "6d1c996fc4ad05b863062dc206d6777d2ac48e7ef39d87c49ac5f0a1f51a60d6"
+      },
+      "case_names": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner",
+        "production_composition::tests::episodic_control::native_heads::native_predecessor_forget_closes_episodic_context"
+      ]
+    },
+    {
+      "phase": "agentd-qualification-profile",
+      "executed": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "uuid": "0ea7a445-a517-43ad-813e-98a95a882a10",
+      "previous_uuid": "ab1fd908-c549-40c2-98c0-c4475142c98d",
+      "uuid_fresh_from_previous_report": true,
+      "uuid_in_original_log": true,
+      "all_case_timestamps_within_original_receipt": true,
+      "junit": {
+        "bytes": 537,
+        "sha256": "a6e2c480c01d36f6faff530c226ec8a398ce453bd33db747d67d9a14b18a3d27"
+      },
+      "receipt": {
+        "bytes": 1700,
+        "sha256": "8c1958efb1e5a18d94654ed3db4c41cfea4dffea9303952ab29fd387c9a4fce9"
+      },
+      "log": {
+        "bytes": 31352,
+        "sha256": "003e1ebf9a4ceb58af14446a728fd82a3397deb3abacd67e54f44a4e0daf952c"
+      },
+      "case_names": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+      ]
+    },
+    {
+      "phase": "native-delivery",
+      "executed": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "uuid": "ffadc51b-09b1-4df0-af36-e89c012081c8",
+      "previous_uuid": "0ea7a445-a517-43ad-813e-98a95a882a10",
+      "uuid_fresh_from_previous_report": true,
+      "uuid_in_original_log": true,
+      "all_case_timestamps_within_original_receipt": true,
+      "junit": {
+        "bytes": 1952,
+        "sha256": "0da842dfbff1607e4c68bd4f1ed9b4ecd73b895c8d93ca9deea75b9754840288"
+      },
+      "receipt": {
+        "bytes": 1758,
+        "sha256": "590ffdc32662b3ed1167be251c35879a795b34ec6ac60f5e4140add8b0de9743"
+      },
+      "log": {
+        "bytes": 36754,
+        "sha256": "ea3473a9b9d2daf08fd0ef68f99ee5be1f1aa03e84b1bb33a7bc1b08d3e69436"
+      },
+      "case_names": [
+        "native_app_server::context::tests::delivery_off_withholds_physical_context_but_keeps_revalidation_and_replay",
+        "native_app_server::control::tests::context_delivery_is_bound_before_connection_and_preserves_legacy_admission",
+        "native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+        "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+        "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+        "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+        "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone"
+      ]
+    },
+    {
+      "phase": "protocol",
+      "executed": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "uuid": "2e8e283c-7543-433f-a1ac-2d6808af0545",
+      "previous_uuid": "ffadc51b-09b1-4df0-af36-e89c012081c8",
+      "uuid_fresh_from_previous_report": true,
+      "uuid_in_original_log": true,
+      "all_case_timestamps_within_original_receipt": true,
+      "junit": {
+        "bytes": 3397,
+        "sha256": "78b0cffbca0c75a5372706bcea9fb8bf7950141a3b0c9460dbbeb2161f739f49"
+      },
+      "receipt": {
+        "bytes": 1525,
+        "sha256": "354d319f837739664b01824e0052be329e95b72e219c388991d454b7e4b4db28"
+      },
+      "log": {
+        "bytes": 31339,
+        "sha256": "a5a404d84d13a3df6679d607579e159d3ea3c1ff15f238666b92ddad9afe5545"
+      },
+      "case_names": [
+        "capabilities::tests::duplicate_and_invalid_ids_are_rejected",
+        "capabilities::tests::negotiation_is_intersection_with_minor_downgrade",
+        "generation::tests::generation_wire_rejects_unknown_fields_and_unbounded_byte_values",
+        "generation::tests::maximum_generation_pages_and_inputs_roundtrip_within_existing_frame",
+        "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation",
+        "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission",
+        "objective_tests::objective_start_outcomes_are_strict_wire_types",
+        "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound",
+        "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+        "tests::automation_wire_round_trip_is_strict_and_bounded",
+        "tests::capabilities_endpoint_is_additive_and_bounded",
+        "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive",
+        "tests::health_wire_round_trip_is_strict_and_bounded",
+        "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+        "tests::memory_federation_control_is_typed_strict_and_bounded",
+        "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded"
+      ]
+    }
+  ],
+  "counts": {
+    "new_rust_case_executions_in_continuation02": 31,
+    "previous_memory_rust_case_executions_referenced_without_rerun": 11,
+    "total_rust_case_executions": 42,
+    "previous_strict_isolation_cases_referenced_without_rerun": 8,
+    "rust_failures": 0,
+    "rust_skipped": 0,
+    "interpretation": "Execution counts across five Rust reports; the profile case runs under two distinct feature configurations, so this is not a distinct-name count."
+  },
+  "prior_memory11_original_bytes_verified": true,
+  "prior_strict8_receipt_verified": true,
+  "strict_isolation_rerun_in_continuation02": false,
+  "memory11_rerun_in_continuation02": false,
+  "verified_v8_passed": true,
+  "codex_build_passed": true,
+  "scoped_fix_passed": true,
+  "final_format_passed": true,
+  "recorded_codex_binary_before": {
+    "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/codex",
+    "bytes": 560467144,
+    "sha256": "d1d7220a54e11f3bd8d96dd997e45db7184939961c8aa433c9eb8d95ee2e91fe"
+  },
+  "recorded_codex_binary_after": {
+    "path": "/home/qq/work/mem12-native-qualification-20261112-ef0c/cargo-target/debug/codex",
+    "bytes": 560467144,
+    "sha256": "d1d7220a54e11f3bd8d96dd997e45db7184939961c8aa433c9eb8d95ee2e91fe"
+  },
+  "recorded_codex_binary_unchanged": true,
+  "binary_verification_basis": "Identical before/after digests in the original authenticated RESULT; binary bytes are not part of the evidence archive.",
+  "new_real_model_calls": 0,
+  "scored_memory_benefit_episodes": 0,
+  "publisher_test_or_model_reruns": 0,
+  "original_failed_attempts_preserved": true
+}

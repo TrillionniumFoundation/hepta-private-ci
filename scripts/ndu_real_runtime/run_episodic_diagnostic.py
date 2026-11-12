@@ -1,6 +1,6 @@
 """Frozen MEM12 generated-task diagnostic, never MEM5/MEM9 or production admission.
 
-Eight generated sources share one task template. A deterministic writer exits
+Generated sources share one task template. A deterministic writer exits
 before fresh reader/model processes. The ordinary reference is BM25; this does
 not introduce a learned selector or claim an advantage over BM25 itself.
 No authenticated-observer implementation, natural-task benefit, model update,
@@ -22,6 +22,11 @@ import time
 import uuid
 
 from .episodic_diagnostic_bindings import verify_writer
+from .episodic_diagnostic_protocol import (
+    protocol_fields,
+    selector_version,
+    validate_protocol,
+)
 from .episodic_diagnostic_report import build_report, selected_text
 from .episodic_isolation import run_isolated_actor
 from .episodic_local_provider import LocalProviderProfile, run_local_provider
@@ -65,6 +70,7 @@ print(json.dumps({"model": task["model"], "input": prompt, "store": False,
 SOURCES = (
     "ndu_real_runtime/run_episodic_diagnostic.py",
     "ndu_real_runtime/episodic_diagnostic_report.py",
+    "ndu_real_runtime/episodic_diagnostic_protocol.py",
     "ndu_real_runtime/episodic_diagnostic_bindings.py",
     "ndu_real_runtime/episodic_memory.py",
     "ndu_real_runtime/episodic_retrieval.py",
@@ -93,8 +99,17 @@ def source_pins():
 _LOADED_SOURCES = source_pins()
 
 
-def prepare(output, profile, cohort_id):
+def prepare(
+    output,
+    profile,
+    cohort_id,
+    *,
+    source_count=8,
+    retrieval_records=2,
+    selector_version="v1",
+):
     """Freeze every case, arm, parser, model/runtime and source before generation."""
+    protocol = protocol_fields(source_count, retrieval_records, selector_version)
     if (
         not isinstance(cohort_id, str)
         or re.fullmatch(r"[a-zA-Z0-9_-]{1,48}", cohort_id) is None
@@ -107,7 +122,7 @@ def prepare(output, profile, cohort_id):
     output.mkdir(parents=True, exist_ok=False)
     rng = random.Random(uuid.uuid4().hex)
     cases = []
-    for index in range(8):
+    for index in range(source_count):
         facts = []
         for color in rng.sample(COLORS, 3):
             key = "parcel-" + rng.randbytes(6).hex()
@@ -136,23 +151,15 @@ def prepare(output, profile, cohort_id):
             }
         )
     plan = {
-        "schema": "hepta.mem12.controlled-diagnostic.v1",
+        **protocol,
         "cohort_id": cohort_id,
         "registered_at_unix_ns": time.time_ns(),
         "profile": profile,
         "sources": source_pins(),
         "actor": pin(ACTOR),
         "provider_worker": pin(WORKER.encode()),
-        "selector": "mem12-full-output-color-v1; independent of MEM5 OCR public_rule",
         "arms": {name: list(value) for name, value in ARMS.items()},
         "cases": cases,
-        "limits": {
-            "context_bytes": 2048,
-            "retrieval_records": 2,
-            "output_tokens": 32,
-            "input_tokens": 1024,
-            "provider_seconds": 60,
-        },
         "scientific_acceptance": "HOLD",
         "production_adoption": False,
         "source_kind": "generated arbitrary assignments; one shared task template",
@@ -172,12 +179,8 @@ def load_plan(output, check_sources=False):
     if pin(raw) != json.loads(_read_regular(output / "PLAN_PIN.json", 1024)):
         raise ValueError("frozen plan changed")
     plan = json.loads(raw)
-    if (
-        plan["schema"] != "hepta.mem12.controlled-diagnostic.v1"
-        or len(plan["cases"]) != 8
-        or plan["arms"] != {name: list(value) for name, value in ARMS.items()}
-        or pin(_read_regular(output / "ACTOR.py", 65536)) != plan["actor"]
-    ):
+    validate_protocol(plan, ARMS)
+    if pin(_read_regular(output / "ACTOR.py", 65536)) != plan["actor"]:
         raise ValueError("frozen protocol changed")
     if check_sources and (
         plan["sources"] != source_pins() or plan["sources"] != _LOADED_SOURCES
@@ -387,7 +390,10 @@ def run_arm(output, plan, plan_sha, case, arm, writer_receipt):
         if provider["status"] == "RETURNED":
             row["physical_generations"] = 1
             row["correct"] = (
-                selected_text(provider["result"].get("text")) == case["truth"]
+                selected_text(
+                    provider["result"].get("text"), version=selector_version(plan)
+                )
+                == case["truth"]
             )
     except (OSError, ValueError, RuntimeError, KeyError, TypeError) as error:
         row.update(
@@ -428,7 +434,23 @@ def main():
         action.add_argument("--" + name, type=Path)
     parser.add_argument("--profile", type=Path)
     parser.add_argument("--cohort-id")
+    parser.add_argument(
+        "--sources", type=int, choices=(8, 32), help="prepare only; default 8"
+    )
+    parser.add_argument(
+        "--retrieval-records", type=int, choices=(1, 2), help="prepare only; default 2"
+    )
+    parser.add_argument(
+        "--selector-version", choices=("v1", "v2"), help="prepare only; default v1"
+    )
     args = parser.parse_args()
+    if not args.prepare and any(
+        value is not None
+        for value in (args.sources, args.retrieval_records, args.selector_version)
+    ):
+        parser.error(
+            "sources, retrieval-records and selector-version only freeze new plans"
+        )
     if args.writer:
         writer(args.writer)
         return
@@ -436,7 +458,12 @@ def main():
         if args.profile is None or args.cohort_id is None:
             parser.error("prepare requires --profile and --cohort-id")
         result = prepare(
-            args.prepare, json.loads(args.profile.read_bytes()), args.cohort_id
+            args.prepare,
+            json.loads(args.profile.read_bytes()),
+            args.cohort_id,
+            source_count=args.sources or 8,
+            retrieval_records=args.retrieval_records or 2,
+            selector_version=args.selector_version or "v1",
         )
     else:
         result = run(args.run) if args.run else report(args.report)
