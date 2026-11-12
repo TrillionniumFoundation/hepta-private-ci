@@ -33,10 +33,14 @@ group for these qualification paths and changed no source bytes. Its exact
 output is in `REAL_TIME_SOURCE_FORMAT.json`. `git diff --check` passed.
 No tests were rerun after formatting; every tested Python source remained identical.
 
-The ai395 replication was requested once with a stable operation key;
-its remote outcome is unconfirmed until original status and logs are read back.
-The local result above is independent of remote completion. Hosted CI likewise
-requires its own exact commit/job evidence and is not inferred from this report.
+ai395 Python 3.14.4: **119/119**, exit 0, wall 0.23619742 s. Original durable
+job `1a1ce71e9da-2564-1678` reports succeeded, complete logs, no timeout/cancel.
+All 24 executed Python source hashes equal the local tested files. The exact
+stdout is `REAL_TIME_SOURCE_AI395.json`; original native status/read payloads
+are `REAL_TIME_SOURCE_AI395_STATUS.json` and `REAL_TIME_SOURCE_AI395_READ.json`.
+An earlier environment-log read timed out; the test was not restarted. Its
+status and output were recovered via retained read operations and verified.
+Hosted CI still needs its own exact commit/job evidence; no hosted pass is inferred.
 
 ## Remaining execution boundaries
 
