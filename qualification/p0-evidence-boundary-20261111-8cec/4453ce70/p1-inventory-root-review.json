@@ -1,0 +1,24 @@
+{
+  "schema": "hepta-historical-research-inventory-root-review-v1",
+  "recorded_at_utc": "2026-11-12T02:22:05.391Z",
+  "source_read_snapshot": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "inventory_file": "p1-evidence-inventory-4453ce70.json",
+  "inventory_sha256": "a782be020c8c4da9bb2443f27b41aeabffc5bd486faa95a159750f43ef5b940b",
+  "inventory_blob": "94c20964838e6b951f2129ecc776ae3844b84fa4",
+  "direct_originals_read_by_root": [
+    "qualification/memory-cell-mem1/RESULTS.md",
+    "qualification/memory-cell-mem1/evidence.json",
+    "scripts/memory_cell_mem1/verify_results.py",
+    "qualification/ctrl1-decision-cell-20261108/README.md",
+    "qualification/ctrl1-decision-cell-20261108/QUALIFICATION.json",
+    "qualification/ctrl1-decision-cell-20261108/SOURCE_COMMITS.json"
+  ],
+  "allOriginalBlobIdentitiesMatch": true,
+  "mem_report_read": true,
+  "ctrl_readme_relevant_scope_and_qualification_read": true,
+  "mem_cost_partial": true,
+  "new_experiments_executed": false,
+  "reviewed_conclusion": "Historical synthetic mechanism studies and negative results exist. In this bounded review, no qualified real-source-cluster P1 net benefit was found; none was newly produced. Prior synthetic NoUpdate/Candidate conclusions do not decide a real A/B/C protocol on 445.",
+  "cost_conclusion": "MEM cost audit remains PARTIAL. CTRL's equal CPU allowance is not equal full consumed cost. Independent real outcomes and native owner adoption remain HOLD.",
+  "execution_identity_limit": "Source commit 445 identifies where the historical records were read, not where those old campaigns executed. Do not substitute historical upstream/core/auditor commits for an unobserved complete execution tree."
+}

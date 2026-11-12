@@ -1,0 +1,331 @@
+{
+  "kind": "bounded_read_only_P1_evidence_inventory",
+  "created_at_utc": "2026-11-12T02:19:09.451409+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "snapshot_commit": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "snapshot_tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+  "scope": {
+    "method": "Read pinned Git objects through previously known workflow/stage indexes; followed the identified MEM-1 and CTRL-1 originals only after discovery.",
+    "repository_wide_or_private_directory_scan": false,
+    "new_tests_or_experiments_during_inventory": 0,
+    "source_changes": 0,
+    "raw_replay_or_training_reproduction_performed": false,
+    "indexed_raw_hash_note": "The indexed originals below have exact Git blob identities. Their raw SHA256/size fields are retained historical manifest declarations, not new archive-content validation or replay.",
+    "no_all_history_absence_claim": true
+  },
+  "summary": {
+    "historical_research_and_negative_results_exist": true,
+    "qualified_real_source_cluster_fixed_selector_MEM_or_content_CTRL_gain_found_in_reviewed_materials": false,
+    "new_independent_real_task_net_benefit_evidence_added_this_round": 0,
+    "current_445_real_A_B_C_protocol_decision": null,
+    "decision_boundary": "Historical MEM shared-model NoUpdate and CTRL research Candidate/NoUpdate belong to their original synthetic protocols. This inventory does not execute or decide a real A-to-training-to-independent-B-to-C protocol on 445.",
+    "eligible_reuse": "Historical mechanism evidence, strong-baseline comparisons, negative results, accounting limits and preserved failure/recovery references under their original identities."
+  },
+  "originals": {
+    "mem_current_results": {
+      "path": "qualification/memory-cell-mem1/RESULTS.md",
+      "git_blob": "ed96d0bbc2f00be15cedd73eb8aaf67b37cc652e",
+      "bytes": 13817,
+      "sha256": "52002695b264e845d0803cee9a04565c4bfbc455a9ad2f51940917b32e574896"
+    },
+    "mem_historical_results": {
+      "path": "qualification/cell-research-stages-20261108/followthrough-20261108/stage-originals/MEM1_RESULTS.md",
+      "git_blob": "244051b423fdccc118ce55b9d414caca8f0da34e",
+      "bytes": 13019,
+      "sha256": "0d195e61978db5b1189a8db98a9323e6e00620d7006cc7250e4147f39d2628c9"
+    },
+    "mem_evidence": {
+      "path": "qualification/memory-cell-mem1/evidence.json",
+      "git_blob": "9f3b856d041d294810a649cd2a1fabfa2b494bdb",
+      "bytes": 3498,
+      "sha256": "fbafcdace801af8f0bb40de4ae84ece81a44210c47c1dc6ef0f11bef16701749"
+    },
+    "mem_cost_verifier": {
+      "path": "scripts/memory_cell_mem1/verify_results.py",
+      "git_blob": "a78aed6b7a4413c91da1bcbec91dd3726cfe26d5",
+      "bytes": 7669,
+      "sha256": "515f47a57dfb07fcac0d5260f3eed1e53c4cd2e51660782ee2e6088a07446448"
+    },
+    "ctrl_readme": {
+      "path": "qualification/ctrl1-decision-cell-20261108/README.md",
+      "git_blob": "2e6701e6491c0765da7e34fd7672c2ba36303a27",
+      "bytes": 26234,
+      "sha256": "96c572c413ffc546e924e74d43420a8b46b8e300aa031869617dfbc010b4c76f"
+    },
+    "ctrl_qualification": {
+      "path": "qualification/ctrl1-decision-cell-20261108/QUALIFICATION.json",
+      "git_blob": "4ab748c47f85a3d637a5c92dd9ba75c3b2a27b33",
+      "bytes": 44869,
+      "sha256": "5ade32bd8dccf1af5d50ca80cdf6702a745605f8e3dfbf80b2b0f35645b41ce4"
+    },
+    "ctrl_sources": {
+      "path": "qualification/ctrl1-decision-cell-20261108/SOURCE_COMMITS.json",
+      "git_blob": "5c24b197e61743ef56b8338ef6558e9f6670a76d",
+      "bytes": 686,
+      "sha256": "cdaf6801bf146c2ee0b23be57d6454ff37abb296e338abf6e74fa0d12322db21"
+    },
+    "historical_stage_status": {
+      "path": "qualification/cell-research-stages-20261108/followthrough-20261108/STAGE_STATUS.json",
+      "git_blob": "9ca1b39a8d64363188354390480e7bc588d3b1ad",
+      "bytes": 4684,
+      "sha256": "ba82e7984690c81d5cd6336e785240f21b7542d3e1fc93e7b3f7bf0651002938"
+    }
+  },
+  "MEM_1": {
+    "references": [
+      "mem_current_results",
+      "mem_historical_results",
+      "mem_evidence",
+      "mem_cost_verifier",
+      "historical_stage_status"
+    ],
+    "original_verdict": {
+      "production": "HOLD",
+      "reference_execution": "COMPLETED_WITH_DOCUMENTED_JUNIT_LIMITATION",
+      "scientific": "HOLD",
+      "shared_model_adoption": "NoUpdate"
+    },
+    "source_and_candidate_identity": {
+      "upstream_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "scope": "three-crate source projection and synthetic reference; not full workspace or production",
+      "binary_sha256": "59ea51c0c495a473a6cefc8c2a3649fc3d2263fa9d5c395e3d59982e5c1b0474",
+      "fast_memory_rs_sha256": "bc77da0ebde6c00b200115b3baad7445ad7d3edfd4a1557f6cfc22a1d5c391b7",
+      "native_example_sha256": "17f13eb54d25f2b5ffc083b9151bab5132fabf6084e80184d139c6e1a41d6acc",
+      "historically_observed_published_head": "cb2d4b47976634f287d5a5369fbd4305064138d3",
+      "remote_publication_refreshed_now": false,
+      "pretrained_base_or_adapter_loaded": false,
+      "actual_executed_full_repository_commit": null,
+      "actual_executed_full_repository_tree": null,
+      "full_repository_execution_identity_status": "UNAVAILABLE_IN_REVIEWED_RECORDS",
+      "execution_identity_note": "The retained pilot binds an upstream commit, a transformed three-crate source projection, source-file SHA256 values and the binary. Neither the upstream commit nor the historically observed publication head is asserted to be the exact full executed Git tree."
+    },
+    "sample_definition": {
+      "units": "Five synthetic stream seeds; not real source clusters or pretrained-model repeats.",
+      "dynamic_arm_seed_runs": 35,
+      "stationary_arm_seed_runs": 35,
+      "curriculum": "A1=96 observations, B=104, A2=40; predict-then-update online scores and read-only probes.",
+      "namespace_limit": "B is a training/interference stream and A2 returns to A. These names do not establish the user's held-out evaluation B and later real task C.",
+      "declared_raw_counts": {
+        "prequential": 16800,
+        "probe": 4200,
+        "recovery": 210,
+        "sleep_candidate": 80,
+        "update": 19760
+      }
+    },
+    "baseline_and_observed_result": {
+      "strongest_and_cheapest_arm": "Exact-key current-fact RAG in this synthetic task; not an LLM RAG system.",
+      "replacement_basis": "Original report explicitly finds no basis for replacing RAG.",
+      "structured_minus_uniform_after_B_retention_pp": {
+        "dynamic": -22.5,
+        "stationary": -20.0
+      },
+      "rehearsal_limit": "Uniform versus no replay adds 128 updates; the report does not call that a special consolidation advantage.",
+      "selector_limit": "Actual production HNMF/current-owner integration was not performed. This is not the requested real-task experiment with a fixed production selector."
+    },
+    "cost_scope": {
+      "recorded": "Kernel multiplications, child/Python CPU, descriptive debug-harness wall time, owner-call counts, payload/update/state counters.",
+      "current_retained_verifier_status": "PARTIAL",
+      "complete_cost_verified": false,
+      "explicit_limits": [
+        "owner calls have no complete event-level ledger",
+        "retained pool snapshots establish only a lower bound on the full peak",
+        "kernel counts exclude hashing/IPC; full physical cost is not reconstructed"
+      ],
+      "current_results_amendment": "Current RESULTS adds retained-binary-byte requirements and the explicit PARTIAL-cost/authentication limit; historical measurements and HOLD are unchanged.",
+      "source_references": {
+        "current_results": {
+          "original_id": "mem_current_results",
+          "scope": "The appended verification paragraph explicitly retains PARTIAL cost accounting and unchanged historical HOLD."
+        },
+        "verifier": {
+          "original_id": "mem_cost_verifier",
+          "scope": "Returned cost_audit object: status=PARTIAL, complete_cost_verified=False, with the three listed accounting limitations."
+        },
+        "verifier_executed_in_this_inventory": false
+      }
+    },
+    "old_capability_and_recovery": {
+      "observed": "Synthetic A-stable retention before/after B and return, excluding replaced/revoked/out-of-scope records as declared.",
+      "historical_native_worker_recoveries": 210,
+      "limit": "Python owner, RNG and teacher remain alive; complete owner crash recovery and uninterrupted paired trajectories were not tested.",
+      "real_old_task_loss_qualification_established": false
+    },
+    "why_not_445_P1_gain": [
+      "No independently sourced real document/history clusters or independent real future B/C panel",
+      "Generated seeds/events do not become independent real-source samples",
+      "No fixed production selector/live-owner confirmation",
+      "Complete cost audit is PARTIAL",
+      "Strongest baseline was not exceeded; original scientific/production status remains HOLD"
+    ]
+  },
+  "CTRL_1": {
+    "references": [
+      "ctrl_readme",
+      "ctrl_qualification",
+      "ctrl_sources"
+    ],
+    "original_verdict": {
+      "status": "COMPLETED_FINITE_ENGINEERING_PILOT_WITH_PASSED_REPLAY",
+      "scientific_promotion": "HOLD",
+      "production_authority": "none"
+    },
+    "source_and_candidate_identity": {
+      "contract_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "parent_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+      "core_code_commit": "472c825a87220574acc5338afe59558e1ad2038f",
+      "auditor_commit": "368ef32be4388d47f3faddf0ac78806e33d680cd",
+      "source_manifest_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+      "original_qualified_directories": [
+        "primary_repeat_2",
+        "cpu_repeat_2"
+      ],
+      "profile": "hepta.ndu.finite-entropic.v1",
+      "adapter": "hepta.ctrl1.resource-cost.v1",
+      "actual_executed_full_repository_commit": null,
+      "actual_executed_full_repository_tree": null,
+      "full_repository_execution_identity_status": "UNAVAILABLE_IN_REVIEWED_RECORDS",
+      "execution_identity_note": "Core commit, auditor commit and executed source-manifest digest are recorded separately. The reviewed SOURCE_COMMITS/QUALIFICATION metadata does not supply an observed full executed repository tree; a historical expected publication tree is not substituted for one."
+    },
+    "sample_definition": {
+      "independent_training_seeds": [
+        17,
+        23,
+        41
+      ],
+      "training_scenarios_per_profile": 4,
+      "development_scenarios_per_profile": 4,
+      "confirmation_scenarios_per_profile": 8,
+      "confirmation_rows": 864,
+      "sampled_episodes": 13824,
+      "source_scope": "Known finite/POMDP transition model, not real document/tool/GUI content outcomes.",
+      "namespace_limit": "A/B/C/D are distinct objective profiles, not the user's learning-chain A/B/C phases.",
+      "repeat_is_extra_independent_seed": false
+    },
+    "baseline_and_observed_result": {
+      "strongest_mean_value": "Fixed-threshold hybrid has the highest mean value in all four profiles.",
+      "joint_MPC_vs_mean_MPC": "NOT_DEMONSTRATED_96_OF_96_EQUAL",
+      "learned_router_vs_fixed_hybrid": "NOT_DEMONSTRATED",
+      "distillation_vs_AC_under_CPU_allowance": "NOT_DEMONSTRATED_AC_WINS_ALL_12_GROUPS",
+      "research_development_selection_counts": {
+        "Candidate": 9,
+        "NoUpdate": 3
+      },
+      "selection_limit": "Research Candidate/NoUpdate does not grant native owner adoption."
+    },
+    "cost_scope": {
+      "declared_cost": "Per-call simulation credits and simulated time under the fixed objective profile.",
+      "measured_scope": "Worker CPU includes teacher work, training, failed/partial epochs and checkpoint serialization; shared roster, parent supervision and evaluation have separate scopes.",
+      "same_allowance_equals_same_consumed_total_cost": false,
+      "full_physical_cost_equivalence_gate": "HOLD",
+      "worker_count": 72,
+      "inclusive_worker_CPU_seconds": 134.585339
+    },
+    "future_and_retention_qualification": {
+      "independent_external_task_outcomes": "HOLD",
+      "real_document_tool_gui_tasks": "HOLD",
+      "native_owner_adoption": "HOLD",
+      "real_old_task_slice_loss": "Not established by the reviewed finite-model qualification scope.",
+      "external_independent_execution_attestation": false
+    },
+    "rejected_originals": [
+      {
+        "original_directory": "primary",
+        "status": "INTEGRITY_REJECTED",
+        "expected_rows": 864,
+        "retained_rows": 860,
+        "repaired": false
+      },
+      {
+        "original_directory": "cpu_allowance",
+        "status": "INTEGRITY_REJECTED",
+        "expected_rows": 576,
+        "retained_rows": 460,
+        "expected_events": 144,
+        "retained_events": 116,
+        "inconsistent_final_checkpoints": 4,
+        "parameter_hash_mismatches": 3,
+        "repaired": false
+      }
+    ],
+    "replay_limit": {
+      "scope": "independent replay invocation using frozen code; not external evaluator attestation",
+      "excluded": [
+        "measured wall/CPU timings",
+        "training reproduction",
+        "external task outcomes"
+      ],
+      "retrained_during_replay": false,
+      "CPU_wall_timings_reproduced": false
+    },
+    "why_not_445_P1_gain": [
+      "No real content source clusters or independent real future B/C outcomes",
+      "Rows/episodes/reruns do not enlarge the three training-seed denominator",
+      "Learned router does not beat the strongest fixed hybrid on mean value",
+      "Full consumed-cost qualification and independent external outcomes remain HOLD",
+      "Real old-task loss and native owner adoption are not established"
+    ]
+  },
+  "indexed_raw_originals": [
+    {
+      "experiment": "MEM-1",
+      "path": "qualification/memory-cell-mem1/raw-evidence-v1.tar.xz",
+      "git_blob": "6f312b46ecae7f0d314b55504b0d7a5c75e3524b",
+      "declared_bytes": 1765660,
+      "declared_raw_sha256": "df21f41c562a695cf76419521a6c73a99539571ee40b1b7b4315323ce38c6d15"
+    },
+    {
+      "experiment": "CTRL-1",
+      "path": "qualification/ctrl1-decision-cell-20261108/primary_repeat_2/PLAN.json",
+      "git_blob": "2fed50f7740e81e6447b2b5e9e905268104311e2",
+      "declared_bytes": 8220,
+      "declared_raw_sha256": "7fb7e51050c04e9c0d99adc92fa56119d1af58fdefb9810a0d272f3dd8ab192c"
+    },
+    {
+      "experiment": "CTRL-1",
+      "path": "qualification/ctrl1-decision-cell-20261108/primary_repeat_2/ARTIFACTS.json",
+      "git_blob": "739317bf30ec61f67ac3b05a5eba09cea0170ad2",
+      "declared_bytes": 11808,
+      "declared_raw_sha256": "cf309d7aa5ed63746037ce7b1423edb1b57c89a87c35161986f7c5422c8a439b"
+    },
+    {
+      "experiment": "CTRL-1",
+      "path": "qualification/ctrl1-decision-cell-20261108/primary_repeat_2/REPORT.json",
+      "git_blob": "3df3b41c50baea95e1233dbff1f8f0a7492642e7",
+      "declared_bytes": 35223,
+      "declared_raw_sha256": "613badd00c6d51266e0cbf0b9bdcd8f1a574e79af41840cb1606564778bc6413"
+    },
+    {
+      "experiment": "CTRL-1",
+      "path": "qualification/ctrl1-decision-cell-20261108/cpu_repeat_2/PLAN.json",
+      "git_blob": "c3793f01da2587b1b951da8c718eee99625d44f3",
+      "declared_bytes": 5605,
+      "declared_raw_sha256": "5748ef5d7a47e1e7f741f200fe56e4fc80e9d17bfc2717388f4dea5ab0c45674"
+    },
+    {
+      "experiment": "CTRL-1",
+      "path": "qualification/ctrl1-decision-cell-20261108/cpu_repeat_2/ARTIFACTS.json",
+      "git_blob": "2692347e8c4f2d3602c19f8dad6970f57f447d17",
+      "declared_bytes": 53434,
+      "declared_raw_sha256": "0e43d0a995c860c22344451aa9fbe3b5fc4e52a397ffa8b8b253fb631ac9f3fa"
+    },
+    {
+      "experiment": "CTRL-1",
+      "path": "qualification/ctrl1-decision-cell-20261108/cpu_repeat_2/REPORT.json",
+      "git_blob": "d245c9ccfd69d33ca48967957e0b22d17fab2c71",
+      "declared_bytes": 8393,
+      "declared_raw_sha256": "8e2946383f7f9d9965a0d9d2a17f5dbdc2f568617f7333e0d5348fd07bcc6b71"
+    }
+  ],
+  "source_before": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": ""
+  },
+  "source_after": {
+    "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+    "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+    "tracked_status": ""
+  },
+  "updated_at_utc": "2026-11-12T02:20:04.072385+00:00"
+}
