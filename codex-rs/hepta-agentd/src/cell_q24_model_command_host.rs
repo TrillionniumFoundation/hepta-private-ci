@@ -13,6 +13,9 @@ use crate::CellQ24ModelProposalOwnerV1;
 use crate::OriginalCellEvaluationModelMaterialClientV1;
 use crate::OriginalCellEvaluationModelMaterialConnectionV1;
 use crate::OriginalCellEvaluationModelMaterialV1;
+use crate::OriginalCellEvaluationModelReadV1;
+use crate::OriginalCellQ24MaterialCommandReceiptV1;
+use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::OriginalCellEvaluationPanelRegistrationV1;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
@@ -40,12 +43,19 @@ enum Origin {
 struct State {
     custody: Option<(File, FileAnchorWitnessStore)>,
     material_connection: Option<OriginalCellEvaluationModelMaterialConnectionV1>,
-    material: Option<OriginalCellEvaluationModelMaterialClientV1>,
+    material: Option<Arc<OriginalCellEvaluationModelMaterialClientV1>>,
     context: Option<Context>,
     model: Option<Model>,
     execution_requested: bool,
     fenced: bool,
     retained: Option<OriginalCellQ24ModelCommandReceiptV1>,
+}
+struct OriginalModelInputs {
+    original: Arc<Trainer>,
+    dataset: OriginalCellQ24MaterialCommandReceiptV1,
+    training: OriginalCellQ24TrainingCommandReceiptV1,
+    material: Arc<OriginalCellEvaluationModelMaterialClientV1>,
+    started: u64,
 }
 pub struct OriginalCellQ24ModelCommandHostV1 {
     bootstrap: Arc<Bootstrap>,
@@ -154,7 +164,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
     fn original_inputs(
         &self,
         state: &mut State,
-    ) -> Result<(Arc<Trainer>, Context, OriginalCellEvaluationModelMaterialV1), Error> {
+    ) -> Result<OriginalModelInputs, Error> {
         let started = now()?;
         let original = self.bootstrap.ready()?.ok_or(Error::Unavailable)?;
         let dataset = self
@@ -171,22 +181,23 @@ impl OriginalCellQ24ModelCommandHostV1 {
         if state.material.is_none() {
             let connection = state.material_connection.take().ok_or(Error::Unavailable)?;
             state.material =
-                Some(connection.bind_original_training(dataset.snapshot().clone(), &training)?);
+                Some(Arc::new(connection.bind_original_training(dataset.snapshot().clone(), &training)?));
         }
-        // No Trainer lane/owners mutex is held while the Evaluator calls back
-        // into the original Trainer for its actual current evidence.
-        let material = self.runtime.block_on(
-            state
-                .material
-                .as_ref()
-                .ok_or(Error::Unavailable)?
-                .read_current(),
-        )?;
+        let material = Arc::clone(state.material.as_ref().ok_or(Error::Unavailable)?);
+        Ok(OriginalModelInputs { original, dataset, training, material, started })
+    }
+
+    fn original_context(
+        &self,
+        state: &mut State,
+        inputs: &OriginalModelInputs,
+        material: &OriginalCellEvaluationModelMaterialV1,
+    ) -> Result<Context, Error> {
         let context = Context::from_original(
             self.bootstrap.config.material.clone(),
             self.registration.clone(),
-            dataset,
-            training,
+            inputs.dataset.clone(),
+            inputs.training.clone(),
             material.original_evaluation().clone(),
         )?;
         if let Some(retained) = &state.context {
@@ -194,15 +205,23 @@ impl OriginalCellQ24ModelCommandHostV1 {
                 return Err(Error::Binding("unchanged original Model predecessors"));
             }
         }
-        let fresh = context.authenticate(started)?;
+        let fresh = context.authenticate(inputs.started)?;
         material.authenticate_current(fresh)?;
         state.context = Some(context.clone());
-        Ok((original, context, material))
+        Ok(context)
     }
 
     fn recover_deployment(&self) -> Result<(), Error> {
         let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
-        let (original, context, before) = self.original_inputs(&mut state)?;
+        let inputs = self.original_inputs(&mut state)?;
+        // The opaque transfer borrows the same original client. No original
+        // Trainer lane or owner lock spans these actual Evaluator exchanges.
+        let operation = self.runtime.block_on(
+            OriginalCellEvaluationModelMaterialClientV1::begin_model_read(inputs.material.as_ref()),
+        )?;
+        let context = self.original_context(&mut state, &inputs, OriginalCellEvaluationModelReadV1::material(&operation))?;
+        let original = &inputs.original;
+        let before = OriginalCellEvaluationModelReadV1::material(&operation);
         context.require_qualified()?;
         before.require_original_model_input(
             &context.training_cut,
@@ -218,11 +237,11 @@ impl OriginalCellQ24ModelCommandHostV1 {
                 file,
                 witness,
                 &context,
-                &before,
+                before,
             )?,
         );
         let (observed, material, fresh) =
-            self.current_after(&mut state, &original, &context, &before)?;
+            self.current_after(&mut state, original, &context, operation)?;
         if let effect::Observed::Completed(receipt) = observed {
             use super::super::model_command::wire;
             let wire::Outcome::Completed { record } =

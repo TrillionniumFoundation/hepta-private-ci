@@ -20,6 +20,7 @@ use super::profile::RootResidentLearningProfileV3;
 use super::stages::ResidentOriginalStageOwnersV3;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::LearningIterationStageOwnerPortsV1;
+use crate::learning_iteration_evidence_client::OriginalCandidateOperationEvidence;
 
 pub(super) struct ResidentOriginalEvidenceV3 {
     pub(super) signatures: Vec<SignedLearningEvidenceV1>,
@@ -34,13 +35,16 @@ pub(super) async fn original_attestations(
     cancellation: &CancellationToken,
 ) -> Result<ResidentOriginalEvidenceV3, Error> {
     owner.authority.profile.scope.validate_snapshot(snapshot)?;
-    let has_model = snapshot
-        .receipts
-        .iter()
-        .any(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal);
-    if !has_model {
-        stages.validate_recovery(snapshot).await?;
+    let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+    if coordinator.candidate().is_some() && matches!(snapshot.receipts.len(), 4 | 5) {
+        let original = ResidentOriginalStageOwnersV3::read_original_candidate_evidence(
+            stages, snapshot,
+        ).await?;
+        return candidate_continuation_attestations(
+            owner, stages, verifier, snapshot, original, cancellation,
+        ).await;
     }
+    stages.validate_recovery(snapshot).await?;
     let mut signatures = Vec::with_capacity(snapshot.receipts.len());
     for receipt in snapshot
         .receipts
@@ -54,13 +58,6 @@ pub(super) async fn original_attestations(
                 .await?,
         );
     }
-    // Model has no LearningEvidence role. This last actual Model read performs
-    // its own D/T/E before/after reads and final original journal CURRENT.
-    let original_model = if has_model {
-        Some(ResidentOriginalStageOwnersV3::read_original_model(stages, snapshot).await?)
-    } else {
-        None
-    };
     // All role I/O precedes this fresh Root clock and revalidation of every
     // retained complete signature, including the earliest observer window.
     let (_, fresh) = owner.read(cancellation).await?;
@@ -70,26 +67,45 @@ pub(super) async fn original_attestations(
         &owner.authority.profile.scope,
         verifier,
     )?;
-    let model = original_model
-        .as_ref()
-        .map(|original| {
-            ResidentOriginalModelProofV3::from_original_readback(
-                &owner.authority.profile,
-                verifier,
-                snapshot,
-                &signatures,
-                original,
-                fresh / 1_000,
-            )
-        })
-        .transpose()?;
     verify_original_evidence(
         &owner.authority.profile,
         verifier,
         snapshot,
         &signatures,
-        model.as_ref(),
+        None,
         fresh / 1_000,
+    )?;
+    Ok(ResidentOriginalEvidenceV3 { signatures, model: None })
+}
+
+/// Consume only the opaque result returned by this same concrete Candidate
+/// operation. Independent Root readback calls always start new original I/O.
+/// No new signature, retained result cache or mutable runtime slot is involved.
+pub(super) async fn candidate_continuation_attestations(
+    owner: &Arc<ResidentRegisteredStateV3>,
+    stages: &ResidentOriginalStageOwnersV3,
+    verifier: &LearningEvidenceVerifierV1,
+    snapshot: &LearningIterationSnapshotV1,
+    original: OriginalCandidateOperationEvidence<'_>,
+    cancellation: &CancellationToken,
+) -> Result<ResidentOriginalEvidenceV3, Error> {
+    let (_, fresh) = owner.read(cancellation).await?;
+    ResidentOriginalStageOwnersV3::require_initial(
+        stages,
+        &owner.authority.profile.initial,
+        &owner.authority.profile.scope,
+        verifier,
+    )?;
+    let (signatures, original_model) = ResidentOriginalStageOwnersV3::consume_original_candidate_evidence(
+        stages, original, snapshot, fresh / 1_000,
+    )?;
+    let model = original_model.as_ref().map(|original| {
+        ResidentOriginalModelProofV3::from_original_readback(
+            &owner.authority.profile, verifier, snapshot, &signatures, original, fresh / 1_000,
+        )
+    }).transpose()?;
+    verify_original_evidence(
+        &owner.authority.profile, verifier, snapshot, &signatures, model.as_ref(), fresh / 1_000,
     )?;
     Ok(ResidentOriginalEvidenceV3 { signatures, model })
 }
@@ -122,6 +138,32 @@ pub(super) fn verify_original_evidence(
         (true, Some(model)) => model.require_original(profile, verifier, snapshot, signatures, now),
         (false, Some(_)) | (true, None) => Err(Error::WrongScope),
     }
+}
+
+/// A checkpoint has already happened. Its original post-CAS clock must still
+/// authenticate every complete role signature and Model record before the
+/// same continuation may enter another stage. Failure never undoes that CAS.
+pub(super) fn verify_checkpoint_evidence(
+    profile: &RootResidentLearningProfileV3,
+    verifier: &LearningEvidenceVerifierV1,
+    snapshot: &LearningIterationSnapshotV1,
+    signatures: &[SignedLearningEvidenceV1],
+    model: Option<&ResidentOriginalModelProofV3>,
+    before_ms: u64,
+    committed_at_ms: u64,
+) -> Result<(), Error> {
+    if committed_at_ms < before_ms {
+        return Err(Error::CommitUncertain);
+    }
+    verify_original_evidence(
+        profile,
+        verifier,
+        snapshot,
+        signatures,
+        model,
+        committed_at_ms / 1_000,
+    )
+    .map_err(|_| Error::CommitUncertain)
 }
 
 /// A saved cold tuple is only a comparison pin. This function never returns

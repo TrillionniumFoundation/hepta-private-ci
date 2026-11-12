@@ -44,9 +44,24 @@ impl OriginalCellQ24ModelCommandHostV1 {
             return Ok(wire::Outcome::ReadbackRequired);
         }
         let result = (|| {
-            let (original, context, before) = self.original_inputs(&mut state)?;
+            let inputs = self.original_inputs(&mut state)?;
+            let operation = self.runtime.block_on(
+                OriginalCellEvaluationModelMaterialClientV1::begin_model_read(inputs.material.as_ref()),
+            )?;
+            let context = self.original_context(&mut state, &inputs, OriginalCellEvaluationModelReadV1::material(&operation))?;
+            let original = &inputs.original;
+            let before = OriginalCellEvaluationModelReadV1::material(&operation);
             request.require_context(&context, request.nonce)?;
             if matches!(context.require_qualified(), Err(Error::Ineligible)) {
+                let expected_material = before.binding();
+                let completed = self.runtime.block_on(OriginalCellEvaluationModelReadV1::finish(operation))?;
+                let fresh = context.authenticate(now()?)?;
+                if completed.binding() != expected_material
+                    || completed.original_evaluation() != &context.evaluation
+                {
+                    return Err(Error::CommitUncertain);
+                }
+                completed.authenticate_current(fresh)?;
                 return Ok(wire::Outcome::Ineligible);
             }
             context.require_qualified()?;
@@ -81,7 +96,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
                             file,
                             witness,
                             &context,
-                            &before,
+                            before,
                         )?,
                     );
                     let model = state.model.as_mut().ok_or(Error::CommitUncertain)?;
@@ -90,7 +105,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
                             original.as_ref(),
                             model,
                             &context,
-                            &before,
+                            before,
                         ),
                     )?
                 }
@@ -100,12 +115,12 @@ impl OriginalCellQ24ModelCommandHostV1 {
                         original.as_ref(),
                         model,
                         &context,
-                        &before,
+                        before,
                     ))?
                 }
             };
             let (after, material, fresh) =
-                self.current_after(&mut state, &original, &context, &before)?;
+                self.current_after(&mut state, original, &context, operation)?;
             if observed != after {
                 return Err(Error::CommitUncertain);
             }
@@ -140,23 +155,18 @@ impl OriginalCellQ24ModelCommandHostV1 {
         state: &mut State,
         original: &Trainer,
         context: &Context,
-        before: &OriginalCellEvaluationModelMaterialV1,
+        operation: OriginalCellEvaluationModelReadV1<'_>,
     ) -> Result<(Observed, codex_hepta_types::Digest32, u64), Error> {
         let started = now()?;
-        let after = self.runtime.block_on(
-            state
-                .material
-                .as_ref()
-                .ok_or(Error::Unavailable)?
-                .read_current(),
-        )?;
-        if after.binding() != before.binding()
-            || after.original_evaluation() != before.original_evaluation()
+        let expected_material = OriginalCellEvaluationModelReadV1::material(&operation).binding();
+        // Finish rereads the original E journal, complete B/retention panel and
+        // T, and compares the full Begin/Finish body on the same held channel.
+        // Failure leaves both this response and the client permanently fenced.
+        let after = self.runtime.block_on(OriginalCellEvaluationModelReadV1::finish(operation))?;
+        if after.binding() != expected_material
             || after.original_evaluation() != &context.evaluation
         {
-            return Err(Error::Binding(
-                "unchanged original current Evaluation material",
-            ));
+            return Err(Error::Binding("unchanged original current Evaluation material"));
         }
         // The Evaluator callback has returned. Re-enter only the original lane
         // to read the exact T and Model; never call recover or commit here.
@@ -166,7 +176,6 @@ impl OriginalCellQ24ModelCommandHostV1 {
         ))?;
         let fresh = context.authenticate(started)?;
         require_clock(started, fresh)?;
-        before.authenticate_current(fresh)?;
         after.authenticate_current(fresh)?;
         let input = after.require_original_model_input(
             &context.training_cut,

@@ -43,6 +43,10 @@ use evaluation::EvaluationLane;
 #[path = "cell_q24_candidate_stage_model.rs"]
 mod model;
 use model::ModelLane;
+#[path = "cell_q24_candidate_stage_operation.rs"]
+mod operation;
+pub(crate) use operation::OriginalCandidateOperationEvidence;
+use operation::OperationLane;
 
 /// All endpoints are original connected streams delivered at the same initial
 /// handoff. There is no future Training receipt, B result, panel or model DTO.
@@ -62,6 +66,7 @@ pub struct OriginalCellQ24CandidateStageOwnersV1 {
     candidate: Mutex<CandidateLane>,
     evaluation: Mutex<EvaluationLane>,
     model: Mutex<ModelLane>,
+    operation: Mutex<OperationLane>,
     end: Instant,
 }
 
@@ -117,6 +122,38 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         gate: Arc<RootResidentLearningEffectGateV3>,
     ) -> Result<(), Error> {
         OriginalCellQ24NoUpdateStageOwnersV1::install_fresh_resident_gate(&mut self.common, gate)
+    }
+
+    pub(crate) async fn read_original_evidence(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<OriginalCandidateOperationEvidence<'_>, Error> {
+        tokio::time::timeout_at(self.end.into(), async {
+            self.require_live_deadline()?;
+            match snapshot.receipts.len() {
+                4 => self.original_evaluation(snapshot, evaluation::Action::Readback).await,
+                5 => self.original_model(snapshot, model::Action::Readback).await,
+                _ => Err(Error::WrongScope),
+            }
+        }).await.map_err(|_| Error::CommitUncertain)?
+    }
+
+    pub(crate) async fn execute_original_evidence(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        stage: Stage,
+    ) -> Result<OriginalCandidateOperationEvidence<'_>, Error> {
+        tokio::time::timeout_at(self.end.into(), async {
+            self.require_live_deadline()?;
+            if self.common.origin != Origin::Fresh {
+                return Err(Error::WrongScope);
+            }
+            match stage {
+                Stage::Evaluation => self.original_evaluation(snapshot, evaluation::Action::Execute).await,
+                Stage::Proposal => self.original_model(snapshot, model::Action::Execute).await,
+                Stage::Experience | Stage::Dataset | Stage::Training | Stage::Selection | Stage::NextUse => Err(Error::WrongScope),
+            }
+        }).await.map_err(|_| Error::CommitUncertain)?
     }
 }
 
@@ -254,6 +291,7 @@ pub(crate) fn fixture_from_original_clients(
         candidate: Mutex::new(CandidateLane::new(initial)),
         evaluation: Mutex::new(EvaluationLane::fixture_unavailable()),
         model: Mutex::new(ModelLane::fixture_unavailable()),
+        operation: Mutex::new(OperationLane::default()),
         end,
     };
     owners.require_initial(

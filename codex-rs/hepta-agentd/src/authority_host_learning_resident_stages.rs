@@ -18,11 +18,19 @@ use crate::OriginalCellQ24CandidateStageOwnersV1;
 use crate::OriginalCellQ24NoUpdateStageOwnersV1;
 use crate::PreparedLearningIterationProposalV1;
 use crate::RootResidentLearningEffectGateV3;
+use crate::learning_iteration_evidence_client::OriginalCandidateOperationEvidence;
 
 /// Construction is only the corresponding concrete, consuming public factory.
 pub(super) enum ResidentOriginalStageOwnersV3 {
     NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+}
+
+/// A single admitted continuation owns this value until its Root checkpoint.
+/// No resident field, transport reply or recovered request can retain it.
+pub(super) struct ResidentStageCompletion<'a> {
+    pub(super) receipt: LearningIterationReceiptV1,
+    pub(super) candidate: Option<OriginalCandidateOperationEvidence<'a>>,
 }
 
 impl ResidentOriginalStageOwnersV3 {
@@ -87,15 +95,47 @@ impl ResidentOriginalStageOwnersV3 {
         }
     }
 
-    pub(super) async fn read_original_model(
+    pub(super) async fn read_original_candidate_evidence(
         &self,
         snapshot: &LearningIterationSnapshotV1,
-    ) -> Result<crate::OriginalCellQ24ModelCommandReceiptV1, Error> {
+    ) -> Result<OriginalCandidateOperationEvidence<'_>, Error> {
         match self {
             Self::Candidate(stages) => {
-                OriginalCellQ24CandidateStageOwnersV1::read_original_model(stages, snapshot).await
+                OriginalCellQ24CandidateStageOwnersV1::read_original_evidence(stages, snapshot).await
             }
-            Self::NoUpdate(_) => Err(Error::OwnerUnavailable("NoUpdate has no Model record")),
+            Self::NoUpdate(_) => Err(Error::OwnerUnavailable("NoUpdate has no Candidate evidence")),
+        }
+    }
+
+    pub(super) async fn execute_original_stage(
+        &self,
+        snapshot: &LearningIterationSnapshotV1,
+        stage: Stage,
+    ) -> Result<ResidentStageCompletion<'_>, Error> {
+        if let Self::Candidate(stages) = self
+            && matches!(stage, Stage::Evaluation | Stage::Proposal)
+        {
+            let candidate = OriginalCellQ24CandidateStageOwnersV1::execute_original_evidence(
+                stages, snapshot, stage,
+            ).await?;
+            return Ok(ResidentStageCompletion {
+                receipt: candidate.receipt().clone(),
+                candidate: Some(candidate),
+            });
+        }
+        let receipt = LearningIterationStageOwnerPortsV1::execute_stage(self, snapshot, stage).await?;
+        Ok(ResidentStageCompletion { receipt, candidate: None })
+    }
+
+    pub(super) fn consume_original_candidate_evidence(
+        &self,
+        original: OriginalCandidateOperationEvidence<'_>,
+        snapshot: &LearningIterationSnapshotV1,
+        observed: u64,
+    ) -> Result<(Vec<SignedLearningEvidenceV1>, Option<crate::OriginalCellQ24ModelCommandReceiptV1>), Error> {
+        match self {
+            Self::Candidate(stages) => OriginalCandidateOperationEvidence::into_original_parts(original, stages, snapshot, observed),
+            Self::NoUpdate(_) => Err(Error::WrongScope),
         }
     }
 }

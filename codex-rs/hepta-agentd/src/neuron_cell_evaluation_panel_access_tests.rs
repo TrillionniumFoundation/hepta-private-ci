@@ -9,7 +9,8 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         &mut self,
         at: u64,
     ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
-        self.read_current_with_clock(|| Ok(at)).await
+        self.read_current_with_clock(|| Ok(at), TrainingRead::Independent)
+            .await
     }
 
     pub(crate) fn fixture_cohort_bytes(&mut self) -> anyhow::Result<Vec<Vec<u8>>> {

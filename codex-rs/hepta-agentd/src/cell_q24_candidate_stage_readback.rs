@@ -16,6 +16,7 @@ use super::super::auth;
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24CandidateStageOwnersV1;
+use super::operation::CandidateOriginalOperation;
 use crate::OriginalCellQ24CandidateMaterialV1;
 use crate::OriginalCellQ24CandidateReadbackClientV1;
 use crate::OriginalCellQ24CandidateReadbackErrorV1;
@@ -63,7 +64,6 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         snapshot: &LearningIterationSnapshotV1,
         mode: CandidateRead,
     ) -> Result<OriginalCellQ24CandidateMaterialV1, Error> {
-        let started_at = auth::now()?;
         self.require_live_deadline()?;
         auth::require_snapshot(&self.common.material, snapshot)?;
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
@@ -73,7 +73,6 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
-        let expected_bundle = coordinator.candidate().ok_or(Error::WrongScope)?;
         if mode == CandidateRead::Dispatch && self.common.origin != Origin::Fresh {
             return Err(Error::WrongScope);
         }
@@ -88,13 +87,29 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             )
             .await?;
         }
-        // Always use one lock order and the original same-job owners. These
-        // async ownership locks serialize work; no Ledger lock crosses I/O.
-        let mut state = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
+        let operation = CandidateOriginalOperation::begin(self, snapshot).await?;
+        let material = OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation).await?;
+        let operation = CandidateOriginalOperation::close(operation).await?;
+        if mode == CandidateRead::Dispatch {
+            let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
+            RootResidentLearningEffectGateV3::require_current(
+                gate,
+                snapshot,
+                &self.common.material.scope,
+            )
+            .await?;
+        }
+        operation.candidate(material)
+    }
+
+    pub(super) async fn read_candidate_in_operation(
+        &self,
+        operation: &CandidateOriginalOperation<'_>,
+    ) -> Result<OriginalCellQ24CandidateMaterialV1, Error> {
+        operation.require_owner(self)?;
+        let snapshot = &operation.training_cut;
+        let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+        let expected_bundle = coordinator.candidate().ok_or(Error::WrongScope)?;
         let mut lane = self.candidate.try_lock().map_err(|_| Error::QueueFull)?;
         if lane.failed {
             return Err(Error::CommitUncertain);
@@ -102,17 +117,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         // Cancellation or any failure after this point permanently fences this
         // instance. A new readonly recovery must contact the original owners.
         lane.failed = true;
-        state.read_prefix(&self.common, snapshot).await?;
-        let dataset = state
-            .original_dataset
-            .as_ref()
-            .ok_or(Error::CommitUncertain)?
-            .clone();
-        let training = state
-            .original_training
-            .as_ref()
-            .ok_or(Error::CommitUncertain)?
-            .clone();
+        let dataset = &operation.dataset;
+        let training = &operation.training;
         if snapshot.receipts.get(2) != Some(training.receipt()) {
             return Err(Error::WrongScope);
         }
@@ -121,7 +127,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             lane.client = Some(
                 OriginalCellQ24TrainingCommandConnectionV1::bind_original_candidate_material(
                     initial,
-                    dataset,
+                    dataset.clone(),
                     training.clone(),
                     Arc::clone(&self.baseline),
                 )
@@ -140,33 +146,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
-        // Re-read all three original roles after every Candidate page. A saved
-        // signature, successful earlier page, or retained model is not CURRENT.
-        state.read_prefix(&self.common, snapshot).await?;
-        if mode == CandidateRead::Dispatch {
-            let gate = self.common.root.as_ref().ok_or(Error::OwnerUnavailable(
-                "fresh resident Candidate continuation",
-            ))?;
-            RootResidentLearningEffectGateV3::require_current(
-                gate,
-                snapshot,
-                &self.common.material.scope,
-            )
-            .await?;
-        }
-        // The final original owner/Root I/O precedes all fresh window checks.
+        // The enclosing private operation performs the second actual E/D/T
+        // prefix after all Candidate/Evaluator I/O. This value alone cannot
+        // complete that operation or supply Root's evidence.
         let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
-        auth::require_clock(started_at, fresh)?;
-        auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?;
-        let current = state
-            .original_training
-            .as_ref()
-            .ok_or(Error::CommitUncertain)?;
-        if material.receipt() != current.receipt()
-            || material.attestation() != current.attestation()
-        {
-            return Err(Error::WrongScope);
-        }
         auth::verify_receipt(
             &self.common.material,
             material.receipt(),

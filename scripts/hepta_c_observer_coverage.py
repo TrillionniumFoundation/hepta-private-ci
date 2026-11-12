@@ -328,6 +328,7 @@ CANDIDATE_STAGE_CASES = tuple(
     for name in (
         "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
         "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch",
+        "candidate_stage_cancelled_operation_cannot_reuse_original_prefix",
     )
 )
 
@@ -423,10 +424,21 @@ ORIGINAL_ARTIFACT_HEAD_CASES = tuple(
     )
 )
 
+ORIGINAL_EVALUATION_OPERATION_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::training_operation::" + name
+    for name in (
+        "original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+        "original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+        "original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+        "original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+    )
+)
+
 OWNER_GROUPS = (
     ("original_artifact_head", PACKAGE, ORIGINAL_ARTIFACT_HEAD_CASES),
     ("original_artifact_preparation", "codex-hepta-learning-artifacts", ORIGINAL_ARTIFACT_PREPARATION_CASES),
     ("legacy_artifact_recovery", "codex-hepta-learning-artifacts", LEGACY_ARTIFACT_RECOVERY_CASES),
+    ("original_evaluation_operation", PACKAGE, ORIGINAL_EVALUATION_OPERATION_CASES),
     ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
     (
         "original_evaluation_model_material",

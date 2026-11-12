@@ -23,7 +23,6 @@ use super::profile::RootResidentLearningProfileV3;
 use super::stages::ResidentOriginalStageOwnersV3;
 use crate::AgentdError;
 use crate::LearningIterationRuntimeErrorV1 as Error;
-use crate::LearningIterationStageOwnerPortsV1;
 use crate::RootResidentLearningEffectGateV3;
 
 pub(super) enum ResidentRequestModeV3 {
@@ -318,7 +317,9 @@ async fn continue_original(
         gate.begin(&predecessor, stage).await?;
         // The durable local intent has been committed. Original role hosts,
         // not this released Root lock, linearize any subsequent remote effects.
-        let call = stages.execute_stage(&predecessor, stage);
+        let call = ResidentOriginalStageOwnersV3::execute_original_stage(
+            stages.as_ref(), &predecessor, stage,
+        );
         let mut call = Box::pin(call);
         let mut watchdog = tokio::time::interval(Duration::from_millis(250));
         watchdog.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
@@ -327,7 +328,7 @@ async fn continue_original(
                 predecessor.request.budget.maximum_training_milliseconds,
             ))
             .ok_or(Error::DeadlineExceeded)?;
-        let receipt = loop {
+        let completed = loop {
             tokio::select! {
                 biased;
                 _ = gate.cancellation().cancelled() => return Err(Error::CommitUncertain),
@@ -340,17 +341,17 @@ async fn continue_original(
         };
         RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)
             .await?;
-        profile.scope.validate_observation(&receipt.observation)?;
+        profile.scope.validate_observation(&completed.receipt.observation)?;
         let (_, now) = owner.read(gate.cancellation()).await?;
-        coordinator.record(receipt, now / 1_000)?;
-        let evidence = authentication::original_attestations(
-            &owner,
-            &stages,
-            &verifier,
-            coordinator.snapshot(),
-            gate.cancellation(),
-        )
-        .await?;
+        coordinator.record(completed.receipt, now / 1_000)?;
+        let evidence = match completed.candidate {
+            Some(original) => authentication::candidate_continuation_attestations(
+                &owner, &stages, &verifier, coordinator.snapshot(), original, gate.cancellation(),
+            ).await?,
+            None => authentication::original_attestations(
+                &owner, &stages, &verifier, coordinator.snapshot(), gate.cancellation(),
+            ).await?,
+        };
         RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope)
             .await?;
         let (_, fresh) = owner.read(gate.cancellation()).await?;
@@ -368,8 +369,20 @@ async fn continue_original(
             evidence.model.as_ref(),
             fresh / 1_000,
         )?;
-        gate.checkpoint(&predecessor, coordinator.snapshot().clone())
+        let committed_at = gate.checkpoint(&predecessor, coordinator.snapshot().clone())
             .await?;
+        // The checkpoint is already durable. An expired original role window
+        // at its actual post-CAS clock is uncertain; retain those bytes and
+        // drop this continuation without dispatching the next stage.
+        authentication::verify_checkpoint_evidence(
+            profile,
+            &verifier,
+            coordinator.snapshot(),
+            &evidence.signatures,
+            evidence.model.as_ref(),
+            fresh,
+            committed_at,
+        )?;
     }
     // Dropping the continuation permanently disables its installed effect gate.
     // The complete result is returned only through the independent readback path.

@@ -288,3 +288,48 @@ pub(crate) fn fixture_original_receipt_client_until_close(
     });
     Ok((client, peer))
 }
+
+/// A bounded negative-mechanism peer: each real request observes the next
+/// explicitly supplied signature. No production attestation is manufactured.
+pub(crate) fn fixture_original_receipt_sequence_until_close(
+    initial: LearningIterationSnapshotV1,
+    receipt: LearningIterationReceiptV1,
+    verifier: LearningEvidenceVerifierV1,
+    signatures: Vec<SignedLearningEvidenceV1>,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<anyhow::Result<usize>>,
+)> {
+    anyhow::ensure!(!signatures.is_empty() && signatures.len() <= 128);
+    let mut fixture = Fixture {
+        initial,
+        receipt,
+        verifier,
+        signature: signatures[0].clone(),
+    };
+    let (client, mut channel) = fixture.original_owner_client()?;
+    let expected = fixture.signature.payload_digest.to_string();
+    let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
+        for index in 0..128 {
+            fixture.signature = signatures[index.min(signatures.len() - 1)].clone();
+            let exchanged = channel.exchange(|bytes| {
+                let request: wire::Request = serde_json::from_slice(bytes)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert_eq!(request.request_id, index as u64 + 1);
+                assert_eq!(request.operation, wire::OPERATION);
+                assert_eq!(request.receipt_digest, expected);
+                let encoded = serde_json::to_value(&request)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert!(encoded.get("payload").is_none());
+                assert!(encoded.get("signature").is_none());
+                serde_json::to_vec(&response(request, fixture.evidence()))
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+            })?;
+            if !exchanged {
+                return Ok(index);
+            }
+        }
+        anyhow::bail!("bounded original evidence sequence exceeded its request budget")
+    });
+    Ok((client, peer))
+}

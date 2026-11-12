@@ -10,17 +10,15 @@ use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1 as Stage;
 use codex_hepta_types::AuthorityPosture;
 
-use super::super::auth;
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24CandidateStageOwnersV1;
-use crate::OriginalCellEvaluationCommandReceiptV1;
-use crate::OriginalCellQ24MaterialCommandReceiptV1;
+use super::OriginalCandidateOperationEvidence;
+use super::operation::CandidateOriginalOperation;
 use crate::OriginalCellQ24ModelCommandClientV1;
 use crate::OriginalCellQ24ModelCommandConnectionV1;
 use crate::OriginalCellQ24ModelCommandErrorV1;
 use crate::OriginalCellQ24ModelCommandReceiptV1;
-use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::RootResidentLearningEffectGateV3;
 
 pub(super) struct ModelLane {
@@ -52,7 +50,7 @@ impl ModelLane {
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-enum Action {
+pub(super) enum Action {
     Execute,
     Readback,
 }
@@ -68,6 +66,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         Ok(self
             .original_model(snapshot, Action::Execute)
             .await?
+            .into_model()?
             .receipt()
             .clone())
     }
@@ -78,15 +77,14 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         &self,
         snapshot: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellQ24ModelCommandReceiptV1, Error> {
-        self.original_model(snapshot, Action::Readback).await
+        self.original_model(snapshot, Action::Readback).await?.into_model()
     }
 
-    async fn original_model(
+    pub(super) async fn original_model(
         &self,
         snapshot: &LearningIterationSnapshotV1,
         action: Action,
-    ) -> Result<OriginalCellQ24ModelCommandReceiptV1, Error> {
-        let started = auth::now()?;
+    ) -> Result<OriginalCandidateOperationEvidence<'_>, Error> {
         self.require_live_deadline()?;
         let training_cut = self.training_prefix(snapshot)?;
         if !(4..=5).contains(&snapshot.receipts.len()) {
@@ -109,6 +107,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::WrongScope);
         }
+        let operation = CandidateOriginalOperation::begin(self, snapshot).await?;
         {
             let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
             if lane.failed {
@@ -118,9 +117,14 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             // an unconfirmed dispatch. Recovery needs a new readonly handoff.
             lane.failed = true;
         }
-        let before = self
-            .model_predecessors(evaluation_cut.snapshot(), &training_cut)
-            .await?;
+        let before = OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(
+            self, &operation, super::evaluation::Action::Readback,
+        ).await?;
+        if before.snapshot() != evaluation_cut.snapshot()
+            || before.training_attestation() != operation.training.attestation()
+        {
+            return Err(Error::WrongScope);
+        }
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
             RootResidentLearningEffectGateV3::require_current(
@@ -137,9 +141,9 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
                 lane.client = Some(
                     OriginalCellQ24ModelCommandConnectionV1::bind_original_evaluation(
                         connection,
-                        before.0.clone(),
-                        before.1.clone(),
-                        before.2.clone(),
+                        operation.dataset.clone(),
+                        operation.training.clone(),
+                        before.clone(),
                     )
                     .map_err(model_failure)?,
                 );
@@ -158,13 +162,16 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             }
             .map_err(model_failure)?
         };
-        // No Model/Trainer owner or Model lane is held during Evaluator I/O.
-        let after = self
-            .model_predecessors(evaluation_cut.snapshot(), &training_cut)
-            .await?;
+        // This is an actual independent Evaluator read outside the Model
+        // lane. Its own host checks T and the full B/retention panel; no
+        // Candidate page or generic StageOwner recursively reopens that work.
+        let after = OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(
+            self, &operation, super::evaluation::Action::Readback,
+        ).await?;
         if before != after {
             return Err(Error::CommitUncertain);
         }
+        let closed = CandidateOriginalOperation::close(operation).await?;
         let current = {
             let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
             let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;
@@ -199,24 +206,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
                 return Err(Error::CommitUncertain);
             }
         }
-        let common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
-        if common.original_dataset.as_ref() != Some(&after.0)
-            || common.original_training.as_ref() != Some(&after.1)
-        {
-            return Err(Error::CommitUncertain);
-        }
-        let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
-        auth::require_clock(started, fresh)?;
-        auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?;
-        self.verify_original_evaluation(snapshot, &training_cut, &after.1, &after.2, fresh)?;
-        self.common
-            .material
-            .scope
-            .validate_snapshot(current.snapshot())?;
+        self.common.material.scope.validate_snapshot(current.snapshot())?;
         self.require_live_deadline()?;
         let mut lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
         if lane
@@ -228,45 +218,9 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         }
         lane.retained = Some(current.clone());
         lane.failed = false;
-        Ok(current)
+        closed.model(after, current)
     }
 
-    async fn model_predecessors(
-        &self,
-        evaluation_cut: &LearningIterationSnapshotV1,
-        training_cut: &LearningIterationSnapshotV1,
-    ) -> Result<
-        (
-            OriginalCellQ24MaterialCommandReceiptV1,
-            OriginalCellQ24TrainingCommandReceiptV1,
-            OriginalCellEvaluationCommandReceiptV1,
-        ),
-        Error,
-    > {
-        let evaluation = self.read_original_evaluation(evaluation_cut).await?;
-        let mut common = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
-        common.read_prefix(&self.common, training_cut).await?;
-        let dataset = common
-            .original_dataset
-            .as_ref()
-            .ok_or(Error::CommitUncertain)?
-            .clone();
-        let training = common
-            .original_training
-            .as_ref()
-            .ok_or(Error::CommitUncertain)?
-            .clone();
-        if evaluation.snapshot() != evaluation_cut
-            || evaluation.training_attestation() != training.attestation()
-        {
-            return Err(Error::WrongScope);
-        }
-        Ok((dataset, training, evaluation))
-    }
 }
 
 fn model_failure(error: OriginalCellQ24ModelCommandErrorV1) -> Error {

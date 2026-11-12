@@ -176,10 +176,12 @@ impl RootResidentLearningEffectGateV3 {
         &self,
         predecessor: &LearningIterationSnapshotV1,
         next: LearningIterationSnapshotV1,
-    ) -> Result<(), Error> {
+    ) -> Result<u64, Error> {
+        // Preserve the original authority clock sampled after the actual CAS.
+        // The same continuation must revalidate its complete role evidence at
+        // that boundary before attempting any subsequent stage.
         self.local(GateActionV3::Checkpoint(next), predecessor)
             .await
-            .map(|_| ())
     }
 
     pub(super) fn cancellation(&self) -> &CancellationToken {

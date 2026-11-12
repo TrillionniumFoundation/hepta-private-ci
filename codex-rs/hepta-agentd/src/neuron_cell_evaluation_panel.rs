@@ -76,18 +76,20 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
     }
 
     pub async fn read_current(&mut self) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
-        self.read_current_with_clock(original::now).await
+        self.read_current_with_clock(original::now, TrainingRead::Independent)
+            .await
     }
 
     async fn read_current_with_clock(
         &mut self,
         mut clock: impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send,
+        training: TrainingRead<'_>,
     ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
         if self.fenced {
             return Err(Error::CommitUncertain);
         }
         self.fenced = true;
-        let result = self.read_original_panel(&mut clock).await;
+        let result = self.read_original_panel(&mut clock, training).await;
         if result.is_ok() {
             self.fenced = false;
         }
@@ -97,10 +99,11 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
     async fn read_original_panel(
         &mut self,
         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
+        training: TrainingRead<'_>,
     ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
         let started_at = clock()?;
-        let before = self.read_members(clock).await?;
-        let after = self.read_members(clock).await?;
+        let before = self.read_members(clock, training).await?;
+        let after = self.read_members(clock, training).await?;
         if before != after {
             return Err(Error::CommitUncertain);
         }
@@ -127,6 +130,7 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
     async fn read_members(
         &mut self,
         clock: &mut (impl FnMut() -> Result<u64, OriginalCellEvaluationQualificationErrorV1> + Send),
+        training: TrainingRead<'_>,
     ) -> Result<Vec<OriginalCellEvaluationPanelMemberReadbackV1>, Error> {
         let mut results = Vec::with_capacity(self.retention.len() + 1);
         results.push(
@@ -134,12 +138,13 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
                 &mut self.primary,
                 self.registration.primary(),
                 clock,
+                training,
             )
             .await?,
         );
         for (owner, task) in self.retention.iter_mut().zip(self.registration.retention()) {
             results.push(
-                OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock)
+                OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)
                     .await?,
             );
         }
@@ -157,6 +162,8 @@ mod test_access;
 
 #[path = "neuron_cell_evaluation_host.rs"]
 mod host;
+pub(crate) use host::TrainingOperation;
+pub(crate) use host::TrainingRead;
 pub use host::OriginalCellEvaluationCommandClientV1;
 pub use host::OriginalCellEvaluationCommandConnectionV1;
 pub use host::OriginalCellEvaluationCommandErrorV1;
@@ -167,3 +174,4 @@ pub(crate) use host::OriginalCellEvaluationModelInputV1;
 pub use host::OriginalCellEvaluationModelMaterialClientV1;
 pub use host::OriginalCellEvaluationModelMaterialConnectionV1;
 pub use host::OriginalCellEvaluationModelMaterialV1;
+pub(crate) use host::OriginalCellEvaluationModelReadV1;

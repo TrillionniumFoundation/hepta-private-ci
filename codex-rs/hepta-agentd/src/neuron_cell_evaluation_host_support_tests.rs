@@ -49,6 +49,37 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
 }
 
 impl OriginalCellEvaluationHostV1 {
+    /// Install only an actual fixture transport. This does not construct an
+    /// operation observation; production still requires the consuming factory.
+    pub(crate) fn fixture_shared_training_operation(
+        &mut self,
+        trainer: Arc<crate::LearningIterationEvidenceClientV1>,
+    ) -> anyhow::Result<()> {
+        let owners = self
+            .owners
+            .get_mut()
+            .map_err(|_| anyhow::anyhow!("original host lock"))?;
+        owners.panel.primary.trainer = Arc::clone(&trainer);
+        for member in &mut owners.panel.retention {
+            member.trainer = Arc::clone(&trainer);
+        }
+        owners.shared_training = Some(trainer);
+        Ok(())
+    }
+
+    pub(crate) fn fixture_distinct_operation_member(&mut self) -> anyhow::Result<()> {
+        let owners = self
+            .owners
+            .get_mut()
+            .map_err(|_| anyhow::anyhow!("original host lock"))?;
+        anyhow::ensure!(!Arc::ptr_eq(
+            &owners.panel.primary.trainer,
+            &owners.panel.retention[0].trainer,
+        ));
+        owners.shared_training = Some(Arc::clone(&owners.panel.primary.trainer));
+        Ok(())
+    }
+
     pub(crate) fn fixture_original_clock(&mut self, at: u64) -> anyhow::Result<()> {
         self.owners
             .get_mut()

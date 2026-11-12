@@ -10,6 +10,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_candidate_stage_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -22,6 +24,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 CORE = AGENT + "cell_q24_candidate_stage_owners.rs"
 INPUTS = AGENT + "cell_q24_candidate_stage_inputs.rs"
 READBACK = AGENT + "cell_q24_candidate_stage_readback.rs"
+OPERATION = AGENT + "cell_q24_candidate_stage_operation.rs"
 EXPECTED = {
     "learning_original_no_update_stage_create": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_no_update_stage_recover": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
@@ -37,7 +40,7 @@ EXPECTED = {
     "learning_original_candidate_stage_recover": (),
     "learning_original_candidate_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "learning_original_candidate_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
-    "learning_original_candidate_stage_current_material": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
+    "learning_original_candidate_stage_current_material": ('codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs',),
 }
 
 
@@ -69,11 +72,9 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
         self.assertIsNotNone(end)
         offset = start
         for _ in range(occurrence + 1):
-            offset = source.index(marker, offset, end + 1)
-            selected = offset
-            offset += len(marker)
+            selected, offset = source_marker_span(source, marker, offset, end + 1)
         self.verifies(path, source)
-        changed = source[:selected] + replacement + source[selected + len(marker):]
+        changed = source[:selected] + replacement + source[offset:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 
@@ -136,16 +137,23 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
         self.rejects(CORE, "fn require_initial(", "initial.request.evaluation_profile != self.protocol.evaluation_profile()")
 
     def test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material(self):
-        source = self.code((ROOT / READBACK).read_text())
-        self.assertEqual(source.count("state.read_prefix(&self.common, snapshot).await?"), 2)
         for marker in (
             "auth::require_snapshot(&self.common.material, snapshot)?",
             "snapshot.receipts.len() != 3",
             "coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)",
             "snapshot.training_no_update_v2().is_some()",
+            "CandidateOriginalOperation::begin(self, snapshot).await?",
+            "OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation).await?",
+            "CandidateOriginalOperation::close(operation).await?",
+            "operation.candidate(material)",
+        ):
+            self.rejects(READBACK, "fn read_original_candidate(", marker)
+        for marker in (
+            "operation.require_owner(self)?",
+            "let snapshot = &operation.training_cut",
             "coordinator.candidate().ok_or(Error::WrongScope)?",
-            "state\n            .original_dataset\n            .as_ref()",
-            "state\n            .original_training\n            .as_ref()",
+            "let dataset = &operation.dataset",
+            "let training = &operation.training",
             "snapshot.receipts.get(2) != Some(training.receipt())",
             "lane.initial.take()",
             "OriginalCellQ24TrainingCommandConnectionV1::bind_original_candidate_material(",
@@ -154,12 +162,11 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
             "material.model().components() != &expected_bundle.components",
             "material.authority() != AuthorityPosture::DENY_ALL",
         ):
-            self.rejects(READBACK, "fn read_original_candidate(", marker)
-        for occurrence in (0, 1):
-            self.rejects(
-                READBACK, "fn read_original_candidate(",
-                "state.read_prefix(&self.common, snapshot).await?", occurrence=occurrence,
-            )
+            self.rejects(READBACK, "fn read_candidate_in_operation(", marker)
+        self.rejects(OPERATION, "fn begin(",
+                     "common.read_prefix(&owners.common, &training_cut).await?")
+        self.rejects(OPERATION, "fn close(",
+                     "common.read_prefix(&self.owners.common, &self.training_cut).await?")
 
     def test_last_root_and_source_io_precede_fresh_full_original_signature_checks(self):
         source = self.code((ROOT / READBACK).read_text())
@@ -173,29 +180,50 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
             "material.receipt() != training.receipt()",
             "material.attestation() != training.attestation()",
             "let fresh = auth::require_material(",
-            "auth::require_clock(started_at, fresh)?",
-            "auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?",
-            "material.receipt() != current.receipt()",
-            "material.attestation() != current.attestation()",
             "auth::verify_receipt(",
             "attestation: material.attestation().clone()",
-            "lane\n            .retained\n            .as_ref()\n            .is_some_and(|prior| prior != &identity)",
+            "lane.retained.as_ref().is_some_and(|prior| prior != &identity)",
         ):
-            self.rejects(READBACK, "fn read_original_candidate(", marker)
+            self.rejects(READBACK, "fn read_candidate_in_operation(", marker)
+        for function, markers in (
+            ("fn close(", (
+                "common.original_dataset.as_ref() != Some(&self.dataset)",
+                "common.original_training.as_ref() != Some(&self.training)",
+                "common.records.get(..3) != Some(self.records.as_slice())",
+                "auth::require_clock(self.started, fresh)?",
+                "auth::verify_prefix(&self.owners.common.material, &self.training_cut, &common, fresh)?",
+            )),
+            ("fn authenticate_prefix(", (
+                "auth::require_clock(self.started, observed)?",
+                "auth::require_clock(observed, fresh)?",
+                "for (receipt, signature) in &self.records",
+                "auth::verify_receipt(&self.owners.common.material, receipt, signature, fresh)?",
+            )),
+            ("fn candidate(", (
+                "self.0.authenticate_prefix(auth::now()?)?",
+                "material.receipt() != self.0.training.receipt()",
+                "material.attestation() != self.0.training.attestation()",
+            )),
+        ):
+            for marker in markers:
+                self.rejects(OPERATION, function, marker)
 
     def test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success(self):
+        self.rejects(READBACK, "fn read_original_candidate(",
+                     "mode == CandidateRead::Dispatch && self.common.origin != Origin::Fresh")
         for marker in (
-            "mode == CandidateRead::Dispatch && self.common.origin != Origin::Fresh",
             "if lane.failed",
             "lane.failed = true",
             "lane.retained = Some(identity)",
             "lane.failed = false",
         ):
-            self.rejects(READBACK, "fn read_original_candidate(", marker)
+            self.rejects(READBACK, "fn read_candidate_in_operation(", marker)
         self.rejects(
-            READBACK, "fn read_original_candidate(", "lane.failed = true",
+            READBACK, "fn read_candidate_in_operation(", "lane.failed = true",
             "lane.failed = false",
         )
+        self.rejects(OPERATION, "fn begin(", "if lane.failed")
+        self.rejects(OPERATION, "fn begin(", "lane.failed = true", "lane.failed = false")
         for marker in ("tokio::time::timeout_at(self.end.into()", "self.require_live_deadline()?"):
             for function in ("fn validate_recovery<'a>", "fn execute_stage<'a>", "fn receipt_attestation<'a>"):
                 self.rejects(CORE, function, marker)

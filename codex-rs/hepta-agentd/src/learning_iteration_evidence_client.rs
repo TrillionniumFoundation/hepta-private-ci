@@ -33,6 +33,7 @@ mod command_evidence;
 
 #[path = "cell_q24_no_update_stage_owners.rs"]
 mod ordinary_stage_owners;
+pub(crate) use ordinary_stage_owners::OriginalCandidateOperationEvidence;
 pub use ordinary_stage_owners::OriginalCellQ24CandidateStageOwnersV1;
 pub use ordinary_stage_owners::OriginalCellQ24CandidateStageStreamsV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdatePeerStreamV1;
@@ -300,6 +301,8 @@ pub(crate) use material::retained_version_dataset_fixture;
 pub(crate) use selection_command::original_readback_test_ports;
 #[cfg(test)]
 pub(crate) use tests::fixture_original_receipt_client_until_close;
+#[cfg(test)]
+pub(crate) use tests::fixture_original_receipt_sequence_until_close;
 #[cfg(test)]
 pub(crate) use training_command::command_test_support;
 #[cfg(test)]

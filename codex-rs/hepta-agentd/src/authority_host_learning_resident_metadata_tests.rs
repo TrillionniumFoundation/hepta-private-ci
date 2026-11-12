@@ -116,6 +116,19 @@ impl ResidentMetadata {
     pub(super) fn completed_metadata(
         &self,
     ) -> anyhow::Result<(LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>)> {
+        self.completed_metadata_with_observer_expiry(self.at + 600)
+    }
+
+    /// The short Observer window is part of this explicit metadata fixture's
+    /// first issuance. No original or previously issued signature is renewed.
+    pub(super) fn completed_metadata_with_observer_expiry(
+        &self,
+        observer_expires_at: u64,
+    ) -> anyhow::Result<(LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>)> {
+        anyhow::ensure!(
+            observer_expires_at > self.at && observer_expires_at <= self.at + 600,
+            "bounded first-issued metadata Observer window"
+        );
         let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(self.initial.clone())?;
         let bundle = self.initial.request.selected_bundle.digest()?;
         let observations = [
@@ -177,7 +190,11 @@ impl ResidentMetadata {
                 objective_digest: self.verifier.objective_digest(),
                 authority_epoch: 1,
                 issued_at: self.at,
-                expires_at: self.at + 600,
+                expires_at: if index == 0 {
+                    observer_expires_at
+                } else {
+                    self.at + 600
+                },
                 payload_digest: Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(
                     &receipt,
                 )?),

@@ -30,6 +30,7 @@ mod wire;
 
 pub use connection::OriginalCellEvaluationModelMaterialClientV1;
 pub use connection::OriginalCellEvaluationModelMaterialConnectionV1;
+pub(crate) use connection::OriginalCellEvaluationModelReadV1;
 
 const MAX_BYTES: usize = 131_072;
 const PAGE_BYTES: usize = 8192;
