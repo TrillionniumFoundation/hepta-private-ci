@@ -36,7 +36,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     &inner.dataset_cut,
                     read,
                     |training| {
-                        let mut operation =
+                        let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
                             OriginalQ24StageOperationV1::from_original_receipt_read(
                                 &inner, owners, runtime, training, read,
                             )?;
@@ -174,7 +174,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     &inner.dataset_cut,
                     read,
                     |training| {
-                        let mut operation =
+                        let mut operation: OriginalQ24StageOperationV1<'_, '_, '_, '_> =
                             OriginalQ24StageOperationV1::from_original_receipt_read(
                                 &inner, owners, runtime, training, read,
                             )?;

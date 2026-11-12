@@ -22,6 +22,7 @@ SIGNING = AGENT + "cell_q24_local_decision_signing.rs"
 ROOT_OWNER = AGENT + "cell_q24_local_decision_root.rs"
 ROOT_MODEL = AGENT + "cell_q24_learning_model_root.rs"
 DISPATCH = AGENT + "cell_q24_learning_model_dispatch.rs"
+B_FRAME = AGENT + "cell_q24_learning_b_operation.rs"
 
 
 class RootLocalDecisionSourceClosureTests(unittest.TestCase):
@@ -35,7 +36,7 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, SIGNING, ROOT_OWNER, ROOT_MODEL, DISPATCH, AGENT + "cell_q24_learning_historical_operation.rs", AGENT + "cell_q24_learning_historical_receipts.rs", AGENT + "cell_q24_learning_stage_owners.rs")
+            for path in (OWNER, SIGNING, ROOT_OWNER, ROOT_MODEL, DISPATCH, B_FRAME, AGENT + "cell_q24_learning_historical_operation.rs", AGENT + "cell_q24_learning_historical_receipts.rs", AGENT + "cell_q24_learning_stage_owners.rs")
         }
 
     def rejects(self, path, function, marker):
@@ -83,7 +84,8 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
             "q24_local_root_attest": (ROOT_MODEL,),
             "q24_local_root_read": (ROOT_MODEL,),
             "q24_model_root_dispatch": (DISPATCH,),
-            "q24_model_root_operation": (AGENT + "cell_q24_learning_historical_operation.rs", AGENT + "cell_q24_learning_historical_receipts.rs"),
+            "q24_model_root_operation": (),
+            "q24_original_b_borrowed_model": (B_FRAME,),
         }
         for identifier, callers in expected.items():
             with self.subTest(boundary=identifier):
@@ -105,11 +107,14 @@ class RootLocalDecisionSourceClosureTests(unittest.TestCase):
         for marker in (
             "OriginalQ24TrainingOperationV1::read_original_training_evidence(original)?",
             "!snapshot.receipts.starts_with(&evidence.snapshot().receipts)",
-            "snapshot.receipts.get(evidence.snapshot().receipts.len()) != Some(before.receipt())",
             "!before.same_original_observation(&after)",
         ):
             with self.subTest(marker=marker):
                 self.rejects(ROOT_MODEL, "fn model_root_action_in_operation(", marker)
+
+    def test_borrowed_model_keeps_exact_native_b_receipt(self):
+        self.rejects(ROOT_MODEL, "fn model_root_action_from_original_b(",
+                     "snapshot.receipts.get(evidence.snapshot().receipts.len()) != Some(observed.receipt())")
 
     def test_original_factory_and_exact_prefix_cannot_be_removed(self):
         for function, marker in (

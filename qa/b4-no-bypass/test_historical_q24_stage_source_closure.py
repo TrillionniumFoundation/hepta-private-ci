@@ -121,7 +121,7 @@ class HistoricalQ24StageSourceClosureTests(unittest.TestCase):
         for marker in (
             "OriginalQ24TrainingOperationV1::read_original_training_evidence(self.training)?",
             "original.snapshot() != snapshot",
-            ".execute_original_root_evaluation(\n                        self.training,\n                        &original,",
+            ".execute_original_root_evaluation(\n                    self.training,\n                    &original,",
         ):
             with self.subTest(marker=marker):
                 self.rejects(OPERATION, "fn execute_stage(", marker)
@@ -131,8 +131,8 @@ class HistoricalQ24StageSourceClosureTests(unittest.TestCase):
             (OPERATION, "fn restore(", "OriginalHistoricalRestoreModeV1::Readback"),
             (OPERATION, "fn restore(", "self.owners.generation.is_none() && generation_receipt(receipt)"),
             (OPERATION, "fn restore(", "self.authenticate_receipt(&snapshot, receipt)?"),
-            (OPERATION, "fn run(", "actual.as_ref() != Some(&expected)"),
-            (OPERATION, "fn run(", "self.authenticate_receipt(&expected, receipt)?"),
+            (OPERATION, "fn run_stage(", "actual.as_ref() != Some(&expected)"),
+            (OPERATION, "fn run_stage(", "self.authenticate_receipt(&expected, receipt)?"),
             (RUNTIME, "fn process_original_historical(", "self.wait_original_successor_stage(&state, &prefix, next)"),
             (RUNTIME, "fn process_original_historical(", "OriginalHistoricalWorkV1::ConfirmRecovery(current.snapshot)"),
         ):
@@ -142,10 +142,10 @@ class HistoricalQ24StageSourceClosureTests(unittest.TestCase):
     def test_original_receipts_and_independent_current_roles_are_mandatory(self):
         for function, marker in (
             ("fn read_receipt(", "&receipt != expected"),
-            ("fn verify_receipt(", "OriginalReceiptVerificationV1::verify(&verification, &signed, self.context.current_time()?)"),
+            ("fn verify_receipt(", "OriginalReceiptVerificationV1::verify(&verification, &signed, self.current_time()?)"),
             ("fn authenticate_receipt(", "self.verify_receipt(snapshot, decision)?"),
             ("fn authenticate_receipt(", "independent_receipt_stages(snapshot, receipt)"),
-            ("fn authenticate_receipt(", "verify_signed_actor_separation(&prior, &current, self.context.current_time()?)"),
+            ("fn authenticate_receipt(", "verify_signed_actor_separation(&prior, &current, self.current_time()?)"),
         ):
             with self.subTest(marker=marker):
                 self.rejects(RECEIPTS, function, marker)
