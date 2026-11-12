@@ -24,11 +24,11 @@ shapes from the frozen #6264 candidate lineage and executed one SciPy
 `scipy.linalg.expm` call for each operator at `dt=0.2`:
 
 | Dimension | Nonzero entries | Observed wall seconds |
-| ---: | ---: | ---: |
-| 1 | 0 | 0.000083 |
-| 127 | 379 | 0.118 |
-| 128 | 381 | 0.120 |
-| 255 | 762 | 0.249 |
+| --------: | --------------: | --------------------: |
+|         1 |               0 |              0.000083 |
+|       127 |             379 |                 0.118 |
+|       128 |             381 |                 0.120 |
+|       255 |             762 |                 0.249 |
 
 Observed aggregate accounting:
 
