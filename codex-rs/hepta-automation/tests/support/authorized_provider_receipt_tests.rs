@@ -364,8 +364,27 @@ async fn taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurr
         ProviderEffectAckSource::StatusLookup,
     );
     let (good, bad) = tokio::join!(recover(&started, correct), recover(&started, substituted));
-    assert!(good.is_ok());
-    assert!(bad.is_err());
+    if good.is_err() || bad.is_ok() {
+        eprintln!("concurrent provider recovery: good={good:?}; bad={bad:?}");
+        let step = started
+            .store
+            .read_taskflow_step(
+                &started.effect.run_id,
+                &started.effect.step_id,
+                started.effect.attempt,
+                &started.owner,
+            )
+            .await;
+        let pool = database(&started.store).await;
+        let reconciliations: Result<i64, sqlx::Error> =
+            sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_effect_dispatch_reconciliations")
+                .fetch_one(&pool)
+                .await;
+        eprintln!("concurrent recovery state: step={step:?}; reconciliations={reconciliations:?}");
+        pool.close().await;
+    }
+    assert!(good.is_ok(), "good={good:?}; bad={bad:?}");
+    assert!(bad.is_err(), "good={good:?}; bad={bad:?}");
     assert_eq!(
         started
             .driver
