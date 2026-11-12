@@ -1,0 +1,14 @@
+{
+  "kind": "recovery-only",
+  "source_head": "f137fb7bfedfc8a509ff215e08fcecbeb64b6cfd",
+  "prerequisite": "399ff25830fac9717f1838cc0b07adf107cd847f",
+  "bundle_bytes": 11973,
+  "bundle_sha256": "b51eb4d14bf37801ea35e16e8c0fcee830db0c43981e7cb7c6faeb63a7afd3f8",
+  "native_validation": "not run for this source",
+  "qualification_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "note": "Hosting commit is not the bundled source tree. Original f137 Git objects restored and verified in the new executor. Later 780/efc5/aeaf/6cd commits were not backed up; any reimplementation must be a new candidate with fresh validation."
+}
