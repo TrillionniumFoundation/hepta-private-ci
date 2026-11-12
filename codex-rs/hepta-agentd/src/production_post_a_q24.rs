@@ -27,6 +27,11 @@ pub(super) struct OriginalPostAContinuationV1 {
     _receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
     _handle: crate::LearningIterationHandleV1,
     _successor: crate::OriginalQ24SuccessorHandoffV1,
+    _publication: (
+        crate::RootGenerationPublicationHandoffV1,
+        crate::RootGenerationPublicationConnectionV1,
+        Instant,
+    ),
 }
 
 impl AgentdProductionLaunch {
@@ -107,13 +112,14 @@ impl AgentdProductionLaunch {
         let pending: PendingHandoffs = self
             .post_a_handoffs
             .take()
-            .ok_or_else(|| refused("original deferred handoff pair is absent"))?;
-        let (learning, model) = pending
+            .ok_or_else(|| refused("original deferred handoffs are absent"))?;
+        let (learning, model, publication) = pending
             .receive_original_after_ack(&self.root, &identity, &ack, &prepared, self.session_end)
             .await?;
         self.require_original_post_a_context(&identity)?;
         config = config.with_root_learning_inputs(learning)?;
         self.q24_model = Some(model);
+        self.publication = Some(publication);
         let authorities = OriginalHistoricalLearningTrustV1::original_stage_authorities(&trust)?;
         // Retain one tracker from the baseline through every signing/journal
         // file, including dispatch. Earlier writer/read aliases are refused.
@@ -167,6 +173,11 @@ impl AgentdProductionLaunch {
             _receipt: receipt,
             _handle: handle,
             _successor: successor,
+            _publication: (
+                self.take_generation_publication_handoff()?,
+                self.take_generation_publication_connection()?,
+                self.session_end,
+            ),
         });
         drop(files);
         Ok((self, config))

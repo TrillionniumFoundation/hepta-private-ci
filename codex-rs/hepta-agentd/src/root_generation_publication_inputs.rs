@@ -25,25 +25,41 @@ impl RootGenerationPublicationHandoffV1 {
     /// publication driver. No caller profile, issuer, grant, CAS or path is
     /// accepted. Original A/B/source and FinalUse owners remain necessary there.
     pub async fn connect(
-        mut self,
+        self,
         connection: RootGenerationPublicationConnectionV1,
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError> {
+        if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
+            return Err(refused("bounded publication lifetime required"));
+        }
+        let end = Instant::now()
+            .checked_add(lifetime)
+            .ok_or_else(|| refused("publication lifetime overflow"))?;
+        Self::connect_until(self, connection, timeout, end).await
+    }
+
+    /// The post-A continuation supplies its original absolute session end.
+    /// Receiving the sealed offer earlier does not connect a pending CURRENT.
+    pub(crate) async fn connect_until(
+        mut self,
+        connection: RootGenerationPublicationConnectionV1,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError> {
+        let remaining = publication_remaining(end)?;
         // SAFETY: both calls only read the current process's credentials.
         if unsafe { libc::getuid() } == 0
             || unsafe { libc::geteuid() } == 0
             || timeout.is_zero()
             || timeout > Duration::from_millis(500)
-            || lifetime.is_zero()
-            || lifetime > Duration::from_secs(300)
+            || remaining > Duration::from_secs(300)
         {
             return Err(refused(
                 "original non-Root consumer and bounded publication timing required",
             ));
         }
         connection.require_original_publication_session()?;
-        let end = Instant::now() + lifetime;
         let size = self.bootstrap.metadata()?.len();
         if size == 0 || size > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {
             return Err(refused("publication bootstrap bound"));
@@ -104,14 +120,14 @@ impl RootGenerationPublicationHandoffV1 {
             unsafe { libc::getegid() },
         )?;
         connection.require_original_publication_session()?;
-        let stream = tokio::time::timeout(timeout, tokio::net::UnixStream::connect(&socket))
-            .await
-            .map_err(|_| refused("publication Root connection timed out"))??;
-        let remaining = end
-            .checked_duration_since(Instant::now())
-            .filter(|value| !value.is_zero())
-            .ok_or_else(|| refused("publication route expired"))?;
-        let original = OriginalPublicationStream::from_stream(
+        let stream = tokio::time::timeout(
+            timeout.min(publication_remaining(end)?),
+            tokio::net::UnixStream::connect(&socket),
+        )
+        .await
+        .map_err(|_| refused("publication Root connection timed out"))??;
+        publication_remaining(end)?;
+        let original = OriginalPublicationStream::from_stream_until(
             stream.into_std()?,
             self.root_pidfd,
             AgentdRootAuthorityPeer {
@@ -120,11 +136,12 @@ impl RootGenerationPublicationHandoffV1 {
                 process_start_ticks: bundle.root.process_start_ticks,
             },
             timeout,
-            remaining,
+            end,
         )?;
         // Only observation occurs during bootstrap. Cancellation discards the
         // result and original stream; it never starts a CURRENT mutation.
         tokio::task::spawn_blocking(move || {
+            publication_remaining(end)?;
             connection.require_original_publication_session()?;
             let client = RootGenerationCurrentClient::from_original_stream(
                 original,
@@ -132,11 +149,19 @@ impl RootGenerationPublicationHandoffV1 {
                 &bundle.learning_operation,
                 connection,
             )?;
-            NeuronGenerationCurrentOwnerV1::from_original_root_publication(client).map(Arc::new)
+            let current = NeuronGenerationCurrentOwnerV1::from_original_root_publication(client)?;
+            publication_remaining(end)?;
+            Ok(Arc::new(current))
         })
         .await
         .map_err(|_| refused("publication connect worker lost"))?
     }
+}
+
+fn publication_remaining(end: Instant) -> Result<Duration, AgentdError> {
+    end.checked_duration_since(Instant::now())
+        .filter(|remaining| !remaining.is_zero())
+        .ok_or_else(|| refused("publication route expired"))
 }
 
 fn refused(message: impl Into<String>) -> AgentdError {
