@@ -1,0 +1,36 @@
+{
+  "source": "7aa88b30c62a9909502811bf6cebce57b825a1d7",
+  "tree": "1c6a607dd8a9059a3312f04e2b109508983df243",
+  "prerequisite": "ea6a3ab4618e62acdea42b3eca55c408a1d1a69b",
+  "commits": [
+    "5ee3cd6f60662255ac717a05012f36077c81c9ac",
+    "f9643722303a6bae35bbf1228940bd9f1dcb2396",
+    "55244efa1e27de49f53fe6cabad7cf857afa9061",
+    "ed2b9fc4941efb14fb85504e5286823ba7b5afce",
+    "7aa88b30c62a9909502811bf6cebce57b825a1d7"
+  ],
+  "bundle_sha256": "064bb7f25b6e21f6e14bcc12b4c4cea673939d6516a271dab375bbe7d9bb764a",
+  "native_tests": 0,
+  "compiled": false,
+  "source_qa": "not run",
+  "fmt": "actual just fmt and diff --check passed per small stage",
+  "remaining": "Late native candidate production and original Generator plan-signing flow are not yet connected; existing completed execution cannot stand in for a real producer.",
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 8504,
+    "sha256": "173044f1d177a55c012cbf7e8eb2f06cdb224f5dfe513d5acc0371de9026fe57",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "source.bundle",
+      "bytes": 8192,
+      "sha256": "064bb7f25b6e21f6e14bcc12b4c4cea673939d6516a271dab375bbe7d9bb764a"
+    },
+    {
+      "path": "source.json",
+      "bytes": 838,
+      "sha256": "e8ff1e0814da814050d51c056299469d8ed9ec9c844a1bb27ad81fa9196fda45"
+    }
+  ]
+}
