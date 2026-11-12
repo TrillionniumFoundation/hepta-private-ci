@@ -83,6 +83,7 @@ env.update(json.loads((helpers/"env.json").read_text()))
 if git("rev-parse","HEAD")!=source or git("status","--porcelain=v1","--untracked-files=all"):
     raise RuntimeError("fixed source must remain clean immediately before native tests")
 
+sys.path.insert(0,str(repo/"scripts"))
 EXPECTED_CASES=[["codex-hepta-agentd","runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic"],["codex-hepta-agentd","learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel"],["codex-hepta-agentd","runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic"]]
 report["purpose"]="Fixed FDE diagnostics only: future layout, original timeout, and original C evidence timing; not the 190-case suite or ordinary acceptance"
 report["expected_owner_cases"]=EXPECTED_CASES
@@ -104,7 +105,7 @@ if xmlpath.exists():
     document=ET.fromstring(xmlpath.read_bytes(),parser=ET.XMLParser(target=NoDoctypeTreeBuilder()))
     cases=list(document.iter("testcase"))
     actual=collections.Counter((c.get("classname"),c.get("name")) for c in cases)
-    expected=collections.Counter(EXPECTED_CASES)
+    expected=collections.Counter(tuple(case) for case in EXPECTED_CASES)
     failure_tags={"failure","error","skipped","flakyFailure","flakyError","rerunFailure","rerunError"}
     rejected=[{"package":c.get("classname"),"name":c.get("name"),"diagnostics":[n.text for n in c if n.tag in failure_tags]} for c in cases if any(n.tag in failure_tags for n in c)]
     report["owner_coverage"]={"total_cases":len(cases),"exact_selected_cases":actual==expected,"raw_junit_bytes":xmlpath.stat().st_size,"raw_junit_sha256":sha(xmlpath),"failed_or_skipped":rejected}
