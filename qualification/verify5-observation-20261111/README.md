@@ -52,7 +52,9 @@ unknown. No model or policy is adopted.
 
 ## Evidence and exact source boundaries
 
-- `ENGINEERING.zip`: executed Python source bytes, all four command logs, raw
+- `ENGINEERING.zip` (reassembled from `ENGINEERING.zip.part-000` and
+  `ENGINEERING.zip.part-001` using `ARCHIVE_PARTS.json`): executed Python source
+  bytes, all four command logs, raw
   observation/cost/label records and actual SQLite databases; SHA-256
   `941750dfede43cbf37706191d7c870ba0a9a4c67967eb6a150589ed2366faffb`.
 - `RESULT.json`, `DIAGNOSTICS.json`, `MODEL.json`, `PLAN.json`: unchanged readable
@@ -75,3 +77,30 @@ head SHA and executed checkout identity remain distinct. Its 18 calls retained
 162,854 UTF-8 payload bytes; their elapsed sum is not parallel wall time.
 `MANIFEST.json` binds all retained top-level files. The live workflow now also
 runs this observation experiment and uploads failures with the original receipts.
+
+## Lossless archive packaging repair
+
+The original CI blob-policy job rejected the 683,590-byte `ENGINEERING.zip`.
+It is now stored as two ordered parts of 360,000 and 323,590 bytes, each within
+the unchanged 512,000-byte policy. The original archive, source bytes and data
+are unchanged after concatenation. `MANIFEST.json` remains the original run's
+manifest; `ARCHIVE_PARTS.json` separately binds the replacement representation.
+This packaging change adds no task executions, fits or predictions.
+
+Reassemble from this directory into a new destination:
+
+```python
+import hashlib, json
+from pathlib import Path
+root = Path("qualification/verify5-observation-20261111")
+manifest = json.loads((root / "ARCHIVE_PARTS.json").read_text())
+chunks = [(root / part["name"]).read_bytes() for part in manifest["parts"]]
+for part, chunk in zip(manifest["parts"], chunks):
+    assert len(chunk) == part["bytes"]
+    assert hashlib.sha256(chunk).hexdigest() == part["sha256"]
+archive = b"".join(chunks)
+assert len(archive) == manifest["original_bytes"]
+assert hashlib.sha256(archive).hexdigest() == manifest["original_sha256"]
+with Path("/tmp/verify5-engineering-restored.zip").open("xb") as stream:
+    stream.write(archive)
+```

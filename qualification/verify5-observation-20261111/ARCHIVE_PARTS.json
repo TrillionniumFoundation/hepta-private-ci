@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.verify.archive-parts.v1",
+  "original_name": "ENGINEERING.zip",
+  "original_bytes": 683590,
+  "original_sha256": "941750dfede43cbf37706191d7c870ba0a9a4c67967eb6a150589ed2366faffb",
+  "parts": [
+    {
+      "name": "ENGINEERING.zip.part-000",
+      "bytes": 360000,
+      "sha256": "b0a861d301fecd90fd2a0d08e2947c37a5d9b91b52fc640d165d30fa4ee83897"
+    },
+    {
+      "name": "ENGINEERING.zip.part-001",
+      "bytes": 323590,
+      "sha256": "d62eae8b6dd2bd0d1e1962a06d10a3ea192b5b3cd7b03fe30e55232a3efc59f3"
+    }
+  ],
+  "max_part_bytes": 360000,
+  "preserves_original_zip_bytes": true,
+  "reason": "Original archive exceeded repository 512000-byte Git blob limit; no allowlist or threshold change."
+}
