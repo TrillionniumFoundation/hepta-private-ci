@@ -25,6 +25,9 @@ use crate::desktop_root_composition::attach_root_desktop_operation_host_with_sta
 #[path = "production_q24_successor.rs"]
 mod successor;
 
+#[path = "production_source_capture.rs"]
+pub(crate) mod source_capture;
+
 #[path = "production_launcher_inputs.rs"]
 mod inputs;
 
@@ -73,6 +76,7 @@ pub struct AgentdProductionLaunch {
     q24_model: Option<crate::AgentdRootQ24ModelFactoryV1>,
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
     initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
+    original_source_capture: Option<source_capture::OriginalSourceCaptureRequestV1>,
 }
 
 struct RuntimeInputs {
@@ -288,6 +292,7 @@ impl AgentdProductionStartup {
                         q24_model: model_factory,
                         publication,
                         initial_publication,
+                        original_source_capture: None,
                     }),
                 ))
             }
@@ -377,6 +382,9 @@ impl AgentdProductionLaunch {
         }
         if self.q24_model.is_some() {
             return Err(AgentdError::Invalid("original Root Model factory received, but concrete learning owners are not assembled".into()));
+        }
+        if let Some(capture) = self.original_source_capture {
+            config.install_original_source_capture(capture)?;
         }
         let RuntimeInputs {
             primary,

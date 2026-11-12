@@ -20,6 +20,10 @@ mod desktop;
 mod circuit_task;
 
 #[cfg(target_os = "linux")]
+#[path = "config_source_capture.rs"]
+mod source_capture;
+
+#[cfg(target_os = "linux")]
 #[path = "config_q24_successor.rs"]
 mod q24_successor;
 
@@ -140,6 +144,11 @@ pub struct AgentdConfig {
     circuit_task_bootstrap: Option<crate::CircuitTaskRuntimeBootstrapV1>,
     circuit_task_invocation:
         Option<std::sync::Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>>,
+    #[cfg(target_os = "linux")]
+    original_source_close: Option<crate::circuit_task::OriginalCircuitSourceCloseV1>,
+    #[cfg(target_os = "linux")]
+    original_source_capture:
+        Option<crate::production_launcher::source_capture::OriginalSourceCaptureRequestV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -308,6 +317,10 @@ impl AgentdConfig {
             neuron_generation_bootstrap: None,
             circuit_task_bootstrap: None,
             circuit_task_invocation: None,
+            #[cfg(target_os = "linux")]
+            original_source_close: None,
+            #[cfg(target_os = "linux")]
+            original_source_capture: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,

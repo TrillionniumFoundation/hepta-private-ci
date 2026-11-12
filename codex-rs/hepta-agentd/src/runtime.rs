@@ -55,6 +55,8 @@ pub async fn run_with_shutdown(
     #[cfg(target_os = "linux")]
     config.require_root_learning_assembled()?;
     let circuit_task = config.take_circuit_task_bootstrap()?;
+    #[cfg(target_os = "linux")]
+    let original_source_capture = config.take_original_source_capture()?;
     let production_operations = config.take_production_operations();
     let sockets = config.take_socket_inputs();
     #[cfg(target_os = "linux")]
@@ -386,6 +388,13 @@ pub async fn run_with_shutdown(
     };
     // The single task host owns cancellation and joining on every exit path.
     // All fallible owner opens and control binding above precede task startup.
+    #[cfg(target_os = "linux")]
+    let mut control = control;
+    #[cfg(target_os = "linux")]
+    let original_control_join = original_source_capture
+        .as_ref()
+        .map(|_| control.original_source_capture_join())
+        .transpose()?;
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
         if let Some(owner) = circuit_task {
@@ -502,6 +511,17 @@ pub async fn run_with_shutdown(
     if let Err(error) = startup {
         tasks.shutdown().await;
         return Err(error);
+    }
+    #[cfg(target_os = "linux")]
+    if let Some((capture, close)) = original_source_capture {
+        let joined = original_control_join.ok_or_else(|| {
+            AgentdError::Protocol("original Source capture lost its control join".into())
+        })?;
+        let drained =
+            source_capture::run_until_original_source_drain(&mut tasks, state, shutdown, joined)
+                .await?;
+        let closed = close.close_after_drain(drained)?;
+        return capture.capture_after_close(closed).await;
     }
     tasks
         .run_until(async move {

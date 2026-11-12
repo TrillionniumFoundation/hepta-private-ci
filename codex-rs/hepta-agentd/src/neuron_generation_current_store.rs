@@ -87,7 +87,9 @@ impl CurrentStore {
     {
         match &self.store {
             Store::RootInitial(original) => Ok(original),
-            _ => Err(invalid("same original Root Initial capture client required")),
+            _ => Err(invalid(
+                "same original Root Initial capture client required",
+            )),
         }
     }
 

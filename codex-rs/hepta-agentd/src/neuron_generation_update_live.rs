@@ -100,11 +100,16 @@ impl LiveGenerationCurrent {
         identity: &crate::AgentdIdentity,
     ) -> Result<Arc<NeuronGenerationCurrentOwnerV1>, AgentdError> {
         if !matches!(&self.publication, RetainedPublication::Initial(_)) {
-            return Err(invalid("source capture requires original Initial publication"));
+            return Err(invalid(
+                "source capture requires original Initial publication",
+            ));
         }
-        self.check_current(self.publication.target()).map_err(invalid)?;
-        self.current.require_original_initial_source_session(session, identity)?;
-        self.check_current(self.publication.target()).map_err(invalid)?;
+        self.check_current(self.publication.target())
+            .map_err(invalid)?;
+        self.current
+            .require_original_initial_source_session(session, identity)?;
+        self.check_current(self.publication.target())
+            .map_err(invalid)?;
         Ok(Arc::clone(&self.current))
     }
 

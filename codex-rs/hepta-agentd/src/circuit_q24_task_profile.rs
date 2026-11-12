@@ -101,6 +101,8 @@ impl<SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 's
     }
 
     pub fn install(self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
+        #[cfg(target_os = "linux")]
+        let config = config.with_original_source_close(Arc::clone(&self.invocation))?;
         config.with_circuit_task_bootstrap(self.bootstrap, self.invocation)
     }
 }
