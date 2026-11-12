@@ -8,8 +8,8 @@ impl OriginalCellQ24LearningStageOwnersV1 {
     pub(super) async fn install_original_generation_in_operation(
         &self,
         snapshot: LearningIterationSnapshotV1,
-        mut selection: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
-        mut next_use: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
+        selection: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
+        next_use: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
     ) -> Result<(), Error> {
         self.inner.require_snapshot(&snapshot)?;
         let inner = Arc::clone(&self.inner);

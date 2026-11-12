@@ -175,13 +175,12 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                     let native = execution
                         .as_mut()
                         .ok_or_else(|| io::Error::other("original B native owners are absent"))?;
-                    if let Some(heads) = &enrollment.heads {
-                        if &native.original_heads(Digest32::from_array(enrollment.namespace))?
+                    if let Some(heads) = &enrollment.heads
+                        && (&native.original_heads(Digest32::from_array(enrollment.namespace))?
                             != heads
-                            || native.output_images(files)? != enrollment.output_images
-                        {
-                            return Err(io::Error::other("original B retained output differs"));
-                        }
+                            || native.output_images(files)? != enrollment.output_images)
+                    {
+                        return Err(io::Error::other("original B retained output differs"));
                     }
                     let clock = || service.original_learning_unix_seconds();
                     let completed = native.perform(
