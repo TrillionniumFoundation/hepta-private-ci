@@ -1,0 +1,86 @@
+{
+  "audit": {
+    "checks": {
+      "failures": [],
+      "passed": 375,
+      "total": 375
+    },
+    "sha256": "870a1d94ed43aba7509633369c0294cb828db3229781499ca97bda3901b5e3d3"
+  },
+  "commands": {
+    "clean_exact_source_before_and_after": true,
+    "count": 4,
+    "exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "total_wall_seconds": 26.946848195000257
+  },
+  "dataset_sha256": "b331d33f3aad24cff4088488c47afe3f67461e98dc15d61c5abdceea0494763f",
+  "figures_and_points": [
+    {
+      "bytes": 426563,
+      "path": "figures/01_differentiation.png",
+      "sha256": "cbe2e12e9c66a29fa672a5c6db73c9a76692238db035f2eff37a107867f4fc06"
+    },
+    {
+      "bytes": 357847,
+      "path": "figures/02_temporal.png",
+      "sha256": "ac1f5513822c19e33e91c6c169c3ada6202a752eb568ec19037b5283af932823"
+    },
+    {
+      "bytes": 419923,
+      "path": "figures/03_credit.png",
+      "sha256": "a609559c4fa28e9fe0603e76c29a576e45dd50338c8f8943d33c15b570bada26"
+    },
+    {
+      "bytes": 26263,
+      "path": "performance_cost.csv",
+      "sha256": "4f4b959c214e690c91a576967916bfbb7aa14cff5f2f9b0b406e42bd5d73f483"
+    }
+  ],
+  "fresh_confirmation_sources": 0,
+  "hosted_ci": {
+    "counted_as_pass": false,
+    "last_observed_status": "queued",
+    "run_id": 43183007925,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43183007925"
+  },
+  "local_tests": {
+    "failed": 0,
+    "final_python_bytes_identical": true,
+    "passed": 69,
+    "skipped": 0
+  },
+  "ordinary_daemon_adoptions": 0,
+  "private_bundle_delivery": "Provided directly to the owner; original observations, SQLite files and raw archives are not included in this repository.",
+  "private_evidence_bundle": {
+    "bytes": 248040637,
+    "filename": "Hepta_Stem_Selection_20261112.zip",
+    "files": 538,
+    "manifest_sha256": "1a03bc81026f063423fbdbeb27de4ea9330e1f740426dec91dfd0666401ab07b",
+    "packaging_and_verification_wall_seconds": 3.610210414999983,
+    "sha256": "56624fc678f6f9d8d3fc2b4f19b8c4af65a4be3cb328d0f18fa90621560ca35e",
+    "verified_member_hashes": 537
+  },
+  "promotion": "NoUpdate",
+  "research_counts": {
+    "credit_cold_duplicate_feedback_calls": 30,
+    "credit_configurations": 30,
+    "credit_feedback_calls": 2160,
+    "credit_updates": 1728,
+    "current_failed_fits": 0,
+    "structural_configurations": 24,
+    "structural_fit_calls": 432,
+    "structural_updates": 4320,
+    "temporal_arms": 9,
+    "temporal_fits": 7,
+    "temporal_updates": 224
+  },
+  "schema": "hepta.stem-selection-public-evidence-index.v1",
+  "scientific_status": "HOLD",
+  "source_commit": "bb34e07389ad75d3b4629b63b0af0ee46f9b9594",
+  "source_tree": "8a16d7b3514fd60c5780e365534e2d2c562120bc"
+}
