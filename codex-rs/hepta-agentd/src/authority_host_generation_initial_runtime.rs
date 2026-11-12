@@ -19,7 +19,15 @@ impl BoundInitial {
     pub(in super::super) fn bind(
         runtime: InitialRuntime,
         config: &HostAuthorityServiceConfig,
+        end: Instant,
     ) -> io::Result<Self> {
+        if Instant::now() >= end {
+            return Err(io::Error::other("original Initial session expired"));
+        }
+        runtime
+            .original_end
+            .set(end)
+            .map_err(|_| io::Error::other("original Initial deadline was already established"))?;
         let mut paths: Vec<_> = validate_runtime_lanes(config)?
             .into_iter()
             .map(|(_, path)| path)
@@ -77,7 +85,12 @@ pub(in super::super) fn serve_optional(
     };
     let stopping = AtomicBool::new(false);
     let active = Mutex::new(None::<UnixStream>);
-    let end = Instant::now() + Duration::from_millis(config.lifetime_ms);
+    let end = *initial
+        .runtime
+        .original_end
+        .get()
+        .ok_or_else(|| io::Error::other("original Initial deadline missing"))?;
+    owner_alive(owner, end)?;
     initial
         .runtime
         .phase

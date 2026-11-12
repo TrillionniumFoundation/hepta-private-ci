@@ -31,6 +31,8 @@ use shared_files::OriginalFile;
 mod data;
 #[path = "authority_host_initial_deployment_inputs.rs"]
 mod inputs;
+#[path = "authority_host_initial_peer_deployment.rs"]
+mod peer_ready;
 use data::InitialDeploymentData;
 use inputs::InitialOriginalFiles;
 
@@ -221,6 +223,11 @@ impl RootGenerationInitialDeploymentV1 {
             file.require_original_file()?;
         }
         self.require_initial_wait(stopping, end)?;
+        let original_end = *self
+            .capability
+            .original_end
+            .get()
+            .ok_or_else(|| io::Error::other("original Initial listener deadline missing"))?;
         let capability: RootGenerationInitialEnrollmentCapabilityV1 = self.capability;
         let result = capability.register(inputs)?;
         self.files
@@ -233,7 +240,7 @@ impl RootGenerationInitialDeploymentV1 {
             file.require_original_file()
                 .map_err(initial_registration_uncertain)?;
         }
-        if stopping.load(Ordering::Acquire) {
+        if stopping.load(Ordering::Acquire) || Instant::now() >= original_end {
             return Err(io::Error::other(
                 "Initial registration outcome uncertain after session ended",
             ));
