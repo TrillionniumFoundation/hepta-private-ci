@@ -37,6 +37,7 @@ def main():
             "graded_migration.py",
             "short_gap_reference.py",
             "model.py",
+            "state_io.py",
             "basis.py",
             "GRADED_PROTOCOL.json",
         )
