@@ -47,6 +47,10 @@ mod completed_journal;
 #[path = "authority_host_completed_learning.rs"]
 mod completed_learning;
 pub(crate) use completed_learning::OriginalCompletedLearningContextV1;
+#[path = "authority_host_completed_observation.rs"]
+mod completed_observation;
+#[path = "authority_host_completed_provider.rs"]
+mod completed_provider;
 #[path = "authority_host_completed_record.rs"]
 mod completed_record;
 #[path = "authority_host_completed_signatures.rs"]
@@ -236,6 +240,19 @@ impl HistoricalTaskReadRuntime {
                     config,
                     registration,
                     owner,
+                    request_id,
+                    end,
+                );
+            }
+            HistoricalReadOperationV1::AcceptCompletedLearning
+            | HistoricalReadOperationV1::CaptureCompletedHistory
+            | HistoricalReadOperationV1::ReadCompletedHistory => {
+                return self.completed_learning_operation(
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    operation,
                     request_id,
                     end,
                 );

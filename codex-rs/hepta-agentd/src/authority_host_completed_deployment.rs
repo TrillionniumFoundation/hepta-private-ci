@@ -37,6 +37,7 @@ pub(super) struct CompletedLearningRuntime {
     pub(super) data: CompletedLearningDeployment,
     pub(super) binding: Digest32,
     pub(super) original: Option<(RootCompletedLearningRefusalV1, CompletedFiles)>,
+    pub(super) completion_phase: AtomicU8,
 }
 
 impl CompletedLearningRuntime {
@@ -151,6 +152,7 @@ impl CompletedLearningRuntime {
             data,
             binding,
             original,
+            completion_phase: AtomicU8::new(0),
         })
     }
 
