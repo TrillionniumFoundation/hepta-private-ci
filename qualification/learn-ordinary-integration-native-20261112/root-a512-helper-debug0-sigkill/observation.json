@@ -1,0 +1,79 @@
+{
+  "source": "a512082999b005395c3caf651bd2f75396222872",
+  "tree": "452f6e273553c417080753d7f5e2fd878f473e6e",
+  "source_before_after_equal_clean": true,
+  "uid": 1000,
+  "executor": "74d784910ce8",
+  "scope": "separate explicit debug-zero helper diagnostic; not the original limited-debug gate",
+  "outer_exit": 1,
+  "cargo_exit": 101,
+  "cargo_finished": false,
+  "elapsed_seconds": 984.5894557289994,
+  "actual_error": "rustc compiling codex-core library received SIGKILL signal 9",
+  "rust_type_error_diagnostics": 0,
+  "tests": 0,
+  "junit": 0,
+  "profile": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "1"
+  },
+  "observed_compiler_artifacts": {
+    "count": 1122,
+    "debuginfo": 0,
+    "opt_level": "0",
+    "debug_assertions": true,
+    "overflow_checks": true,
+    "test": false
+  },
+  "cause_oom_or_enospc_proven": false,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 84724,
+    "sha256": "036352ecdabd3bb2a12939da626f1f6af043b7485caee6aeeabf4beba0a0cbd4",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "helper/build.log",
+      "bytes": 219,
+      "sha256": "3c2b857996c3f33fce4c600233f09ec7b91b6e880acb789e435bf16894fd7fc2"
+    },
+    {
+      "path": "helper/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1031594,
+      "sha256": "cd4b27524cc32449e907dc10e1398bb611941c17b5782a075c89b26d3ae53407"
+    },
+    {
+      "path": "helper/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 70294,
+      "sha256": "608e1bc0dd1df04150e2845bfb42c7e3e9c45e769a62b793d55bbfa2386e20c1"
+    },
+    {
+      "path": "helper/helpers/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "helper/helpers/manifest.json",
+      "bytes": 1247,
+      "sha256": "e294de470ee0547c07509935b3460f765911d2f3166a0f07527247bced8f83bb"
+    },
+    {
+      "path": "helper/run.json",
+      "bytes": 2597,
+      "sha256": "ad9695e3eb411873d4b2072e9080bc7c10acf216eceafc42ab8468ef0616f28c"
+    },
+    {
+      "path": "run_roota512_debug0_helpers.py",
+      "bytes": 3578,
+      "sha256": "6d49f5fb7035d3279d77c5fcedceabf7553700ba2d4ddbc1a1c80309bb194722"
+    }
+  ]
+}
