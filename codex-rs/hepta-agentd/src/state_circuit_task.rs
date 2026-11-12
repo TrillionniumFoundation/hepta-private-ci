@@ -223,8 +223,7 @@ impl AgentdState {
             Err(CircuitTaskErrorV1::CommitUncertain) => {
                 // Observation only: never resubmit computation after ACK loss.
                 self.require_current_run_start(record)?;
-                handle
-                    .readback(request, record.clone())
+                crate::CircuitTaskHandleV1::readback(handle, request, record.clone())
                     .await
                     .map_err(task_error)?
             }
