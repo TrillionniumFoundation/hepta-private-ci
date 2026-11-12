@@ -1,0 +1,117 @@
+....................................................................................................................................................................EEEEEEE...............................................................................................
+======================================================================
+ERROR: test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs', function='into_inputs', marker='self.definition.into_definition()?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 127, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 51, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 111, in check_mutation
+    changed = mutate(original)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 123, in remove
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs', function='into_inputs', marker='program.program_id == self.circuit.entry_program')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 127, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 51, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 111, in check_mutation
+    changed = mutate(original)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 123, in remove
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs', function='into_inputs', marker='node_id: program.entry_node.clone()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 127, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 51, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 111, in check_mutation
+    changed = mutate(original)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 123, in remove
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs', function='into_inputs', marker='CircuitCellRegistryV1::new(self.circuit, vec![binding])')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 127, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 51, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 111, in check_mutation
+    changed = mutate(original)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 123, in remove
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs', function='into_inputs', marker='TaskFlowFence::new(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 127, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 51, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 111, in check_mutation
+    changed = mutate(original)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 123, in remove
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs', function='into_inputs', marker='identity.agent_id.clone()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 127, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 51, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 111, in check_mutation
+    changed = mutate(original)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 123, in remove
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+======================================================================
+ERROR: test_root_deployment_retains_original_files_in_the_same_unique_runtime (test_root_historical_handoff_source_closure.RootHistoricalHandoffClosureTests.test_root_deployment_retains_original_files_in_the_same_unique_runtime) (path='codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs', function='into_inputs', marker='agent_id: StableId::new(identity.agent_id.as_str())')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 127, in rejects_removal
+    self.check_mutation(path, remove)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_handoff_source_closure.py", line 51, in check_mutation
+    component.RootHistoricalSourceCaptureClosureTests.check_mutation(self, path, mutate)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 111, in check_mutation
+    changed = mutate(original)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_root_historical_capture_source_closure.py", line 123, in remove
+    offset = source.index(marker, start, end + 1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+----------------------------------------------------------------------
+Ran 260 tests in 51.943s
+
+FAILED (errors=7)
