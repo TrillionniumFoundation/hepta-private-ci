@@ -72,6 +72,18 @@ impl OriginalLateInput {
         Ok(input)
     }
 
+    pub(super) fn require_original_pin(
+        &self,
+        path: &std::path::Path,
+        expected: Identity,
+    ) -> Result<(), AgentdError> {
+        Self::require_original(self)?;
+        if self.path != path || self.identity != expected {
+            return Err(refused("late input differs from the actual Root file pin"));
+        }
+        Self::require_original(self)
+    }
+
     fn require_original(&self) -> Result<(), AgentdError> {
         post_a_remaining(self.end)?;
         let parent = self
