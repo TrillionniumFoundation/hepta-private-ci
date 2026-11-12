@@ -270,8 +270,13 @@ class OriginalSelectionReadbackClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 replacement = marker.replace("!=", "==") if "!=" in marker else marker.replace("!", "", 1)
                 self.mutate(CLIENT, "fn require_request(", marker, replacement)
-        self.mutate(CLIENT, "fn operation(", "None => OPERATION")
-        self.mutate(CLIENT, "fn operation(", "Some(_)")
+        self.mutate(CLIENT, "fn operation(", "} else {\n        OPERATION\n    }")
+        self.mutate(CLIENT, "fn operation(", "context.evaluated.is_some()")
+        self.mutate(
+            CLIENT, "fn operation(",
+            '"runtime.learning.original-circuit-evaluated-selection.readback.v1"',
+            '"runtime.learning.original-circuit-evaluated-selection.readbacK.v1"',
+        )
 
     def test_service_checks_read_only_request_before_the_same_original_owner(self):
         guard = "readonly::require_request(&request, &self.context, request_id, now()?)?;"
