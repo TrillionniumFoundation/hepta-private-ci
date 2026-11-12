@@ -2177,7 +2177,7 @@ id = "learning_source_bound_training_owner_create"
 symbol = "CellQ24TrainingOwnerV1::create_from_original_source"
 receiver_type = "CellQ24TrainingOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
-definition_markers = ["pub fn create_from_original_source(","source.native_inputs()?","source: Some(source)"]
+definition_markers = ["pub fn create_from_original_source(","source.native_inputs()?","source: Some(Arc::new(source))"]
 product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
@@ -2186,7 +2186,7 @@ id = "learning_source_bound_training_owner_recover"
 symbol = "CellQ24TrainingOwnerV1::recover_from_original_source"
 receiver_type = "CellQ24TrainingOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
-definition_markers = ["pub fn recover_from_original_source(","source.native_inputs()?","source: Some(source)"]
+definition_markers = ["pub fn recover_from_original_source(","source.native_inputs()?","source: Some(Arc::new(source))"]
 product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
@@ -10413,8 +10413,8 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn source_operation_fenced("
-sequence = ["self.operation_state.load(Ordering::Acquire) == FENCED"]
-top_level = []
+sequence = ["&self","self.operation_state.load(Ordering::Acquire) == FENCED"]
+top_level = ["self.operation_state.load(Ordering::Acquire) == FENCED"]
 
 [[protected_file.required_function_order]]
 function = "fn require_original_source("
@@ -10474,8 +10474,8 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn joined("
-sequence = ["self.armed = false"]
-top_level = []
+sequence = ["&mut self","self.armed = false"]
+top_level = ["self.armed = false"]
 
 [[protected_file.required_function_order]]
 function = "fn drop("
@@ -10494,8 +10494,8 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn stage_is_fenced("
-sequence = ["self.stage_fenced.load(Ordering::Acquire)"]
-top_level = []
+sequence = ["&self","self.stage_fenced.load(Ordering::Acquire)"]
+top_level = ["self.stage_fenced.load(Ordering::Acquire)"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_training_source.rs"

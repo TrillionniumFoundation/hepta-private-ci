@@ -88,7 +88,8 @@ class OriginalReadonlyReadySourceClosureTests(unittest.TestCase):
 
     def rows(self, path):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), 1)
+        # One path can carry independent complete records; verify every one.
+        self.assertTrue(rows, path)
         return rows
 
     def verifies(self, path, source):
