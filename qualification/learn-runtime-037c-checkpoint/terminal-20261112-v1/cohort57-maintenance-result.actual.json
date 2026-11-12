@@ -1,0 +1,74 @@
+{
+  "after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+    "dirty": "",
+    "file_count": 15218,
+    "inventory_sha256": "595a67452c18a62eb2bfcaded8534cc7a69c93e6dd75d7d83310d486e965f382",
+    "tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258"
+  },
+  "after_format": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+    "dirty": "",
+    "file_count": 15218,
+    "inventory_sha256": "595a67452c18a62eb2bfcaded8534cc7a69c93e6dd75d7d83310d486e965f382",
+    "tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258"
+  },
+  "before": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+    "dirty": "",
+    "file_count": 15218,
+    "inventory_sha256": "595a67452c18a62eb2bfcaded8534cc7a69c93e6dd75d7d83310d486e965f382",
+    "tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258"
+  },
+  "execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--offline"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/codex-rs",
+    "finished_at": "2026-11-12T17:44:18.639735+00:00",
+    "log_bytes": 174502,
+    "log_file": "just-fix.raw.log",
+    "log_sha256": "e648b7429a7cca0bf37d7eaeffca18dc8b312e3854b628581a8c056ed8d751e2",
+    "returncode": 101,
+    "started_at": "2026-11-12T17:39:27.560547+00:00"
+  },
+  "exit_code": 101,
+  "finished_at": "2026-11-12T17:44:21.015051+00:00",
+  "format_execution": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-source-20261112-037c-57b27c81/codex-rs",
+    "finished_at": "2026-11-12T17:39:25.156680+00:00",
+    "log_bytes": 73,
+    "log_file": "just-fmt.raw.log",
+    "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "returncode": 0,
+    "started_at": "2026-11-12T17:39:24.907681+00:00"
+  },
+  "kind": "exact-source-fix-only",
+  "postimages": {
+    "file_count": 0,
+    "patch_bytes": 0,
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "qualification": false,
+  "request_key": "learn-037c-maintenance-57b27c81d0d5-v1",
+  "source_sha": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "source_tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "started_at": "2026-11-12T17:39:21.928992+00:00",
+  "status": "failed"
+}

@@ -1,0 +1,66 @@
+{
+  "after": {
+    "commit": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+    "dirty": false,
+    "parents": [
+      "4ab34bbd3ca803213b6eecbaba81af719630f5d0"
+    ],
+    "tree": "780459baa22446728e58a211da9d4b72c57aa4d7"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+    "dirty": false,
+    "parents": [
+      "4ab34bbd3ca803213b6eecbaba81af719630f5d0"
+    ],
+    "tree": "780459baa22446728e58a211da9d4b72c57aa4d7"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "-E",
+    "test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures) | test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources) | test(=runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources)",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 605.2708850800991,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-12T17:15:09.694475+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 57429,
+  "log_file": "diagnostic-four.json.c290f65008c14b52bf1a2a1f849e13a7.log",
+  "log_sha256": "a618f1ca01d4092310be10fdb14eacda614ea1da69d6885c680f022447ac9e1a",
+  "minimum_tests": 1,
+  "observed_failed_tests": 1,
+  "observed_passed_tests": 3,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+  "started_at": "2026-11-12T17:05:04.385523+00:00",
+  "status": "failed",
+  "tested_sha": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-common-20261112-037c"
+}

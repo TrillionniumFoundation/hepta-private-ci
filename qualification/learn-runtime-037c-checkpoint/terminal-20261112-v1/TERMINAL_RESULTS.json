@@ -1,0 +1,77 @@
+{
+  "kind": "actual terminal observations; no ordinary qualification",
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "source_gate": {
+    "tests": 482,
+    "passed": 442,
+    "failed": 38,
+    "errors": 2,
+    "exit": 1,
+    "source_unchanged": true,
+    "timed_out": false
+  },
+  "maintenance": {
+    "format_exit": 0,
+    "fix_exit": 101,
+    "source_unchanged": true,
+    "postimages": 0,
+    "compiler_diagnostics": 94,
+    "code_counts": {
+      "E0659": 90,
+      "E0603": 1,
+      "E0308": 1,
+      "E0616": 1,
+      "E0004": 1
+    },
+    "tests_run": 0
+  },
+  "diagnostic_four": {
+    "source": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+    "passed": 3,
+    "failed": 1,
+    "timed_out": 0,
+    "same_as_57b": false,
+    "case_limits": {
+      "stack_bytes": 8388608,
+      "timeout_seconds": 60,
+      "test_threads": 2,
+      "retries": 0
+    },
+    "cases": [
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "seconds": "49.821",
+        "passed": true
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources",
+        "seconds": "50.835",
+        "passed": true
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+        "seconds": "7.914",
+        "passed": false
+      },
+      {
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+        "seconds": "21.762",
+        "passed": true
+      }
+    ],
+    "remaining_failure": "C actual owner read about 1112 ms exceeded original 500 ms deadline before publication withdrawal"
+  },
+  "qualification_counts": {
+    "ordinary_evaluated_NoUpdate": 0,
+    "ordinary_Adopt": 0,
+    "whole_daemon_Root_cold_recovery": 0,
+    "multigeneration": 0
+  },
+  "unrun": [
+    "57b exact-source native tests",
+    "full caller gate on 57b",
+    "formal five-crate and protected Root native"
+  ],
+  "artifact_notes": "gzip files preserve complete original bytes; original hashes and gzip hashes are distinct. Read transport failures are retained. No test/deadline/authority limits changed. Older pending reports remain historical; this record adds actual terminal outcomes."
+}

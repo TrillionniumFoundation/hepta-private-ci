@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="4" failures="1" errors="0" uuid="76385b2b-3063-4084-bbe7-0230c052804d" timestamp="2026-11-12T12:13:57.884-05:00" time="71.601">
+    <testsuite name="codex-hepta-agentd" tests="4" disabled="0" errors="0" failures="1">
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources" classname="codex-hepta-agentd" timestamp="2026-11-12T12:13:57.900-05:00" time="49.821">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources" classname="codex-hepta-agentd" timestamp="2026-11-12T12:13:57.900-05:00" time="50.835">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal" classname="codex-hepta-agentd" timestamp="2026-11-12T12:14:48.735-05:00" time="7.914">
+            <failure message="Error: before actual publication withdrawal: evidence=OwnerUnavailable(&quot;original learning evidence owner&quot;); elapsed=501.635604ms; original_server=Err(Transport(DeadlineElapsed))" type="test failure with exit code 101">Error: before actual publication withdrawal: evidence=OwnerUnavailable(&quot;original learning evidence owner&quot;); elapsed=501.635604ms; original_server=Err(Transport(DeadlineElapsed))</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1178 filtered out; finished in 7.89s
+
+</system-out>
+            <system-err>HEPTA_C_EVIDENCE_DIAGNOSTIC stage=client_read_begin request_id=1 elapsed_us=0
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=transport_loop_begin request_id=0 elapsed_us=164
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=complete_request_arrived request_id=1 elapsed_us=925
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=request_authenticated request_id=1 elapsed_us=2103
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=original_owner_read_begin request_id=1 elapsed_us=2117
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=client_read_return request_id=1 elapsed_us=501652
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=original_owner_read_end request_id=1 elapsed_us=1114671
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=response_authenticated request_id=1 elapsed_us=1118314
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=handler_return request_id=1 elapsed_us=1118511
+HEPTA_C_EVIDENCE_DIAGNOSTIC request_id=1 handler_elapsed_us=1117577
+HEPTA_C_EVIDENCE_DIAGNOSTIC stage=transport_loop_return request_id=0 elapsed_us=1118581
+HEPTA_C_EVIDENCE_DIAGNOSTIC transport_result=Err(Transport(DeadlineElapsed))
+Error: before actual publication withdrawal: evidence=OwnerUnavailable(&quot;original learning evidence owner&quot;); elapsed=501.635604ms; original_server=Err(Transport(DeadlineElapsed))
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures" classname="codex-hepta-agentd" timestamp="2026-11-12T12:14:47.723-05:00" time="21.762">
+        </testcase>
+    </testsuite>
+</testsuites>

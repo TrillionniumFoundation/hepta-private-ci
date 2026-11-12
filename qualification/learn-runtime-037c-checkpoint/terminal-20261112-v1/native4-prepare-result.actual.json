@@ -1,0 +1,130 @@
+{
+  "base": "4ab34bbd3ca803213b6eecbaba81af719630f5d0",
+  "diagnostic_only": true,
+  "exit_code": 1,
+  "finished_at": "2026-11-12T17:15:17.425943+00:00",
+  "formal_focused_qualification": false,
+  "named_case_coverage": {
+    "available": true,
+    "checks": [
+      {
+        "attributes": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+            "time": "21.762",
+            "timestamp": "2026-11-12T12:14:47.723-05:00"
+          }
+        ],
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+        "observed_count": 1,
+        "passed": true
+      },
+      {
+        "attributes": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+            "time": "7.914",
+            "timestamp": "2026-11-12T12:14:48.735-05:00"
+          }
+        ],
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+        "observed_count": 1,
+        "passed": false
+      },
+      {
+        "attributes": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+            "time": "49.821",
+            "timestamp": "2026-11-12T12:13:57.900-05:00"
+          }
+        ],
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "observed_count": 1,
+        "passed": true
+      },
+      {
+        "attributes": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources",
+            "time": "50.835",
+            "timestamp": "2026-11-12T12:13:57.900-05:00"
+          }
+        ],
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources",
+        "observed_count": 1,
+        "passed": true
+      }
+    ],
+    "diagnostic_only": true,
+    "exact_pass_coverage": false,
+    "expected_count": 4,
+    "junit": "/home/qian-qi/hepta-learn-037c-evidence/native-00378c2e33ed-diagnostic-four-v3/diagnostic-four.xml",
+    "junit_sha256": "5440b92d0c87994cab564b173730e7b6c1478de586444a86fc553185b6a15390",
+    "observed_count": 4
+  },
+  "native_process": {
+    "actual_process_exit_observed": true,
+    "command": [
+      "/usr/bin/python3",
+      "/home/qian-qi/hepta-learn-037c-evidence/native-prepare-00378c2e33ed-diagnostic-four-v3/diagnostic.py",
+      "--repo",
+      "/home/qian-qi/hepta-learn-common-20261112-037c",
+      "--records",
+      "/home/qian-qi/hepta-learn-037c-evidence/native-00378c2e33ed-diagnostic-four-v3",
+      "--source",
+      "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+      "--suite",
+      "diagnostic-four"
+    ],
+    "controller_kill": false,
+    "cwd": "/home/qian-qi/hepta-learn-common-20261112-037c",
+    "finished_at": "2026-11-12T17:15:15.184519+00:00",
+    "log_bytes": 68152,
+    "log_file": "native-process.raw.log",
+    "log_sha256": "ba784c974929a7de054de12fb78654ec4dc954e9bffed635a350bfc31dee8ea3",
+    "returncode": 1,
+    "started_at": "2026-11-12T16:53:16.879609+00:00"
+  },
+  "ordinary_qualification": 0,
+  "postimages": {
+    "files": [],
+    "patch": {
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "request_key": "learn-037c-native-00378c2e33ed-diagnostic-four-v3",
+  "root_qualification": 0,
+  "source": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+  "source_after": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "files": 14995,
+    "inventory_sha256": "8883c1997c9248a93d1ff75284f6e31f66730e0d0a10adda07ffb5361ebc10fe",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+    "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b",
+    "status": "",
+    "tree": "780459baa22446728e58a211da9d4b72c57aa4d7"
+  },
+  "source_ready": {
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "commit": "00378c2e33ede95f4a93bf96f6d87b3bd415d337",
+    "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "files": 14995,
+    "inventory_sha256": "8883c1997c9248a93d1ff75284f6e31f66730e0d0a10adda07ffb5361ebc10fe",
+    "sparse_path": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/worktrees/hepta-learn-common-20261112-037c/info/sparse-checkout",
+    "sparse_sha256": "2dd9b95a4cfcaf70510cfa92ba0b1ec515b75ccbb21d56dae47f232fdea50d5b",
+    "status": "",
+    "tree": "780459baa22446728e58a211da9d4b72c57aa4d7"
+  },
+  "started_at": "2026-11-12T16:41:11.625466+00:00",
+  "status": "diagnostic-failed",
+  "tree": "780459baa22446728e58a211da9d4b72c57aa4d7"
+}
