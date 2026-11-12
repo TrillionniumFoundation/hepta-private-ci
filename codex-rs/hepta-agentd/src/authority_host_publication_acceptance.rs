@@ -65,14 +65,7 @@ impl PublicationAcceptance {
         let original = slot
             .reserved
             .original_for_version(PublicationVersion::DurableV2)?;
-        if prepared.current != original.intent.previous
-            || prepared.prepared.as_ref() != Some(&original.intent)
-            || prepared.current == expected.current
-        {
-            return Err(io::Error::other(
-                "first real Prepared to Published transition required",
-            ));
-        }
+        Self::require_first_transition(&original.intent, prepared, expected)?;
         slot.require_profile()?;
         let published = expected
             .published
@@ -155,6 +148,25 @@ impl PublicationAcceptance {
         };
         accepted.require_original(&slot.reserved)?;
         Ok(accepted)
+    }
+
+    /// A data-only precondition. Passing it neither proves the CAS happened
+    /// nor constructs an acceptance; the producer retains every physical and
+    /// live authority check above.
+    pub(super) fn require_first_transition(
+        intent: &UpdateIntent,
+        prepared: &CurrentHead,
+        expected: &CurrentHead,
+    ) -> io::Result<()> {
+        if prepared.current != intent.previous
+            || prepared.prepared.as_ref() != Some(intent)
+            || prepared.current == expected.current
+        {
+            return Err(io::Error::other(
+                "first real Prepared to Published transition required",
+            ));
+        }
+        Ok(())
     }
 
     pub(super) fn require_original(&self, reserved: &ReservedPublicationProfile) -> io::Result<()> {
