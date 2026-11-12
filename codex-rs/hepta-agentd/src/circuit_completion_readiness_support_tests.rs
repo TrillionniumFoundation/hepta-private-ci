@@ -30,7 +30,7 @@ pub(crate) fn client(
     } = original;
     Ok((
         OriginalCircuitCompletionReadinessClientV1 {
-            context,
+            context: context.legacy()?.clone(),
             binding,
             channel,
             retained,
