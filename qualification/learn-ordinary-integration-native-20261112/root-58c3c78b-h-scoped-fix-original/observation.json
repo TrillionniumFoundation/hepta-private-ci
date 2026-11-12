@@ -1,0 +1,104 @@
+{
+  "source": "58c3c78b2afec0306110c07f352d3d145de9b4af",
+  "tree": "427fb71e88c7e6fd272f212eabfc06f25364556e",
+  "elapsed_seconds": 158.82596420496702,
+  "exit_code": 101,
+  "command": [
+    "/home/qq/hepta-learn-ff41-tools/bin/just",
+    "fix",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "profile_overrides": [],
+  "source_unchanged": false,
+  "autofix_changed_files": 6,
+  "actual_terminal_error": "recursion limit reached expanding serde_json json_internal at ordinary_q24_process_deployment_tests.rs:146 (object ends at 204)",
+  "tests": 0,
+  "junit": 0,
+  "capture_job": "1a1d07a2820-2564-1b89",
+  "normalized_changed_path_match": true,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 86260,
+    "sha256": "8d0980df01fbbc0dd0aa9286fc3af917f851e2b502fed51fba824673dfd8205f",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "autofix-current.patch",
+      "bytes": 7010,
+      "sha256": "753fc68f5db706627b54c96247ab4125e2c26ec33d3da7da7e39cb9ba8330f3c"
+    },
+    {
+      "path": "capture-observation.json",
+      "bytes": 607,
+      "sha256": "0476fc1891e19fa0c26f7dea8984d6ea4ebf1512016c8ea6002c8e1510ee6fe0"
+    },
+    {
+      "path": "capture-package.json.gz",
+      "bytes": 51762,
+      "sha256": "e024ca11030e29f2e5ea31d1124dd6f2bb0333f1e8fb59686973116b6c99415e"
+    },
+    {
+      "path": "capture-verification.json",
+      "bytes": 2522,
+      "sha256": "e1bcd2b5f100408e4f2f8101cbc01717f540dae91ae9c3b29c70baccc3fb7ac8"
+    },
+    {
+      "path": "postimage/codex-rs/hepta-agentd/src/authority_host_historical_ledger_registration.rs",
+      "bytes": 6303,
+      "sha256": "22d93a714fd35c5111b5a0fb4efdb5b1dc12420394bce1c8a15b554e74dced6d"
+    },
+    {
+      "path": "postimage/codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs",
+      "bytes": 21651,
+      "sha256": "b110bf1b6ec8fb73266d29e5f64b528e4d9945df252b0655b44f0d48f9a581f7"
+    },
+    {
+      "path": "postimage/codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execution.rs",
+      "bytes": 11614,
+      "sha256": "1ac1cf6e2aa74261994a362b85d6fe5935e3247ca9405db5f7b8a9c894f7ec19"
+    },
+    {
+      "path": "postimage/codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+      "bytes": 12845,
+      "sha256": "8a3e7f59f72a2ef89ef440ca369e82f866d0340911cc02dade43f1b3f3d6ba10"
+    },
+    {
+      "path": "postimage/codex-rs/hepta-agentd/src/cell_q24_learning_generation_operation.rs",
+      "bytes": 2566,
+      "sha256": "bfd60503cf779e7ce9f15a7e1829d09b2e9b5a3ce10f932b229b56f0a0b98409"
+    },
+    {
+      "path": "postimage/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 68466,
+      "sha256": "96150fbc2d3e27a3ecee8f8d87139481b72a64b7ce0a95240ac0709cb1f986d3"
+    },
+    {
+      "path": "result.json",
+      "bytes": 1877,
+      "sha256": "622cc1436fc1fa300a93bb6fe3a580620d9ed7f74f78e154af229c1bd9ec2b10"
+    },
+    {
+      "path": "stderr.log",
+      "bytes": 75692,
+      "sha256": "4d77ba708e250c3636f36cb1d8a2aeb4a311b20fde0dc7f37a655b26a6da5da9"
+    },
+    {
+      "path": "stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

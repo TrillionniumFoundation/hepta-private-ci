@@ -1,0 +1,7 @@
+# Actual H scoped fix with six preserved autofixes
+
+The exact 58c3c78b scoped just fix returned 101 after 158.825964 seconds. Agentd library checking reached its warnings; test compilation then failed on the large serde_json json! fixture at ordinary_q24_process_deployment_tests.rs:146. No tests or JUnit were produced. This source does not include the later fixture split and does not prove compilation of subsequent initialization or Root integration.
+
+The tool made six actual source changes before failing. The complete original 75,692-byte stderr, result, empty stdout, exact patch and all six source postimages are retained. A separate read-only process captured them without editing the native worktree or starting another build. All raw logs match their original result hashes. The capture helper initial exact-status comparison returned false because the original result stores literal newline escapes and strips leading status whitespace; a separate normalization record proves the six path/status pairs match, without rewriting that original observation or result.
+
+Autofixes remove a Copy clone, redundant mutable-option conversions and unused imports/mutability, and collapse two B output-integrity nested conditions into let chains. These preserved postimages are not silently installed or called qualified. Their actual source guards must be migrated to the same checks when integrated. Complete positive, NoUpdate and daemon plus Root cold restart counts remain zero.
