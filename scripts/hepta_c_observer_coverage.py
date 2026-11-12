@@ -252,7 +252,21 @@ NEXT_USE_COMMAND_CASES = tuple(
     )
 )
 
+PHYSICAL_CELL_PACKAGE = "codex-hepta-neuron"
+PHYSICAL_CELL_PREFIX = "cell_generation_journal::tests::physical_current::"
+PHYSICAL_CELL_CASES = tuple(
+    PHYSICAL_CELL_PREFIX + name
+    for name in (
+        "physical_current_preserves_complete_bytes_cursor_state_and_append_owner",
+        "physical_current_rejects_short_tail_extra_tail_and_truncation_without_repair",
+        "physical_current_rejects_valid_same_length_rehashed_history_and_cannot_rearm",
+        "physical_current_rejects_header_change_and_preserves_cursor_after_restore",
+        "physical_current_fences_witness_change_between_original_descriptor_reads",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
     ("original_selector", PACKAGE, SELECTION_CASES),
