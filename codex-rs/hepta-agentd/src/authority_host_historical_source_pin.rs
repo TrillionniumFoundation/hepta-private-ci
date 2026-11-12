@@ -143,6 +143,12 @@ mod record;
 #[path = "authority_host_historical_task_data.rs"]
 mod task_data;
 
+#[path = "authority_host_historical_task.rs"]
+mod task;
+pub(crate) use task::RootOriginalHistoricalCompleteTaskObservationV1;
+pub(crate) use task::RootOriginalHistoricalTaskReadV1;
+pub(crate) use task::RootRetainedHistoricalCompleteTaskV1;
+
 impl HostAuthorityService {
     /// Capture only under this actual Initial owner's original writer/pidfd.
     /// A must still be alive, but its Source writer must have released its lock.
