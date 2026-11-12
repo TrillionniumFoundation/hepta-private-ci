@@ -1,0 +1,68 @@
+test_actual_factory_binds_all_members_before_minting_private_source (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_actual_factory_binds_all_members_before_minting_private_source) ... ok
+test_call_identity_counter_and_immutable_signature_cannot_be_substituted (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_call_identity_counter_and_immutable_signature_cannot_be_substituted) ... ok
+test_cohort_cells_qualification_and_receipt_tails_remain_real (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_cohort_cells_qualification_and_receipt_tails_remain_real) ... ok
+test_first_and_last_reads_stay_in_the_original_physical_slots (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_first_and_last_reads_stay_in_the_original_physical_slots) ... ok
+test_original_effect_owner_and_transport_budgets_are_unchanged (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_original_effect_owner_and_transport_budgets_are_unchanged) ... ok
+test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) ... 
+  test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) (boundary='learning_original_panel_training_prepare') ... ERROR
+  test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) (boundary='learning_original_panel_training_qualification') ... ERROR
+  test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) (boundary='learning_original_panel_training_panel') ... ERROR
+
+======================================================================
+ERROR: test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) (boundary='learning_original_panel_training_prepare')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellEvaluationQualificationSourcesV1::prepare_with_training receiver
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 77, in test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls
+    PROOF._verify_boundary(ROOT, row, index, ())
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: learning_original_panel_training_prepare: codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs: unresolved possible OriginalCellEvaluationQualificationSourcesV1::prepare_with_training receiver
+
+======================================================================
+ERROR: test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) (boundary='learning_original_panel_training_qualification')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 77, in test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls
+    PROOF._verify_boundary(ROOT, row, index, ())
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/verify_hepta_callers.py", line 544, in _verify_boundary
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: learning_original_panel_training_qualification: caller set mismatch; missing=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs'], unexpected=[]
+
+======================================================================
+ERROR: test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls (test_original_panel_training_transaction_source_closure.OriginalPanelTrainingTransactionClosureTests.test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls) (boundary='learning_original_panel_training_panel')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/verify_hepta_callers.py", line 528, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/verify_hepta_callers.py", line 529, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible OriginalCellEvaluationPanelOwnerV1::read_current_with_training receiver
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py", line 77, in test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls
+    PROOF._verify_boundary(ROOT, row, index, ())
+  File "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror/scripts/verify_hepta_callers.py", line 533, in _verify_boundary
+    raise VerificationFailure(
+panel_training_transaction_proof.VerificationFailure: learning_original_panel_training_panel: codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs: unresolved possible OriginalCellEvaluationPanelOwnerV1::read_current_with_training receiver
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.952s
+
+FAILED (errors=3)

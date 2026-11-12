@@ -1,0 +1,31 @@
+{
+  "base_sha": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "claim": "Every valid Panel has one primary and at least one retention member before a Host can use Individual or Bound panel read mode.",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+      "bytes": 5940,
+      "sha256": "0b51a44ac006db18ae4b67a31040fcb0704cc5bb13e312c919cdfb0f50ed0efe",
+      "blob": "c0c67017117f71982a9d294b5b6d61e37844da6d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "bytes": 8237,
+      "sha256": "7b4af96b6fbe850496196e54d39d2787796d7bc0cde1a3e1f20bb18c01679b7b",
+      "blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "bytes": 6536,
+      "sha256": "4498d4c2d918feee5a82304037d5cf6d9bf2c5f2a7139459e0354d4c3d45ed13",
+      "blob": "ea8b12aebdfb2441c09efa56830ff9e6417be6ae"
+    }
+  ],
+  "chain": [
+    "OriginalCellEvaluationPanelRegistrationV1::new rejects retention.is_empty() and retention.len()>16; private fields, no deserializer/setter",
+    "OriginalCellEvaluationPanelOwnerV1::from_original_owners calls validate_original_members before constructing Self",
+    "validate_original_members rejects empty retention, registration length mismatch and >16; stores original private retention",
+    "OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1); valid private panel contains 2..17 members"
+  ],
+  "status": "READ_ONLY_EXACT_BASE_PROOF; no source changed; native unrun"
+}

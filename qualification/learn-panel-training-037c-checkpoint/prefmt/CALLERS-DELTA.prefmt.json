@@ -1,0 +1,1810 @@
+{
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "base_callers_sha256": "abd68af6b993cb2b363c1909581b628e6f94bab0696eff2e55120d5cf9d2f4b9",
+  "base_callers_git_blob": "50077d9ffa5362358ae2234864be1f905217d184",
+  "new_boundaries": [
+    {
+      "id": "learning_original_panel_training_source",
+      "symbol": "OriginalPanelTrainingSourceV1::from_original_training_readback",
+      "receiver_type": "OriginalPanelTrainingSourceV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "definition_markers": [
+        "pub(super) fn from_original_training_readback("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_call",
+      "symbol": "OriginalPanelTrainingSourceV1::call",
+      "receiver_type": "OriginalPanelTrainingSourceV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "definition_markers": [
+        "pub(super) fn call("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_begin",
+      "symbol": "OriginalPanelTrainingCallV1::begin",
+      "receiver_type": "OriginalPanelTrainingCallV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "definition_markers": [
+        "pub(super) fn begin("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_slot",
+      "symbol": "OriginalPanelTrainingReadV1::read",
+      "receiver_type": "OriginalPanelTrainingReadV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "definition_markers": [
+        "pub(super) async fn read("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_finish",
+      "symbol": "OriginalPanelTrainingReadV1::finish",
+      "receiver_type": "OriginalPanelTrainingReadV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "definition_markers": [
+        "pub(super) fn finish("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_actual",
+      "symbol": "OriginalCellEvaluationQualificationSourcesV1::read_trainer",
+      "receiver_type": "OriginalCellEvaluationQualificationSourcesV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "definition_markers": [
+        "pub(super) async fn read_trainer("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_prepare",
+      "symbol": "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training",
+      "receiver_type": "OriginalCellEvaluationQualificationSourcesV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "definition_markers": [
+        "pub(super) async fn prepare_with_training("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_qualification",
+      "symbol": "OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training",
+      "receiver_type": "OriginalCellEvaluationQualificationOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "definition_markers": [
+        "pub(super) async fn finish_readback_with_training("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_panel_training_panel",
+      "symbol": "OriginalCellEvaluationPanelOwnerV1::read_current_with_training",
+      "receiver_type": "OriginalCellEvaluationPanelOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "definition_markers": [
+        "async fn read_current_with_training("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+      ],
+      "caller_markers": []
+    }
+  ],
+  "boundary_changes": [
+    {
+      "id": "learning_original_evaluation_panel_current",
+      "index_in_base": 427,
+      "before": {
+        "id": "learning_original_evaluation_panel_current",
+        "symbol": "OriginalCellEvaluationPanelOwnerV1::read_current",
+        "receiver_type": "OriginalCellEvaluationPanelOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+        "definition_markers": [
+          "pub async fn read_current(",
+          "self.read_current_with_clock(original::now).await",
+          "self.fenced = true",
+          "self.read_original_panel(&mut clock).await",
+          "if result.is_ok()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "caller_markers": []
+      },
+      "after": {
+        "id": "learning_original_evaluation_panel_current",
+        "symbol": "OriginalCellEvaluationPanelOwnerV1::read_current",
+        "receiver_type": "OriginalCellEvaluationPanelOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+        "definition_markers": [
+          "pub async fn read_current(",
+          "self.read_current_with_clock(original::now).await",
+          "self.fenced = true",
+          "self.read_original_panel(&mut clock, training).await",
+          "if result.is_ok()"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "caller_markers": []
+      }
+    },
+    {
+      "id": "learning_original_evaluation_panel_member_current",
+      "index_in_base": 428,
+      "before": {
+        "id": "learning_original_evaluation_panel_member_current",
+        "symbol": "OriginalCellEvaluationPanelMemberOwnersV1::read_original",
+        "receiver_type": "OriginalCellEvaluationPanelMemberOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "definition_markers": [
+          "pub(super) async fn read_original(",
+          "self.read_cells()?",
+          "self.qualification.completed_bytes()?",
+          "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
+        ],
+        "caller_markers": [
+          "OriginalCellEvaluationPanelMemberOwnersV1::read_original("
+        ]
+      },
+      "after": {
+        "id": "learning_original_evaluation_panel_member_current",
+        "symbol": "OriginalCellEvaluationPanelMemberOwnersV1::read_original",
+        "receiver_type": "OriginalCellEvaluationPanelMemberOwnersV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "definition_markers": [
+          "pub(super) async fn read_original(",
+          "self.read_cells()?",
+          "self.qualification.completed_bytes()?",
+          "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
+        ],
+        "caller_markers": [
+          "OriginalCellEvaluationPanelMemberOwnersV1::read_original("
+        ]
+      }
+    }
+  ],
+  "protected_row_replacements": [
+    {
+      "index_in_base": 261,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+        "required": [
+          "pub runner: &'a mut CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>",
+          "pub executions: &'a mut OriginalCellEvaluationExecutionStoreV1<X>",
+          "pub trainer: &'a LearningIterationEvidenceClientV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "FinalHoldoutProviderV1",
+          "evaluate_or_readback(",
+          "release_after_consumption(",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "Deserialize",
+          "unwrap_or",
+          "permit_all",
+          "if false",
+          "pub journal:",
+          "pub witness:",
+          "into_inner(",
+          "try_clone(",
+          "DerefMut",
+          "AsMut",
+          ".claim(",
+          ".complete(",
+          "::claim(",
+          "::complete(",
+          "compare_and_swap(",
+          "OriginalCellEvaluationExecutionStoreV1::create(",
+          "OriginalCellEvaluationExecutionStoreV1::recover(",
+          "pub fn prepare(",
+          "pub fn read_original("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "let clock = || binding::now()",
+              "OriginalCellEvaluationExecutionStoreV1::readback_only(",
+              "self.executions",
+              "config.execution_evidence.key()",
+              "CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>",
+              "runner.readback_completed_evidence(",
+              "&config.plan",
+              "candidate: self.journals.candidate",
+              "fixed_expert: self.journals.fixed_expert",
+              "candidate_plan: self.candidate_plan",
+              "baseline_plan: self.baseline_plan",
+              "evaluator: &config.context.evaluator",
+              "verifier: &config.verifier",
+              "clock: &clock",
+              "&mut executions",
+              "if execution != config.execution_evidence || evaluation.plan() != &config.plan",
+              "require_original_signed_execution(&config.context.evaluator)?",
+              "runner.qualification_bundle(&evaluation, &config.context)?",
+              "Ok(Prepared"
+            ]
+          },
+          {
+            "function": "fn read_trainer(",
+            "sequence": [
+              "let trainer: &LearningIterationEvidenceClientV1 = self.trainer",
+              "trainer\n            .readback(",
+              "&config.training",
+              "binding::training_receipt(config)?",
+              "if original != config.training_evidence",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn prepare(",
+            "sequence": [
+              "let before = self.read_original(config)?",
+              "self.read_trainer(config).await?",
+              "let after = self.read_original(config)?",
+              "if before != after",
+              "return Err(Error::CommitUncertain)",
+              "let current = binding::now()?",
+              "binding::clock_time(started_at, current)?",
+              "binding::authenticate(config, &after, current)?",
+              "Ok(after)"
+            ],
+            "top_level": [
+              "let before = self.read_original(config)?",
+              "self.read_trainer(config).await?",
+              "let after = self.read_original(config)?",
+              "if before != after",
+              "let current = binding::now()?"
+            ]
+          },
+          {
+            "function": "fn verify_current(",
+            "sequence": [
+              "if self.read_original(config)? != *prepared",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+        "required": [
+          "pub runner: &'a mut CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>",
+          "pub executions: &'a mut OriginalCellEvaluationExecutionStoreV1<X>",
+          "pub trainer: &'a LearningIterationEvidenceClientV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "FinalHoldoutProviderV1",
+          "evaluate_or_readback(",
+          "release_after_consumption(",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "Deserialize",
+          "unwrap_or",
+          "permit_all",
+          "if false",
+          "pub journal:",
+          "pub witness:",
+          "into_inner(",
+          "try_clone(",
+          "DerefMut",
+          "AsMut",
+          ".claim(",
+          ".complete(",
+          "::claim(",
+          "::complete(",
+          "compare_and_swap(",
+          "OriginalCellEvaluationExecutionStoreV1::create(",
+          "OriginalCellEvaluationExecutionStoreV1::recover(",
+          "pub fn prepare(",
+          "pub fn read_original("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "let clock = || binding::now()",
+              "OriginalCellEvaluationExecutionStoreV1::readback_only(",
+              "self.executions",
+              "config.execution_evidence.key()",
+              "CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>",
+              "runner.readback_completed_evidence(",
+              "&config.plan",
+              "candidate: self.journals.candidate",
+              "fixed_expert: self.journals.fixed_expert",
+              "candidate_plan: self.candidate_plan",
+              "baseline_plan: self.baseline_plan",
+              "evaluator: &config.context.evaluator",
+              "verifier: &config.verifier",
+              "clock: &clock",
+              "&mut executions",
+              "if execution != config.execution_evidence || evaluation.plan() != &config.plan",
+              "require_original_signed_execution(&config.context.evaluator)?",
+              "runner.qualification_bundle(&evaluation, &config.context)?",
+              "Ok(Prepared"
+            ]
+          },
+          {
+            "function": "fn read_trainer(",
+            "sequence": [
+              "let trainer: &LearningIterationEvidenceClientV1 = self.trainer",
+              "trainer\n            .readback(",
+              "&config.training",
+              "binding::training_receipt(config)?",
+              "if original != config.training_evidence",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn prepare_with_training(",
+            "sequence": [
+              "let before = self.read_original(config)?",
+              "OriginalPanelTrainingReadV1::read(training, self, config).await?",
+              "let after = self.read_original(config)?",
+              "if before != after",
+              "return Err(Error::CommitUncertain)",
+              "let current = binding::now()?",
+              "binding::clock_time(started_at, current)?",
+              "binding::authenticate(config, &after, current)?",
+              "Ok(after)"
+            ],
+            "top_level": [
+              "let before = self.read_original(config)?",
+              "OriginalPanelTrainingReadV1::read(training, self, config).await?",
+              "let after = self.read_original(config)?",
+              "if before != after",
+              "let current = binding::now()?"
+            ]
+          },
+          {
+            "function": "fn verify_current(",
+            "sequence": [
+              "if self.read_original(config)? != *prepared",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn prepare(",
+            "sequence": [
+              "self.prepare_with_training(config, started_at, &mut OriginalPanelTrainingReadV1::Individual)",
+              ".await"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 263,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+        "required": [
+          "struct ReadbackPort",
+          "journal: &'a mut OriginalCellEvaluationExecutionStoreV1<W>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "FinalHoldoutProviderV1",
+          "evaluate_or_readback(",
+          "release_after_consumption(",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "Deserialize",
+          "unwrap_or",
+          "permit_all",
+          "if false",
+          "pub journal:",
+          "pub witness:",
+          "into_inner(",
+          "try_clone(",
+          "DerefMut",
+          "AsMut",
+          ".claim(",
+          ".complete(",
+          "::claim(",
+          "::complete(",
+          "compare_and_swap(",
+          "OriginalCellEvaluationExecutionStoreV1::create(",
+          "OriginalCellEvaluationExecutionStoreV1::recover(",
+          "pub struct ReadbackPort",
+          "pub fn read_original(",
+          "PersistPort"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "let started_at = binding::now()?",
+              "let bytes = self.completed_bytes()?",
+              "self.read_completed(&mut source, &bytes, started_at).await"
+            ],
+            "top_level": [
+              "let started_at = binding::now()?",
+              "let bytes = self.completed_bytes()?"
+            ]
+          },
+          {
+            "function": "fn read_completed(",
+            "sequence": [
+              "source.prepare(&self.config, started_at).await?",
+              "self.finish_readback(source, &prepared, bytes, started_at, false)\n                .await",
+              "if result.is_err()",
+              "self.fenced = true",
+              "result"
+            ]
+          },
+          {
+            "function": "fn finish_readback(",
+            "sequence": [
+              "let current = binding::now()?",
+              "binding::clock_time(started_at, current)?",
+              "binding::authenticate(&self.config, prepared, current)?",
+              "let mut sink = ReadbackPort",
+              "journal: &mut self.journal",
+              "key: &self.saved",
+              "execution_digest: prepared.evaluation.temporal().execution_digest",
+              "CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>",
+              "runner.qualify_and_persist(",
+              "ProductTimingEvidenceV1::Qualification",
+              "&mut sink",
+              "if let Some(error) = sink.error.take()",
+              "return Err(error)",
+              "let qualification = result?",
+              "drop(sink)",
+              "source.read_trainer(&self.config).await?",
+              "source.verify_current(&self.config, prepared)?",
+              "if self.completed_bytes()? != bytes",
+              "return Err(Error::CommitUncertain)",
+              "let current = binding::now()?",
+              "binding::clock_time(started_at, current)?",
+              "if new_publication",
+              "binding::new_work_time(&self.config, started_at, current)?",
+              "binding::authenticate(&self.config, prepared, current)?",
+              "let decision = revalidate_product_qualification_v1(",
+              "qualification.product()",
+              "prepared.bundle.clone()",
+              "self.config.plan.product_plan().metric_roles.clone()",
+              "&self.config.product_evidence",
+              "ProductTimingEvidenceV1::Qualification",
+              "&self.config.verifier",
+              "current",
+              "if qualification.product().decision != decision",
+              "return Err(Error::CommitUncertain)",
+              "Ok(qualification)"
+            ]
+          },
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "if execution_digest != self.execution_digest",
+              "binding::decision_bytes(self.key, execution_digest, decision)?",
+              "if expected != self.bytes",
+              "ProductEvaluationExecutionStoreV1::readback(self.journal, self.key)?",
+              "State::Pending => return Err(Error::Pending)",
+              "State::Completed(original) if original == self.bytes",
+              "State::Completed(_) => return Err(Error::CommitUncertain)",
+              "binding::publication_digest(self.key, self.bytes)"
+            ]
+          },
+          {
+            "function": "fn persist(",
+            "sequence": [
+              "self.read_original(execution_digest, decision)",
+              "Ok(digest) => Ok(digest)",
+              "Err(error)",
+              "self.error = Some(error)",
+              "Err(ProductEvidenceSinkErrorV1::Rejected)"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+        "required": [
+          "struct ReadbackPort",
+          "journal: &'a mut OriginalCellEvaluationExecutionStoreV1<W>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "FinalHoldoutProviderV1",
+          "evaluate_or_readback(",
+          "release_after_consumption(",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "Deserialize",
+          "unwrap_or",
+          "permit_all",
+          "if false",
+          "pub journal:",
+          "pub witness:",
+          "into_inner(",
+          "try_clone(",
+          "DerefMut",
+          "AsMut",
+          ".claim(",
+          ".complete(",
+          "::claim(",
+          "::complete(",
+          "compare_and_swap(",
+          "OriginalCellEvaluationExecutionStoreV1::create(",
+          "OriginalCellEvaluationExecutionStoreV1::recover(",
+          "pub struct ReadbackPort",
+          "pub fn read_original(",
+          "PersistPort"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "let started_at = binding::now()?",
+              "let bytes = self.completed_bytes()?",
+              "self.read_completed(&mut source, &bytes, started_at).await"
+            ],
+            "top_level": [
+              "let started_at = binding::now()?",
+              "let bytes = self.completed_bytes()?"
+            ]
+          },
+          {
+            "function": "fn read_completed(",
+            "sequence": [
+              "source.prepare(&self.config, started_at).await?",
+              "self.finish_readback(source, &prepared, bytes, started_at, false)\n                .await",
+              "if result.is_err()",
+              "self.fenced = true",
+              "result"
+            ]
+          },
+          {
+            "function": "fn finish_readback_with_training(",
+            "sequence": [
+              "let current = binding::now()?",
+              "binding::clock_time(started_at, current)?",
+              "binding::authenticate(&self.config, prepared, current)?",
+              "let mut sink = ReadbackPort",
+              "journal: &mut self.journal",
+              "key: &self.saved",
+              "execution_digest: prepared.evaluation.temporal().execution_digest",
+              "CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>",
+              "runner.qualify_and_persist(",
+              "ProductTimingEvidenceV1::Qualification",
+              "&mut sink",
+              "if let Some(error) = sink.error.take()",
+              "return Err(error)",
+              "let qualification = result?",
+              "drop(sink)",
+              "OriginalPanelTrainingReadV1::read(training, source, &self.config).await?",
+              "source.verify_current(&self.config, prepared)?",
+              "if self.completed_bytes()? != bytes",
+              "return Err(Error::CommitUncertain)",
+              "let current = binding::now()?",
+              "binding::clock_time(started_at, current)?",
+              "if new_publication",
+              "binding::new_work_time(&self.config, started_at, current)?",
+              "binding::authenticate(&self.config, prepared, current)?",
+              "let decision = revalidate_product_qualification_v1(",
+              "qualification.product()",
+              "prepared.bundle.clone()",
+              "self.config.plan.product_plan().metric_roles.clone()",
+              "&self.config.product_evidence",
+              "ProductTimingEvidenceV1::Qualification",
+              "&self.config.verifier",
+              "current",
+              "if qualification.product().decision != decision",
+              "return Err(Error::CommitUncertain)",
+              "Ok(qualification)"
+            ]
+          },
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "if execution_digest != self.execution_digest",
+              "binding::decision_bytes(self.key, execution_digest, decision)?",
+              "if expected != self.bytes",
+              "ProductEvaluationExecutionStoreV1::readback(self.journal, self.key)?",
+              "State::Pending => return Err(Error::Pending)",
+              "State::Completed(original) if original == self.bytes",
+              "State::Completed(_) => return Err(Error::CommitUncertain)",
+              "binding::publication_digest(self.key, self.bytes)"
+            ]
+          },
+          {
+            "function": "fn persist(",
+            "sequence": [
+              "self.read_original(execution_digest, decision)",
+              "Ok(digest) => Ok(digest)",
+              "Err(error)",
+              "self.error = Some(error)",
+              "Err(ProductEvidenceSinkErrorV1::Rejected)"
+            ]
+          },
+          {
+            "function": "fn finish_readback(",
+            "sequence": [
+              "self.finish_readback_with_training(",
+              "source,",
+              "prepared,",
+              "bytes,",
+              "started_at,",
+              "new_publication,",
+              "&mut OriginalPanelTrainingReadV1::Individual",
+              ".await"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 336,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+        "required": [
+          "pub struct OriginalCellEvaluationPanelOwnerV1",
+          "registration: OriginalCellEvaluationPanelRegistrationV1",
+          "bindings: Vec<Digest32>",
+          "retained: Option<OriginalCellEvaluationPanelReadbackV1>",
+          "fenced: bool",
+          "async fn read_current_with_clock("
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "pub primary:",
+          "pub retention:",
+          "pub fn recover",
+          "pub fn reset",
+          "FnOnce",
+          "dyn FinalHoldoutProvider",
+          "qualify_or_readback(",
+          "attest_",
+          "execute_",
+          "publish_",
+          "unwrap_or",
+          "if false",
+          "pub async fn read_current_with_clock",
+          "pub(crate) async fn read_current_with_clock",
+          "pub(super) async fn read_current_with_clock"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_owners(",
+            "sequence": [
+              "fn from_original_owners(",
+              "Self::validate_original_members(&registration, &primary, &retention)?",
+              "Ok(Self",
+              "bindings,",
+              "retained: None",
+              "fenced: false"
+            ],
+            "top_level": [
+              "let bindings = Self::validate_original_members"
+            ]
+          },
+          {
+            "function": "fn read_current(",
+            "sequence": [
+              "fn read_current(",
+              "self.read_current_with_clock(original::now).await"
+            ],
+            "top_level": [
+              "self.read_current_with_clock(original::now).await"
+            ]
+          },
+          {
+            "function": "fn read_current_with_clock(",
+            "sequence": [
+              "fn read_current_with_clock(",
+              "if self.fenced",
+              "return Err(Error::CommitUncertain)",
+              "self.fenced = true",
+              "let result = self.read_original_panel(&mut clock).await",
+              "if result.is_ok()",
+              "self.fenced = false",
+              "result"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "self.fenced = true",
+              "let result = self.read_original_panel(&mut clock).await",
+              "if result.is_ok()"
+            ]
+          },
+          {
+            "function": "fn read_original_panel(",
+            "sequence": [
+              "fn read_original_panel(",
+              "let started_at = clock()?",
+              "let before = self.read_members(clock).await?",
+              "let after = self.read_members(clock).await?",
+              "if before != after",
+              "return Err(Error::CommitUncertain)",
+              "self.require_observed_panel(&after)?",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.primary.authenticate(&after[0], current)?",
+              "for (owner, observed) in self.retention.iter_mut().zip(after.iter().skip(1))",
+              "owner.authenticate(observed, current)?",
+              "let result = self.seal_observed_panel(after)?",
+              "self\n            .retained\n            .as_ref()\n            .is_some_and(|original| original != &result)",
+              "return Err(Error::CommitUncertain)",
+              "self.retained = Some(result.clone())",
+              "Ok(result)"
+            ],
+            "top_level": [
+              "let started_at = clock()?",
+              "let before = self.read_members(clock).await?",
+              "let after = self.read_members(clock).await?",
+              "if before != after",
+              "self.require_observed_panel(&after)?",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.primary.authenticate(&after[0], current)?",
+              "for (owner, observed) in self.retention.iter_mut().zip(after.iter().skip(1))",
+              "let result = self.seal_observed_panel(after)?",
+              "self.retained = Some(result.clone())"
+            ]
+          },
+          {
+            "function": "fn read_members(",
+            "sequence": [
+              "fn read_members(",
+              "OriginalCellEvaluationPanelMemberOwnersV1::read_original(",
+              "&mut self.primary",
+              "self.registration.primary()",
+              "clock,",
+              ".await?",
+              "for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())",
+              "OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock)\n                    .await?",
+              "Ok(results)"
+            ],
+            "top_level": [
+              "for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+        "required": [
+          "pub struct OriginalCellEvaluationPanelOwnerV1",
+          "registration: OriginalCellEvaluationPanelRegistrationV1",
+          "bindings: Vec<Digest32>",
+          "retained: Option<OriginalCellEvaluationPanelReadbackV1>",
+          "fenced: bool",
+          "async fn read_current_with_clock("
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "pub primary:",
+          "pub retention:",
+          "pub fn recover",
+          "pub fn reset",
+          "FnOnce",
+          "dyn FinalHoldoutProvider",
+          "qualify_or_readback(",
+          "attest_",
+          "execute_",
+          "publish_",
+          "unwrap_or",
+          "if false",
+          "pub async fn read_current_with_clock",
+          "pub(crate) async fn read_current_with_clock",
+          "pub(super) async fn read_current_with_clock"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_owners(",
+            "sequence": [
+              "fn from_original_owners(",
+              "Self::validate_original_members(&registration, &primary, &retention)?",
+              "Ok(Self",
+              "bindings,",
+              "retained: None",
+              "fenced: false"
+            ],
+            "top_level": [
+              "let bindings = Self::validate_original_members"
+            ]
+          },
+          {
+            "function": "fn read_current(",
+            "sequence": [
+              "fn read_current(",
+              "self.read_current_with_clock(original::now).await"
+            ],
+            "top_level": [
+              "self.read_current_with_clock(original::now).await"
+            ]
+          },
+          {
+            "function": "fn read_current_with_training(",
+            "sequence": [
+              "fn read_current_with_training(",
+              "if self.fenced",
+              "return Err(Error::CommitUncertain)",
+              "self.fenced = true",
+              "let result = self.read_original_panel(&mut clock, training).await",
+              "if result.is_ok()",
+              "self.fenced = false",
+              "result"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "self.fenced = true",
+              "let result = self.read_original_panel(&mut clock, training).await",
+              "if result.is_ok()"
+            ]
+          },
+          {
+            "function": "fn read_original_panel(",
+            "sequence": [
+              "fn read_original_panel(",
+              "let started_at = clock()?",
+              "let before = self.read_members(clock, training).await?",
+              "let after = self.read_members(clock, training).await?",
+              "if before != after",
+              "return Err(Error::CommitUncertain)",
+              "self.require_observed_panel(&after)?",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.primary.authenticate(&after[0], current)?",
+              "for (owner, observed) in self.retention.iter_mut().zip(after.iter().skip(1))",
+              "owner.authenticate(observed, current)?",
+              "let result = self.seal_observed_panel(after)?",
+              "self\n            .retained\n            .as_ref()\n            .is_some_and(|original| original != &result)",
+              "return Err(Error::CommitUncertain)",
+              "self.retained = Some(result.clone())",
+              "Ok(result)"
+            ],
+            "top_level": [
+              "let started_at = clock()?",
+              "let before = self.read_members(clock, training).await?",
+              "let after = self.read_members(clock, training).await?",
+              "if before != after",
+              "self.require_observed_panel(&after)?",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.primary.authenticate(&after[0], current)?",
+              "for (owner, observed) in self.retention.iter_mut().zip(after.iter().skip(1))",
+              "let result = self.seal_observed_panel(after)?",
+              "self.retained = Some(result.clone())"
+            ]
+          },
+          {
+            "function": "fn read_members(",
+            "sequence": [
+              "fn read_members(",
+              "OriginalCellEvaluationPanelMemberOwnersV1::read_original(",
+              "&mut self.primary",
+              "self.registration.primary()",
+              "clock,",
+              ".await?",
+              "for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())",
+              "OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock, training)\n                    .await?",
+              "Ok(results)"
+            ],
+            "top_level": [
+              "for (owner, task) in self.retention.iter_mut().zip(self.registration.retention())"
+            ]
+          },
+          {
+            "function": "fn read_current_with_clock(",
+            "sequence": [
+              "self.read_current_with_training(&mut clock, &mut OriginalPanelTrainingReadV1::Individual)",
+              ".await"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 337,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "required": [
+          "pub struct OriginalCellEvaluationPanelMemberOwnersV1",
+          "pub qualification: OriginalCellEvaluationQualificationOwnerV1<Q>",
+          "pub candidate: CellGenerationJournalV2<C>",
+          "pub fixed_expert: CellGenerationJournalV2<F>",
+          "pub executions: OriginalCellEvaluationExecutionStoreV1<X>",
+          "pub trainer: Arc<LearningIterationEvidenceClientV1>",
+          "pub cohort: OriginalCircuitEvaluationCohortReadbackV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "qualify_or_readback(",
+          "new_publication: true",
+          "File::open",
+          "File::create",
+          "recover(",
+          "self.qualification.config =",
+          "self.qualification.saved =",
+          "FnOnce",
+          "impl Clone for OriginalCellEvaluationPanelMemberOwnersV1",
+          "unwrap_or",
+          "if false",
+          "Option<OriginalCircuitEvaluationCohortReadbackV1>",
+          "cohort: None"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn read_original(",
+              "let started_at = original::now()?",
+              "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "let before = self.read_cells()?",
+              "let mut sources = OriginalCellEvaluationQualificationSourcesV1",
+              "let bytes = self.qualification.completed_bytes()?",
+              "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?",
+              ".finish_readback(",
+              "&mut sources,",
+              "&prepared,",
+              "&bytes,",
+              "started_at,",
+              "false,",
+              ".await?",
+              "drop(sources)",
+              "let after = self.read_cells()?",
+              "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "if before != after || cohort_before != cohort_after",
+              "return Err(Error::CommitUncertain)",
+              "product_evidence: self.qualification.config.product_evidence.clone()",
+              "execution_evidence: self.qualification.config.execution_evidence.clone()",
+              "cells: after.0",
+              "scopes: after.1",
+              "cohort: cohort_after",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.authenticate(&observed, current)?",
+              "Ok(observed)"
+            ],
+            "top_level": [
+              "let started_at = original::now()?",
+              "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "let before = self.read_cells()?",
+              "let mut sources = OriginalCellEvaluationQualificationSourcesV1",
+              "let bytes = self.qualification.completed_bytes()?",
+              "drop(sources)",
+              "let after = self.read_cells()?",
+              "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "if before != after || cohort_before != cohort_after",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.authenticate(&observed, current)?"
+            ]
+          },
+          {
+            "function": "fn read_cells(",
+            "sequence": [
+              "fn read_cells(",
+              "CellGenerationJournalV2::read_current_checkpoint(&mut self.candidate)?",
+              "CellGenerationJournalV2::read_current_checkpoint(&mut self.fixed_expert)?",
+              "candidate != record.candidate.journal_cut",
+              "fixed_expert != record.fixed_expert.journal_cut",
+              "return Err(Error::Binding(",
+              "self.candidate.snapshot()?.scope.clone()",
+              "self.fixed_expert.snapshot()?.scope.clone()",
+              ".source_run_id",
+              ".as_str()",
+              "candidate_scope.run_id == source_run || baseline_scope.run_id == source_run",
+              "return Err(Error::Binding(",
+              "Ok(([candidate, fixed_expert], [candidate_scope, baseline_scope]))"
+            ],
+            "top_level": [
+              "let candidate = CellGenerationJournalV2::read_current_checkpoint",
+              "let fixed_expert ="
+            ]
+          },
+          {
+            "function": "fn authenticate(",
+            "sequence": [
+              "fn authenticate(",
+              "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(",
+              "&mut self.cohort,",
+              "&observed.cohort,",
+              "current,",
+              "observed.product_evidence != config.product_evidence",
+              "observed.execution_evidence != config.execution_evidence",
+              "observed.qualification.comparison() != config.plan.record()",
+              "return Err(Error::Binding(",
+              "original::authenticate(config, &observed.prepared, current)?",
+              "revalidate_product_qualification_v1(",
+              "observed.qualification.product()",
+              "observed.prepared.bundle.clone()",
+              "config.plan.product_plan().metric_roles.clone()",
+              "&config.product_evidence",
+              "ProductTimingEvidenceV1::Qualification",
+              "&config.verifier",
+              "current,",
+              "if observed.qualification.product().decision != decision",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(",
+              "original::authenticate(config, &observed.prepared, current)?",
+              "let decision = revalidate_product_qualification_v1(",
+              "if observed.qualification.product().decision != decision"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "required": [
+          "pub struct OriginalCellEvaluationPanelMemberOwnersV1",
+          "pub qualification: OriginalCellEvaluationQualificationOwnerV1<Q>",
+          "pub candidate: CellGenerationJournalV2<C>",
+          "pub fixed_expert: CellGenerationJournalV2<F>",
+          "pub executions: OriginalCellEvaluationExecutionStoreV1<X>",
+          "pub trainer: Arc<LearningIterationEvidenceClientV1>",
+          "pub cohort: OriginalCircuitEvaluationCohortReadbackV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "qualify_or_readback(",
+          "new_publication: true",
+          "File::open",
+          "File::create",
+          "recover(",
+          "self.qualification.config =",
+          "self.qualification.saved =",
+          "FnOnce",
+          "impl Clone for OriginalCellEvaluationPanelMemberOwnersV1",
+          "unwrap_or",
+          "if false",
+          "Option<OriginalCircuitEvaluationCohortReadbackV1>",
+          "cohort: None"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn read_original(",
+              "let started_at = original::now()?",
+              "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "let before = self.read_cells()?",
+              "let mut sources = OriginalCellEvaluationQualificationSourcesV1",
+              "let bytes = self.qualification.completed_bytes()?",
+              "OriginalCellEvaluationQualificationSourcesV1::prepare_with_training(",
+              "OriginalCellEvaluationQualificationOwnerV1::finish_readback_with_training(",
+              "&mut sources,",
+              "&prepared,",
+              "&bytes,",
+              "started_at,",
+              "false,",
+              ".await?",
+              "drop(sources)",
+              "let after = self.read_cells()?",
+              "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "if before != after || cohort_before != cohort_after",
+              "return Err(Error::CommitUncertain)",
+              "product_evidence: self.qualification.config.product_evidence.clone()",
+              "execution_evidence: self.qualification.config.execution_evidence.clone()",
+              "cells: after.0",
+              "scopes: after.1",
+              "cohort: cohort_after",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.authenticate(&observed, current)?",
+              "Ok(observed)"
+            ],
+            "top_level": [
+              "let started_at = original::now()?",
+              "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "let before = self.read_cells()?",
+              "let mut sources = OriginalCellEvaluationQualificationSourcesV1",
+              "let bytes = self.qualification.completed_bytes()?",
+              "drop(sources)",
+              "let after = self.read_cells()?",
+              "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+              "if before != after || cohort_before != cohort_after",
+              "let current = clock()?",
+              "original::clock_time(started_at, current)?",
+              "self.authenticate(&observed, current)?"
+            ]
+          },
+          {
+            "function": "fn read_cells(",
+            "sequence": [
+              "fn read_cells(",
+              "CellGenerationJournalV2::read_current_checkpoint(&mut self.candidate)?",
+              "CellGenerationJournalV2::read_current_checkpoint(&mut self.fixed_expert)?",
+              "candidate != record.candidate.journal_cut",
+              "fixed_expert != record.fixed_expert.journal_cut",
+              "return Err(Error::Binding(",
+              "self.candidate.snapshot()?.scope.clone()",
+              "self.fixed_expert.snapshot()?.scope.clone()",
+              ".source_run_id",
+              ".as_str()",
+              "candidate_scope.run_id == source_run || baseline_scope.run_id == source_run",
+              "return Err(Error::Binding(",
+              "Ok(([candidate, fixed_expert], [candidate_scope, baseline_scope]))"
+            ],
+            "top_level": [
+              "let candidate = CellGenerationJournalV2::read_current_checkpoint",
+              "let fixed_expert ="
+            ]
+          },
+          {
+            "function": "fn authenticate(",
+            "sequence": [
+              "fn authenticate(",
+              "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(",
+              "&mut self.cohort,",
+              "&observed.cohort,",
+              "current,",
+              "observed.product_evidence != config.product_evidence",
+              "observed.execution_evidence != config.execution_evidence",
+              "observed.qualification.comparison() != config.plan.record()",
+              "return Err(Error::Binding(",
+              "original::authenticate(config, &observed.prepared, current)?",
+              "revalidate_product_qualification_v1(",
+              "observed.qualification.product()",
+              "observed.prepared.bundle.clone()",
+              "config.plan.product_plan().metric_roles.clone()",
+              "&config.product_evidence",
+              "ProductTimingEvidenceV1::Qualification",
+              "&config.verifier",
+              "current,",
+              "if observed.qualification.product().decision != decision",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "OriginalCircuitEvaluationCohortReadbackV1::authenticate_current(",
+              "original::authenticate(config, &observed.prepared, current)?",
+              "let decision = revalidate_product_qualification_v1(",
+              "if observed.qualification.product().decision != decision"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 345,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "required": [
+          "pub struct OriginalCellEvaluationHostV1",
+          "owners: Mutex<Owners>",
+          "execution_requested: AtomicBool",
+          "evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>",
+          "retained: Option<Receipt>",
+          "fenced: bool"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "LearningEvidenceVerifierV1::new",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "transmute",
+          "FnOnce",
+          "FnMut",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "pub owners:",
+          "pub evaluator:",
+          "pub retained:",
+          "impl Clone for OriginalCellEvaluationHostV1",
+          "pub fn from_original_receipt_owner(",
+          "pub async fn read_panel(",
+          "pub fn current_time("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_receipt_owner(",
+            "sequence": [
+              "evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>",
+              "panel: Panel",
+              "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&evaluator)",
+              "panel.primary.qualification.config",
+              "panel.fenced",
+              "receipt.training != primary.training",
+              "receipt.scope != primary.scope",
+              "receipt.plan != primary.plan",
+              "receipt.signing.plan != *primary.plan.product_plan()",
+              "receipt.signing.execution_namespace != primary.execution_namespace",
+              "receipt.signing.signer.principal != primary.context.evaluator",
+              "receipt.signing.verifier.trust_digest() != primary.verifier.trust_digest()",
+              "receipt.signing.verifier.scope_digest() != primary.verifier.scope_digest()",
+              "receipt.signing.verifier.objective_digest() != primary.verifier.objective_digest()",
+              "Context::from_checkpoint(",
+              "primary.training_evidence.clone()",
+              "context.binding(now()?)?",
+              "Handle::try_current()",
+              "execution_requested: AtomicBool::new(readback_only)",
+              "Semaphore::new(4)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn completion(",
+            "sequence": [
+              "if self.fenced",
+              "return Err(Error::CommitUncertain)",
+              "self.read_original_completion(context, action).await",
+              "if result.is_err()",
+              "LearningOriginalOwnerErrorV1::Pending",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "self.fenced = true",
+              "result"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "let result =",
+              "if result.is_err()"
+            ]
+          },
+          {
+            "function": "fn read_original_completion(",
+            "sequence": [
+              "self.current_time()?",
+              "context.authenticate(started_at)?",
+              "let before = self.read_panel().await?",
+              "before.training() != &context.training",
+              "before.training_evidence() != &context.training_evidence",
+              "before.registration() != &context.registration",
+              "if action == wire::Action::Execute",
+              "self.current_time()?",
+              "require_clock(started_at, current)?",
+              "current >= context.training.request.envelope.expiry_unix_seconds",
+              "let primary = &mut self.panel.primary",
+              "OriginalCellEvaluationReceiptSourcesV1",
+              "qualification: before.primary().qualification()",
+              "context: &config.context",
+              "evidence: &config.product_evidence",
+              "trainer: primary.trainer.as_ref()",
+              "wire::Action::Execute =>",
+              "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(",
+              "wire::Action::Readback =>",
+              "OriginalCellEvaluationReceiptOwnerV1::readback(",
+              "let after = self.read_panel().await?",
+              "if before != after",
+              "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+              "&completed.0,\n            &completed.1",
+              "let current = self.current_time()?",
+              "require_clock(started_at, current)?",
+              "current >= context.training.request.envelope.expiry_unix_seconds",
+              "return Err(Error::CommitUncertain)",
+              "self.authenticate_panel(&after, current)?",
+              "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)",
+              "config.signing.verifier.require_signer_binding(",
+              "LearningEvidenceRoleV1::Evaluator",
+              "contract::authenticate_receipt(context, completed.0, completed.1, current)?",
+              "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)",
+              "self.retained = Some(original.clone())",
+              "Ok(original)"
+            ],
+            "top_level": [
+              "let started_at =",
+              "context.authenticate(started_at)?",
+              "let before =",
+              "let completed =",
+              "let after =",
+              "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+              "self.authenticate_panel(&after, current)?",
+              "let original = contract::authenticate_receipt(",
+              "self.retained = Some(original.clone())",
+              "Ok(original)"
+            ]
+          },
+          {
+            "function": "fn read_panel(",
+            "sequence": [
+              "&mut self",
+              "OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel)\n            .await\n            .map_err(Error::from)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn authenticate_panel(",
+            "sequence": [
+              "self.panel.retained.as_ref() != Some(observed)",
+              "observed.retention().len() != self.panel.retention.len()",
+              "self.panel\n            .primary\n            .authenticate(observed.primary(), current)?",
+              "self.panel.retention.iter_mut().zip(observed.retention())",
+              "owner.authenticate(member, current)?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn current_time(",
+            "sequence": [
+              "&self",
+              "now()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn now(",
+            "sequence": [
+              "fn now(",
+              "super::original::now().map_err(Error::from)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_clock(",
+            "sequence": [
+              "current < started_at",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "required": [
+          "pub struct OriginalCellEvaluationHostV1",
+          "owners: Mutex<Owners>",
+          "execution_requested: AtomicBool",
+          "evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>",
+          "retained: Option<Receipt>",
+          "fenced: bool"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "LearningEvidenceVerifierV1::new",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "transmute",
+          "FnOnce",
+          "FnMut",
+          "dyn LearningIterationStageOwnerPortsV1",
+          "pub owners:",
+          "pub evaluator:",
+          "pub retained:",
+          "impl Clone for OriginalCellEvaluationHostV1",
+          "pub fn from_original_receipt_owner(",
+          "pub async fn read_panel(",
+          "pub fn current_time("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_receipt_owner(",
+            "sequence": [
+              "evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>",
+              "panel: Panel",
+              "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&evaluator)",
+              "panel.primary.qualification.config",
+              "panel.fenced",
+              "receipt.training != primary.training",
+              "receipt.scope != primary.scope",
+              "receipt.plan != primary.plan",
+              "receipt.signing.plan != *primary.plan.product_plan()",
+              "receipt.signing.execution_namespace != primary.execution_namespace",
+              "receipt.signing.signer.principal != primary.context.evaluator",
+              "receipt.signing.verifier.trust_digest() != primary.verifier.trust_digest()",
+              "receipt.signing.verifier.scope_digest() != primary.verifier.scope_digest()",
+              "receipt.signing.verifier.objective_digest() != primary.verifier.objective_digest()",
+              "Context::from_checkpoint(",
+              "primary.training_evidence.clone()",
+              "context.binding(now()?)?",
+              "Handle::try_current()",
+              "training_source: OriginalPanelTrainingSourceV1::Individual",
+              "execution_requested: AtomicBool::new(readback_only)",
+              "Semaphore::new(4)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn completion(",
+            "sequence": [
+              "if self.fenced",
+              "return Err(Error::CommitUncertain)",
+              "self.read_original_completion(context, action).await",
+              "if result.is_err()",
+              "LearningOriginalOwnerErrorV1::Pending",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "self.fenced = true",
+              "result"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "let result =",
+              "if result.is_err()"
+            ]
+          },
+          {
+            "function": "fn read_original_completion(",
+            "sequence": [
+              "self.current_time()?",
+              "context.authenticate(started_at)?",
+              "OriginalPanelTrainingSourceV1::call(&self.training_source, self.panel.retention.len() + 1)?",
+              "OriginalPanelTrainingCallV1::begin(&call)?",
+              "let before = self.read_panel_with_training(&mut training).await?",
+              "before.training() != &context.training",
+              "before.training_evidence() != &context.training_evidence",
+              "before.registration() != &context.registration",
+              "if action == wire::Action::Execute",
+              "self.current_time()?",
+              "require_clock(started_at, current)?",
+              "current >= context.training.request.envelope.expiry_unix_seconds",
+              "let primary = &mut self.panel.primary",
+              "OriginalCellEvaluationReceiptSourcesV1",
+              "qualification: before.primary().qualification()",
+              "context: &config.context",
+              "evidence: &config.product_evidence",
+              "trainer: primary.trainer.as_ref()",
+              "wire::Action::Execute =>",
+              "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(",
+              "wire::Action::Readback =>",
+              "OriginalCellEvaluationReceiptOwnerV1::readback(",
+              "let after = self.read_panel_with_training(&mut training).await?",
+              "if before != after",
+              "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+              "&completed.0,\n            &completed.1",
+              "let current = self.current_time()?",
+              "require_clock(started_at, current)?",
+              "current >= context.training.request.envelope.expiry_unix_seconds",
+              "return Err(Error::CommitUncertain)",
+              "OriginalPanelTrainingReadV1::finish(training, &call, current)?",
+              "self.authenticate_panel(&after, current)?",
+              "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)",
+              "config.signing.verifier.require_signer_binding(",
+              "LearningEvidenceRoleV1::Evaluator",
+              "contract::authenticate_receipt(context, completed.0, completed.1, current)?",
+              "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)",
+              "self.retained = Some(original.clone())",
+              "Ok(original)"
+            ],
+            "top_level": [
+              "let started_at =",
+              "context.authenticate(started_at)?",
+              "let before =",
+              "let completed =",
+              "let after =",
+              "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+              "self.authenticate_panel(&after, current)?",
+              "let original = contract::authenticate_receipt(",
+              "self.retained = Some(original.clone())",
+              "Ok(original)"
+            ]
+          },
+          {
+            "function": "fn read_panel(",
+            "sequence": [
+              "&mut self",
+              "OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel)\n            .await\n            .map_err(Error::from)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn authenticate_panel(",
+            "sequence": [
+              "self.panel.retained.as_ref() != Some(observed)",
+              "observed.retention().len() != self.panel.retention.len()",
+              "self.panel\n            .primary\n            .authenticate(observed.primary(), current)?",
+              "self.panel.retention.iter_mut().zip(observed.retention())",
+              "owner.authenticate(member, current)?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn current_time(",
+            "sequence": [
+              "&self",
+              "now()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn now(",
+            "sequence": [
+              "fn now(",
+              "super::original::now().map_err(Error::from)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_clock(",
+            "sequence": [
+              "current < started_at",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_panel_with_training(",
+            "sequence": [
+              "matches!(training, OriginalPanelTrainingReadV1::Individual)",
+              "return self.read_panel().await",
+              "OriginalCellEvaluationPanelOwnerV1::read_current_with_training(",
+              "&mut self.panel, super::original::now, training,",
+              ".await"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "new_protected_rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "required": [
+        "call: &'call OriginalPanelTrainingCallV1",
+        "identity: Arc<()>",
+        "source: OriginalPanelTrainingSourceV1",
+        "admitted: AtomicBool",
+        "enum Cursor",
+        "Refused,"
+      ],
+      "forbidden": [
+        "SigningKey",
+        ".sign(",
+        "Deserialize",
+        "Serialize",
+        "'static",
+        "transmute",
+        "*const",
+        "*mut",
+        "Box::leak",
+        "mem::forget",
+        "impl Clone",
+        "derive(Clone",
+        "pub fn ",
+        "pub async fn ",
+        "pub(crate)",
+        "pub trainer:",
+        "pub cursor:",
+        "pub source:",
+        "UnixStream::connect",
+        "File::open",
+        "unwrap_or",
+        "if false",
+        ".claim(",
+        ".complete(",
+        "attest_original_completion(",
+        "qualify_or_readback("
+      ],
+      "required_function_order": [
+        {
+          "function": "fn from_original_training_readback(",
+          "sequence": [
+            "Self::Bound(Arc::new(OriginalPanelTrainingPinV1",
+            "trainer,",
+            "config: config.clone()"
+          ]
+        },
+        {
+          "function": "fn call(",
+          "sequence": [
+            "if members < 2",
+            ".checked_mul(8)",
+            "Self::Individual => Self::Individual",
+            "Self::Bound(original) => Self::Bound(Arc::clone(original))",
+            "identity: Arc::new(())",
+            "slots,",
+            "admitted: AtomicBool::new(false)"
+          ]
+        },
+        {
+          "function": "fn begin(",
+          "sequence": [
+            ".compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)",
+            "Error::CommitUncertain",
+            "match &self.source",
+            "OriginalPanelTrainingReadV1::Individual",
+            "OriginalPanelTrainingProofV1",
+            "call: self",
+            "cursor: Cursor::Next(0)"
+          ]
+        },
+        {
+          "function": "fn read(",
+          "sequence": [
+            "Self::Individual => OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await",
+            "Self::Panel(proof)",
+            "std::mem::replace(&mut proof.cursor, Cursor::Refused)",
+            "return Err(Error::CommitUncertain)",
+            "&proof.call.source",
+            "original.require_source(source.trainer, config)?",
+            "if slot == 0 || slot + 1 == proof.call.slots",
+            "OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await?",
+            "original.authenticate(binding::now()?)?",
+            "proof.cursor = if slot + 1 == proof.call.slots",
+            "Cursor::Complete",
+            "Cursor::Next(slot + 1)",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn finish(",
+          "sequence": [
+            "self,",
+            "expected: &OriginalPanelTrainingCallV1",
+            "current: u64",
+            "Self::Panel(proof)",
+            "&proof.call.source, &expected.source",
+            "!Arc::ptr_eq(&proof.call.identity, &expected.identity)",
+            "!Arc::ptr_eq(original, expected_source)",
+            "return Err(Error::Binding(",
+            "!matches!(proof.cursor, Cursor::Complete)",
+            "return Err(Error::CommitUncertain)",
+            "original.authenticate(current)"
+          ]
+        },
+        {
+          "function": "fn require_source(",
+          "sequence": [
+            "!std::ptr::eq(self.trainer.as_ref(), trainer)",
+            "self.config.training != config.training",
+            "self.config.scope != config.scope",
+            "self.config.training_evidence != config.training_evidence",
+            "self.config.context.generator != config.context.generator",
+            "self.config.verifier.trust_digest() != config.verifier.trust_digest()",
+            "self.config.verifier.scope_digest() != config.verifier.scope_digest()",
+            "self.config.verifier.objective_digest() != config.verifier.objective_digest()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn authenticate(",
+          "sequence": [
+            "self.config.verifier.verify(",
+            "LearningEvidenceRoleV1::Generator",
+            "&self.config.training_evidence",
+            "learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?",
+            "current,",
+            "original.principal() != &self.config.context.generator",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "required": [
+        "OriginalCellQ24TrainingReadbackConnectionV1",
+        "OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "UnixStream::connect",
+        "File::open",
+        "unwrap_or",
+        "if false",
+        ".sign(",
+        "fixture_",
+        "LearningEvidenceVerifierV1::new"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn into_host_from_original_training_readback(",
+          "sequence": [
+            "LearningIterationCoordinatorV1::from_snapshot(dataset.snapshot().clone())",
+            ".record(",
+            "training.receipt().clone()",
+            "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self)",
+            "panel.fenced || receipt.training != *actual.snapshot()",
+            "std::iter::once(&panel.primary).chain(&panel.retention)",
+            "original.training != *actual.snapshot()",
+            "original.training_evidence != *training.attestation()",
+            "original.scope != receipt.scope",
+            "original.verifier.trust_digest()",
+            "original.verifier.scope_digest()",
+            "original.verifier.objective_digest()",
+            "OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training(",
+            "trainer, dataset, training,",
+            "panel.primary.trainer = Arc::clone(&trainer)",
+            "for member in &mut panel.retention",
+            "member.trainer = Arc::clone(&trainer)",
+            "OriginalPanelTrainingSourceV1::from_original_training_readback(",
+            "&panel.primary.qualification.config",
+            "OriginalCellEvaluationHostV1::from_original_receipt_owner(self, panel)?",
+            "host.owners",
+            ".get_mut()",
+            ".training_source = training_source",
+            "Ok(host)"
+          ]
+        }
+      ]
+    }
+  ],
+  "all_existing_forbidden_markers_preserved": true,
+  "global_callers_or_allowlist_edited": false,
+  "native_tests_run": false,
+  "actual_format": false,
+  "required_boundary_ids_add": [
+    "learning_original_panel_training_source",
+    "learning_original_panel_training_call",
+    "learning_original_panel_training_begin",
+    "learning_original_panel_training_slot",
+    "learning_original_panel_training_finish",
+    "learning_original_panel_training_actual",
+    "learning_original_panel_training_prepare",
+    "learning_original_panel_training_qualification",
+    "learning_original_panel_training_panel"
+  ]
+}

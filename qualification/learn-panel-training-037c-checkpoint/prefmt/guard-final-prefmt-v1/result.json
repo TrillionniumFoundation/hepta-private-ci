@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_original_panel_training_transaction_source_closure.py",
+    "-v"
+  ],
+  "cwd": "/tmp/hepta-learn-037c-20261112/recovery-b-panel-training-proof-57b-v2/guard-mirror",
+  "source_base": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "returncode": 0,
+  "started_at": "2026-11-12T17:55:40.282667+00:00",
+  "seconds": 0.9682118060009088,
+  "raw_bytes": 1562,
+  "raw_sha256": "933c5952f3af0b7fba63bea9ad17831ba31d736c1bbbbcc4657182036c45455c",
+  "source_unchanged": true,
+  "scope": "six local proof/caller mutation suites only; not full-source or native",
+  "native_tests_run": false
+}

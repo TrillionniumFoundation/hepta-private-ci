@@ -1,0 +1,80 @@
+{
+  "source": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "verifier_sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+  "scope": "exact three-path current caller index, not full repository",
+  "files": {
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs": "7b6858cbe0454c48f0bd7be47ce535276f9dd592cd4512023ab5ec86a02d9456",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs": "b69a53d8048deba5ef0f36bdb92f0d85362ff5e783ba9301ee74e6f35d5be4c7",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs": "1b72670f9f5608c4ac099d38661b4080f42fca517e89bbc375f3a1f4733bec54"
+  },
+  "results": [
+    {
+      "id": "learning_original_evaluation_host_profile",
+      "before": {
+        "failure": "learning_original_evaluation_host_profile: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']"
+      },
+      "after": "PASS",
+      "original": {
+        "id": "learning_original_evaluation_host_profile",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile",
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "definition_markers": [
+          "pub(crate) fn original_host_profile("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "caller_markers": []
+      },
+      "proposed": {
+        "id": "learning_original_evaluation_host_profile",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile",
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "definition_markers": [
+          "pub(crate) fn original_host_profile("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+        ],
+        "caller_markers": []
+      }
+    },
+    {
+      "id": "learning_original_evaluation_host_constructor",
+      "before": {
+        "failure": "learning_original_evaluation_host_constructor: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']"
+      },
+      "after": "PASS",
+      "original": {
+        "id": "learning_original_evaluation_host_constructor",
+        "symbol": "OriginalCellEvaluationHostV1::from_original_receipt_owner",
+        "receiver_type": "OriginalCellEvaluationHostV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ],
+        "caller_markers": []
+      },
+      "proposed": {
+        "id": "learning_original_evaluation_host_constructor",
+        "symbol": "OriginalCellEvaluationHostV1::from_original_receipt_owner",
+        "receiver_type": "OriginalCellEvaluationHostV1",
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs"
+        ],
+        "caller_markers": []
+      }
+    }
+  ]
+}

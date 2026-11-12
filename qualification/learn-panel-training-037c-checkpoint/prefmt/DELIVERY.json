@@ -1,0 +1,180 @@
+{
+  "status": "PREFMT_SCOPED_GUARD6PASS_NATIVE_UNRUN_ORDINARY0",
+  "base_commit": "57b27c81d0d5321b873ee751fd0e58e1d905b988",
+  "base_tree": "3db894ee96d358c583bbf4ea15163a0d2bd96258",
+  "scope": "Independent artifact-only checkpoint. None of the product, QA or CALLERS proposal is installed at repository root by this commit. Main PR ref is not updated.",
+  "production_files": 8,
+  "rust_files": 14,
+  "source_guard_files": 1,
+  "guard_evidence": "Six tests passed against the recorded local partial mirror and a proposed CALLERS file; not the published full source gate.",
+  "native_tests_status": "UNRUN",
+  "ordinary_adopt_qualification": 0,
+  "ordinary_no_update_qualification": 0,
+  "daemon_root_cold_recovery_qualification": 0,
+  "budget_claim": "This slice preserves 3 actual Training reads per B Readback / 4 per Execute by retaining original first and final panel slots plus the unchanged receipt owner. It does not establish end-to-end 128-frame sufficiency.",
+  "formatter_status": "Root observed isolated 14-file formatter exit0. Complete actual output is being recovered; not included or claimed verified by this prefmt checkpoint.",
+  "files": [
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "bytes": 17561,
+      "sha256": "57cabfb5381d834910aa470b8a3c4b9db10a7250700566aa003f6f86466007b5",
+      "blob": "71d28396530520fd9c430856aa019d01f03d7db7"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/cell_q24_training_panel_read_peer_tests.rs",
+      "bytes": 3351,
+      "sha256": "c19b47d1834efbaaa0bf90983d516f4b28378746ca31d4b80e97db51bdf8b33e",
+      "blob": "bac103c40f2279e904618bb4cac70e8b6f7a6ca6"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "bytes": 7931,
+      "sha256": "a45aeab40a6893ce2ea7d4200d51cc8a51585920ed4aa1ce3c5c0dc2b6f8ea75",
+      "blob": "d652c4915eb0f4d1e20886c1a4527e152b45919b"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_support_tests.rs",
+      "bytes": 6512,
+      "sha256": "8ffdebc5373af3e8bf72ed8278de7166e5e99c1439d4514ae84cb7bf0fcd2d67",
+      "blob": "5206b45a9d8f30e48690b75d54893e03058245bd"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/circuit_original_evaluation_training_read_tests.rs",
+      "bytes": 7410,
+      "sha256": "60d66cdd5e75bae2a1ffa1ae578ee51fe9346a0375e9c9469cc0bdeecde978cb",
+      "blob": "c900980522a2f860fdec349a3f4786b0a202f5ed"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "bytes": 12475,
+      "sha256": "23b7c4c0a3ebda8987cdf93b255742b9b9fb3f5740ba65467e947bc5d4752b41",
+      "blob": "e02f3ed5b4855dd057d788fbe35dca89c73ef872"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "bytes": 3852,
+      "sha256": "4171b410b0dd504e01e510942c3315edecfd79029e86b8ca24d3950bd473d9a1",
+      "blob": "ea2f9f5e1c669aa37258c86a9a393fd661d5b3c9"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "bytes": 7178,
+      "sha256": "6b1e34ed0b5907ea0dea18f34dcb74da732e8358d9c8d546ce16b59a239b0f88",
+      "blob": "d1418d6cd1b01401f2505ec430190248c167f91c"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "bytes": 7406,
+      "sha256": "df289d239e4b3bdd34eefd85fe662938d5848bc7378068b622fc211230f5674e",
+      "blob": "3076ad2130497e82d9850c8d145df982e6c5518e"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "bytes": 11223,
+      "sha256": "6a41fe8d0bf18d14e6f29853c1096439a8bfcaf39edde8093ef3805cee7b0933",
+      "blob": "514d6cbf873acddb19c7e4540d198e3a498fe084"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "bytes": 7204,
+      "sha256": "fa0b0478c38fc561bdba8e105ca3efbbdb08c3d411a50d925508521fec44d47e",
+      "blob": "35de0290b766d457d44e043e5ee8cc9c93cac947"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "bytes": 4586,
+      "sha256": "d6053d5836705557306141f51354ecb8990d2dca8a0f83f6676f348fb2741588",
+      "blob": "100be7ebc6050623074e8cb2ad019efb1afc9b30"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_access_tests.rs",
+      "bytes": 2733,
+      "sha256": "7bd163ff931dbf29c33c6ec71ecc1e76113853c7c5e9818759200fb24d40b41f",
+      "blob": "52d9c5fdcc36d70f0aff6b95d3e3c41113e88126"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "bytes": 8515,
+      "sha256": "041818a39c970946a8a08af0ca2ae5cd7b87bf2d84d26f6617b5ed9c39f47d10",
+      "blob": "93c97ef2547e771f25092285ce40e56c85e38937"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/postimages/qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "bytes": 10723,
+      "sha256": "28cd99b7c2b0277f869687b60b81881b29009403c62ce01537f86d9a8e1f7608",
+      "blob": "9f182803ac6fdf9305f4b40d94ad1e9ca4757023"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/PREFMT_MANIFEST.json",
+      "bytes": 6875,
+      "sha256": "f4458417d64c35058090310d5dcc78ce75b0c498dd4efc44b23babfc05d0fcc9",
+      "blob": "2f65db5b66afb17b26e4db2b8d3eca99e6f9ce29"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/product-prefmt-v2.patch",
+      "bytes": 22255,
+      "sha256": "34e0b3581d8f4a3678337c2d66caf6d3b1bc180fcd19f057df77a10c793f8e8f",
+      "blob": "3bb3dfffb0e87cb4cd4c875d86fbd205ae1524f8"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/tests-prefmt-v2.patch",
+      "bytes": 34582,
+      "sha256": "c0e3ca154618959a808151aa9b380d3244e2aab0b9ecb9e70f8466d3558f6105",
+      "blob": "5dfa4c3e56081e63e56faf317bb1bad9b0a08067"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/PRESERVED_FUNCTIONS.actual.json",
+      "bytes": 7833,
+      "sha256": "e0d41db3e4a90bb1d6d6a74e2d68254b8a386cb166e397864826fe3bd7e199bb",
+      "blob": "c40f2dd9bd465e0b8361ed84d1feee71578c82bf"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/CALLERS-DELTA.prefmt.json",
+      "bytes": 73633,
+      "sha256": "a0fcf8442a10adce2590993abd01aceafe20451fbe9aff55a150abcea212217f",
+      "blob": "803c0efc187b30f77c86bb6013a45c6a1f7118ac"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/EXISTING_CALLER_GAPS.actual.json",
+      "bytes": 3716,
+      "sha256": "8521dec819119e570af83975ff6bbd7c4491cd3704c03ea65d8237910fa5a317",
+      "blob": "9b67a9c4ec093cb70d504ba9066893b384864e8e"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/guard-final-prefmt-v1/result.json",
+      "bytes": 705,
+      "sha256": "77d42f7177af4e2282b07ce4a4101474a7d3b583240cf616f10d122c6f9addc9",
+      "blob": "1850d0c81dc5e30265d9bc1ae1d807870c775a85"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/guard-final-prefmt-v1/source-guard.raw.log",
+      "bytes": 1562,
+      "sha256": "933c5952f3af0b7fba63bea9ad17831ba31d736c1bbbbcc4657182036c45455c",
+      "blob": "75f841695ff5189e4bdfa8623b3c2329ff1df2d4"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/guard-attempt-1.raw.log",
+      "bytes": 7892,
+      "sha256": "a7a741aded04ff9a7f0fd0d41b92655753298ee8f3cb55a699a397d0744ff521",
+      "blob": "3e1e89df8973d84fea112b08b4ca58bdf7ae5ca5"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/prefmt/NONEMPTY_RETENTION.actual.json",
+      "bytes": 1619,
+      "sha256": "2ffd6f646434b0ea3651902208523865a3d2a0e464ddd76f776ffaf417bab503",
+      "blob": "308e222a673b97981f3e429993895b81fe14ca92"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/exact57b-reference/neuron_cell_evaluation_panel_binding.rs",
+      "bytes": 8237,
+      "sha256": "7b4af96b6fbe850496196e54d39d2787796d7bc0cde1a3e1f20bb18c01679b7b",
+      "blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5"
+    },
+    {
+      "path": "qualification/learn-panel-training-037c-checkpoint/exact57b-reference/neuron_cell_evaluation_panel_contract.rs",
+      "bytes": 5940,
+      "sha256": "0b51a44ac006db18ae4b67a31040fcb0704cc5bb13e312c919cdfb0f50ed0efe",
+      "blob": "c0c67017117f71982a9d294b5b6d61e37844da6d"
+    }
+  ]
+}
