@@ -29,10 +29,11 @@ CALLERS = {
         AGENT + "authority_host_q24_model_transport.rs",
         AGENT + "authority_host_generation_publication_enrollment.rs",
         AGENT + "authority_host_generation_publication_transport.rs",
-        AGENT + "authority_host_generation_publication_session.rs",
+        AGENT + "authority_host_original_publication_route.rs",
         AGENT + "authority_host_historical_read.rs",
         AGENT + "authority_host_historical_read_session.rs",
         AGENT + "authority_host_derived_learning_registration.rs",
+        AGENT + "authority_host_post_a_provider.rs",
     ),
     "q24_publication_original_b_manifest": (
         AGENT + "cell_q24_publication_driver.rs",
