@@ -26,6 +26,8 @@ mod q24_model;
 
 #[path = "authority_host_q24_evaluation.rs"]
 mod q24_evaluation;
+pub(crate) use q24_evaluation::OriginalRootBEvaluationBorrowV1;
+pub(crate) use q24_evaluation::OriginalRootIndependentBEvaluationFilesV1;
 
 #[path = "authority_host_generation_initial_session.rs"]
 mod generation_initial;

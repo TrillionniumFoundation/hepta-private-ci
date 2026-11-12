@@ -147,6 +147,10 @@ pub use authority_host_runtime::HostAuthorityInitialized;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::HostIssuerLeaseRenewalPlan;
 #[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::OriginalRootBEvaluationBorrowV1;
+#[cfg(target_os = "linux")]
+pub(crate) use authority_host_runtime::OriginalRootIndependentBEvaluationFilesV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootNotesPolicyPredecessor;

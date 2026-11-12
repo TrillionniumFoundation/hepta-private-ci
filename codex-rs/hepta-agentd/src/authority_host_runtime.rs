@@ -40,6 +40,8 @@ pub(crate) use listeners::validate_runtime_lanes;
 
 #[path = "authority_host_session.rs"]
 mod session;
+pub(crate) use session::OriginalRootBEvaluationBorrowV1;
+pub(crate) use session::OriginalRootIndependentBEvaluationFilesV1;
 pub use session::PreparedHostAuthoritySession;
 pub(crate) use session::PreparedPublicationData;
 pub(crate) use session::PublicationInputData;

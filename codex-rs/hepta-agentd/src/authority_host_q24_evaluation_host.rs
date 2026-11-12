@@ -53,6 +53,31 @@ struct OriginalBState {
     execution: Option<OriginalBExecution>,
 }
 
+impl OriginalRootIndependentBEvaluationFilesV1 {
+    /// A data binding; all actual use still enters the retained Root attempt.
+    pub(crate) fn original_binding(&self) -> Digest32 {
+        Digest32::of_parts(&[
+            b"hepta.root.independent-b.custodian.v1\0",
+            self.initial.head_digest.as_array(),
+        ])
+    }
+
+    pub(crate) fn require_original_learning(
+        &self,
+        learning: &RegisteredHostLearningCheckpointV1,
+    ) -> io::Result<()> {
+        if !Arc::ptr_eq(&self.backend, &learning.backend)
+            || serde_json::to_vec(&self.profile).map_err(io::Error::other)?
+                != serde_json::to_vec(&learning.profile).map_err(io::Error::other)?
+        {
+            return Err(io::Error::other(
+                "B and Model require the same original learning capability",
+            ));
+        }
+        Ok(())
+    }
+}
+
 /// Native B material is lent synchronously within Root. No wire constructor,
 /// clone, sender, journal handle or key is available from this view.
 pub(crate) struct OriginalRootBEvaluationBorrowV1<'a> {
