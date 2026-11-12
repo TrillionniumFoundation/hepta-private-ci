@@ -1,0 +1,143 @@
+{
+  "schema": "hepta-current-user-service-qualification-summary-v1",
+  "source_commit": "4453ce7089168c583553c434ce1bee92e209f8dd",
+  "operation_scope": {
+    "configured_operator_hosts_queried": 1,
+    "request_scoped_to_current_ssh_user": true,
+    "queried_domain_kinds": [
+      "gui",
+      "user"
+    ],
+    "exact_service_labels": [
+      "ai.hepta.gateway",
+      "ai.hepta.installed-live-watchdog"
+    ],
+    "subprocess_timeout_seconds": 5,
+    "job_timeout_seconds": 30,
+    "unique_idempotent_request_bindings": 1,
+    "initial_response": "timeout_without_job_id",
+    "reconciliation_used_same_key_and_identical_arguments": true
+  },
+  "exact_label_source_references": [
+    {
+      "label": "ai.hepta.gateway",
+      "repository_relative_source": "scripts/hepta-immutable-release-tree",
+      "lines": [
+        14,
+        912
+      ]
+    },
+    {
+      "label": "ai.hepta.gateway",
+      "repository_relative_source": "scripts/hepta-launchd-cutover-bridge",
+      "lines": [
+        2380,
+        2566
+      ]
+    },
+    {
+      "label": "ai.hepta.installed-live-watchdog",
+      "repository_relative_source": "scripts/hepta-launchd-cutover-bridge",
+      "lines": [
+        2380,
+        2566
+      ]
+    }
+  ],
+  "confirmed_job_terminal": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false,
+    "cancelled": false,
+    "output_complete": true,
+    "output_durable": true,
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "terminal_publication_confirmed": true,
+    "automatic_retry": false
+  },
+  "complete_whitelist_readback": {
+    "stdout_complete": true,
+    "stdout_bytes": 859,
+    "stderr_bytes": 0,
+    "stderr_complete": true
+  },
+  "service_observations": [
+    {
+      "label": "ai.hepta.gateway",
+      "domain_kind": "gui",
+      "queried_current_ssh_user": true,
+      "exit_code": 113,
+      "observation_complete": false,
+      "safe_state": null,
+      "pid_present": null,
+      "query_status": "completed"
+    },
+    {
+      "label": "ai.hepta.installed-live-watchdog",
+      "domain_kind": "gui",
+      "queried_current_ssh_user": true,
+      "exit_code": 113,
+      "observation_complete": false,
+      "safe_state": null,
+      "pid_present": null,
+      "query_status": "completed"
+    },
+    {
+      "label": "ai.hepta.gateway",
+      "domain_kind": "user",
+      "queried_current_ssh_user": true,
+      "exit_code": 113,
+      "observation_complete": false,
+      "safe_state": null,
+      "pid_present": null,
+      "query_status": "completed"
+    },
+    {
+      "label": "ai.hepta.installed-live-watchdog",
+      "domain_kind": "user",
+      "queried_current_ssh_user": true,
+      "exit_code": 113,
+      "observation_complete": false,
+      "safe_state": null,
+      "pid_present": null,
+      "query_status": "completed"
+    }
+  ],
+  "service_state_assessment": "Unverified",
+  "inference_limits": [
+    "The confirmed successful job terminal describes completion of the bounded observer script, not successful observation of any service.",
+    "Each exact label/domain query returned exit code 113 and observation_complete=false; no safe service state or PID presence was observed.",
+    "Only the current SSH user's GUI and user domains on one configured operator host were queried. Other users and other hosts were not queried by this operation.",
+    "The observations cannot establish that these services are absent, stopped, running, or unavailable in other domains.",
+    "Authenticated SSH reachability and service-label queries do not establish original application or learning-owner capability delivery."
+  ],
+  "original_owner_capability_delivery": {
+    "notes": "Unverified",
+    "observer": "Unverified",
+    "root": "Unverified",
+    "original_capabilities_obtained": false
+  },
+  "privacy_scope": {
+    "host_aliases_included": false,
+    "ssh_user_identity_included": false,
+    "network_destinations_included": false,
+    "private_paths_included": false,
+    "raw_service_output_included": false,
+    "command_arguments_included": false,
+    "environment_included": false
+  },
+  "actions_performed": {
+    "service_changes": false,
+    "sudo_used": false,
+    "other_users_queried": false,
+    "personal_files_read": false,
+    "prior_unrelated_unknown_execution_touched": false
+  }
+}
