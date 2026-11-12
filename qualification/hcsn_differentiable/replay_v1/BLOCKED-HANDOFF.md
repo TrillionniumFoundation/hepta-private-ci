@@ -7,6 +7,13 @@ Read-only export job `1a1ce7e3837-2564-16c9` completed successfully with zero
 model executions. It contains the six selected real C2 checkpoints, original
 source and prepared episode bytes; no factorial checkpoint is substituted.
 
+A separate retained backup search inspected the 63,631,371-byte
+`HCSN_Research_Evidence_20261112.zip` (354 outer members and 445 members across
+ten nested archives). Its 57 `.pt` files are 23,399–34,481-byte factorial/GRU
+states, with no selected 450,552/450,616-byte original C2 checkpoint. The retained
+inventory reports no original c385 source/data package either. This backup cannot
+replace the fixed export; the evidence summary preserves its identity and scope.
+
 Desktop noninteractive-gh inspection key
 `c06d-desktop-c2-github-auth-inspect-v1` received MCP timeouts on its initial
 request and same-key reconciliation. No job ID or authorization result has
@@ -39,6 +46,12 @@ FROZEN with that exact commit. The ubuntu-latest lane then checks out source and
 artifact separately, verifies the archive, derives the explicit CPU profile,
 and starts fresh bounded recovery workers. Missing publication currently fails
 before model setup; a synthetic fixture is never used as a replacement.
+
+Actions run 43172821314 tested exact source
+`0de7f86e0636c585a7f15a580a889990e29e0a4b`: the 18 synthetic adapter controls
+passed, then real-recovery failed at the missing-publication precondition.
+Artifact checkout, runtime setup/install and model execution were all skipped.
+The run is a recorded failure with zero model calls, not a successful recovery.
 
 Native training attempts `1a1ce727d17-2564-167b` and
 `1a1ce768bc3-2564-1695` were authoritatively cancelled by SIGTERM, not the declared
