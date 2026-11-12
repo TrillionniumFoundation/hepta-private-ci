@@ -338,6 +338,7 @@ pub(super) async fn start_learning(
     .await
 }
 
+#[cfg(test)]
 async fn start_profile(
     admission: Admission,
     published_task: PublishedCircuitFeatureTaskV1,

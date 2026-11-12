@@ -3375,7 +3375,7 @@ forbidden = ["pub original:", "Deref", "into_inner", "AgentdCircuitTaskInvocatio
 path = "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
 required = ["pub published_task: PublishedCircuitFeatureTaskV1", "invocation: Arc<DurableCircuitTaskSourceV1<SW>>", "source: Arc<CircuitTaskSourceReadbackV1<SW>>", "pub source: Arc<CircuitTaskSourceReadbackV1<SW>>"]
 forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "CellStateOwnerV1", "pub invocation:", "pub bootstrap:", "unwrap_or", "permit_all"]
-required_order = [["fn circuit_q24_task_channel_v1<", "profile.fence.owner_agent_id != identity.agent_id", "identity.spawn_generation == 0", "identity.spawn_generation.checked_add(1) != Some(profile.fence.generation)", "!(1..=64).contains(&profile.queue_capacity)", "published.require_bundle(&profile.bundle)?", "CircuitCellRegistryV1::new(", "CellQ24FeatureWorkerV1::new(", "let source = match profile.source_mode", "DurableCircuitTaskSourceV1::create(", "DurableCircuitTaskSourceV1::recover(", "published.open_cell(", "published\n        .control(", "AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder)", "circuit_task_channel_v1(", "source.readback()", "Ok(CircuitQ24TaskRuntimeV1"]]
+required_order = [["fn circuit_q24_task_channel_v1<", "profile.fence.owner_agent_id != identity.agent_id", "identity.spawn_generation == 0", "identity.spawn_generation.checked_add(1) != Some(profile.fence.generation)", "!(1..=64).contains(&profile.queue_capacity)", "published.require_bundle(&profile.bundle)?", "CircuitCellRegistryV1::new(", "CellQ24FeatureWorkerV1::new(", "let source = match profile.source_mode", "DurableCircuitTaskSourceV1::create(", "DurableCircuitTaskSourceV1::recover(", "published.open_cell(", "published\n        .control(", "AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder)", "circuit_task_channel_v1(", "DurableCircuitTaskSourceV1::readback(&source)", "Ok(CircuitQ24TaskRuntimeV1"]]
 required_function_order = [{ function = "fn install(", sequence = ["config.with_circuit_task_bootstrap(", "self.bootstrap, self.invocation)"] }]
 
 [[protected_file]]
@@ -5374,7 +5374,7 @@ required_function_order = [{ function = "fn revalidate_original_artifacts(", seq
 path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
 required = ["OriginalCellQ24RetainedArtifactForRootV1","OriginalCellQ24SelectedArtifactForRootV1","decision.require_root_publication()?","artifacts\n                        .read_original_publication(","with_original_publication(","current.require_original_root_selection(","validation::predecessor(","connection: crate::RootGenerationPublicationConnectionV1"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "RootAuthorityDirectory::open", "HostAuthorityFrontierStore::initialize", "NeuronGenerationCurrentOwnerV1::initialize", "spawn_blocking"]
-required_function_order = [{ function = "fn for_qualified_adoption(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","!decision.adopts()","owners.validate_recovery(","owners\n            .original_publication_manifest(","original.require_current().await?"] }, { function = "fn from_original_result(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","decision.adopts()","owners.validate_recovery(","original.require_current().await?"] }, { function = "fn publish_candidate(", sequence = ["original.require_current().await?","validation::artifact_request(","with_original_publication(","self.original.decision.require_new_work()?","request.now = self.authorities.now()?","artifacts.publish(request)?"] }, { function = "fn connect_current(", sequence = ["self.original.require_current().await?","handoff.connect(connection, timeout, lifetime).await?","current.require_original_root_selection(","self.original.require_current().await?"] }, { function = "fn prepare_feature(", sequence = ["original.require_current().await?","original.decision.require_new_work()?","validation::feature_target(","validation::predecessor(","with_original_publication(","revalidate(","current::prepare_selected("] }, { function = "fn recover_feature(", sequence = ["original.require_current().await?","validation::feature_target(","with_original_publication(","revalidate(","current::recover_selected("] }]
+required_function_order = [{ function = "fn for_qualified_adoption(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","!decision.adopts()","owners.validate_recovery(","owners\n            .original_publication_manifest(","original.require_current().await?"] }, { function = "fn from_original_result(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","decision.adopts()","owners.validate_recovery(","original.require_current().await?"] }, { function = "fn publish_candidate(", sequence = ["original.require_current().await?","validation::artifact_request(","with_original_publication(","self.original.decision.require_new_work()?","request.now = self.authorities.now()?","artifacts.publish(request)?"] }, { function = "fn connect_current(", sequence = ["OriginalDecision::require_current(&self.original).await?","handoff.connect(connection, timeout, lifetime).await?","current.require_original_root_selection(","OriginalDecision::require_current(&self.original).await?"] }, { function = "fn prepare_feature(", sequence = ["original.require_current().await?","original.decision.require_new_work()?","validation::feature_target(","validation::predecessor(","with_original_publication(","revalidate(","current::prepare_selected("] }, { function = "fn recover_feature(", sequence = ["original.require_current().await?","validation::feature_target(","with_original_publication(","revalidate(","current::recover_selected("] }]
 
 [[boundary]]
 id = "root_original_final_use_observer_enrollment"
@@ -5436,7 +5436,7 @@ symbol = "OriginalCellQ24TaskLedgerProducerV1::readback"
 receiver_type = "OriginalCellQ24TaskLedgerProducerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
 definition_markers = ["fn readback("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"]
+product_callers = []
 caller_markers = []
 
 [[boundary]]
@@ -5454,7 +5454,7 @@ symbol = "OriginalCellQ24TaskLedgerProducerV1::prepare_dataset"
 receiver_type = "OriginalCellQ24TaskLedgerProducerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
 definition_markers = ["fn prepare_dataset("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"]
+product_callers = []
 caller_markers = []
 
 [[boundary]]
@@ -5554,8 +5554,8 @@ forbidden = ["SigningKey::generate","AllowVerifier","permit_all"]
 required_function_order = [
   { function = "fn open_original(", sequence = ["binding::configuration(","let journal = match inputs.open_mode","LearningOwnerJournalV1::create(","LearningOwnerJournalV1::recover("] },
   { function = "fn resume_from_original_source(", sequence = ["self.capture(&mut state)?","self.require_ledger(ledger)?","decision_signing_payload_v2(&captured.decision)?","state.journal.read(&self.decision_key)","witnessed_snapshot(ledger)?","journal.commit_once(","binding::sign(","binding::decode(&bytes)?","let (snapshot, frontier) = original_snapshot(ledger)?","if !witnessed","ledger.append_decision(","self.resume_original_outcome(","self.status("] },
-  { function = "fn prepare_learning(", sequence = ["self.prepare_dataset(","OriginalCellQ24DatasetFreezeOwnerV1::create(","OriginalCellQ24DatasetFreezeOwnerV1::recover(","preparation.authorize_and_materialize(&mut owner)?","self.readback()?","prepared.revalidate_source()?"] },
-  { function = "fn recover_learning(", sequence = ["!matches!(freeze.open_mode, CircuitQ24TaskOpenModeV1::Recover)","self.capture(&mut state)?","self.status(","config.projection.unit_profile_digest != self.config.unit_profile_digest","original_history.push(captured.task.clone())","CellQ24DatasetFreezePreparationV1::recover(","OriginalCellQ24DatasetFreezeOwnerV1::recover(","owner.readback(&preparation)?","authorization != frozen.authorization","crate::CellQ24PreparedLearningV1::recover(","self.require_source(&captured)?","self.readback()?","prepared.revalidate_source()?"] },
+  { function = "fn prepare_learning(", sequence = ["self.prepare_dataset(","OriginalCellQ24DatasetFreezeOwnerV1::create(","OriginalCellQ24DatasetFreezeOwnerV1::recover(","preparation.authorize_and_materialize(&mut owner)?","self.readback()?","crate::CellQ24PreparedLearningV1::revalidate_source(&prepared)?"] },
+  { function = "fn recover_learning(", sequence = ["!matches!(freeze.open_mode, CircuitQ24TaskOpenModeV1::Recover)","self.capture(&mut state)?","self.status(","config.projection.unit_profile_digest != self.config.unit_profile_digest","original_history.push(captured.task.clone())","CellQ24DatasetFreezePreparationV1::recover(","OriginalCellQ24DatasetFreezeOwnerV1::recover(","owner.readback(&preparation)?","authorization != frozen.authorization","crate::CellQ24PreparedLearningV1::recover(","self.require_source(&captured)?","self.readback()?","crate::CellQ24PreparedLearningV1::revalidate_source(&prepared)?"] },
   { function = "fn capture(", sequence = ["self\n            .source\n            .read_run_publication(","cell\n            .committed(&publication)","CellQ24DatasetTaskV1::capture(","binding::decision(","self.require_source(&captured)?","state.captured = Some(captured.clone())"] },
 ]
 
@@ -5745,7 +5745,7 @@ symbol = "OriginalCellQ24TrainingReadbackV1::from_original_stage"
 receiver_type = "OriginalCellQ24TrainingReadbackV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_readback.rs"
 definition_markers = ["fn from_original_stage("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_readback.rs"]
+product_callers = []
 caller_markers = []
 
 [[boundary]]
@@ -5834,7 +5834,7 @@ path = "codex-rs/hepta-agentd/src/cell_q24_training_readback.rs"
 required = ["Arc::ptr_eq(prepared, &self.prepared)","Arc::ptr_eq(training, &self.training)","Arc::ptr_eq(cancelled, &self.cancelled)","snapshot.receipts.starts_with(&self.completed.receipts)"]
 forbidden = ["execute_training(","fit_or_readback(","attest_original_completion(","SigningKey","File::open",".sign("]
 required_function_order = [
-  { function = "fn original_training_readback(", sequence = ["self.inner.require_snapshot(&snapshot)?",".in_lane(","OriginalCellQ24TrainingReadbackV1::from_original_stage(","Arc::clone(&inner.prepared)","Arc::clone(&inner.training)","Arc::clone(&inner.cancelled)"] },
+  { function = "fn original_training_readback(", sequence = ["self.inner.require_snapshot(&snapshot)?",".in_lane(","OriginalCellQ24TrainingReadbackV1::from_original_stage(","Arc::clone(&inner.prepared)","Arc::clone(&inner.training)","inner.dataset_cut.clone(),","snapshot,","Arc::clone(&inner.cancelled)"] },
   { function = "fn from_original_stage(", sequence = ["cancelled.load(Ordering::Acquire)","prepared.revalidate_source()",".validate_snapshot(&dataset)","dataset.request != prepared.initial().request",".read_original_dataset_completion(&dataset)","completed_cut(&dataset, completed.receipt)?","if cut != snapshot","original.require_context("] },
   { function = "fn readback(", sequence = ["self.require_context(snapshot, expected)?",".read_original_dataset_completion(&self.dataset)","&completed.receipt != expected","completed_cut(&self.dataset, completed.receipt)? != self.completed","self.require_context(snapshot, expected)?","Ok(completed.attestation)"] },
   { function = "fn require_context(", sequence = ["self.cancelled.load(Ordering::Acquire)","prepared.revalidate_source()","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",".validate_snapshot(snapshot)","!snapshot.receipts.starts_with(&self.completed.receipts)","self.completed.receipts.last() != Some(expected)","self.cancelled.load(Ordering::Acquire)"] },
@@ -7042,3 +7042,15 @@ required_function_order = [
   {function = "fn receive_original_late_writer(", sequence = ["inputs::parse(arguments)?", "require_late_owner(uid, gid)?", "receive_root_production_writer_handoff(", "receive_root_production_inputs(", "AgentdConfig::from_root_writer_handoff(", ".with_root_bound_sockets(control, app_server)?", "config.identity() != expected", "let learning: crate::RootLearningHandoffV1", "let model: crate::RootQ24ModelFactoryHandoffV1", "config.with_root_learning_inputs(inputs)?", "require_late_owner(uid, gid)?", "verify_sender_process_binding(", "Ok(("]},
   {function = "fn require_late_owner(", sequence = ["libc::getuid()", "libc::geteuid()", "libc::getgid()", "libc::getegid()", "actual != (uid, uid, gid, gid)", "return Err(", "Ok(())"]},
 ]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+required = ["fn prepare_dataset("]
+forbidden = []
+required_function_order = [{ function = "fn prepare_dataset(", sequence = ["self.capture(&mut state)?","self.status(&mut state, &ledger, &captured)?","OriginalCellQ24TaskLedgerStatusV1::Complete { .. }","return Err(Error::PendingOutcome)","config.projection.unit_profile_digest != self.config.unit_profile_digest","original_history.push(captured.task.clone())","CellQ24DatasetFreezePreparationV1::capture(","self.require_source(&captured)?","Ok(preparation)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+required = ["/// Observation only: no signing, append, witness repair or task retry."]
+forbidden = []
+required_function_order = [{ function = "fn readback(", sequence = ["let mut state = self",".state",".lock()","let captured = self.capture(&mut state)?;","let ledger = self",".ledger",".lock()","self.status(&mut state, &ledger, &captured)"] }]

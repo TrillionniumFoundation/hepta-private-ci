@@ -345,6 +345,71 @@ sys.argv[0]=entry
 runpy.run_path(entry,run_name='__main__')
 """
 
+
+ROOT_EXECUTION_READ = r"""
+import hashlib,json,os,stat,sys
+from pathlib import Path
+assert os.getuid()==os.geteuid()==0
+parent,path=Path(sys.argv[1]),Path(sys.argv[2])
+uid,gid=int(sys.argv[3]),int(sys.argv[4])
+assert uid>0 and gid>=0
+assert parent.is_absolute() and parent.resolve()==parent and parent.name=='records'
+assert path.parent==parent and path.name.endswith('.execution.json')
+def identity(s):
+    return (s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_gid,s.st_nlink,
+            s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+p_before=parent.lstat()
+assert stat.S_ISDIR(p_before.st_mode) and p_before.st_uid==uid and p_before.st_gid==gid
+directory=os.open(parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+try:
+    assert identity(os.fstat(directory))==identity(p_before)
+    descriptor=os.open(path.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=directory)
+    try:
+        before=os.fstat(descriptor)
+        assert stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_uid==0
+        assert 0<before.st_size<=65536
+        data=bytearray()
+        while len(data)<=65536:
+            chunk=os.read(descriptor,min(8192,65537-len(data)))
+            if not chunk:
+                break
+            data.extend(chunk)
+        assert len(data)==before.st_size and len(data)<=65536
+        assert identity(os.fstat(descriptor))==identity(before)
+        assert identity(os.stat(path.name,dir_fd=directory,follow_symlinks=False))==identity(before)
+        assert identity(os.fstat(directory))==identity(p_before)
+        assert identity(parent.lstat())==identity(p_before) and parent.resolve()==parent
+        print(json.dumps({'actual_uid':os.getuid(),'actual_euid':os.geteuid(),
+            'original_path':str(path),'file_identity':list(identity(before)),
+            'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),
+            'record':json.loads(data)},sort_keys=True),flush=True)
+    finally:
+        os.close(descriptor)
+finally:
+    os.close(directory)
+"""
+
+def read_root_execution_record(name, output):
+    """Read only this completed launch's original Root record before any chown."""
+    if result.get("completion_unknown"):
+        raise RuntimeError("original launch completion unknown; Root record handoff stopped")
+    if output != RECORDS / (name + ".execution.json"):
+        result["completion_unknown"] = True
+        raise RuntimeError("Root record must be this exact step in the fresh attempt")
+    try:
+        read = raw(name + "-root-record-read", ["sudo","-n","python3","-c",
+                   ROOT_EXECUTION_READ,str(RECORDS),str(output),str(UID),str(GID)], timeout=60)
+        proof = json.loads(Path(read["log"]["path"]).read_text())
+        if (proof.get("actual_uid") != 0 or proof.get("actual_euid") != 0
+                or proof.get("original_path") != str(output)
+                or not isinstance(proof.get("record"),dict)):
+            raise RuntimeError("original Root record read proof differs")
+        save(name + ".root-record-read.json", proof)
+        return proof["record"], proof
+    except BaseException:
+        result["completion_unknown"] = True
+        raise
+
 def recorded(name, command, timeout=3600, minimum=0, root=False, root_env=None, check=True, cwd=None):
     global root_touched_records
     if result.get("completion_unknown"):
@@ -371,7 +436,11 @@ def recorded(name, command, timeout=3600, minimum=0, root=False, root_env=None, 
     if not output.is_file():
         result["completion_unknown"] = True
         raise RuntimeError("original executor has no terminal record for " + name)
-    original_terminal = json.loads(output.read_text())
+    root_record_read = None
+    if root:
+        original_terminal, root_record_read = read_root_execution_record(name, output)
+    else:
+        original_terminal = json.loads(output.read_text())
     if (original_terminal.get("timed_out") is True
             or original_terminal.get("output_limit_exceeded") is True
             or original_terminal.get("status") in ("running","interrupted")):
@@ -391,6 +460,24 @@ def recorded(name, command, timeout=3600, minimum=0, root=False, root_env=None, 
         if not (completed or no_dispatch):
             result["completion_unknown"] = True
             raise RuntimeError("original Root command did not prove terminal completion")
+    if root:
+        expected = {"source_sha":HEAD,"tested_sha":HEAD,"lane":"source-head","command":command}
+        if any(original_terminal.get(k)!=v for k,v in expected.items()):
+            result["completion_unknown"] = True
+            raise RuntimeError("original Root terminal differs from this source/command")
+        if completed:
+            before,after=original_terminal.get("before"),original_terminal.get("after")
+            if (not isinstance(before,dict) or before!=after or before.get("commit")!=HEAD
+                    or before.get("tree")!=TREE or before.get("dirty") is not False):
+                result["completion_unknown"] = True
+                raise RuntimeError("original Root terminal lacks the same clean source")
+        # The original recorder now proves terminal completion without timeout/truncation.
+        # Only this task's records/reports are transferred; caches remain untouched.
+        restore_record_ownership(name + "-terminal-record-ownership")
+        transferred = file_digest(output)
+        if (transferred["sha256"]!=root_record_read["sha256"]
+                or transferred["bytes"]!=root_record_read["bytes"]):
+            raise RuntimeError("original Root record bytes changed during evidence handoff")
     record, passed, log = read_execution(output, command, must_pass=False)
     passed = passed and raw_record["exit_code"] == 0 and not raw_record["timed_out"]
     result.setdefault("execution_records", []).append({

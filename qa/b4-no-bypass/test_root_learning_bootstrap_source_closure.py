@@ -48,9 +48,15 @@ CALLERS = {
     "root_learning_original_client_constructor": (INPUTS,),
     "root_learning_scoped_client_constructor": (INPUTS,),
     "root_learning_original_purpose_send": (CLI,),
-    "root_learning_original_purpose_receive": (LAUNCHER,),
-    "root_learning_original_handoff_consume": (LAUNCHER,),
-    "root_learning_original_config_hold": (LAUNCHER,),
+    "root_learning_original_purpose_receive": (
+        LAUNCHER, AGENT + "production_launcher_late_writer.rs",
+    ),
+    "root_learning_original_handoff_consume": (
+        LAUNCHER, AGENT + "production_launcher_late_writer.rs",
+    ),
+    "root_learning_original_config_hold": (
+        LAUNCHER, AGENT + "production_launcher_late_writer.rs",
+    ),
     "root_learning_original_stage_assembly": (),
     "root_learning_original_runtime_consume": (CONFIG,),
     "root_learning_original_delivery_source": (INPUTS,),

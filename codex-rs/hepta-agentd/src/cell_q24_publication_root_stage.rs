@@ -209,15 +209,16 @@ impl OriginalCellQ24SelectedArtifactForRootV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<OriginalCellQ24RootPublicationDriverV1, Error> {
-        self.original.require_current().await?;
+        OriginalDecision::require_current(&self.original).await?;
         let handoff: crate::RootGenerationPublicationHandoffV1 = handoff;
-        let current = handoff.connect(connection, timeout, lifetime).await?;
+        let current: Arc<NeuronGenerationCurrentOwnerV1> =
+            handoff.connect(connection, timeout, lifetime).await?;
         current.require_original_root_selection(
             &self.original.decision.snapshot,
             &self.original.decision.operation,
             self.selected.observation().digest(),
         )?;
-        self.original.require_current().await?;
+        OriginalDecision::require_current(&self.original).await?;
         Ok(OriginalCellQ24RootPublicationDriverV1 {
             driver: OriginalCellQ24PublicationDriverV1 {
                 original: self.original,

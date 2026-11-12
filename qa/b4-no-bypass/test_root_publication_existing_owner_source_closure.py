@@ -39,6 +39,7 @@ CALLERS = {
         AGENT + "cell_q24_publication_driver.rs",
         AGENT + "cell_q24_publication_current.rs",
         AGENT + "cell_q24_publication_root_stage.rs",
+        AGENT + "cell_q24_publication_successor_current.rs",
     ),
 }
 

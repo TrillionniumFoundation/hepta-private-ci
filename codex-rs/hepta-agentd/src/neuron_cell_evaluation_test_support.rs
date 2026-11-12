@@ -32,14 +32,12 @@ pub(super) fn id(name: &str) -> StableId {
     checked(StableId::new(name))
 }
 pub(super) fn file(path: &Path) -> File {
-    checked(
-        OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(path),
-    )
+    let mut options: std::fs::OpenOptions = OpenOptions::new();
+    options.create(true);
+    options.truncate(false);
+    options.read(true);
+    options.write(true);
+    checked(options.open(path))
 }
 
 pub(super) type Journal = CellGenerationJournalV2<FileAnchorWitnessStore>;

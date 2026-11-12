@@ -4,6 +4,7 @@
 //! trained-model benefit or independent business consumer acceptance.
 
 use super::*;
+use anyhow::Context;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseIssuerTrustKey;
 use codex_hepta_contracts::RootAuthorityDirectory;
@@ -83,7 +84,12 @@ fn digest(value: &str) -> Digest32 {
 fn control(socket: &UnixDatagram, expected: &[u8]) -> anyhow::Result<()> {
     socket.set_read_timeout(Some(LIFETIME))?;
     let mut bytes = [0; 256];
-    let size = socket.recv(&mut bytes)?;
+    let size = socket.recv(&mut bytes).with_context(|| {
+        format!(
+            "publication component control awaiting {}",
+            String::from_utf8_lossy(expected)
+        )
+    })?;
     assert_eq!(&bytes[..size], expected);
     Ok(())
 }
@@ -101,7 +107,9 @@ fn send_data(socket: &UnixDatagram, value: &impl serde::Serialize) -> anyhow::Re
 fn data<T: serde::de::DeserializeOwned>(socket: &UnixDatagram) -> anyhow::Result<T> {
     socket.set_read_timeout(Some(LIFETIME))?;
     let mut bytes = vec![0; 32769];
-    let size = socket.recv(&mut bytes)?;
+    let size = socket
+        .recv(&mut bytes)
+        .context("publication child awaiting original intent data")?;
     anyhow::ensure!(size > 0 && size <= 32768, "bounded component control");
     Ok(serde_json::from_slice(&bytes[..size])?)
 }
@@ -167,9 +175,11 @@ fn record_component_decision(
 fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow::Result<()> {
     // SAFETY: only observe this test process's actual credentials.
     assert_eq!(unsafe { (libc::getuid(), libc::geteuid()) }, (0, 0));
-    let mut fixture = fixture::Fixture::new()?;
+    let mut fixture = fixture::Fixture::new().context("publication component fixture setup")?;
     let initial_current = fixture.current.original_broker_head()?;
-    fixture.run_phase(Phase::Publish)?;
+    fixture
+        .run_phase(Phase::Publish)
+        .context("publication component Publish phase")?;
     let published = fixture.current.original_broker_head()?;
     assert_eq!(published.current, fixture.intent.target);
     assert_eq!(published.prepared, None);
@@ -182,12 +192,16 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
     let claims_path = fixture.local.join("device/authority.claims");
     let claimed = std::fs::read(&claims_path)?;
     anyhow::ensure!(!claimed.is_empty(), "real original nonce append required");
-    fixture.run_phase(Phase::Recover)?;
+    fixture
+        .run_phase(Phase::Recover)
+        .context("publication component Recover phase")?;
     assert_eq!(fixture.current.original_broker_head()?, published);
     assert_eq!(support::protected_files(&fixture.current_path)?, protected);
     assert_eq!(std::fs::read(&claims_path)?, claimed);
 
-    fixture.run_phase(Phase::RetiredSession)?;
+    fixture
+        .run_phase(Phase::RetiredSession)
+        .context("publication component RetiredSession phase")?;
     assert_eq!(fixture.current.original_broker_head()?, published);
     assert_eq!(support::protected_files(&fixture.current_path)?, protected);
     assert_eq!(std::fs::read(&claims_path)?, claimed);
@@ -205,7 +219,9 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
             .grant;
         issuer.revoke(&grant.grant_id)?;
     }
-    fixture.run_phase(Phase::Revoked)?;
+    fixture
+        .run_phase(Phase::Revoked)
+        .context("publication component Revoked phase")?;
     assert_eq!(fixture.current.original_broker_head()?, published);
     assert_eq!(support::protected_files(&fixture.current_path)?, protected);
     fixture.child.release()?;

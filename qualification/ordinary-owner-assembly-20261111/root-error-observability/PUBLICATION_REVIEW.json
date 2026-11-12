@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.publication-root-diagnostic-independent-review.v1",
+  "classification": "STATIC_TEST_ONLY_REVIEW_NOT_NATIVE_EXECUTION",
+  "reviewer": "/root/hepta_audit",
+  "reviewed_manifest": "4dd431632aa1e07d004ed1fac30958f912557100",
+  "source_delta": "df8954c7b1c609b6be4d4f8936797453c9bd5957",
+  "author_diagnostic": "f9ca1b4c5fb62e1a2182ed501d55de00570c6434",
+  "baseline": {
+    "commit": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "child_override": "c70be8c1b145f82e0ab089cf1bc04ded9a4fbce6"
+  },
+  "independent_exact_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_support_tests.rs",
+      "preimage": {
+        "git_blob": "b5e5e84aed65e4fb5156eb57f35c81598fb1a7a1",
+        "bytes": 6382,
+        "sha256": "3db950fc0243141b25524ed0ad94baf9b0d66a2efd7cbd733d05d3793db4ff0a"
+      },
+      "postimage": {
+        "git_blob": "e33531e3fecda5e3cd37ca19a48f4698f0ae58e3",
+        "bytes": 7957,
+        "sha256": "17e70f1b907da39042b2ebe19616f639b86efd65c0126734d31ff927f62b7901"
+      },
+      "exact_operations": 6,
+      "forward_and_reverse_exact": true,
+      "assertion_negative_timeout_token_sequence_equal": true,
+      "guard_token_count": 6
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_tests.rs",
+      "preimage": {
+        "git_blob": "f692164419c65c420b2fbfcfeb796f432aca6852",
+        "bytes": 8553,
+        "sha256": "bf5c5b3b3d29fadbc7afbb4e70498f492b7b087f18c21dd7a08488192bb40929"
+      },
+      "postimage": {
+        "git_blob": "2f1b7f3710b5f7a92708234db40c56547f01d358",
+        "bytes": 9120,
+        "sha256": "58fcc4e022282e7400992a7ff91e3672cf968041207aa0d65ff12550a0939202"
+      },
+      "exact_operations": 8,
+      "forward_and_reverse_exact": true,
+      "assertion_negative_timeout_token_sequence_equal": true,
+      "guard_token_count": 25
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "eeca436dab40d6b30c765fd95e69b1f3507e7427",
+        "bytes": 29805,
+        "sha256": "4deab9a45c068b20f59084817734c2b636f4ea9afcc716c3b49c78ea9ceae375"
+      },
+      "postimage": {
+        "git_blob": "480426e7638af68de8a2cda666e72f0a597c41cc",
+        "bytes": 30230,
+        "sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225"
+      },
+      "exact_operations": 3,
+      "forward_and_reverse_exact": true,
+      "assertion_negative_timeout_token_sequence_equal": true,
+      "guard_token_count": 18
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "c70be8c1b145f82e0ab089cf1bc04ded9a4fbce6",
+        "bytes": 13125,
+        "sha256": "e54c6f674f1d1ba94e8ba1ce3bb410352debf8f7437d7aeedbeff0c5aa7c68fd"
+      },
+      "postimage": {
+        "git_blob": "c3030b6519c73bb1cfb4a8ec66069ef3b5db5801",
+        "bytes": 15383,
+        "sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8"
+      },
+      "exact_operations": 15,
+      "forward_and_reverse_exact": true,
+      "assertion_negative_timeout_token_sequence_equal": true,
+      "guard_token_count": 66
+    }
+  ],
+  "total_exact_operations": 36,
+  "findings": [
+    "All four complete preimages and postimages were fetched by exact immutable Git blobs, their byte lengths and SHA256 checked independently, and all declared exact operations replayed and reversed byte-for-byte.",
+    "The original assertion, explicit-negative and timeout token sequences remain equal in all four files. No actual nonce/CURRENT/recovery/retired-session assertion, phase ordering, Root parent roster, grant lifetime or alarm was removed or enlarged.",
+    "ChildOwner now retains anonymous regular File handles for original stdout/stderr and supplies clones through the original subprocess stdio. It does not expose authority files, new signers, original Root writer access, or altered setpriv/credential/FD handoff logic.",
+    "The original sixty-second deadline/try_wait loop remains. finish waits for the original child, reads the original regular files, retains the original success-status condition and error output, and returns the original UTF-8 stdout interface used by the existing lifecycle marker assertion.",
+    "Read/Seek/Write are already in the actual publication and Initial parent module imports used by support through super::*. The new private fields are initialized in the existing spawn constructor. Reads occur after the existing child wait in the normal finish path.",
+    "Early-error Drop retains the original try_wait, conditional kill and wait sequence. It then emits the observed cleanup status and available original stdout/stderr bytes, including an explicit output-read error if necessary. There is no added pipe EOF wait, new timeout or new Rust-supervisor termination logic.",
+    "A wait error is explicitly printed, so these diagnostics should be described as preserving the observed cleanup status and output, not as unconditionally proving child termination in every error case.",
+    "The fixture prints the original served result before registration.join can propagate its own failure. Parent and child context identify existing phases and operations; they do not replace or swallow the original operation result.",
+    "Publication intentionally already allowed the service result of deliberate refused frames to be an error while the child proves the negative outcome. The diagnostic patch preserves that behavior rather than converting a previously checked error into success.",
+    "The child adds four fixed step lines per unchanged phase. The original test credentials, single connection custody, FinalUse claim/dispatch, CURRENT readbacks and negative tests remain in place.",
+    "No root cause for the original EAGAIN failures is established by this static review. The original 715 run remains 15 passed and 2 failed, and this patch requires a new fixed-source compilation/execution."
+  ],
+  "conclusion": "No concrete static blocker found in the reviewed narrow test-observability delta. Parent may integrate for a new fixed-source native attempt.",
+  "production_changes": 0,
+  "registry_changes": 0,
+  "root_parent_roster_changes": 0,
+  "cargo_executed": false,
+  "native_executed": false,
+  "official_checker_executed": false,
+  "authorityGranted": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

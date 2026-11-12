@@ -151,7 +151,7 @@ impl OriginalCellQ24EvaluationStageV1 {
         Ok(CellEvaluationQualificationRequestV1 {
             context: &self.context,
             evidence: &self.evidence,
-            timing: self.timing.borrow(),
+            timing: OriginalCellQ24EvaluationTimingV1::borrow(&self.timing),
             verifier: &self.verifier,
             now: now()?,
         })

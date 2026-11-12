@@ -2,6 +2,7 @@
 //! CURRENT client, consumed FinalUse dispatch, then read-only explicit recovery.
 
 use super::*;
+use anyhow::Context;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::claim_final_use;
 use codex_hepta_contracts::dispatch_final_use_with_witness;
@@ -33,7 +34,9 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
         let mut original_head: Option<types::CurrentHead> = None;
         let mut published_head: Option<types::CurrentHead> = None;
         for phase in [Phase::Publish, Phase::Recover, Phase::RetiredSession, Phase::Revoked] {
-            let (mut sealed, root_pin) = crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)?;
+            eprintln!("ROOT_PUBLICATION_CHILD phase={phase:?} step=receive-original-offers");
+            let (mut sealed, root_pin) = crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)
+                .with_context(|| format!("publication {phase:?}: receive original production handoff"))?;
             let mut raw = Vec::new();
             sealed.rewind()?;
             sealed.read_to_end(&mut raw)?;
@@ -41,13 +44,17 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
             assert_eq!((original.root.pid, original.root.uid, original.consumer.uid), (root, 0, 60001));
             let identity = original.registered_identity.identity()?;
             sealed.rewind()?;
-            let mut learning = crate::receive_root_learning_handoff(socket.try_clone()?, LIFETIME)?;
-            let publication = crate::receive_root_generation_publication_handoff(socket.try_clone()?, LIFETIME)?;
+            let mut learning = crate::receive_root_learning_handoff(socket.try_clone()?, LIFETIME)
+                .with_context(|| format!("publication {phase:?}: receive original learning handoff"))?;
+            let publication = crate::receive_root_generation_publication_handoff(socket.try_clone()?, LIFETIME)
+                .with_context(|| format!("publication {phase:?}: receive original publication handoff"))?;
             let mut production = crate::receive_root_production_inputs(
                 sealed, root_pin, &identity, TIMEOUT, LIFETIME,
-            ).await?;
+            ).await.with_context(|| format!("publication {phase:?}: connect original five-lane inputs"))?;
+            eprintln!("ROOT_PUBLICATION_CHILD phase={phase:?} step=original-inputs-connected");
             assert_eq!(production.session.revocations()?, original.revocations);
-            let connection = production.take_generation_publication_connection()?;
+            let connection = production.take_generation_publication_connection()
+                .with_context(|| format!("publication {phase:?}: take original connection"))?;
             assert!(matches!(production.take_generation_publication_connection().err(),
                 Some(crate::AgentdError::GenerationFenced(message)) if message.contains("already taken")));
             // Public bootstrap metadata cannot replace the sealed original
@@ -65,23 +72,31 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
                 crate::AgentdRootAuthorityPeer { pid: bundle.root.pid, boot_id: bundle.root.boot_id,
                     process_start_ticks: bundle.root.process_start_ticks },
                 learning.root_pidfd, initial.clone(), TIMEOUT, LIFETIME, scope,
-            )?;
+            ).with_context(|| format!("publication {phase:?}: connect original learning checkpoint"))?;
             let decision = record_component_decision(initial.clone())?;
             if matches!(phase, Phase::Publish) {
-                assert_eq!(checkpoint.restore(&initial.request).await?, None);
-                checkpoint.checkpoint(Digest32::ZERO, &initial).await?;
+                assert_eq!(checkpoint.restore(&initial.request).await
+                    .with_context(|| format!("publication {phase:?}: restore vacant original checkpoint"))?, None);
+                checkpoint.checkpoint(Digest32::ZERO, &initial).await
+                    .with_context(|| format!("publication {phase:?}: write original initial checkpoint"))?;
                 let mut replay = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
                 for receipt in &decision.snapshot().receipts {
                     let previous = replay.snapshot().head_digest;
                     replay.record(receipt.clone(), receipt.observed_unix_seconds)?;
-                    assert_eq!(checkpoint.checkpoint(previous, replay.snapshot()).await?, replay.snapshot().head_digest);
+                    assert_eq!(checkpoint.checkpoint(previous, replay.snapshot()).await
+                        .with_context(|| format!("publication {phase:?}: write original component checkpoint"))?,
+                        replay.snapshot().head_digest);
                 }
             }
-            assert_eq!(checkpoint.restore(&initial.request).await?, Some(decision.snapshot().clone()));
+            assert_eq!(checkpoint.restore(&initial.request).await
+                .with_context(|| format!("publication {phase:?}: restore original decision checkpoint"))?,
+                Some(decision.snapshot().clone()));
+            eprintln!("ROOT_PUBLICATION_CHILD phase={phase:?} step=learning-ready");
             // Neither Root late registration nor this child's publication
             // connection has occurred. Both real original services responded.
             assert_eq!(socket.send(b"LEARNING_AND_ORIGINAL_INPUTS_READY")?, 34);
-            let intent: types::UpdateIntent = data(&socket)?;
+            let intent: types::UpdateIntent = data(&socket)
+                .with_context(|| format!("publication {phase:?}: receive registered original intent"))?;
             let operation = learning_retained_task_operation_id_v1(&decision)?;
             assert_eq!(intent.operation_id, operation.as_str());
             let claims = production.bootstrap.consumers.device.local_state_dir.join("authority.claims");
@@ -100,22 +115,30 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
                 drop((checkpoint, production));
                 continue;
             }
-            let current = publication.connect(connection, TIMEOUT, LIFETIME).await?;
+            let current = publication.connect(connection, TIMEOUT, LIFETIME).await
+                .with_context(|| format!("publication {phase:?}: connect original CURRENT purpose"))?;
+            eprintln!("ROOT_PUBLICATION_CHILD phase={phase:?} step=current-connected");
             assert!(!current.store.is_original_host(), "non-Root holds the real Root lane, never a writable directory");
             current.require_original_root_selection(decision.snapshot(), &operation,
-                Digest32::from_array(intent.selection))?;
-            let before = current.store.load()?;
+                Digest32::from_array(intent.selection))
+                .with_context(|| format!("publication {phase:?}: require original Root selection"))?;
+            let before = current.store.load()
+                .with_context(|| format!("publication {phase:?}: read original CURRENT"))?;
             if matches!(phase, Phase::Publish) {
                 original_head = Some(before.clone());
                 let mut prepared = before.clone();
                 prepared.prepared = Some(intent.clone());
-                current.store.replace(&before, &prepared)?;
-                assert_eq!(current.store.load()?, prepared);
+                current.store.replace(&before, &prepared)
+                    .context("publication Publish: prepare original CURRENT")?;
+                assert_eq!(current.store.load()
+                    .context("publication Publish: read original prepared CURRENT")?, prepared);
                 assert_eq!(socket.send(b"PREPARED")?, 8);
                 control(&socket, b"GENESIS")?;
                 let binding = intent.binding()?;
-                let signed = production.grants.request_grant(&binding)?;
-                let token = claim_final_use(&production.device, &signed, &binding)?;
+                let signed = production.grants.request_grant(&binding)
+                    .context("publication Publish: request original grant")?;
+                let token = claim_final_use(&production.device, &signed, &binding)
+                    .context("publication Publish: claim original grant")?;
                 let (result, witness) = dispatch_final_use_with_witness(
                     &production.device, token, &binding, |witness| -> Result<types::CurrentHead, crate::AgentdError> {
                         let next = types::CurrentHead {
@@ -128,8 +151,8 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
                         assert_eq!(actual, next);
                         Ok(actual)
                     },
-                )?;
-                let published = result?;
+                ).context("publication Publish: dispatch original grant")?;
+                let published = result.context("publication Publish: original CURRENT dispatch effect")?;
                 assert_eq!(published.published.as_ref().map(|record| &record.witness), Some(&witness));
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
                 let nonce = std::fs::read(&claims)?;
@@ -203,7 +226,7 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
 fn require_uncertain(error: crate::AgentdError) {
     assert!(
         matches!(error, crate::AgentdError::Io(ref error)
-        if error.get_ref().is_some_and(<(dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static)>::is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>)),
+        if error.get_ref().is_some_and(<dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static>::is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>)),
         "original closed client must keep typed uncertainty: {error}"
     );
 }

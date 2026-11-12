@@ -2,6 +2,7 @@
 //! owner are production implementations; no FileCas/test authority is used.
 
 use super::*;
+use anyhow::Context;
 use crate::DeploymentGrantPolicy;
 use crate::HostAuthorityBootstrap;
 use crate::HostAuthorityConsumerConfig;
@@ -497,7 +498,9 @@ impl Fixture {
                 control(&self.offer, b"LEARNING_AND_ORIGINAL_INPUTS_READY")?;
                 deployment.component_trigger_original(&late_material)?;
                 let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
-                let registered = deployment.wait_and_register(&stopping)?;
+                let registered = deployment
+                    .wait_and_register(&stopping)
+                    .with_context(|| format!("publication {phase:?}: original late registration"))?;
                 anyhow::ensure!(
                     !registered.binding().parse::<Digest32>()?.is_zero(),
                     "actual Root acknowledgement"
@@ -542,12 +545,17 @@ impl Fixture {
                 )
                 .map_err(io::Error::other)
             });
+            // Retain the original service result even when the control worker
+            // returns first with a failed handshake.
+            eprintln!("ROOT_PUBLICATION_COMPONENT phase={phase:?} service={served:?}");
             let result = registration
                 .join()
-                .map_err(|_| anyhow::anyhow!("original Root registration worker panicked"))??;
+                .map_err(|_| anyhow::anyhow!("original Root registration worker panicked"))?
+                .with_context(|| {
+                    format!("publication {phase:?}: control worker failed; service={served:?}")
+                })?;
             // A deliberate refused frame can close its worker before or during
             // the original fixed-lane shutdown. The child asserts that refusal.
-            println!("ROOT_PUBLICATION_COMPONENT phase={phase:?} service={served:?}");
             Ok::<_, anyhow::Error>(result)
         })?;
         assert_eq!(

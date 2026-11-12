@@ -6,8 +6,8 @@ use std::os::fd::AsRawFd;
 use std::os::fd::IntoRawFd;
 use std::os::unix::net::UnixListener;
 
-use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_fleet::ResourceBudget;
 use pretty_assertions::assert_eq;
 
 struct DescriptorInputs {
@@ -43,22 +43,39 @@ impl DescriptorInputs {
         };
         // SAFETY: the kernel writes one initialized, live stack timespec.
         anyhow::ensure!(unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut clock) } == 0);
-        let deadline =
-            clock.tv_sec as u64 * 1_000_000_000 + clock.tv_nsec as u64 + 10_000_000_000;
+        let deadline = clock.tv_sec as u64 * 1_000_000_000 + clock.tv_nsec as u64 + 10_000_000_000;
         // SAFETY: only actual kernel credentials are observed.
         let actual = unsafe { libc::geteuid() };
         let wrong_owner = if actual == 60001 { 60002 } else { 60001 };
         let mut arguments = Vec::new();
         for (flag, value) in [
             ("--root-production-profile", "android".to_string()),
-            ("--root-production-handoff-fd", self.descriptors[0].as_raw_fd().to_string()),
+            (
+                "--root-production-handoff-fd",
+                self.descriptors[0].as_raw_fd().to_string(),
+            ),
             ("--root-production-uid", wrong_owner.to_string()),
             ("--root-production-gid", wrong_owner.to_string()),
-            ("--root-production-control-fd", self.descriptors[1].as_raw_fd().to_string()),
-            ("--root-production-app-server-fd", self.descriptors[2].as_raw_fd().to_string()),
-            ("--android-runtime-server", "original-component-server".to_string()),
-            ("--android-runtime-environment", "original-component-environment".to_string()),
-            ("--android-original-payload-fd", self.descriptors[3].as_raw_fd().to_string()),
+            (
+                "--root-production-control-fd",
+                self.descriptors[1].as_raw_fd().to_string(),
+            ),
+            (
+                "--root-production-app-server-fd",
+                self.descriptors[2].as_raw_fd().to_string(),
+            ),
+            (
+                "--android-runtime-server",
+                "original-component-server".to_string(),
+            ),
+            (
+                "--android-runtime-environment",
+                "original-component-environment".to_string(),
+            ),
+            (
+                "--android-original-payload-fd",
+                self.descriptors[3].as_raw_fd().to_string(),
+            ),
             ("--android-original-deadline-ns", deadline.to_string()),
         ] {
             arguments.extend([OsString::from(flag), OsString::from(value)]);
@@ -103,7 +120,8 @@ async fn late_writer_refuses_incomplete_and_aliased_inputs_before_claiming_right
         .ok_or_else(|| anyhow::anyhow!("control argument absent"))?;
     aliased[control + 1] = handoff;
     for arguments in [Vec::new(), partial, aliased] {
-        let result = AgentdProductionLaunch::receive_original_late_writer(arguments, &expected).await;
+        let result =
+            AgentdProductionLaunch::receive_original_late_writer(arguments, &expected).await;
         assert!(matches!(result, Err(AgentdError::Invalid(_))));
         for descriptor in &fixture.descriptors {
             // SAFETY: F_GETFD only inspects each still-owned original descriptor.

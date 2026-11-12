@@ -365,7 +365,7 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         ) {
             return Err(Error::PendingOutcome);
         }
-        prepared.revalidate_source()?;
+        crate::CellQ24PreparedLearningV1::revalidate_source(&prepared)?;
         Ok(prepared)
     }
 
@@ -439,7 +439,7 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         ) {
             return Err(Error::PendingOutcome);
         }
-        prepared.revalidate_source()?;
+        crate::CellQ24PreparedLearningV1::revalidate_source(&prepared)?;
         Ok(prepared)
     }
 

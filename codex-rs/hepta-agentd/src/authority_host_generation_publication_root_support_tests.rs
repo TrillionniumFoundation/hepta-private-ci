@@ -76,12 +76,18 @@ pub(super) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, P
 pub(super) struct ChildOwner {
     child: Option<Child>,
     deadline: Instant,
+    stdout: File,
+    stderr: File,
 }
 
 impl ChildOwner {
     pub(super) fn spawn(receive: UnixDatagram, state: &Path) -> anyhow::Result<Self> {
         let executable = File::open(std::env::current_exe()?)?;
         let inherited = [receive.as_raw_fd(), executable.as_raw_fd()];
+        // Anonymous files preserve both original streams even when a parent
+        // handshake fails before finish; there is no pipe-draining wait.
+        let stdout = tempfile::tempfile()?;
+        let stderr = tempfile::tempfile()?;
         let mut command = Command::new("/usr/bin/setpriv");
         command
             .args([
@@ -114,8 +120,8 @@ impl ChildOwner {
             .env("HEPTA_LEARNING_SERVICE_STATE", state)
             .current_dir("/")
             .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped());
+            .stdout(Stdio::from(stdout.try_clone()?))
+            .stderr(Stdio::from(stderr.try_clone()?));
         // SAFETY: after fork only async-signal-safe fcntl touches the two retained
         // descriptors. setpriv performs the real credential/capability transition.
         unsafe {
@@ -135,6 +141,8 @@ impl ChildOwner {
         Ok(Self {
             child: Some(child),
             deadline,
+            stdout,
+            stderr,
         })
     }
 
@@ -171,28 +179,57 @@ impl ChildOwner {
             );
             std::thread::sleep(Duration::from_millis(5));
         }
-        let output = self
+        let status = self
             .child
             .take()
             .ok_or_else(|| anyhow::anyhow!("finished original child required"))?
-            .wait_with_output()?;
+            .wait()?;
+        let (stdout, stderr) = self.read_child_output()?;
         anyhow::ensure!(
-            output.status.success(),
+            status.success(),
             "dedicated child failed: {}{}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
+            String::from_utf8_lossy(&stdout),
+            String::from_utf8_lossy(&stderr)
         );
-        Ok(String::from_utf8(output.stdout)?)
+        Ok(String::from_utf8(stdout)?)
+    }
+
+    fn read_child_output(&mut self) -> io::Result<(Vec<u8>, Vec<u8>)> {
+        self.stdout.rewind()?;
+        let mut stdout = Vec::new();
+        self.stdout.read_to_end(&mut stdout)?;
+        self.stderr.rewind()?;
+        let mut stderr = Vec::new();
+        self.stderr.read_to_end(&mut stderr)?;
+        Ok((stdout, stderr))
     }
 }
 
 impl Drop for ChildOwner {
     fn drop(&mut self) {
-        if let Some(child) = &mut self.child {
+        if let Some(mut child) = self.child.take() {
             if !matches!(child.try_wait(), Ok(Some(_))) {
                 let _ = child.kill();
             }
-            let _ = child.wait();
+            let status = child.wait();
+            let mut log = io::stderr().lock();
+            let _ = writeln!(
+                log,
+                "ROOT_COMPONENT_CHILD_CLEANUP pid={} status={status:?}",
+                child.id()
+            );
+            match self.read_child_output() {
+                Ok((stdout, stderr)) => {
+                    let _ = writeln!(log, "ROOT_COMPONENT_CHILD_STDOUT bytes={}", stdout.len());
+                    let _ = log.write_all(&stdout);
+                    let _ = writeln!(log, "\nROOT_COMPONENT_CHILD_STDERR bytes={}", stderr.len());
+                    let _ = log.write_all(&stderr);
+                    let _ = writeln!(log, "\nROOT_COMPONENT_CHILD_OUTPUT_END");
+                }
+                Err(error) => {
+                    let _ = writeln!(log, "ROOT_COMPONENT_CHILD_OUTPUT_READ_FAILED: {error}");
+                }
+            }
         }
     }
 }

@@ -1,0 +1,156 @@
+{
+  "schema": "hepta-independent-root-record-read-static-review/v1",
+  "reviewer": "/root/hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Static review of the narrow Root-owned 0600 execution-record read fix; no Cargo, native, Root, or qualification execution by this reviewer.",
+  "base_scripts": [
+    {
+      "git_blob": "5d718f99edc182f47ae99778d8e9a70a2ab88800",
+      "bytes": 45572,
+      "sha256": "5804a0509071d75b474f867a67d6c8660f9222410773e07e187adf68fc442903",
+      "role": "complete final harness"
+    },
+    {
+      "git_blob": "0b73adfbb4d5026334cee905ada63d3737c7463c",
+      "bytes": 44937,
+      "sha256": "dbba3e6e3afadbefb8bff0266dd51cd008f0838f22aa753ef5e07967d4a79a69",
+      "role": "Root17-only diagnostic"
+    }
+  ],
+  "reviewed_scripts": [
+    {
+      "git_blob": "90994f511820596ecceeb2ecc5ca4ecdafa8c653",
+      "bytes": 50110,
+      "sha256": "8f8886e4c7a15fb319a2bb9e587e3c948bb6f4d671d03ec5f1db11620e4e9e0b",
+      "role": "complete final harness with record read fix"
+    },
+    {
+      "git_blob": "d109e6d532f1cce69d9afd03483b374d19092ed9",
+      "bytes": 49475,
+      "sha256": "f3e19377e7208c495c00d02131a5171d28be88d1635532fbe37748396f249ff6",
+      "role": "Root17-only diagnostic with record read fix"
+    }
+  ],
+  "independent_checks": {
+    "exact_utf8_bytes_and_git_blob_sha1_and_sha256_recomputed": true,
+    "all_four_python_sources_ast_parsed_without_execution": true,
+    "modified_existing_functions": [
+      "recorded"
+    ],
+    "new_functions": [
+      "read_root_execution_record"
+    ],
+    "new_assignments": [
+      "ROOT_EXECUTION_READ"
+    ],
+    "unchanged_existing_function_count": 19,
+    "changed_existing_assignments": [],
+    "original_root_programs_unchanged": [
+      "RUST_PREFLIGHT",
+      "ROOT_SETUP",
+      "ROOT_CACHE",
+      "ROOT_WRAPPER"
+    ],
+    "original_finally_nodes_byte_equal": true,
+    "original_finally_node_count": 10,
+    "original_unknown_wait_preserved": true
+  },
+  "findings": [
+    "The original failure remains a failed harness attempt: its actual Root toolchain recorder completed successfully, but the operator attempted to read a Root-owned 0600 execution.json before the existing ownership transfer. This patch does not relabel that attempt as a successful Root test.",
+    "The added sudo helper is read-only. It requires actual UID/EUID 0, the exact canonical records parent owned by the invoking operator, an immediate .execution.json child, and an O_DIRECTORY/O_NOFOLLOW parent descriptor.",
+    "The child is opened relative to the held parent descriptor with O_RDONLY/O_NOFOLLOW/O_NONBLOCK. The helper requires a Root-owned regular file with nlink 1 and size 1..65536 bytes, then reads only bounded bytes.",
+    "Actual file descriptor, no-follow path, parent descriptor and parent path identity are checked before and after. The identity includes device, inode, mode, ownership, link count, size, mtime_ns and ctime_ns. File bytes, byte count and SHA256 are returned with the original parsed record.",
+    "The operator validates the exact step path and proof, the original terminal/no-timeout/no-truncation status, source/tested SHA, lane, command and clean before/after source identity before invoking the existing ownership transfer.",
+    "After transfer, exact bytes and SHA256 must equal the read-only Root proof, then the original read_execution validation checks the execution record and original log.",
+    "Read failures or unclassified/unknown completion set completion_unknown before raising. They do not enable early chown, later Cargo, collector launch, cache mutation, signal-based supervision, or cleanup of live/unknown processes.",
+    "The original four Root program bodies, other nineteen functions, finally cleanup ordering and end-of-run unknown-process wait were mechanically compared and remain byte-identical.",
+    "No changes were made to source checkers, the Root17 parent roster, source-bound helper verification, test filtering, original just/nextest execution, UID0 requirements, Root bind identity checks, or authority."
+  ],
+  "conclusion": "No concrete blocking issue found in this narrow static review. Parent may execute the fixed, separately registered diagnostic request; runtime behavior and all native/Root results remain pending actual execution.",
+  "fixed_new_diagnostic_request_git_blob": "817e6ac943c089be44e3cd15edec82e93eed4ecb",
+  "execution_and_acceptance": {
+    "native_executed_by_reviewer": false,
+    "root_executed_by_reviewer": false,
+    "official_verifier_executed_by_this_review": false,
+    "ordinary_production_chain_accepted": false,
+    "permissions_or_authority_granted": false
+  },
+  "structural_check": [
+    {
+      "base": "final-harness-original.py",
+      "post": "full-harness-permission-fix.py",
+      "changed_existing_functions": [
+        "recorded"
+      ],
+      "unchanged_existing_functions": [
+        "save",
+        "progress",
+        "file_digest",
+        "remaining",
+        "raw",
+        "git",
+        "identity",
+        "clean",
+        "snapshot",
+        "tool_snapshot",
+        "workflow_contract",
+        "read_execution",
+        "root_environment",
+        "package_args",
+        "json_from_raw_log",
+        "binary_bindings",
+        "listed_root_parents",
+        "restore_record_ownership",
+        "test_suite"
+      ],
+      "new_functions": [
+        "read_root_execution_record"
+      ],
+      "changed_existing_assignments": [],
+      "new_assignments": [
+        "ROOT_EXECUTION_READ"
+      ],
+      "finally_equal": true,
+      "old_finally_nodes": 10,
+      "root_programs_equal": true
+    },
+    {
+      "base": "root17-diagnostic.py",
+      "post": "root17-permission-fix.py",
+      "changed_existing_functions": [
+        "recorded"
+      ],
+      "unchanged_existing_functions": [
+        "save",
+        "progress",
+        "file_digest",
+        "remaining",
+        "raw",
+        "git",
+        "identity",
+        "clean",
+        "snapshot",
+        "tool_snapshot",
+        "workflow_contract",
+        "read_execution",
+        "root_environment",
+        "package_args",
+        "json_from_raw_log",
+        "binary_bindings",
+        "listed_root_parents",
+        "restore_record_ownership",
+        "test_suite"
+      ],
+      "new_functions": [
+        "read_root_execution_record"
+      ],
+      "changed_existing_assignments": [],
+      "new_assignments": [
+        "ROOT_EXECUTION_READ"
+      ],
+      "finally_equal": true,
+      "old_finally_nodes": 10,
+      "root_programs_equal": true
+    }
+  ]
+}

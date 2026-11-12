@@ -3,6 +3,7 @@
 //! completion or FileCAS is created.
 
 use super::*;
+use anyhow::Context;
 use crate::DeploymentGrantPolicy;
 use crate::HostAuthorityBootstrap;
 use crate::HostAuthorityConsumerConfig;
@@ -421,7 +422,8 @@ impl Fixture {
         );
         std::thread::scope(|scope| -> anyhow::Result<()> {
             let registration = scope.spawn(|| -> anyhow::Result<()> {
-                control(&self.offer, b"ORIGINAL_INPUTS_READY")?;
+                control(&self.offer, b"ORIGINAL_INPUTS_READY")
+                    .with_context(|| format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY"))?;
                 // The original child has now opened both real nonce owners.
                 // The production loader invokes the original same-PID cap.
                 let unchanged = support::protected_files(&self.current_path)?;
@@ -442,11 +444,13 @@ impl Fixture {
                     );
                     send_data(&self.offer, &false)?;
                 } else {
-                    let registered = outcome?;
+                    let registered = outcome
+                        .with_context(|| format!("initial parent {phase:?}: registering original deployment"))?;
                     anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
                     send_data(&self.offer, &true)?;
                 }
-                control(&self.offer, b"STABLE")?;
+                control(&self.offer, b"STABLE")
+                    .with_context(|| format!("initial parent {phase:?}: awaiting STABLE"))?;
                 if !reject {
                     let head = self.head()?;
                     anyhow::ensure!(
@@ -455,11 +459,13 @@ impl Fixture {
                     );
                 }
                 assert_eq!(self.offer.send(b"CHECKED")?, 7);
-                control(&self.offer, b"DONE")?;
+                control(&self.offer, b"DONE")
+                    .with_context(|| format!("initial parent {phase:?}: awaiting DONE"))?;
                 Ok(())
             });
             let served = prepared.serve_with_ready(move || {
                 crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)
+                    .with_context(|| format!("initial parent {phase:?}: sending original production handoff"))
                     .map_err(io::Error::other)?;
                 crate::send_root_generation_initial_handoff(
                     send.try_clone()?,
@@ -467,20 +473,32 @@ impl Fixture {
                     &root_pin,
                     TIMEOUT,
                 )
+                .with_context(|| format!("initial parent {phase:?}: sending original initial handoff"))
                 .map_err(io::Error::other)?;
-                send_data(&send, &plan).map_err(io::Error::other)?;
-                send_target_files(&send, target_writer, witness_writer).map_err(io::Error::other)
+                send_data(&send, &plan)
+                    .with_context(|| format!("initial parent {phase:?}: sending component plan"))
+                    .map_err(io::Error::other)?;
+                send_target_files(&send, target_writer, witness_writer)
+                    .with_context(|| format!("initial parent {phase:?}: sending original target descriptors"))
+                    .map_err(io::Error::other)
             });
-            registration
+            let registered = registration
                 .join()
-                .map_err(|_| anyhow::anyhow!("initial registration thread"))??;
+                .map_err(|_| anyhow::anyhow!("initial registration thread panicked"))
+                .and_then(|outcome| outcome);
+            if let Err(error) = registered {
+                return Err(error.context(format!(
+                    "initial parent {phase:?}, controlled_ack_loss={}: original Root serve result: {served:?}",
+                    self.drop_ack
+                )));
+            }
             if reject || (phase == Phase::Publish && self.drop_ack) {
                 anyhow::ensure!(
                     served.is_err(),
                     "source refusal or controlled ACK loss closes original lane"
                 );
             } else {
-                served?;
+                served.with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
             }
             Ok(())
         })

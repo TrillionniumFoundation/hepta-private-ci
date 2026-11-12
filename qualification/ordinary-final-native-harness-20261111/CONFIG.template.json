@@ -47,7 +47,7 @@
       "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
     ],
     "overall_timeout_seconds": 27000,
-    "full_caller_timeout_seconds": 2400
+    "full_caller_timeout_seconds": 3600
   },
   "required_replacements": [
     "head",
@@ -62,7 +62,9 @@
     "reference_repository is only an existing original object cache; the harness clones its own source and does not check out or modify the donor.",
     "The two Cargo target directories are explicit and separate; the parent remains the only native execution owner.",
     "The seventeen parent names must still exactly match the final source workflow. A changed roster requires an explicit reviewed parameter/harness update.",
-    "No command here was executed. All placeholders deliberately fail validation before setup."
+    "No command here was executed. All placeholders deliberately fail validation before setup.",
+    "Current script is the exact Root-record-read fix: read the original UID0 execution JSON through the bounded read-only bridge, prove terminal completion, then transfer only task records and verify original bytes/logs.",
+    "The original pre-fix harness and failed Root17 attempt remain historical evidence. Do not execute their old PROCESS_REQUEST stdin as the current script."
   ],
   "source_reference_for_roster": "5daade9e4ce374ac169702d6b59490149ccefd34",
   "execute": false
