@@ -35,6 +35,8 @@ use crate::learning_owner_journal::LearningOwnerJournalV1;
 
 #[path = "cell_q24_task_ledger_binding.rs"]
 mod binding;
+#[path = "cell_q24_task_outcome_control.rs"]
+pub(crate) mod control;
 #[path = "cell_q24_task_ledger_outcome.rs"]
 mod outcome;
 #[path = "cell_q24_task_outcome_codec.rs"]

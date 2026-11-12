@@ -26,6 +26,9 @@ mod q24_successor;
 #[path = "config_q24_circuit_task.rs"]
 #[cfg(target_os = "linux")]
 mod q24_circuit_task;
+#[cfg(target_os = "linux")]
+#[path = "config_q24_outcome.rs"]
+mod q24_outcome;
 
 #[path = "config_sockets.rs"]
 mod sockets;
@@ -138,6 +141,9 @@ pub struct AgentdConfig {
     terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
     neuron_generation_bootstrap: Option<crate::NeuronGenerationRuntimeBootstrapV2>,
     circuit_task_bootstrap: Option<crate::CircuitTaskRuntimeBootstrapV1>,
+    #[cfg(target_os = "linux")]
+    original_q24_outcome_control:
+        Option<std::sync::Arc<crate::OriginalCellQ24TaskLedgerProducerV1>>,
     circuit_task_invocation:
         Option<std::sync::Arc<dyn crate::AgentdCircuitTaskInvocationProviderV1>>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
@@ -307,6 +313,8 @@ impl AgentdConfig {
             terminal_learning_bootstrap: None,
             neuron_generation_bootstrap: None,
             circuit_task_bootstrap: None,
+            #[cfg(target_os = "linux")]
+            original_q24_outcome_control: None,
             circuit_task_invocation: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
