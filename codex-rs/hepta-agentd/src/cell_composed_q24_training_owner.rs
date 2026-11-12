@@ -63,6 +63,7 @@ mod result_data;
 mod work;
 pub(crate) use work::OriginalQ24TrainingWorkDataV1;
 pub(crate) use work::OriginalQ24TrainingWorkObservedV1;
+#[cfg(test)]
 pub(crate) use work::original_q24_work_contract;
 
 /// Owns one exact frozen Dataset cut and its bounded native optimizer. Transfer

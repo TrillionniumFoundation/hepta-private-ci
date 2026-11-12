@@ -91,7 +91,7 @@ pub(super) struct OriginalColdSuccessorData {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub(super) struct OriginalFinalizedColdData {
-    pub(super) record_digest: Digest32,
+    pub(super) record_digest: String,
     pub(super) cut: RootSuccessorTaskCutV1,
     pub(super) refusal_attempt: u64,
 }
@@ -242,7 +242,8 @@ impl OriginalColdSuccessorData {
             record_digest: Digest32::of_parts(&[
                 b"hepta.root.original-successor-record.v1\0",
                 &serde_json::to_vec(&successor)?,
-            ]),
+            ])
+            .to_string(),
             cut: cut.as_ref().clone(),
             refusal_attempt: refusal.attempt,
         }))
