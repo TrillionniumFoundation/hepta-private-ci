@@ -92,6 +92,14 @@ impl RootGenerationInitialDeploymentFilesV1 {
             DirectoryPin::capture_private(&data.consumer_state_root)?,
         ];
         let inputs = InitialOriginalFiles {
+            learning_trust: data
+                .learning_trust
+                .as_ref()
+                .map(|path| {
+                    RootInitialLearningTrustFilesV1::open_original_learning_trust(path)
+                        .map(Arc::new)
+                })
+                .transpose()?,
             current: RootAuthorityDirectory::open(&data.current_directory)
                 .map_err(io::Error::other)?,
             target_journal: OriginalFile::open_original(&data.target_journal)?,
@@ -262,3 +270,9 @@ fn initial_registration_uncertain(error: io::Error) -> io::Error {
 #[cfg(test)]
 #[path = "authority_host_initial_deployment_tests.rs"]
 mod tests;
+
+use std::sync::Arc;
+#[path = "authority_host_initial_learning_trust_files.rs"]
+mod learning_trust;
+pub(crate) use learning_trust::RegisteredInitialLearningTrustV1;
+pub use learning_trust::RootInitialLearningTrustFilesV1;

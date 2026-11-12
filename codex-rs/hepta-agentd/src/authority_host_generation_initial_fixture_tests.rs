@@ -372,6 +372,7 @@ impl Fixture {
         let bootstrap: HostAuthorityPublicBootstrapV1 = serde_json::from_slice(&raw)?;
         sealed.rewind()?;
         let inputs = crate::RootGenerationInitialEnrollmentV1 {
+            learning_trust: None,
             mode: if matches!(phase, Phase::Publish | Phase::ReserveExisting) {
                 crate::RootGenerationInitialModeV1::Reserve
             } else {

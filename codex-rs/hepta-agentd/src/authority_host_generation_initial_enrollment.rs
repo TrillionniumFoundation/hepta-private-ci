@@ -54,6 +54,10 @@ impl HostAuthorityService {
                     .refresh_projection()
                     .map_err(io::Error::other)?
                     .observed_unix_ms;
+                let learning_trust = inputs
+                    .learning_trust
+                    .map(|files| files.bind_original(&self.identity, deployment, now))
+                    .transpose()?;
                 let (artifacts, selected) =
                     inputs::open_artifacts(inputs.artifacts, config.peer_uid, now)?;
                 let binding = crate::neuron_generation_initial::validate_initial_configuration(
@@ -96,6 +100,7 @@ impl HostAuthorityService {
                     intent: prepared.intent_digest().to_string(),
                     selection: prepared.selection_observation_digest().to_string(),
                     final_use: prepared.final_use_binding().clone(),
+                    learning_trust: learning_trust.as_ref().map(|original| original.pin.clone()),
                     binding: String::new(),
                 };
                 profile.binding = profile.digest()?;
@@ -152,6 +157,7 @@ impl HostAuthorityService {
                     artifacts,
                     selected: Mutex::new(selected),
                     consumer,
+                    learning_trust,
                 };
                 enrolled.require_profile()?;
                 enrolled.require_selection(
