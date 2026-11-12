@@ -1,0 +1,170 @@
+{
+  "source_head": "f43af1e484fe602fd73b8fc62933b08a1b138212",
+  "source_tree": "5cdf0728ded7cc7c351316a612bd367b4e557e0a",
+  "workflow_sha256": "eb00edb089d767daf6ca4fdf30e569c3b62162e481aa8a57dc61bbab54b2e1b7",
+  "status": "prepared only; none of this roster executed by this review",
+  "original_parent_count": 35,
+  "new_parent_count": 7,
+  "expected_count": 42,
+  "parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+    "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+    "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+    "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+    "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+    "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+    "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+    "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+    "neuron_generation_current::initial_root_tests::root_initial_peer_ready_registers_fixed_inputs_without_trigger_file",
+    "authority_host_service::generation_initial::historical_source_pin::tests::root_source_pin_preserves_exact_registration_and_never_initializes_recovery",
+    "authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_capability_rejects_replaced_lifetime_and_late_ack",
+    "authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_ack_is_data_and_keeps_the_one_shot_consumed",
+    "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_never_promotes_missing_pending_or_fenced",
+    "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_observed_conflict_stays_refused_after_restored_bytes",
+    "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_rejects_peer_ack_without_context_finalization",
+    "authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_sequences_block_stale_cross_handle_completion",
+    "authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_does_not_retrofit_old_primary_or_split_one_scope",
+    "authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_crash_during_failed_primary_read_remains_armed_after_restore",
+    "authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_physical_corruption_then_restore_stays_refused_across_processes",
+    "authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_unfinished_capture_cannot_initialize_after_restart",
+    "authority_host_service::generation_initial::historical_source_handoff::tests::cold::root_source_handoff_physical_corruption_then_restore_stays_refused_across_processes",
+    "authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_finalized_primary_before_failed_postcheck_is_not_recoverable",
+    "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_data_never_promotes_pending_or_missing_refusal",
+    "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_finalized_primary_before_failed_postcheck_cannot_recover",
+    "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_corruption_then_restore_stays_refused_across_processes",
+    "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_historical_join_cannot_skip_or_swallow_physical_read",
+    "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer",
+    "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_missing_witness_never_reinitializes",
+    "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption",
+    "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cross_handle_attempts_and_missing_marker_fail_closed",
+    "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_attempt_survives_process_exit_without_new_nonce",
+    "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_retains_actual_signature_and_reopen_never_issues",
+    "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_recovery_refuses_missing_and_substituted_profile"
+  ],
+  "new_parents": [
+    "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer",
+    "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_missing_witness_never_reinitializes",
+    "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption",
+    "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cross_handle_attempts_and_missing_marker_fail_closed",
+    "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_attempt_survives_process_exit_without_new_nonce",
+    "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_retains_actual_signature_and_reopen_never_issues",
+    "authority_host_service::generation_publication::grant_store::tests::root_publication_grant_recovery_refuses_missing_and_substituted_profile"
+  ],
+  "root_filter": "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files) | test(=authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness) | test(=root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec) | test(=root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights) | test(=authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights) | test(=final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming) | test(=final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files) | test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current) | test(=neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery) | test(=neuron_generation_current::initial_root_tests::root_initial_peer_ready_registers_fixed_inputs_without_trigger_file) | test(=authority_host_service::generation_initial::historical_source_pin::tests::root_source_pin_preserves_exact_registration_and_never_initializes_recovery) | test(=authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_capability_rejects_replaced_lifetime_and_late_ack) | test(=authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_ack_is_data_and_keeps_the_one_shot_consumed) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_never_promotes_missing_pending_or_fenced) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_observed_conflict_stays_refused_after_restored_bytes) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_rejects_peer_ack_without_context_finalization) | test(=authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_sequences_block_stale_cross_handle_completion) | test(=authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_does_not_retrofit_old_primary_or_split_one_scope) | test(=authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_crash_during_failed_primary_read_remains_armed_after_restore) | test(=authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_physical_corruption_then_restore_stays_refused_across_processes) | test(=authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_unfinished_capture_cannot_initialize_after_restart) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::cold::root_source_handoff_physical_corruption_then_restore_stays_refused_across_processes) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_finalized_primary_before_failed_postcheck_is_not_recoverable) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_data_never_promotes_pending_or_missing_refusal) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_finalized_primary_before_failed_postcheck_cannot_recover) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_corruption_then_restore_stays_refused_across_processes) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_historical_join_cannot_skip_or_swallow_physical_read) | test(=authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer) | test(=authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_missing_witness_never_reinitializes) | test(=authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption) | test(=authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cross_handle_attempts_and_missing_marker_fail_closed) | test(=authority_host_service::generation_publication::grant_store::tests::root_publication_grant_attempt_survives_process_exit_without_new_nonce) | test(=authority_host_service::generation_publication::grant_store::tests::root_publication_grant_retains_actual_signature_and_reopen_never_issues) | test(=authority_host_service::generation_publication::grant_store::tests::root_publication_grant_recovery_refuses_missing_and_substituted_profile)",
+  "root_arguments": [
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "--run-ignored",
+    "only",
+    "-E",
+    "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files) | test(=authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness) | test(=root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec) | test(=root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights) | test(=authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights) | test(=final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming) | test(=final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files) | test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current) | test(=neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery) | test(=neuron_generation_current::initial_root_tests::root_initial_peer_ready_registers_fixed_inputs_without_trigger_file) | test(=authority_host_service::generation_initial::historical_source_pin::tests::root_source_pin_preserves_exact_registration_and_never_initializes_recovery) | test(=authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_capability_rejects_replaced_lifetime_and_late_ack) | test(=authority_host_runtime::session::generation_initial::source_capture::tests::root_source_capture_ack_is_data_and_keeps_the_one_shot_consumed) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_never_promotes_missing_pending_or_fenced) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_observed_conflict_stays_refused_after_restored_bytes) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_recovery_rejects_peer_ack_without_context_finalization) | test(=authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_sequences_block_stale_cross_handle_completion) | test(=authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_does_not_retrofit_old_primary_or_split_one_scope) | test(=authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_crash_during_failed_primary_read_remains_armed_after_restore) | test(=authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_physical_corruption_then_restore_stays_refused_across_processes) | test(=authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_unfinished_capture_cannot_initialize_after_restart) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::cold::root_source_handoff_physical_corruption_then_restore_stays_refused_across_processes) | test(=authority_host_service::generation_initial::historical_source_handoff::tests::root_source_handoff_finalized_primary_before_failed_postcheck_is_not_recoverable) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_data_never_promotes_pending_or_missing_refusal) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_finalized_primary_before_failed_postcheck_cannot_recover) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_corruption_then_restore_stays_refused_across_processes) | test(=authority_host_service::generation_initial::run_start_retention::tests::root_run_start_historical_join_cannot_skip_or_swallow_physical_read) | test(=authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer) | test(=authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_missing_witness_never_reinitializes) | test(=authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption) | test(=authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cross_handle_attempts_and_missing_marker_fail_closed) | test(=authority_host_service::generation_publication::grant_store::tests::root_publication_grant_attempt_survives_process_exit_without_new_nonce) | test(=authority_host_service::generation_publication::grant_store::tests::root_publication_grant_retains_actual_signature_and_reopen_never_issues) | test(=authority_host_service::generation_publication::grant_store::tests::root_publication_grant_recovery_refuses_missing_and_substituted_profile)",
+    "--test-threads",
+    "1",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "corruption_focus": [
+    {
+      "id": "authority_host_service::generation_initial::data_refusal::tests::root_data_refusal_crash_during_failed_primary_read_remains_armed_after_restore",
+      "mechanism": "Actual primary open fails inside durable inspect; child flushes phase receipt and exits before returning through failure handler; fresh child reads restored primary=7 then rejects unfinished refusal Arm. Parent initialized/loaded primary successfully first.",
+      "scope": "Root storage component; no ordinary A"
+    },
+    {
+      "id": "authority_host_service::generation_initial::historical_source_pin::tests::cold::root_source_pin_physical_corruption_then_restore_stays_refused_across_processes",
+      "mechanism": "Successful fresh child baseline; malformed real protected Source pin bytes; observer child fails; restore original bytes with sync_all; different child rejects. All child returns require exit success and phase-specific receipt.",
+      "scope": "Source pin storage; synthetic registration metadata"
+    },
+    {
+      "id": "authority_host_service::generation_initial::historical_source_handoff::tests::cold::root_source_handoff_physical_corruption_then_restore_stays_refused_across_processes",
+      "mechanism": "Successful fresh child Finalized baseline; malformed real protected handoff; observer child fails; restore bytes; another child rejects; phase receipts mandatory.",
+      "scope": "Handoff storage; no complete Source/RunStart/Ledger admission"
+    },
+    {
+      "id": "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_corruption_then_restore_stays_refused_across_processes",
+      "mechanism": "Successful fresh child Finalized baseline; malformed real protected RunStart retention; observer child fails; restore bytes; another child rejects; phase receipts mandatory.",
+      "scope": "Retained RunStart storage; synthetic registration/publication tuple"
+    },
+    {
+      "id": "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption",
+      "mechanism": "Successful fresh child baseline; same-length corruption of primary; child proves physical read failed then exits inside armed callback before failure handler; exact old bytes restored and read back; another child is rejected before callback entry.",
+      "scope": "CURRENT publication refusal component; synthetic primary/profile; not ordinary recovered CURRENT"
+    }
+  ],
+  "same_handle_component_tests": [
+    {
+      "package": "codex-hepta-intelligence-eval",
+      "name": "product_execution_file::tests::physical::execution_current_completed_corruption_then_restore_refuses_same_handle"
+    },
+    {
+      "package": "codex-hepta-intelligence-eval",
+      "name": "product_execution_file::tests::physical::execution_current_pending_corruption_then_restore_refuses_same_handle"
+    },
+    {
+      "package": "codex-hepta-neuron",
+      "name": "witness::tests::physical_current::witness_current_physical_corruption_fences_reads_and_cas_after_restore"
+    }
+  ],
+  "same_handle_warning": "These tests intentionally permit a fresh handle to reopen valid restored bytes. They do not establish persistent refusal or whole cold recovery.",
+  "original_5981_exact_test_name": "original_execution_owner_physical_corruption_fences_even_after_restore",
+  "original_5981_in_this_source": "not found by exact repository source search; do not describe new component cases as a rerun of original109",
+  "separate_first_a": {
+    "name": "neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes",
+    "package": "codex-hepta-agentd",
+    "included_in_42": false,
+    "scope": "actual product binaries A only; not Adopt/NoUpdate/C/cold",
+    "required_binaries": [
+      "codex-hepta-agentd",
+      "hepta-authority-host",
+      "codex-hepta-agentd library test executable for isolated Observer child"
+    ]
+  },
+  "whole_cold_status": "No complete ordinary A/B/C + daemon/Root restart positive produced by this review. FactoryV2 uses synthetic request/material and creates no Model owner.",
+  "uid_probe": {
+    "host": "ai395",
+    "job": "1a1d0b445dd-2564-1bba",
+    "actual_euid": 1000,
+    "command": [
+      "/usr/bin/sudo",
+      "-n",
+      "/usr/bin/id",
+      "-u"
+    ],
+    "returncode": 0,
+    "stdout": "0\n",
+    "stderr": "",
+    "native_started": false
+  },
+  "execution_requirements": {
+    "platform": "Linux with real process credentials, pidfd, /proc identity, SCM_RIGHTS; no uid override or namespace simulation",
+    "root": "actual uid/euid0 and original Root-owned /run0700 directories; fixture assertions must fail rather than self-skip",
+    "factory": "real setgroups/setgid/setuid to60001; two actual distinct bind-mount domains with original source+mountpoint metadata; all run-root child and daemon identities checked",
+    "fixture_env": [
+      "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT",
+      "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE",
+      "HEPTA_CHECKPOINT_TEST_ROOT",
+      "HEPTA_Q24_FACTORY_WITNESS_BIND",
+      "HEPTA_Q24_FACTORY_WITNESS_SOURCE"
+    ],
+    "helper_manifest": "scripts/hepta_cell_test_helpers.py --package codex-hepta-infer-worker-host --output-dir <records>/helpers, then exact helpers/env.json; verify-only afterward",
+    "command": "existing workflow recorder wraps real just test --locked --offline; sudo outside recorder; minimum-tests1, no retries; exact non-skipped JUnit parent multiset equals all42",
+    "children": "Do not put dedicated helper child test names in top-level roster. Each parent launches current_exe --exact --ignored and requires its own phase receipt after assertions.",
+    "source_receipts": "freeze exact source; hash before/after; move old JUnit away; retain command/exit/timeout/full raw output/fresh JUnit/helper hashes/root-parent-coverage.json; maintain before/after SHA/tree unchanged",
+    "limits": "Root marker/history rollback together is excluded; UID probe does not prove bind-mount permission or binary availability"
+  }
+}

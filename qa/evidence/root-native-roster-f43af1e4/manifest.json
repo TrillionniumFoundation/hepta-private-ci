@@ -1,0 +1,63 @@
+{
+  "head": "f43af1e484fe602fd73b8fc62933b08a1b138212",
+  "tree": "5cdf0728ded7cc7c351316a612bd367b4e557e0a",
+  "prerequisite": "a84ab9d35d4c6319e4b4f7a317dda7577d92d777",
+  "change": "Seven exact ignored Root parent names appended; original35/collector/deadlines/zero retries unchanged; native unrun",
+  "a84_qualification": {
+    "head": "a84ab9d35d4c6319e4b4f7a317dda7577d92d777",
+    "source_qa": {
+      "passed": 14,
+      "failed": 0
+    },
+    "protected": {
+      "passed": 786
+    },
+    "callers": {
+      "passed": 2,
+      "failed": 0
+    },
+    "rust_files": 6795,
+    "source_unchanged": true,
+    "clean": true,
+    "native": "not run"
+  },
+  "files": [
+    {
+      "path": "source.bundle",
+      "bytes": 966,
+      "sha256": "e822050929fcb3b9c693d2176257d1d3184b471ca93a4bcc290457a7973bafd8"
+    },
+    {
+      "path": "a84-validation.tar.gz",
+      "bytes": 3279,
+      "sha256": "b0e94245775e2edd1b2172988b904af65363fcbb606976102d18c91dd9405d90"
+    },
+    {
+      "path": "roster.json",
+      "bytes": 25753,
+      "sha256": "774d3769c18491b96c9372787af2e96a65d526b9f504d9a3eb349c7c2409dbb3"
+    }
+  ],
+  "raw_results": [
+    {
+      "path": "root-c-grant-a84ab9d3/run_exact_validation.py",
+      "bytes": 3567,
+      "sha256": "921e9d01f3ae6e223498802ca0997fca5fabdb2ce8eb46d2b02a9779b2396e44"
+    },
+    {
+      "path": "root-c-grant-a84ab9d3/driver.log",
+      "bytes": 1095,
+      "sha256": "88d3c9ef0d5536e811f396329635887b30d1a86fbdc12efc47e75e9b04fa9801"
+    },
+    {
+      "path": "root-c-grant-a84ab9d3/source-qa.log",
+      "bytes": 3214,
+      "sha256": "f8a1e64500241bbeed8fcc7e05f38e02b2b3978dc56259e7e23a4b3872dabc81"
+    },
+    {
+      "path": "root-c-grant-a84ab9d3/result.json",
+      "bytes": 3141,
+      "sha256": "b27b41a872da6b88ca5455cfcb3985dc6bb2ec2c712da7df1c5a4d1c269cd732"
+    }
+  ]
+}
