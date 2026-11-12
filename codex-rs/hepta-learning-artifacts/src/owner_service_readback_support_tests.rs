@@ -5,6 +5,8 @@ use std::path::Path;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 pub(super) struct OriginalPublicationReadbackFixture {
