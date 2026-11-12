@@ -1,0 +1,94 @@
+{
+  "model_calls": 0,
+  "optimizer_calls": 0,
+  "rows": [
+    {
+      "identity": {
+        "bytes": 8985,
+        "sha256": "86731258772ee6e7f2e8b04ae614688c765078a308a0a442a1254442e3565e6c"
+      },
+      "moment_absolute_error": 3.469446951953614e-18,
+      "name": "first",
+      "parameter_group": {
+        "amsgrad": false,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "capturable": false,
+        "decoupled_weight_decay": false,
+        "differentiable": false,
+        "eps": 1e-08,
+        "foreach": null,
+        "fused": null,
+        "lr": 5e-05,
+        "maximize": false,
+        "params": [
+          0
+        ],
+        "weight_decay": 0
+      },
+      "second_moment_absolute_error": 1.3552527156068805e-20,
+      "step": 1.0
+    },
+    {
+      "identity": {
+        "bytes": 9113,
+        "sha256": "f5fab2bf9d28f9eac979740d0bad4081d06208e09703d62540765540d96d6467"
+      },
+      "moment_absolute_error": 1.0408340855860843e-17,
+      "name": "continuous",
+      "parameter_group": {
+        "amsgrad": false,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "capturable": false,
+        "decoupled_weight_decay": false,
+        "differentiable": false,
+        "eps": 1e-08,
+        "foreach": null,
+        "fused": null,
+        "lr": 5e-05,
+        "maximize": false,
+        "params": [
+          0
+        ],
+        "weight_decay": 0
+      },
+      "second_moment_absolute_error": 2.710505431213761e-20,
+      "step": 2.0
+    },
+    {
+      "identity": {
+        "bytes": 9177,
+        "sha256": "38538040fff0131415d23fb34aae96201913ab9185b481a82ccfdedb4c0a7ed4"
+      },
+      "moment_absolute_error": 1.0408340855860843e-17,
+      "name": "resumed",
+      "parameter_group": {
+        "amsgrad": false,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "capturable": false,
+        "decoupled_weight_decay": false,
+        "differentiable": false,
+        "eps": 1e-08,
+        "foreach": null,
+        "fused": null,
+        "lr": 5e-05,
+        "maximize": false,
+        "params": [
+          0
+        ],
+        "weight_decay": 0
+      },
+      "second_moment_absolute_error": 2.710505431213761e-20,
+      "step": 2.0
+    }
+  ],
+  "schema": "hcsn-independent-actual-adam-moment-review-v1"
+}
