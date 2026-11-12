@@ -522,4 +522,5 @@ pub(crate) fn owner_alive(owner: &OwnedFd, end: Instant) -> io::Result<()> {
 }
 
 pub(crate) use session::RegisteredInitialLearningTrustV1;
+pub(crate) use session::RootHistoricalLedgerDeploymentV1;
 pub use session::RootInitialLearningTrustFilesV1;

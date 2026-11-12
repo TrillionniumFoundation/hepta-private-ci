@@ -226,4 +226,5 @@ fn root_start() -> io::Result<u64> {
 }
 
 pub(crate) use deployment::RegisteredInitialLearningTrustV1;
+pub(crate) use deployment::RootHistoricalLedgerDeploymentV1;
 pub use deployment::RootInitialLearningTrustFilesV1;

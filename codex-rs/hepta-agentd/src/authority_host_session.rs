@@ -503,4 +503,5 @@ impl PreparedHostAuthoritySession {
 }
 
 pub(crate) use generation_initial::RegisteredInitialLearningTrustV1;
+pub(crate) use generation_initial::RootHistoricalLedgerDeploymentV1;
 pub use generation_initial::RootInitialLearningTrustFilesV1;
