@@ -240,6 +240,10 @@ class RecurrentLifecycle(DurableLifecycle):
             raise ValueError("original recurrent owner identity drift")
         super()._save()
 
+    def _dispatch_pending_ensure(self, pending):
+        """Execute the newly entered original decision on this owner backend."""
+        self.ensure()
+
     def step(self):
         self._refresh()
         self._save()
@@ -310,7 +314,7 @@ class RecurrentLifecycle(DurableLifecycle):
         state["phase"] = "entered"
         self._save()  # Conservative uncertainty covers a cut before owner entry.
         if pending["action"] == "ensure":
-            self.ensure()
+            self._dispatch_pending_ensure(pending)
             if pending["key"] in self.unresolved:
                 return False
         else:
