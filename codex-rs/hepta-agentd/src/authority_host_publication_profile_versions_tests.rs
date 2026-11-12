@@ -68,7 +68,7 @@ fn legacy_record_encoding_and_incarnation_equality_remain_exact() -> anyhow::Res
         serde_json::to_vec(&original)?
     );
     reserved.require_live_profile(&original)?;
-    let mut changed = original.clone();
+    let mut changed = original;
     changed.writer = Digest32::of_bytes(b"new-writer").to_string();
     changed.identity = Digest32::of_bytes(b"new-process").to_string();
     changed.binding = changed.digest()?;

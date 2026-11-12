@@ -173,7 +173,7 @@ impl OriginalPostATrust {
             principal_id: StableId::new(source.source.scope.principal_digest.to_string())?,
             agent_id: source.source.scope.agent_id.clone(),
             cell_id: source.source.scope.cell_id.clone(),
-            source_run_id: source.source.scope.run_id.clone(),
+            source_run_id: source.source.scope.run_id,
             completed_task_receipt: original.outcome.observed.source_history_digest.parse()?,
             selected_artifact_digest: Digest32::from_array(selected.content_digest),
             evaluation_profile,

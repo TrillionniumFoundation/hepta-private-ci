@@ -4,6 +4,7 @@
 use super::*;
 use crate::decode_readonly_ledger_data_v1;
 use crate::encode_readonly_ledger_data_v1;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn ledger_read_data_roundtrip_is_identical_to_the_actual_writer_image() -> TestResult {

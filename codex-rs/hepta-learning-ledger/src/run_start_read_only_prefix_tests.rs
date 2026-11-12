@@ -1,6 +1,7 @@
 //! Actual files and owner appends; the prefix is data, never an ACK.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 fn prefix(fixture: &Fixture) -> Result<OriginalRunStartPrefixV1, RunStartStoreError> {
     observe_original_run_start_prefix_v1(

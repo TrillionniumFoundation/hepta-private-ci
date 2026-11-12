@@ -169,7 +169,7 @@ fn root_run_start_data_never_promotes_pending_or_missing_refusal() -> anyhow::Re
     let target = success.expected.original.target.clone();
     RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target)?.readback_digest()?;
     let (_refusal, state) = pending(Arc::clone(&root), "pending")?;
-    let target = state.expected.original.target.clone();
+    let target = state.expected.original.target;
     assert!(RootRetainedRunStartDataV1::open_finalized(Arc::clone(&root), &target).is_err());
     let old = original("old-primary-without-marker")?;
     let target = old.target.clone();

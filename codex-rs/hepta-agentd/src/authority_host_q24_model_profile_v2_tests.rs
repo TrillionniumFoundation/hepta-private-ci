@@ -125,7 +125,7 @@ fn v2_description_rejects_original_custody_scope_and_policy_substitution() -> an
             "{file}"
         );
     }
-    let mut different = initial.clone();
+    let mut different = initial;
     different.request.source_run_id = codex_hepta_types::StableId::new("different-source-run")?;
     assert!(
         profile

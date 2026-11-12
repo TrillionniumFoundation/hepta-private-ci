@@ -541,7 +541,7 @@ impl Fixture {
                             .revoked_grant_ids
                             .contains(&record.signed.grant.grant_id)
                     );
-                    let mut expected = before.clone();
+                    let mut expected = before;
                     expected.revision = expected
                         .revision
                         .checked_add(1)

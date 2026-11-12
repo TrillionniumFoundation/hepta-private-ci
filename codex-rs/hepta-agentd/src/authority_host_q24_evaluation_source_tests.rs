@@ -71,7 +71,7 @@ fn independent_b_source_preserves_original_units_and_policy_probabilities() -> i
 fn independent_b_source_rejects_noncanonical_unknown_and_missing_data() -> io::Result<()> {
     let original = source();
     let bytes = serde_json::to_vec(&original)?;
-    let mut spaced = bytes.clone();
+    let mut spaced = bytes;
     spaced.push(b'\n');
     assert!(OriginalHoldoutSourceData::decode(&spaced).is_err());
     let mut unknown = serde_json::to_value(&original)?;

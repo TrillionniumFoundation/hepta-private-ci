@@ -316,8 +316,8 @@ fn monotonic_micros() -> anyhow::Result<u64> {
         time.tv_sec >= 0 && (0..1_000_000_000).contains(&time.tv_nsec),
         "original monotonic clock"
     );
-    Ok(u64::try_from(time.tv_sec)?
+    u64::try_from(time.tv_sec)?
         .checked_mul(1_000_000)
         .and_then(|seconds| seconds.checked_add(time.tv_nsec as u64 / 1_000))
-        .ok_or_else(|| anyhow::anyhow!("monotonic clock overflow"))?)
+        .ok_or_else(|| anyhow::anyhow!("monotonic clock overflow"))
 }
