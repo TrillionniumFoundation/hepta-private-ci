@@ -243,3 +243,7 @@ fn serve_optional_with_end(
         result.and(served)
     })
 }
+
+#[cfg(test)]
+#[path = "authority_host_q24_model_cold_root_tests.rs"]
+mod cold_root_tests;
