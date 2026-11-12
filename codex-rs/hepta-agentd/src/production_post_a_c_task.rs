@@ -128,7 +128,7 @@ impl OriginalCTaskPlan {
         }
         route.require_current()?;
         let source = self.source.wait_original_value(cancelled).await?;
-        let original = source.with_original_bytes(|bytes| {
+        let original = OriginalLateValue::with_original_bytes(&source, |bytes| {
             Ok(
                 OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
                     bytes, identity,
@@ -137,7 +137,7 @@ impl OriginalCTaskPlan {
         })?;
         super::super::initial_q24::clock::require_source_deadline(&original.source)?;
         let target = self.target.wait_original_value(cancelled).await?;
-        let target_data = target.with_original_bytes(|bytes| {
+        let target_data = OriginalLateValue::with_original_bytes(&target, |bytes| {
             let data: ObserverData = serde_json::from_slice(bytes)?;
             Ok(data.original_observer_config()?)
         })?;
@@ -148,7 +148,9 @@ impl OriginalCTaskPlan {
         }
         crate::cell_composed_q24::validate_manifest(&decision.bundle, selected).map_err(refused)?;
         let ingress = self.ingress.wait_original_value(cancelled).await?;
-        let request = ingress.with_original_bytes(|bytes| Ok(serde_json::from_slice(bytes)?))?;
+        let request = OriginalLateValue::with_original_bytes(&ingress, |bytes| {
+            Ok(serde_json::from_slice(bytes)?)
+        })?;
         let model = actual_model(owners, decision, baseline).await?;
         let (predecessor, new_target, execution) = route.with_original_data(|fixed| {
             files::open_original_new_files(

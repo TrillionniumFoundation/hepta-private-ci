@@ -96,7 +96,7 @@ impl OriginalArtifactPlan {
     ) -> Result<OriginalSelectedArtifacts, AgentdError> {
         route.require_current()?;
         let lease = self.lease.wait_original_value(cancelled).await?;
-        let writer_lease = lease.with_original_bytes(|bytes| {
+        let writer_lease = OriginalLateValue::with_original_bytes(&lease, |bytes| {
             let data: data::WriterLeaseData = serde_json::from_slice(bytes)?;
             data.original_signed_lease()
         })?;
@@ -144,7 +144,7 @@ impl OriginalArtifactPlan {
                     let head = self.head.wait_original_value(cancelled).await?;
                     route.require_current()?;
                     lease.require_unchanged()?;
-                    let signed = head.with_original_bytes(|bytes| {
+                    let signed = OriginalLateValue::with_original_bytes(&head, |bytes| {
                         let data: CurrentData = serde_json::from_slice(bytes)?;
                         Ok(data.original_current()?)
                     })?;
@@ -189,7 +189,7 @@ impl OriginalArtifactPlan {
         route.require_current()?;
         lease.require_unchanged()?;
         let selection = self.selection.wait_original_value(cancelled).await?;
-        let signed = selection.with_original_bytes(|bytes| {
+        let signed = OriginalLateValue::with_original_bytes(&selection, |bytes| {
             let data: SelectionData = serde_json::from_slice(bytes)?;
             Ok(data.original_selection()?)
         })?;
