@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.root.postformat-extractor-preparation-review.v1",
+  "reviewed_at": "2026-11-12 16:58:15 UTC",
+  "source_preparation_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "source_preparation_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "extractor": {
+    "git_blob": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+    "bytes": 23468,
+    "sha256": "faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb"
+  },
+  "plan": "ffaabdbd254bea8e3d45572c1e8e961625ee5119",
+  "waiting_contract": "432b443aacc5ab56cb248e1bc3c01d6d39e58748",
+  "scope": "Preparation-only review; retain WAITING until actual native fix/fmt and full physical postimage review.",
+  "checks": [
+    "Read complete extractor control flow; source is read-only and output is unapplied proposals.",
+    "Requires exact original inventory driver, complete actual formatted inventory, all 46 file pins, original verifier and typed helper.",
+    "Requires separately reviewed actual fix/fmt zero exits and non-timeout observations.",
+    "Unique actual function/root-container scopes; two Clone implementations are separately identified.",
+    "Full source inventory compared after extraction; mismatch/unknown cannot yield successful preparation.",
+    "Reconstructed exact 46 preformat source blobs from already independently verified 87-object packet, with byte length/SHA256/Git SHA matched to plan.",
+    "Cloud calls only shape/literal/mount helper functions: 382 selectors, 17 actual literal spans, 10 module mounts resolved.",
+    "17 actual literals changed by one same-length character while preserving old literal in appended comment and unrelated function: all rejected."
+  ],
+  "actual_result": {
+    "scope": "PREPARATION shape functions only on exact unformatted 86dd; main, maintenance, verifier, QA and Rust gates not run",
+    "extractor_git_blob": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+    "passed_selectors": 382,
+    "passed_literals": 17,
+    "passed_mounts": 10,
+    "rejected_same_length_literal_with_decoys": 17,
+    "failures": []
+  },
+  "original_result_blob": "bc00a5c31495a69aeb2bbca5d5b590acb860bd38",
+  "probe_script_blob": "3f0b3387b76e1fafb4bb2f2e211c4b05c9ffb4f7",
+  "extractor_main_executed": false,
+  "actual_formatted_markers_frozen": false,
+  "source_mutated": false,
+  "source_closure_run": false,
+  "full_caller_run": false,
+  "rust_tests_run": false,
+  "qualification": false
+}

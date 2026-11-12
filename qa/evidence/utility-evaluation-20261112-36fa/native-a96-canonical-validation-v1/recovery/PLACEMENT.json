@@ -1,0 +1,199 @@
+{
+  "schema": "hepta.utility.immutable-placement.v1",
+  "status": "retained exact recovery inputs/reports and derived packaging notes; not new native execution",
+  "prefix": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/",
+  "entries": [
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/scripts/recover_snapshot_audit.py",
+      "git_blob_sha": "194676e6f423debc36f3392c00889fa3b81991bb",
+      "bytes": 5920,
+      "sha256": "2eb8dfd1bb17665fd73eb3d7f99f8259e5fa58ee8be07a56a63780505b95fac6",
+      "kind": "recovery_program_exact_bytes",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/scripts/recover_object_and_tree_audits.py",
+      "git_blob_sha": "1408ff20888a09a39ae5165797b95f03952f45ad",
+      "bytes": 5863,
+      "sha256": "526b502c6a614e045fdf7b7a1f0fe5e56d21500bae2cec8a9f346db9937a0bd0",
+      "kind": "recovery_program_exact_bytes",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/reports/SNAPSHOT_RECOVERY_REVIEW.json",
+      "git_blob_sha": "f58576cfe66debbcd026d209b5a6d406e5a73d7c",
+      "bytes": 1701,
+      "sha256": "0d8c474777832cd5a99095004d280fdbed7093656ec63056968ce075cd5f144e",
+      "kind": "actual_root_recovery_report",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/reports/OBJECT_TREE_RECOVERY_REVIEW.json",
+      "git_blob_sha": "95354c2b84623964169f4f00c720ad69172ae764",
+      "bytes": 1467,
+      "sha256": "c668080848b0e2b227d4b19a301045e35d6d4923c7431af109e2e58a947ac1ee",
+      "kind": "actual_root_recovery_report",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/b298-before-blob-requests.json",
+      "git_blob_sha": "c5eb161c96f8238d8837cbe9c864e875087ed2aa",
+      "bytes": 5872,
+      "sha256": "7c28a1a66f111d9ea88a7d9681498ae7082374f0d6cb984d47aa75549a1e66ee",
+      "kind": "fixed_before_blob_requests",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/b298-before-verified-metadata.json",
+      "git_blob_sha": "767fde874fd6c3f72c320687dc63f020521da3fc",
+      "bytes": 7791,
+      "sha256": "0f0b072e78c156c4984e1d309d4fd1271d252fb8be18baa1c1162a8fd851d8cd",
+      "kind": "32_fixed_before_blob_metadata",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/recovered-anchor-commits.json",
+      "git_blob_sha": "3000afacdfbec63c8a9275636e9b3be943818334",
+      "bytes": 3368,
+      "sha256": "580f6d0f42583bb1c4e9370bcc71912403f1324e74f43647ca3810140985c5c8",
+      "kind": "exact_raw_commit_reconstruction_metadata",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/b298-git-commit.json",
+      "git_blob_sha": "593329dfece6c335f1d967b3c629235b435e26ec",
+      "bytes": 1642,
+      "sha256": "f4e55b03395808ae7f9ee28b7049baf55b23cb26425a7e884fa30a585e0c9134",
+      "kind": "retained_original_github_commit_metadata",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/c0f-git-commit.json",
+      "git_blob_sha": "ba7627fed6f3e2fec3dd6bc8346cb8ff572cd5f7",
+      "bytes": 2525,
+      "sha256": "a2491dc28ce30d4df3f8d69a190b98fe482be724d0a7ef05aee3e7e9cd504a59",
+      "kind": "retained_original_github_commit_metadata",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/b298-canonical.commit",
+      "git_blob_sha": "ef473d54e252e7d30973d0357d2fdcd66a2cc9f0",
+      "bytes": 667,
+      "sha256": "725fa073df706df1b7ac0ab6f25a9018769ccdeac68d624b8e3255d15f3d8c27",
+      "kind": "exact_reconstructed_commit_body",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/c0f-canonical.commit",
+      "git_blob_sha": "81369bfd8e7bc48a9aea6ae8d2e60e10a6fbdc6b",
+      "bytes": 1293,
+      "sha256": "8aefa9dd70ba73ec646dbca656270509dfa3c1afed23b08e10330540a587d4d3",
+      "kind": "exact_reconstructed_commit_body",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/b298-c0f-compare.json",
+      "git_blob_sha": "57d5c73b7a4af22a8a8ae0d4e6979753a1162296",
+      "bytes": 268945,
+      "sha256": "d9a28eb1bc6e669a1cc6ea2938a938175ca6ec2b260a9da0af9d16f44535d557",
+      "kind": "retained_github_41_path_compare",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/original-part-index.json",
+      "git_blob_sha": "ff9bc0fd717d6941322b1c49ddce51bdb4800ef7",
+      "bytes": 16575,
+      "sha256": "1409c9e3d88f2b1a86cce84bb1f4bb89581ca528b643c70cd23fd41b5cc2557e",
+      "kind": "root_persisted_52_original_part_index",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/recovered/CANONICAL_COMMITS_AND_DIFFS.json",
+      "git_blob_sha": "46607a7a88e98bcba9c92b195cabd0e4af14be1e",
+      "bytes": 121293,
+      "sha256": "76ea4915817064a7c58d4762e53656814555b9689b44f5102e45b7f8ca7900cb",
+      "kind": "exact_original_native_audit_bytes",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/ACTUAL_DRIVER.py",
+      "git_blob_sha": "49c9c2c13cf545b2a47cce110b8dce6b60a0e86a",
+      "bytes": 23087,
+      "sha256": "de06c9c92068b1741b9faeaea413b87e5e7316330dac1b7eb07d17eef1776c99",
+      "kind": "exact_original_native_validator_not_executed_here",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/inputs/CANONICAL_MANIFEST.original.json",
+      "git_blob_sha": "7781160ffff79c238c5955bd8ca2e320e7ef7c99",
+      "bytes": 286428,
+      "sha256": "33137b5f1d860e8268e73ec9fc1751c70aed0734f502af41a19c6fcb37c502eb",
+      "kind": "exact_original_395_object_packet_manifest",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/packaging/VERIFY_LOCAL_RECOVERY.v1.py",
+      "git_blob_sha": "340a3548b43f4dc25321f89ce796631f9b6e3942",
+      "bytes": 8570,
+      "sha256": "a279b9a160cea33ac0ca1038080b367a2d67342a19de1da526584d6951a09fe4",
+      "kind": "packaging_checker_preparation_with_JSON_embedding_error",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/packaging/VERIFY_LOCAL_RECOVERY.v1.original-sdk.json",
+      "git_blob_sha": "47795d0f816bbfa744d40ed4f9ef02c3a69d641a",
+      "bytes": 269,
+      "sha256": "2dae370d3e52f7c40e373e885a5d344eb26d30a20dfafa1b78422981a5e2c02a",
+      "kind": "actual_packaging_checker_NameError_exit1",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/packaging/VERIFY_LOCAL_RECOVERY.v2.py",
+      "git_blob_sha": "b31ad7544845ccf79e158f25d6a313ae29cbf493",
+      "bytes": 8738,
+      "sha256": "cf0fd20a7608b1cb8f607b1ecb5274ac911b6a1e41c711983dc31bf49f1962f5",
+      "kind": "corrected_packaging_checker_json_loads_only",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/packaging/VERIFY_LOCAL_RECOVERY.v2.original-sdk.json",
+      "git_blob_sha": "4717fb233f330c62d54c41382c44e8acae43276d",
+      "bytes": 25641,
+      "sha256": "d294131f5bebcc99d4564a2481a372b7b6ffef766f2994178ca6c6b09024440a",
+      "kind": "actual_packaging_checker_exit0",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/reports/PACKAGING_INDEPENDENT_CHECK.json",
+      "git_blob_sha": "1d4d03af039b4ccfc56b5a5162ba38a4a054cabd",
+      "bytes": 28909,
+      "sha256": "1971b33ed34394fb72c3d7651f7d3859a377bf22b52eac06634c8391bda1e06d",
+      "kind": "derived_packaging_check_report_no_qualification",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/README.md",
+      "git_blob_sha": "29ca2d9bbb7a358cdf54dde11b50e5ef2fb3e23d",
+      "bytes": 8702,
+      "sha256": "e36335b9e0cb4fa46caf6c059faa3d230b5af9cb60c5f9bb813e2e49c598842b",
+      "kind": "derived_recovery_scope_and_reconstruction_notes",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/native-a96-canonical-validation-v1/recovery/RECOVERY_MANIFEST.json",
+      "git_blob_sha": "0fb14b5675c11f3214986e1f41ebfd24694dc830",
+      "bytes": 48498,
+      "sha256": "dd9ed2df6772af503ca3fce09097c37d224e34fdff7313e310b79b827f52edbd",
+      "kind": "complete_recovery_manifest",
+      "complete_github_readback_equal": true
+    }
+  ],
+  "entry_count": 23,
+  "referenced_existing_part_count": 52,
+  "referenced_existing_part_index_git_blob_sha": "ff9bc0fd717d6941322b1c49ddce51bdb4800ef7",
+  "existing_52_parts_included_in_entry_count": false,
+  "new_blob_create_calls_for_existing_52_parts": 0,
+  "reference_only_original_root_git_blob_sha": "d7c135961dfacc04fe8b69697a66450e65566acb",
+  "source_or_ref_mutation": false,
+  "qualification": false
+}

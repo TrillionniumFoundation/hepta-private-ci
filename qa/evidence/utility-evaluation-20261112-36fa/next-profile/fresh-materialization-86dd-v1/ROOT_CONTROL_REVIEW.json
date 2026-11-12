@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.root.fresh-materialization-control-review.v1",
+  "reviewed_at_utc": "2026-11-12 17:00:10 UTC",
+  "decision": "APPROVED_FOR_ONE_CREATE_ONLY_MATERIALIZATION",
+  "source_preparation_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "source_preparation_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "parents": [
+    "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+  ],
+  "driver": {
+    "git_blob": "1ca5aab7144291449f89364646b62b364d3cbe0d",
+    "bytes": 64399,
+    "sha256": "7787562e1bdd744b54eb73c59233810013135a55e966eeaa05317fb807ef6c16"
+  },
+  "control_plan_git_blob": "7e01c6bf9d98a9bdb8d9cfddac120f8d40580167",
+  "control_manifest_git_blob": "89148d01aeb02079e10337489421af91b9dfe76e",
+  "native_peer": {
+    "agent": "/root/native_ci_audit",
+    "complete_driver_review": true,
+    "blocking_findings": [],
+    "scope": "Sole native executor reviewed host paths, frozen inputs, PACK/import/readback, old-source preservation, target exclusivity, deadlines, and failure disposition."
+  },
+  "root_checks": [
+    "Read all executable control flow and exact fixed constants; independently checked driver 64399 bytes, SHA256 and Git blob.",
+    "Both original transport formats retain exact bytes: 395 gzip/base64 package and 87 raw JSON-fragment package.",
+    "Requires actual successful a96 native result, original supervisor terminal and Root independent actual-result review.",
+    "Recomputes original full c0f physical inventory and Git state before admission; exact original inventory implementation is imported under a non-main name.",
+    "Recursively verifies full b298/c0f, seven upstream and 86dd snapshots, all provided bodies, required direct references and precise final 99-path delta.",
+    "Computes actual old/provided object union rather than inventing 16618 as an observed count.",
+    "Only creates the fixed absent new repository; standard no-delta PACK v2, index-pack --threads=1, every new object read back.",
+    "Materializes 15188 leaves from new verified object bytes; exact index, physical bytes, modes, clean status and detached HEAD/tree required.",
+    "No shared/alternate object store, synthetic history, old-repo writes, Cargo, formatting, tests, source/evidence refs or PR changes.",
+    "Old source full physical inventory, complete .git metadata and HEAD/index/refs are compared before/after; inputs and final destination rechecked.",
+    "Missing proof, integrity mismatch, incomplete final evidence or timeout cannot admit maintenance; partial target retained and never automatically retried."
+  ],
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1",
+  "target_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "source_snapshot_lock_note": "No added flock is claimed. The original source repository is already frozen and previous original jobs are terminal; driver is read-only there and rejects observed before/after changes.",
+  "staging_clarification": "Do not stage the WAITING template as APPROVED_CONFIG.json. A WAITING copy may only use WAITING_CONFIG.json. The separately frozen approved config is created once at the formal approved path.",
+  "execution_key": "hepta-utility-36fa-fresh-materialization-86dd-v1",
+  "budget": {
+    "materialization_seconds": 600,
+    "final_evidence_seconds": 180,
+    "outer_supervisor_seconds": 900,
+    "changes_existing_gate_or_maintenance_limits": false
+  },
+  "launcher_requirement": "Pin exact absolute driver and APPROVED_CONFIG paths, byte lengths and SHA256 before compiling/executing the original driver once. Reconcile only the same execution identity if acknowledgement is lost.",
+  "acceptance": {
+    "driver_status": "MATERIALIZED_FOR_MAINTENANCE_ONLY",
+    "normal_supervisor_exit": 0,
+    "complete_durable_output": true,
+    "full_final_source_and_destination_evidence": true
+  },
+  "authorization_scope": "Fresh source materialization preparation only; subsequent maintenance and actual qualification remain separate steps.",
+  "executed_at_review": false,
+  "qualification": false
+}

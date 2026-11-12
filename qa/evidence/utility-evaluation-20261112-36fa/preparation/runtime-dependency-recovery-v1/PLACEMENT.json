@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.utility.immutable-placement.v1",
+  "prefix": "qa/evidence/utility-evaluation-20261112-36fa/preparation/runtime-dependency-recovery-v1/",
+  "entries": [
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/preparation/runtime-dependency-recovery-v1/MAINTENANCE_DEPENDENCY_RECOVERY_PLAN.json",
+      "bytes": 17795,
+      "sha256": "22b85535cbb1d079c8dd698d8827122b439c964672fce7d182726783a0fb2ec6",
+      "git_blob_sha": "8936bfb0e0dbab9e471a158f1161567273798360",
+      "kind": "prepared recovery proposal; not executed",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/preparation/runtime-dependency-recovery-v1/upstream/uv-0.11.3.release-metadata.original.json",
+      "bytes": 79718,
+      "sha256": "04c95a43085d7a73f786a5d582307e74381260ee9ecef5fca48ddee69d10c24f",
+      "git_blob_sha": "3d7f970775fac2dc72a5b0eebc3b77ccb9a369cb",
+      "kind": "exact observed GitHub release API body",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/preparation/runtime-dependency-recovery-v1/upstream/codex-v8-150.4.0.release-metadata.original.json",
+      "bytes": 74214,
+      "sha256": "ea508d2eee4cdf486248155c40461f9dd80ab2c76e7c0b3db59a5159aee0365a",
+      "git_blob_sha": "5afa7428f4ad8558f5a3a20d56eb06ae5e711046",
+      "kind": "exact observed GitHub release API body",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/preparation/runtime-dependency-recovery-v1/observations/CHECKSUM_CONNECTOR_READS.original-sdk.json",
+      "bytes": 1443,
+      "sha256": "3589dec8d7120638c7748569ed41449193a6d6b8e23efd597cd0c96caea07f64",
+      "git_blob_sha": "588dd3f572aa5d63476dd486ca7aef289f231021",
+      "kind": "retained actual checksum connector failures; no binary retrieval",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/preparation/runtime-dependency-recovery-v1/SOURCE_AND_RUNTIME_EVIDENCE.json",
+      "bytes": 30227,
+      "sha256": "79190f54edd50b1a903e536aba56f6409346c605cc283a9466436cb3a1d99494",
+      "git_blob_sha": "54c746fd2b6433778144796d410e3666717d5859",
+      "kind": "derived exact-source/runtime pin audit",
+      "complete_github_readback_equal": true
+    },
+    {
+      "path": "qa/evidence/utility-evaluation-20261112-36fa/preparation/runtime-dependency-recovery-v1/README.md",
+      "bytes": 6267,
+      "sha256": "f543fb671f093a0e24cd7f8d3321a7d148a7109a332692129ca7677dd81ec01f",
+      "git_blob_sha": "32fec3941742e788d08746aaff6ea3063c926daa",
+      "kind": "human-readable exact dependency recovery scope",
+      "complete_github_readback_equal": true
+    }
+  ],
+  "entry_count": 6,
+  "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "source_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "execution_status": "prepared; native restore driver remains separate and requires Root review",
+  "payload_downloads": 0,
+  "H_commands": 0,
+  "source_or_ref_mutation": false,
+  "qualification": false
+}

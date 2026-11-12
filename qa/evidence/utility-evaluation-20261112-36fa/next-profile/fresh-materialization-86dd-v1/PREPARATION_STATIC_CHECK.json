@@ -1,0 +1,46 @@
+{
+  "format": "hepta-fresh-materialization-driver-preparation-verification-v1",
+  "source_driver": {
+    "bytes": 64399,
+    "sha256": "7787562e1bdd744b54eb73c59233810013135a55e966eeaa05317fb807ef6c16",
+    "git_blob": "1ca5aab7144291449f89364646b62b364d3cbe0d",
+    "lines": 1085
+  },
+  "actual_cloud_directory": "/tmp/hepta-86dd-fresh-control-36fa-VJCeMI",
+  "actual_environment": "newly restored cloud executor; no assumption that prior cloud files survived",
+  "python": "3.12.14",
+  "actual_verification": "ast.parse and compile(..., mode='exec') only; compile returns a code object that was not executed",
+  "actual_tool_result": {
+    "chunk_id": "3deec1",
+    "wall_time_seconds": 0.000048757,
+    "exit_code": 0,
+    "original_token_count": 50,
+    "output": "AST/compile-only accepted; driver main not executed\nbytes 64399 sha256 7787562e1bdd744b54eb73c59233810013135a55e966eeaa05317fb807ef6c16 git_blob 1ca5aab7144291449f89364646b62b364d3cbe0d\nfunctions 60\n"
+  },
+  "driver_main_executed": false,
+  "native_task_started": false,
+  "git_import_executed": false,
+  "source_materialized": false,
+  "maintenance_executed": false,
+  "qualification_or_rust_tests_executed": false,
+  "ref_or_pr_updated": false,
+  "source_algorithms": {
+    "original_evidence_only_driver": "49c9c2c13cf545b2a47cce110b8dce6b60a0e86a",
+    "copied_pure_function_definitions": [
+      "now",
+      "sha256",
+      "oid",
+      "check",
+      "nodup",
+      "parse",
+      "regular_read",
+      "jbytes",
+      "parse_tree",
+      "commit_fields",
+      "snapshot"
+    ],
+    "original_inventory_driver": "51181866cbbb6e0176aab04117efffa8b6792b31",
+    "inventory_usage": "whole original bytes hash-verified; loaded as a non-main module; only unchanged inventory/require_inventory called by the prepared driver"
+  },
+  "execution_permission": "Not granted by this preparation. Root/native must freeze and verify the approved config and exact driver before one stable-key native launch."
+}

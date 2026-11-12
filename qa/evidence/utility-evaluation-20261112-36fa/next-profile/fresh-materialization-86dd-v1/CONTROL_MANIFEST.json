@@ -1,0 +1,186 @@
+{
+  "format": "hepta-fresh-source-materialization-control-package-v1",
+  "status": "WAITING_ROOT_AND_NATIVE_REVIEW",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prepared_at_utc": "2026-11-12T16:54:30Z",
+  "driver": {
+    "name": "driver.py",
+    "bytes": 64399,
+    "sha256": "7787562e1bdd744b54eb73c59233810013135a55e966eeaa05317fb807ef6c16",
+    "git_blob": "1ca5aab7144291449f89364646b62b364d3cbe0d",
+    "lines": 1085,
+    "full_text_readback_equal": true
+  },
+  "documents": [
+    {
+      "name": "CONTROL_PLAN.md",
+      "bytes": 13537,
+      "sha256": "5465c5f2841a4bd50dfde8bfa0d850bad7143f46e717774379399533228f9a2f",
+      "git_blob": "7e01c6bf9d98a9bdb8d9cfddac120f8d40580167",
+      "full_text_readback_equal": true
+    },
+    {
+      "name": "WAITING_CONFIG.json",
+      "bytes": 823,
+      "sha256": "601ef015252c05c3501878999a5ee3550e69bf87cae6874e020788fb2e27c986",
+      "git_blob": "73767785ac6298bf49d51318882715e4d76812d8",
+      "full_text_readback_equal": true
+    },
+    {
+      "name": "PREPARATION_STATIC_CHECK.json",
+      "bytes": 1976,
+      "sha256": "dd5d18d786028f33b31b9d1797cc11e642fae4893000a7edf3f39a454b008f2b",
+      "git_blob": "b61a4a89f879755c726152140d4f8be257c85441",
+      "full_text_readback_equal": true
+    }
+  ],
+  "execution": {
+    "native_launch_performed": false,
+    "driver_main_executed": false,
+    "git_object_import_performed": false,
+    "materialization_performed": false,
+    "maintenance_or_tests_run": false,
+    "remote_or_source_ref_updates": false,
+    "only_actual_check": "Cloud AST parse + compile-only syntax validation of exact driver; no execution of its code object/main."
+  },
+  "approved_config": {
+    "created": false,
+    "waiting_template": "73767785ac6298bf49d51318882715e4d76812d8",
+    "required_launcher_contract": "After Root/native approve, freeze a separate approved config blob. Launcher pins actual absolute driver path+bytes+SHA256 and approved config absolute path+bytes+SHA256 in one stable-key native launch record. A status string alone is not launch authorization."
+  },
+  "source": {
+    "repo": "/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1",
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+    "physical_baseline": {
+      "bytes": 5474911,
+      "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+      "git_blob": "5ed18452e2e967281ac368f934b9e4358627b9d3",
+      "prior_observation_only": true,
+      "must_recompute_before_and_after": true
+    }
+  },
+  "destination": {
+    "repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "create_only": true,
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "parents": [
+      "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+    ],
+    "leaf_count": 15188,
+    "detached_head": true,
+    "shared_object_dependency": false
+  },
+  "evidence_output": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-source-materialization-86dd-v1/run",
+  "actual_prerequisite_evidence": {
+    "canonical_native_review": {
+      "bytes": 38525,
+      "sha256": "e3fa2ee9c142b6360fb7994db28746d54b2abf9fc27ea362f08e6a80d37f7bdb",
+      "git_blob": "d7c135961dfacc04fe8b69697a66450e65566acb"
+    },
+    "root_independent_review": {
+      "bytes": 3394,
+      "sha256": "b1e3c533857dfb02536d10d90f999e4fcc109fc217ef868014cec6eef45c5e47",
+      "git_blob": "96406b978365a8414f9f76169421faa1f2e318d6"
+    },
+    "supervisor_terminal_sdk": {
+      "bytes": 912,
+      "sha256": "95ad61f014f0f1aa6736c47811bb97001c5ceeb37f5871e08f507d1d2569ee71",
+      "git_blob": "e25a789e1f8ae2a08d7e512b20c81790493b141c"
+    }
+  },
+  "algorithm_sources": {
+    "canonical_evidence_only_driver": "49c9c2c13cf545b2a47cce110b8dce6b60a0e86a",
+    "original_inventory": {
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    },
+    "no_source_verifier_or_contract_modified": true
+  },
+  "input_packets": {
+    "canonical_395": {
+      "manifest": "7781160ffff79c238c5955bd8ca2e320e7ef7c99",
+      "provided": {
+        "commit": 7,
+        "tree": 80,
+        "blob": 308
+      },
+      "required_existing": 16082,
+      "transport": "five gzip+base64 segments, each with exactly one final LF",
+      "raw_packet_bytes": 12080171,
+      "raw_packet_sha256": "bcecb58bbaf97b6fbd83bb9f9bee9829c902d8c721b52f19aac2160a0a2b8af0"
+    },
+    "prepared_87": {
+      "manifest": "d8ea5b18c429024b3ba2bdd3ee171a4fb0a58a98",
+      "provided": {
+        "commit": 1,
+        "tree": 9,
+        "blob": 77
+      },
+      "direct_existing_only": 1451,
+      "transport": "five exact raw UTF-8/ASCII JSON fragments; no trimming/base64/gzip at outer layer",
+      "raw_packet_bytes": 3241174,
+      "raw_packet_sha256": "05e3a7b01f5814e0816fe8d521c68f55fddc64536e62fcedca7934e0832cb055"
+    }
+  },
+  "scope": {
+    "complete_old_snapshots": [
+      "b298",
+      "c0f"
+    ],
+    "complete_new_upstream_snapshots": 7,
+    "complete_prepared_snapshot": 1,
+    "trusted_old_snapshot_objects": 16136,
+    "supplied_objects": 482,
+    "provided_395_vs_87_overlap": 0,
+    "unique_import_objects": "Computed from actual union; any overlap with existing old snapshots must match complete metadata. 16618 is an upper bound only.",
+    "full_c0f_available_for_fmt_base": true,
+    "whole_history_verified": false,
+    "shallow_or_grafts_or_replace_created": false
+  },
+  "import_protocol": {
+    "pack_version": 2,
+    "delta_objects": 0,
+    "standard_git_command": [
+      "git",
+      "index-pack",
+      "--threads=1",
+      "--stdin"
+    ],
+    "original_raw_bodies_preserved": true,
+    "record_pack_header_count_sha1_sha256": true,
+    "all_imported_raw_bodies_read_back": true,
+    "destination_source_built_from_new_verified_blobs": true,
+    "no_old_working_files_copied": true
+  },
+  "timing": {
+    "operation_seconds": 600,
+    "final_record_seconds": 180,
+    "scope": "New preparation operation; no source/test/maintenance budget changes"
+  },
+  "acceptance": {
+    "driver_status": "MATERIALIZED_FOR_MAINTENANCE_ONLY",
+    "requires_actual_supervisor_normal_exit_zero": true,
+    "requires_complete_durable_output": true,
+    "requires_exact_source_before_after": true,
+    "requires_final_destination_inventory": true,
+    "requires_unchanged_inputs": true,
+    "qualification": false,
+    "maintenance_approval_separate": true
+  },
+  "failure": {
+    "missing_or_mismatched_proof": "HOLD or failed preflight; no target creation",
+    "existing_target_or_output": "Refuse overwrite; reconcile original execution",
+    "timeout_or_missing_terminal_or_record_error": "Unknown; preserve partial new directory; no maintenance admission",
+    "observed_integrity_mismatch": "Failed integrity with actual observations retained",
+    "automatic_retry_or_rename_or_cleanup_old_source": false
+  },
+  "cloud_preparation": {
+    "directory": "/tmp/hepta-86dd-fresh-control-36fa-VJCeMI",
+    "new_directory_created_for_this_preparation": true,
+    "old_cloud_files_assumed_restored": false
+  }
+}

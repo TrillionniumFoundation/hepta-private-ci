@@ -1,0 +1,820 @@
+{
+  "source": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "state": "PREPARATION/HOLD; actual fmt not yet admitted",
+    "pins": [
+      {
+        "path": "justfile",
+        "git_blob_sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      {
+        "path": "scripts/just-shell.py",
+        "git_blob_sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "bytes": 2030,
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      {
+        "path": "scripts/format.py",
+        "git_blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "bytes": 16599,
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "scripts/pyproject.toml",
+        "git_blob_sha": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+        "bytes": 177,
+        "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0"
+      },
+      {
+        "path": "scripts/uv.lock",
+        "git_blob_sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+        "bytes": 6220,
+        "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "git_blob_sha": "025813e20504f31d12dae2092a0807a1a4066419",
+        "bytes": 421005,
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      {
+        "path": "codex-rs/Cargo.toml",
+        "git_blob_sha": "fcd9d64bd64f5b8f8276ac72cd0a070b97deaeaa",
+        "bytes": 23385,
+        "sha256": "acc1d51df0364172c38a14421c03cbf4fee90bf9a251173b29c7098ea0a09678"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "git_blob_sha": "917d2492264a35bc9c0feaef41878d8825870866",
+        "bytes": 78,
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "git_blob_sha": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+        "bytes": 28133,
+        "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+      },
+      {
+        "path": ".github/workflows/repo-checks.yml",
+        "git_blob_sha": "3ff0f275c075617a49d5b257d318b74b100dad39",
+        "bytes": 4345,
+        "sha256": "9f06a9eb55ebaef65ec88893d3c341d151a28193002bca9f358437c93f7f311a"
+      },
+      {
+        "path": "scripts/hepta_ci_v8.py",
+        "git_blob_sha": "088b737c0cca7386161e06b254c794bf972380ad",
+        "bytes": 3153,
+        "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c"
+      },
+      {
+        "path": "scripts/codex_package/v8.py",
+        "git_blob_sha": "e8788ec0f308038542807ec6adf014c157d65187",
+        "bytes": 6624,
+        "sha256": "8007703ea89e620342940d33f32a14dd593278e820f37433a42f783b2bd99d4e"
+      },
+      {
+        "path": "scripts/codex_package/targets.py",
+        "git_blob_sha": "e217e8d0fd485cfddfc8f50ec9c0b3a90c8be985",
+        "bytes": 4738,
+        "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8"
+      },
+      {
+        "path": "third_party/v8/README.md",
+        "git_blob_sha": "a22dbb98ca0a08e58089c70b5c6bc3ee9b1dfd01",
+        "bytes": 11082,
+        "sha256": "2fe61f1d177dff6771ded026494b3e98db8e4c2ab2ea102442fa63bdd4e28657"
+      },
+      {
+        "path": "third_party/v8/rusty_v8_150_4_0.sha256",
+        "git_blob_sha": "628ae7a9ac94eee0e0dd66c927964a0ad06544d7",
+        "bytes": 227,
+        "sha256": "4d9885b59f209e063c755acc917529bd23ec87c949f7fe205b2b56e73f649552"
+      }
+    ]
+  },
+  "repo_source_excerpts": [
+    {
+      "path": "justfile",
+      "git_blob_sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "excerpt_lines": [
+        {
+          "line": 51,
+          "text": "    @{{ python }} ../scripts/format.py {args}"
+        },
+        {
+          "line": 55,
+          "text": "    @{{ python }} ../scripts/format.py --all --check"
+        },
+        {
+          "line": 58,
+          "text": "    cargo clippy --fix --tests --allow-dirty {args}"
+        },
+        {
+          "line": 61,
+          "text": "    cargo clippy --tests {args}"
+        }
+      ]
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "git_blob_sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "excerpt_lines": []
+    },
+    {
+      "path": "scripts/format.py",
+      "git_blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "bytes": 16599,
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "excerpt_lines": [
+        {
+          "line": 98,
+          "text": "    # Each `--project` retains its local dependency and Ruff configuration context."
+        },
+        {
+          "line": 99,
+          "text": "    uv_run_args = ["
+        },
+        {
+          "line": 102,
+          "text": "        \"--frozen\","
+        },
+        {
+          "line": 103,
+          "text": "        \"--project\","
+        },
+        {
+          "line": 109,
+          "text": "        *uv_run_args,"
+        },
+        {
+          "line": 128,
+          "text": "                    *uv_run_args,"
+        },
+        {
+          "line": 146,
+          "text": "        \"--frozen\","
+        },
+        {
+          "line": 147,
+          "text": "        \"--project\","
+        },
+        {
+          "line": 331,
+          "text": "            previous_document.get(\"project\", {}).get(\"requires-python\"),"
+        },
+        {
+          "line": 335,
+          "text": "            current_document.get(\"project\", {}).get(\"requires-python\"),"
+        }
+      ]
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "git_blob_sha": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+      "bytes": 177,
+      "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+      "excerpt_lines": [
+        {
+          "line": 4,
+          "text": "requires-python = \">=3.10\""
+        },
+        {
+          "line": 5,
+          "text": "dependencies = [\"ruff>=0.15.8\"]"
+        }
+      ]
+    },
+    {
+      "path": "scripts/uv.lock",
+      "git_blob_sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "bytes": 6220,
+      "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c",
+      "excerpt_lines": [
+        {
+          "line": 3,
+          "text": "requires-python = \">=3.10\""
+        },
+        {
+          "line": 14,
+          "text": "    { name = \"ruff\" },"
+        },
+        {
+          "line": 18,
+          "text": "requires-dist = [{ name = \"ruff\", specifier = \">=0.15.8\" }]"
+        },
+        {
+          "line": 21,
+          "text": "name = \"ruff\""
+        },
+        {
+          "line": 22,
+          "text": "version = \"0.15.13\""
+        },
+        {
+          "line": 34,
+          "text": "    { url = \"https://files.pythonhosted.org/packages/e8/31/bf1a0803d077e679cfeee5f2f67290a0fa79c7385b5d9a8c17b9db2c48f0/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl\", hash = \"sha256:cc411dfebe5eebe55ce041c6ae080eb7668955e866daa2fbb16692a784f1c4ca\", size = 11434486, upload-time = \"2026-05-14T13:44:27.761Z\" },"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "git_blob_sha": "025813e20504f31d12dae2092a0807a1a4066419",
+      "bytes": 421005,
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+      "excerpt_lines": [
+        {
+          "line": 17402,
+          "text": "name = \"v8\""
+        },
+        {
+          "line": 17403,
+          "text": "version = \"150.4.0\""
+        },
+        {
+          "line": 17405,
+          "text": "checksum = \"42a978ff11f15b24e5c05a7123cf2b68f41e763546699781a924ef4e2cf43a49\""
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "git_blob_sha": "fcd9d64bd64f5b8f8276ac72cd0a070b97deaeaa",
+      "bytes": 23385,
+      "sha256": "acc1d51df0364172c38a14421c03cbf4fee90bf9a251173b29c7098ea0a09678",
+      "excerpt_lines": [
+        {
+          "line": 372,
+          "text": "async-channel = \"2.3.1\""
+        },
+        {
+          "line": 398,
+          "text": "crossbeam-channel = \"0.5.15\""
+        },
+        {
+          "line": 569,
+          "text": "v8 = \"=150.4.0\""
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "git_blob_sha": "917d2492264a35bc9c0feaef41878d8825870866",
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "excerpt_lines": [
+        {
+          "line": 2,
+          "text": "channel = \"1.96.0\""
+        },
+        {
+          "line": 3,
+          "text": "components = [\"clippy\", \"rustfmt\", \"rust-src\"]"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "git_blob_sha": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+      "bytes": 28133,
+      "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1",
+      "excerpt_lines": [
+        {
+          "line": 281,
+          "text": "              stage(\"fix\", [\"just\", \"fix\", \"--locked\", \"--offline\", *packages])"
+        },
+        {
+          "line": 282,
+          "text": "              stage(\"fmt\", [\"just\", \"fmt\", \"--base\", os.environ[\"FORMAT_BASE_SHA\"]], 600)"
+        },
+        {
+          "line": 329,
+          "text": "          tool: just@1.51.0,nextest@0.9.103"
+        },
+        {
+          "line": 331,
+          "text": "        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0"
+        },
+        {
+          "line": 333,
+          "text": "          version: \"0.11.3\""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "git_blob_sha": "3ff0f275c075617a49d5b257d318b74b100dad39",
+      "bytes": 4345,
+      "sha256": "9f06a9eb55ebaef65ec88893d3c341d151a28193002bca9f358437c93f7f311a",
+      "excerpt_lines": [
+        {
+          "line": 78,
+          "text": "        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0"
+        },
+        {
+          "line": 80,
+          "text": "          version: \"0.11.3\""
+        }
+      ]
+    },
+    {
+      "path": "scripts/hepta_ci_v8.py",
+      "git_blob_sha": "088b737c0cca7386161e06b254c794bf972380ad",
+      "bytes": 3153,
+      "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c",
+      "excerpt_lines": [
+        {
+          "line": 29,
+          "text": "    allowed = {\"RUSTY_V8_ARCHIVE\", \"RUSTY_V8_SRC_BINDING_PATH\"}"
+        }
+      ]
+    },
+    {
+      "path": "scripts/codex_package/v8.py",
+      "git_blob_sha": "e8788ec0f308038542807ec6adf014c157d65187",
+      "bytes": 6624,
+      "sha256": "8007703ea89e620342940d33f32a14dd593278e820f37433a42f783b2bd99d4e",
+      "excerpt_lines": [
+        {
+          "line": 22,
+          "text": "V8_ARTIFACT_PROFILE = \"ptrcomp_sandbox_release\""
+        },
+        {
+          "line": 41,
+          "text": "    archive_override = environ.get(\"RUSTY_V8_ARCHIVE\")"
+        },
+        {
+          "line": 42,
+          "text": "    binding_override = environ.get(\"RUSTY_V8_SRC_BINDING_PATH\")"
+        },
+        {
+          "line": 47,
+          "text": "            \"Cargo package builds need RUSTY_V8_ARCHIVE and RUSTY_V8_SRC_BINDING_PATH set together.\""
+        },
+        {
+          "line": 52,
+          "text": "        \"RUSTY_V8_ARCHIVE\": str(artifacts.archive),"
+        },
+        {
+          "line": 53,
+          "text": "        \"RUSTY_V8_SRC_BINDING_PATH\": str(artifacts.binding),"
+        },
+        {
+          "line": 65,
+          "text": "        f\"https://github.com/openai/codex/releases/download/rusty-v8-v{version}\""
+        },
+        {
+          "line": 71,
+          "text": "        archive_name = f\"rusty_v8_{V8_ARTIFACT_PROFILE}_{target}.lib.gz\""
+        },
+        {
+          "line": 73,
+          "text": "        archive_name = f\"librusty_v8_{V8_ARTIFACT_PROFILE}_{target}.a.gz\""
+        },
+        {
+          "line": 74,
+          "text": "    binding_name = f\"src_binding_{V8_ARTIFACT_PROFILE}_{target}.rs\""
+        },
+        {
+          "line": 75,
+          "text": "    checksums_name = f\"rusty_v8_{V8_ARTIFACT_PROFILE}_{target}.sha256\""
+        }
+      ]
+    },
+    {
+      "path": "scripts/codex_package/targets.py",
+      "git_blob_sha": "e217e8d0fd485cfddfc8f50ec9c0b3a90c8be985",
+      "bytes": 4738,
+      "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8",
+      "excerpt_lines": []
+    },
+    {
+      "path": "third_party/v8/README.md",
+      "git_blob_sha": "a22dbb98ca0a08e58089c70b5c6bc3ee9b1dfd01",
+      "bytes": 11082,
+      "sha256": "2fe61f1d177dff6771ded026494b3e98db8e4c2ab2ea102442fa63bdd4e28657",
+      "excerpt_lines": [
+        {
+          "line": 11,
+          "text": "`RUSTY_V8_ARCHIVE`/`RUSTY_V8_SRC_BINDING_PATH` with Codex release assets. Bazel"
+        },
+        {
+          "line": 21,
+          "text": "- Rust crate: `v8 = =150.4.0`"
+        },
+        {
+          "line": 55,
+          "text": "- `rusty-v8-v<crate_version>`"
+        },
+        {
+          "line": 95,
+          "text": "used by `rusty_v8 v150.4.0`, compiles published artifact targets with"
+        },
+        {
+          "line": 109,
+          "text": "Release and CI Cargo builds for Darwin and Linux use `RUSTY_V8_ARCHIVE` plus a"
+        },
+        {
+          "line": 110,
+          "text": "downloaded `RUSTY_V8_SRC_BINDING_PATH` to point at those `openai/codex` release"
+        },
+        {
+          "line": 111,
+          "text": "assets directly. We do not use `RUSTY_V8_MIRROR` because the upstream `v8` crate"
+        },
+        {
+          "line": 113,
+          "text": "under `rusty-v8-v<crate_version>`."
+        },
+        {
+          "line": 144,
+          "text": "already verified local pair supplied together as `RUSTY_V8_ARCHIVE` and"
+        },
+        {
+          "line": 145,
+          "text": "`RUSTY_V8_SRC_BINDING_PATH`. Explicit pairs and `V8_FROM_SOURCE` retain the"
+        },
+        {
+          "line": 149,
+          "text": "### Verified 150.4.0 GNU sandbox release input"
+        },
+        {
+          "line": 152,
+          "text": "[`rusty-v8-v150.4.0`](https://github.com/openai/codex/releases/tag/rusty-v8-v150.4.0)"
+        },
+        {
+          "line": 160,
+          "text": "| `librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz` | 29,366,352 | `a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583` |"
+        },
+        {
+          "line": 161,
+          "text": "| `src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs` | 39,884 | `7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506` |"
+        },
+        {
+          "line": 162,
+          "text": "| `rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256` | 262 | `6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be` |"
+        }
+      ]
+    },
+    {
+      "path": "third_party/v8/rusty_v8_150_4_0.sha256",
+      "git_blob_sha": "628ae7a9ac94eee0e0dd66c927964a0ad06544d7",
+      "bytes": 227,
+      "sha256": "4d9885b59f209e063c755acc917529bd23ec87c949f7fe205b2b56e73f649552",
+      "excerpt_lines": []
+    }
+  ],
+  "original_runtime_blobs": [
+    "33f5f7e4f7c40b2363924f866667ae4456e891bb",
+    "0dd826e7040f841ee2f8d056c190407cf4af2a49",
+    "68934b7a5b168585bec7116b4bec944f617d716e",
+    "d64b521f2cfaa36039d0b4a2b4d7a5774433f0b1",
+    "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+  ],
+  "uv_fixed_tag_cli": {
+    "url": "https://api.github.com/repos/astral-sh/uv/contents/crates/uv-cli/src/lib.rs?ref=0.11.3",
+    "bytes": 312307,
+    "sha256": "145aee167f4027abe64137db2eeec484aa797d78cae12d9cfc58c6157822566e",
+    "git_blob_sha": "ab86c9e53bb3ea408fb8b7511e70b51b091db275",
+    "option_snippets": [
+      {
+        "selector": "pub struct SyncArgs",
+        "line": 3811,
+        "lines": [
+          "    /// platform. Conversely, any distributions that are built from source may be incompatible with",
+          "    /// the _target_ platform, as they will be built for the _current_ platform. The",
+          "    /// `--python-platform` option is intended for advanced use cases.",
+          "    #[arg(long)]",
+          "    pub python_platform: Option<TargetTriple>,",
+          "}",
+          "",
+          "#[derive(Args)]",
+          "pub struct SyncArgs {",
+          "    /// Include optional dependencies from the specified extra name.",
+          "    ///",
+          "    /// May be provided more than once."
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 650,
+        "lines": [
+          "    /// uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"frozen\", \"upgrade\"])]",
+          "    pub locked: bool,",
+          "",
+          "    /// Update the version without re-locking the project [env: UV_FROZEN=]",
+          "    ///",
+          "    /// The project environment will not be synced.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    #[command(flatten)]",
+          "    pub installer: ResolverInstallerArgs,"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 3703,
+        "lines": [
+          "",
+          "    /// Run without updating the `uv.lock` file [env: UV_FROZEN=]",
+          "    ///",
+          "    /// Instead of checking if the lockfile is up-to-date, uses the versions in the lockfile as the",
+          "    /// source of truth. If the lockfile is missing, uv will exit with an error. If the",
+          "    /// `pyproject.toml` includes changes to dependencies that have not been included in the",
+          "    /// lockfile yet, they will not be present in the environment.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    /// Run the given path as a Python script.",
+          "    ///"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 4027,
+        "lines": [
+          "",
+          "    /// Sync without updating the `uv.lock` file [env: UV_FROZEN=]",
+          "    ///",
+          "    /// Instead of checking if the lockfile is up-to-date, uses the versions in the lockfile as the",
+          "    /// source of truth. If the lockfile is missing, uv will exit with an error. If the",
+          "    /// `pyproject.toml` includes changes to dependencies that have not been included in the",
+          "    /// lockfile yet, they will not be present in the environment.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    /// Perform a dry run, without writing the lockfile or modifying the project environment.",
+          "    ///"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 4373,
+        "lines": [
+          "    /// uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"frozen\", \"upgrade\"])]",
+          "    pub locked: bool,",
+          "",
+          "    /// Add dependencies without re-locking the project [env: UV_FROZEN=]",
+          "    ///",
+          "    /// The project environment will not be synced.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    /// Prefer the active virtual environment over the project's virtual environment.",
+          "    ///"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 4618,
+        "lines": [
+          "    /// uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"frozen\", \"upgrade\"])]",
+          "    pub locked: bool,",
+          "",
+          "    /// Remove dependencies without re-locking the project [env: UV_FROZEN=]",
+          "    ///",
+          "    /// The project environment will not be synced.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    #[command(flatten)]",
+          "    pub installer: ResolverInstallerArgs,"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 4740,
+        "lines": [
+          "    /// uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"frozen\", \"upgrade\"])]",
+          "    pub locked: bool,",
+          "",
+          "    /// Display the requirements without locking the project [env: UV_FROZEN=]",
+          "    ///",
+          "    /// If the lockfile is missing, uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    #[command(flatten)]",
+          "    pub build: BuildOptionsArgs,"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 5047,
+        "lines": [
+          "    /// uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"frozen\", \"upgrade\"])]",
+          "    pub locked: bool,",
+          "",
+          "    /// Do not update the `uv.lock` before exporting [env: UV_FROZEN=]",
+          "    ///",
+          "    /// If a `uv.lock` does not exist, uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    #[command(flatten)]",
+          "    pub resolver: ResolverArgs,"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 5197,
+        "lines": [
+          "    /// uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"frozen\", \"upgrade\"])]",
+          "    pub locked: bool,",
+          "",
+          "    /// Audit the requirements without locking the project [env: UV_FROZEN=]",
+          "    ///",
+          "    /// If the lockfile is missing, uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"locked\", \"upgrade\", \"no_sources\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    #[command(flatten)]",
+          "    pub build: BuildOptionsArgs,"
+        ]
+      },
+      {
+        "selector": "pub frozen: bool",
+        "line": 7931,
+        "lines": [
+          "    ///",
+          "    /// Asserts that the `uv.lock` would remain unchanged after a resolution. If the lockfile is",
+          "    /// missing or needs to be updated, uv will exit with an error.",
+          "    #[arg(long, conflicts_with_all = [\"frozen\", \"upgrade\"])]",
+          "    pub locked: bool,",
+          "",
+          "    /// Assert that a `uv.lock` exists without checking if it is up-to-date [env: UV_FROZEN=]",
+          "    #[arg(long, conflicts_with_all = [\"locked\"])]",
+          "    pub frozen: bool,",
+          "",
+          "    /// Perform a dry run, without writing the lockfile.",
+          "    ///"
+        ]
+      },
+      {
+        "selector": "pub check: bool",
+        "line": 4138,
+        "lines": [
+          "    /// `--python-platform` option is intended for advanced use cases.",
+          "    #[arg(long)]",
+          "    pub python_platform: Option<TargetTriple>,",
+          "",
+          "    /// Check if the Python environment is synchronized with the project.",
+          "    ///",
+          "    /// If the environment is not up to date, uv will exit with an error.",
+          "    #[arg(long, overrides_with(\"no_check\"))]",
+          "    pub check: bool,",
+          "",
+          "    #[arg(long, overrides_with(\"check\"), hide = true)]",
+          "    pub no_check: bool,"
+        ]
+      },
+      {
+        "selector": "pub check: bool",
+        "line": 4153,
+        "lines": [
+          "pub struct LockArgs {",
+          "    /// Check if the lockfile is up-to-date.",
+          "    ///",
+          "    /// Asserts that the `uv.lock` would remain unchanged after a resolution. If the lockfile is",
+          "    /// missing or needs to be updated, uv will exit with an error.",
+          "    ///",
+          "    /// Equivalent to `--locked`.",
+          "    #[arg(long, value_parser = clap::builder::BoolishValueParser::new(), conflicts_with_all = [\"check_exists\", \"upgrade\"], overrides_with = \"check\")]",
+          "    pub check: bool,",
+          "",
+          "    /// Check if the lockfile is up-to-date [env: UV_LOCKED=]",
+          "    ///"
+        ]
+      },
+      {
+        "selector": "pub check: bool",
+        "line": 5095,
+        "lines": [
+          "    )]",
+          "    pub python: Option<Maybe<String>>,",
+          "}",
+          "",
+          "#[derive(Args)]",
+          "pub struct FormatArgs {",
+          "    /// Check if files are formatted without applying changes.",
+          "    #[arg(long)]",
+          "    pub check: bool,",
+          "",
+          "    /// Show a diff of formatting changes without applying them.",
+          "    ///"
+        ]
+      },
+      {
+        "selector": "pub find_links:",
+        "line": 6912,
+        "lines": [
+          "        long,",
+          "        short,",
+          "        env = EnvVars::UV_FIND_LINKS,",
+          "        hide_env_values = true,",
+          "        value_delimiter = ',',",
+          "        value_parser = parse_find_links,",
+          "        help_heading = \"Index options\"",
+          "    )]",
+          "    pub find_links: Option<Vec<Maybe<PipFindLinks>>>,",
+          "",
+          "    /// Ignore the registry index (e.g., PyPI), instead relying on direct URL dependencies and those",
+          "    /// provided via `--find-links`."
+        ]
+      },
+      {
+        "selector": "UV_OFFLINE",
+        "line": 266,
+        "lines": [
+          "    /// especially if you're relying on a corporate trust root (e.g., for a mandatory proxy) that's",
+          "    /// included in your system's certificate store.",
+          "    #[arg(global = true, long, value_parser = clap::builder::BoolishValueParser::new(), overrides_with_all = [\"no_system_certs\", \"native_tls\", \"no_native_tls\"])]",
+          "    pub system_certs: bool,",
+          "",
+          "    #[arg(global = true, long, overrides_with_all = [\"system_certs\", \"native_tls\", \"no_native_tls\"], hide = true)]",
+          "    pub no_system_certs: bool,",
+          "",
+          "    /// Disable network access [env: UV_OFFLINE=]",
+          "    ///",
+          "    /// When disabled, uv will only use locally cached data and locally available files.",
+          "    #[arg(global = true, long, overrides_with(\"no_offline\"))]"
+        ]
+      },
+      {
+        "selector": "UV_PYTHON_DOWNLOADS",
+        "line": 194,
+        "lines": [
+          "        global = true,",
+          "        long,",
+          "        help_heading = \"Python options\",",
+          "        overrides_with = \"managed_python\"",
+          "    )]",
+          "    pub no_managed_python: bool,",
+          "",
+          "    #[expect(clippy::doc_markdown)]",
+          "    /// Allow automatically downloading Python when required. [env: \"UV_PYTHON_DOWNLOADS=auto\"]",
+          "    #[arg(global = true, long, help_heading = \"Python options\", hide = true)]",
+          "    pub allow_python_downloads: bool,",
+          ""
+        ]
+      },
+      {
+        "selector": "UV_PYTHON_DOWNLOADS",
+        "line": 199,
+        "lines": [
+          "    pub no_managed_python: bool,",
+          "",
+          "    #[expect(clippy::doc_markdown)]",
+          "    /// Allow automatically downloading Python when required. [env: \"UV_PYTHON_DOWNLOADS=auto\"]",
+          "    #[arg(global = true, long, help_heading = \"Python options\", hide = true)]",
+          "    pub allow_python_downloads: bool,",
+          "",
+          "    #[expect(clippy::doc_markdown)]",
+          "    /// Disable automatic downloads of Python. [env: \"UV_PYTHON_DOWNLOADS=never\"]",
+          "    #[arg(global = true, long, help_heading = \"Python options\")]",
+          "    pub no_python_downloads: bool,",
+          ""
+        ]
+      },
+      {
+        "selector": "UV_CACHE_DIR",
+        "line": 894,
+        "lines": [
+          "    ///",
+          "    /// By default, the cache is stored in `$XDG_CACHE_HOME/uv` or `$HOME/.cache/uv` on Unix and",
+          "    /// `%LOCALAPPDATA%\\uv\\cache` on Windows.",
+          "    ///",
+          "    /// When `--no-cache` is used, the cache is stored in a temporary directory and discarded when",
+          "    /// the process exits.",
+          "    ///",
+          "    /// An alternative cache directory may be specified via the `cache-dir` setting, the",
+          "    /// `--cache-dir` option, or the `$UV_CACHE_DIR` environment variable.",
+          "    ///",
+          "    /// Note that it is important for performance for the cache directory to be located on the same",
+          "    /// file system as the Python environment uv is operating on."
+        ]
+      }
+    ]
+  },
+  "uv_project_environment_document": {
+    "url": "https://raw.githubusercontent.com/astral-sh/uv/0.11.3/docs/concepts/projects/config.md",
+    "bytes": 23547,
+    "sha256": "1833dbbf093d8d85c7125836cfc58eba76e8f2cd3b27c4664f21ab5055e96425",
+    "git_blob_sha": "1cb2709478287b91ee01895fb30de6427b13f20d"
+  },
+  "scope": "Read-only source and retained evidence audit. No H execution or installation. Nanosecond runtime integers remain in their exact raw original blobs and are not reserialized here."
+}

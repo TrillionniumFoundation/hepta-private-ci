@@ -1,0 +1,3297 @@
+{
+  "schema": "hepta.utility.nonrust-postformat-fence-plan.v1",
+  "status": "prepared_semantic_plan_not_executed",
+  "source_preparation": {
+    "commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "published": false,
+    "formatted": false
+  },
+  "structural_callers": {
+    "git_blob_sha": "50eee584787ed0706ef2f900a09f1ca9d9cd8819",
+    "bytes": 1294564,
+    "sha256": "8610f25a4d8ace133d07894f35c6bf5c5bdba0a4fb77bd7056ec24b5d2a302da",
+    "boundary_count": 569,
+    "protected_rows": 412,
+    "authority_flags_unchanged": true
+  },
+  "original_verifier": {
+    "path": "scripts/verify_hepta_callers.py",
+    "git_blob_sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "bytes": 38402,
+    "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+  },
+  "typed_helper": {
+    "path": "scripts/hepta_typed_callers.py",
+    "git_blob_sha": "2708a60c076c0b4ae8c0bdd4473ce30bc9c9bbf4",
+    "bytes": 7759,
+    "sha256": "809503c4b3362d10470bf1ba6c9bd821d1a9c392055b71c37abddd4dcfc61cb2"
+  },
+  "independent_semantic_review": "4519f6278f8225894d4db1c19181b3de6db0d726",
+  "counts": {
+    "old_rows": 39,
+    "new_rows": 10,
+    "final_expected_protected_rows": 422,
+    "unique_rust_paths": 46
+  },
+  "selectors_are_identifiers_not_frozen_format_literals": true,
+  "rows": [
+    {
+      "id": "existing-203",
+      "index": 203,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+        "git_blob_sha": "542e4e532443ac2082bd0b8fa7649fcdb25deca9",
+        "bytes": 16314,
+        "sha256": "78c39ac0b426a42b9e189df6cc1501084a476cdbe1b174925b26b2a2a511d474"
+      },
+      "original_row_raw_sha256": "2da1716f08c475dccd70af5b5757ee3a74180c4d9e492b276cf9a101123d9c0b",
+      "original_function_guards": [
+        "require_bundle",
+        "require_active"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "require_bundle"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_active"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_update"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_parts"
+        },
+        {
+          "kind": "unique_function",
+          "name": "open_cell"
+        },
+        {
+          "kind": "root_impl_method",
+          "header": "impl PublishedCircuitFeatureTaskV1",
+          "name": "require_current"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep actual CURRENT/owner/CURRENT checks, original previous completion, distinct C run and current manifest/bundle before and after reads.",
+        "Generic existing from_update/from_parts/open_cell fences remain; require_current is bound specifically to the PublishedCircuitFeatureTaskV1 impl, not another same-named trait method."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-267",
+      "index": 267,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+        "git_blob_sha": "4db1399444a01432f056f71e7322990750f3ce0f",
+        "bytes": 9941,
+        "sha256": "86fbd7cd4f61e2cd9b5b9314384c820ec078d14742c23c6275c7b4ff24e50504"
+      },
+      "original_row_raw_sha256": "1309260d810420a1ddb819c67a0a9d90a08f2be4990069e368f307728481357f",
+      "original_function_guards": [
+        "observation",
+        "from_original_profile",
+        "read_current",
+        "require_original_context",
+        "require_timing",
+        "now",
+        "from_original_stream"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "observation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_current"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_original_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_timing"
+        },
+        {
+          "kind": "unique_function",
+          "name": "now"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_stream"
+        }
+      ],
+      "semantic_obligations": [
+        "Preserve opaque ReadProfile, consuming channel, unchanged timing, original live Material/Source/Cell verification and retained-observation monotonicity.",
+        "Legacy require_original_context still rejects evaluated; evaluated clients use the separate typed entry."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-269",
+      "index": 269,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+        "git_blob_sha": "70b9f0751f3a66ec3ece56e052ff297ab2ce2708",
+        "bytes": 10065,
+        "sha256": "033182fbbca85af429aa360ecabb74fb659109e6e676a70f7c9bdf0e358b03e9"
+      },
+      "original_row_raw_sha256": "47d06999566c75004faaad64c84f74331266635f52de6661b0be35bc6c840ed3",
+      "original_function_guards": [
+        "new",
+        "require_context",
+        "require_request",
+        "encode_completed",
+        "decode_completed",
+        "authenticate_completed",
+        "authenticate_receipt"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_request"
+        },
+        {
+          "kind": "unique_function",
+          "name": "encode_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "decode_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_receipt"
+        }
+      ],
+      "semantic_obligations": [
+        "Request purpose now comes from the actual typed context; all original request echoes, full training/evaluated authentication and Completed decoding remain.",
+        "Both old and new purpose literals must be checked at actual code spans; no shared purpose or raw metadata construction."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-270",
+      "index": 270,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "git_blob_sha": "e71678cfe13ed276dd7c5ec7692959e6a448c12f",
+        "bytes": 9491,
+        "sha256": "e7661388a907c2ca323e1de4d647263b02362115b44d2d9a133cd6303f05db45"
+      },
+      "original_row_raw_sha256": "674aef82f295515c0341bb6f2260672e6918fd4da4b009375029fd2581acfbca",
+      "original_function_guards": [
+        "from_original_receipt_owner",
+        "serve_commands",
+        "serve_evidence_readback",
+        "serve_command_channel",
+        "command_response",
+        "original_response",
+        "original_state"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_receipt_owner"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_commands"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_evidence_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_command_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "command_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_state"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionCommandOwnerV1"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep actual original owner construction, origin-derived execution_requested, request authentication and one-shot Execute admission.",
+        "Owner attest/readback moved into new circuit_evaluated_selection_command_service::observe_original. Fence both this dispatch and the new helper's legacy/evaluated arms."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-271",
+      "index": 271,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+        "git_blob_sha": "edb6b381246d2fd927772ed33607bf0e8e4ac8dc",
+        "bytes": 3358,
+        "sha256": "0e9d874288cc72b34b8c6d6959974e97cc6767ff577e38c0d6dfc22ff2187bf2"
+      },
+      "original_row_raw_sha256": "f42424c4f4b54120c137f6919624f200272e0bf21b33f7ade1164fcab9db6bc3",
+      "original_function_guards": [
+        "serve_evidence_channel",
+        "evidence_response"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "serve_evidence_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evidence_response"
+        }
+      ],
+      "semantic_obligations": [
+        "Evidence path still performs only Readback; preserve actual evidence request/actor/head/binding and original before/after current checks.",
+        "Replace obsolete direct readback call marker only with observe_original(...Readback...) at this site plus the new helper's exact original readback calls. Never permit Execute here."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-279",
+      "index": 279,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+        "git_blob_sha": "d2512ef649afa6e5a723de54ecf5f579b82c150c",
+        "bytes": 24286,
+        "sha256": "cd63c4caf31b917f6ed92bad012b04f337fac9b61939c25c3799306812d14cb4"
+      },
+      "original_row_raw_sha256": "35d0bb4c01d2d7c9fccb2791d77a9512af8ebc3e74a649c152366f3996c36246",
+      "original_function_guards": [
+        "create",
+        "recover",
+        "prepare",
+        "attest_source",
+        "readback_source",
+        "predecessors",
+        "finish_original_readback",
+        "decode_completed",
+        "authenticate_completed",
+        "attest_original_completion",
+        "attest_original_remote_completion",
+        "readback",
+        "readback_remote",
+        "read_local_next_use",
+        "read_remote_next_use",
+        "original_command_profile",
+        "into_command_owner"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "create"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover"
+        },
+        {
+          "kind": "unique_function",
+          "name": "prepare"
+        },
+        {
+          "kind": "unique_function",
+          "name": "attest_source"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback_source"
+        },
+        {
+          "kind": "unique_function",
+          "name": "predecessors"
+        },
+        {
+          "kind": "unique_function",
+          "name": "finish_original_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "decode_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "attest_original_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "attest_original_remote_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback_remote"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_local_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_remote_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_command_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "into_command_owner"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_profile"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "trait",
+          "name": "NextUseSources"
+        }
+      ],
+      "semantic_obligations": [
+        "Preserve every old create/recover/prepare/predecessors/finish/signature/current/journal check and the already explicit real trainer UFCS.",
+        "Add the private source.require_profile(&self.profile) call before source observation; actual T/E/S and EvaluatedOwner last-live-read order remain."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-280",
+      "index": 280,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+        "git_blob_sha": "6aefc9c12e05fe7b052346bcff14f0c05fae664d",
+        "bytes": 11175,
+        "sha256": "cf3cd4afd971a3ba753cff7e069e44c655c7798065538515a8848e326690592b"
+      },
+      "original_row_raw_sha256": "40fa41cf381c4532f0f419014f799ababa333af16065a051f986019d4e76c21a",
+      "original_function_guards": [
+        "new",
+        "require_context",
+        "require_request",
+        "encode_completed",
+        "decode_completed",
+        "authenticate_completed",
+        "authenticate_receipt"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_request"
+        },
+        {
+          "kind": "unique_function",
+          "name": "encode_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "decode_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_receipt"
+        }
+      ],
+      "semantic_obligations": [
+        "Typed purpose change retains full original C request/response, all context echoes, exact five-to-six predecessor semantics and original T/S signatures.",
+        "No evaluated context through legacy purpose; no signature synthesis."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-281",
+      "index": 281,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "git_blob_sha": "2f4867ac61d636c323cb8cfd36b0363e5c490b38",
+        "bytes": 10233,
+        "sha256": "e2791227d48e080760166ed66f305d9080c0882d132fe487cc9fda56b9b27871"
+      },
+      "original_row_raw_sha256": "6258536ba4500f3cb7e5be6845095bfc20939abf6899b46b2eaff8ac8d195010",
+      "original_function_guards": [
+        "from_original_receipt_owner",
+        "serve_commands",
+        "serve_evidence_readback",
+        "serve_command_channel",
+        "command_response",
+        "original_response",
+        "original_state"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_receipt_owner"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_commands"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_evidence_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_command_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "command_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_state"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseCommandOwnerV1"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep original actual owner, actual live task, actual selector and same origin-derived one-shot admission.",
+        "Trainer field becomes typed OriginalPredecessors; actual effects move to the new evaluated C service helper, never to evidence/readiness."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-282",
+      "index": 282,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+        "git_blob_sha": "988542fea74e3c077929ab9313a2c9bc0ae40d52",
+        "bytes": 3509,
+        "sha256": "d31435a2790000a02e7788907e80dfa4ad216efcab54e2338088c31d9cd9dcd4"
+      },
+      "original_row_raw_sha256": "9634f1ceb15c1da35d1f352a353f722dfeb94950b8f040f4c694383a114daf05",
+      "original_function_guards": [
+        "serve_evidence_channel",
+        "evidence_response"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "serve_evidence_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evidence_response"
+        }
+      ],
+      "semantic_obligations": [
+        "Preserve Readback-only C evidence dispatch and every original actual request/binding/signature verification.",
+        "Moved readback is observe_original(Readback) plus exact original legacy/evaluated helper readback. Existing forbidden Execute and attestation markers stay."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-293",
+      "index": 293,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "git_blob_sha": "d4f5618ba50678f6dea3d5af731492d8679f9f03",
+        "bytes": 19386,
+        "sha256": "ceca269c19d8b5b8f9ec08ff2b387be3d87cf576d6899d429b1cbfc3affe7eec"
+      },
+      "original_row_raw_sha256": "61f0872e5cab906ef47237bbea17ea4997d5dbf89c4faa4977f4ea4de88be62c",
+      "original_function_guards": [
+        "from_original_training",
+        "from_checkpoint",
+        "authenticate",
+        "binding",
+        "from_original_stream",
+        "recover_from_original_stream",
+        "bind_original_stream",
+        "execute_selection",
+        "readback",
+        "receipt_attestation",
+        "exchange",
+        "require_clock",
+        "now",
+        "drop"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_training"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_checkpoint"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate"
+        },
+        {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "execute_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "receipt_attestation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "exchange"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_clock"
+        },
+        {
+          "kind": "unique_function",
+          "name": "now"
+        },
+        {
+          "kind": "unique_function",
+          "name": "drop"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionCommandContextV1"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitSelectionCommandReceiptV1"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep legacy constructors and recovery semantics, same original channel, request counters, abandonment fence, full response authentication, retained receipt equality and clock.",
+        "The optional evaluated profile adds dispatch through authenticate_evaluated/operation; no legacy field checks or recovery execution latch removed."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-295",
+      "index": 295,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+        "git_blob_sha": "516dbb946cc04d920f1671bb2df336e8b49d3b32",
+        "bytes": 20840,
+        "sha256": "2d39198326ea191f70b5358dcacedc6b3f29e26daa1e6eca738fec4c64e3f6c2"
+      },
+      "original_row_raw_sha256": "7bc3afcb3851589aae2cea23f49b5c3b3a3b55c4b74707479f97c8aa84d98b3b",
+      "original_function_guards": [
+        "from_original_selection",
+        "from_checkpoint",
+        "authenticate",
+        "binding",
+        "from_original_stream",
+        "recover_from_original_stream",
+        "bind_original_stream",
+        "attest_completed_task",
+        "readback",
+        "receipt_attestation",
+        "exchange",
+        "require_clock",
+        "now",
+        "drop"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_checkpoint"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate"
+        },
+        {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "attest_completed_task"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "receipt_attestation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "exchange"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_clock"
+        },
+        {
+          "kind": "unique_function",
+          "name": "now"
+        },
+        {
+          "kind": "unique_function",
+          "name": "drop"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseCommandContextV1"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitNextUseCommandReceiptV1"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep legacy same T/S evidence and ordinary command channel contract; add opaque evaluated S profile through the separate private constructor.",
+        "Recovered clients remain execution_requested; no response alone can restore a consumed connection or promote to Fresh."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-298",
+      "index": 298,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+        "git_blob_sha": "2cc7863be53975b17f661bc19b3d098c2e43a352",
+        "bytes": 4556,
+        "sha256": "7573e73dc0fb4df72246a3b518922ab05de89bbcd4db8003092cc1b017d3db91"
+      },
+      "original_row_raw_sha256": "ae65948cf4f9a16891e3e137930305889ab640207ab22d9516eaccd58fd4c788",
+      "original_function_guards": [
+        "bind_original_stage_channel"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "bind_original_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_evaluated_stage_channel"
+        }
+      ],
+      "semantic_obligations": [
+        "Old TNU binder remains exact; new binder checks full Material scope/digests and the same opaque evaluation before consuming the pre-held stage channel.",
+        "Origin dispatch selects Fresh versus recovery without any new stream or time window."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-299",
+      "index": 299,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+        "git_blob_sha": "9c0dd4ce4576120fd4835ed785c566cdc0dffa69",
+        "bytes": 4734,
+        "sha256": "fb23ef85c0ad4193faae84d014cf55ec1f5fe31a9f70f65eb86fcea5bff5f7ec"
+      },
+      "original_row_raw_sha256": "559407648db03e7c2d165b97ff2a4055afd7166afe65b3691a5becd6790725a2",
+      "original_function_guards": [
+        "bind_original_stage_channel"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "bind_original_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_evaluated_stage_channel"
+        }
+      ],
+      "semantic_obligations": [
+        "Old five-cut legacy binder remains; new binder uses the same genuine opaque evaluated S and full Material binding.",
+        "Do not shift legacy receipt indices to represent evaluated prefixes; original origin dispatch and channel ownership stay."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-300",
+      "index": 300,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+        "git_blob_sha": "7bc9d61e1d069b8801d86a4bea0fcbcc2e478beb",
+        "bytes": 10232,
+        "sha256": "aedbbbba7c3cf784a8e536379d5b6c4afe06f2c64cd984c3822394fc34d9731c"
+      },
+      "original_row_raw_sha256": "d38462991fb4390adbdd83eac5d5e413c700392e7301797a6268c31772e85557",
+      "original_function_guards": [
+        "new",
+        "require_context",
+        "bind_original_stage_channel",
+        "read_current"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_current"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_evaluated_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_profile"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "Request"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitCompletionReadinessClientV1"
+        }
+      ],
+      "semantic_obligations": [
+        "Preserve legacy Request::new/require_context and add explicit enum dispatch in from_profile/require_profile.",
+        "Shared bind_profile verifies actual initial/D, Material, purpose/mode, clock and peer lifetime. read_current takes the channel before I/O and validates Ready monotonicity before restoration; identical Ready remains legal."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-301",
+      "index": 301,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+        "git_blob_sha": "aebe684c36cab0a89c13e4f702e18e1b37a27f10",
+        "bytes": 7032,
+        "sha256": "e126553e98e480c0f9c55ebdf054a3ad7780cecee88f259b374fe885a4a83e0f"
+      },
+      "original_row_raw_sha256": "52f1431a643d680de7242faf84a520f34368713a3ef643245867986febf77ddf",
+      "original_function_guards": [
+        "serve_completion_readiness",
+        "serve_readiness_channel",
+        "readiness_response",
+        "read_original_readiness"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "serve_completion_readiness"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_readiness_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readiness_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_original_readiness"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_evaluated_completion_readiness"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_completion_profile"
+        }
+      ],
+      "semantic_obligations": [
+        "Legacy serve_completion_readiness still calls legacy(); new evaluated entry explicitly requires Evaluated and NextUse.",
+        "Shared response validates require_profile before actual Source/Cell I/O and revalidates after; only original ReconciliationRequired maps to NotReady. All original bounded service/clock/current checks migrate to the shared helper."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-324",
+      "index": 324,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "git_blob_sha": "9128be835dbb0ca724591499ab0a7a34c9a9f3f2",
+        "bytes": 6251,
+        "sha256": "8f3f1d25f19ceaa6b9763af1d25317acfc56d284c9c93291a982bab6a650fb78"
+      },
+      "original_row_raw_sha256": "66d7b1345920b340aba6cefeadc01269844912f5a5561aecf9e574f3815a7a8b",
+      "original_function_guards": [
+        "require_initial",
+        "install_fresh_resident_gate",
+        "require_stage",
+        "read_original_model"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "require_initial"
+        },
+        {
+          "kind": "unique_function",
+          "name": "install_fresh_resident_gate"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_stage"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_original_model"
+        },
+        {
+          "kind": "unique_function",
+          "name": "validate_recovery"
+        },
+        {
+          "kind": "unique_function",
+          "name": "execute_stage"
+        },
+        {
+          "kind": "unique_function",
+          "name": "prepare_proposal"
+        },
+        {
+          "kind": "unique_function",
+          "name": "receipt_attestation"
+        }
+      ],
+      "semantic_obligations": [
+        "Resident protocol routing may delegate only the full evaluated retained prefix to the actual Candidate owner; this does not grant effects.",
+        "Fresh Root gate installation, recovery validation and actual owner dispatch/receipt readback remain separate and must not be replaced with supplied metadata."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-339",
+      "index": 339,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "git_blob_sha": "3c534c5aef813fe1e43eba0cc5e3978721e82167",
+        "bytes": 12252,
+        "sha256": "1e3e48412677a08d9e993613c305c9abf95571627819699229f4449e96a62631"
+      },
+      "original_row_raw_sha256": "d81b5af193535f69898e6a04bcd9cb05f6546000c811e0054d81b435aa7307f1",
+      "original_function_guards": [
+        "from_original_streams",
+        "recover_original_streams",
+        "require_initial",
+        "install_fresh_resident_gate",
+        "require_live_deadline"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_streams"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_original_streams"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_initial"
+        },
+        {
+          "kind": "unique_function",
+          "name": "install_fresh_resident_gate"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_live_deadline"
+        },
+        {
+          "kind": "unique_function",
+          "name": "validate_recovery"
+        },
+        {
+          "kind": "unique_function",
+          "name": "execute_stage"
+        },
+        {
+          "kind": "unique_function",
+          "name": "prepare_proposal"
+        },
+        {
+          "kind": "unique_function",
+          "name": "receipt_attestation"
+        }
+      ],
+      "semantic_obligations": [
+        "Candidate constructors retain original material/actual channels/Root gate and original deadline; recovery must not install a fresh gate.",
+        "Only complete evaluated NoUpdate Selection/NextUse delegates to the new retained helpers; other candidate owners and original reject/Unknown branches stay."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-340",
+      "index": 340,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+        "git_blob_sha": "dd33ee5fae36cac16f6543d4becb80b695b04da5",
+        "bytes": 6614,
+        "sha256": "8794b0b954d359045b278af2d0eef0cd0773fa1ffbc62ba41690020a0c0a6553"
+      },
+      "original_row_raw_sha256": "c8119dd7900933d8801e35fa9d5970a46800037ab777b0bc8051d15a0ec8e26a",
+      "original_function_guards": [
+        "bind"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "bind"
+        }
+      ],
+      "semantic_obligations": [
+        "Original initial Model/T/E channels and bindings remain genuine held capabilities; common origin and minimum deadline remain.",
+        "Only add the private continuation slot and use the already held common channels. No reconnect, reissued capability, new timeout or synthetic owner."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-351",
+      "index": 351,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+        "git_blob_sha": "74be1cee263699d8e5ab793387290417f9444ad7",
+        "bytes": 10156,
+        "sha256": "2ceffadeb15095523302bcb4b2aca2307a2589766cc057ececcbc66347e319cf"
+      },
+      "original_row_raw_sha256": "45c98d935d2b9baee4a94cd67e6497919851fed95f541a1260108076219e9003",
+      "original_function_guards": [
+        "from_original_profile",
+        "serve_readback",
+        "serve_channel",
+        "response",
+        "require_task_input_current",
+        "require_original_selection",
+        "read_original",
+        "serve_original_retained_channel",
+        "from_original_owners"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_task_input_current"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_original_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_original"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_original_retained_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_original_evaluated_retained_channel"
+        }
+      ],
+      "semantic_obligations": [
+        "Legacy retained Selection entry remains legacy-only; new retained Selection entry requires explicit Evaluated and Selection.",
+        "Shared actual task/Cell/Source reads retain full profile request/binding/clock verification before and after I/O; no command effect on these read channels."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-353",
+      "index": 353,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "git_blob_sha": "cd5dbe4c394c7416c0b81ad9065af82ae08da4da",
+        "bytes": 20900,
+        "sha256": "1d4395a3a91ba1d8fa4690e1ebfbb8794ce848bcde21d57c21d7c62231c854c7"
+      },
+      "original_row_raw_sha256": "111d8927e448b2cb68aeccd0fe495fc94a8a93906a05225d4dc06c9a02484359",
+      "original_function_guards": [
+        "read_prefix",
+        "read_stage",
+        "read_attestation",
+        "ensure_trainer",
+        "ensure_selector",
+        "ensure_next_use",
+        "ensure_readiness",
+        "record_material",
+        "record_training",
+        "record_selection",
+        "record_next_use",
+        "pin",
+        "ensure_version"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "read_prefix"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_stage"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_attestation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "ensure_trainer"
+        },
+        {
+          "kind": "unique_function",
+          "name": "ensure_selector"
+        },
+        {
+          "kind": "unique_function",
+          "name": "ensure_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "ensure_readiness"
+        },
+        {
+          "kind": "unique_function",
+          "name": "record_material"
+        },
+        {
+          "kind": "unique_function",
+          "name": "record_training"
+        },
+        {
+          "kind": "unique_function",
+          "name": "record_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "record_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "pin"
+        },
+        {
+          "kind": "unique_function",
+          "name": "ensure_version"
+        },
+        {
+          "kind": "unique_function",
+          "name": "take_evaluated_retained_channels"
+        }
+      ],
+      "semantic_obligations": [
+        "All old TNU ensure/read/record/pin methods remain exact and preserve failed/one-shot state.",
+        "New take_evaluated_retained_channels consumes only the original initial Version/S/C/readiness options once; reject existing bound/consumed slots instead of rebuilding."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-358",
+      "index": 358,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+        "git_blob_sha": "ae1efbd3b0ffecbd925d67e98b85fee801d4766a",
+        "bytes": 5869,
+        "sha256": "f1e72494f3206ab3e5d2760cdf04e811509d03f1b76286139749144ed149add6"
+      },
+      "original_row_raw_sha256": "bade201103980be6d289c18142e6dba2f4c5969866f7794febcaf1281a595131",
+      "original_function_guards": [
+        "now",
+        "require_clock"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "now"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_clock"
+        },
+        {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "RetainedVersionPurposeV1"
+        }
+      ],
+      "semantic_obligations": [
+        "Old authority DENY_ALL and clock remain; add private distinct Version purpose enum and exact evaluated operation literal.",
+        "Fresh and Recovered remain separate origin variants."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-359",
+      "index": 359,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+        "git_blob_sha": "8e2157b1c5f4ac24fd601e2a7221cdb239ca324c",
+        "bytes": 10554,
+        "sha256": "cec3904e8c3d5998a9e8da7f2a561cab8a2530e60a4421241428feb0b8ea5e12"
+      },
+      "original_row_raw_sha256": "87d73e46df6849758fe8a3be2177afe564a501c94efb422b47b714cf231baa63",
+      "original_function_guards": [
+        "from_original",
+        "authenticate",
+        "require_fresh"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_fresh"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated"
+        },
+        {
+          "kind": "unique_function",
+          "name": "purpose"
+        },
+        {
+          "kind": "unique_function",
+          "name": "coordinator"
+        },
+        {
+          "kind": "unique_function",
+          "name": "duplicate_response_pin"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_context"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalVersionCut"
+        }
+      ],
+      "semantic_obligations": [
+        "Old cut construction remains three-cut; evaluated constructor is actual four-cut opaque T/E with original origin-aware access.",
+        "Coordinator/full D/T/E signing bytes plus signatures, scope/digests, distinct purpose domain, actual Material freshness and duplicate immutable response pin must all remain."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-360",
+      "index": 360,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+        "git_blob_sha": "1f28eee14dc754e17445ddaa11cc092913a804a6",
+        "bytes": 11179,
+        "sha256": "6f2ce817e0a5f556863ba97dd82ebc2f26831e585f4bb9f7ad1b5d4fcb7db3a2"
+      },
+      "original_row_raw_sha256": "8d23774a3c93c223c41c5c7361b67c7f9665354e869cbfcf57db0d9e7e6ad752",
+      "original_function_guards": [
+        "bind_original_stage_channel",
+        "recover_original_stage_channel",
+        "bind",
+        "exchange",
+        "drop"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "bind_original_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_original_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind"
+        },
+        {
+          "kind": "unique_function",
+          "name": "exchange"
+        },
+        {
+          "kind": "unique_function",
+          "name": "drop"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_evaluated_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_original_evaluated_stage_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_cut"
+        },
+        {
+          "kind": "unique_function",
+          "name": "pin"
+        }
+      ],
+      "semantic_obligations": [
+        "Old bind/recovery entrypoints remain separate; new evaluated bind/recovery consumes original Version channel with exact cut, Material and lifetime.",
+        "Shared bind_cut/exchange retain request ID/one-shot/abandonment and full current pin verification; wrong prefix or current response is not a usable publication."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-361",
+      "index": 361,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+        "git_blob_sha": "02f8f03d1d4f52db6d476e0f84bb3d353d91769d",
+        "bytes": 5432,
+        "sha256": "69b3b358b4017ad240497580a8b3d2819b1cb665136cc619f4cc41a3dd32b21d"
+      },
+      "original_row_raw_sha256": "00bee8c47f26e2d90416f02340b316a85c22c54dd4e884f6473b8fc7a7a037f0",
+      "original_function_guards": [
+        "new",
+        "require_cut",
+        "decode"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_cut"
+        },
+        {
+          "kind": "unique_function",
+          "name": "decode"
+        }
+      ],
+      "semantic_obligations": [
+        "Request purpose/head/binding/operation/full prefix derive from the actual typed cut and all echoes stay exact.",
+        "Decode preserves Prepared versus Published versus Unknown/Uncertain, original intent/publication pins and original errors."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-362",
+      "index": 362,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "git_blob_sha": "6ac9d7f3ac8412391804d9fdb9a9626663132d33",
+        "bytes": 16837,
+        "sha256": "c6936e70b53094431a85afba795900ddb984215cb14dd261d4eb410b98ba5051"
+      },
+      "original_row_raw_sha256": "48c303f4ab88b7da7e98f1a0256c932d196473fbc0714767ab0ba4c7f61dd6ff",
+      "original_function_guards": [
+        "from_original_owners",
+        "recover_from_original_owners",
+        "new"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "purpose"
+        },
+        {
+          "kind": "unique_function",
+          "name": "into_evaluator"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_original_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_lifetime"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "InitialVersionEvidence"
+        }
+      ],
+      "semantic_obligations": [
+        "Old factories route only Legacy; evaluated factories require an actual pre-held E Connection by value.",
+        "Shared fresh factory authenticates actual original inputs; shared recovery requires complete 3/4-cut snapshot+all signatures and actual held C owners. No recovered reader installed at constructor."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-364",
+      "index": 364,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+        "git_blob_sha": "d5c9cac9bb551376adce36d04b167f6fa978791d",
+        "bytes": 11705,
+        "sha256": "2c111ed45349835a31089e764b8ebf0b0c32edb55ad769ada4597ff4647b71f3"
+      },
+      "original_row_raw_sha256": "f6994c7121063f73c46a89339315e1a80b7c6c1175c41d18a379d1a5fc2b5c2e",
+      "original_function_guards": [
+        "bind_original_predecessor",
+        "read_original",
+        "require_cut_current",
+        "observe_phase",
+        "install_original_selection_reader"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "bind_original_predecessor"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_original"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_cut_current"
+        },
+        {
+          "kind": "unique_function",
+          "name": "observe_phase"
+        },
+        {
+          "kind": "unique_function",
+          "name": "install_original_selection_reader"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_original_recovery"
+        },
+        {
+          "kind": "unique_function",
+          "name": "build_original_selection_reader"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_trainer"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_evaluator"
+        }
+      ],
+      "semantic_obligations": [
+        "Bind actual D then consume original T then actual E for evaluated; compare complete cold expected prefix/signatures before retaining same clients.",
+        "Cold reader stays local between two full original reads and installs only after equality/publication/freshness/lifetime. Current read brackets phase with actual D/T/E and Artifact; Prepared physical publication never reconstructs C."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-365",
+      "index": 365,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+        "git_blob_sha": "ebc02be6cff65a205b1fa1fc171307a0e8a4c05c",
+        "bytes": 12320,
+        "sha256": "a27f3500ba05011b49367be53ff9e3dca42bf30ee867f624f0c5f4810198ab89"
+      },
+      "original_row_raw_sha256": "cbd483c9505c77703656d792dccdd730054903e0550ded49fbe7a2cc9b598ff3",
+      "original_function_guards": [
+        "prepare_original",
+        "publish_original_final_use",
+        "run_original_c",
+        "drop"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "prepare_original"
+        },
+        {
+          "kind": "unique_function",
+          "name": "publish_original_final_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "run_original_c"
+        },
+        {
+          "kind": "unique_function",
+          "name": "drop"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_original_final_use_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_not_cancelled"
+        }
+      ],
+      "semantic_obligations": [
+        "Fresh and one-shot preparation/publication/runtime latches remain; phase/config/T/E consumption is nonretryable.",
+        "Independent signed FinalUse binding, cancellation, actual publish/install/read/freshness precede Published. C requires actual Published and consumes original config once. Preserve original Unknown after a late effect."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-366",
+      "index": 366,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+        "git_blob_sha": "34dc709c958cca632bb21189c78be2bb19c08fb7",
+        "bytes": 13624,
+        "sha256": "bfc5f37c56ce5d9838a528f83bd9e13cf2569669f7d0158a24ac025c838b0e39"
+      },
+      "original_row_raw_sha256": "03068158f43307d3ff61c13e8a612fb76b48314bf85fbbdf282478a2becd92bc",
+      "original_function_guards": [
+        "serve_commands",
+        "serve_original_ordinary",
+        "serve_original_selection_readback",
+        "command_response",
+        "encode_response"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "serve_commands"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_original_ordinary"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_original_selection_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "command_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "encode_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_original_selection_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "remaining_lifetime"
+        }
+      ],
+      "semantic_obligations": [
+        "Same original channel/timing/128-frame service; actual commands run original locked state.",
+        "Recovered bind failure clears only the unhanded reader admission under lock. Selection service requires actual Published, admitted reader and full freshness before cloning; wrong external wire is not global revocation."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-367",
+      "index": 367,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+        "git_blob_sha": "38be926458be8a3b1db0e5c22e1336dc1c8737f8",
+        "bytes": 8949,
+        "sha256": "ebbc285c1b54c06a9ce330a657af9b4b31c5b0c6befe24de10dd038676cc5218"
+      },
+      "original_row_raw_sha256": "af5765ff9035a9e6d8643641e4938e7dbfc32a559b2afdc0f3a848dfa1734fad",
+      "original_function_guards": [
+        "require_completed_a",
+        "install_original",
+        "observe"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "require_completed_a"
+        },
+        {
+          "kind": "unique_function",
+          "name": "install_original"
+        },
+        {
+          "kind": "unique_function",
+          "name": "observe"
+        }
+      ],
+      "semantic_obligations": [
+        "Original completed A is verified from the actual original Source twice; C must remain a distinct original session.",
+        "Original factory consumes supplied actual files/config, checks actual publication/current/Selection before and after, and does not manufacture RunStart."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-370",
+      "index": 370,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "git_blob_sha": "6ac9d7f3ac8412391804d9fdb9a9626663132d33",
+        "bytes": 16837,
+        "sha256": "c6936e70b53094431a85afba795900ddb984215cb14dd261d4eb410b98ba5051"
+      },
+      "original_row_raw_sha256": "62893ddda236600eb68a91ff35661861a66c2833f82f2367fbfd8657732ee5f1",
+      "original_function_guards": [
+        "from_original_owners",
+        "recover_from_original_owners",
+        "new"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_original_profile"
+        }
+      ],
+      "semantic_obligations": [
+        "Independent Root FinalUse issuer slot remains pre-held, one-shot and unavailable on recovery.",
+        "Shared fresh/recovery constructor moves the same issuer state; recovered Published history still starts without reader admission and cannot start C."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-371",
+      "index": 371,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+        "git_blob_sha": "ebc02be6cff65a205b1fa1fc171307a0e8a4c05c",
+        "bytes": 12320,
+        "sha256": "a27f3500ba05011b49367be53ff9e3dca42bf30ee867f624f0c5f4810198ab89"
+      },
+      "original_row_raw_sha256": "94e6fbb98995c214ed64b0954fd270bd8390716c8b0a6c018bde8988aac0f97d",
+      "original_function_guards": [
+        "prepare_original",
+        "publish_original_final_use",
+        "run_original_c"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "prepare_original"
+        },
+        {
+          "kind": "unique_function",
+          "name": "publish_original_final_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "run_original_c"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_original_final_use_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_not_cancelled"
+        }
+      ],
+      "semantic_obligations": [
+        "Exact independent grant binding must precede one-shot publication; no local issuer/Root execute privilege added.",
+        "Actual original publication plus complete current verification must succeed before Published/C-start. Cancellation and Uncertain remain."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-372",
+      "index": 372,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+        "git_blob_sha": "34dc709c958cca632bb21189c78be2bb19c08fb7",
+        "bytes": 13624,
+        "sha256": "bfc5f37c56ce5d9838a528f83bd9e13cf2569669f7d0158a24ac025c838b0e39"
+      },
+      "original_row_raw_sha256": "3539545e1c29a5041a6d09175ffe5baae408ac90f7e11ca1c9541ea9ef67fb8e",
+      "original_function_guards": [
+        "serve_original_ordinary",
+        "command_response"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "serve_original_ordinary"
+        },
+        {
+          "kind": "unique_function",
+          "name": "command_response"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_original_selection_channel"
+        }
+      ],
+      "semantic_obligations": [
+        "Ordinary service runs actual commands, original C runtime and independent issuer loop; no source reader bypass.",
+        "Actual command_response consumes/retains original outcome and recovery admission; new shared Selection reader gate requires actual Published."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-373",
+      "index": 373,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+        "git_blob_sha": "023d44d19df5ae7eb6b566ba03d6b323d9e6eaef",
+        "bytes": 11232,
+        "sha256": "eefa95b19559db29d0ab86399369faa220bb46bd806059e34597294908dc666a"
+      },
+      "original_row_raw_sha256": "f765ba9f7b1dfc367e6c098238cd6c18311495474666c335471b252d5bb6a74a",
+      "original_function_guards": [
+        "from_original_evaluation",
+        "recover_original_evaluation",
+        "snapshot",
+        "authenticate",
+        "require_current",
+        "verify_original_predecessors",
+        "clone_for_original_receipt",
+        "into_original_receipt_readback",
+        "receipt_configuration",
+        "receipt_context_binding",
+        "original_receipt_predecessors",
+        "require_new_original_receipt",
+        "require_original_receipt_owners"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_original_evaluation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "snapshot"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_current"
+        },
+        {
+          "kind": "unique_function",
+          "name": "verify_original_predecessors"
+        },
+        {
+          "kind": "unique_function",
+          "name": "clone_for_original_receipt"
+        },
+        {
+          "kind": "unique_function",
+          "name": "into_original_receipt_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "receipt_configuration"
+        },
+        {
+          "kind": "unique_function",
+          "name": "receipt_context_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_receipt_predecessors"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_new_original_receipt"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_original_receipt_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluation_attestation"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep opaque non-Clone evaluated context, actual T/E signatures and scope, full current owner reads, Fresh versus Readback origin.",
+        "clone_for_original_receipt preserves existing origin exactly; attenuation occurs only in the explicit into_original_receipt_readback operation. New E attestation getter exposes only borrowed actual signature."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-374",
+      "index": 374,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+        "git_blob_sha": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f",
+        "bytes": 9069,
+        "sha256": "b92ee6d8d8e12d97f3bbe46e6f3c1e15bca4f832dcd214adfa2e48c00d4e649f"
+      },
+      "original_row_raw_sha256": "dae8f48c227c8a112c115594925a4edf84795f92c12f6608ffef88cb31109234",
+      "original_function_guards": [
+        "final_use_binding",
+        "intent_digest",
+        "publish_and_retain_original_evidence",
+        "publish_original_retained_task"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "final_use_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "intent_digest"
+        },
+        {
+          "kind": "unique_function",
+          "name": "publish_and_retain_original_evidence"
+        },
+        {
+          "kind": "unique_function",
+          "name": "publish_original_retained_task"
+        },
+        {
+          "kind": "unique_function",
+          "name": "prepare_original_circuit_evaluated_retention_v1"
+        }
+      ],
+      "semantic_obligations": [
+        "Preserve actual evaluated preparation and consuming publication with independent signed FinalUse, current checks, cancellation and original selected material.",
+        "By-value tuple returns same task/T/E, never clones or reconnects. Generic prepare guard and all existing late-current checks remain."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-381",
+      "index": 381,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+        "git_blob_sha": "185310b62f39e6fe2b789566145057f634a2bd6a",
+        "bytes": 14849,
+        "sha256": "eb53df564b95b1bc94d2f451fc02a5f8b55fde2b666b24dd985270c5bcf6c55f"
+      },
+      "original_row_raw_sha256": "d2f6168312388de7124c93105b084216ea1d6fb5fffbed691869d15799050d45",
+      "original_function_guards": [
+        "clone",
+        "original_context",
+        "evidence_domain",
+        "require_new",
+        "require_signed_separation",
+        "trainer",
+        "evaluated_owners",
+        "location",
+        "observe",
+        "create_evaluated",
+        "recover_evaluated",
+        "from_evaluated_custody",
+        "attest_original_evaluated_selection",
+        "readback_evaluated_selection",
+        "completed_evaluated_selection",
+        "authenticate_evaluated_training",
+        "into_original_receipt_readback",
+        "original_receipt_binding",
+        "original_receipt_predecessors"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "clone"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evidence_domain"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_signed_separation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "trainer"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "location"
+        },
+        {
+          "kind": "unique_function",
+          "name": "observe"
+        },
+        {
+          "kind": "unique_function",
+          "name": "create_evaluated"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_evaluated"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_evaluated_custody"
+        },
+        {
+          "kind": "unique_function",
+          "name": "attest_original_evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback_evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "completed_evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_evaluated_training"
+        },
+        {
+          "kind": "unique_function",
+          "name": "into_original_receipt_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_receipt_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_receipt_predecessors"
+        },
+        {
+          "kind": "unique_function",
+          "name": "into_evaluated_readback_owner"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep original evaluated S custody, distinct domains/full T/E signatures, actual owner prepare/readback/sign/current and opaque S equality.",
+        "New into_evaluated_readback_owner consumes the actual owner; original recovered path remains read-only. Cloning opaque receipt preserves current origin helper."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-383",
+      "index": 383,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+        "git_blob_sha": "fdf5e0b5e93c16ed312aa09e8d249e13b0b22520",
+        "bytes": 12252,
+        "sha256": "9ce8dc0075129e06d5c6871f4a3e32323bfe679ec73c32a2a50a3126f88c3f5c"
+      },
+      "original_row_raw_sha256": "3d830c514b9f6aeb84ccc830fdee65377c7223ae0bed1a9ef50517585fe48be9",
+      "original_function_guards": [
+        "require_new",
+        "require_signed_separation",
+        "trainer",
+        "selector",
+        "evaluated_owners",
+        "location",
+        "observe",
+        "create_evaluated",
+        "recover_evaluated",
+        "from_evaluated_custody",
+        "attest_original_evaluated_completion",
+        "readback_evaluated_completion",
+        "completed_evaluated_next_use",
+        "authenticate_predecessors"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "require_new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_signed_separation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "trainer"
+        },
+        {
+          "kind": "unique_function",
+          "name": "selector"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "location"
+        },
+        {
+          "kind": "unique_function",
+          "name": "observe"
+        },
+        {
+          "kind": "unique_function",
+          "name": "create_evaluated"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_evaluated"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_evaluated_custody"
+        },
+        {
+          "kind": "unique_function",
+          "name": "attest_original_evaluated_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback_evaluated_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "completed_evaluated_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_predecessors"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_selection"
+        }
+      ],
+      "semantic_obligations": [
+        "Keep actual evaluated C custody, same opaque S, complete T/E/S signatures and current Source/Cell order.",
+        "New original_selection getter remains private/borrowed; no raw metadata constructor or legacy training receipt substitution."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-390",
+      "index": 390,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+        "git_blob_sha": "3ab1c8a5e7ac5192300c231b1b42d1ac67446871",
+        "bytes": 12403,
+        "sha256": "71edafa0bd67fdd9229059a0251b8c668f9552d30afcf07273575ee529cf726b"
+      },
+      "original_row_raw_sha256": "af5b4ce0b333882d5573b8ca3f593a5334289e074e37d4077055169c4112e800",
+      "original_function_guards": [
+        "from_original_stream",
+        "bind_original_selection",
+        "readback",
+        "context_binding",
+        "request",
+        "require_request"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "context_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "request"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_request"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_original_evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "finish_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "operation"
+        }
+      ],
+      "semantic_obligations": [
+        "Old connection/bind stays legacy; new evaluated bind uses genuine same opaque S plus actual initial/actor/digests.",
+        "Shared finish_binding/readback preserves read-only request purpose, before/after actual current check and full expected receipt equality; no execute/recover/re-sign."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-391",
+      "index": 391,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+        "git_blob_sha": "768febf4707ae5114bdedd61820630f30d63d0a2",
+        "bytes": 3399,
+        "sha256": "90bf5df480ab970db68d440b8b7042568d94569670985bcc095a39271cd77bab"
+      },
+      "original_row_raw_sha256": "58a529dc4fa5570ee4242b6c65a88fafa91cb53f7172effc0dde3fc96a2ed7e8",
+      "original_function_guards": [
+        "serve_original_selection_readback",
+        "serve_original_selection_readback_channel",
+        "original_selection_readback_response"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "serve_original_selection_readback"
+        },
+        {
+          "kind": "unique_function",
+          "name": "serve_original_selection_readback_channel"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_selection_readback_response"
+        }
+      ],
+      "semantic_obligations": [
+        "Read-only S service now dispatches typed original predecessor reads while preserving actual request and original owner/current order.",
+        "Existing forbidden command_response/original_response/Execute/attest/reset/reconnect remains. Both branches must read original same T/E and actual S owner."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "existing-409",
+      "index": 409,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "unformatted_source": {
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+        "git_blob_sha": "749a448516c46079683536ffdbc1714432bf3023",
+        "bytes": 9175,
+        "sha256": "e477c4add7255164ebaf29b1472327b504c690c1e4b32fb897f58f249a70af53"
+      },
+      "original_row_raw_sha256": "c0d2162c707b6cc4706bb376622c12ea91adf9a22cc0c4298ca0f9129a1be7b0",
+      "original_function_guards": [
+        "clone",
+        "for_original_selection",
+        "for_original_next_use",
+        "prefix",
+        "scope",
+        "mode",
+        "binding",
+        "decision",
+        "require_original_selection",
+        "from_original_evaluated_stream",
+        "require_original_evaluated_selection",
+        "from_original_evaluated_owners"
+      ],
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "clone"
+        },
+        {
+          "kind": "unique_function",
+          "name": "for_original_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "for_original_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "prefix"
+        },
+        {
+          "kind": "unique_function",
+          "name": "scope"
+        },
+        {
+          "kind": "unique_function",
+          "name": "mode"
+        },
+        {
+          "kind": "unique_function",
+          "name": "binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "decision"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_original_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated_stream"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_original_evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_original_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_original_evaluated_next_use"
+        }
+      ],
+      "semantic_obligations": [
+        "Existing upstream evaluated four/five-cut read implementation remains; add only NextUse's same opaque S comparison and explicit NextUse mode.",
+        "All exact domains, original signatures, scope, actual read services and cold attenuation remain; no sixth-cut acceptance through five-cut read binding."
+      ],
+      "old_forbidden": "preserve_exact_array_and_order",
+      "file_level_marker_rule": "Review every old required/required_order marker. Retain unchanged constraints; explicitly map moved guards to actual same-authority helpers. No automatic replacement or deletion.",
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-412",
+      "index": 412,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "unformatted_source": {
+        "bytes": 9625,
+        "sha256": "a6ebc9fe1e07500366bde02f5b3d42b88c9bc7c98f1590fb0aa61f1021968281",
+        "git_blob_sha": "6cb5e7fc0f274cbdbae9fe57140b48cca4983677"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "new"
+        },
+        {
+          "kind": "unique_function",
+          "name": "refresh"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_selector"
+        },
+        {
+          "kind": "unique_function",
+          "name": "bind_next_use"
+        },
+        {
+          "kind": "unique_function",
+          "name": "is_evaluated_no_update"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluated_prefix"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_evaluated_retained_stage"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalPins"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "EvaluatedContinuation"
+        }
+      ],
+      "semantic_obligations": [
+        "Only the complete evaluated NoUpdate cut is admitted; legacy TrainingNoUpdate and Adopt do not acquire this route.",
+        "Actual held Dataset/Training/Evaluation provenance, full pins, original windows and four/five/six-cut prefixes remain distinct.",
+        "Initial Version, Selector, NextUse and readiness channels are consumed once from the existing common owner state; no reconnect or new signing authority."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-413",
+      "index": 413,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "unformatted_source": {
+        "bytes": 7081,
+        "sha256": "62f787c6afce6de146f21c06d4934a50b8789ff052180399dbd5903303d62b85",
+        "git_blob_sha": "0e24b809a531f741ccecc13b8262e184aec1dfb1"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "execute_evaluated_retained_stage"
+        },
+        {
+          "kind": "unique_function",
+          "name": "prepare_retained_version"
+        },
+        {
+          "kind": "unique_function",
+          "name": "await_completed_c"
+        }
+      ],
+      "semantic_obligations": [
+        "The Root effect gate is checked around real effects and original deadlines remain unchanged.",
+        "A lane is fenced before awaiting effects; Version Prepare, Selector Execute and C attestation each use their original one-shot owner path.",
+        "C requires actual completion readiness and actual published Version/current evidence; original bounded polling is retained."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-414",
+      "index": 414,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "unformatted_source": {
+        "bytes": 7189,
+        "sha256": "0390d83874b107b2946b311bdd2fd983b6c50c9d6a95ab42052546c1b495e881",
+        "git_blob_sha": "3caae9286796ae6d40579812d6c725904e1926ab"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "require_published"
+        },
+        {
+          "kind": "unique_function",
+          "name": "pin_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "pin_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "read_evaluated_retained_prefix"
+        },
+        {
+          "kind": "unique_function",
+          "name": "retained_attestation"
+        }
+      ],
+      "semantic_obligations": [
+        "Four-cut evaluated evidence, five-cut Selector and six-cut C remain distinct and bind the same complete preceding observations.",
+        "Published Version, T/E, S and C are read through their original owners; no new grant, reconnect, signature or fabricated readback."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-415",
+      "index": 415,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "unformatted_source": {
+        "bytes": 5872,
+        "sha256": "53f70e2f5d14229dab8ca9c3dfb56677524e2e2bead2554f1add3729499c860c",
+        "git_blob_sha": "c64626eb19dae7b01dd6c77e8d931abe36272e41"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_evaluated_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_evaluated"
+        },
+        {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "eq"
+        },
+        {
+          "kind": "unique_function",
+          "name": "fmt"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluated_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluated_receipt"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_evaluated_stream"
+        },
+        {
+          "kind": "root_impl_method",
+          "header": "impl Clone for OriginalCircuitSelectionCommandContextV1",
+          "name": "clone",
+          "protect_entire_impl": true
+        },
+        {
+          "kind": "root_impl_method",
+          "header": "impl Clone for OriginalCircuitSelectionCommandReceiptV1",
+          "name": "clone",
+          "protect_entire_impl": true
+        }
+      ],
+      "semantic_obligations": [
+        "The opaque evaluated profile uses a distinct purpose and verifies original training/evaluation identity, signature, scope and current windows.",
+        "Recovered command construction attenuates to readback before binding; legacy constructors retain their original semantics.",
+        "An evaluated receipt can be obtained only from the original authenticated completed command response."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-416",
+      "index": 416,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "unformatted_source": {
+        "bytes": 1838,
+        "sha256": "2489a8ba8547be9283b59280f5eb6df43546bdb87c39e298ee664482d6acd2e9",
+        "git_blob_sha": "37275599142dce61221b02f1ecbd69139f32a21b"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "original_evaluated_command_context"
+        },
+        {
+          "kind": "unique_function",
+          "name": "into_evaluated_command_owner"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_original_command_response"
+        }
+      ],
+      "semantic_obligations": [
+        "The original Selector owner is consumed by value, retaining the same opaque evaluation context.",
+        "Command-response conversion preserves the authenticated original signed receipt and full evaluated prefix; it does not re-sign."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-417",
+      "index": 417,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "unformatted_source": {
+        "bytes": 3971,
+        "sha256": "ea74cae24545206a7a31b5539692b7c07f58a12f8fc65894b0fea5ffb8a15bb1",
+        "git_blob_sha": "473ff552c0aece25492f3fe5a0c20c346bd873c3"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated_receipt_owner"
+        },
+        {
+          "kind": "unique_function",
+          "name": "observe_original"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalPredecessors"
+        }
+      ],
+      "semantic_obligations": [
+        "Legacy and evaluated predecessor branches retain their actual held clients; no metadata-only replacement.",
+        "Actual original attest/readback calls remain behind the existing origin, one-shot, current and command authentication checks."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-418",
+      "index": 418,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "unformatted_source": {
+        "bytes": 4502,
+        "sha256": "3b8b6c21d2e1f9947ab908f58e45c14998cef5d9f2ac2286c6a6f7527fa4d09c",
+        "git_blob_sha": "6dac672a00b5116148f9c931b7f7c9fbb81d293f"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "from_evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "authenticate_evaluated"
+        },
+        {
+          "kind": "unique_function",
+          "name": "operation"
+        },
+        {
+          "kind": "unique_function",
+          "name": "eq"
+        },
+        {
+          "kind": "unique_function",
+          "name": "fmt"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluated_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "recover_from_original_evaluated_stream"
+        }
+      ],
+      "semantic_obligations": [
+        "The evaluated C purpose requires the same opaque original Selector and complete preceding evaluated cut.",
+        "Recovery is readback-only and retains full scope, objective, original signatures and time windows."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-419",
+      "index": 419,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "unformatted_source": {
+        "bytes": 4553,
+        "sha256": "62ad1269e3a7a0b24b806cd4dfff263e96be34d6f7660a31ffc1c09977eacbd3",
+        "git_blob_sha": "d44ab21c8e2d8cf46225214f6a16e116e2dc7939"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "from_original_evaluated_receipt_owner"
+        },
+        {
+          "kind": "unique_function",
+          "name": "observe_original"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "OriginalPredecessors"
+        }
+      ],
+      "semantic_obligations": [
+        "The same held actual Training, Evaluation and Selector clients are used for C predecessor reads.",
+        "Legacy/evaluated dispatch calls the original C owner behind existing origin and one-shot restrictions."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-420",
+      "index": 420,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "unformatted_source": {
+        "bytes": 3904,
+        "sha256": "45c3cb55d88cb6cc65f15dea4623ad93c5987533b3c4ae1df2a78e9b780306d4",
+        "git_blob_sha": "4c5c98eca6126fe808ba6f01365525deeb14d816"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "snapshot"
+        },
+        {
+          "kind": "unique_function",
+          "name": "trainer"
+        },
+        {
+          "kind": "unique_function",
+          "name": "selector"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluated_owners"
+        },
+        {
+          "kind": "unique_function",
+          "name": "location"
+        },
+        {
+          "kind": "unique_function",
+          "name": "require_profile"
+        },
+        {
+          "kind": "unique_function",
+          "name": "observe"
+        },
+        {
+          "kind": "unique_function",
+          "name": "original_evaluated_command_selection"
+        },
+        {
+          "kind": "unique_function",
+          "name": "attest_original_evaluated_remote_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "readback_evaluated_remote_completion"
+        },
+        {
+          "kind": "unique_function",
+          "name": "into_evaluated_command_owner"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "struct",
+          "name": "OriginalCircuitEvaluatedNextUseRemoteSourcesV1"
+        }
+      ],
+      "semantic_obligations": [
+        "The source profile and opaque Selector must agree with the complete evaluated predecessor.",
+        "EvaluatedOwner location preserves the final actual Source/Cell observation after all awaited T/E/S predecessor reads.",
+        "Recovered original attest requests remain readback-only; the original owner is consumed for the command-owner transfer."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    },
+    {
+      "id": "new-421",
+      "index": 421,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "unformatted_source": {
+        "bytes": 3098,
+        "sha256": "7635d2d7a7222fe4aeeb623292e21cdf1df0fc94f91dc5f027369801d469bd11",
+        "git_blob_sha": "b62728f79eeda3e17f4067bcaa3227c96da40e42"
+      },
+      "selectors": [
+        {
+          "kind": "unique_function",
+          "name": "final_use_binding"
+        },
+        {
+          "kind": "unique_function",
+          "name": "intent_digest"
+        },
+        {
+          "kind": "unique_function",
+          "name": "completed"
+        },
+        {
+          "kind": "unique_function",
+          "name": "trainer"
+        },
+        {
+          "kind": "unique_function",
+          "name": "evaluator"
+        },
+        {
+          "kind": "unique_function",
+          "name": "publish"
+        },
+        {
+          "kind": "root_type",
+          "item_kind": "enum",
+          "name": "RetainedVersionPreparedV1"
+        }
+      ],
+      "semantic_obligations": [
+        "A private non-Clone enum consumes the original prepared publication by value and returns the same T/E custody.",
+        "Explicit original Prepared type UFCS retains the original signed inputs, await, return values and effect ordering."
+      ],
+      "proposed_forbidden": [
+        "SigningKey",
+        ".sign(",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "LearningEvidenceVerifierV1::new",
+        "with_root_learning_stage_owners(",
+        "permit_all",
+        "if false"
+      ],
+      "formatted_marker_status": "WAITING_ACTUAL_NATIVE_FORMAT"
+    }
+  ],
+  "actual_scope_contract": [
+    "Use original comment/literal/cfg(test) masks. Actual function/container spans must be unique and complete; unresolved shapes reject preparation.",
+    "Same-named Clone methods must belong to the two specified root-level impls. An impl inside a nested module, an unused nested function, comment, string or different impl is not the actual scope.",
+    "Full stripped bodies protect executable structure but mask strings. Critical operation/domain literals need a separate actual-span check at the approved code prefix; same-length mutations with preserved comment/dead-code strings must be rejected.",
+    "Private type declarations and public mutable/raw capability fields are not inferred from prose. Proposed root-type spans must be checked against actual formatted code.",
+    "Original generic function fences stay file-level under the unchanged verifier; the supplementary scope QA binds actual function/container spans and records this limitation."
+  ],
+  "policy": [
+    "No final literal or source hash is derived until the root approves actual native formatted postimages and a complete physical source inventory.",
+    "The extraction script emits proposals only; it cannot edit CALLERS, QA, source, refs, chmod, install dependencies or launch Cargo/tests.",
+    "The 600/300/4800 qualification commands, complete original collector, exact caller equality, receiver inference, exception semantics and all old attacks remain.",
+    "This stage supersedes the earlier 140-function AST-unchanged structural claim only for explicitly reviewed QA method migrations; retain precise before/after per migrated method."
+  ],
+  "gate_results": {
+    "source_closure": "not_run",
+    "caller_self_test": "not_run",
+    "full_caller": "not_run",
+    "rust_tests": "not_run",
+    "real_authorized_A_B_C": "not_established"
+  },
+  "critical_literals": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      },
+      "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+      "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-selection.command.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      },
+      "prefix_regex": "Some\\s*\\(_\\)\\s*=>",
+      "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-next-use.command.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      },
+      "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-evaluated-selection-command.v1\\0\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      },
+      "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-selection-command.v1\\0\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      },
+      "prefix_regex": "\\breturn\\s+Ok\\(Digest32::of_parts\\(&\\[",
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-evaluated-next-use-command.v1\\0\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "binding"
+      },
+      "prefix_regex": "(?m)^\\s*Ok\\(Digest32::of_parts\\(&\\[",
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-next-use-command.v1\\0\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "scope": {
+        "kind": "module_constant"
+      },
+      "prefix_regex": "\\bconst\\s+PURPOSE\\s*:\\s*&str\\s*=",
+      "expected_rust_literal": "\"runtime.learning.original-circuit.completion-readiness.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "scope": {
+        "kind": "module_constant"
+      },
+      "prefix_regex": "\\bconst\\s+EVALUATED_PURPOSE\\s*:\\s*&str\\s*=",
+      "expected_rust_literal": "\"runtime.learning.original-circuit.evaluated-completion-readiness.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      },
+      "prefix_regex": "Self::EvaluatedNoUpdate\\s*=>",
+      "expected_rust_literal": "\"runtime.learning.original-evaluated-retained-version.command.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "authenticate"
+      },
+      "prefix_regex": "RetainedVersionPurposeV1::TrainingNoUpdate\\s*=>",
+      "expected_rust_literal": "b\"hepta.agentd.original-retained-version.command.v1\\0\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "authenticate"
+      },
+      "prefix_regex": "RetainedVersionPurposeV1::EvaluatedNoUpdate\\s*=>",
+      "expected_rust_literal": "b\"hepta.agentd.original-evaluated-retained-version.command.v1\\0\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "scope": {
+        "kind": "module_constant"
+      },
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "expected_rust_literal": "\"runtime.learning.original-circuit-selection.command.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "scope": {
+        "kind": "module_constant"
+      },
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "expected_rust_literal": "\"runtime.learning.original-circuit-next-use.command.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "scope": {
+        "kind": "module_constant"
+      },
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "expected_rust_literal": "\"runtime.learning.original-retained-version.command.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "scope": {
+        "kind": "module_constant"
+      },
+      "prefix_regex": "\\bconst\\s+OPERATION\\s*:\\s*&str\\s*=",
+      "expected_rust_literal": "\"runtime.learning.original-circuit-selection.readback.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "context_binding"
+      },
+      "prefix_regex": "Ok\\(Digest32::of_parts\\(&\\[",
+      "expected_rust_literal": "b\"hepta.agentd.original-circuit-selection-readback.v1\\0\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "scope": {
+        "kind": "unique_function",
+        "name": "operation"
+      },
+      "prefix_regex": "\\bif\\s+context\\.evaluated\\.is_some\\(\\)\\s*\\{",
+      "expected_rust_literal": "\"runtime.learning.original-circuit-evaluated-selection.readback.v1\"",
+      "mutation": "Change one literal character without changing length; preserve old text in a comment, unrelated string, nested unused fn and another function. The actual scoped check plus full original structural guard must reject all variants.",
+      "not_a_verdict_cache": true
+    }
+  ],
+  "module_mounts": [
+    {
+      "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "parent_preformat_blob": "3c534c5aef813fe1e43eba0cc5e3978721e82167",
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "module_name": "retained",
+      "path_literal": "\"cell_q24_candidate_stage_retained.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "parent_preformat_blob": "6cb5e7fc0f274cbdbae9fe57140b48cca4983677",
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_execute.rs",
+      "module_name": "execution",
+      "path_literal": "\"cell_q24_candidate_stage_retained_execute.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "parent_preformat_blob": "6cb5e7fc0f274cbdbae9fe57140b48cca4983677",
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained_readback.rs",
+      "module_name": "readback",
+      "path_literal": "\"cell_q24_candidate_stage_retained_readback.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "parent_preformat_blob": "d4f5618ba50678f6dea3d5af731492d8679f9f03",
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs",
+      "module_name": "evaluated",
+      "path_literal": "\"circuit_evaluated_selection_command.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "parent_preformat_blob": "185310b62f39e6fe2b789566145057f634a2bd6a",
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "module_name": "command_owner_adapter",
+      "path_literal": "\"circuit_evaluated_selection_command_owner_adapter.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "parent_preformat_blob": "e71678cfe13ed276dd7c5ec7692959e6a448c12f",
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "module_name": "evaluated",
+      "path_literal": "\"circuit_evaluated_selection_command_service.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "parent_preformat_blob": "516dbb946cc04d920f1671bb2df336e8b49d3b32",
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs",
+      "module_name": "evaluated",
+      "path_literal": "\"circuit_evaluated_next_use_command.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "parent_preformat_blob": "2f4867ac61d636c323cb8cfd36b0363e5c490b38",
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "module_name": "evaluated",
+      "path_literal": "\"circuit_evaluated_next_use_command_service.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "parent_preformat_blob": "fdf5e0b5e93c16ed312aa09e8d249e13b0b22520",
+      "child": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "module_name": "remote",
+      "path_literal": "\"circuit_evaluated_next_use_remote.rs\"",
+      "production_root_required": true
+    },
+    {
+      "parent": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "parent_preformat_blob": "6ac9d7f3ac8412391804d9fdb9a9626663132d33",
+      "child": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "module_name": "prepared_custody",
+      "path_literal": "\"circuit_retained_version_prepared.rs\"",
+      "production_root_required": true
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "format": "hepta-fresh-materialization-v2-static-review-v1",
+  "status": "PREPARATION_ONLY_NOT_EXECUTED",
+  "actual_static_check": {
+    "added_definitions": [
+      "final_source_lookup_audit",
+      "source_object_lookup"
+    ],
+    "changed_original_definitions": [
+      "source_git_state",
+      "validate_approval_and_proofs",
+      "main"
+    ],
+    "driver_main_executed": false,
+    "native_execution": false,
+    "new_bytes": 73386,
+    "new_git_blob": "ed0c0896128528fcd19881fd9d38891104cb1e3e",
+    "new_sha256": "2d3f96129665bb425d72bdf1d8bb6e575a1885d91d1c4eed39961032fe24fdd6",
+    "old_bytes": 64399,
+    "patch_bytes": 15929,
+    "patch_sha256": "934dd308686f59e979fc28ebdf1103a33a43396ff6ea9b7f5c8089e8f904787f",
+    "removed_definitions": [],
+    "status": "syntax_and_exact_definition_diff_verified",
+    "tests": 0,
+    "top_level_original_definitions": 56,
+    "unchanged_original_definitions": 53
+  },
+  "initial_cloud_copy_issue": {
+    "scope": "cloud preparation file only",
+    "cause": "apply_patch Add File input appended one extra final LF",
+    "expected_bytes": 73293,
+    "observed_bytes": 73294,
+    "static_check_exit_code": 1,
+    "driver_main_executed": false,
+    "native_execution": false,
+    "resolution": "removed only the extra final empty line; repeat exact-byte/AST check"
+  },
+  "source_preimage": {
+    "bytes": 64399,
+    "sha256": "7787562e1bdd744b54eb73c59233810013135a55e966eeaa05317fb807ef6c16",
+    "git_blob": "1ca5aab7144291449f89364646b62b364d3cbe0d",
+    "lines": 1085
+  },
+  "candidate": {
+    "bytes": 73386,
+    "sha256": "2d3f96129665bb425d72bdf1d8bb6e575a1885d91d1c4eed39961032fe24fdd6",
+    "git_blob": "ed0c0896128528fcd19881fd9d38891104cb1e3e",
+    "lines": 1272
+  },
+  "actual_probe": {
+    "bytes": 9541,
+    "sha256": "de2498c12a831faa5ed84cbb269f5423100ce8dabf90225dc60030c70428d030",
+    "git_blob": "f2a69c3d434111133905c0ef454336f59bf5253e"
+  },
+  "observed_graph_before_after_equal": true,
+  "git_declared_three_alternates_equal_pinned_graph": true,
+  "all_3_alternates_raw_git_blobs_independently_fetched_and_hashed": true,
+  "native_execution_performed_by_this_preparation": false,
+  "driver_main_calls": 0,
+  "tests_requested": 0,
+  "scope": "AST parse, compile-to-code-object only, exact source definitions comparison, source/native-evidence metadata binding; not an execution test of the new lookup function or the materialization driver."
+}

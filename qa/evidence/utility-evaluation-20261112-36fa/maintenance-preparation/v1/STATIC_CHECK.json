@@ -1,0 +1,106 @@
+{
+  "format": "hepta-scoped-maintenance-structure-static-check-v1",
+  "status": "HOLD_STRUCTURE_ONLY_NOT_EXECUTED",
+  "actual_check": {
+    "Cargo_fmt_tests": false,
+    "constants": {
+      "C0F": "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "FIX_SECONDS": 7200,
+      "FMT_SECONDS": 900,
+      "HEAD": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+      "LEAVES": 15188,
+      "PREFLIGHT_SECONDS": 600,
+      "RECORD_SECONDS": 300,
+      "TREE": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+    },
+    "driver": {
+      "bytes": 46877,
+      "git_blob": "842cb1dbc262d09412ab4f1759f05f1115c60d86",
+      "sha256": "618fb1ab12dafb6c11da0efed59c96b93f841b3db6d306781a5688cb9cd6e71c"
+    },
+    "driver_module_or_main_executed": false,
+    "maximum_log_bytes_expression": "64 * 1024 * 1024",
+    "native_execution": false,
+    "original_clean_gate_run_call_sites": 0,
+    "original_execute_logged_call_sites": 1,
+    "status": "AST_and_compile_only_complete",
+    "top_level_definitions": [
+      "PreconditionError",
+      "IntegrityError",
+      "now",
+      "sha256",
+      "oid",
+      "check",
+      "nodup",
+      "parse",
+      "regular_read",
+      "jbytes",
+      "write",
+      "jwrite",
+      "gzrecord",
+      "event",
+      "pin_bytes",
+      "read_input",
+      "real_directory",
+      "external_directory",
+      "run_readonly",
+      "git",
+      "git_state",
+      "verify_original_inputs",
+      "load_module",
+      "parse_supervisor",
+      "validate_materialization",
+      "active_build_processes",
+      "installed_file_observation",
+      "environment_preflight",
+      "metadata_inventory",
+      "actual_leaf_map",
+      "merkle",
+      "OriginalBlobReader",
+      "read_actual_leaf",
+      "archive_transition",
+      "capture_source",
+      "check_fmt_base",
+      "set_alarm",
+      "alarm_handler",
+      "bounded_record",
+      "stage",
+      "validate_config",
+      "initial_preflight",
+      "finalize_source",
+      "finalize_inputs",
+      "retain_terminal",
+      "main"
+    ]
+  },
+  "checker_development_note": {
+    "scope": "cloud static checker only",
+    "reason": "ast.literal_eval does not evaluate the unchanged MAXIMUM_LOG_BYTES multiplication AST",
+    "driver_unchanged": true,
+    "driver_main_executed": false
+  },
+  "materialization_result_independently_fetched_and_hashed": {
+    "bytes": 69974,
+    "sha256": "b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58",
+    "git_blob": "456f749e7558e18df99172d9c9273cda890b8feb"
+  },
+  "materialization_actual_terminal_independently_fetched_and_checked": {
+    "bytes": 913,
+    "sha256": "83a16687e3b108f49c598cb6be9aead68a2a95991c92df49a836889422bab2b2",
+    "git_blob": "3e60d21bec849a19efb5d818b43152bfc72486fe"
+  },
+  "actual_materialization_job": "1a1d0c6996e-2564-1bc8",
+  "runtime_observation": {
+    "bytes": 2479,
+    "sha256": "b28c6140b7cfb8a118f4a8e12ab8793b7a2426cfe05ebebb24dee7892f111b1b",
+    "git_blob": "33f5f7e4f7c40b2363924f866667ae4456e891bb"
+  },
+  "limitations": [
+    "No wrapper main or maintenance command executed.",
+    "No semantic tests run against the wrapper.",
+    "No claim that restored runtime materials or complete formatter environment exist.",
+    "Current original-map-only environment code is explicitly a HOLD structure; a separate exact environment revision is required before approval."
+  ],
+  "native_operations_performed": false,
+  "source_or_ref_updates": false
+}

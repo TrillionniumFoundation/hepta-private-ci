@@ -1,0 +1,1251 @@
+{
+  "schema": "hepta.utility.nonrust-qa-migration-plan.v1",
+  "status": "prepared_exact_attack_mapping_no_tests_run",
+  "base_preparation": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "structural_stage": {
+    "manifest": "ef1b6d57369aa6fcdc4950424429b11bfbb0c37b",
+    "historical_claim": "Only at that earlier stage:12QA EXPECTED-only,140 functions source+AST unchanged.",
+    "files": [
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+        "after": {
+          "bytes": 26872,
+          "sha256": "ac47d2af70cb786b68ade4cc2999cdc7be496be6598376451484992dbcc8e852",
+          "git_blob_sha": "4b824b6562195eb23e82ec41d7ce727a6885427a"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+        "after": {
+          "bytes": 16270,
+          "sha256": "99ea5f4e78e83eefba712241749cab517eba36028f489b50faaa22db46dad6f6",
+          "git_blob_sha": "369cfa0646d7598f7934e6131712c70dbe5969c6"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "after": {
+          "bytes": 14070,
+          "sha256": "113cac56debefe87460e3ebc76ee34201a00a9d7439449f5061c5f90e3af20e6",
+          "git_blob_sha": "90c95e989d59dd67a005f89588de27062f70e992"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "after": {
+          "bytes": 15442,
+          "sha256": "3985cde8ffaf790e200c43580474439183dfb023048327878d1f107b75cf5e01",
+          "git_blob_sha": "3a5242a01e2ad3d213d71323076bfe6661d4c36c"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "after": {
+          "bytes": 25886,
+          "sha256": "755c636d56b5fd16719dc6ae8e5ff987b1f594dae19873c5062287ce68689efe",
+          "git_blob_sha": "e29b774f6a54229acf05d237c7d00b0bef5608fb"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "after": {
+          "bytes": 17639,
+          "sha256": "615372987e280bd49098130779e0c0347fe2762c1e81796b477d1d728b99d869",
+          "git_blob_sha": "27f9f64ff416ab65d5f068a5e25fcae8385b10ab"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "after": {
+          "bytes": 22402,
+          "sha256": "1f12f51b7b5c7fdd2300a35888bbc2e5b5415f49ac449c6e6749f6e3c900357a",
+          "git_blob_sha": "4891478d53b6da4ffe830adaaba2bcfa45b31619"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "after": {
+          "bytes": 14507,
+          "sha256": "ba60c6a3aa08bbc5a6ecbb1311a1483243dde3bf5022f65d94d6c9ba22d10027",
+          "git_blob_sha": "e56bcaeea85ed4749c75898b2df3519a1cb18368"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+        "after": {
+          "bytes": 23165,
+          "sha256": "c6ebba5304d1c8c906956cdb3611bdd0b2e08eea802623c9661c11f8c123b720",
+          "git_blob_sha": "724aef5bba1f9124b18601344ecaeb3ce2288b21"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "after": {
+          "bytes": 16564,
+          "sha256": "76dd1212624361df213bf0759a16f79a265c3c3d1e5a44d2342eca0a83a22a23",
+          "git_blob_sha": "9db8a2178c629ca8a6c7136bc25e9833579c2edd"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "after": {
+          "bytes": 14974,
+          "sha256": "a55f752a2f0a3b425109cae7a23ec7bd39d7a32b2d8aa1d38f8ba3c127a8ee5a",
+          "git_blob_sha": "76f0d48e9150ec50c64ad8a25b46b66bf8a4096b"
+        }
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "after": {
+          "bytes": 27811,
+          "sha256": "528221475bae004ea46aa7d16e86595294a86254589083f08d240f7ad1377939",
+          "git_blob_sha": "0ef4dc5b862c8e684697775d3469823537961005"
+        }
+      }
+    ]
+  },
+  "current_static_review_cohort": {
+    "files": 17,
+    "test_methods": 152,
+    "description": "A different targeted set for affected guards; not the same cohort as the prior12QA/140 functions. Parsed only; no imports of tests or unittest execution."
+  },
+  "existing_methods_mapped": [
+    {
+      "id": "M01",
+      "before": {
+        "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+          "git_blob_sha": "4b824b6562195eb23e82ec41d7ce727a6885427a",
+          "bytes": 26872,
+          "sha256": "ac47d2af70cb786b68ade4cc2999cdc7be496be6598376451484992dbcc8e852"
+        },
+        "method": {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_registered_calls_are_exact_and_extra_callers_are_rejected",
+          "source_sha256": "91ffa7b186377585970e339956da603ff8f71472afa982cc4a0596120c1241d4",
+          "ast_sha256": "419385c1961ccd8391fa3b5e7219bf70de75213e11071d9497b02f0779bc8d28",
+          "line": 129,
+          "end_line": 154,
+          "self_calls": [
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Apply the separately approved complete-collector proposal only if actual QA preimage remains 4b824b6562195eb23e82ec41d7ce727a6885427a.",
+        "Use original _source_files and original masks for all Rust; pin source_roots ('codex-rs',) and original three ignored fragments. Pass the same ignored tuple to exactly the four existing call sites.",
+        "Every mutant is a fresh dict of the full fixed baseline map; _verify_boundary recomputes original authority fields without a supplied cache."
+      ],
+      "unchanged_obligations": [
+        "Every old injection, exact membership check, missing-admitted-caller rejection, real remote duplicate and authority False assertion remains; tail is byte-identical after reversing four ignored arguments."
+      ],
+      "limits": [
+        "Approved proposal manifest188f73478ab19d1e35ba313c9cb89758b673ac2c / postb3ce035272a94815839dcb002077936276027044 / root review2db2b92122ab01e3c601fd29354547861fc918d0. This changes one original method AST; do not repeat the earlier all140-unchanged statement."
+      ],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M02",
+      "before": {
+        "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+          "git_blob_sha": "4b824b6562195eb23e82ec41d7ce727a6885427a",
+          "bytes": 26872,
+          "sha256": "ac47d2af70cb786b68ade4cc2999cdc7be496be6598376451484992dbcc8e852"
+        },
+        "method": {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_legacy_tnu_version_and_readiness_reject_evaluated_contexts",
+          "source_sha256": "156cde124e1ae874aaa6d1b7ed7c4982697db70dd0a2e09acc1bfa63581231bf",
+          "ast_sha256": "0952d5c0181db3d1b28f95cc002281eee91b2ae8b9f2c3f89c3ee1d704c5afee",
+          "line": 257,
+          "end_line": 275,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "7ba226d0768a92c38acb904121600d475b0009b8c30a085dd5c317ca9d1382bd"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "054904d7e6ce53ceab4710d7927c43a65267a0d6f07dd7d3b6a8bcef9c21b839"
+            },
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "981151333b2f210c5f170b37fc7fce8c74870c2c72d28ed5831502ee9386b7da"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0358b2cb536adcc2cbc668a596919dfba382d4e5655bb22955648880543d7ccf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ee9f7ad2d352085df194f9b03b3cd70c3444ad8210a8fdca3393a6eac9dc737c"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Keep the three unchanged legacy rejection targets: CLIENT.require_original_context, SERVICE.serve_original_retained_channel, READINESS_OWNER.serve_completion_readiness with self.context.legacy()?.",
+        "The old readiness_response legacy-call deletion migrates to actual request.require_profile(&self.context,self.binding,request_id) in the same shared function, plus deletion/reversal of the TrainingNoUpdate delegation to Request::require_context.",
+        "The old read_original_readiness legacy-call deletion migrates to actual self.context.decision() in the same shared function; retain the existing ReadProfile::decision -> wire::decision(context) Legacy-arm mutation and add explicit evaluated-mode/opaque-cut rejection at its distinct entry.",
+        "Keep unused-body attacks on each of the five original functions; do not drop the two shared functions merely because they now serve two explicit profiles."
+      ],
+      "unchanged_obligations": [
+        "Original ReadProfile::legacy TrainingNoUpdate/Err cases, legacy3/4cut wire.mode attacks, and each original profile delegation attack remain. Shared evaluated support never changes the old legacy entry policy."
+      ],
+      "limits": [
+        "New shared-method admission is intentional only behind explicit typed profile/purpose. Equivalent attack targets need a separately reviewed actual postfmt diff; no claim that deleting decision is itself the same operation as the old legacy check."
+      ],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M03",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+          "git_blob_sha": "9db8a2178c629ca8a6c7136bc25e9833579c2edd",
+          "bytes": 16564,
+          "sha256": "76dd1212624361df213bf0759a16f79a265c3c3d1e5a44d2342eca0a83a22a23"
+        },
+        "method": {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_command_and_readback_keep_actual_owner_and_original_transport_bounds",
+          "source_sha256": "ff16c3ea9d0103e9e2a9e0b01bad8c17be00addc3fd9fe38554dbf2c3b41f7e6",
+          "ast_sha256": "74d780f026c7c2c896f6b2be2a082ca8d02838ff87e1e55f9db2407521333a17",
+          "line": 153,
+          "end_line": 166,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "4b5c3fbe9b141b4b3f7e4669ff1acf6b85569eaefad69d6638ef14541f9605eb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "12884bdf2c9d0c6d1408282932cfcb3959a2a618bda8fc98c0535f7501524617"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1c939142ecb16686cca63101ae38fecc40a215738421909553a4b4c714e0bbea"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "6eac12809310f9f9d2c932e60acf92300b02c6279b44d14fd5401561c9df4321"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9cb0f3e2e26331e61a22881f8c8ba10e12bec04df1766485698be2c6e0f6a91e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "65e0b88c3a7c1a2e36fd0a6b571d66eb2de240e71d484633e1344839ccff95ae"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e0b1402e79504c9191ac66197a62892b5d1ead0b208a6798362997760344f874"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Move the two real original owner call mutations from SERVICE.original_response to circuit_evaluated_selection_command_service::observe_original's Legacy arm: exact attest_original_remote_selection and readback_remote calls remain distinct attack targets.",
+        "Add the original_response dispatch attack: actual held typed owner -> observe_original with Execute only when execute, otherwise Readback. Swapping actions must reject.",
+        "Replace the obsolete direct-call locator in EVIDENCE.evidence_response with its actual observe_original(original,Readback) guard and retain a real helper readback mutation. Add Readback->Execute attack.",
+        "Add symmetric attacks for the new evaluated helper arm's actual original evaluated attest/readback calls; do not substitute these for the Legacy attacks."
+      ],
+      "unchanged_obligations": [
+        "Original spawn_blocking, 500ms evidence bound, authenticate_receipt and exact receipt digest assertions unchanged. No-key/writer/readback-effect method stays intact."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M04",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+          "git_blob_sha": "27f9f64ff416ab65d5f068a5e25fcae8385b10ab",
+          "bytes": 17639,
+          "sha256": "615372987e280bd49098130779e0c0347fe2762c1e81796b477d1d728b99d869"
+        },
+        "method": {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_attestation_and_readback_use_live_original_owners_without_running_c",
+          "source_sha256": "cb1ee9a90163cee4e2d866d258b8f0fba6f4894c54a4f52f1aa43a70c8254df9",
+          "ast_sha256": "7412bd7e44a1a20e84953d31160310fdc8b4ded4d2e9294bc171088cf523c7b6",
+          "line": 158,
+          "end_line": 175,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "bb54151c3d455ff7ab63687b145422fff7401b4a3ce9985a2323144450cc7a02"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "55a556b68a2f9c510a9b16b7094b1e689026a92c41d446a6dff7059a424c55f7"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "762d90056ee5b944ac49b621a2fc9a6b7912272712210c6d40bc998c58c7e788"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1c939142ecb16686cca63101ae38fecc40a215738421909553a4b4c714e0bbea"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "6eac12809310f9f9d2c932e60acf92300b02c6279b44d14fd5401561c9df4321"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "86e47a9a12d3692d2c591ec393206f4d538aa08be8c1e0a13ea06410c8c9a110"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "a57c520658eaa66eb0f44520917e9cbb426e38a6fee557e140ddbcc01822eeb4"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "941a433084a47455634595da052d7de1efb5c03a091c9083b9afe653baf8e3df"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e598a7410d1bf6d6b875b562c6c67c598b02b9f60bda1a9c79aac755068a1873"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e0b1402e79504c9191ac66197a62892b5d1ead0b208a6798362997760344f874"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "629daa4b52b36007b7ee87b569233ca3f2b2f2588518282ca70da7849b83b1fe"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Move original C attest_original_remote_completion, readback_remote and selector:&self.selector mutations to the actual Legacy arm of circuit_evaluated_next_use_command_service::observe_original.",
+        "Fence actual original_response dispatch and exact evidence_response Readback delegation before testing original helper effects. Add wrong-action negative.",
+        "Add evaluated arm same actual T/E/S/live dependencies and evaluated original C attest/readback mutations independently."
+      ],
+      "unchanged_obligations": [
+        "Original spawn_blocking, 500ms, command/evidence final current and require_clock, authenticate_receipt and receipt digest tests unchanged. Every original no-C-execute/factory/signer ban remains."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M05",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+          "git_blob_sha": "724aef5bba1f9124b18601344ecaeb3ce2288b21",
+          "bytes": 23165,
+          "sha256": "c6ebba5304d1c8c906956cdb3611bdd0b2e08eea802623c9661c11f8c123b720"
+        },
+        "method": {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_service_checks_read_only_request_before_the_same_original_owner",
+          "source_sha256": "bbc763a6b9a7d0e7f32ad2f44110e0feac2152f9d9536d46cbdcb4302f885c6f",
+          "ast_sha256": "2f4f344e64d0d2f8094d26b877f5c8da111458e7069a2e12ff8e5362fbea6281",
+          "line": 264,
+          "end_line": 287,
+          "self_calls": [
+            {
+              "method": "mutate",
+              "ast_sha256": "0319beb4fa296f5b82a5e5e5901e51e29c193fce59d02ed4ffda7404f7483f7b"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "5ac19b20a48781bb93ef9221e69b49878de10899f756485080f9de60e9f785a4"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "b7dd35c4b2e34899f3b173815cdc4bf9a9101df792b27fc8efe6cb3e24f0b91f"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "19e82e7db4760cc890fb6eb87a97be452da1c53b0cb82b2eab1f8ce30f6d6ba3"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "c8820fe4f849e2c65c0b645b615c065502070791223f2ba468ede0840d0c3297"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Preserve request authentication before original owner lock and actual typed owner declaration.",
+        "Original direct readback_remote span moves to observe_original(original,Readback) in the read-only service and the actual Legacy helper readback call.",
+        "Preserve the original attempted attest/Execute replacement rejection at the service dispatch; add evaluated helper Readback-only path without replacing the Legacy original call attack.",
+        "If original statement-order splice uses the old direct-call end, re-anchor it to the actual delegate statement from approved formatted code; preserve the same before/after request/owner ordering assertion."
+      ],
+      "unchanged_obligations": [
+        "All old request/owner order, sign/execute/recover/reset/reconnect bans, complete collector membership and actual current response tests remain."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M06",
+      "before": {
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+          "git_blob_sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+          "bytes": 11172,
+          "sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818"
+        },
+        "method": {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_legacy_or_non_root_provider_cannot_be_promoted",
+          "source_sha256": "99b47e01e379d1c209c4f6b975d77bdf65fc8ad6d4424b7c3b922a3e84e5747e",
+          "ast_sha256": "5450dfd83c1085df7720920578b738dad0a33f6669b3638e4a3f249ac1e609fc",
+          "line": 98,
+          "end_line": 110,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "c44edf9ed527a220d6e9adb9b4d5ddb81d67e64a827dddf14b1fcb526f82eb4a"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "883dd8ba024c341f404a9888232228c0e09b3a4917dbe49dfa114c658893e587"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "The legacy public factory retains its exact provider parameter and Legacy private-profile delegation.",
+        "Move original issuer conversion and Some(final_use_issuer) state attacks to the actual private from_original_profile function that now owns those statements.",
+        "Add the evaluated public factory's actual pre-held E Connection and explicit Evaluated delegation as additional tests; no raw receipt substitution."
+      ],
+      "unchanged_obligations": [
+        "Original AgentdUnixFinalUseGrantProvider -> independent original issuer conversion, no arbitrary provider/Root grant promotion and all original wrapper attacks remain."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M07",
+      "before": {
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+          "git_blob_sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+          "bytes": 11172,
+          "sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818"
+        },
+        "method": {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_cold_and_unknown_never_reset_the_original_issuer",
+          "source_sha256": "6246cefe19346b59d8651dca38e043188d448a37651e5626a23234cd90a17d09",
+          "ast_sha256": "be5b35da069526949cd59fdb4ed466508a9a22551bd57929b6acee0188baaf00",
+          "line": 153,
+          "end_line": 169,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "89b0584cc36812d398f66cd832b288bbe2998f01e91883be39782c2a722f9cb7"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "c042eef627675777139b5466c179471a7f02fa0361bbad99a1e9a321a7755e7f"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "c8cf901a81bd7a158812320cb6141a99158bab069c6fc5fc532188c0199d1d12"
+            },
+            {
+              "method": "rejects_source",
+              "ast_sha256": "dac1fc34ba7f5e25129640c69aa26b00c4d988b59f1d5f1c54da454849527e01"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Keep legacy recovery wrapper origin/delegation restriction; move its original Recovered phase/None issuer state attacks to recover_original_profile.",
+        "Keep new constructor recovered one-shot latches and actual historical Published outcome branch guards exactly.",
+        "Add explicit evaluated recovery's complete four-cut/all-signature prefix and required original E ownership; recovery still has no issuer and no reader admission."
+      ],
+      "unchanged_obligations": [
+        "Every original anti-reset injection and denial/unknown behavior remains; recovered historical publication never starts C or provides a fresh issuer."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M08",
+      "before": {
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+          "git_blob_sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+          "bytes": 11172,
+          "sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818"
+        },
+        "method": {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback",
+          "source_sha256": "b809a7066ca2472a57ab998a7ea76489da6ce5ad3cbcb9479cc45c59e63e9733",
+          "ast_sha256": "19e394ec99e3684bef2fc0695c05c6796b6562c245331f59e47462f8c03ceca6",
+          "line": 191,
+          "end_line": 199,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "eb8405bc63f121c6647607d5cccf151ad15abfc7cbcbb820c50028cd9a47b31c"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "b4ceba101a8f073300b9bdcedd92e979db6d2de275de12d44bb6ab543e288c60"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "The ordinary service join of commands/runtime/independent issuer remains unchanged.",
+        "Shared command_response's old direct read_original is now the recovered-admission path read_original_recovery on Readback; map the original read mutation to that actual call plus both complete read_original calls inside recovery.",
+        "Keep original final_use_outcome/Denied/Uncertain branch attacks, and add actual Published+freshness-before-reader clone in the shared selection channel."
+      ],
+      "unchanged_obligations": [
+        "Do not accept Installed/Some(reader) alone, change denial to complete NoUpdate, or revoke already handed connections through malformed wire."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M09",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "git_blob_sha": "4891478d53b6da4ffe830adaaba2bcfa45b31619",
+          "bytes": 22402,
+          "sha256": "1f12f51b7b5c7fdd2300a35888bbc2e5b5415f49ac449c6e6749f6e3c900357a"
+        },
+        "method": {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_readiness_only_original_unresolved_publication_remains_pending",
+          "source_sha256": "e79156dfd85acfda450e3ce5f799cabfad29d4aa243925edd947d1fb24c24d7e",
+          "ast_sha256": "eefe7e79c6434b1909b8297ba6da942e0cac12c859beb17d7195630156136f1f",
+          "line": 231,
+          "end_line": 245,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "71018285b2d791e03ead54c7ea64820b8025508a74403e46fdbca0ed33f68084"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c7a9d5828ebe953c0539e8a551e42d689c1c52b8de75e77d956c2e8744008f87"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7334bf51e8bbbcc26cd2c43ea638ebdb4d8bcdad71bb89d76bf4eb233143df35"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "fd770e153d0a1b56ad082db7b43b5c6241d850fab7f5bf23614219ae2f7926f4"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Preserve all actual Source/Cell/task-current and exact ReconciliationRequired->NotReady mutations in read_original_readiness.",
+        "The legacy binder's original context_binding check now belongs to shared bind_profile through ReadProfile::binding; keep legacy wrapper selection and test the actual shared binding before/after Material/D and peer lifetime.",
+        "Final exact changed literal locators come from actual fmt, not this plan."
+      ],
+      "unchanged_obligations": [
+        "Original 128-frame/16KiB limits, actual publication decode/read, C private snapshot on unresolved and all errors other than ReconciliationRequired remain."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M10",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "git_blob_sha": "4891478d53b6da4ffe830adaaba2bcfa45b31619",
+          "bytes": 22402,
+          "sha256": "1f12f51b7b5c7fdd2300a35888bbc2e5b5415f49ac449c6e6749f6e3c900357a"
+        },
+        "method": {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity",
+          "source_sha256": "3a7606393caeafef9952f7e5c3d0f133e87302ec7f0c7e9e645a62d0cc529647",
+          "ast_sha256": "3de286d22966f5df2d6245f6835a7c7c4e13d77fba9aeb69b518a8f1a8b3eca0",
+          "line": 247,
+          "end_line": 266,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "36a43a828c5ecd1c1c5b2975bd390abca0c3dee63de0b7ed84088806d6e31804"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7c3c24346eee793ca13f57cf89dd448c6f22a4477b0f3d15535b24900ae1e8fd"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "74b3ac81f2fa64aa3d1d0e3320571cb1a37d7856686e5927d0438a259ecba742"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Keep channel.take, request count, actual transport, retained Ready equality and restore-after-check attacks.",
+        "Move shared request.require_context(self.context.legacy()) mutation to request.require_profile; independently attack the Legacy delegation to old require_context.",
+        "Move shared wire::context_binding(self.context.legacy(),fresh) mutation to self.context.binding(fresh); retain original fresh<started clock attack.",
+        "Keep old Request::require_context purpose inequality and add distinct evaluated purpose/mode request checks."
+      ],
+      "unchanged_obligations": [
+        "Same authenticated Ready remains legal; changed Ready or Ready->NotReady must consume connection and reject before restore. No deadlines or frame counts change."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M11",
+      "before": {
+        "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+          "git_blob_sha": "5fb67098c33f4ccc055fb3e8ac18486543680eec",
+          "bytes": 13049,
+          "sha256": "547b93c64daf821fbc4b3b75cc7e1c6225799cd0164f7a24853124a5f6a67034"
+        },
+        "method": {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_authentication_does_not_open_candidate_effects_or_original_root_factories",
+          "source_sha256": "50ade65d2578279777e59f328cedd892a7ff9b770e1b7b466d20364843395fb4",
+          "ast_sha256": "b5cc57c6d3fe18e6afe46621fa1a117d495669391ea3f992aab02fa724ca7208",
+          "line": 205,
+          "end_line": 219,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "bb9f735f7232f40c185a59143fad8de81d7d6bd57acc485172bff54f74822db8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c0f89f1963dde2e1905c0030d00f996962830bb6cd34ce4372238175dadcf0cc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cff6c4e01fc61874755b3f3fe29284e6b0156915a2d0144f88c39b2d055a2a7c"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "023a278c6fd2ec999bffa70cbda28d0e2ef8160094b06e4f9e0eda84d5187cc5"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "The old unconditional Candidate S/C refusal was intentionally replaced only for the complete evaluated NoUpdate route. Do not preserve a false unconditional-refusal assertion.",
+        "Map that old authority attack to actual delegated require_evaluated_retained_stage and its complete evaluated_prefix predicate; mutate legacy3/4/5 and Adopt acceptance separately.",
+        "Independently delete pre-effect/before-dispatch/post-effect actual Root-gate checks in execute_evaluated_retained_stage, failed latch, original deadline and no-new-grant constraints."
+      ],
+      "unchanged_obligations": [
+        "Root six-signature authentication remains distinct from effect permission. Original factory/grant/signer forbiddens and non-evaluated refusal paths remain."
+      ],
+      "limits": [
+        "This is a disclosed semantic relocation under the authorized new NoUpdate-only route, not an AST-only marker edit. Fresh real task qualification remains unproven."
+      ],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M12",
+      "before": {
+        "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+          "git_blob_sha": "bcf2dbb0824b0a99d9acfd8c54afe51356d212a1",
+          "bytes": 9787,
+          "sha256": "9b71b1793c6969fef17488bd221b01e688464b41c04fade74dc1cbb96e4074ef"
+        },
+        "method": {
+          "class": "ResidentCandidateStageClosureTests",
+          "name": "test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied",
+          "source_sha256": "87adab0801f097a349226ed5d744de1023b77443dc58b5b4b595ea10cbc28acb",
+          "ast_sha256": "6ddc38f43f728fa66097d8d0a822314a36f081413cfc77825b7eb1885d6e1391",
+          "line": 139,
+          "end_line": 166,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "12b824403d0954a2b0d4f263a9f95d76d285e9fd31b28cb0ed7d8ac0b58ecf50"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "da11545f1ca3840a7e1006b45f4f21090ae4c35e22292ae58c5fbc9e5a646adb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1e921833f6ba624dbc779dc09895c8535994d01638a87cd93e3eeabb7a2aec56"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5224bfb7d8db0ba3587e222d0b0c7f8473688b7b84666d6b03ace5cf26d58483"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9ffd81d7783a77ce3445199945edb865c695b2c4acac7f4824016e72a20541f2"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2d2fbb8013c24e1e481267e76a7f3afb1f201f82ba657f9709ae977e555fc78b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3ea7cbf9dd88a302759de16d7a16d103c6a6254815e443c6e233b2eabb94eaf9"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "09539199a4c04438af61ab3d21c41e2669652850a82c79804cf2c5a1c0b6ac25"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ec419b01b706e5a4211d20ee3dec0420c85946b3b28a10023d00b35b591d1fa0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "32f2910e38c0d6cf9d1601835ee7fac5eafcc3dcacdce3bdb1ecc4bb16bbf74c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "13af57465aa3df249b583c0835f66e1601b2c12f58d3febf0641d101f24691bd"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Retain every actual recovery/common checkpoint and existing Root begin/checkpoint/attestation attack.",
+        "Where old require_stage blanket-denied Candidate S/C, test the exact actual typed delegation plus complete evaluated-prefix check; retain refusal for absent capability, incomplete prefix, Adopt and legacy mismatches.",
+        "Existing real E execution and authentication predecessor checks remain; add actual Version/S/C authority checks in the new helper rather than declaring routing itself authorized."
+      ],
+      "unchanged_obligations": [
+        "No Model/Training/Evaluation caller source is removed; no supplied receipt grants the original Root effect capability."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M13",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+          "git_blob_sha": "90c95e989d59dd67a005f89588de27062f70e992",
+          "bytes": 14070,
+          "sha256": "113cac56debefe87460e3ebc76ee34201a00a9d7439449f5061c5f90e3af20e6"
+        },
+        "method": {
+          "class": "OriginalCandidateStageClosureTests",
+          "name": "test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority",
+          "source_sha256": "b4b6a2b4f292d5fa4d00f56c3307f1e6a720932bc4cb5dad0920125642fc5b9f",
+          "ast_sha256": "12045f88675b1ae0f175e5ddd87263b4077195a23bb1a1a239f8a1462972d1dd",
+          "line": 206,
+          "end_line": 224,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "cc00ca167b35d981ab6bda5695e26662bdf6088d64507aa1bd2687344ea874bf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "8d41f1df0a09257d73c7f2bbb8eaf0c4f9f66297679e1f42e603dc8cbc517a84"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "67813686749eab3fbfbaa3d5633e6bef5e00a63e3647fa0ce188544535fca53c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b6c7ab7bbdec3c85ab87c2ace47bac06654d66f32c44a6a370f55b4f25d21d2d"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "eda0443bedfd2b02530029e26a240b848f9af3fd5251e6cf44d7b74bacbdf8eb"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Preserve real E execution/InsufficientEvidence/Unknown and original unavailable proposal path.",
+        "Map removed blanket S/C refusal markers only to the complete evaluated retained-prefix predicate and original Root/current/custody effect checks.",
+        "Add explicit missing T/E/Version/S/C initial channel attacks and Adopt/wrong-cut mutations; no fallback from missing B to complete NoUpdate."
+      ],
+      "unchanged_obligations": [
+        "Original prepare_proposal remains unavailable without actual adoption owner. Every original unrelated candidate mutation and refusal stays."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M14",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "git_blob_sha": "4891478d53b6da4ffe830adaaba2bcfa45b31619",
+          "bytes": 22402,
+          "sha256": "1f12f51b7b5c7fdd2300a35888bbc2e5b5415f49ac449c6e6749f6e3c900357a"
+        },
+        "method": {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors",
+          "source_sha256": "a10e1a35f3ec6c3f38162878ada6d4ee32a88bd41eee8462a8c25ec38f20f77c",
+          "ast_sha256": "48b82f73866d5475a68e829cb59adc8cc7e3cb63ff89884f30b56217b0424db7",
+          "line": 205,
+          "end_line": 229,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "7f51f149e5958c347d5ccd1c34fb0f4a1b7c9270791fb7c6a3ff9e3377d12c0d"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7ec9f8ca971324cd1a09a3cdc5eabe3b0409aaf33c3d1ed00a0315affda78236"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "985855cbb0235254aecdbc947bc4b17d0b466011474c96169c14fe266c4d7449"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "3e7b44b2ddb956d93a6f084a3ee645fc50a0dcd1eb5af5f56da77be13da38782"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "For Selector/NextUse keep every original legacy bind marker at bind_original_stage_channel unchanged.",
+        "Only READINESS's shared Material/D and peer-lifetime work moves to bind_profile. Preserve its old bind wrapper -> TrainingNoUpdate dispatch and mutate the same actual checks in bind_profile.",
+        "The four existing initial channel .take attacks and all reopen/from_stream/connect/Instant::now injections stay byte-identical where formatting permits."
+      ],
+      "unchanged_obligations": [
+        "No replacement capability, renewed lifetime or recovered Fresh execution is allowed; keep every original negative assertion."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M15",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+          "git_blob_sha": "724aef5bba1f9124b18601344ecaeb3ce2288b21",
+          "bytes": 23165,
+          "sha256": "c6ebba5304d1c8c906956cdb3611bdd0b2e08eea802623c9661c11f8c123b720"
+        },
+        "method": {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_opaque_dataset_training_and_selection_cannot_be_detached_or_renewed",
+          "source_sha256": "e20d7eb29584dd31e959e6032df4b18dd361a12af7f39e8442bf56b13fb477f7",
+          "ast_sha256": "330336ed27b9d074cbc3dae1d1c87daff3614e393b42dc322d29a56c4b41fb43",
+          "line": 211,
+          "end_line": 236,
+          "self_calls": [
+            {
+              "method": "mutate",
+              "ast_sha256": "93b11a571c8da81e41cf55bd6d6bd4d247cead046d090ee4feb7fe1e87f7cf44"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "a3fd3c7551158878ffa7056d344fc96c13ada5871fc5f44c6451236c89e04138"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "3c3130175ef68bc891f446e627eaa78aa0546cce6847e5a0905383f3e5d28bbf"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Keep legacy dataset snapshot, scope and verifier context construction attacks in bind_original_selection.",
+        "Move all actual initial/Material/D validation, peer lifetime, full verified Selection equality, actual channel custody and returned opaque evidence construction mutations to shared finish_binding.",
+        "Preserve the explicit equality inversion mutant and original context_binding mutation. Add evaluated binder's actual T/E recovery + same Selection into finish_binding, without replacing legacy tests."
+      ],
+      "unchanged_obligations": [
+        "Every old check string has one actual new owner location. No reduction of original initial binding, full signatures, clock, scope or connection ownership."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M16",
+      "before": {
+        "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+          "git_blob_sha": "724aef5bba1f9124b18601344ecaeb3ce2288b21",
+          "bytes": 23165,
+          "sha256": "c6ebba5304d1c8c906956cdb3611bdd0b2e08eea802623c9661c11f8c123b720"
+        },
+        "method": {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_wire_purpose_action_sequence_and_original_context_cannot_change",
+          "source_sha256": "01bae92e49f0f5504d649bf204d9d39719e185ed77f6d8bacf5fcbd344df5967",
+          "ast_sha256": "95b8b81b99394d7a4840111e6fccac8a45c5002c941efa58a8d3ba21231dbab4",
+          "line": 238,
+          "end_line": 262,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "6914dc8749951dd857342a54f5174792890ccd2e4558c2dac211de242bbafdb1"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "5962423b0d0afbaa586454ac88c8fdb912983d8c924fe2708044150c3d9a20cc"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "a50cedb469a001f6719d2522131531f823d5a63a96d6665d431f3a534f26e65b"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "c05d6d68307507e6a16fdcb1fa2475b82ffa153c0796b9445ee8a3d7e5a6157e"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "0af1f1be1add4ef880a1d0d68cb200e49c1ec2b09c8ed5fbf0fc0499284200cd"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Keep the original legacy readback-purpose mutation and original Readback->Execute negative.",
+        "request.operation = OPERATION.into becomes actual operation(context).into; observed.operation != OPERATION becomes actual != operation(context). Preserve deletion/inversion negatives at those same functions.",
+        "Independently test operation's Legacy fallback and evaluated-only branch, both actual purpose literals, and wrong-profile purpose crossing."
+      ],
+      "unchanged_obligations": [
+        "Every original schema/request_id/1..128/binding/operation_id/training_head/scope/actor/action inequality attack stays. No same-key generic purpose."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    },
+    {
+      "id": "M17",
+      "before": {
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "source": {
+          "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+          "git_blob_sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+          "bytes": 11172,
+          "sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818"
+        },
+        "method": {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_publication_and_c_runtime_keep_the_original_verifier_tail",
+          "source_sha256": "0c1f701ab63b6fe53c7ecb9a33a7a469f19f6f2d6d9910d7f3dc604cf112c4b4",
+          "ast_sha256": "305f0eb98557ba14d71355e9615f082e0af2ec403032c9ab4c39b95b5f6674a7",
+          "line": 171,
+          "end_line": 189,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "8d1552077c62101ea4c11e8dd55abac0e01baac1686b581fb065228bc9fb702f"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "a31ed4303f98e9fb1a5a969b8de915aa6e95eb1cc76627d92cd78146c50a7cd2"
+            },
+            {
+              "method": "rejects_source",
+              "ast_sha256": "4f24bb2254837fa9b4b3610d4d598b8aaa71f7a4ca5b7cbf914a6f86b3632181"
+            }
+          ]
+        }
+      },
+      "migration": [
+        "Keep each original Requested, issuer-consumed, exact grant, publication_requested, original install and final Published mutation.",
+        "The direct legacy publish_and_retain_original_trainer call now resides in RetainedVersionPreparedV1::publish. Keep that actual original UFCS call mutation there and add the version effect's consuming original.publish(signed) delegation mutation.",
+        "Add the distinct evaluated Prepared original UFCS and same T/E tuple retention attacks. Do not substitute a new publisher or repeatable enum clone."
+      ],
+      "unchanged_obligations": [
+        "All original actual read/current, Published-before-C, config.take, crate::run, and public visibility broadening mutations stay."
+      ],
+      "limits": [],
+      "actual_postformat_diff": "pending",
+      "executed": false
+    }
+  ],
+  "new_methods_planned": [
+    {
+      "name": "test_new_typed_edges_and_old_boundary_inventory_are_exact",
+      "attacks": [
+        "Exact all569 boundary IDs/required IDs plus original authority False; compare the 28 new fixed rows, every receiver/method/definition and exact product_callers from structural plan.",
+        "This is manifest integrity, not a replacement for full original caller verification."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_complete_evaluated_prefix_cannot_admit_legacy_adopt_or_wrong_owner",
+      "attacks": [
+        "Delete/reverse complete NoUpdate, exact4..6, no legacy TNU, baseline-selected bundle, changed candidate and exact next-stage checks.",
+        "Delete full D/T/E snapshot/signature/context pin equality; replace first Fresh-only construction with unconditional Fresh."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_original_continuation_channels_are_consumed_once",
+      "attacks": [
+        "Replace each original initial Version/S/C/readiness .take with retained/recreated value; bypass failed latch or reset before final checks.",
+        "Require private original fields/profile storage and prohibit public raw/mutable capability construction."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_root_current_checks_surround_actual_retained_effects",
+      "attacks": [
+        "Delete the pre-lane, pre-effect, post-effect actual held Root gate checks independently.",
+        "Move a gate check after actual dispatch; late failure must stay Uncertain, never reset lane to success."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_version_prepare_is_once_and_completion_requires_actual_readiness",
+      "attacks": [
+        "Replace read-only Version polling with another Prepare; change old128 bounds/deadline/2s readback logic.",
+        "Remove actual Published, actual same S or T/E refresh after Ready; no C execution or manufactured completion in poller."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_four_five_six_pins_keep_full_signed_predecessors",
+      "attacks": [
+        "Shift actual S get4/C get5 receipt to legacy positions; truncate prefix, drop expected actual signatures, scope or original opaque context equality.",
+        "Delete actual Version publication checks before/after S/C readback; remove C observation equality."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_each_selector_clone_is_bound_to_its_actual_root_impl",
+      "attacks": [
+        "Independently drop evaluated clone in Context and Receipt; swap owner scope; keep old body in a different impl, string, comment, nested function or nested module.",
+        "Both exact root impls must independently retain the same original clone_for_original_receipt helper."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_clone_and_cold_recovery_cannot_promote_original_origin",
+      "attacks": [
+        "Change clone_for_original_receipt to Fresh or change recovered attenuation/bind execution_requested flag.",
+        "Remove full evaluated T/E/S authentication or evaluated binding equality while keeping nominal receipt values."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_original_command_helpers_keep_distinct_legacy_and_evaluated_reads",
+      "attacks": [
+        "Mutate both original Legacy attest/readback calls and both evaluated calls independently in S/C helpers.",
+        "Swap Readback with Execute, replace same actual trainer/evaluator/selector/live owner, or skip explicit profile validation."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_evaluated_remote_c_finishes_with_actual_source_cell_after_predecessors",
+      "attacks": [
+        "Remove same opaque S/actual live profile equality; change EvaluatedOwner to LocalOwner or RemoteOwner.",
+        "Replace recovered readback_source with attest_source, or replace actual live read with metadata."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_version_requires_actual_preheld_e_and_distinct_purpose",
+      "attacks": [
+        "Drop E initial_connection.take/bind/read or replace full four-cut with legacy third-cut; bypass cold complete expected signature vector.",
+        "Change purpose/domain with a same-length literal and preserved decoy text; prohibit fresh reconstruction on recovered path."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_cold_reader_is_installed_only_after_two_complete_current_reads",
+      "attacks": [
+        "Install reader in bind_original_predecessor, before second full read, before publication/equality/freshness/lifetime, or retain on failure.",
+        "Delete second actual Artifact/current/phase read or accept physically Published Control in merely Prepared phase as an installed C."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_later_cold_bind_failure_and_invalid_wire_have_separate_effects",
+      "attacks": [
+        "Remove recovered reader clearing after genuine bind/current failure; move clearing to malformed external request handling.",
+        "Require lock and actual scope; do not claim revocation of already handed read-only Arcs."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_only_published_and_fresh_version_can_serve_s_or_start_c",
+      "attacks": [
+        "Replace Published with Installed/Some(reader), clone before full freshness, bypass outcome check or take C config more than once.",
+        "Delete actual same A completion/current checks around original C factory; no fabricated RunStart."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_final_use_and_prepared_custody_are_consumed_by_original_owners",
+      "attacks": [
+        "Remove exact independent grant binding before phase/publication consume; delete cancellation check before effect; reopen consumed phase/flags/issuer.",
+        "Change prepared enum to Clone; drop evaluator from evaluated return; use different T/E or substitute nonoriginal publication call."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_readiness_has_exact_typed_purposes_and_monotone_channel_state",
+      "attacks": [
+        "Admit evaluated through legacy serve/new/require_context, route evaluated through legacy request validators, remove any request echo or NextUse check.",
+        "Restore channel before checks; accept changed Ready/Ready->NotReady; map arbitrary Source errors to NotReady; delete any post-I/O original current check."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_actual_protocol_literals_reject_same_length_comment_and_dead_code_decoys",
+      "attacks": [
+        "For each of17 actual spans change literal contents without changing length; preserve old literal in comment/string/other fn/nested unused fn.",
+        "Check actual code prefix/approved scope and original masked body together; file-level raw substring alone never establishes purpose."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    },
+    {
+      "name": "test_new_production_modules_are_real_and_cannot_gain_authority_factories",
+      "attacks": [
+        "Move each of10 actual path+module mounts into comment/string/nested module/cfg(test), or swap child path while preserving old raw text.",
+        "Add each applicable new forbidden signer/reconnect/writer/Root-grant marker; preserve all original row forbiddens without deletion."
+      ],
+      "implementation": "pending_actual_formatted_source",
+      "executed": false,
+      "proves_only": "source-fence mechanism, not runtime authority or real A/B/C"
+    }
+  ],
+  "preservation_rules": [
+    "Every changed old method gets exact before/after source and AST/call-node mapping. No old assert/attack can be silently dropped.",
+    "Unchanged old methods remain byte-identical; root additionally checks whole-file/postimage identity for all unrelated source.",
+    "Move an attack to the actual new owner/helper only with the original call and new call-site restriction both protected. Keep Legacy and evaluated branches separate.",
+    "The actual old full-source injected-caller attacks remain; no new ignored path, smaller Rust collection, field/result cache or altered gate budget.",
+    "Literal/token strings above identify semantics in the approved preparation; final mutation snippets and complete function-body markers are taken only from actual native formatted postimages.",
+    "No new tests are skipped to obtain PASS. The existing Root-only UID0 case stays explicitly in the33-case workflow inventory and outside default executed coverage.",
+    "All runtime claims remain pending; original c0f failures and old gate artifacts remain independent."
+  ],
+  "gates": {
+    "source_closure": "not_run",
+    "full_caller": "not_run",
+    "cargo": "not_run",
+    "real_A_B_C": "not_established"
+  },
+  "scope_note": "The17 mapped methods are confirmed semantic relocations already read in exact86dd. Additional purely formatted marker updates must be enumerated from actual fmt and reviewed; this plan does not claim every old test is already compatible."
+}

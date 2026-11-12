@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.utility.nonrust-postformat-preparation-manifest.v1",
+  "status": "prepared_not_run_waiting_actual_native_format",
+  "source_published": "c0f78493f815780f68b9bf5e390a21314d79311f",
+  "source_preparation": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "preparation_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "files": [
+    {
+      "filename": "FENCE_SEMANTIC_MATRIX.json",
+      "git_blob_sha": "ffaabdbd254bea8e3d45572c1e8e961625ee5119",
+      "bytes": 124054,
+      "sha256": "9e83fffb854297f7e70f1b72e9f594c2159c4b81955b64ac2eaeeab669b2eb2d"
+    },
+    {
+      "filename": "extract_formatted_fences.py",
+      "git_blob_sha": "f8686d5986f0f21404621d7e2d6a78634dc3f578",
+      "bytes": 23468,
+      "sha256": "faa04485bd3adfb4fe8b765e56da28d398803dd03f625c72a617c5235fe58edb"
+    },
+    {
+      "filename": "INPUT_TEMPLATE_WAITING.json",
+      "git_blob_sha": "432b443aacc5ab56cb248e1bc3c01d6d39e58748",
+      "bytes": 23096,
+      "sha256": "42cd4c80e0783f7eaa13f243d680a64550a830505823fa5886835cf240424e78"
+    },
+    {
+      "filename": "EXTRACTOR_AST_ORIGINAL_SDK.json",
+      "git_blob_sha": "cdc22927cbcd31a0864df8da9c45e006cc620997",
+      "bytes": 304,
+      "sha256": "1d6ce913c45bc79c4c843345073bf1860fbed79e2a1a65dd096472df179882ec"
+    },
+    {
+      "filename": "QA_ATTACK_MIGRATION_PLAN.json",
+      "git_blob_sha": "8f7cfef232e975495f01b3c2cf4437a5ce27ab2a",
+      "bytes": 61710,
+      "sha256": "ec3214ba2ceab2177c81e6df50ec13d441dfed5aa16f6dc07e5469b17c8289e3"
+    },
+    {
+      "filename": "QA_STATIC_METHOD_INVENTORY.json",
+      "git_blob_sha": "d21368dedf663cfa4ae3a57db77141710dfae8d1",
+      "bytes": 179062,
+      "sha256": "d2d1eaec2a6d9f6f1c95d7856f7f75005074db4b19ca7b0ebf2eb4fa890c99d3"
+    },
+    {
+      "filename": "QA_AST_ORIGINAL_SDKS.json",
+      "git_blob_sha": "2d568f1914b2ccb9d06a2a908bd4dbd509179531",
+      "bytes": 132351,
+      "sha256": "f180beb537ed5b3989e86e72a99a4be76ad22d97a4a5c4c41253040e7555e8c3"
+    },
+    {
+      "filename": "README.md",
+      "git_blob_sha": "48ad5a523c77660dc6b684d92e39b6cb0680d211",
+      "bytes": 6535,
+      "sha256": "fe1a8c58b46172fe961e62fa8cc1b5805086ce39c800298addf209d1652caed5"
+    }
+  ],
+  "review_references_not_replaced_or_repacked": {
+    "independent_semantic_review": "4519f6278f8225894d4db1c19181b3de6db0d726",
+    "root_extractor_preparation_review": "8fb461476446b302110165b36c9b401fbe6f01bc",
+    "root_preformat_shape_probe": "3f0b3387b76e1fafb4bb2f2e211c4b05c9ffb4f7",
+    "root_preformat_shape_result": "bc00a5c31495a69aeb2bbca5d5b590acb860bd38",
+    "historical_structure_manifest": "ef1b6d57369aa6fcdc4950424429b11bfbb0c37b",
+    "approved_collector_proposal": "188f73478ab19d1e35ba313c9cb89758b673ac2c",
+    "approved_collector_root_review": "2db2b92122ab01e3c601fd29354547861fc918d0"
+  },
+  "counts": {
+    "old_protected_rows_affected": 39,
+    "new_protected_rows_planned": 10,
+    "unique_rust_paths": 46,
+    "final_protected_rows_expected": 422,
+    "boundaries_unchanged_from_structural_preparation": 569,
+    "critical_literals": 17,
+    "production_module_mounts": 10,
+    "explicit_old_qa_method_migrations": 17,
+    "new_qa_methods_planned": 18,
+    "static_qa_files": 17,
+    "static_qa_methods": 152
+  },
+  "actual_checks": {
+    "extractor_ast_parsed": true,
+    "extractor_definitions_loaded": true,
+    "extractor_main_invoked": false,
+    "qa_static_ast_inventory": true,
+    "source_mutation": false,
+    "source_closure": false,
+    "full_caller": false,
+    "cargo": false,
+    "final_marker_freeze": false,
+    "allowlist_changed": false
+  },
+  "limitations": [
+    "No actual formatted-source contract exists yet.",
+    "Preformat shape checks are separately pinned original evidence, not a final literal or gate result.",
+    "The17/152 targeted AST review cohort is distinct from the historical12/140 structural cohort.",
+    "Future method changes and format-only string migrations require exact before/after mapping; old assertions/attacks and600/300/4800 budgets remain.",
+    "No real authorized A/B/C, settlement, model availability or daemon/Root recovery is proven."
+  ]
+}

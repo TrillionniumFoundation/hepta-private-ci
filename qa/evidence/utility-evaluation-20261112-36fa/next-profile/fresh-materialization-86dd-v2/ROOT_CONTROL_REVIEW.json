@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.root.fresh-materialization-v2-control-review.v1",
+  "reviewed_at_utc": "2026-11-12 17:19:15 UTC",
+  "decision": "APPROVED_FOR_ONE_CORRECTED_CREATE_ONLY_MATERIALIZATION",
+  "driver": {
+    "git_blob": "ed0c0896128528fcd19881fd9d38891104cb1e3e",
+    "bytes": 73386,
+    "sha256": "2d3f96129665bb425d72bdf1d8bb6e575a1885d91d1c4eed39961032fe24fdd6"
+  },
+  "predecessor_review": "4028ed1938469173bbf08927be3ea4603aa1ba86",
+  "exact_revision_patch": "9511f6b9dea28a5e9359b4bdf8562566b000b2fa",
+  "root_static_comparison": "a77cbb3a4d4604c423bf839935103bc0f0177ecd",
+  "original_failure": {
+    "job": "1a1d0badea9-2564-1bbf",
+    "result": "6f4cfae9ebe5541ff1328205d413a08f862da190",
+    "original_file_sdk": "1d1604a79785717b1c604dd560a803dc977a154d",
+    "terminal": "e5a0d5b1cd06ca5ce3098780895463865fff67c9",
+    "exit_code": 1,
+    "status": "FAILED_PREPARATION",
+    "error": "ValueError: source alternates not admitted",
+    "target_created": false,
+    "full_physical_source_before_verified": false,
+    "source_unchanged": null
+  },
+  "diagnosis": {
+    "cause": "The v1 control incorrectly disallowed pre-existing read-only alternates in its source repository. The requirement of an independent new destination remains.",
+    "actual_probe": "f2a69c3d434111133905c0ef454336f59bf5253e",
+    "original_stdout_reader": "c4476e687ef03298a7729a4a28af2d5e4158c2ea",
+    "normal_terminal": "8dfd5d44c1d59bb4173ba40d8e5ec24812d96d6b",
+    "job": "1a1d0bf5574-2564-1bc3",
+    "exit_code": 0,
+    "original_source_state_equal": true,
+    "full_worktree_inventory": false,
+    "observed_object_directories": 4,
+    "observed_alternate_files": 3,
+    "terminal_alternates_absent": true,
+    "existing_git_warning_preserved": true
+  },
+  "reviewed_changes": [
+    "Exact full diff independently regenerated from immutable v1/v2 bodies and matched.",
+    "53 of 56 original definitions unchanged byte-for-byte; only source_git_state, validate_approval_and_proofs and main changed; two read-only lookup functions added.",
+    "Four directory identities, three complete alternates file versions/bytes/hashes/modes/owners and final absence exactly equal the actual native observation.",
+    "Source lookup checked initially, before new target creation and during final audits; missing/changed/unlisted/cyclic lookup blocks acceptance.",
+    "Original source_git_state result shape retained for direct comparison to d7c native result.",
+    "Primary source full physical inventory and .git metadata audits retained. No donor-wide history or worktree unchanged claim is added.",
+    "All 482 provided bodies, original snapshot closure, PACK raw bodies, complete new-object readback, 15188 physical leaves/index/HEAD checks retained.",
+    "New repository still has no alternates/shared-object dependency; original donor files and v1 outputs remain untouched.",
+    "600-second operation, 180-second final evidence, original qualification budgets and stack remain unchanged."
+  ],
+  "native_peer_review": "Complete v2 diff and added functions reviewed by /root/native_ci_audit against actual host observations; no blocking findings.",
+  "source_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "source_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+  "parents": [
+    "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+  ],
+  "target_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+  "target_rule": "The same target was not created by v1; v2 still requires it absent. No renaming, overwrite, automatic retry or replay of the old execution.",
+  "driver_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-source-materialization-86dd-v1/driver-v2.py",
+  "approved_config_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-source-materialization-86dd-v1/APPROVED_CONFIG_V2.json",
+  "evidence_run_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-source-materialization-86dd-v1/run-v2",
+  "execution_key": "hepta-utility-36fa-fresh-materialization-86dd-v2",
+  "outer_timeout_seconds": 900,
+  "admission": "Exact driver/config byte lengths, SHA256 and absolute paths fixed by launcher; reconcile only this new stable key.",
+  "scope": "Offline preparation only; actual normal exit zero and all complete final audits required for MATERIALIZED_FOR_MAINTENANCE_ONLY.",
+  "maintenance_started": false,
+  "cargo_or_tests_started": false,
+  "qualification": false
+}

@@ -1,0 +1,249 @@
+{
+  "format": "hepta-fresh-materialization-v2-root-actual-original-readback-review-v1",
+  "reviewed_at": "2026-11-12 17:40:31 UTC",
+  "status": "ACTUAL_MATERIALIZATION_VERIFIED_PREPARATION_ONLY",
+  "actual_job": "1a1d0c6996e-2564-1bc8",
+  "original_result": "456f749e7558e18df99172d9c9273cda890b8feb",
+  "original_terminal": "3e60d21bec849a19efb5d818b43152bfc72486fe",
+  "original_chunk_inputs": [
+    "14deeb14c98c0049a5cbd9c668627da1bef8cf98",
+    "094ccc95545ffe78b12f8fee40a159f969dff9c2"
+  ],
+  "result_complete_original_binary_readback": {
+    "bytes": 69974,
+    "sha256": "b2ef9a18547838b5978d8f4b7b8cc11b28d089cc386c207894017c2cfe5e1c58",
+    "git_blob": "456f749e7558e18df99172d9c9273cda890b8feb",
+    "version": "2050:50138784:69974:1794504137332335430:1794504137332335430",
+    "consecutive_offsets": true,
+    "terminal_eof": true
+  },
+  "original_small_read_sdk": "ac2481f88e9aa87815c1c5258f5881d0f28d7e8a",
+  "original_small_files_checked": [
+    {
+      "name": "COMMANDS.json",
+      "bytes": 16283,
+      "git_blob": "65554dae4fe7808e7a218e66f124eb3100b325a5"
+    },
+    {
+      "name": "NEW_DATABASE_SNAPSHOT_CLOSURES.json",
+      "bytes": 2108,
+      "git_blob": "e54b9714d7a26d3c8b40447fd009dee41df1622f"
+    },
+    {
+      "name": "PACK_INPUT.json",
+      "bytes": 431,
+      "git_blob": "ee9dc5f3c7458162c49b48d319f9032cec7ffb89"
+    },
+    {
+      "name": "SOURCE_GIT_STATE.before.json",
+      "bytes": 339,
+      "git_blob": "c3104f2f81d4369c55eb9729492c1b1ae976becf"
+    },
+    {
+      "name": "SOURCE_GIT_STATE.after.json",
+      "bytes": 339,
+      "git_blob": "c3104f2f81d4369c55eb9729492c1b1ae976becf"
+    },
+    {
+      "name": "SOURCE_OBJECT_LOOKUP.before.json",
+      "bytes": 2755,
+      "git_blob": "90d54843ac7e82e53448aee538f3f554ca421e5c"
+    },
+    {
+      "name": "SOURCE_OBJECT_LOOKUP.before-target.json",
+      "bytes": 2755,
+      "git_blob": "90d54843ac7e82e53448aee538f3f554ca421e5c"
+    },
+    {
+      "name": "SOURCE_OBJECT_LOOKUP.after.json",
+      "bytes": 2755,
+      "git_blob": "90d54843ac7e82e53448aee538f3f554ca421e5c"
+    },
+    {
+      "name": "TARGET.final-state.json",
+      "bytes": 247,
+      "git_blob": "594e260daf34bdeb0383f679d1e8a3cc9b2a4071"
+    },
+    {
+      "name": "HISTORY_SCOPE.json",
+      "bytes": 591,
+      "git_blob": "3b8b317ff299bcb33ea255728a774608fe819e2d"
+    },
+    {
+      "name": "DISK_PREFLIGHT.json",
+      "bytes": 254,
+      "git_blob": "31e1244d84527a0f2dee616cddf6e092903781ca"
+    },
+    {
+      "name": "INPUT_IDENTITIES.json",
+      "bytes": 4717,
+      "git_blob": "ed173e985ef4beec6933da1a70e7195aac8ebe31"
+    },
+    {
+      "name": "SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+      "bytes": 2345,
+      "git_blob": "55ba89b182b61e577c221b31ae1b0634ad4d5cf2"
+    },
+    {
+      "name": "SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+      "bytes": 2345,
+      "git_blob": "55ba89b182b61e577c221b31ae1b0634ad4d5cf2"
+    }
+  ],
+  "native_placement": "a06eb44005b634402f8fd777e9dcde20c024fa25",
+  "all_40_placement_paths_hash_checked": true,
+  "non_utf8_git_metadata_gzip_checked_via_exact_base64_companion": {
+    "path": "fresh-materialization-86dd-v2/run/SOURCE_GIT_METADATA.before-and-after.json.gz",
+    "name": "SOURCE_GIT_METADATA.before-and-after.json.gz",
+    "bytes": 1758,
+    "sha256": "d6c9c55d824fa450f55bf6fef41ae51f4f3181a7aef2cbca04fc627a5bf6e50a",
+    "blob": "4cd47b9abcf284cdd28ee2be2302ec636de47b54",
+    "full_binary_source_observed": true,
+    "base64_companion_full_readback": true,
+    "companion": "55ba89b182b61e577c221b31ae1b0634ad4d5cf2"
+  },
+  "normal_terminal": {
+    "at_unix_ms": 1794504137510,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1d0c6996e-2564-1bc8",
+    "launch_nonce": "f782674bc37f4a8e19ae34fa85ea211f",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 11610,
+        "stored": 11610
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "all_34_recorded_git_commands_zero": true,
+  "source_before": {
+    "bytes": 5474911,
+    "git_blob": "5ed18452e2e967281ac368f934b9e4358627b9d3",
+    "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57"
+  },
+  "source_after": {
+    "bytes": 5474911,
+    "git_blob": "5ed18452e2e967281ac368f934b9e4358627b9d3",
+    "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57"
+  },
+  "actual_destination": {
+    "bytes": 5611182,
+    "filesystem_entries": 15188,
+    "git_blob": "e7efbbc915cf80db9f873a2b5f9bf162daf4308c",
+    "sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+    "tracked_entries": 15188
+  },
+  "actual_new_database": {
+    "complete_snapshots": 10,
+    "final_leaves": 15188,
+    "full_c0f_snapshot": true,
+    "objects": 16618
+  },
+  "verified_graphs": {
+    "canonical_existing_required": 16082,
+    "import_union": 16618,
+    "original_parent_snapshot_leaves": {
+      "b298": 14842,
+      "c0f": 14851
+    },
+    "prepared_changes": 99,
+    "prepared_direct_existing": 1451,
+    "prepared_leaves": 15188,
+    "prepared_new_paths": 27,
+    "provided_objects": 482,
+    "provided_old_overlap": 0,
+    "seven_upstream_snapshots": 7,
+    "upstream_tip_leaves": 15161,
+    "whole_history_claimed": false
+  },
+  "final_audits": [
+    {
+      "check": "close_owned_helpers",
+      "finished_at": "2026-11-12T17:22:07.541771+00:00",
+      "owned_cat_file_helpers_closed": true,
+      "started_at": "2026-11-12T17:22:07.510378+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "original_source",
+      "finished_at": "2026-11-12T17:22:12.377837+00:00",
+      "git_metadata_equal": true,
+      "git_state_equal": true,
+      "inventory": {
+        "bytes": 5474911,
+        "git_blob": "5ed18452e2e967281ac368f934b9e4358627b9d3",
+        "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57"
+      },
+      "started_at": "2026-11-12T17:22:07.541786+00:00",
+      "status": "verified"
+    },
+    {
+      "alternates_and_directory_identities_equal": true,
+      "check": "original_source_object_lookup",
+      "directory_count": 4,
+      "donor_worktree_or_history_inventory_claimed": false,
+      "finished_at": "2026-11-12T17:22:12.381058+00:00",
+      "started_at": "2026-11-12T17:22:12.377854+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "new_destination",
+      "finished_at": "2026-11-12T17:22:17.288973+00:00",
+      "inventory_bytes": 5611182,
+      "inventory_sha256": "bca1a7399820966d3167a26f89355898a9ea9a7169938ffa27e7dd9576fc1711",
+      "started_at": "2026-11-12T17:22:12.381098+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "original_inputs",
+      "finished_at": "2026-11-12T17:22:17.324273+00:00",
+      "input_count": 18,
+      "started_at": "2026-11-12T17:22:17.289021+00:00",
+      "status": "verified"
+    }
+  ],
+  "materialized": {
+    "detached": true,
+    "head": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "index_equals_tree": true,
+    "maintenance_or_tests_started": false,
+    "physical_bytes_equal": true,
+    "qualification": false,
+    "tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6"
+  },
+  "qualification": false,
+  "maintenance_started": false,
+  "cargo_or_tests_started": false,
+  "real_authorized_task_chain_qualified_outcomes": 0,
+  "limits": [
+    "Snapshot closure and exact physical materialization, not whole Git history fsck.",
+    "All eight large native records remain pinned; only selected large records have been recovered or copied off-host.",
+    "The original c0f focused/source gates remain failed; no inherited test PASS.",
+    "Runtime dependencies require a separate real recovery result and original maintenance must run before final source admission.",
+    "Original materialization v1 was a known preparation failure, retained separately without replay."
+  ]
+}

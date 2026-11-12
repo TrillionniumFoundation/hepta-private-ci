@@ -1,0 +1,256 @@
+{
+  "format": "hepta-fresh-source-materialization-control-package-v2",
+  "status": "PREPARATION_HOLD_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "driver": {
+    "name": "driver-v2.py",
+    "bytes": 73386,
+    "sha256": "2d3f96129665bb425d72bdf1d8bb6e575a1885d91d1c4eed39961032fe24fdd6",
+    "git_blob": "ed0c0896128528fcd19881fd9d38891104cb1e3e",
+    "lines": 1272
+  },
+  "documents": [
+    {
+      "name": "driver-v2.patch",
+      "bytes": 15929,
+      "sha256": "934dd308686f59e979fc28ebdf1103a33a43396ff6ea9b7f5c8089e8f904787f",
+      "git_blob": "9511f6b9dea28a5e9359b4bdf8562566b000b2fa"
+    },
+    {
+      "name": "WAITING_CONFIG_V2.json",
+      "bytes": 1345,
+      "sha256": "e14e91417d4fdae6ea012aca57e5ce5be8aca1e129bc36b2568db42eaca443b3",
+      "git_blob": "3a8816e55999f75c3fdb4b2852733f10826dece1"
+    },
+    {
+      "name": "STATIC_REVIEW_V2.json",
+      "bytes": 2424,
+      "sha256": "cf8cdedb3354ea239fe45c0c00be1858401d2dd843e76db2f3db9d27e4278216",
+      "git_blob": "77d5135f1e8750591b735c3efaedcea83076a18c"
+    },
+    {
+      "name": "CONTROL_PLAN_V2.md",
+      "bytes": 7929,
+      "sha256": "2a327fae4b07177d81c014300c593fed5df53cb2f85f3d9bd8c0dd3f8d88e1a1",
+      "git_blob": "367187e89b919dfb809dbd6c63c3cc91db818070"
+    }
+  ],
+  "predecessor_driver": {
+    "bytes": 64399,
+    "sha256": "7787562e1bdd744b54eb73c59233810013135a55e966eeaa05317fb807ef6c16",
+    "git_blob": "1ca5aab7144291449f89364646b62b364d3cbe0d",
+    "lines": 1085
+  },
+  "predecessor_package": {
+    "bytes": 7243,
+    "sha256": "15c19f5e8f3cf3c38d92ce74b90ff748f09c798ae5b6f32411c40b3ea76b9382",
+    "git_blob": "89148d01aeb02079e10337489421af91b9dfe76e"
+  },
+  "original_failed_attempt": {
+    "job_id": "1a1d0badea9-2564-1bbf",
+    "result": {
+      "bytes": 4889,
+      "sha256": "83cb7e05f0bf3433dbce093def3a3660eef43432cca9eb35b68f113ca338a443",
+      "git_blob": "6f4cfae9ebe5541ff1328205d413a08f862da190"
+    },
+    "commands": {
+      "bytes": 1978,
+      "sha256": "53733995f6f63e418c729862785b09dc69280a06c385da3d61a5acc985b8770b",
+      "git_blob": "ea300a06d7e8a1e6899bc51e21b79b6f39e98e17"
+    },
+    "actual_status": "FAILED_PREPARATION",
+    "error": "ValueError: source alternates not admitted",
+    "phase": "preconditions",
+    "actual_completed_readonly_git_commands": 4,
+    "target_created": false,
+    "import_started": false,
+    "physical_source_inventory_started": false,
+    "source_repo_unmodified": null,
+    "automatic_replay_authorized": false
+  },
+  "source_lookup_observation": {
+    "original_stdout": {
+      "bytes": 9541,
+      "sha256": "de2498c12a831faa5ed84cbb269f5423100ce8dabf90225dc60030c70428d030",
+      "git_blob": "f2a69c3d434111133905c0ef454336f59bf5253e"
+    },
+    "original_process_read": {
+      "bytes": 31180,
+      "sha256": "a4ec106a947587d75fa61fdea579a9141248320b50a6579944e0c4bbae9c5a1e",
+      "git_blob": "c4476e687ef03298a7729a4a28af2d5e4158c2ea"
+    },
+    "original_format": "hepta-existing-source-alternates-readonly-observation-v1",
+    "original_status": "existing_readonly_alternates_observed",
+    "graph_before_after_equal": true,
+    "git_state_before_after_equal": true,
+    "physical_source_inventory_performed": false,
+    "pinned_closure": [
+      {
+        "object_directory": "/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1/.git/objects",
+        "directory_identity": {
+          "device": 2050,
+          "inode": 13005165,
+          "mode": 320,
+          "uid": 1000
+        },
+        "alternates": {
+          "state": "file",
+          "bytes": 58,
+          "sha256": "6a68044ee04f004ea14022b8da7abcc402347ecc83ca53736c877d5018cc3b2f",
+          "git_blob": "9200f58a90f6cabee66c146e356d2140510d8b95",
+          "mode": 256,
+          "uid": 1000,
+          "nlink": 1,
+          "version": "2050:13005268:58:1794492755492598433:1794492759160043169"
+        },
+        "resolved_alternates": [
+          "/home/qian-qi/hepta-utility-36fa-review-19aa/.git/objects"
+        ]
+      },
+      {
+        "object_directory": "/home/qian-qi/hepta-utility-36fa-review-19aa/.git/objects",
+        "directory_identity": {
+          "device": 2050,
+          "inode": 51966829,
+          "mode": 448,
+          "uid": 1000
+        },
+        "alternates": {
+          "state": "file",
+          "bytes": 55,
+          "sha256": "a6e5887fe123d6edd3f1bd82761c7f52f4a51d6ed82a01a6762c55606e6e1d32",
+          "git_blob": "b8472ffa047e1dec2205ffa82124ae5acaae1e6b",
+          "mode": 384,
+          "uid": 1000,
+          "nlink": 1,
+          "version": "2050:51966830:55:1794471509559386806:1794471509559386806"
+        },
+        "resolved_alternates": [
+          "/home/qian-qi/hepta-utility-20261112-36fa/.git/objects"
+        ]
+      },
+      {
+        "object_directory": "/home/qian-qi/hepta-utility-20261112-36fa/.git/objects",
+        "directory_identity": {
+          "device": 2050,
+          "inode": 49941046,
+          "mode": 448,
+          "uid": 1000
+        },
+        "alternates": {
+          "state": "file",
+          "bytes": 63,
+          "sha256": "4efb520fd22fab2b6dd0cddb9185ddcc5192b30c7900d60ad0620ebef14ed5e0",
+          "git_blob": "b15856bd49a06d8851106cd2180c4217714ab5fe",
+          "mode": 384,
+          "uid": 1000,
+          "nlink": 1,
+          "version": "2050:49941048:63:1794467977207135692:1794467977207135692"
+        },
+        "resolved_alternates": [
+          "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/objects"
+        ]
+      },
+      {
+        "object_directory": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/objects",
+        "directory_identity": {
+          "device": 2050,
+          "inode": 51969256,
+          "mode": 448,
+          "uid": 1000
+        },
+        "alternates": {
+          "state": "absent"
+        },
+        "resolved_alternates": []
+      }
+    ],
+    "actual_git_declared_alternate_directories_match": true,
+    "historical_garbage_warning_preserved": "warning: garbage found: /home/qian-qi/hepta-learn-ordinary-ce434-20261111/.git/objects/pack/tmp_pack_A1STqQ\n",
+    "donor_wide_scan_or_cleanup_requested": false
+  },
+  "source_identity": {
+    "source_repo": "/home/qian-qi/hepta-utility-36fa-source-gates-c0f78493-v1",
+    "original_source_commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "original_source_tree": "313ee34febc8ccc54c611ab56286e289518c63cb",
+    "target_repo": "/home/qian-qi/hepta-utility-36fa-maintenance-86dd-v1",
+    "target_commit": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+    "target_tree": "383ab85c39ef9d848252ef5c25922d13d9fae6c6",
+    "parents": [
+      "c0f78493f815780f68b9bf5e390a21314d79311f",
+      "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+    ],
+    "final_leaf_count": 15188
+  },
+  "staging": {
+    "input_evidence_root": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-source-materialization-86dd-v1",
+    "driver_filename": "driver-v2.py",
+    "approved_config_filename": "APPROVED_CONFIG_V2.json",
+    "waiting_config_filename": "WAITING_CONFIG_V2.json",
+    "new_output_subdirectory": "run-v2",
+    "proposed_new_execution_key": "hepta-utility-36fa-fresh-materialization-86dd-v2",
+    "preserves_v1_driver_config_run": true,
+    "reuses_exact_previously_staged_immutable_inputs": true,
+    "target_and_output_must_not_exist": true,
+    "final_config_author": "Root, after Root/native review; not created by this preparation",
+    "launcher_must_pin": [
+      "driver actual path/bytes/SHA256",
+      "final approved config actual path/bytes/SHA256"
+    ],
+    "authorized_to_launch": false
+  },
+  "unchanged_semantics": {
+    "original_source_full_inventory": {
+      "bytes": 5474911,
+      "sha256": "cdb6cea4f3142702681a20476db2a078a08d7b3b981bbc1ceb568c886fe3aa57",
+      "git_blob": "5ed18452e2e967281ac368f934b9e4358627b9d3"
+    },
+    "original_source_full_own_git_metadata_before_after": true,
+    "actual_source_git_state_return_shape_unchanged": true,
+    "canonical_objects": 395,
+    "prepared_objects": 87,
+    "old_bounded_snapshot_union": 16136,
+    "supplied_plus_old_pack_union_count": "derived exactly with overlap validation; 16618 upper bound only",
+    "raw_object_checks": [
+      "source full snapshots",
+      "PACK input",
+      "new cat-file --batch readback"
+    ],
+    "complete_new_snapshot_closure": true,
+    "complete_new_physical_index_HEAD_inventory": true,
+    "new_target_alternates_forbidden": true,
+    "old_source_and_donor_write_requests": false,
+    "history_scope": "bounded snapshots plus authentic commit parent fields; no whole-history fsck success claimed",
+    "operation_seconds": 600,
+    "final_record_seconds": 180,
+    "cargo_fmt_tests_or_remote_refs_authorized": false
+  },
+  "actual_preparation_validation": {
+    "added_definitions": [
+      "final_source_lookup_audit",
+      "source_object_lookup"
+    ],
+    "changed_original_definitions": [
+      "source_git_state",
+      "validate_approval_and_proofs",
+      "main"
+    ],
+    "driver_main_executed": false,
+    "native_execution": false,
+    "new_bytes": 73386,
+    "new_git_blob": "ed0c0896128528fcd19881fd9d38891104cb1e3e",
+    "new_sha256": "2d3f96129665bb425d72bdf1d8bb6e575a1885d91d1c4eed39961032fe24fdd6",
+    "old_bytes": 64399,
+    "patch_bytes": 15929,
+    "patch_sha256": "934dd308686f59e979fc28ebdf1103a33a43396ff6ea9b7f5c8089e8f904787f",
+    "removed_definitions": [],
+    "status": "syntax_and_exact_definition_diff_verified",
+    "tests": 0,
+    "top_level_original_definitions": 56,
+    "unchanged_original_definitions": 53
+  },
+  "native_execution_started": false,
+  "driver_main_executed": false,
+  "test_commands_dispatched": 0,
+  "qualification": false
+}

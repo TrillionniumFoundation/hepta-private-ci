@@ -1,0 +1,4318 @@
+{
+  "schema": "hepta.utility.qa-static-method-inventory.v1",
+  "status": "AST_only_no_tests_run",
+  "source_preparation": "86dd56a930277e0d1aef3e475e35c2b5d60b43b7",
+  "cohort_note": "17 targeted QA files /152 test methods; different from the earlier12-file/140-function structural stage. No claim of current compatibility or execution.",
+  "files": [
+    {
+      "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+      "source_sha256": "78f6879458525456006a70130412a68035fa486b9733b8c0b7aaf3c5315110d2",
+      "tests": [
+        {
+          "class": "CellGenerationPhysicalCurrentClosureTests",
+          "name": "test_physical_current_has_an_exact_closed_caller_set",
+          "source_sha256": "f8876b4c788bc2d0e089ec85634537e93848f346207c350ca28260bfc2a304be",
+          "ast_sha256": "35de242bcca414f3b77b65f8e92853cb8f61281912416e20293fc0d480be8026",
+          "line": 55,
+          "end_line": 65,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "ef91df2ac80b3f7ac5f607d8f0c4a7af551fa9a4c8c1d2577b8c892260191a30"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "808ce4490e4100e2efda1cc03631047c85f4139993a1a1f936ede868eeddc792"
+            },
+            {
+              "method": "code",
+              "ast_sha256": "a8e687514a2ba650ce0c10e8d16c90d2ead374decfecbc25c14184fa15840ca2"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "CellGenerationPhysicalCurrentClosureTests",
+          "name": "test_full_original_descriptor_replay_and_same_retained_state_are_required",
+          "source_sha256": "07c7f92c5270d2167aff4b3da700e310df059ad0d8cd0a4b884bb05356f95700",
+          "ast_sha256": "aa78b179499beda1f31b71c08901c23ee31869902c2eeaca3d60077d0add2351",
+          "line": 67,
+          "end_line": 88,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "189f12b511a6204c73aaaaacc71b29169313a5caca53a1929f8ef458c2233acc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "eaf22b20a44168897f3e3e9d2203b6a62002b3ef0b769205ebcd6a84c1f4d3d6"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3d6a32dbc0b8a466567193c51da4879b420a2024bcc0424f8a2e2a0aad7e967b"
+            }
+          ]
+        },
+        {
+          "class": "CellGenerationPhysicalCurrentClosureTests",
+          "name": "test_both_witness_observations_and_cursor_restoration_precede_success",
+          "source_sha256": "b7c12ab53c5ba3de1ef5bc7b1d203a5a1818a70843a2b9680186f6fd390f8f60",
+          "ast_sha256": "bb912704f37a0313480ce8a2cfa1314ee892c6a132f1b78852c0d31eaefb181f",
+          "line": 90,
+          "end_line": 103,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "9e24b11d47330ccc27024372e763198da4c7e8f9e803d24822efa9fc10599285"
+            }
+          ]
+        },
+        {
+          "class": "CellGenerationPhysicalCurrentClosureTests",
+          "name": "test_any_failure_fences_recovery_even_after_original_bytes_are_restored",
+          "source_sha256": "e979aeb9c3479188b4cc3581d3623174b6a95aec8b8239d6c382fc08ae5698f8",
+          "ast_sha256": "373080ecd3f390ec5bf5515b9d5aac633194e07f57c017601f329d42727aeb8e",
+          "line": 105,
+          "end_line": 127,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "430d66d24e285475fe1a63d4f3ebf79c01a638a39859dfae235774e1718db81c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e99a5b44937fcc78a0f9637e1ffe550a70e4008e063707b1846479cf5409b40a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1fa11cff8e79ce6081d7f5e7f91535400c2c7dded9e2bc6cb2a5ba872880157d"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "55fc239dab0ff99aadae13aa6d6471567548c7ddc3f6d4fe11f9ceba9aeebe90"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "7711adf1632dfdfd9f8569420855d050bcb1266091a840c169ca5417909e8ec1"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "48fc33948ef54683d0f55420a53d3ecdd38b4aaefa02fa632bc2e241db70470e"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+      "source_sha256": "38e01ac8e6eb696f2c3aba84fa907b540311f043ea7012a34ae388e80a210e61",
+      "tests": [
+        {
+          "class": "OriginalCircuitSelectionOwnerSourceClosureTests",
+          "name": "test_original_selector_authority_entries_stay_closed",
+          "source_sha256": "461b6167298a190fdaa72d3bcc7941d16fe3869ac296289e362a00e871d76a65",
+          "ast_sha256": "f6cad2922d66daa3dbb8b84379e099e6f6028a7b0e7b4b71a01f1a377bee5ce4",
+          "line": 49,
+          "end_line": 74,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "5801b0aef8a7bba4d5cfbd30f2e5c17384cce53ffcaa01824e1f0867e7d93bf4"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "8626e01adc8fda055c37011ba5c921cd2cc26c8b4ce28d7dd00df9083df8bef9"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "dfe2c5550bc489d084b2d969b921142acd74a59c6308101063f677f26377da69"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCircuitSelectionOwnerSourceClosureTests",
+          "name": "test_selection_reads_the_original_sealed_publication",
+          "source_sha256": "b8118cf1ec60ab537832b2655442e3167846204ecef7d9e510f6223d22c7fb0d",
+          "ast_sha256": "7d6851dc581ff54a4d04c8bd197729e15dff4845b1ad1f343df01abce3c4aa14",
+          "line": 76,
+          "end_line": 94,
+          "self_calls": [
+            {
+              "method": "assertIn",
+              "ast_sha256": "8626e01adc8fda055c37011ba5c921cd2cc26c8b4ce28d7dd00df9083df8bef9"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "58df2df77b8d4e26c69e5787bbf548fee2b377da4bafe59ebcd878a5f9aac8b7"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "52d50519bb40b9c1b0492fd8c821055439bccc261d954881b3167a3341c71769"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c5947ce01ccd32525c63bfc01936b41305f79d49582bba47bb8773b5eec1bbba"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCircuitSelectionOwnerSourceClosureTests",
+          "name": "test_original_training_pin_and_physical_readbacks_cannot_be_skipped",
+          "source_sha256": "c5522ddcfdaa1a5a64335b67949bcebf80fe7b41f50b7618226f7248d2b172c9",
+          "ast_sha256": "182ce04af58006df4d3dedcd320301bece88d2a45b4a8e889a11424f74b52b28",
+          "line": 96,
+          "end_line": 105,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "fa9c5d95a54af30df34790a3735cbe890f6f70e51bbc947ce2450e8946072a6e"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCircuitSelectionOwnerSourceClosureTests",
+          "name": "test_missing_pending_deadline_and_role_separation_remain_distinct",
+          "source_sha256": "8ba6c3cb62d333b776801834df53e9c248219c835128f8d1e08a3d9372a69800",
+          "ast_sha256": "57af3f3f68c4274b87949baffb71ef79d06d728ad9b67522e75cd7811f02cd7a",
+          "line": 107,
+          "end_line": 120,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "fa9c5d95a54af30df34790a3735cbe890f6f70e51bbc947ce2450e8946072a6e"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "source_sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+      "tests": [
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_opaque_result_and_readonly_host_custody_fields_cannot_become_writable",
+          "source_sha256": "ec85d1a67b90a681cf6bf4b4e02f9ae6cfa84a56032ee231c3db8201a0014ae1",
+          "ast_sha256": "8d8bfcba68ea0aa78ee534507642761cf1430ffa5197d6936f5b2d9981b670bb",
+          "line": 111,
+          "end_line": 138,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "561a704004cb53bda8f25e4f313034924d0de54f9bbbe6e9bed8d85bbd0626ad"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "c8b3e881a655143d89927842542d3e26e6021aedb40662832d6fd9db330c44bf"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "53dedd54adafb6a1a953ab77a666f3d54b6d729d3d81649b74e6f0f0f44154a8"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "3efe47d3b194d7aa6413a3264fc5d915af7573afc818a07bd2ca2e22c7b7b7c8"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_all_complete_product_rows_remain_valid",
+          "source_sha256": "f2bd60d2675f0e79c9c2038cde5bf140bc29531541e814d5c76a314d156336f8",
+          "ast_sha256": "99d3c9b41239bee6b2eef9d2dfcc07f8905a538735aab3c39abf95247427e59d",
+          "line": 140,
+          "end_line": 143,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "3ec188e76f1a1114430777ef225ca9a86ba8a2e3f601ce3b1653ae8560345eb1"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "13c497f29cb2ebd5c40fbdff3a2f7e6390c2ecae99e1e9aaf161b3af84d52c55"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_actual_readonly_calls_are_closed_and_no_effect_caller_is_claimed",
+          "source_sha256": "3ebcb248280db5e35adf421113fa2d6d77b8d0f27ad9c2225a60c0c121d7c07b",
+          "ast_sha256": "54100d42077f52a0b7ed55b4777e7d2472f87ad16dd6324092e91e3be4648b6d",
+          "line": 145,
+          "end_line": 175,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "f1c3b81a6cc7ffe80dae40f9d130d636039d533bcfc7dc15f8577313ce4b2b55"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "47f64acac9ed70114860115b2a8d78ac36bd054dd04592ad91049eb3cdaa6ef2"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "b66426b98a8de646bc75242b76164d1e916be20854498ccfccd11d8bf5a678d6"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_recovery_permanently_attenuates_fresh_s_and_never_claims_missing_c",
+          "source_sha256": "db51b2a43d8ee9d9609655ed3963754e584f135ad2d174b4d1dc517a33266e9e",
+          "ast_sha256": "03c84dd3dab140a45edc647997272e92e3c57db28d7be8253eb2adab3e6442e6",
+          "line": 177,
+          "end_line": 195,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "a0822934bb3935cb631ed691b518e43ef6361e75e902a03c2399579f0fecaf94"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c85d30dde759240226f4b86c2398229ce0c94a13cf7ef652b6ebe11c6f890361"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5e0ff155fe5c66ee3f086cb3bd8826a3dd646fa2117011e9ed96b50495eb1a87"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_new_work_checks_cannot_be_deferred_into_uninvoked_closures",
+          "source_sha256": "de63dc0b03fe78fda54c62aea098542fa8133b94981abae40760f2c9246f2857",
+          "ast_sha256": "538927619f902acb235b98f636f21dc2a5218c2e3fc96cfd2ba6457f6da84fa3",
+          "line": 197,
+          "end_line": 210,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "bffc66253fe0d95a05346343dad1d10fb9a989f1d84a7243c972f4a2c32ccc45"
+            },
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "c36f440ae988cecfa91140cb195f0ac58db0e8d1a02f5e67ecb1052ffbd9f6f0"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_private_source_profile_prevents_legacy_or_remote_downgrade",
+          "source_sha256": "288eb519ffe749502656cab829705e8f2aa67d28be1492fe00bdc5f25b3b3ed7",
+          "ast_sha256": "2b2763bef853e490b70473ab961dbda4613788351889a3bc266ea986eb8918ed",
+          "line": 212,
+          "end_line": 219,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "77ed8c7c038d6f4353fe61d7faaa6819c2be4ddcb4cb9561fe5ed29aca4b54ca"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "857a1ad5a701d761c2341ebe832cad3a845696b1ff61cdb8eef81dd60a87e0c5"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "dabd2a8c35a2c712b68ee730d0f49957a38a101ca06776518e7fd9cf2b32c193"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "dcafb4a1cc566a20a458b9d5f4062ec0d3534535b219b983e1de51720bb81bbf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "371e6faf46d0b9169f3d439afc8c84ad664a678f6d76445ea8c6663a79fb74e8"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_full_original_s_cut_and_signature_cannot_be_replaced_by_metadata",
+          "source_sha256": "e6426e06d0f24d393fbdaca68d192dc427a68e001e187e83f928f56fbedeca69",
+          "ast_sha256": "06ce68cf07eeab0baf1e02b838bf8060097563e2c3d81fa11fe0fba5931c450e",
+          "line": 221,
+          "end_line": 238,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "44bc13a4f33bcb6969258da51be0d50c81d43dd934b0ff074af2f6feb2c6075f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0e132af8ca87a99785b56917662cebe3ff30f33094de40d461b02fc15c1a6f7d"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_c_full_same_prefix_is_checked_before_readonly_s_io",
+          "source_sha256": "a1fb512116c858480d569a2551353560aed7529e5e519ddc0b21a521f94f5048",
+          "ast_sha256": "112ed872452836bf9c9334d9d206ae0c6e39f7418fc74de89bdb11157b485eab",
+          "line": 240,
+          "end_line": 255,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "9be17f4da5eb804f77964e909db6dd8543bfc4a77a2a26be3998c1434592a7cc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5ce7c808cce75706ab0f2c87e26d97a125c130e0a891bcc6ffd05d1e17ef8aa8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3a5585c8438cc35ddf79355c69714a2c70eefe1ec8d2135899388a14c7ba7c50"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7310346556c4741357c27609b10743510c3d844d8c52eef87c076306b68fb75d"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_both_live_predecessors_and_readonly_original_s_are_mandatory",
+          "source_sha256": "a93f58a492347d1ad0add84a9d896b45107fbd1d51d4e03d3c594f24faad9709",
+          "ast_sha256": "d2a654a6dd4a4d31bdd2f7f5770e2a04a735aa33d12acabc35b1cced65548338",
+          "line": 257,
+          "end_line": 274,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "eead9236859657807452d82443ad3a1a6c939e6674d850dcc7f131724a7b5b87"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "fa8e57d705b3ab90ad8f350fa8fc68e9f72c22ade3a5d90fbc10eba0b9a8c3f7"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_final_source_cell_fence_follows_every_awaited_t_b_s_response",
+          "source_sha256": "234e3000b021802d80d6e4e4e5daa1498f57ef36e2a93c6c7d25b616cd44d746",
+          "ast_sha256": "64dd1c8bf8fd4d42571a79ec0e62ee8f99a78ce18a55035e8e1eb704f5a02b31",
+          "line": 276,
+          "end_line": 295,
+          "self_calls": [
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "4b8c63b11b27338d1f2ff8f362b8c0aa208f9d361396ecfa3c3f2b2c6a2aa955"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "4ccb25190be52c1a76862693a068f5918035ab4980ffcb732c8148ca3fe4d790"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1f02a721f45d283da55b5c3af88e32bf711e4aa50e8c5b5535cd70cef4f9b38a"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "7954d1d6326d1e46e2d0adce537f1a2f7d3c422ef34a026aee8ee10cd252ed11"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c5d907fc492c8aeaa4ab7448fa2621d1b7984cace810fb90a7ece6ea9680f4ac"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_claim_and_readback_failures_keep_fence_and_original_journal",
+          "source_sha256": "2e4407edbc44586c059f45f60515f91d0abcf92c817a8169ea15fa8c167d9382",
+          "ast_sha256": "3ac19e8de5ffa00cec107ddc81cd18833c7341b1ae008c8f9802ed6b0c8161c1",
+          "line": 297,
+          "end_line": 310,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "2dc6080c2595435fa4b7bc5cb27779762052bf77693920b4c049480978913ad8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0163fea4562bcb9636d385d472eae368f4543c629e95773697c1f0518744afe5"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0a5f2d67b2f25313a98236747d95359515c0a5bb763844901fb58234d4e84a34"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "64045145dfe56d9ab4ad08134b1b2ff0518f3569619c5a422e704aea0ee64f11"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_all_t_b_s_and_observer_roles_remain_independent_and_current",
+          "source_sha256": "a6f30518ffe4cbae4bf0e186b95fa852e0c6849cf9f2a99eff55981c1e2b3e3e",
+          "ast_sha256": "72a1fab26d54d41d9e02f18f3ad7e3db4609faa418cbfe9b9105c330184b9d9d",
+          "line": 312,
+          "end_line": 329,
+          "self_calls": [
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "a28ff49b6de28d8a91f598cc138d65a9c80f03e44487fe711720a0bdbf32cac3"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "a51c1f856c2af0c2a5115c86789d4294d201b870ef98f6ffad1f4c01340de26b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "80b9c0cff8b63730f8057c14ae3aeef4f488a4725b145b6130c55e0daa2433f2"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "64045145dfe56d9ab4ad08134b1b2ff0518f3569619c5a422e704aea0ee64f11"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_bindings_include_full_original_t_b_s_and_no_timestamp_refresh",
+          "source_sha256": "332f5bf3654c33ca344d0f186d35f0e95fb7da4cc6c20f2a9653b86378793921",
+          "ast_sha256": "6b62bff74061534c591a2b6bf86f346e3414c37717af6d68893bc5a823991bd9",
+          "line": 331,
+          "end_line": 344,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "e04ab52e1df4fabd2d1a223c55fa5ca03589607f7e7eed77c93bf6f11161e957"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e36c7f708413f5c53bfdffd71e13c4097d2326b3fb00c064428f052e41fd5db9"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "174a4f94d83902cd37a3deb60f3953ad1e97fa2edd0f2a9a067bccfa04001f30"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "afcdab3c11f267acd82a39deb664194a951d33ee16c928e155881b945ae37e39"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "53696fc2bad919aee909e3876de29bad5864c0268235ad9ff9384cd902adcafe"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_private_receipt_helper_accepts_only_actual_retained_c",
+          "source_sha256": "0f36cf4fdd0f78734f9e5eea9015a7c3721de3745071b162f4ec4efc9bb88be1",
+          "ast_sha256": "9f8ac666fbb899382a99f54dc2b98897aa059fd141fe322a5d2f169b1c4cc8b7",
+          "line": 346,
+          "end_line": 356,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "007fad1e459594c749be7915390d5cb87cc577363df45e2e4c0107588e1e8b13"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "a06d3e313e7ed91dc58bd6c406defd4084ac24264559b2691cdceb3372f45227"
+            },
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "13b1d1add5609f235d730d7e6eaccb51ad79df567d878b7c5ed30d4cca10498a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "696682cda8bdc49b895714f5e4cfa25fc1a28a0ed5d63c465198de11520582f0"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_generic_transfer_and_duplicate_receipt_name_guards_are_top_level",
+          "source_sha256": "1dec8ee86320c74a744606f639fb460ad0a1a72e710f3e6b91f3e7e8d77dd363",
+          "ast_sha256": "28149b39b7b3e018874c81a77e850d560e88e134ac56d7e709e622123b9638a8",
+          "line": 358,
+          "end_line": 372,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "ca82b75bef9afff1fb84d398c57d1bb356b2fd54c1a22a5392a5f7acaf52ac48"
+            },
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "c36f440ae988cecfa91140cb195f0ac58db0e8d1a02f5e67ecb1052ffbd9f6f0"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_distinct_signature_domains_are_actual_code_and_not_comment_decoys",
+          "source_sha256": "0018671e2a6884d217886b24150af04577854dcc1ec7d9ed189e88687ad9ab7b",
+          "ast_sha256": "ba31faf886a1d2d73d46d0477d23b1d4b689e0473730525761866f82669ae822",
+          "line": 374,
+          "end_line": 411,
+          "self_calls": [
+            {
+              "method": "assertTrue",
+              "ast_sha256": "e98a2e204bee69654fc394530a1d3d30528db3ba863d31fe168f0c7d873ab3cf"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "b198f3b0f59f67c7ef1b94dbd883914b404912c6d0c9d5b742013bd78a0db922"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "abf1073a73ed60023237fe7933e1f1b0bbdad6a9d6e5629e83656a3760eaf7a6"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "b48b6ce334ecbc8646acbc27b377ad79465a2e423c4d5a22e6e5d9b3bedb8e27"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_host_fixed_context_cannot_be_swapped_or_faked_by_future_head",
+          "source_sha256": "9174a9f01651d1a0a346a45e437f21af599631960fdc3a2be194c7ea8ef87db6",
+          "ast_sha256": "3c86f28c8d2770eba8d7a2b1351dbbb25fdba0f51a2c3bb918723de40c0c3011",
+          "line": 413,
+          "end_line": 428,
+          "self_calls": [
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "8882dd22876fbfebeac9d573a3b074c4ba3e76f9ed5de45f2f147107080942fe"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "8c2fa52d0afff4de9acc474a8be225f3c4b72df5da9a43b32df566de21e57491"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2ae0d2e2e08c9a374b5bec60421dcc77534fc4529f086c038f85b55dd304dad3"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_host_checks_each_correlated_readonly_request_before_original_io",
+          "source_sha256": "f2e5556b6e5c7fde3556b3f4e3640980fb3b945582500164fb715a01b61caf10",
+          "ast_sha256": "e9d9d2e5b7d21e5a45d57a065d5ef2272f4832d3939655b526bd1c25b171c752",
+          "line": 430,
+          "end_line": 443,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "4b54f41b664af49adad9ce1c2114ba48d7072953fe59fe268f14f9abf24cc84c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "599bd12f845db9fb46e71d10fffd304daebf54eae24639345dfde30d66059726"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "10d4c58f5cf4719efa95d17ba4c591a58076d0211966ea95c9ed7f0907844ac5"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_host_response_is_exact_original_s_and_never_new_signing",
+          "source_sha256": "63a245ee836766b29d7627e64b79b917f628dd2ee00d7897d0b13a7976968535",
+          "ast_sha256": "182205a6ee46ec8166e00a2000ebcd403cecd10c897b72b55bf8844886c82798",
+          "line": 445,
+          "end_line": 457,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "7b22d8870bbb4aa6016ccb5eded814c29399824c2af28e3c28b16506de1d48a8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "10d4c58f5cf4719efa95d17ba4c591a58076d0211966ea95c9ed7f0907844ac5"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "b8dbdef80e7839b22d8d4ea01cca4a6c0e9ba389bbab5ac87f3dd18d84c2aae6"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_host_keeps_original_custody_session_and_finite_exchange_budgets",
+          "source_sha256": "56603e88a4ed0eb50490f3a0de6107f66560106c057826cc8e35a4867a5e7ca4",
+          "ast_sha256": "14f06f0388c19b5b55b381e926cbc9bd5fdb3e46f34064e492d9970f97060829",
+          "line": 459,
+          "end_line": 467,
+          "self_calls": [
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "d4a12dde821c9f64e22be7383e053cd7391915b0a1a0c826aae95805fabffced"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bbc52d99c24abdad977a2daa6d018d5966c715f28cfcb8276e4c67d8d0fd2ecb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "108ee891cc40310e04ace4d34aad198e4178889769b5fb7176dff1cf51714fe0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "213d3530abec48299523f555f27febeb4a4558c962b1a14277a07f9c29c9398c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "696faf2a993b1a5f1431ab4c6699785bf2952d1aa3d10ae373e356f210ea9d78"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_mechanical_binding_extraction_preserves_legacy_profile_and_commands",
+          "source_sha256": "0393ee48348fb84441c13194b4cc03be619528686804062b869446970146a865",
+          "ast_sha256": "d667a3da6f0fcfe2e4011f1fa76032751de8d39e534456c7e04d0314fd760e5a",
+          "line": 469,
+          "end_line": 485,
+          "self_calls": [
+            {
+              "method": "rejects_hidden",
+              "ast_sha256": "7a2cf98ac6603881fbbaf18d7897b0c6783773eac820e102ebd39344f1402ade"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "62dfd4dc0dd861d9c1a3f056d70962428ca4b233dbbd7d07d7e461f54dd0ec5b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "774189f69fa6a573a02606a617a10cc61c5a30998804f8fe1d261fd71bbd3853"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "18120ce7467165e7dc082f27e28d3197e0c52fef85cf5500281911cdbf32c217"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "653b03fa8b5d10a17e7b4e20c4fb3926e115fe7b08e52963da25fa4a6eeba1ce"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "05cda32ff04a629afe6e98f53889df6901a9e5f427a3c82f9fad964d68fe8c61"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedNextUseClosureTests",
+          "name": "test_native_mechanisms_cover_real_source_failure_cold_missing_and_full_read_counts",
+          "source_sha256": "05fa41c99a7cf16404b77b6ef220571518c7bec7c1b932e021239eec1a410100",
+          "ast_sha256": "9ddc7ca8f8fd46021a503783dc0fdd3f65095de6c7fc78b2eebe9eebe671da79",
+          "line": 487,
+          "end_line": 499,
+          "self_calls": [
+            {
+              "method": "assertIn",
+              "ast_sha256": "8fdcffc95a8424cfe84816c548ae05f65dab5cb1675b49289cb74875d1ab961b"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "c5049f9ad8bf5c9480ebacf47c117b882fc0a15d3343eade69af990d55fb18b2"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "d151372491a068da61161157ac2dee615a588d23c3c8dfd4c5324085293b4bba"
+            },
+            {
+              "method": "assertNotIn",
+              "ast_sha256": "c03ad978d9c3a811ee749d712f8b42fb5c05dcb5f91562dcfc46a6d6a2167c2f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "source_sha256": "ac47d2af70cb786b68ade4cc2999cdc7be496be6598376451484992dbcc8e852",
+      "tests": [
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_registered_calls_are_exact_and_extra_callers_are_rejected",
+          "source_sha256": "91ffa7b186377585970e339956da603ff8f71472afa982cc4a0596120c1241d4",
+          "ast_sha256": "419385c1961ccd8391fa3b5e7219bf70de75213e11071d9497b02f0779bc8d28",
+          "line": 129,
+          "end_line": 154,
+          "self_calls": [
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_all_actual_product_functions_have_guards",
+          "source_sha256": "9b3e2ec467c2c2c7229e03f5f75068e39f3833abb8cf61d830c36d8323487d89",
+          "ast_sha256": "f790d3f61225b858ad8867076c98dbc738894a88e0163fb1cde38eb968a74745",
+          "line": 156,
+          "end_line": 164,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "13c497f29cb2ebd5c40fbdff3a2f7e6390c2ecae99e1e9aaf161b3af84d52c55"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "4ca48063c96080cebe4ec7c5d85f51d3bd71168a201ee8ca7dede14860871ba7"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_opaque_cut_client_and_actual_owner_fields_cannot_be_made_writable",
+          "source_sha256": "c85ca9e4b7ae07473a6987e867bf56f469366df0ff57f4b67683ca3ce06665a2",
+          "ast_sha256": "751664a0a1272f8d2af085b62f59b7a865e2aba26440db996f94d9d55a4844fe",
+          "line": 166,
+          "end_line": 187,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "969a6853488ffd7c4fe94e7a231e92d4e6a5feb7c5e32c24f081609c7c1b8b69"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "assertNotEqual",
+              "ast_sha256": "5197af56ea3df9195aba537a5ea88a2e7a97928b8a23c65b2b5bc91417941559"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "06fe164a0dd72e84ee0deea0af4cb8702b7cb79ffa7cddf3a20d7a6d15a009c3"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "c8b3e881a655143d89927842542d3e26e6021aedb40662832d6fd9db330c44bf"
+            },
+            {
+              "method": "assertNotEqual",
+              "ast_sha256": "5197af56ea3df9195aba537a5ea88a2e7a97928b8a23c65b2b5bc91417941559"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "53dedd54adafb6a1a953ab77a666f3d54b6d729d3d81649b74e6f0f0f44154a8"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_only_original_opaque_inputs_can_construct_readback_profiles",
+          "source_sha256": "2ea1f0b3d5c22f8e2d6c731ed53a8f3b68ec204957592a4d3f48f176960d7969",
+          "ast_sha256": "82c6374725e40558b910485582bccb7cecc169a34f8150f0073db040a8df913c",
+          "line": 189,
+          "end_line": 205,
+          "self_calls": [
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "5c8cf200d5ab51c3d5927d2bef6105f83cbcfda05ce6e94cc9574eeb73cfcefd"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3e4232655085bb3e672c189ab17d4bececcff04444d93ad1724e0227f9f11390"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "afc61796f6d156ffdd9a0ba6499a1396f4d3538cd662b69faa0d317fd2f9d3b5"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_complete_signed_context_exact_cuts_and_baseline_are_mandatory",
+          "source_sha256": "da6522e40c4b5c60007468e489248b83aa4abfb76de2e21a510bd8bbbec0fba8",
+          "ast_sha256": "2e1116d00e48355f0fa3ccda25260f81048259c81ab44a7aae4bda2c6398b81b",
+          "line": 207,
+          "end_line": 227,
+          "self_calls": [
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "1f290e507cd757828b02927bdd5f88430aeb7a7e5c07d3af929307b2cced15a9"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "12aa0e188ca90728e134a849076530e9ac6edf8f0f125111a44afa24e5912abf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9cbce868a489862555572e64252aba7cc0e17fad628f922fdc08aecb0be13b6f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9294c0b7bd2e8bbf7036f004823f9068348a707faa0d70a74425a2734600abe8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "f293d7b8ccb2b1cb6f78a57958cba1f41718f2cf9e043ec8e3d426d5cc77f316"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_actual_domain_literals_cannot_be_spoofed_by_comments",
+          "source_sha256": "38bb4e82596812f527ac93e0ae447bfd5b6b15ec3fdf1ef05e7411368dd7932f",
+          "ast_sha256": "801a51c03b72d68423c19731a55cf89dc7ccaa9c154ab62427c6e7a61d47fb13",
+          "line": 229,
+          "end_line": 242,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "0bb0db51d07f3c4f9a87d3b94274ba4fc55cf60d2ad26f4bb6a1325f39411b46"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "abf1073a73ed60023237fe7933e1f1b0bbdad6a9d6e5629e83656a3760eaf7a6"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "c5fde7b76cbcfd52500ddaadd74f3c166994b89b573f802a47ecf993e4b9cb55"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "53dedd54adafb6a1a953ab77a666f3d54b6d729d3d81649b74e6f0f0f44154a8"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_fixed_evaluated_request_checks_every_echo_and_original_prefix",
+          "source_sha256": "1d41cce0f8f9bfc7d0a65ba194a8a63d83b4fdd9ca8e865d0d6e147da7a4aa65",
+          "ast_sha256": "cda88284605da53728631e4ee53fc0f0d8d77ee92df5881fafbe1bf0d5b0bb09",
+          "line": 244,
+          "end_line": 255,
+          "self_calls": [
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "8666e257e61db944842b5fc9d73ba136cfefebf4987fb5c634d376152956b546"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e5d03f6f961dd082bfb5d3e5022904b449155b77a408a8ebc3cacaf3cb3c5a95"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "27bffd7f4ed4bd17b9b717e251d94005a23945f972bffa385de0e8538984ae92"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e25ccff23c42988900e51dfa5283b5dae40104f3694bf8711c191a231b9c6b40"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ac97782b753d814407c0e4bec429dd37671705e5372bddd1486943b5f4819ff1"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "106f4481f015a506f1daf28c12e3cada35e72c18d043b4b39bc675bfe6507dcd"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_legacy_tnu_version_and_readiness_reject_evaluated_contexts",
+          "source_sha256": "156cde124e1ae874aaa6d1b7ed7c4982697db70dd0a2e09acc1bfa63581231bf",
+          "ast_sha256": "0952d5c0181db3d1b28f95cc002281eee91b2ae8b9f2c3f89c3ee1d704c5afee",
+          "line": 257,
+          "end_line": 275,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "7ba226d0768a92c38acb904121600d475b0009b8c30a085dd5c317ca9d1382bd"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "054904d7e6ce53ceab4710d7927c43a65267a0d6f07dd7d3b6a8bcef9c21b839"
+            },
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "981151333b2f210c5f170b37fc7fce8c74870c2c72d28ed5831502ee9386b7da"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0358b2cb536adcc2cbc668a596919dfba382d4e5655bb22955648880543d7ccf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ee9f7ad2d352085df194f9b03b3cd70c3444ad8210a8fdca3393a6eac9dc737c"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_actual_source_and_cell_surround_each_read_and_five_cut_c_result",
+          "source_sha256": "d9331157ebecbc5fc75d8fcaf90d15c5e3c0bb7c5c7ac2b0c0b2c62949898d2e",
+          "ast_sha256": "2d9c859b5bd08b8b6928c9767dfd019e7b8f57a796f44aa3ab274b2e3d2e12c4",
+          "line": 277,
+          "end_line": 288,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "d8d6a58014e83e3436bfbc38191b5d27c71434141d34671015b5339cd8e95bda"
+            },
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "93354ab4d672176cd7e819379201aeab5476ed3ca802bcbc0e2d06ef6b0c5967"
+            },
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "18ebd9a2c2de7e1c8a066ecf35211c0e79dfb4e5d8b9a2e1283b88450e8fad3e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9242c47ea5e201a51c31ce7e75afdd29c58fe09cc904566acef78a8592380401"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_remote_s_uses_actual_same_context_and_predecessor_owners",
+          "source_sha256": "75dec89a9717ad38c9395b26e839917b90e27c5cb3aa30eaf6d1b58e415e7068",
+          "ast_sha256": "447da96a5e94ef1af3cd1bf82758c6a69142eb50005a87903edef231c42c48c0",
+          "line": 290,
+          "end_line": 305,
+          "self_calls": [
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "65c8a2b452951a63e29d4bafa974c6097dadc149ffa321a7501231194e85f4cf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            },
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "377c1ef92422215f0a91df8147d2aadc8b0d1b4e92cde2cb9c1dbac0c42c0833"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "775b366d3507c62a4da9dd426642765e42a6e7dd2ac30738c7846103f8b3f396"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_last_live_tb_then_remote_source_cell_then_journal_order_cannot_move",
+          "source_sha256": "3afa0232b25cb5546b044908eff3e0f47a87c5395f3f9f2c179eefb9e307f219",
+          "ast_sha256": "a94dcce2bcdc09fc8e7b84649f7ddb3773169baf6631fbc6571a98dc06a55e31",
+          "line": 307,
+          "end_line": 324,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "eecba0827427df5d5f4e591812d243f2fcac082213b88f95715e893f202a1da6"
+            },
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "fe5f7bb0949d137ef6c2a6110196d1b77b63460cc7a74e31e72b7b46037c2d73"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "e6077b6cb8ef32cbc086f58a40e31215999f256c315b2397e11b5d94088d9cb4"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "8c73a278d638dddc5ac8055887eedaa74d304dbcef3c926b313b5db900cb47ef"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_active_signature_final_owner_and_actual_c_arms_reject_unused_closures",
+          "source_sha256": "0be62dc06574a6eaf0a655414c0e8ad2db11e14d296e4594b0f3834ec99dce43",
+          "ast_sha256": "81fc6314f22d1c4c46453fbe91fdf89ead0a7b2ebc5cbc0ff6ba5ffecedd344a",
+          "line": 326,
+          "end_line": 342,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "38c1e34ab8b5139504a32e5b1c757dff327a72596528af3f1f0a0c83cae358eb"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "53dedd54adafb6a1a953ab77a666f3d54b6d729d3d81649b74e6f0f0f44154a8"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_recovery_never_claims_and_unknown_completion_stays_fenced",
+          "source_sha256": "9ab129833e96b92691381e9ae5cda04426522b951a41bbdb3ea91151d25d6e37",
+          "ast_sha256": "08275bce751a9799a28c125f994cb9d60194589fe5a252bb40517249cfac81ea",
+          "line": 344,
+          "end_line": 352,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "23b3b370f1ee2e2d56e69726deea4ed0bc60289106e85d6017abca707a5d24dc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "63557ed78c0062fcbac6de8ccb6089afb6dd598763a23e428bb369399d4cb1c3"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "240f194a52023d4d1157a604cfed9474f18603ba6f620c72566b5c2265068aaf"
+            },
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "377c1ef92422215f0a91df8147d2aadc8b0d1b4e92cde2cb9c1dbac0c42c0833"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9c11aa76edc8b1ebc90f4df831da494ea6d9d3fdefdf5dfe9e349ce0c3013865"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_consumed_connection_and_original_bounds_survive_dispatch",
+          "source_sha256": "fc68b90222de67304d5ca7b87f21e7a3867d89d397fc504cc5d185fbbef832d3",
+          "ast_sha256": "fce8811cfef626c4b8ee8b4ff5574deb296eb62b7b1f0367bc7169c2fa321cb1",
+          "line": 354,
+          "end_line": 367,
+          "self_calls": [
+            {
+              "method": "rejects_unused_body",
+              "ast_sha256": "9a8934784b9f13b9dc74c9a2cc69df0da66a6bcb00442a278d95eea2252ab0d3"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "a8993c142aad8fb84b4c0a678c8f3d659029728180d7e4aae10e7b28415bf22e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "05f1f57bfe06c25f397c236cd8a57fe5b684328085b55f352fabad347d8f1e5c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_new_read_modules_cannot_gain_writer_or_signer_factories",
+          "source_sha256": "5f135502881bf8be86de0223a6910b26c571e0497a17afcba87a42b48570a946",
+          "ast_sha256": "efffd357b10a0075bfd6587cb95d12fe8e7ec14c8a7a52f1db51c0ce2739ed4d",
+          "line": 369,
+          "end_line": 376,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "bffc66253fe0d95a05346343dad1d10fb9a989f1d84a7243c972f4a2c32ccc45"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "f7f90fa856e79efc26a2ee2b38f53d3c26d1c0eaba1b978c49ac775f9935ac13"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedPublishedReadClosureTests",
+          "name": "test_real_modules_exports_and_six_native_cases_are_mounted",
+          "source_sha256": "3824ea4c33bdd3231e3078dc68cc257fd1afe1a1680182079778dded8ce4edec",
+          "ast_sha256": "82a5100dbf3a9f5cad9bda6f9024d81d9a95e24667a5b929401bd21ef099bb56",
+          "line": 378,
+          "end_line": 403,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "bd7bf2dd13722e5fa8b4887357e2dff46dee950476a90a06f983161cc44a356a"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "7c8912940fd987994a1140d9fddbbde521cc483f6a2d01765af33af25378dfde"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "efec11e7b24f96816473121609375402d7357356b97bf1355163eac1039f05b2"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "f0c8d75653465a801a8745ff5018509da319c4a614d5afee35155164ddf394e6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+      "source_sha256": "99ea5f4e78e83eefba712241749cab517eba36028f489b50faaa22db46dad6f6",
+      "tests": [
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_only_exact_original_readback_edges_are_open_and_factories_remain_closed",
+          "source_sha256": "9ad4c2401ed7b344b9a43f4e6ece6dfbb1f9c87a5313bc2ae55746f889ad330b",
+          "ast_sha256": "530b4bf7d514a94e2b9e5e1ad9d229aacc24a40f25d629b5d5ec7a5185b3d0b2",
+          "line": 77,
+          "end_line": 103,
+          "self_calls": [
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_cold_constructor_cannot_become_new_work_or_skip_original_authentication",
+          "source_sha256": "ee840ab1945fa967605ba11bfbda80f7e299aaf41d708020207e4748608d69fc",
+          "ast_sha256": "3965356e1bf6cccdf21634aedb6057972e3cd90d8a835bd1ec4df36d9d93f6bd",
+          "line": 105,
+          "end_line": 119,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "9fc6dd2b0678cc3badb29b3a7c68885acd523d817d1a32fa00e4d18079dd6e19"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ecee0f00fbcaa1d203fd3ae9be85cbcbc70d6157e5df08da7e68312d11be6d85"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "93617821b0bed7fb4b59b06484716f63dd1e20bf5394deb596fe5813c741080f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "4cd8b99a8c4bd4593ac9ce572a1545e2dead5eba78acf68e2e6ff8881745cb04"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_four_original_receipts_and_complete_negative_candidate_are_required",
+          "source_sha256": "850b6b6ced0deda8bafef46b5d5f59751f2c3cf28bf9b9fbd7c36de4b921b365",
+          "ast_sha256": "265c3b46392acdf985d1a219cf75f721e225e6e256ce52a8e959ee94077ab4ff",
+          "line": 121,
+          "end_line": 137,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "2d686d5eef43f57e776fc553913ae38d4a7a8eb1d3ef76e521b9189a7d285729"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "917036bc0eb82862292325953f065b9022c5c8209c5a2e23a308d1ffdfe70da1"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e19cbfae2d14d778fa3e225c448f3f5cda0f26d9e8ab799e8b8fa448d7ff0232"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_original_signatures_roles_and_expiry_cannot_be_replaced_by_digest_matches",
+          "source_sha256": "5602791534e7696800cb6a88d48878c758fc871a8009154cfc4d4c9e0b4b4e42",
+          "ast_sha256": "bb49ed95ac615da97d18cfa22b4495ad96404ced1a9d7b3d2d6b5791d23a599a",
+          "line": 139,
+          "end_line": 152,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "5d6ed8d3a46c08fce7916ed50416ba26aa7c1ace680fb5e1b80538a1aaff19e2"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c561b57008991de7fd2b32fbae4b37928aef2e2f402e85bc2e81a8e39f1be5cc"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2d90db5e1a8435c2863b07a790e27973a39ef9f01245d594432a3556e2108d1c"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_both_original_owners_are_reread_before_final_fresh_authentication",
+          "source_sha256": "af21ef056bbbc2a9f82789d6c9ce1e823c49cec976e82fba935cd0ec587d236d",
+          "ast_sha256": "171941264502181ba59c853601be3b406ddf178a973921bdd6a812be6220792f",
+          "line": 154,
+          "end_line": 166,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "55bc578de5de2bd23b1eaa9bdae9a477b050dfc944e0b4c28770ceadc1475e24"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "fa8e57d705b3ab90ad8f350fa8fc68e9f72c22ade3a5d90fbc10eba0b9a8c3f7"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_prepare_keeps_real_artifact_selection_fences_and_postprepare_uncertainty",
+          "source_sha256": "3a4374e59267d4d66629154548b7e0f06e11d12f8c7cf6040826e44b1a3d5987",
+          "ast_sha256": "278575b42edc430b52d9d42f4788b9a96882ef90b540e468e39c152edf285303",
+          "line": 168,
+          "end_line": 185,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "9afe120c7aa72d3a4aea24e7f351ae82b35790a56143c1ca03129c4c30b4b2a7"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0757dd7694e90c7e34a670f68306b1e18a47f92cc9358d1c5e30cade68ca58cb"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "19fb0e4c4ae7cfeae294ead9fbd63e0c4da643e2b7ebb451779d73bee8ba8b16"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_publish_preserves_uncertainty_and_rechecks_original_owners_and_task",
+          "source_sha256": "f12bf4cf2dd4c03f74f1c2735f347ec0ecac4bad7432e6e80fbfba8ebbcefd27",
+          "ast_sha256": "630637dd4e900787d12a1462b4eb3dead73631bc673b2a9007e6ad338c87a432",
+          "line": 187,
+          "end_line": 207,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "29b4525e0d344db41efadd63de04553a74e4f235a5833fc6e2623c8b2b98959b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cfdc20f84dc51cbeebcb8dd6c272a2aedc4a82d9fdfb671385b2c99f5adc8174"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1cbd91e0c46905fb4aa1887d3c44cdfeaf2f264ef22df605484424283b2dfdd0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "35537febf90b07d80c92823fb3c98d7a2b6d084261e394b8a2a609a96a182a85"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_continuation_custody_keeps_same_clients_behind_the_internal_consuming_call",
+          "source_sha256": "dc6f1e58d8e80d15bc2222c85bfff16492b8a7b1c0ec86398e5626434833a323",
+          "ast_sha256": "d632dfbbbe32bd49728d18080663050d0a28496b6c9f11650d4daf22934469fe",
+          "line": 209,
+          "end_line": 228,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "61d03b0c122a0ae5f5efa73bf1505992618d9566bbeb331372183e209bf170d6"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "af46d034d65b3575d0cc5b90a67cfd8d144d74a2aca22fa6c177fb985c6ec15e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1cbd91e0c46905fb4aa1887d3c44cdfeaf2f264ef22df605484424283b2dfdd0"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "65869840ffe2c78d0937fcd1829fcacfc9a409f09f152c9770cd2751cf3c6f24"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_cold_recovery_keeps_original_intent_and_cannot_repeat_effects",
+          "source_sha256": "ae13c974b7b517173ba5b4dff85af133fbe9aea1adc9b30c910d6fac69363fa6",
+          "ast_sha256": "48eaa7091a94374f49e860c01466cb32398a6e59d0559008af175c726e9898b9",
+          "line": 230,
+          "end_line": 246,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "1a86fd27632ca5347af6981bd33a679cc18e786e7efd763ff41bd8bca2d3bb73"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "d557a8b6db3940ae5165b1c24316e2e9c29dbfd572c688d3eca328abce55f5d7"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "07ff00e6842ded91b0cd7cdef6600b04379b01de83c743e8dc9a551a5cf34d58"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_no_signer_writer_candidate_upgrade_or_fresh_recovery_capability_can_be_added",
+          "source_sha256": "2d7b4e823482ae412abb52ab1a1e818a395ac556bdb5023f0ab04e782742b80d",
+          "ast_sha256": "058fd7fb7134cd4e8ea003c5df3fe72ba77159d54ae1552838ef4af47f771b81",
+          "line": 248,
+          "end_line": 261,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "9558c439d09254d62117ee6d5c0a43b5f7b6ab7d28574f55029b8a41c385e107"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "62728dbce9a1d920f9f1988ccd47b6835c058c1e9c17185528f632b358ef7fd2"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedRetentionClosureTests",
+          "name": "test_exports_retain_the_original_linux_boundary",
+          "source_sha256": "9f0089fa0f090be87366c26bdb614855c5dfcb6adc719d5817cd64fac39e21ea",
+          "ast_sha256": "4202ae1c6b9f8b0ba9db574f4c4729b5fce3275d542de4a6a200fa8ad1a96d47",
+          "line": 263,
+          "end_line": 274,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "7fb28350910e830b24c10b9e9b046f5fcb51c20e4233e887c4b48a38839f531c"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "4869eb9b2fcb27e3b7b543c7689c455ab07398fa58ac16bbf4d2c70898cedddf"
+            },
+            {
+              "method": "assertNotIn",
+              "ast_sha256": "457bc8e865cea38ae765aa88e643742066a20ca26405db4dc40fbbfbcdc0049c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+      "source_sha256": "2c0ebf4a1e26704f06306d1c951f94487646c1449c6fd406a172f8e23400d4ce",
+      "tests": [
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_original_profiles_pass_each_complete_protected_row",
+          "source_sha256": "34755ef914793295f407b7eac2c0a749ac0d3d40bf7b83e9952bf743153d9aed",
+          "ast_sha256": "846a9eaebc3a9dd92e890a9b1ba1b40d3fb709589daad2af0f4ceaefe5373531",
+          "line": 84,
+          "end_line": 87,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "3ec188e76f1a1114430777ef225ca9a86ba8a2e3f601ce3b1653ae8560345eb1"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "13c497f29cb2ebd5c40fbdff3a2f7e6390c2ecae99e1e9aaf161b3af84d52c55"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_profile_guards_cannot_be_hidden_in_an_uninvoked_closure",
+          "source_sha256": "bf49055c8d041e8854112586295208ec7836d10f85a32b918788ea2f65651a50",
+          "ast_sha256": "7aac143ba7f36cd44adc1d98dee74c99ccc8ce64a19b3f60bee43a6dbd30c8a4",
+          "line": 89,
+          "end_line": 110,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "c871fc347947be412c6d0f7c04bffb829f4482e31f3ea9a5901032ce69793f2b"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "c47616ad849ebd18cf8e6821f39bb5985091f72f8862451c76a8b6fef6419e66"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "9dd0b7153981426634941de71fa26054570ef89087357c8d818f554a42e308ff"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_exact_entrypoints_remain_closed_and_cell_reader_has_one_new_caller",
+          "source_sha256": "b769d270f7576771bf818da38ba4ca8295bddf20c476ee77e4486901dd03a590",
+          "ast_sha256": "c9147086c688a5cf158808f74e48420bcc658132e94fdd95326311d5dadddc78",
+          "line": 112,
+          "end_line": 157,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "d61d73a4d59cd15b923934b3bc20dbd5888a8cbf8d889e8abc1521c36097074b"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "600037c10b821d34e0a523aae1328416e505305ec1ae4636b9fe68f558599ad6"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "11b27713a748c0cb54a1ac79e0202982d2cc57f53e633c1a87ccc10bd5a09212"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "8940f382b0f8e895b6f57b67f03fa099804fe939a561d2c15d24746f9a371185"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "c0aaa64c040a6fc5ec02b043d5a50614ce9f1d103b36e091d6f25ecdc033f934"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "6d3f89bafc50d1e26ac349be1b58604b12c1c34f7ea6ae17c663a35a9ed493d4"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_recovered_context_and_opaque_selection_never_regain_fresh_authority",
+          "source_sha256": "35fd6740ea7ae23f5253ecd3b290d997d55b60bc93a44ba2c57ec6a09efdcc8e",
+          "ast_sha256": "319852a5e871a226288320f9304f41081f58b79c8bb42ab38c531b6db9614284",
+          "line": 159,
+          "end_line": 179,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "5e0ff155fe5c66ee3f086cb3bd8826a3dd646fa2117011e9ed96b50495eb1a87"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "734c93bcb57e4c4c78459382edac1ce0503cd00ad8bc25947d66af54ad84cb3f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "a040460698922ece503b1ab903fa32e247b1fafd192bad84917ede6c3e1108c0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "4d43ff587dbed4c9325f0683c1f9cd0d9ca2845e047cb7ef9a0cb376ba179000"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "4e3aa76a3ce709ce1766c00126b693897f612058ae72f56627dc7a3fdb2ccbd8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_recovery_cannot_claim_missing_or_pending_selection_or_create_a_replacement_store",
+          "source_sha256": "0a4f712236b9a0ce8ad95fc3ca3d23f6bdf60ccc82decf07e2924b533e2f2f41",
+          "ast_sha256": "bac2ab6f189a5505bbb3747b305062c4fe8e478fd94c52aef015cf88418a10a6",
+          "line": 181,
+          "end_line": 203,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "e3742686f4f59673ca37a1d01a152da8ad968849877cb010fbaa3bdf333db769"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "369a3eae4f56a0441a7be86b07b30d226e0f28fcdec6895524a4d81d8d006ebc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "53696fc2bad919aee909e3876de29bad5864c0268235ad9ff9384cd902adcafe"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_original_t_b_and_actual_cell_capabilities_are_required",
+          "source_sha256": "4a66c8669f4d3cf7493a2b925e81352958bf17a6484cac52100f665b3f5b324a",
+          "ast_sha256": "ae4b5c1e7e31542bfdb0ff9f1cc72be037855c2695b37adf7e117523a88a6d69",
+          "line": 205,
+          "end_line": 226,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "148759ed4c52e9b684c5e5dd3c23dfd60287dedfe95d8881e5102e6d101b928c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "dabd2a8c35a2c712b68ee730d0f49957a38a101ca06776518e7fd9cf2b32c193"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "fa8e57d705b3ab90ad8f350fa8fc68e9f72c22ade3a5d90fbc10eba0b9a8c3f7"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_final_cell_check_follows_last_t_b_await_and_precedes_journal_read",
+          "source_sha256": "73ecb44d8140e03c7a405a4503170c268e3fd7a1cbbf9eadf95f79c67ae2e256",
+          "ast_sha256": "2100f7d7c12ed3e1d1837c819ad1e3729349a327af3328c509530479070bd7f5",
+          "line": 228,
+          "end_line": 257,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "33af996c47ee537eabcaf565a417d2b1a4e689ec88efd01fcd2637359cc21a86"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "4ccb25190be52c1a76862693a068f5918035ab4980ffcb732c8148ca3fe4d790"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0163fea4562bcb9636d385d472eae368f4543c629e95773697c1f0518744afe5"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1f02a721f45d283da55b5c3af88e32bf711e4aa50e8c5b5535cd70cef4f9b38a"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "7954d1d6326d1e46e2d0adce537f1a2f7d3c422ef34a026aee8ee10cd252ed11"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_t_b_and_s_all_keep_original_signatures_independent_roles_and_clocks",
+          "source_sha256": "8645dc06dce68f0e4efdc9c49998d9febf3ed7f51d0bc91ab5bb8d191274437f",
+          "ast_sha256": "9766f1f6ab53f896c94998bb781ba63baa1c60371523a20c6417c9c5388e9ff6",
+          "line": 259,
+          "end_line": 284,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "ccd62634c9ee0f82f85d9bbe2bab85b030610d3f059eb70376a82da8aec1e46e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7ff7918f7b9659817e13b95823d1bab0c495c8ccc571b65e7898fa61e2bc952a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "dd45d5aa742dbcc5c6df603859848b4247c322ff2d83ee40255df203a94e4815"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "47b4922dde2e48bdc987f8ca469bdd195c03f88a40b112feba06b6e5db1b3eab"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2b0de75a6342754e1ebde1d9c6d28e89f2c840b552ff8c336accede81cc9d4f4"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2d90db5e1a8435c2863b07a790e27973a39ef9f01245d594432a3556e2108d1c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "4010b49d81429bef5c6a0f0884956916f83be0d740b7a391e24e4a0d5b8070ef"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_journal_binding_includes_b_full_signature_and_old_tnu_profile_stays_distinct",
+          "source_sha256": "a4b61559ca6476efee8d1bb2b8dab26dbbb7c1c069b3b88a7b7aa6eeb929d04b",
+          "ast_sha256": "35c0524017a975674218db7055ea0b9282cfc1484bb4e139bdd9d432d1fe97fa",
+          "line": 286,
+          "end_line": 314,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "f5a2419aa406bae7f3c9c649c9eb40e5faad7fc7018001237d1d053edf3d8dea"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9af7dc769e2bbf63774761be13cdf306a91331201354ea79f129a2aca717a56b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "6c57291677c31b2f7ba3fdf2525a78efd976c97d800fe2b5afd175780e54853e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "174a4f94d83902cd37a3deb60f3953ad1e97fa2edd0f2a9a067bccfa04001f30"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "afcdab3c11f267acd82a39deb664194a951d33ee16c928e155881b945ae37e39"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "6ff65ab52bd6712e16a5b24d6dc7c3a17dff51be1e8a5aea43484806d5d4ef2d"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "ddacf724c15eb3b68a3cb58a68aefa4ce80450e258186f71d046a0f0ee66a362"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "86ebd404f9583a9436fd0b17db465e9c1b30e106fc36a2aae6b282b787ce61ab"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_old_command_adapter_still_refuses_the_new_evaluated_four_cut",
+          "source_sha256": "bf75436d4c142ea0127d4a982908d2268c2fb72a22d242708c645d2bac89fc90",
+          "ast_sha256": "87bcebe9fdc22922fa2fad4431806987a17f22fad2687a140b59f41eefcec5a8",
+          "line": 316,
+          "end_line": 327,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "7142173d61b5b6d9b3df550aaffe4a4365b3ba2b03cb16830c7850aa6406d29c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7d42f44c1f7a72d9bc01deea46eeb5d0a93ebf21d3b6b76ff755a58fde64b44a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "132a340cc23e1d40284be66785cac58e17565367ca2d9153eabe7fa1057a7abb"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_legacy_c_refuses_evaluated_five_cut_before_touching_original_journal",
+          "source_sha256": "0d74f15c0b560ce5ef1768158773fd855bffd79835af079a1e9b80ecedff8e7f",
+          "ast_sha256": "922577b5e0fcfada045112794b05438d58edb6919c50847ae94c2e9fa5db9fd4",
+          "line": 329,
+          "end_line": 349,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "02f59196bfcc0ab041122e79ccb6d339affedc70163460cfe7d2375059a514c3"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5c1a26545a6f7ae78cbfc417fc5b7be0c778ee0aba57b66dfd30cae73fb0e278"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "eb35af0723516fe81f595bc6654bfaeaca479fba4bf66982d8597d766bccccc0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ad88c8aea1aa5f67fde0c7c43326913c09837a7b0c3749381bd881a40e9961a7"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_opaque_receipt_has_no_additional_public_capability_or_mutable_owner_getter",
+          "source_sha256": "afb5e39e3f10c6f66a566fdd060f9cdb00704488c974a608ac5bdee9d7b59c3c",
+          "ast_sha256": "7340f58138adb1d5850c7ba38ab533ef9f0dd924b35a2cea592406c380b3e02e",
+          "line": 351,
+          "end_line": 369,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "4069adf4010b21a050e0eacc93641e399cf93ab8c4340d59d980e4a9f88e45dd"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "f5bce28fe90d8751a8bfe7252aabbecf67490b73f3beb6289fcf6130ddeeea1e"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "9215473f593dfad988a1716d35e2848a9dee8b0fc9724341fdc5b4959ef8005b"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "f80098069c28b082ad27582c1013de8ab986de169b7eb1cb368b032323db72ff"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "e51bdcd056a55b9f43298f74612ab75435b7f560d3439d4fa7b41423c138b662"
+            }
+          ]
+        },
+        {
+          "class": "EvaluatedSelectionClosureTests",
+          "name": "test_original_fixture_tests_are_mounted_and_public_exports_stay_linux_only",
+          "source_sha256": "d5f8dc7c55c5e8ad9fa7c9531130f125d860048b5d8ab7bb49de89a43b51d047",
+          "ast_sha256": "212b46cc8bf52295e0db5d118a25811fd155609677599d1c0309df870e3b978f",
+          "line": 371,
+          "end_line": 385,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "d4c9e257c72e8700249468c201afafcb4cef8e6c3ca9d9b819bfdfc2ba48ac49"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "c92beb9ae1e43c98095ba397ffa9b0c4c67d641ce9b1d69385b666cd41810cab"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "c10ad7988876c4db2f250bd5f8fb75db19a9c6e3853fe516f1d051ab8f7210e9"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "25f5f2694c9468c5048e1ea45e0dee706fdd0a561e4c101ad09b7164f7e5534a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "source_sha256": "113cac56debefe87460e3ebc76ee34201a00a9d7439449f5061c5f90e3af20e6",
+      "tests": [
+        {
+          "class": "OriginalCandidateStageClosureTests",
+          "name": "test_actual_candidate_and_shared_original_edges_remain_exact",
+          "source_sha256": "39244c08aca898085a2af4d7119749218a38e351753608490eff75079da3e2cc",
+          "ast_sha256": "b2519f9a530782c408240a8d842956202f220c2387013cc7aaa268a0b8d02a52",
+          "line": 80,
+          "end_line": 101,
+          "self_calls": [
+            {
+              "method": "code",
+              "ast_sha256": "a8e687514a2ba650ce0c10e8d16c90d2ead374decfecbc25c14184fa15840ca2"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCandidateStageClosureTests",
+          "name": "test_initial_handoff_pins_panel_profile_baseline_actor_and_original_time",
+          "source_sha256": "16a052d19aa13303faf3a60afc92385608152f101a9ce5c8152b95a275ebe5cb",
+          "ast_sha256": "ca37d4eaf0d8abec5de241b3dbd4a3aa4f97fc1242b11e1966d1522580e442eb",
+          "line": 103,
+          "end_line": 136,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "ae889002f6a4eddd424ce509c624372f09cd88cb1f7d25c6a164697b368041aa"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "d289447a296565d09c04b8ab40e31138f636086d7b743ba77e6bc9485b6ec0fb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "6770496c32b5de4b7cd0fd66f4311e7475fe83473c241d6699117308f2a9c9eb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "f21aadb7f587f655f64e0d51a6c9495de7000d55122a4b37c6d57aa5137aa3aa"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bf8a24ccf49cf2cb7df83912255e97d1b38da53d325d40b90c61932010f3fadc"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCandidateStageClosureTests",
+          "name": "test_actual_prefix_and_candidate_pages_cannot_be_replaced_by_cached_material",
+          "source_sha256": "7f1f7d5488b802c61ec3f400d7cc32c1cf37880817cb399790684ddb3d0fd8cb",
+          "ast_sha256": "b6c24769e55b05735453a2d62670651a5f7123b6b1c3bd31d14baee163583eb5",
+          "line": 138,
+          "end_line": 162,
+          "self_calls": [
+            {
+              "method": "code",
+              "ast_sha256": "57846810d4bb348a2f5eda123070945cda8c175a83f6a6af8ded210c93b4a825"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "97348243e6aacdf40fed6e8d38b8c448eb7a82808db816a41af79ef6d72ed36e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cd3c3568f06c27cc81ee85d051f9fa093174ad81a0a43ac8a8d25dc92e46be3f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9a6071327d80193ea8fe84e24ae75ebca16c4fc2ba1c1e3f4e23a10f6c15f856"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCandidateStageClosureTests",
+          "name": "test_last_root_and_source_io_precede_fresh_full_original_signature_checks",
+          "source_sha256": "a3a498c75eb1d235fa5dfa30afa99d1186449341283d26a0c5a685a7579bff2d",
+          "ast_sha256": "904fb5e1be6af5dc83bd626c94189ca6734e78cc796fc9c9fcfa6edc9143635d",
+          "line": 164,
+          "end_line": 184,
+          "self_calls": [
+            {
+              "method": "code",
+              "ast_sha256": "57846810d4bb348a2f5eda123070945cda8c175a83f6a6af8ded210c93b4a825"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "3d547d67e57e8a86a0db10888c52e300a5cfb2f4b850435fe5c6bf48484d30fc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0399d7bbc8a276cba4ff7800e2ed758dc34d73e98a0759b57f2858ab3436a76f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cd3c3568f06c27cc81ee85d051f9fa093174ad81a0a43ac8a8d25dc92e46be3f"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCandidateStageClosureTests",
+          "name": "test_unknown_cancel_or_recovery_cannot_restore_dispatch_or_cached_success",
+          "source_sha256": "f6c34646749e0f68f250115b02b930364bcb630e9595d6735d4897f171741094",
+          "ast_sha256": "7278d4e4cc413c4f34672e071ec181d6b5a555231e918ee1354ccf0fa1d42d2e",
+          "line": 186,
+          "end_line": 204,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "cabb849bff90195b688daedf58000f9cd5368c5f8f62ac8299cc05a74fc6c4d4"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2561d98fe0a4cd728ba0fefc3d07cec8e6b64e84ef92d0e0d2e42595765b2da3"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "56ad32256b33768034541472200ca3c1c7a1c2335f045943b85f67f64e4ffe04"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "47d8aa43fc236840a34d99d736d5da8c9d67d30557f9d33b47ca58b61b210877"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cd3c3568f06c27cc81ee85d051f9fa093174ad81a0a43ac8a8d25dc92e46be3f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ff02a8bfb5f0019db3185b4d5b58f2f989ec306617b6b73d016238dbb02ac84c"
+            }
+          ]
+        },
+        {
+          "class": "OriginalCandidateStageClosureTests",
+          "name": "test_unavailable_b_and_adoption_capabilities_cannot_become_no_update_or_authority",
+          "source_sha256": "b4b6a2b4f292d5fa4d00f56c3307f1e6a720932bc4cb5dad0920125642fc5b9f",
+          "ast_sha256": "12045f88675b1ae0f175e5ddd87263b4077195a23bb1a1a239f8a1462972d1dd",
+          "line": 206,
+          "end_line": 224,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "cc00ca167b35d981ab6bda5695e26662bdf6088d64507aa1bd2687344ea874bf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "8d41f1df0a09257d73c7f2bbb8eaf0c4f9f66297679e1f42e603dc8cbc517a84"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "67813686749eab3fbfbaa3d5633e6bef5e00a63e3647fa0ce188544535fca53c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b6c7ab7bbdec3c85ab87c2ace47bac06654d66f32c44a6a370f55b4f25d21d2d"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "eda0443bedfd2b02530029e26a240b848f9af3fd5251e6cf44d7b74bacbdf8eb"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "source_sha256": "615372987e280bd49098130779e0c0347fe2762c1e81796b477d1d728b99d869",
+      "tests": [
+        {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+          "source_sha256": "dc6bed6dcea2a7bfa2009e2162c159d3bfb6a4d2cab10e5493e3cab86698394f",
+          "ast_sha256": "9deccfcca1e662a4c155f8ff46db23d582cc2e8952f44ad047172f343504c338",
+          "line": 74,
+          "end_line": 95,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "4e6491587b2881bfc897f653c9ae2d1a46a5781ade28e65d13e7d5bf37592996"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_fresh_context_pins_actual_selection_and_both_original_signatures",
+          "source_sha256": "370ebfe77b6752d746c22c71952ee28c7b35fc2c2aa04d3c881b85df4def55b1",
+          "ast_sha256": "43db1c75997866afab011c0aeccb6a83983d0dcb94b60326b3bbb13d1e344420",
+          "line": 97,
+          "end_line": 116,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "93617821b0bed7fb4b59b06484716f63dd1e20bf5394deb596fe5813c741080f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "67a84c4773c3156805235c64e903442335d3631c252d0ba08ef888c70eb44f68"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+          "source_sha256": "26a091b963ef4be61f0e74170b90853bae9c3ce145fb7eeeb7f4c5b13d67f7d8",
+          "ast_sha256": "e4c840f07d0085ca55159e115d2bfb1b063e7de7937250b4e2ad13edc0ae3f3a",
+          "line": 118,
+          "end_line": 130,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "6971741b83d92374ba598758ea4bfc7e93de03e666a37733a71d32e7a7ac9d10"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "50453e0239c2f59015474ea60ae39bcf4c81d12c956aee44aeb7b715c0c5430a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b2cd8750d81afe28b6a01fed91d7477aa226f033336dddec467129b2de190095"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "39300dc6ecb2a5f73854809068cfd9f27cf452ae51b74973d04342b1ab4f3e7a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2ad17a24919ec57bf0cfc5e4d2fc2063e73677fded9e85a134ddf9f16e1cde97"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "fe7f171ec198950d1733863f2f07f77b88f655f8ae3323bb72aee2a476a041ff"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5bd2a899f2b35fe8f3dd308e85f31247fe4bacbb9f0c561e34e8c2c2f1e1bd79"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+          "source_sha256": "c792dd9561a6691ca885e137d8ec0a025b366a9edabafb1be40c8ca81e89084f",
+          "ast_sha256": "79183ddfea68a2bba36eb726caabac53345617f5a1e922eecdd8695bdcacc5f1",
+          "line": 132,
+          "end_line": 156,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "b6f5edbb3f9226f19a7dc1b2eac2ed1580722783f0776b09621daa19084b4cd6"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "84eb3d6ce1d3d39228daf718fe9f3dd235551cf15296eb4b9a5c1f1659cc172f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "79a6a691400c47472d572a7dc67ef5788da1c94f87910fec00ef94138d55b26b"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0675af2d9dc6b31bc8c2078746bb25bb26086388d4b0174c5dde0ed347dfb9f9"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "80509dd64dbfc245c98d3cccb231f47f8c21934d5a199f2dd6ee561660e26da7"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0675af2d9dc6b31bc8c2078746bb25bb26086388d4b0174c5dde0ed347dfb9f9"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_attestation_and_readback_use_live_original_owners_without_running_c",
+          "source_sha256": "cb1ee9a90163cee4e2d866d258b8f0fba6f4894c54a4f52f1aa43a70c8254df9",
+          "ast_sha256": "7412bd7e44a1a20e84953d31160310fdc8b4ded4d2e9294bc171088cf523c7b6",
+          "line": 158,
+          "end_line": 175,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "bb54151c3d455ff7ab63687b145422fff7401b4a3ce9985a2323144450cc7a02"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "55a556b68a2f9c510a9b16b7094b1e689026a92c41d446a6dff7059a424c55f7"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "762d90056ee5b944ac49b621a2fc9a6b7912272712210c6d40bc998c58c7e788"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1c939142ecb16686cca63101ae38fecc40a215738421909553a4b4c714e0bbea"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "6eac12809310f9f9d2c932e60acf92300b02c6279b44d14fd5401561c9df4321"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "86e47a9a12d3692d2c591ec393206f4d538aa08be8c1e0a13ea06410c8c9a110"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "a57c520658eaa66eb0f44520917e9cbb426e38a6fee557e140ddbcc01822eeb4"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "941a433084a47455634595da052d7de1efb5c03a091c9083b9afe653baf8e3df"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e598a7410d1bf6d6b875b562c6c67c598b02b9f60bda1a9c79aac755068a1873"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e0b1402e79504c9191ac66197a62892b5d1ead0b208a6798362997760344f874"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "629daa4b52b36007b7ee87b569233ca3f2b2f2588518282ca70da7849b83b1fe"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_response_requires_actual_retained_c_with_new_run_and_original_roles",
+          "source_sha256": "51180e75b76377aacaf2073aae7b4c0cbd76bca14cbe97e7a097d8d2be3892e8",
+          "ast_sha256": "57ca1ce08364b77cd4284d2940ff8cdc285ea5c7613c2a5b0d499d43f7cc7186",
+          "line": 177,
+          "end_line": 193,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "93617821b0bed7fb4b59b06484716f63dd1e20bf5394deb596fe5813c741080f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3763a959c224d46c70c5b1cfc0706cc838b870bc096841ffafe2de8a855d953a"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNextUseCommandClosureTests",
+          "name": "test_no_key_writer_callback_or_readback_effect_factory_can_be_added",
+          "source_sha256": "ba1a7f1446051beba8ced82c258e80a2205977c4b0cff3fa5fd03a2904bed946",
+          "ast_sha256": "5d8b7df34023b10041c15aabd27edb88ec05769ad5d1912625254f504ac19d4d",
+          "line": 195,
+          "end_line": 212,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "bffc66253fe0d95a05346343dad1d10fb9a989f1d84a7243c972f4a2c32ccc45"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "source_sha256": "1f12f51b7b5c7fdd2300a35888bbc2e5b5415f49ac449c6e6749f6e3c900357a",
+      "tests": [
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_only_concrete_original_edges_and_resident_installation_are_registered",
+          "source_sha256": "f10dd1bac1cab3477d3ab9a7fa2bd060aed23bedb143f726b0f99156030b8044",
+          "ast_sha256": "4b5b43e3831cff88af67aa02d35cb237cf3bd5bfd65d6d9fd9aee5de3367f2ea",
+          "line": 99,
+          "end_line": 121,
+          "self_calls": [
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "code",
+              "ast_sha256": "a8e687514a2ba650ce0c10e8d16c90d2ead374decfecbc25c14184fa15840ca2"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_initial_fixed_context_and_original_deadlines_precede_all_late_binding",
+          "source_sha256": "36bb8cbd7ac0ebc241c2932e1c459dfccf56b69acf93361767473c1647eaf36a",
+          "ast_sha256": "cff9828e2336f4a9aca212d6a41e169980783954e6a50d0cfb16e06abdea8a29",
+          "line": 123,
+          "end_line": 147,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "fc28c3bc0770f71ec7b8bd2a5c5d486b4be325afda7cdd2a424659478e863399"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bf8a24ccf49cf2cb7df83912255e97d1b38da53d325d40b90c61932010f3fadc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "719a341aaf43036b8369e5763e856143498decbef6ccbb5096df6059886cc05d"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_resident_gate_and_same_cancellation_remain_at_actual_effect_edges",
+          "source_sha256": "7ed4109979a323c8041ae12942d4154ec67cbfa56e6079c421071391031b837b",
+          "ast_sha256": "0a57eb4d012ed4a8999ed225ccf64a488357b3e6506001ed7588c612543b2039",
+          "line": 149,
+          "end_line": 180,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "7a10e96690ebeaa5f13ea686892de16324b8ce26c5d0c838efd39c672cb4285a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "908118c212823adf461dadca97f287924e5649da53703f95ad1b55a1bd7fb705"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "99f236e3ba8c2d4f35b74008fdeca02462aff75698c4f8f5f87c8f8557abd59a"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "32888898c744c63a0c8652c99dbe86ec54b88089864f6340165692e7a81b47ea"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_recovery_and_attestation_use_real_owner_reads_and_final_clock",
+          "source_sha256": "00e913440c28fe0cf049d9b8b2efaeff0898c0466129f8a31598f0642ff7fba0",
+          "ast_sha256": "1297dd04876e1ccc77688f4b38fbc52a475f70d62f175023c547ed85fc0828b4",
+          "line": 182,
+          "end_line": 203,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "fbab5f7dbf7c94afb5a245d65a0b72e2ffb317886cc230206e3a080caedabf43"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "35563a67443167ea180440f01ba46acca4b558c1998751b416ce616090261a97"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "38481c79900e3de8f29f261b300b87edc66af8f96bacc0e7562c637a5e0407e1"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ff02a8bfb5f0019db3185b4d5b58f2f989ec306617b6b73d016238dbb02ac84c"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_late_binding_consumes_same_transport_and_authenticates_opaque_predecessors",
+          "source_sha256": "a10e1a35f3ec6c3f38162878ada6d4ee32a88bd41eee8462a8c25ec38f20f77c",
+          "ast_sha256": "48b82f73866d5475a68e829cb59adc8cc7e3cb63ff89884f30b56217b0424db7",
+          "line": 205,
+          "end_line": 229,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "7f51f149e5958c347d5ccd1c34fb0f4a1b7c9270791fb7c6a3ff9e3377d12c0d"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7ec9f8ca971324cd1a09a3cdc5eabe3b0409aaf33c3d1ed00a0315affda78236"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "985855cbb0235254aecdbc947bc4b17d0b466011474c96169c14fe266c4d7449"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "3e7b44b2ddb956d93a6f084a3ee645fc50a0dcd1eb5af5f56da77be13da38782"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_readiness_only_original_unresolved_publication_remains_pending",
+          "source_sha256": "e79156dfd85acfda450e3ce5f799cabfad29d4aa243925edd947d1fb24c24d7e",
+          "ast_sha256": "eefe7e79c6434b1909b8297ba6da942e0cac12c859beb17d7195630156136f1f",
+          "line": 231,
+          "end_line": 245,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "71018285b2d791e03ead54c7ea64820b8025508a74403e46fdbca0ed33f68084"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c7a9d5828ebe953c0539e8a551e42d689c1c52b8de75e77d956c2e8744008f87"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7334bf51e8bbbcc26cd2c43ea638ebdb4d8bcdad71bb89d76bf4eb233143df35"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "fd770e153d0a1b56ad082db7b43b5c6241d850fab7f5bf23614219ae2f7926f4"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_readiness_consumes_unknown_transport_and_never_regresses_completed_identity",
+          "source_sha256": "3a7606393caeafef9952f7e5c3d0f133e87302ec7f0c7e9e645a62d0cc529647",
+          "ast_sha256": "3de286d22966f5df2d6245f6835a7c7c4e13d77fba9aeb69b518a8f1a8b3eca0",
+          "line": 247,
+          "end_line": 266,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "36a43a828c5ecd1c1c5b2975bd390abca0c3dee63de0b7ed84088806d6e31804"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7c3c24346eee793ca13f57cf89dd448c6f22a4477b0f3d15535b24900ae1e8fd"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "74b3ac81f2fa64aa3d1d0e3320571cb1a37d7856686e5927d0438a259ecba742"
+            }
+          ]
+        },
+        {
+          "class": "OriginalNoUpdateStageClosureTests",
+          "name": "test_candidate_is_preserved_and_no_model_authority_or_signature_renewal_is_added",
+          "source_sha256": "6cc6a794e79d9880192783aefe9c74e37f13607356d10665987b4a9dd809dba1",
+          "ast_sha256": "4e836895837cb430dff894a481f8ca643a145bc2aea98186da906d8a980b6e4b",
+          "line": 268,
+          "end_line": 289,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "b6c7ab7bbdec3c85ab87c2ace47bac06654d66f32c44a6a370f55b4f25d21d2d"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9d7ef7eb41fb3ad80b5221a78e676df3671c7b2ab46f9ccdc1bc4dc763a117f5"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7ec9f8ca971324cd1a09a3cdc5eabe3b0409aaf33c3d1ed00a0315affda78236"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5e48d4b7cd067311435616666a687af84b527af678f326391d58600cf90abe44"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "f18102d2ff7afa08118e3c6fa4f9d030176ba9dc9d632807d0ef2a6acde73b35"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "source_sha256": "ba60c6a3aa08bbc5a6ecbb1311a1483243dde3bf5022f65d94d6c9ba22d10027",
+      "tests": [
+        {
+          "class": "OriginalPublishedReadClosureTests",
+          "name": "test_concrete_live_read_edges_are_exact_and_external_factories_stay_closed",
+          "source_sha256": "721f6ba1ee2dc19c6c706f414511ae286a31bdd0cb9293306650b89296d031f0",
+          "ast_sha256": "b972f34695a62e59b8299107818a79b726e8e6510bdc74803e032d7668b4a244",
+          "line": 75,
+          "end_line": 115,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "4e6491587b2881bfc897f653c9ae2d1a46a5781ade28e65d13e7d5bf37592996"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            }
+          ]
+        },
+        {
+          "class": "OriginalPublishedReadClosureTests",
+          "name": "test_source_current_keeps_original_handle_two_witnesses_and_permanent_fence",
+          "source_sha256": "c8b084c86d12890448ad17a2b5a00fae3ffed4a07d4cc96267b7fd004cc0924e",
+          "ast_sha256": "4a8cfb5442982b35dfdefa079deaf1789b8b134afda03d8edb105573026f887f",
+          "line": 117,
+          "end_line": 135,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "d8559b54dc93c6c5fc6d3ab233ad80381475983b024f9b4e35a0aa0c17eab46d"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b4a21b12d7b70b016becb4ec3351afd7d08762c7be77a83ca09ed7eeceb7d262"
+            }
+          ]
+        },
+        {
+          "class": "OriginalPublishedReadClosureTests",
+          "name": "test_mode_frozen_scope_cut_and_complete_original_signatures_are_bound",
+          "source_sha256": "1aca39c39fb07584405a039855edcbad247c29a528365355f5c0077a85c736f5",
+          "ast_sha256": "6282cfd8dea8c89a2daaad3c179b026ec63313e48c3cbf90765076ef6ea8e9c0",
+          "line": 137,
+          "end_line": 157,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "b0bec6d5018aee0030aaefd8cb85bb5c9502526bab4ebd2fd28e2a47bb53d427"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0fb73567f1f074f32c7dcbdb1442c69b4e2fa115da63d6939df6b36559e053cc"
+            }
+          ]
+        },
+        {
+          "class": "OriginalPublishedReadClosureTests",
+          "name": "test_no_historical_read_replaces_remote_io_or_fresh_window_validation",
+          "source_sha256": "951c4345eda9334c582e21e8de66a0aa3012e9a3313c63e24a7e01a6249d107c",
+          "ast_sha256": "ff45e2fc7bce826a5ff5eb36b290b20691b078c368193d691e25cd478448f118",
+          "line": 159,
+          "end_line": 177,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "732a727b8a062afb57a6dda0a66c956c3f4627bd0c7f8debea26073a4ca8e705"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7ae0bbded280c62dfa04b82c929cadc7a911b59dba74d9fadf4f99e9154dcd7f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7f8aa76c52bf35f76e3b670faa207cd491dab83b89a6bfd828a87456cdebf7fe"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c5b6c60c2d0eeb65d42e46b8354eefa732a61b3f90bb13b45fc4c27738dcdbd7"
+            }
+          ]
+        },
+        {
+          "class": "OriginalPublishedReadClosureTests",
+          "name": "test_actual_task_source_selection_and_c_completion_precede_wire_response",
+          "source_sha256": "4bb8d3a87027d76769d78f350965232bdf5d5881868a48b770792f1ac0f565a3",
+          "ast_sha256": "726ab3d220eee88f108fb3ff8d747a23a8c18f7c547badf1b9f4c78bcc4829d2",
+          "line": 179,
+          "end_line": 203,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "95bef8d3d00a48f753a74b61046209ae490780b6a7b9707c12fe9bfe09b23a39"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b61dabd018132ec4da14d42bfd2849812eef59665be5445a6c93a5c50b181350"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "72e99933216123ad309677baa57ac846fb81084f2cb2c31a98028a7a743b5973"
+            }
+          ]
+        },
+        {
+          "class": "OriginalPublishedReadClosureTests",
+          "name": "test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides",
+          "source_sha256": "bc46660cb74bcbdce909d3b8a3bf60596621f15f20c1e8acf787c2d872b778b1",
+          "ast_sha256": "ee92c32c50388672e40750ccd6cc4aa8ec8ce774c281768b8e34b28fc69c6754",
+          "line": 205,
+          "end_line": 242,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "5bfa86b6c7ba8788d55ec9074e2e82a1ce6a5f9b86cb24bb525244eeacc0c081"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "98e4bc7189bf22540427f25b0527950126d93b7fec98b92270167b06ceabdc8c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "8db09cf2111739114d01c515433891234e10598cc165082ec18e0e985a556463"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "4f33d21e961d4e7b898b8b5725b8363e2e5c1e807084bab73691495e4576d39f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "68a29fa9d71a4c215302e203c0b3b4e623cd24060501cb608ca60e44cbe8a3ce"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "7c08392ac87dc50646cf08f76dadd4f83d0041c31922a28e5a1034fe0e14ebdb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "08c958d24f2f3ebe041262e8c61c2871de8a24d390ce87d9cdd597154da49bb5"
+            }
+          ]
+        },
+        {
+          "class": "OriginalPublishedReadClosureTests",
+          "name": "test_private_wire_is_bounded_mode_exact_and_has_no_writer_or_signer_factory",
+          "source_sha256": "994665abaa1deb214b8b776ee804aebda98682b795a6b9ac75ef598e6983dad5",
+          "ast_sha256": "dd6651bb6afc4ffb4f602a202207e609c3ee720a513e3a1d3b58908ca5a94c0a",
+          "line": 244,
+          "end_line": 275,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "c5d6f8e89b4deacbebfc11d21f5ab24bafae45466c1e842f696b124c4a390d92"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "f34c4ecadf9aa3777f7fb968807034cbb3a8e5d53477db6c5f169cc1a34d4af2"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2ad788a8053d1548c27f4f3a82a801179c64fc3efaf0f152d2a6fde248381099"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "bffc66253fe0d95a05346343dad1d10fb9a989f1d84a7243c972f4a2c32ccc45"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+      "source_sha256": "255ae04f596f3e4f370416e2165ddb7518ba9b634d60b08db83d180494fbb461",
+      "tests": [
+        {
+          "class": "OriginalRetainedOwnerReadbackClosureTests",
+          "name": "test_private_source_kind_cannot_promote_remote_reads_to_local_protocol",
+          "source_sha256": "4d756fc7b175d544a8244fd71c8083b3804ac9772bf92bf90969db639c7f5d34",
+          "ast_sha256": "c57e9c4a3ae3da1c1949dc9750835c70fea476c04a9f49064c7a173fe5dda7c2",
+          "line": 100,
+          "end_line": 112,
+          "self_calls": [
+            {
+              "method": "verifies",
+              "ast_sha256": "fbe28a44ab745917204421e9733332757516bb1a62b5bc7a36eb57c6160825bc"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "53dedd54adafb6a1a953ab77a666f3d54b6d729d3d81649b74e6f0f0f44154a8"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "f7f90fa856e79efc26a2ee2b38f53d3c26d1c0eaba1b978c49ac775f9935ac13"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedOwnerReadbackClosureTests",
+          "name": "test_new_and_recovered_requests_preserve_failure_fence_and_attestation_mode",
+          "source_sha256": "e18cd0d39c42699b2596f60bca4ffb3db65204f50c0b36a87d67fa29f2dd2143",
+          "ast_sha256": "2596096e4f6173a0dc83266a58e4fb12fcf286623478fa0ad0f921ef8e734881",
+          "line": 114,
+          "end_line": 126,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "ec6ca91977671014e0b8712a7bfc98ff6bb2e6e8b6190f9b5a03fe5a4c7557f8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b31f1f60ab252869766fe9d4cde0324336d4ccc4cdf4d2a907c515819ca137f8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0131970bcad1616eae89addf2637467eb0fb194df43646a49ec3f2a8d88934b2"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1edda813d2c0da4e63e962949e3a53c815dc0fa26355ab4d67d51a57e5ec6dd6"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedOwnerReadbackClosureTests",
+          "name": "test_remote_predecessors_are_live_and_authenticated_before_first_journal_read",
+          "source_sha256": "9462ada75a6f5f18c3998e710a8030c43443b97e3f91432d50063434e7b3e430",
+          "ast_sha256": "350352f493564335a88e3deafbd07331d0840edc69f4a437b70a4fb7c8ca30aa",
+          "line": 128,
+          "end_line": 138,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "c66803fe7945ad139c0c9d49166ce8bc518f1df4e3de1ca7373bdb701ec86911"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "4f33d21e961d4e7b898b8b5725b8363e2e5c1e807084bab73691495e4576d39f"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedOwnerReadbackClosureTests",
+          "name": "test_both_post_observation_paths_and_final_physical_journal_check_are_required",
+          "source_sha256": "526a14781eb34fcf7e571b27cdf5a0880dae82ee9c2b02bed4368231e2aa2273",
+          "ast_sha256": "2e328fcc78c290a8583cd47c92a4ed800a0c8d527ae686cf71473956a730049b",
+          "line": 140,
+          "end_line": 157,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "8e4ca783d2ce5017252924d6187b173176a8de04da451ee34dc548c0c1367507"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "bc3519f5ca2deef9977f8954249c0546d54bdfb32c84d0b5f37ed22d8c63b2d0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1735b899c279e00d617aa01c44f24312c679ea9b2485fdc280c8fc3fbc1b0459"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e1950ff8f0b9994a6aac6fc03e92bd8cc8dec088a3649496aae386d818143dcf"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "d2f50d221cf4fd710ef585a43b97d0e3c55356f61d4b6b30468951c985ca8d90"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedOwnerReadbackClosureTests",
+          "name": "test_decode_preserves_original_payload_receipt_cut_and_signed_issue_time",
+          "source_sha256": "e9b08094888b9ea60acea77d5573d97bffeaf1f49b4ad5ea72e876b6b1d06c12",
+          "ast_sha256": "fb9b4a766b8e3f0c5d28f0298fc19f36f52d9412f9cf109b9f21afc49aea4db8",
+          "line": 159,
+          "end_line": 170,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "a7d91927dcc9b2176ec90e4a0161274921f71700cdaa375fd0cf1122102e0e87"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "88eb2513821e3c8ba0a675c00e52644ae5d93aa7e2b892aef1a37e85f698cd48"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedOwnerReadbackClosureTests",
+          "name": "test_final_authentication_cannot_skip_current_roles_identity_or_deadline",
+          "source_sha256": "fb1b471d95724aa0ca0d8ed94f30823da26502765194546b3fb0b6792327d161",
+          "ast_sha256": "ed0f69605e71fe600d034fa773a9a9a4b1db81ac19bb81aaf54434ef150fb3b6",
+          "line": 172,
+          "end_line": 184,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "da07f31c52f38bbf901ba2f25cf05b28ac388c6900dea6376e7da419f1be73a2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "source_sha256": "c6ebba5304d1c8c906956cdb3611bdd0b2e08eea802623c9661c11f8c123b720",
+      "tests": [
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_exact_readback_edges_use_complete_rust_collection_and_reject_another_caller",
+          "source_sha256": "f57b7e16aa52b4215b641f917041d89506fb92115e1b6e6921e41beb1b0f4672",
+          "ast_sha256": "e9faaf0a66c9278e4c99692a352e8490f0319e58374c6490b3714d6d56648bbf",
+          "line": 121,
+          "end_line": 182,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "4e6491587b2881bfc897f653c9ae2d1a46a5781ade28e65d13e7d5bf37592996"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "1e25cd8f0d5d42069a445d9460e8e8e1ef3d9ea9e6558d40deddf114fe0f92b8"
+            },
+            {
+              "method": "assertNotIn",
+              "ast_sha256": "28fa9ec584b625bed17b26c23921c168af3f3b46247008dd68ef378c8ac80f03"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "a36bab777b5b47dce2ffab97eb142d2fd597f5c3fb034957ce1dce38dda0296b"
+            },
+            {
+              "method": "assertNotRegex",
+              "ast_sha256": "077c8be647162107a1a754157081408e241d97e51634170042241a5514305b52"
+            },
+            {
+              "method": "assertFalse",
+              "ast_sha256": "e5411c0be516251423ecd2b85ad4626c7fb7bdcc40d408dbf9badfd924fab481"
+            },
+            {
+              "method": "assertFalse",
+              "ast_sha256": "2cd1b3ce31d86022219d2970c619888be7b8737ab4a009437d7cf09d7951e480"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "74dd034d932555f92b656ff5e9c29c2301722fbc14f10846b3bf41d146cab1c4"
+            },
+            {
+              "method": "assertFalse",
+              "ast_sha256": "b7de25f561ef74a3a0ad13b2de22e307e806029778bb83f0de47dce7c7c2582e"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_original_peer_and_initial_context_are_verified_before_and_after_binding",
+          "source_sha256": "9e271c1cb4696da00ede8d037556e659d2793ee5ec5db0d4dd2ebd8859e2b247",
+          "ast_sha256": "b374ec58431a90f1011d88cf61c5e5949151878e13afaa860eb867f8604b4267",
+          "line": 184,
+          "end_line": 209,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "b4073a80ff9750feed980bf8a37e3adbf785ed2c50db44d4423ced5dc584102a"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "0edf699a8ba6788604cfec2a1c4c0b0fa195a162d0ef56ebd8c2672b41be20df"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "8862ced0ce2ec78391a031443dbb68233ef0c3c48e9a799f2e6efbdf4abd2c8d"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "b932623a4e2feafdbadc7a5ee449b50e87cd6cd914e68a83b49f166726b1e365"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "6f0a52313bf08ef44c09aefb17bdd27686daaaa6670336571c55b1aea730f25e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "d2b508adf9701f0edafd37051997da1d263fcf26d7b81aab97f67b22b1a90dbf"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "6ecea4ab4e9598403bd57a393c419c12498328267a15781dec9f76c147495691"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_opaque_dataset_training_and_selection_cannot_be_detached_or_renewed",
+          "source_sha256": "e20d7eb29584dd31e959e6032df4b18dd361a12af7f39e8442bf56b13fb477f7",
+          "ast_sha256": "330336ed27b9d074cbc3dae1d1c87daff3614e393b42dc322d29a56c4b41fb43",
+          "line": 211,
+          "end_line": 236,
+          "self_calls": [
+            {
+              "method": "mutate",
+              "ast_sha256": "93b11a571c8da81e41cf55bd6d6bd4d247cead046d090ee4feb7fe1e87f7cf44"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "a3fd3c7551158878ffa7056d344fc96c13ada5871fc5f44c6451236c89e04138"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "3c3130175ef68bc891f446e627eaa78aa0546cce6847e5a0905383f3e5d28bbf"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_wire_purpose_action_sequence_and_original_context_cannot_change",
+          "source_sha256": "01bae92e49f0f5504d649bf204d9d39719e185ed77f6d8bacf5fcbd344df5967",
+          "ast_sha256": "95b8b81b99394d7a4840111e6fccac8a45c5002c941efa58a8d3ba21231dbab4",
+          "line": 238,
+          "end_line": 262,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "6914dc8749951dd857342a54f5174792890ccd2e4558c2dac211de242bbafdb1"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "5962423b0d0afbaa586454ac88c8fdb912983d8c924fe2708044150c3d9a20cc"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "a50cedb469a001f6719d2522131531f823d5a63a96d6665d431f3a534f26e65b"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "c05d6d68307507e6a16fdcb1fa2475b82ffa153c0796b9445ee8a3d7e5a6157e"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "0af1f1be1add4ef880a1d0d68cb200e49c1ec2b09c8ed5fbf0fc0499284200cd"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_service_checks_read_only_request_before_the_same_original_owner",
+          "source_sha256": "bbc763a6b9a7d0e7f32ad2f44110e0feac2152f9d9536d46cbdcb4302f885c6f",
+          "ast_sha256": "2f4f344e64d0d2f8094d26b877f5c8da111458e7069a2e12ff8e5362fbea6281",
+          "line": 264,
+          "end_line": 287,
+          "self_calls": [
+            {
+              "method": "mutate",
+              "ast_sha256": "0319beb4fa296f5b82a5e5e5901e51e29c193fce59d02ed4ffda7404f7483f7b"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "5ac19b20a48781bb93ef9221e69b49878de10899f756485080f9de60e9f785a4"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "b7dd35c4b2e34899f3b173815cdc4bf9a9101df792b27fc8efe6cb3e24f0b91f"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "19e82e7db4760cc890fb6eb87a97be452da1c53b0cb82b2eab1f8ce30f6d6ba3"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "c8820fe4f849e2c65c0b645b615c065502070791223f2ba468ede0840d0c3297"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_client_requires_fresh_complete_original_evidence_before_restoring_peer",
+          "source_sha256": "a3e5acffde029c25493bf8f1a3e4408e1656a52597f15275a1fcf94ff11bf28e",
+          "ast_sha256": "a19adc0578013c947f7feba708cf4bb9fb9b492e7b51d72ecf3dfb141b20b55a",
+          "line": 289,
+          "end_line": 314,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "7452cbf2a488bfb4b6bc5e00af77f79eb5d070e4c0a583bb929c44863eb08af3"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "153cfc72d5f19a4896339cbc844515daf8f12824a15f410709276443e3fc52bf"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "0a0fe31fc5c34c3350ab0c7d1625f338b84a70eb4b72d9139b02a1d43ebdb338"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "68c089d52ea6d1bf62a965b0ac79f08c89bab219a289dd645231de577a435f43"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_missing_pending_and_unknown_are_not_reusable_completed_selection",
+          "source_sha256": "2d068af542a384240860c7e8124c92df9296d5bcf94c22894cb908dce4b2bcc2",
+          "ast_sha256": "426ec2ecb9e6d54529b67020d014953b77389e4828527e6d15ba1c62786ef4e2",
+          "line": 316,
+          "end_line": 337,
+          "self_calls": [
+            {
+              "method": "mutate",
+              "ast_sha256": "8b0e73c8cc564766fd7b4a22487b63a88f7cde357ec2bbc06a98563c9b87cf72"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "2216a3a8942e4f6cdbaa885a4c3896ac1db5ea697dbd3b705567431a881503cd"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "68c089d52ea6d1bf62a965b0ac79f08c89bab219a289dd645231de577a435f43"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_service_keeps_bounded_original_transport_and_final_authentication",
+          "source_sha256": "d5d3c8e51c9fb7ccd07203c24482acf5b340d79f35a3fe30a6849800b2a8fb97",
+          "ast_sha256": "328b0b480f9527f21cc740d6ff1f3d997c2725361af6a055e78587bb52c148da",
+          "line": 339,
+          "end_line": 360,
+          "self_calls": [
+            {
+              "method": "mutate",
+              "ast_sha256": "0bdad86481d68407a61c761c4af4f177e3e0c597edeebf56f6534e0d6960979d"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "3a6c730a02124be97ccb735bb9b21af2ad87cceb005f66a59a7b46ea817942fa"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "1be39989b8e5d010e3827bdfab6ff53fb6252a7140df92e38073b8a36ef4298a"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "mutate",
+              "ast_sha256": "b86a4c1f0169909a9539702a8bb3518a5e6183fbabe5b315270de63a54f1d70b"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectionReadbackClosureTests",
+          "name": "test_read_only_adapters_cannot_gain_signing_execution_reconnection_or_new_owner",
+          "source_sha256": "a59006009b99a0c96a18da7577b4af877c6362807e4a3b9dcb183c69ac429b41",
+          "ast_sha256": "fa0149c6335b01ddaef74973ae5f1cdc7d518001e7f0737041ad05ed83ceabf5",
+          "line": 362,
+          "end_line": 376,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "bffc66253fe0d95a05346343dad1d10fb9a989f1d84a7243c972f4a2c32ccc45"
+            },
+            {
+              "method": "assert_protected_rejects",
+              "ast_sha256": "57a7d9b6ae21c277bb7a1f58a38d2f53dc1e5e3054922ca7fe9b61822a8fc093"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "source_sha256": "76dd1212624361df213bf0759a16f79a265c3c3d1e5a44d2342eca0a83a22a23",
+      "tests": [
+        {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+          "source_sha256": "77e3860090210dc772127aeb21e3dd9d4144aa77d6390ff59be4c48f59e3a52d",
+          "ast_sha256": "4b663a87f7217433d7b2b4d767d6de9944f7fd9a6a95cdb63593578c2000782d",
+          "line": 75,
+          "end_line": 96,
+          "self_calls": [
+            {
+              "method": "assertEqual",
+              "ast_sha256": "4e6491587b2881bfc897f653c9ae2d1a46a5781ade28e65d13e7d5bf37592996"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_fresh_context_uses_opaque_actual_training_and_full_original_binding",
+          "source_sha256": "b7a9e6ce3c19510088df1b91cce15ab760d083d2043d5455d197c3ec0c6d20e6",
+          "ast_sha256": "633a53b71e2093c10a2fd461e5aadd0c911e447ccc6ef5da90dfb08cbe1cdc6d",
+          "line": 98,
+          "end_line": 111,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "93617821b0bed7fb4b59b06484716f63dd1e20bf5394deb596fe5813c741080f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "67a84c4773c3156805235c64e903442335d3631c252d0ba08ef888c70eb44f68"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_owner_origin_cannot_be_promoted_by_connection_or_caller_flag",
+          "source_sha256": "7e703353537485b190560fbfb5793ae1ce611336acda2e9ec8a8e55a8c7317fd",
+          "ast_sha256": "95cebe47ac82daa6521edabfa4e39c50522056ca04ffa1ed185aeeff38349723",
+          "line": 113,
+          "end_line": 125,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "6971741b83d92374ba598758ea4bfc7e93de03e666a37733a71d32e7a7ac9d10"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "50453e0239c2f59015474ea60ae39bcf4c81d12c956aee44aeb7b715c0c5430a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b2cd8750d81afe28b6a01fed91d7477aa226f033336dddec467129b2de190095"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "14ceb9af6cf08ba52c99a3c9f894749e06f9c8cdfff7241797c0a07af2739b16"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2ad17a24919ec57bf0cfc5e4d2fc2063e73677fded9e85a134ddf9f16e1cde97"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "fe7f171ec198950d1733863f2f07f77b88f655f8ae3323bb72aee2a476a041ff"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5bd2a899f2b35fe8f3dd308e85f31247fe4bacbb9f0c561e34e8c2c2f1e1bd79"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_client_consumes_unknown_exchange_and_checks_time_after_last_peer_io",
+          "source_sha256": "151de38efcabbff7f79d6d8ad26a3ce2753139349aa56fbf499e028ad6e5ede0",
+          "ast_sha256": "09cfbd6fd557c2ece1a9a5f5d988a5727d33f20a6eb4555e7dfed154a0cc920f",
+          "line": 127,
+          "end_line": 151,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "b6f5edbb3f9226f19a7dc1b2eac2ed1580722783f0776b09621daa19084b4cd6"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "84eb3d6ce1d3d39228daf718fe9f3dd235551cf15296eb4b9a5c1f1659cc172f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2de85348b383ddd4bfeb77cb845de394261ed3b29e7da5a8a44cbd39a8a41ca9"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0675af2d9dc6b31bc8c2078746bb25bb26086388d4b0174c5dde0ed347dfb9f9"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "80509dd64dbfc245c98d3cccb231f47f8c21934d5a199f2dd6ee561660e26da7"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0675af2d9dc6b31bc8c2078746bb25bb26086388d4b0174c5dde0ed347dfb9f9"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_command_and_readback_keep_actual_owner_and_original_transport_bounds",
+          "source_sha256": "ff16c3ea9d0103e9e2a9e0b01bad8c17be00addc3fd9fe38554dbf2c3b41f7e6",
+          "ast_sha256": "74d780f026c7c2c896f6b2be2a082ca8d02838ff87e1e55f9db2407521333a17",
+          "line": 153,
+          "end_line": 166,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "4b5c3fbe9b141b4b3f7e4669ff1acf6b85569eaefad69d6638ef14541f9605eb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "12884bdf2c9d0c6d1408282932cfcb3959a2a618bda8fc98c0535f7501524617"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1c939142ecb16686cca63101ae38fecc40a215738421909553a4b4c714e0bbea"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "6eac12809310f9f9d2c932e60acf92300b02c6279b44d14fd5401561c9df4321"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9cb0f3e2e26331e61a22881f8c8ba10e12bec04df1766485698be2c6e0f6a91e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "65e0b88c3a7c1a2e36fd0a6b571d66eb2de240e71d484633e1344839ccff95ae"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e0b1402e79504c9191ac66197a62892b5d1ead0b208a6798362997760344f874"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_response_verifies_exact_extension_baseline_and_independent_original_roles",
+          "source_sha256": "3e76c8d3d858798ec8111b5594857f73a9e5c9dd21de3a81e49d2a2882398a0d",
+          "ast_sha256": "0b694a589c05aa16649a1a28f7f59e73d7bc00998cf48de31d325e0117c246f2",
+          "line": 168,
+          "end_line": 180,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "93617821b0bed7fb4b59b06484716f63dd1e20bf5394deb596fe5813c741080f"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3763a959c224d46c70c5b1cfc0706cc838b870bc096841ffafe2de8a855d953a"
+            }
+          ]
+        },
+        {
+          "class": "OriginalSelectorCommandClosureTests",
+          "name": "test_no_key_writer_callback_or_readback_effect_factory_can_be_added",
+          "source_sha256": "4529ad5bfa499dd9b0231b0fb60f112da6a14efef4b2024eef124244b106405b",
+          "ast_sha256": "2c1689841577e6ed9090f6fc9fdfad640e33d24dfca2fe85ce0179ca64325986",
+          "line": 182,
+          "end_line": 198,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "bffc66253fe0d95a05346343dad1d10fb9a989f1d84a7243c972f4a2c32ccc45"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "source_sha256": "9b71b1793c6969fef17488bd221b01e688464b41c04fade74dc1cbb96e4074ef",
+      "tests": [
+        {
+          "class": "ResidentCandidateStageClosureTests",
+          "name": "test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle",
+          "source_sha256": "03ec5b0bd06ba01f78c608c5b76cad68a1ecf5cecdd6c462a1c921a6ca0039be",
+          "ast_sha256": "929f889a6e51c1e1ce0d050e4cc75ac1c484afc32e441ea80cdee82ca4db6ee8",
+          "line": 71,
+          "end_line": 90,
+          "self_calls": [
+            {
+              "method": "code",
+              "ast_sha256": "a8e687514a2ba650ce0c10e8d16c90d2ead374decfecbc25c14184fa15840ca2"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "ResidentCandidateStageClosureTests",
+          "name": "test_both_factories_consume_original_values_under_the_same_root_registration",
+          "source_sha256": "b6d7957b06846a870baed71154605aaab68c88aa2a7c0aaa87d982ac398a6907",
+          "ast_sha256": "0722f898385a172c80af36a1376f765cc01589dc45238213bec33d7697df9481",
+          "line": 92,
+          "end_line": 111,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "03195bfc6084071365a36abbe83326d67765af82326f3adbcc89385ebb047e4b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "a6e0eafd2764233ee74ac2766508ca9d745d507cee1eefea73ad3948115f002d"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ad1702851c474af0a14e9149c1d32e3a6f5379958de9e4491eff6bca305dda5b"
+            }
+          ]
+        },
+        {
+          "class": "ResidentCandidateStageClosureTests",
+          "name": "test_only_fresh_cas_installs_the_same_gate_and_no_callback_or_clone_can_escape",
+          "source_sha256": "c0ada975ff0a3e4d4955434b4a3ec0f227cbadb4cd1ce62714c9f1a3c8ea432b",
+          "ast_sha256": "f99f9afe74073a05e3b31b73b90de26cd9e8b54a57c12a9f75e8336e6d2d4ad7",
+          "line": 113,
+          "end_line": 137,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "2b32aa67a13124da940f9b888dffdef7b21ceb89a9e947f2ab00610f4fcaa6dd"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "566fcfbb418523a0a6aa6e092e1fd2bceb2f992c034097f244126c2ca7ccdcbe"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "c665792af6a49671fa3fafcdc6dd3f7548e2a19a11811deba24dc692c60a05af"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "523f885f6f6dcc15b39504d0c907231655df1251fb84535ecf2e760015ebf4b5"
+            },
+            {
+              "method": "verifies",
+              "ast_sha256": "96561d13f36f0498828e2981fb2491574fd80fffb850432422d0de86029afd67"
+            }
+          ]
+        },
+        {
+          "class": "ResidentCandidateStageClosureTests",
+          "name": "test_actual_training_checkpoint_precedes_candidate_material_and_missing_caps_stay_denied",
+          "source_sha256": "87adab0801f097a349226ed5d744de1023b77443dc58b5b4b595ea10cbc28acb",
+          "ast_sha256": "6ddc38f43f728fa66097d8d0a822314a36f081413cfc77825b7eb1885d6e1391",
+          "line": 139,
+          "end_line": 166,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "12b824403d0954a2b0d4f263a9f95d76d285e9fd31b28cb0ed7d8ac0b58ecf50"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "da11545f1ca3840a7e1006b45f4f21090ae4c35e22292ae58c5fbc9e5a646adb"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1e921833f6ba624dbc779dc09895c8535994d01638a87cd93e3eeabb7a2aec56"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "5224bfb7d8db0ba3587e222d0b0c7f8473688b7b84666d6b03ace5cf26d58483"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9ffd81d7783a77ce3445199945edb865c695b2c4acac7f4824016e72a20541f2"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2d2fbb8013c24e1e481267e76a7f3afb1f201f82ba657f9709ae977e555fc78b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3ea7cbf9dd88a302759de16d7a16d103c6a6254815e443c6e233b2eabb94eaf9"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "09539199a4c04438af61ab3d21c41e2669652850a82c79804cf2c5a1c0b6ac25"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ec419b01b706e5a4211d20ee3dec0420c85946b3b28a10023d00b35b591d1fa0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "32f2910e38c0d6cf9d1601835ee7fac5eafcc3dcacdce3bdb1ecc4bb16bbf74c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "13af57465aa3df249b583c0835f66e1601b2c12f58d3febf0641d101f24691bd"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+      "source_sha256": "547b93c64daf821fbc4b3b75cc7e1c6225799cd0164f7a24853124a5f6a67034",
+      "tests": [
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_only_original_fourth_negative_evaluation_can_select_retention",
+          "source_sha256": "14c29d22c949d92574dfccf45c65a47c9e103851ef3dc485e9b03a11d47b7567",
+          "ast_sha256": "1a54b3b8e9c94183a7cba74b0df08df049f6d193d3098ed32156b5888dfae5db",
+          "line": 60,
+          "end_line": 77,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "16d53df7b1e6b3bfadd7d9fc8be9ff9a0e576ff8f783497c1cf05ad136be2b1b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1045df5f648ded9a0f2af3564367ee5fe23a30cf5508075be9bd550405a74f0c"
+            }
+          ]
+        },
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_negative_shape_requires_exact_stage_order_and_original_candidate",
+          "source_sha256": "510e22f79081fb508e7c23860dffefe9723a636ed128e40def866424dc4b7885",
+          "ast_sha256": "5cb518f51438dc5912643df84aeb1f27dbe640fa9a02426014400bc30796c5f3",
+          "line": 79,
+          "end_line": 108,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "b557bcb69b8aca30351d5ff18f857b3817e8f2471d48062adb18ff13d7654e39"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "f2f61c9da835beeae337d82a7e1c1eca4ef24d3080e8f8e2276ad35b4b24c591"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "383706f465074a10e04e9d6b18960e39cc11f993c0e404a24bf04c154f24fe4c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2b6245d98a8623504c8135830e77f6fce1ad4cc47e0231fe16ed86722f525762"
+            }
+          ]
+        },
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_six_signature_exception_does_not_replace_model_or_training_no_update_bounds",
+          "source_sha256": "ca8625e6a694fef6d08b03262cae00fd6d6fcca60145c4ee3c0e7dd178d0928a",
+          "ast_sha256": "8df16e1e95f9a7d6729bac2cf145c39c240f98402bf592b95745dc581a669b12",
+          "line": 110,
+          "end_line": 132,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "16d53df7b1e6b3bfadd7d9fc8be9ff9a0e576ff8f783497c1cf05ad136be2b1b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1045df5f648ded9a0f2af3564367ee5fe23a30cf5508075be9bd550405a74f0c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "8cc789ce433e5bc702c318aa747c19441792c5b03acd4cc4bed0426b161acb50"
+            }
+          ]
+        },
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_every_receipt_still_requires_current_original_signature_and_signed_time",
+          "source_sha256": "b1ac6d2d1ec3177120fc3c566572998b69c6b74920df8800427402f3097727d8",
+          "ast_sha256": "c70a9de32afb8ea41ded4bfdbdd357b9b350da5b75573d4dcc5b510d5121a954",
+          "line": 134,
+          "end_line": 149,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "7f1ff9928bd2f839e3c40fba76c9fa3c397371aeff3dabf15dff9fe50fdc1dae"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b96ac2ebb20ddd5a910f2f136920188d9018b4cc729fc0864b8d23b33440c3b1"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "da26585ea5d0321fafcc89a0912623f39ba392fa65897c12fcde3ad9802c9465"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e0fb6d95f6e7b5ffcecb02612b6fcd475ea648767ccc3035d378e65a1a8c287f"
+            }
+          ]
+        },
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_selector_and_c_each_require_every_independent_original_predecessor",
+          "source_sha256": "4123ca21e6a94b503185b5e3555371e0fe33e43bb3cfaad468e3c93436f27312",
+          "ast_sha256": "7a3d4e7740193c18beb4064d9758b927221a22c3e3a81e83fbe5a74f6d807c8e",
+          "line": 151,
+          "end_line": 178,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "f02c7c1a0a042f5e13e5675a218692a62f53e7fd0a3064fc3a8a84a3233ae361"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e0718a13070bd72f53e610ed1ab1e8fa94e52c2ad0f1d544e929b5b64705ed5b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "1812a9af57b1b0a1871b0a34de0bf4b8e20a0a1cd293957b889d2214f38b4cb0"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "f4451d646ea5d512d885268cb0d2d9c841b63748ddfe88bf55706cb281ac52e2"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cc8f7935e29ed3393f003a840f2e51a936e3f51bee5198a571036c5113bf1d91"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cc8f7935e29ed3393f003a840f2e51a936e3f51bee5198a571036c5113bf1d91"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "160881361720ff25def8bed1f75aaff961b8a63463e011451d6584dd25e514f0"
+            }
+          ]
+        },
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_wire_bound_is_six_and_the_complete_model_aware_auth_result_is_mandatory",
+          "source_sha256": "114e00a16120241662b512bded6a84c0a7c1071e0db669fd64de6a77fb2f892f",
+          "ast_sha256": "e2ff29b5cf030c32c3612f9e3ffa3ff7d0381b180288d074a8cc5ebac51fa80d",
+          "line": 180,
+          "end_line": 195,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "39c78b55bbae9ef0f78754a8aa2417a6dbcd208a021dc3b9c257a96f54d5942b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "429dfa606cbefa2a969224f7662bf3fa39964421bf2f7230a9b9fbe107ad5320"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "4ac4674241478b0af9250dd1194c4b67f53d76ea6d149cf876c06dca440a0197"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "2e64f85955621f0c5e03475a93497d518bd9cdb30d199e59b733991218f63ede"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3763a959c224d46c70c5b1cfc0706cc838b870bc096841ffafe2de8a855d953a"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0a3a9f17ca8cf21ac985f726153f1ccc11a5cba144085df34496aee49816cb60"
+            }
+          ]
+        },
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_guarded_root_checks_cannot_be_hidden_in_dead_nested_blocks",
+          "source_sha256": "8df3683a6f27a7c53e7060167d4590df088c5f3d7c1f02a7e75b629afb2879c8",
+          "ast_sha256": "8e86c3b0f6fda52e01ae651b7558a2dbc0a327d154fe0afa04cff698588dba6a",
+          "line": 197,
+          "end_line": 203,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "20064c431ff2c0b7da950e95b72669e2465dd82b4fa65c9ba24c3b94690b7373"
+            }
+          ]
+        },
+        {
+          "class": "ResidentEvaluatedRetentionSourceClosureTests",
+          "name": "test_authentication_does_not_open_candidate_effects_or_original_root_factories",
+          "source_sha256": "50ade65d2578279777e59f328cedd892a7ff9b770e1b7b466d20364843395fb4",
+          "ast_sha256": "b5cc57c6d3fe18e6afe46621fa1a117d495669391ea3f992aab02fa724ca7208",
+          "line": 205,
+          "end_line": 219,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "bb9f735f7232f40c185a59143fad8de81d7d6bd57acc485172bff54f74822db8"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "c0f89f1963dde2e1905c0030d00f996962830bb6cd34ce4372238175dadcf0cc"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "cff6c4e01fc61874755b3f3fe29284e6b0156915a2d0144f88c39b2d055a2a7c"
+            },
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "023a278c6fd2ec999bffa70cbda28d0e2ef8160094b06e4f9e0eda84d5187cc5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "source_sha256": "ed1647a0f6ef13f9022bdc0748fa5071247725732a76658b9b4c07a4ac23eee1",
+      "tests": [
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_only_original_readback_edge_opens_and_host_factories_stay_closed",
+          "source_sha256": "0293d593c1ae3d43bf4fcbf911493a5e0826a3144cc8fffe13825411a33eaf1a",
+          "ast_sha256": "4a038c02e20323b39df1b12e01f5a736f112fe63f49e3e272005d931b090bbc9",
+          "line": 69,
+          "end_line": 104,
+          "self_calls": [
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_version_final_artifact_read_follows_control_and_source_io",
+          "source_sha256": "3a444faec8f71da352475483e1dee56f4b76e7b25cb1e990d5a9f5a65d4afec4",
+          "ast_sha256": "45c4c2a5ccd7ba3faa2b678bc5e96efad1f1cd81e6f1754e0f03ef8544290101",
+          "line": 106,
+          "end_line": 123,
+          "self_calls": [
+            {
+              "method": "assertIn",
+              "ast_sha256": "e88caddbb148fba028cbf2a908bdec4956257bdcc5a959888ea05f8a186a80f2"
+            },
+            {
+              "method": "rejects_source",
+              "ast_sha256": "18647efe375b31382c10cab7b079cc27e87a9ca480770e692141287e55312ade"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "edb0e708ec82a802ef4a7c283789771afe3e529e39c902600aa18ff76709ceb7"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_version_exports_remain_inside_the_linux_module_boundary",
+          "source_sha256": "32572817e659cf18842f20979c4e12da918eed310deb37670906d85cbbcd4111",
+          "ast_sha256": "fc6e8b29702a2753db199af36ac56998920c7f36932eea443893135abc207ec1",
+          "line": 125,
+          "end_line": 151,
+          "self_calls": [
+            {
+              "method": "assertIn",
+              "ast_sha256": "7d88f54286af52a78ea0e1f794cbd7edc7ae1959e1b2117dfb9351ca3b5314ee"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "957c779ae6944dd8fa7f96366998849ea3a00ced1906709e0b8cdc1bae89c3ed"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "7fb28350910e830b24c10b9e9b046f5fcb51c20e4233e887c4b48a38839f531c"
+            },
+            {
+              "method": "assertRaises",
+              "ast_sha256": "b48b6ce334ecbc8646acbc27b377ad79465a2e423c4d5a22e6e5d9b3bedb8e27"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_context_requires_actual_opaque_training_and_strict_no_update",
+          "source_sha256": "65c8de5d9edae532fcf91983af7e037da538318f725a80b8a37e379f723439ce",
+          "ast_sha256": "c7a8ab12992225e113bcce0a6ba0c92539f15cf156d69e5c71504138e82c2084",
+          "line": 153,
+          "end_line": 173,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "0bcb5cd3dc70f262146ba49d1bc7e2316f6647d2ab4bfdc02567dbc51757740e"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e19cbfae2d14d778fa3e225c448f3f5cda0f26d9e8ab799e8b8fa448d7ff0232"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_training_is_live_and_complete_original_signature_never_renews",
+          "source_sha256": "7fd28d46c3b63282e5c6c0a1edaf466687c5ec41d870a8a43e40e8251f5b1e6c",
+          "ast_sha256": "2f3a6c7365a5cf581eb24645cf55b4f0f2d1eb1fedc8f3162d0ad1a21cfc3b08",
+          "line": 175,
+          "end_line": 185,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "3ccfadf4787aaac3c26fd10c86cc15872f90c5cbbffe774d80d0813c6c55a526"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_prepare_keeps_original_selection_and_actual_no_update_operation",
+          "source_sha256": "fd143f90c8c1cfe3c744e30f1ec1a2eb992fda7cdf8c2d8764a4d59c22f41b77",
+          "ast_sha256": "328928fab32ae53f0439824aee0ba010324f2c52404b919e2003ede35ee6c6ee",
+          "line": 187,
+          "end_line": 202,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "585c9de3549ab51eab62bd0dafbedfa2125b77fbb7fca251344df901d0a1970e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "ecdf13cacee0d651f8fd96810c6e4863e4f2cc3d1e876005a8262a5c57fd1536"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "37fc633d331b2e6f1aa811d5535f20ff9e6b4b3f721d33563f2583ab166cfbe6"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_publish_consumes_separate_exact_final_use_and_checks_original_current",
+          "source_sha256": "1b8493ca6fa74fd5611060a1673141b43059ef8626acf3a7ab40e3e8dade69e2",
+          "ast_sha256": "db65e5e9542428d7e5f5b6be696b81065908b9346570f71a654c389005f02147",
+          "line": 204,
+          "end_line": 228,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "be9d03dd4cd9db7ad1167bd6cece0cfd0a31255ff2addf31c01e9e9e6bc2ac49"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "60e67f5d3afb1d5e5ef857ebba62f193187c5a254b2260e67946db3efab8272b"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "b3fc65c2e0bd66a69f982c4a5955f606d4162dc151a5de670482ff0a224be607"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_distinct_c_uses_actual_task_content_not_nonce_or_new_run_alone",
+          "source_sha256": "ff69edae98ec6bd80bb83e6bacef5e4c6a9b690b845cd885f88577cbd3c8b6b5",
+          "ast_sha256": "ce2c3b426330635822b54da7faf600c7127f8540e4e2f50f2cce79539a1e162b",
+          "line": 230,
+          "end_line": 256,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "9fab5d5e1a093cec8242f1a9301bc3093076935f800639640660312d5b0112f7"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e7c1ba720dcc0a531388dda0be9b9be20459b3f30854926fffbd559871eecf30"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "844e10f706d921cddcc395f27ccfaad5ede3a0f06bd6f3ce852ba269a4b9a48e"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_cold_unknown_only_reads_exact_original_files_and_does_not_prepare",
+          "source_sha256": "d8097a2fd717ed0007469b6905afa3ae237368f307f2f3ebdda2805a68cb311d",
+          "ast_sha256": "7bbdd4d8c8d1fb732c641abec50b078ab1b220cb80adf4d609e7c8aa04b96a93",
+          "line": 258,
+          "end_line": 275,
+          "self_calls": [
+            {
+              "method": "rejects_source",
+              "ast_sha256": "b86715351f1970136798e3153fe8614f7e18cf9c835650260ea61c5120485920"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d2927d663b7ecd4f903d0fb4db1df9e572f3adfd654811832b3fced5ffb1f44e"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "62307381784a662402db002d45792c631008a271ac1d360052938e06521bafc4"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_dropped_queued_work_cannot_send_a_new_publication",
+          "source_sha256": "b17f2523c7082ea4039f35fb6ebf3561fd941393cedbc1aac4dbdf009acb506b",
+          "ast_sha256": "cabfee3c65e6251b523dba3935fc054b2387fd08bb73361b8afe8243bf2a26cb",
+          "line": 277,
+          "end_line": 286,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "a2a198b1d1352b474e5380585ae2d8ed0e960499c29e35bbc68dcf5cad1e353c"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "dd8e82466c33bb357a5a9c08d61bda407b0e31c7bd29711f98e64c34fe6653e7"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "1535bc7ebe58732eaa09bbc366961f1a6fabffb48ab9c11449cbb80251f46be3"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "04e3ce1faaf3b409e0c6e57279377b10b330a433070d23fefc26aaffef2c0af6"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "f4db0efdf9aa575c873bead9ec3dfad703b14315e13f7db47bf930a299ece2ad"
+            }
+          ]
+        },
+        {
+          "class": "RetainedPublicationClosureTests",
+          "name": "test_no_resident_grant_candidate_upgrade_or_local_signer_shortcut",
+          "source_sha256": "7361255d914a29b07d2726c93e0e7ca49b81679c3dcce07e9cb8391db3fcd82f",
+          "ast_sha256": "b61fcae3e8bb97e97d65befd583755c2e7180f53e19b02800a7bced518dff1ab",
+          "line": 288,
+          "end_line": 302,
+          "self_calls": [
+            {
+              "method": "rejects_source",
+              "ast_sha256": "c88ba5d763f2552f1632d4b5970c9c58628887c2d79be532314ec2572665ab0e"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "d8d7e43774a909b444e05d5c555cc004465c6f7827abe80d3b84b3ec623d7a16"
+            },
+            {
+              "method": "rejects_source",
+              "ast_sha256": "49417512992546ee962926311cb15952a20c90cd0c68fdeb72af056414518f11"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+      "source_sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818",
+      "tests": [
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_original_issuer_has_only_actual_version_callers",
+          "source_sha256": "77c742ad4ec5508c13d1c252976c3fac576f2a4e56039664350b6fc44f2b7060",
+          "ast_sha256": "afd912baa87b9751116e5b751b8861ffe0004a49de45f7d19089dcac77acb419",
+          "line": 70,
+          "end_line": 96,
+          "self_calls": [
+            {
+              "method": "assertTrue",
+              "ast_sha256": "326e24932b1e99d1f7326f95994540b3901bf207072295bce12d4890a7cd89d8"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "f48a1213d6c1f33548d131e5ddd1f786a4ee3ed73f27988fa4e642bf14b006b0"
+            },
+            {
+              "method": "assertEqual",
+              "ast_sha256": "edae1b6218e03d48e36779f2ee01be1a92a059cfd3fc4c98538ebd09c7347629"
+            },
+            {
+              "method": "assertIn",
+              "ast_sha256": "4c338fac986da4664d04976c7f054d94979ec5035f21d60cc1249d07b9705a27"
+            },
+            {
+              "method": "assertRaisesRegex",
+              "ast_sha256": "13a7f103fca88563e109ddd41b7a893ee515e824c5e5467ba57727e62e27269b"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_legacy_or_non_root_provider_cannot_be_promoted",
+          "source_sha256": "99b47e01e379d1c209c4f6b975d77bdf65fc8ad6d4424b7c3b922a3e84e5747e",
+          "ast_sha256": "5450dfd83c1085df7720920578b738dad0a33f6669b3638e4a3f249ac1e609fc",
+          "line": 98,
+          "end_line": 110,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "c44edf9ed527a220d6e9adb9b4d5ddb81d67e64a827dddf14b1fcb526f82eb4a"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "883dd8ba024c341f404a9888232228c0e09b3a4917dbe49dfa114c658893e587"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_exact_purpose_and_once_survive_a_legal_denial",
+          "source_sha256": "02aa7b98c14732e4a45b34e99532739ab30692fd921eeb204cb3e4960b2f7771",
+          "ast_sha256": "1592266b4b503c626faf93aa8c40fdaf74abe0f6ccea2fe4e27b876d7fb5d933",
+          "line": 112,
+          "end_line": 126,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "b2e7ea18bf979cb61a47ccc5348aba1c11f573158e308c1c36e0b8e11dca1a08"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "2d4923033e90b93668eb326b20601adafda8ea04e0272336a573348f7f2e61d8"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_claim_comes_only_from_the_actual_current_prepared_owner",
+          "source_sha256": "36ef11cb9fdbc17d857b9c1d378060cf9c6e0a5f3efbb209801498c50e7b44bd",
+          "ast_sha256": "7a45943f28cb734eae5244980dc4a010892197f05836bff992d8442a38079ec0",
+          "line": 128,
+          "end_line": 139,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "d364783cc5b0f24c3c0b204a4232316a63248ecb2034bbc563d657f612e055f0"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_queued_cancel_and_last_actual_read_precede_root_request",
+          "source_sha256": "8070de1ca59937c0781b8c258f72196b14b4762118bf044f960115d5f6bcc8f4",
+          "ast_sha256": "af4c3a53030eea8e669186c8db86c717b0a096e4c0f50fbe069e7caf554594df",
+          "line": 141,
+          "end_line": 151,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "e5c7ab49ec5e4e3e726c8221af31dfb0d327aa11f5d829ae8ac2ec8cf38ebaef"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "e671a5bc09ec922a5dddf043462266700596d2801cd012307fd55a969c3a4d7b"
+            },
+            {
+              "method": "rejects",
+              "ast_sha256": "91460b3ebb4109816d9da13b2a6135c9b2e2a12c8013b8c175a0f2a1b4010bc8"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_cold_and_unknown_never_reset_the_original_issuer",
+          "source_sha256": "6246cefe19346b59d8651dca38e043188d448a37651e5626a23234cd90a17d09",
+          "ast_sha256": "be5b35da069526949cd59fdb4ed466508a9a22551bd57929b6acee0188baaf00",
+          "line": 153,
+          "end_line": 169,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "89b0584cc36812d398f66cd832b288bbe2998f01e91883be39782c2a722f9cb7"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "c042eef627675777139b5466c179471a7f02fa0361bbad99a1e9a321a7755e7f"
+            },
+            {
+              "method": "subTest",
+              "ast_sha256": "c8cf901a81bd7a158812320cb6141a99158bab069c6fc5fc532188c0199d1d12"
+            },
+            {
+              "method": "rejects_source",
+              "ast_sha256": "dac1fc34ba7f5e25129640c69aa26b00c4d988b59f1d5f1c54da454849527e01"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_publication_and_c_runtime_keep_the_original_verifier_tail",
+          "source_sha256": "0c1f701ab63b6fe53c7ecb9a33a7a469f19f6f2d6d9910d7f3dc604cf112c4b4",
+          "ast_sha256": "305f0eb98557ba14d71355e9615f082e0af2ec403032c9ab4c39b95b5f6674a7",
+          "line": 171,
+          "end_line": 189,
+          "self_calls": [
+            {
+              "method": "reject_each",
+              "ast_sha256": "8d1552077c62101ea4c11e8dd55abac0e01baac1686b581fb065228bc9fb702f"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "a31ed4303f98e9fb1a5a969b8de915aa6e95eb1cc76627d92cd78146c50a7cd2"
+            },
+            {
+              "method": "rejects_source",
+              "ast_sha256": "4f24bb2254837fa9b4b3610d4d598b8aaa71f7a4ca5b7cbf914a6f86b3632181"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_ordinary_host_really_serves_the_issuer_and_preserves_denied_readback",
+          "source_sha256": "b809a7066ca2472a57ab998a7ea76489da6ce5ad3cbcb9479cc45c59e63e9733",
+          "ast_sha256": "19e394ec99e3684bef2fc0695c05c6796b6562c245331f59e47462f8c03ceca6",
+          "line": 191,
+          "end_line": 199,
+          "self_calls": [
+            {
+              "method": "rejects",
+              "ast_sha256": "eb8405bc63f121c6647607d5cccf151ad15abfc7cbcbb820c50028cd9a47b31c"
+            },
+            {
+              "method": "reject_each",
+              "ast_sha256": "b4ceba101a8f073300b9bdcedd92e979db6d2de275de12d44bb6ab543e288c60"
+            }
+          ]
+        },
+        {
+          "class": "OriginalRetainedVersionIssuerClosureTests",
+          "name": "test_no_new_key_policy_socket_or_resident_grant_authorizes_publication",
+          "source_sha256": "09e7df483498461ad074f60761edc96d037838d73266e02ab867573c5cfc5c78",
+          "ast_sha256": "1dea94ce54e85bd652e4c8857598df73927e72422b8e16d3145703138a4ac5e7",
+          "line": 201,
+          "end_line": 210,
+          "self_calls": [
+            {
+              "method": "subTest",
+              "ast_sha256": "fab86f523738489da4e9e3ff72f2e2ef90dd94260b92fef6c49a2dfeb2ef42f8"
+            },
+            {
+              "method": "rejects_source",
+              "ast_sha256": "27862592e5cb649c80a43bbf6c7b1420732636889bed462ff681a7e31696c998"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

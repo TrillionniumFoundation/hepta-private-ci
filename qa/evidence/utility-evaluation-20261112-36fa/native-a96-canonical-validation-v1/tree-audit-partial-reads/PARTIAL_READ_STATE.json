@@ -1,0 +1,182 @@
+{
+  "schema": "hepta.utility.original-audit-partial-read-retention.v1",
+  "status": "stopped_by_root_to_avoid_duplicate_large_reads",
+  "original_validation_root_blob": "d7c135961dfacc04fe8b69697a66450e65566acb",
+  "original_artifact": {
+    "bytes": 920740,
+    "git_blob": "1796295975d26842f3f913c8b206a4b9c38e9ee6",
+    "name": "TREE_AND_ANCHOR_RAW.json.gz",
+    "parts": [
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 0,
+        "decoded_sha256": "01aab0bcdd09c2f554a3f78eb04eeabeb34b4218bd62620b039ad0d581b02338",
+        "git_blob": "b2fe22e155bd9568d356818a5282040c84d8f375",
+        "name": "TREE_AND_ANCHOR_RAW.json.gz.part-001.b64",
+        "sha256": "3494283e745bcfc98d7e7417c91c3ba7f99c51570f52668b62251332e6587002"
+      },
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 262144,
+        "decoded_sha256": "0a0ce034f00b696c2048ba97442460ed37fb221415e52f0f6036c5a4802694a0",
+        "git_blob": "708e6ab7ee02afe276d47cf5e92c2732cb4a2201",
+        "name": "TREE_AND_ANCHOR_RAW.json.gz.part-002.b64",
+        "sha256": "17b6346e7a12368eecdc0fa1b8b68cb36c840d1000288c9cc1085111b14458e4"
+      },
+      {
+        "bytes": 349529,
+        "decoded_bytes": 262144,
+        "decoded_offset": 524288,
+        "decoded_sha256": "e6dd7aa431b7085e471174b9d3a6dbe97bceb436edc3cf74a090529ce4daa010",
+        "git_blob": "003acdfc6a5d91d22e2a5686d7cfba374a3573b6",
+        "name": "TREE_AND_ANCHOR_RAW.json.gz.part-003.b64",
+        "sha256": "91e4ac4e46036cefd88958eaa1cbed8c8bf94bdb275cfbc3c61c0d16a9bb5534"
+      },
+      {
+        "bytes": 179081,
+        "decoded_bytes": 134308,
+        "decoded_offset": 786432,
+        "decoded_sha256": "c0f65b8ed78d0a1f951ef41ee5f160361582c8a11bcfd21a9b8e6291d5467337",
+        "git_blob": "8e82f70f652500674f141870a5dd003e5e4593c0",
+        "name": "TREE_AND_ANCHOR_RAW.json.gz.part-004.b64",
+        "sha256": "8d591af75d54939ed898b5e9ba606edc564b970e556d10840a038c085e029f5a"
+      }
+    ],
+    "raw_bytes": 1987695,
+    "raw_git_blob": "33de1f7a55eb040b9fe2cbace05e6bba401eb40e",
+    "raw_sha256": "8912bc39982001e1705ac027a197341fd9a722d75746a68e1da207fdcc4e19b8",
+    "sha256": "a86aa06f6f1752ae604362b4af4d34842487d50a9511e5c4978d63840fa1b9d7"
+  },
+  "source_gates_or_cargo_started": false,
+  "native_validation_replayed": false,
+  "native_validation_cancelled": false,
+  "source_mutated": false,
+  "control_cell": "g4:877",
+  "control_cell_terminated": true,
+  "actual_retained_reads": [
+    {
+      "name": "part-001-first-tool-result.json",
+      "kind": "serialized_observed_CallToolResult_not_native_process_log",
+      "part": 1,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-001.b64",
+      "source_version": "2050:50138586:349529:1794501228358013217:1794501228358013217",
+      "bytes": 87904,
+      "sha256": "2cfc9633d2ad1704b2cb25ac71d75bb0e48ecd107467f140594204a8ba351b1c",
+      "git_blob_sha": "3e0983c6aaf53d0dc9f4fddc4c67d14e007412ec",
+      "complete_github_readback_equal": true
+    },
+    {
+      "name": "part-001-prefix-000000-065536.txt",
+      "kind": "exact_original_file_prefix",
+      "part": 1,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-001.b64",
+      "source_version": "2050:50138586:349529:1794501228358013217:1794501228358013217",
+      "bytes": 65536,
+      "sha256": "cdf877cc027f37a04e040bd727bcdddad0145c5e49446cce4932b110bcf91731",
+      "git_blob_sha": "b82fe0cbbd7eb4efbbb8a3f5ad0601f42a8044b5",
+      "complete_github_readback_equal": true
+    },
+    {
+      "name": "part-002-first-tool-result.json",
+      "kind": "serialized_observed_CallToolResult_not_native_process_log",
+      "part": 2,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-002.b64",
+      "source_version": "2050:50138587:349529:1794501228363433529:1794501228363433529",
+      "bytes": 87904,
+      "sha256": "523773ebf2db42f2adc5a6ac2c6481195df5ebdcd7c155e5cc4a3c421c000aa5",
+      "git_blob_sha": "21ec54655fc72e5f91965243daa8843fd05981e8",
+      "complete_github_readback_equal": true
+    },
+    {
+      "name": "part-002-prefix-000000-065536.txt",
+      "kind": "exact_original_file_prefix",
+      "part": 2,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-002.b64",
+      "source_version": "2050:50138587:349529:1794501228363433529:1794501228363433529",
+      "bytes": 65536,
+      "sha256": "bde4d6587e107f17cbb11ceb0e548aff414dfc44f765bb6bc3cc8dfff3506c91",
+      "git_blob_sha": "b7a4f801b793c28534422845a268c81ec6c4f6a7",
+      "complete_github_readback_equal": true
+    },
+    {
+      "name": "part-003-first-tool-result.json",
+      "kind": "serialized_observed_CallToolResult_not_native_process_log",
+      "part": 3,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-003.b64",
+      "source_version": "2050:50138588:349529:1794501228368908166:1794501228368908166",
+      "bytes": 87904,
+      "sha256": "9d709b50687ae7598e1486d50d354815ecaa790fe89ca4f4b3c4c20ac16ccf4c",
+      "git_blob_sha": "d3911a164b0d9a748ac2304cde5fdec4310267ea",
+      "complete_github_readback_equal": true
+    },
+    {
+      "name": "part-003-prefix-000000-065536.txt",
+      "kind": "exact_original_file_prefix",
+      "part": 3,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-003.b64",
+      "source_version": "2050:50138588:349529:1794501228368908166:1794501228368908166",
+      "bytes": 65536,
+      "sha256": "7c483139cbe633eb6b2e4b645432e40d8b6b88b0c0f2eaf6d8ca7fc8eaebf386",
+      "git_blob_sha": "7fdf1985ffbaae849db7fb96cffc7f52be66203a",
+      "complete_github_readback_equal": true
+    },
+    {
+      "name": "part-004-first-tool-result.json",
+      "kind": "serialized_observed_CallToolResult_not_native_process_log",
+      "part": 4,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-004.b64",
+      "source_version": "2050:50138589:179081:1794501228374312601:1794501228374312601",
+      "bytes": 87904,
+      "sha256": "95330f25f4369cdc75c1638cd5836fb55872959ab9cf0e72db7ec5f9f5b349c7",
+      "git_blob_sha": "bfbcabe7875fa3f73a4ef473bd5f4aab73b22123",
+      "complete_github_readback_equal": true
+    },
+    {
+      "name": "part-004-prefix-000000-065536.txt",
+      "kind": "exact_original_file_prefix",
+      "part": 4,
+      "source_path": "/home/qian-qi/hepta-utility-36fa-evidence/a96-canonical-independent-validation-v1/validation/TREE_AND_ANCHOR_RAW.json.gz.part-004.b64",
+      "source_version": "2050:50138589:179081:1794501228374312601:1794501228374312601",
+      "bytes": 65536,
+      "sha256": "0f915f398dd6483ce12bf84ff44463f3fa9239b2143f4ec6a1f6d24ec4d72bfe",
+      "git_blob_sha": "700132d083efd5d5336fb7508b86ad8240c56ef7",
+      "complete_github_readback_equal": true
+    }
+  ],
+  "observed_but_not_recovered": [
+    {
+      "kind": "second_chunk_notifications",
+      "per_part_next_offset": 131072,
+      "parts": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "chunk_verification_reported": true,
+      "original_sdk_bytes_retained": false,
+      "reason": "The stopped V8 exec cell had not committed its store snapshot. These facts came from already observed notify outputs only."
+    },
+    {
+      "kind": "subsequent_read_invocation_path",
+      "offset": 131072,
+      "parts": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "admission_observed": false,
+      "completion": "Unknown",
+      "reissued": false
+    }
+  ],
+  "evidence_limits": [
+    "Only the first65536 bytes of each encoded part were completely captured and retained here.",
+    "This does not claim the four full original parts were read or retained offhost.",
+    "Root is separately reconstructing original deterministic audit bytes and will require full original size/SHA256/Git identities; those results are not asserted here.",
+    "Terminating this orchestration cell only stopped additional read dispatch; no native process or validation job was cancelled or restarted."
+  ]
+}
