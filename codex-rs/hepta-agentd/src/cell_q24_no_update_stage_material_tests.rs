@@ -5,12 +5,12 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-use codex_hepta_learning_artifacts::LearningIterationStageV1;
-use codex_hepta_types::StableId;
 use crate::LearningIterationRuntimeErrorV1;
 use crate::LearningIterationStageOwnerPortsV1;
 use crate::learning_iteration_evidence_client::fresh_material_only;
 use crate::learning_iteration_evidence_client::recovered_material_only;
+use codex_hepta_learning_artifacts::LearningIterationStageV1;
+use codex_hepta_types::StableId;
 
 #[tokio::test]
 async fn ordinary_stage_without_resident_gate_never_dispatches_original_material()
@@ -18,14 +18,24 @@ async fn ordinary_stage_without_resident_gate_never_dispatches_original_material
     let fixture = MaterialCommandFixture::new().await?;
     let before = fixture.bytes()?;
     let (experience, experience_peer) = connected(
-        &fixture, Role::Experience, Mode::ExecuteOnce, None, Effect::Original,
+        &fixture,
+        Role::Experience,
+        Mode::ExecuteOnce,
+        None,
+        Effect::Original,
     )?;
     let (dataset, dataset_peer) = connected(
-        &fixture, Role::Dataset, Mode::ExecuteOnce, None, Effect::Original,
+        &fixture,
+        Role::Dataset,
+        Mode::ExecuteOnce,
+        None,
+        Effect::Original,
     )?;
     let owners = fresh_material_only(fixture.config.clone(), experience, dataset)?;
     owners.require_initial(
-        &fixture.config.initial, &fixture.config.scope, &fixture.config.verifier,
+        &fixture.config.initial,
+        &fixture.config.scope,
+        &fixture.config.verifier,
     )?;
     let mut changed = fixture.config.initial.clone();
     changed.request.operation_id = StableId::new("different-original-ordinary-operation")?;
@@ -34,8 +44,15 @@ async fn ordinary_stage_without_resident_gate_never_dispatches_original_material
         Err(LearningIterationRuntimeErrorV1::WrongScope)
     ));
     assert!(matches!(
-        owners.execute_stage(&fixture.config.initial, LearningIterationStageV1::Experience).await,
-        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("fresh resident continuation"))
+        owners
+            .execute_stage(
+                &fixture.config.initial,
+                LearningIterationStageV1::Experience
+            )
+            .await,
+        Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+            "fresh resident continuation"
+        ))
     ));
     assert!(matches!(
         owners.prepare_proposal(&fixture.config.initial).await,
@@ -43,8 +60,18 @@ async fn ordinary_stage_without_resident_gate_never_dispatches_original_material
     ));
     assert_eq!(fixture.bytes()?, before);
     drop(owners);
-    assert_eq!(experience_peer.join().map_err(|_| anyhow::anyhow!("Experience peer"))??, 0);
-    assert_eq!(dataset_peer.join().map_err(|_| anyhow::anyhow!("Dataset peer"))??, 0);
+    assert_eq!(
+        experience_peer
+            .join()
+            .map_err(|_| anyhow::anyhow!("Experience peer"))??,
+        0
+    );
+    assert_eq!(
+        dataset_peer
+            .join()
+            .map_err(|_| anyhow::anyhow!("Dataset peer"))??,
+        0
+    );
     assert_eq!(fixture.bytes()?, before);
     Ok(())
 }
@@ -55,14 +82,27 @@ async fn ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim(
     let fixture = MaterialCommandFixture::new().await?;
     let before = fixture.bytes()?;
     let (experience, experience_peer) = connected(
-        &fixture, Role::Experience, Mode::ReadbackOnly, None, Effect::Original,
+        &fixture,
+        Role::Experience,
+        Mode::ReadbackOnly,
+        None,
+        Effect::Original,
     )?;
     let (dataset, dataset_peer) = connected(
-        &fixture, Role::Dataset, Mode::ReadbackOnly, None, Effect::Original,
+        &fixture,
+        Role::Dataset,
+        Mode::ReadbackOnly,
+        None,
+        Effect::Original,
     )?;
     let owners = recovered_material_only(fixture.config.clone(), experience, dataset)?;
     assert!(matches!(
-        owners.execute_stage(&fixture.config.initial, LearningIterationStageV1::Experience).await,
+        owners
+            .execute_stage(
+                &fixture.config.initial,
+                LearningIterationStageV1::Experience
+            )
+            .await,
         Err(LearningIterationRuntimeErrorV1::WrongScope)
     ));
     // This result comes from the original Experience journal. An empty
@@ -73,8 +113,18 @@ async fn ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim(
     ));
     assert_eq!(fixture.bytes()?, before);
     drop(owners);
-    assert_eq!(experience_peer.join().map_err(|_| anyhow::anyhow!("Experience peer"))??, 1);
-    assert_eq!(dataset_peer.join().map_err(|_| anyhow::anyhow!("Dataset peer"))??, 0);
+    assert_eq!(
+        experience_peer
+            .join()
+            .map_err(|_| anyhow::anyhow!("Experience peer"))??,
+        1
+    );
+    assert_eq!(
+        dataset_peer
+            .join()
+            .map_err(|_| anyhow::anyhow!("Dataset peer"))??,
+        0
+    );
     assert_eq!(fixture.bytes()?, before);
     Ok(())
 }
