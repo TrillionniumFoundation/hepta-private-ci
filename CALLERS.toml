@@ -11834,7 +11834,7 @@ required_function_order = [{ function = "fn open_original(", sequence = ["post_a
 path = "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
 required = []
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "unwrap_or_default", "unwrap_or_else"]
-required_function_order = [{ function = "fn with_current_feature_read<T>(", sequence = ["OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |ledger|", "RootHistoricalTaskPublicationDataV1::validate_against(", "&self.data.publication, ledger,", "action(&ledger.target, source, decision)"] }]
+required_function_order = [{ function = "fn with_current_feature_read<T>(", sequence = ["OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |ledger|", "crate::circuit_task::RootHistoricalTaskPublicationDataV1::validate_against(", "&self.data.publication,", "ledger,", "action(&ledger.target, source, decision)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_feature_current_publication.rs"

@@ -127,7 +127,7 @@ class PostAPhysicalPreparationSourceTests(unittest.TestCase):
     def test_feature_fact_is_borrowed_from_actual_double_root_read(self):
         self.check_markers(AGENT + "root_historical_task_read_client.rs", "fn with_current_feature_read<T>(", (
             "OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |ledger|",
-            "RootHistoricalTaskPublicationDataV1::validate_against(", "&self.data.publication, ledger,",
+            "RootHistoricalTaskPublicationDataV1::validate_against(", "&self.data.publication,", "ledger,",
             "action(&ledger.target, source, decision)"))
         self.check_markers(AGENT + "circuit_feature_current_publication.rs", "fn read_original_historical_completion(", (
             "OriginalHistoricalTaskReadReceiptV1::with_current_feature_read(", "manifest.digest()", "!= binding.manifest_digest()",
