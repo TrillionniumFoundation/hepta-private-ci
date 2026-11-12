@@ -30,11 +30,19 @@ class CfCModel(Model):
         if kind != "cfc" or any(type(v) is not int or v < 1 for v in dims):
             raise ValueError("invalid CfC kind or dimensions")
         self.config = dict(
-            kind=kind, input_dim=input_dim, action_dim=action_dim,
-            output_dim=output_dim, hidden_dim=hidden_dim, seed=seed,
+            kind=kind,
+            input_dim=input_dim,
+            action_dim=action_dim,
+            output_dim=output_dim,
+            hidden_dim=hidden_dim,
+            seed=seed,
         )
         self.kind, self.d, self.a, self.k, self.h = (
-            kind, input_dim, action_dim, output_dim, hidden_dim
+            kind,
+            input_dim,
+            action_dim,
+            output_dim,
+            hidden_dim,
         )
         rng = np.random.default_rng(seed)
         self.params = {}
@@ -57,7 +65,9 @@ class CfCModel(Model):
         p = self.params
         dt = x[:, -1:]
         if not np.isfinite(dt).all() or (dt < 0).any():
-            raise ValueError("CfC final input feature must be finite nonnegative seconds")
+            raise ValueError(
+                "CfC final input feature must be finite nonnegative seconds"
+            )
         z = np.concatenate((x, state["fast"]), axis=1)
         f1 = np.tanh(z @ p["Wf1"] + p["bf1"])
         f2 = np.tanh(z @ p["Wf2"] + p["bf2"])
@@ -73,20 +83,26 @@ class CfCModel(Model):
         if allowed.shape != logits.shape or not allowed.any(axis=1).all():
             raise ValueError("each label must allow at least one joint category")
         weights = (
-            np.ones(len(logits)) if sample_weights is None
+            np.ones(len(logits))
+            if sample_weights is None
             else np.asarray(sample_weights, dtype=float)
         )
         if (
-            weights.shape != (len(logits),) or not np.isfinite(weights).all()
-            or (weights < 0).any() or weights.sum() <= 0
+            weights.shape != (len(logits),)
+            or not np.isfinite(weights).all()
+            or (weights < 0).any()
+            or weights.sum() <= 0
         ):
             raise ValueError("invalid sample weights")
         weights = weights / weights.sum()
         allowed_logits = np.where(allowed, logits, -np.inf)
-        loss = float(weights @ (
-            np.logaddexp.reduce(logits, axis=1)
-            - np.logaddexp.reduce(allowed_logits, axis=1)
-        ))
+        loss = float(
+            weights
+            @ (
+                np.logaddexp.reduce(logits, axis=1)
+                - np.logaddexp.reduce(allowed_logits, axis=1)
+            )
+        )
         dl = (softmax(logits) - softmax(allowed_logits)) * weights[:, None]
         p = self.params
         grads = {key: np.zeros_like(value) for key, value in p.items()}
@@ -94,7 +110,7 @@ class CfCModel(Model):
         grads["Wy"], grads["by"] = hidden.T @ dl, dl.sum(axis=0)
         dh = (dl @ p["Wy"].T) * (1 - hidden**2)
         grads["Wh"], grads["bh"] = features.T @ dh, dh.sum(axis=0)
-        df = (dh @ p["Wh"].T)[:, :self.h]
+        df = (dh @ p["Wh"].T)[:, : self.h]
         for z, dt, f1, f2, gate in reversed(history):
             dg = df * (f2 - f1) * gate * (1 - gate)
             deltas = {
@@ -108,5 +124,5 @@ class CfCModel(Model):
                 grads["W" + name] += z.T @ delta
                 grads["b" + name] += delta.sum(axis=0)
                 dz += delta @ p["W" + name].T
-            df = dz[:, self.d:]
+            df = dz[:, self.d :]
         return loss, grads

@@ -22,9 +22,9 @@ def scalar_reference(model, observation, previous):
     result = []
     for j in range(model.h):
         affine = {
-            name: float(p["b" + name][j]) + sum(
-                float(value) * float(p["W" + name][i, j])
-                for i, value in enumerate(z)
+            name: float(p["b" + name][j])
+            + sum(
+                float(value) * float(p["W" + name][i, j]) for i, value in enumerate(z)
             )
             for name in ("f1", "f2", "ta", "tb")
         }
@@ -52,9 +52,9 @@ class CfCCellTests(unittest.TestCase):
             previous = rng.normal(0, 0.4, (batch, 3))
             original = previous.copy()
             actual = model.observe(observation, {"fast": previous})["fast"]
-            expected = np.array([
-                scalar_reference(model, x, h) for x, h in zip(observation, previous)
-            ])
+            expected = np.array(
+                [scalar_reference(model, x, h) for x, h in zip(observation, previous)]
+            )
             np.testing.assert_allclose(actual, expected, rtol=1e-13, atol=1e-14)
             np.testing.assert_array_equal(previous, original)
             self.assertEqual(actual.shape, (batch, 3))
@@ -93,7 +93,10 @@ class CfCCellTests(unittest.TestCase):
     def test_training_isolated_and_unknown_targets_preserve_adam(self):
         kernel = TemporalKernel("cfc-cell", self.config)
         state = kernel.observe(
-            kernel.initial_state("episode"), self.x[0, 0], episode_id="episode", cursor=0
+            kernel.initial_state("episode"),
+            self.x[0, 0],
+            episode_id="episode",
+            cursor=0,
         )
         before = (kernel.weights_sha256, kernel.optimizer_sha256, copy.deepcopy(state))
         candidate, receipt = kernel.train_candidate(
@@ -136,7 +139,9 @@ class CfCCellTests(unittest.TestCase):
             self.assertEqual(state, recovered)
             self.assertEqual(
                 kernel.observe(state, self.x[0, 2], episode_id="episode", cursor=2),
-                restored.observe(recovered, self.x[0, 2], episode_id="episode", cursor=2),
+                restored.observe(
+                    recovered, self.x[0, 2], episode_id="episode", cursor=2
+                ),
             )
             np.testing.assert_array_equal(
                 kernel.predict(state, [1], episode_id="episode"),
@@ -150,7 +155,11 @@ class CfCCellTests(unittest.TestCase):
             )
             self.assertEqual(
                 (first.weights_sha256, first.optimizer_sha256, first_receipt["losses"]),
-                (second.weights_sha256, second.optimizer_sha256, second_receipt["losses"]),
+                (
+                    second.weights_sha256,
+                    second.optimizer_sha256,
+                    second_receipt["losses"],
+                ),
             )
 
     def test_model_checkpoint_next_update_matches_in_fresh_process(self):
@@ -165,13 +174,28 @@ class CfCCellTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             model.save(root / "before.npz")
-            np.savez(root / "batch.npz", x=self.x, actions=self.actions, allowed=self.allowed)
+            np.savez(
+                root / "batch.npz", x=self.x, actions=self.actions, allowed=self.allowed
+            )
             env = dict(os.environ)
-            env["PYTHONPATH"] = str(Path(__file__).resolve().parent) + os.pathsep + env.get("PYTHONPATH", "")
+            env["PYTHONPATH"] = (
+                str(Path(__file__).resolve().parent)
+                + os.pathsep
+                + env.get("PYTHONPATH", "")
+            )
             subprocess.run(
-                [sys.executable, "-c", code, str(root / "before.npz"),
-                 str(root / "batch.npz"), str(root / "after.npz")],
-                check=True, capture_output=True, text=True, env=env,
+                [
+                    sys.executable,
+                    "-c",
+                    code,
+                    str(root / "before.npz"),
+                    str(root / "batch.npz"),
+                    str(root / "after.npz"),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
             )
             recovered = CfCModel.load(root / "after.npz")
             model.fit_step(self.x, self.actions, self.allowed)
@@ -186,8 +210,10 @@ class CfCCellTests(unittest.TestCase):
         for value in (-0.1, np.nan, np.inf):
             with self.assertRaises(ValueError):
                 kernel.observe(
-                    kernel.initial_state("episode"), [0, 0, value],
-                    episode_id="episode", cursor=0,
+                    kernel.initial_state("episode"),
+                    [0, 0, value],
+                    episode_id="episode",
+                    cursor=0,
                 )
         invalid = self.x.copy()
         invalid[0, 0, -1] = -1
