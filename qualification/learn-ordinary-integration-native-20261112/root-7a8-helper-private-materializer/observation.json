@@ -1,0 +1,75 @@
+{
+  "source": "7a8cc3c8c473b623a12667f49750c2ee5a46ea14",
+  "tree": "c39ccb2167f7f8c1f3b2899ebaa073fd61a3bac1",
+  "source_before_after_equal_clean": true,
+  "bundle_prerequisite": "b26ea05c09900e77c2c316cab94b6668a16f6a8a",
+  "scope": "required same-source helper Cargo build only",
+  "outer_exit": 1,
+  "cargo_exit": 101,
+  "elapsed_seconds": 468.04383218199837,
+  "actual_errors": [
+    {
+      "code": "E0624",
+      "caller": "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs:322",
+      "definition": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs:100",
+      "message": "method materialize_historical is private"
+    }
+  ],
+  "tests": 0,
+  "junit": 0,
+  "profile_override": null,
+  "cargo_build_jobs": 1,
+  "complete_chain_counts": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_plus_root_cold_restart": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 200857,
+    "sha256": "dda6e0fc2d8599147a8a229b4615b1c7105ec83cd6911b99584dc416606bb46e",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "helper/build.log",
+      "bytes": 212,
+      "sha256": "fbadecf8a70085f5da3719230f4ed0dd6fa497ba72ec95160ddba48eba589bb5"
+    },
+    {
+      "path": "helper/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1101462,
+      "sha256": "7b6c7efabf2befeac37e277ea9451961ff8333f1b55fce919c71308c0b84d6fe"
+    },
+    {
+      "path": "helper/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 23516,
+      "sha256": "36807e6198c3fe33991167c63a333a1a8e889cacbb20fe547e673018088b5b2e"
+    },
+    {
+      "path": "helper/helpers/env.json",
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "helper/helpers/manifest.json",
+      "bytes": 1233,
+      "sha256": "2d79f76b562b226db1ed7261a7eeb572bd8fd0895792e6c9c68ae1d5d0406c57"
+    },
+    {
+      "path": "helper/run.json",
+      "bytes": 2403,
+      "sha256": "b56fcda2598a802ad60bf9de9fc36280e4a4551be971b7445d735a55c9a43b78"
+    },
+    {
+      "path": "run_root7a8_helpers.py",
+      "bytes": 3360,
+      "sha256": "eb41c4b6e5a1841f1fbd615af067884ba46a34b8dc69d0c0f4e99d5cdbe454cc"
+    },
+    {
+      "path": "root-7a8cc3c8-helper-source.bundle",
+      "bytes": 124476,
+      "sha256": "db296a5972c8c558202784e2e85d43f87bfef8290c15f72342915a73b770039c"
+    }
+  ]
+}
