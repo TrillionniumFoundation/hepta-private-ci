@@ -1,0 +1,104 @@
+{
+  "source_head": "2e807cc1cf152c24715f2b3fc15cc63c4527f687",
+  "source_tree": "2b3634add19c4964eced08136031447650444427",
+  "host": "ai395",
+  "v1": "preflight_failed: extra driver CARGO_HOME assertion; no Cargo launched",
+  "v2": {
+    "status": "completed",
+    "exit_code": 101,
+    "duration_seconds": 190.9370577,
+    "actual_stage": "codex-hepta-agentd lib test compilation",
+    "errors": 58,
+    "warnings": 3,
+    "tests_executed": 0,
+    "junit_produced": false,
+    "source_unchanged": false,
+    "source_before_sha256": "0a1ce9c1a437f24e536b3220bc4b7c44938a475d0a9809c9168dcb97c7851ac3",
+    "source_after_sha256": "be34e01070f87cabdf646357cafbf6ec639ecca20a81912a482178511ffce77d",
+    "autofix": "authority_host_historical_source_pin.rs only: remove two unused mut bindings"
+  },
+  "scope": "actual just fix --locked --offline for agentd, agent-protocol, learning-ledger, contracts, neuron, intelligence-eval; jobs=1, incremental=0, Rust1.96, no profile override",
+  "whole_chain_counts": {
+    "positive": 0,
+    "evaluated_no_update": 0,
+    "daemon_root_cold": 0
+  },
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 30629,
+    "sha256": "1e6c62e3afe73a6c5ee5af31972b69b43c7d0891f1f2cd70a476d2478ec69f01",
+    "entries": [
+      {
+        "path": "v1/driver-error.log",
+        "bytes": 308,
+        "sha256": "deec291fc90f3c20f960d611b4228fb8b1ce7983255ebd69624c943326fda441"
+      },
+      {
+        "path": "v1/driver.py",
+        "bytes": 7258,
+        "sha256": "941179083a32ed3aa06bba3b23deaf1afd085c848a44abf7d6ad3b4315cb1fdc"
+      },
+      {
+        "path": "v1/result.json",
+        "bytes": 2089,
+        "sha256": "fd01121faa9a51c5a1899808dac432b123effbcf405ab5bc6a36dbdbff7cef1e"
+      },
+      {
+        "path": "v1/root-2e807cc1-preflight.json",
+        "bytes": 1497,
+        "sha256": "65ac192aacada5559cdabfe5da1f85bc21b06b7e4f0ade4a742c3293590be5c7"
+      },
+      {
+        "path": "v1/source-import.log",
+        "bytes": 155,
+        "sha256": "e7fdaae6a14d32be2dc55947b36a2d5c48cf97f34436e5043bb413dc7f4b42e6"
+      },
+      {
+        "path": "v2/diagnostics.json",
+        "bytes": 3340,
+        "sha256": "4ae20ffd8623f7713259b4a8c813f7d81c3fdddd540d80c0e4dfc97e1c5c609e"
+      },
+      {
+        "path": "v2/diagnostics.log",
+        "bytes": 51482,
+        "sha256": "abbaf5e7a1ae406a857c1f059e77cce0b55c05db2646acb7b38a4fbd7b1a9927"
+      },
+      {
+        "path": "v2/driver.py",
+        "bytes": 7137,
+        "sha256": "eb26606fa574e3a8dd7aecb631aaa7fa0047ea9609c5b699f8e944860e626397"
+      },
+      {
+        "path": "v2/fix.patch",
+        "bytes": 807,
+        "sha256": "c1346de8ba6c1f291825bd7d20130a4e52f6cbc61d139758602ce9f442a7f7ae"
+      },
+      {
+        "path": "v2/postimage/codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs",
+        "bytes": 21643,
+        "sha256": "35964560412d95dc99715bc13b994739c112efb75fd53964f4930fe4366e2e5a"
+      },
+      {
+        "path": "v2/result.json",
+        "bytes": 3785,
+        "sha256": "c2c663154f689d5724445a94ce713b5efbe1851a367363d9c5026325ff9bbc8c"
+      },
+      {
+        "path": "v2/stderr.log",
+        "bytes": 132414,
+        "sha256": "0b5db6fe55560c017cbb5a6a290e3601f90fddfae4a77671b97ae919ee957e94"
+      },
+      {
+        "path": "v2/stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "limits": [
+    "This is compile diagnostics, not executed native tests or qualification.",
+    "The stdout file is actually empty. No lost output or missing JUnit is reconstructed.",
+    "v1/result.json is the complete original failure record; v1/root-2e807cc1-preflight.json is separate preflight metadata.",
+    "v2 source-import log is not in this recovered copy; original H files remain retained."
+  ]
+}
