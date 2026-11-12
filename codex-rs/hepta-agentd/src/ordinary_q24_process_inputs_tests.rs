@@ -74,6 +74,9 @@ impl ObjectiveInputs {
                 .replace("notes.replace", "circuit.compute")
                 .replace("notes", "circuit"),
         )?;
+        // The reused grammar does not enroll its old Notes/Circuit issuer.
+        // Pin the one actual AuthBus issuer before computing either digest.
+        document["profile"]["allowedTrustedSourceIdentities"] = json!([OBJECTIVE_ISSUER]);
         let profile = document["profile"].clone();
         let admitted_profile = decode_admission_profile_json_v1(&serde_json::to_vec(&profile)?)?;
         let source = &mut document["source"];
@@ -227,5 +230,59 @@ fn ordinary_q24_input_authorities_bind_actual_objective_without_supplying_a_rece
         (generator, observer)
     );
     assert!(std::fs::read(paths.ledger).is_err());
+    Ok(())
+}
+
+#[test]
+fn ordinary_q24_objective_inputs_admit_only_the_actual_authbus_issuer() -> anyhow::Result<()> {
+    let directory = tempfile::tempdir()?;
+    let fleet = directory.path().join("fleet");
+    std::fs::create_dir(&fleet)?;
+    let identity = crate::HostAuthorityRegisteredIdentity {
+        agent_id: codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
+        spawn_generation: 1,
+        fleet_root: fleet,
+        workspace: directory.path().into(),
+        resources: codex_hepta_fleet::ResourceBudget::local_default(),
+    }
+    .identity()?;
+    let (_, bundle, _) = super::super::material::model(directory.path())?;
+    let now = crate::authbus_ingress::now_ms()?;
+    for input in [
+        ObjectiveInputs::new(&identity, &bundle, now)?,
+        ObjectiveInputs::successor(&identity, &bundle, now)?,
+    ] {
+        let profile = decode_admission_profile_json_v1(&serde_json::to_vec(&input.profile)?)?;
+        let source =
+            decode_source_envelope_json_v1(input.request.body.source_envelope_json.as_bytes())?;
+        pretty_assertions::assert_eq!(
+            profile.allowed_trusted_source_identities,
+            vec![StableId::new(&input.request.issuer_id)?]
+        );
+        let mut context = ObjectiveAdmissionContextV1 {
+            revision: Revision::new(input.request.body.objective_revision)?,
+            now_unix_micros: now
+                .checked_mul(1_000)
+                .ok_or_else(|| anyhow::anyhow!("clock overflow"))?,
+            selected_profile_digest: profile.digest()?,
+            source_authentication: ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
+                source_identity: StableId::new(&input.request.issuer_id)?,
+                source_digest: source.structured_intent.provenance.source_digest,
+            },
+        };
+        let admitted = admit_and_compile_objective_v1(&source, &profile, &context)?;
+        let compiled = admitted
+            .compile_result
+            .map_err(|error| anyhow::anyhow!("unexpected conflict: {error:?}"))?;
+        pretty_assertions::assert_eq!(compiled.objective.semantic_digest, input.objective);
+        context.source_authentication = ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
+            source_identity: StableId::new("circuit-objective-test-issuer")?,
+            source_digest: source.structured_intent.provenance.source_digest,
+        };
+        assert!(matches!(
+            admit_and_compile_objective_v1(&source, &profile, &context),
+            Err(codex_hepta_objective::ObjectiveAdmissionError::SourceAuthenticationMismatch)
+        ));
+    }
     Ok(())
 }
