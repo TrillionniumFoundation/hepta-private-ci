@@ -1,7 +1,9 @@
 //! Actual UID0 files establish descriptor behavior only. No test data or key
 //! is promoted to a Root B enrollment, signature or completed evaluation.
 
+use std::io::Read;
 use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 
@@ -132,6 +134,22 @@ fn original_b_writer_transfers_once_and_rechecks_output_physically() -> io::Resu
     writer.try_lock().map_err(io::Error::other)?;
     assert!(original.take_original_writer().is_err());
     overwrite(&mut writer, b"completed original output")?;
+    let mut readonly = original.original_readonly()?;
+    // SAFETY: F_GETFL only observes the two owned descriptors.
+    assert_eq!(
+        unsafe { libc::fcntl(readonly.as_raw_fd(), libc::F_GETFL) } & libc::O_ACCMODE,
+        libc::O_RDONLY
+    );
+    assert_eq!(
+        (readonly.metadata()?.dev(), readonly.metadata()?.ino()),
+        (writer.metadata()?.dev(), writer.metadata()?.ino())
+    );
+    writer.seek(SeekFrom::Start(5))?;
+    let mut first = [0; 1];
+    readonly.read_exact(&mut first)?;
+    assert_eq!(first, *b"c");
+    assert_eq!(writer.stream_position()?, 5);
+    assert!(readonly.write_all(b"forbidden candidate mutation").is_err());
     assert_eq!(
         original.observe_owned_output()?,
         Digest32::of_bytes(b"completed original output")
