@@ -233,6 +233,71 @@
       "source_status_after": "",
       "outer_process_observation": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json",
       "exact_request_blob": "f920d23cba04fd79d9cb991c0ea2ab8d69488ff0"
+    },
+    {
+      "sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+      "tree": "5529e9391304dbbdaf98df3fb978b689362c85d5",
+      "job_id": "1a1ccfa36ce-2564-112c",
+      "request_digest": "7a22eb77e439153bbb288dae71dcc7b82dee04261fe424ed85ed483a48a30683",
+      "purpose": "Seven-case diagnostic of original failures; no complete source/caller/native closure or ordinary acceptance claim.",
+      "outer_terminal": {
+        "state": "failed",
+        "exit_code": 1,
+        "timed_out": false,
+        "cancelled": false,
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true
+      },
+      "source_checks_executed": 0,
+      "full_caller_proof_executed": false,
+      "helper_build_exit_code": 0,
+      "helper_verification_exit_code": 0,
+      "native_command_exit_code": 100,
+      "native_tests_executed": 7,
+      "native_test_results": {
+        "passed": 0,
+        "failed": 7,
+        "skipped_selected": 0,
+        "unselected_filtered": 1075
+      },
+      "native_command_timed_out": false,
+      "native_elapsed_seconds": 438.39003055915236,
+      "test_execution_seconds": 82.033,
+      "failed_test_names": [
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature"
+        }
+      ],
+      "source_after": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+      "source_status_after": "",
+      "exact_request_blob": "61ff789272227097207ba82c7407176b6792e147",
+      "outer_process_observation": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/terminal-observation.json"
     }
   ],
   "full_chain_acceptance": {
@@ -415,6 +480,41 @@
       "bytes": 129513,
       "sha256": "971795ce0588c93d53a3346bd699269214c132c3a1f9ac34bfd0c7c8855a6910",
       "original_version": "2050:590237:129513:1794438856032455825:1794438856032455825"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v9-diagnostic-v1/result.json",
+      "bytes": 2032,
+      "sha256": "fa4e064adc84365394cc1ea59f8c4969bd2b314f8bcef0392d4d55ffe93bde27",
+      "original_version": "2050:590408:2032:1794441068674032435:1794441068674032435"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/result.json",
+      "bytes": 7698,
+      "sha256": "320f140ed933f9a5b09c0adf8e4704e7d64f326237c3b77219c0e1c3ad5e910a",
+      "original_version": "2050:2817057:7698:1794441068606965032:1794441068606965032"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/focused-native.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/focused-native.json",
+      "bytes": 3489,
+      "sha256": "1a9f3f02841dcc17d6158c27714c7a7878ed0cd9c0db72259cd2d80a07e8d891",
+      "original_version": "2050:2817055:3489:1794441068444150014:1794441068448056236"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/focused-native.junit.xml",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/focused-native.junit.xml",
+      "bytes": 13238,
+      "sha256": "27df81282f7fe5f5d18a376f2c1cdc984e18591a11d6f0b6743ad5a6ebe8975e",
+      "original_version": "2050:2818041:13238:1794441068545288830:1794441068545288830"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/focused-native.json.1901720dc3ba46938e70962551bb3ebc.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/focused-native.json.1901720dc3ba46938e70962551bb3ebc.log",
+      "bytes": 57487,
+      "sha256": "bfbf6ca4cd64c99670ced447e76065c377fa7825c10e3005290027782b4afd0e",
+      "original_version": "2050:2819932:57487:1794441068366058739:1794441068366058739"
     }
   ],
   "normalized_observations": [
@@ -447,6 +547,16 @@
       "job_id": "1a1cccec57a-2564-1088",
       "representation": "normalized_running_process_status_observation",
       "normalization": "Parsed h_process_status JSON and serialized it with two-space indentation. This is a running observation during complete caller proof, not terminal evidence or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/terminal-observation.json",
+      "bytes": 729,
+      "sha256": "58efe7f8f77d675781859e67f82a6152fa40493153be2668f961001238bf71ff",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1ccfa36ce-2564-112c",
+      "representation": "normalized_terminal_process_status_observation",
+      "normalization": "Parsed h_process_status JSON serialized with two-space indentation. This is not a raw host file or the original MCP response envelope."
     }
   ]
 }

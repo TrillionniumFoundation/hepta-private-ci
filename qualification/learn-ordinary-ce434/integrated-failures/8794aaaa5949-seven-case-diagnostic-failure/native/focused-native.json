@@ -1,0 +1,68 @@
+{
+  "after": {
+    "commit": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+    "dirty": false,
+    "parents": [
+      "c01b92316da4257fbb73fac5813d31c7cc0126ee",
+      "dee28e8056d96a5c992cec594b25804ec92dc837"
+    ],
+    "tree": "5529e9391304dbbdaf98df3fb978b689362c85d5"
+  },
+  "base_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "before": {
+    "commit": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+    "dirty": false,
+    "parents": [
+      "c01b92316da4257fbb73fac5813d31c7cc0126ee",
+      "dee28e8056d96a5c992cec594b25804ec92dc837"
+    ],
+    "tree": "5529e9391304dbbdaf98df3fb978b689362c85d5"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "(package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature))",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 438.39003055915236,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-11T23:51:08.443513+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 57487,
+  "log_file": "focused-native.json.1901720dc3ba46938e70962551bb3ebc.log",
+  "log_sha256": "bfbf6ca4cd64c99670ced447e76065c377fa7825c10e3005290027782b4afd0e",
+  "minimum_tests": 7,
+  "observed_failed_tests": 7,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+  "started_at": "2026-11-11T23:43:50.046823+00:00",
+  "status": "failed",
+  "tested_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-all-owners-ce434-20261111-v9-diagnostic/codex-rs"
+}

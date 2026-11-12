@@ -43,3 +43,13 @@ The complete original execution JSON, 129,513-byte raw log, 57,899-byte fresh JU
 The preparation snapshot and normalized outer-process observation are explicitly interim: the original complete caller proof was still running with an empty log at observation. Neither a terminal overall result nor a full-proof pass is established here. Later evidence must be appended separately. All earlier failure evidence remains unchanged.
 
 A later diagnostic candidate or repair must obtain its own executed results; these failures are not replaced or reclassified. Complete ordinary positive adoption, ordinary NoUpdate/fallback and daemon plus Root cold restart remain **0**.
+
+## Exact 8794 timing diagnostic: seven failures reproduced
+
+The immutable diagnostic source is `8794aaaa5949ab1b92897337ffb40f87c6587c18`, tree `5529e9391304dbbdaf98df3fb978b689362c85d5`. Original job `1a1ccfa36ce-2564-112c` completed **failed, exit 1**, with complete, durable output and confirmed terminal publication; no timeout, cancellation or automatic retry occurred.
+
+The seven previously failing cases all executed and failed: **0 passed, 7 failed, no selected skips**. The 1,075 unselected cases were filtered out. Native command exit was 100; its raw log, execution record and fresh 13,238-byte JUnit are retained, along with the final native and preparation results. Each original file's byte length and SHA256 was verified before publication.
+
+The original output records Trainer-before reads of 15.247 and 12.342 milliseconds followed by Published reads failing with DeadlineElapsed at 514.505 and 514.372 milliseconds. Two direct Published owner reads took 1.496458 and 1.505878 seconds; complete handlers took 1.520905 and 1.531655 seconds. Deferred Training completed successfully in 28.579967 seconds; the subsequent Evidence read failed at 501.853 milliseconds, with the server path finishing after 3.906761 seconds. These measurements identify where this source failed; they do not justify extending the original deadlines or changing unavailable into Missing.
+
+No full source QA, full caller proof or 109-case closure was run for this diagnostic source. A separate crypto-profile-only comparison uses the same seven tests and original protocol settings; no result from that source is inferred here. This diagnostic does not replace or reclassify earlier failures or establish ordinary task adoption, NoUpdate/fallback, or a daemon plus Root cold restart.
