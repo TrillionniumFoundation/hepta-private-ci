@@ -141,3 +141,6 @@ fn missing_support_is_insufficient() {
         Disposition::InsufficientEvidence
     );
 }
+
+#[path = "legacy_incomplete_evidence_tests.rs"]
+mod incomplete_evidence;
