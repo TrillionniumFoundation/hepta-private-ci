@@ -22,7 +22,12 @@ LS, MS, PS = (A + "authority_host_" + name + ".rs" for name in (
 WORKER = A + "authority_host_post_a_worker.rs"
 CALLERS = {
     "root_original_owner_absolute_end": (PEER,),
-    "root_original_peer_absolute_end": (L, M, P, A + "authority_host_historical_read_runtime.rs"),
+    "root_original_peer_absolute_end": (
+        L, M, P, A + "authority_host_historical_read_runtime.rs",
+        A + "authority_host_generation_initial_transport.rs",
+        A + "authority_host_initial_peer_runtime.rs",
+        A + "authority_host_q24_evaluation_serve.rs",
+    ),
     "root_post_a_bound_learning": (A + "authority_host_session.rs", WORKER),
     "root_post_a_installation_prepare": (A + "authority_host_historical_read_session.rs",),
     "root_post_a_installation_submit": (A + "authority_host_post_a_provider.rs",),
