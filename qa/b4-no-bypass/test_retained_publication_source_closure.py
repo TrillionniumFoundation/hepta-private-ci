@@ -30,7 +30,7 @@ EXPECTED = {
     "learning_retained_publication_prepare": ('codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs',),
     "learning_retained_publication_publish": (),
     "learning_retained_publication_recover": (),
-    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs'),
 }
 
 
@@ -213,28 +213,39 @@ class RetainedPublicationClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.rejects(MAIN, "fn publish_and_retain_original_trainer(", marker)
         for marker in (
-            "task.require_current()?",
-            "require_previous(context, previous)?",
-            ".selection(original, &coordinator, &previous.manifest)?",
-            "task.require_bundle(&context.training.request.selected_bundle)?",
+            "require_published_decision(&coordinator, task)?",
             "context.authenticate(finished, access)?",
         ):
             with self.subTest(marker=marker):
                 self.rejects(BINDING, "fn require_published(", marker)
+        for marker in (
+            "task.require_current()?",
+            "require_previous(request, previous)?",
+            ".selection(original, coordinator, &previous.manifest)?",
+            "task.require_bundle(&request.selected_bundle)?",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(BINDING, "fn require_published_decision(", marker)
 
     def test_distinct_c_uses_actual_task_content_not_nonce_or_new_run_alone(self):
+        for marker in (
+            "context.authenticate(now()?, PublicationAccess::NewWork)?",
+            "require_inputs_for_request(&context.training.request, inputs)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(BINDING, "fn require_inputs<", marker)
         for marker in (
             "inputs.completed.binding != expected",
             "next.manifest != inputs.predecessor.config.manifest",
             "source.scope.run_id == inputs.completed.source.input().scope.run_id",
             "source.observation == inputs.completed.source.input().observation",
-            "source.scope.agent_id != context.training.request.agent_id",
-            "source.scope.cell_id != context.training.request.cell_id",
+            "source.scope.agent_id != request.agent_id",
+            "source.scope.cell_id != request.cell_id",
             "crate::circuit_feature_task_digest_v1(definition, source)?",
             "next.source_frontier",
         ):
             with self.subTest(marker=marker):
-                self.rejects(BINDING, "fn require_inputs<", marker)
+                self.rejects(BINDING, "fn require_inputs_for_request<", marker)
         for marker in (
             "previous.source.history_digest().as_str()",
             "request.completed_task_receipt.to_string()",

@@ -43,7 +43,7 @@ EXPECTED = {
     "learning_original_training_initial_connection_recover": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",),
     "learning_original_training_initial_connection_dataset": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
     "learning_original_training_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
-    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs'),
     "learning_original_selector_command_context": ("codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",),
     "learning_original_selector_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
     "learning_original_selector_command_client_readback": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",),

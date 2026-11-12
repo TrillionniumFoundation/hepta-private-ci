@@ -40,7 +40,7 @@ EXPECTED = {
     "learning_original_evaluation_connection_training": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
     "learning_original_evaluation_connection_recovery": (),
     "learning_original_evaluation_command_execute": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
-    "learning_original_evaluation_command_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",),
+    "learning_original_evaluation_command_readback": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"),
     "learning_original_evaluation_command_attestation": (),
 }
 

@@ -30,7 +30,7 @@ EXPECTED = {
     "learning_original_training_command_client_create": (),
     "learning_original_training_command_client_recover": (),
     "learning_original_training_command_client_execute": ("codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
-    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs'),
+    "learning_original_training_command_client_readback": ('codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs', 'codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs', 'codex-rs/hepta-agentd/src/circuit_retained_version_state.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs'),
     "learning_original_training_command_client_attestation": (),
     "learning_original_training_command_owner_create": (AGENT + "cell_q24_training_bootstrap_build.rs",),
     "learning_original_training_command_owner_recover": (AGENT + "cell_q24_training_bootstrap_build.rs",),
