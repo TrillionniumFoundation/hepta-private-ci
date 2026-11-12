@@ -1,0 +1,172 @@
+{
+  "schema": "learn-training-actual-product-recovery-v1",
+  "status": "ACTUAL_FORMATTED_T9_RECOVERED_ORIGINAL_SCOPED18_RESULT_RETAINED_NATIVE_UNRUN",
+  "source_base": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "source_base_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "actual_archive_checkpoint": "28152d709c836ec39b59390dda126735f0b336d7",
+  "actual_archive": {
+    "bytes": 29526,
+    "sha256": "d5feb190422009022a9a1f091359f35042e54127b53212d83eba8cc289d11ef3",
+    "blob": "c38b09598c84510fa6f5110a3010aa3e9762efcd"
+  },
+  "decoded_archive": {
+    "bytes": 121046,
+    "sha256": "e57b1576cec90d48cc6d8055ae4ddea53460a4f6950bfae67ed36d23c3e45310",
+    "blob": "59bc1bc2d2d7d62dad0492d3e22c5cd30e346785"
+  },
+  "original_sdk_payload": {
+    "bytes": 39810,
+    "sha256": "a33241d765b563125737780b667bb0e7f4f75879f4081fdaf4556aa5c14390ed",
+    "blob": "acb2623dd66a54d2fde68dbe40bc9cb12fd3d694"
+  },
+  "proof": [
+    "All 10 immutable pages recomposed into exact 39810-byte original payload and matched immutable whole result SHA256.",
+    "Decoded actual gzip matched prior 29526-byte SHA256 and Git blob; validated gzip CRC32 and ISIZE.",
+    "Each of nine decoded Rust byte streams matched both actual archive metadata and independently retained prior bytes/SHA256/Git blob pins.",
+    "Five existing files are pinned to exact a96 source inventory; four are new paths.",
+    "New test module suffix reconstructs exact original 12544-byte command test base and original Git blob."
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_tests.rs",
+      "before": {
+        "bytes": 12544,
+        "blob": "cc560a9a3792c672001dfedfda8a16061cbe14a5"
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_tests.rs",
+        "bytes": 12613,
+        "sha256": "9c3ee1620dcb545ed65f8d3efbca7a602b2db202aeb31aec0699b343f1da4d28",
+        "blob": "d98bd3c606763e0b3b7af6f4ac43c43f15caa732"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "before": {
+        "bytes": 12136,
+        "blob": "9dd91ec0e81aff907a7760cdcee880226945993d"
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+        "bytes": 11405,
+        "sha256": "d4bfc8c6e850ffc037deab60a3f0f5b004c75c48a0567e70cccda34d38733970",
+        "blob": "31010e80d331c7f32b84afb7c2b4f2edc63affb2"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "before": {
+        "bytes": 17052,
+        "blob": "bd124d3f287e1e3b5783aec5f51e2d083d8b21d8"
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+        "bytes": 17192,
+        "sha256": "5093a9718644ccd84029c5c6d64b24cdf1536698ffda3824a74bdc5499b44b50",
+        "blob": "48a35b8c6aeac859c3fa9085bbaa0231a84008d3"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "before": {
+        "bytes": 5629,
+        "blob": "189e494e4b216109bd81ad0a5acaafe907053a80"
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "bytes": 5695,
+        "sha256": "17ff6575d665e148c6e4f510a4a4c35dc326a7e0a163742d19acafb2d11d2c47",
+        "blob": "dc0b23e15625bdd6d5442555d259b3cacb12f9b6"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs",
+      "before": null,
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner_read.rs",
+        "bytes": 2475,
+        "sha256": "c4e9d6d0c4d73816eed06b2a62ad442495518c666c56bd8d4572312dd7e1abc4",
+        "blob": "5d36c0856b08864b129434f3c15a67bd54fbc7cf"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+      "before": null,
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs",
+        "bytes": 4209,
+        "sha256": "0d6c3602f4096e42fb3171b577c36efcc11e1826a9488c3e88f0cba293c4f8da",
+        "blob": "c0b38e367ca375bfe4382b275130b3781c5ff48b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs",
+      "before": null,
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_lane.rs",
+        "bytes": 7220,
+        "sha256": "c562908d496d29c893cd552e2e3cbe36e6785b0041254144b1a3742af73959bc",
+        "blob": "68b40418df15eada032a272d9732b38daa83e4a9"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_tests.rs",
+      "before": null,
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_read_tests.rs",
+        "bytes": 13639,
+        "sha256": "a23bdba0165bb3580e0cd64e250c3f8b64e025ab5d712d3e979c91480250a88e",
+        "blob": "8d8ae79f45148a7ca0aac0478d1c4e3b18ab6a16"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "before": {
+        "bytes": 14395,
+        "blob": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4"
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "bytes": 14702,
+        "sha256": "b8aa1030f9106c3cea02e4d40d4053104032d65fe64e536815c150a123f6c3bc",
+        "blob": "2cdf18c555acf11301570d8a555b9f6a37e604bb"
+      }
+    }
+  ],
+  "actual_source_test_names": [
+    "cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_keeps_thirty_two_reads_within_same_upstream_budget",
+    "cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_rechecks_withdrawal_after_actual_native_read",
+    "cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_cancel_keeps_occupied_lane_and_consumed_channel",
+    "cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_refuses_mid_read_native_journal_change",
+    "cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_proof_rejects_same_bytes_after_original_source_drop",
+    "cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_candidate_source_read_keeps_legacy_missing_then_permanent_native_refusal"
+  ],
+  "native_budget": {
+    "test_timeout_seconds": 60,
+    "rust_min_stack": 8388608,
+    "test_threads": 2,
+    "retries": 0,
+    "original_outer_timeout_seconds": 7200,
+    "helper_timeout_seconds": 3600
+  },
+  "original_scoped_result": {
+    "passed": 18,
+    "failed": 0,
+    "raw_log": "qualification/learn-training-037c-checkpoint/source-guard-final-v1.raw.log",
+    "sha256": "1f827ce39df5df07f6c9efa199b0af756a9d594a16fd8e360ab6eda1306d4280",
+    "scope": "Historical exact Current13 + T9 mirror, original three T QA files, and original final CALLERS delta. Not rerun for this recovery commit; one QA and delta original are still missing."
+  },
+  "new_native_tests_run": false,
+  "complete_ordinary_NoUpdate_qualification": 0,
+  "global_callers_modified": false,
+  "main_pr_updated": false,
+  "integration_dependency": {
+    "current13_actual_source_checkpoint": "e18d71c2d066fbefc4f323159a9f2d968eac2d54",
+    "scope": "Original 32-read mechanism test and the historical 18-check mirror include Current13; this recovery branch does not claim integrated runnable closure."
+  },
+  "missing_originals": [
+    "T final new QA11061/SHA35321542e88887630373801e7d903aab786f76c18320711b5c7d7fb316790abe",
+    "T final CALLERS delta47147/SHA3a780c5f8846c6cd6c637306ea62e1049a5eb67fe86feedf24daaa6d4c8b42c8"
+  ],
+  "new_guard_reconstruction": "If required, reconstruct as new identities with new verification; never attach historical 18 PASS to a different file set."
+}

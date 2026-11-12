@@ -26,6 +26,10 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 mod model_lane;
 
 #[cfg(target_os = "linux")]
+#[path = "cell_q24_training_source_read_lane.rs"]
+mod readonly_lane;
+
+#[cfg(target_os = "linux")]
 #[path = "cell_q24_source_bound_stage.rs"]
 mod source_bound;
 #[cfg(target_os = "linux")]
@@ -202,7 +206,14 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         self.require_dataset(dataset)?;
-        self.in_lane(Owners::read_original_completion).await
+        #[cfg(target_os = "linux")]
+        {
+            OriginalCellQ24TrainingStageV1::read_original_source_completion(self).await
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            self.in_lane(Owners::read_original_completion).await
+        }
     }
 
     /// The caller supplies only an equality check, never bytes to be signed.

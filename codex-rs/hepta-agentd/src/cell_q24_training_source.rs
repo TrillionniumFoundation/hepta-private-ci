@@ -38,6 +38,9 @@ use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellQ24DatasetV1;
 use crate::OriginalCellQ24RemoteMaterialClientV1;
 
+#[path = "cell_q24_training_source_read.rs"]
+pub(crate) mod readonly;
+
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24TrainingSourceErrorV1 {
     #[error("original training source binding: {0}")]
@@ -182,6 +185,7 @@ pub struct OriginalCellQ24TrainingSourceV1 {
     material: OriginalCellQ24DatasetV1,
     binding: Digest32,
     runtime: Handle,
+    read_identity: Arc<()>,
 }
 
 /// Read actual data and original completed Material owners in a blocking lane.
@@ -249,6 +253,7 @@ async fn capture_live_original_source(
             material,
             binding,
             runtime,
+            read_identity: Arc::new(()),
         })
     })
     .await
