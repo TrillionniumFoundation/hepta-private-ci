@@ -75,7 +75,7 @@ pub struct CircuitTaskSourceInputV1 {
 }
 
 impl CircuitTaskSourceInputV1 {
-    fn input(&self, operation_id: StableId) -> CellStepInputV1 {
+    pub(crate) fn input(&self, operation_id: StableId) -> CellStepInputV1 {
         CellStepInputV1 {
             operation_id,
             scope: self.scope.clone(),

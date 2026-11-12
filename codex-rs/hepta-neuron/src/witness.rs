@@ -31,6 +31,8 @@ use crate::WitnessStoreError;
 mod observer;
 #[cfg(target_os = "linux")]
 pub(crate) use observer::read_original_file;
+#[cfg(target_os = "linux")]
+pub use observer::read_original_file as observe_original_file_anchor_v1;
 
 const MAGIC: &[u8; 8] = b"HPTNWA01";
 const HEADER: usize = 112;
