@@ -209,7 +209,7 @@ class _Amplitude(torch.autograd.Function):
                 problem_identity=problem.identity,
             )
         )
-        ctx.problem, ctx.metadata, ctx.options, ctx.budget = (
+        ctx.problem, ctx._hcsn_metadata, ctx.options, ctx.budget = (
             problem,
             metadata,
             options,
@@ -238,7 +238,7 @@ class _Amplitude(torch.autograd.Function):
                 not torch.equal(value, copy) for value, copy in zip(originals, copies)
             ):
                 raise RuntimeError("initial amplitude input changed after forward")
-            ctx.metadata.check(budget)
+            ctx._hcsn_metadata.check(budget)
         except RuntimeError:
             budget.guard_rejections += 1
             raise
