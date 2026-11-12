@@ -17,11 +17,10 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 
 use crate::AgentdIdentity;
-use crate::CircuitCellBindingV1;
-use crate::CircuitCellRegistryV1;
 use crate::CircuitCellRouteV1;
 use crate::CircuitTaskSourceInputV1;
 use crate::RootHistoricalSourceInputsV1;
+use crate::OriginalSingleQ24SourceConfigurationV1;
 
 #[path = "authority_host_historical_source_deployment_cell.rs"]
 mod cell;
@@ -91,36 +90,33 @@ impl SourceDeploymentData {
         journal: File,
         witness: File,
     ) -> io::Result<RootHistoricalSourceInputsV1> {
-        let definition = self.definition.into_definition()?;
-        let program = self
-            .circuit
-            .programs
-            .iter()
-            .find(|program| program.program_id == self.circuit.entry_program)
-            .ok_or_else(|| io::Error::other("single Q24 Source entry program missing"))?;
-        let binding = CircuitCellBindingV1 {
-            program_id: program.program_id.clone(),
-            node_id: program.entry_node.clone(),
-            cell: definition.clone(),
-            routes: self
-                .routes
-                .into_iter()
-                .map(|route| {
-                    Ok(CircuitCellRouteV1 {
-                        candidate_id: StableId::new(route.candidate_id)
-                            .map_err(io::Error::other)?,
-                        outcome: route.outcome,
-                        selected_edges: route.selected_edges,
-                    })
-                })
-                .collect::<io::Result<Vec<_>>>()?,
-        };
-        let registry =
-            CircuitCellRegistryV1::new(self.circuit, vec![binding]).map_err(io::Error::other)?;
-        let source = self.source;
+        let original = self.into_configuration(identity)?;
+        let registry = original.registry().map_err(io::Error::other)?;
         Ok(RootHistoricalSourceInputsV1 {
             journal,
             witness,
+            witness_scope: original.witness_scope,
+            witness_generation: original.witness_generation,
+            witness_records: original.witness_records,
+            fence: original.fence,
+            registry,
+            definition: original.definition,
+            source: original.source,
+        })
+    }
+
+    fn into_configuration(
+        self,
+        identity: &AgentdIdentity,
+    ) -> io::Result<OriginalSingleQ24SourceConfigurationV1> {
+        if self.schema_version != 1 || self.purpose != super::DEPLOYMENT_PURPOSE {
+            return Err(io::Error::other("original single Q24 Source deployment required"));
+        }
+        let definition = self.definition.into_definition()?;
+        let source = self.source;
+        let original = OriginalSingleQ24SourceConfigurationV1 {
+            source_journal: self.source_journal,
+            source_witness: self.source_witness,
             witness_scope: JournalScope {
                 scope_digest: Digest32::from_array(self.witness_scope),
                 objective_digest: Digest32::from_array(self.witness_objective),
@@ -136,7 +132,14 @@ impl SourceDeploymentData {
                 self.fence.fencing_token,
             )
             .map_err(io::Error::other)?,
-            registry,
+            circuit: self.circuit,
+            routes: self.routes.into_iter().map(|route| {
+                Ok(CircuitCellRouteV1 {
+                    candidate_id: StableId::new(route.candidate_id).map_err(io::Error::other)?,
+                    outcome: route.outcome,
+                    selected_edges: route.selected_edges,
+                })
+            }).collect::<io::Result<Vec<_>>>()?,
             definition,
             source: CircuitTaskSourceInputV1 {
                 scope: CellScopeV1 {
@@ -165,6 +168,23 @@ impl SourceDeploymentData {
                     .collect::<io::Result<Vec<_>>>()?,
                 lease_duration_ms: source.lease_duration_ms,
             },
-        })
+        };
+        original.registry().map_err(io::Error::other)?;
+        Ok(original)
+    }
+}
+
+impl OriginalSingleQ24SourceConfigurationV1 {
+    /// Decode the same complete Source preimage without acquiring Root custody,
+    /// opening an owner, or asserting that an observation actually occurred.
+    pub(crate) fn from_original_deployment_bytes(
+        bytes: &[u8],
+        identity: &AgentdIdentity,
+    ) -> io::Result<Self> {
+        if bytes.is_empty() || bytes.len() > 1_048_576 {
+            return Err(io::Error::other("original Source deployment size bound"));
+        }
+        let data: SourceDeploymentData = serde_json::from_slice(bytes).map_err(io::Error::other)?;
+        data.into_configuration(identity)
     }
 }

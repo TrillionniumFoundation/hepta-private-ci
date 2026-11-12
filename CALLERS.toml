@@ -7233,7 +7233,7 @@ required_function_order = [{ function = "fn enable_initial_source_capture_from_d
 path = "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_data.rs"
 required = ["struct SourceDeploymentData {","#[serde(deny_unknown_fields)]","source_journal: PathBuf,","source_witness: PathBuf,"]
 forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","from_test_store","SigningKey","FinalUseAuthority::new","prepare_forward_recovery","LearningIterationSnapshotV1","pub pin:","pub authority:","RetiredCheckpointPublisher","SignedFinalUseGrant","File::open","OpenOptions","#[derive(Clone","Deserialize for TaskFlowFence"]
-required_function_order = [{ function = "fn into_inputs(", sequence = ["self.definition.into_definition()?","self\n            .circuit\n            .programs","program.program_id == self.circuit.entry_program","CircuitCellBindingV1 {","node_id: program.entry_node.clone()","cell: definition.clone()","CircuitCellRegistryV1::new(self.circuit, vec![binding])","Ok(RootHistoricalSourceInputsV1 {","TaskFlowFence::new(","identity.agent_id.clone()","source: CircuitTaskSourceInputV1 {","scope: CellScopeV1 {","agent_id: StableId::new(identity.agent_id.as_str())","lease_duration_ms: source.lease_duration_ms"] }]
+required_function_order = [{function = "fn into_inputs(",sequence = ["self.into_configuration(identity)?","original.registry().map_err(io::Error::other)?","Ok(RootHistoricalSourceInputsV1 {","journal,","witness,","definition: original.definition","source: original.source"]},{function = "fn into_configuration(",sequence = ["self.schema_version != 1 || self.purpose != super::DEPLOYMENT_PURPOSE","self.definition.into_definition()?","OriginalSingleQ24SourceConfigurationV1 {","TaskFlowFence::new(","identity.agent_id.clone()","source: CircuitTaskSourceInputV1 {","scope: CellScopeV1 {","agent_id: StableId::new(identity.agent_id.as_str())","lease_duration_ms: source.lease_duration_ms","original.registry().map_err(io::Error::other)?"]},{function = "fn from_original_deployment_bytes(",sequence = ["bytes.is_empty() || bytes.len() > 1_048_576","serde_json::from_slice(bytes)","data.into_configuration(identity)"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment_cell.rs"
@@ -7403,3 +7403,20 @@ path = "codex-rs/hepta-agentd/src/neuron_v13_generation_update.rs"
 required = [".writer()?"]
 forbidden = []
 required_function_order = [{function = "fn revalidate_selection(",sequence = [".artifacts",".writer()?",".lock()","selected.revalidate("]}]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_q24_source_configuration.rs"
+required = ["pub(crate) struct OriginalSingleQ24SourceConfigurationV1","pub(crate) fence: TaskFlowFence","pub(crate) definition: CellDefinitionV1","pub(crate) source: CircuitTaskSourceInputV1"]
+forbidden = ["std::fs::File","RootAuthorityDirectory","SigningKey","FinalUseAuthority","pub authority:","pub pin:","RetiredCheckpointPublisher","impl Deserialize"]
+required_function_order = [{function = "fn registry(",sequence = ["self\n            .circuit\n            .programs","program.program_id == self.circuit.entry_program","CircuitCellBindingV1 {","node_id: program.entry_node.clone()","cell: self.definition.clone()","routes: self.routes.clone()","CircuitCellRegistryV1::new(self.circuit.clone(), vec![binding])"]}]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_initial_launch_data.rs"
+required = ["pub(crate) struct OriginalRootInitialLaunchDataV1","target: CellGenerationObserverConfigV1","trust: ArtifactOwnerTrustV1","selector: ArtifactSelectionVerifierV1","selection: SignedArtifactSelectionV1"]
+forbidden = ["std::fs::File","RootAuthorityDirectory","SigningKey","FinalUseAuthority","NeuronGenerationCurrentOwnerV1","#[derive","pub authority:","pub pin:"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_initial_deployment_data.rs"
+required = ["impl crate::OriginalRootInitialLaunchDataV1"]
+forbidden = ["File::open","OpenOptions","RootAuthorityDirectory::open","HostAuthorityFrontierStore::open"]
+required_function_order = [{function = "fn from_original_deployment_value(",sequence = ["serde_json::from_value(value)","data.schema_version != 1","data.owner_trust.original_owner_trust()?","data.selector_trust.original_selector(&trust)?","target: data.target.original_observer_config()?","retained_current: data.retained_current.original_current()?","DatasetWithdrawalSnapshotReceiptV1 {","selection: data.selection.original_selection()?"]}]
