@@ -1,4 +1,4 @@
-"""Standard-library-only pre-import review for the exact-migration successor."""
+"""Standard-library-only pre-import review for the AST-count successor."""
 
 import argparse
 import ast
@@ -6,11 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 
-IDENTITY = "hcsn-original-visit897-source-migration-vjp-n128-reviewer-schema-successor-20261112-c06d"
+IDENTITY = "hcsn-original-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d"
 KEY = f"{IDENTITY}-001"
-PARENT = "833aead36dfd889d693d31b6f001f96f950e3a32"
+PARENT = "bdb904e546d5817cb11097cb9ca6f3f88a6f6bec"
 BYTE_GATE_PARENT = "37672f24f828989f328de42dbd7b70603038e04a"
-BRANCH = "research/hcsn-visit897-source-migration-vjp-n128-reviewer-schema-successor-20261112-c06d"
+BRANCH = "research/hcsn-visit897-source-migration-vjp-n128-ast-count-successor-20261112-c06d"
 
 
 def sha(path):
@@ -65,8 +65,8 @@ def main():
     )
     require(len(request["negative_guards"]) == 12, "twelve_negative_guards")
     require(
-        len(request["historical_red_retained"]) == 6,
-        "six_historical_red_records_retained",
+        len(request["historical_red_retained"]) == 7,
+        "seven_historical_red_records_retained",
     )
     require(
         request["execution_policy"]
@@ -125,7 +125,7 @@ def main():
         "exact_migrate_accumulation_provenance_exact",
     )
     require(
-        request["historical_red_retained"][-1]
+        request["historical_red_retained"][-2]
         == {
             "kind": "hosted_reviewer_schema_preimport_failure",
             "run_id": 43275048169,
@@ -143,6 +143,27 @@ def main():
             "status": "RED_PREIMPORT_REVIEWER_SCHEMA_NO_ARTIFACT_NO_READMISSION",
         },
         "parent_reviewer_schema_red_exact",
+    )
+    require(
+        request["historical_red_retained"][-1]
+        == {
+            "kind": "hosted_ast_set_count_preimport_failure",
+            "run_id": 43277019131,
+            "job_id": 131388014924,
+            "artifact_id": None,
+            "artifacts_found": 0,
+            "unique_execution_key": (
+                "hcsn-original-visit897-source-migration-vjp-n128-"
+                "reviewer-schema-successor-20261112-c06d-001"
+            ),
+            "candidate_imports": 0,
+            "candidate_forwards": 0,
+            "continuous_adjoint_calls": 0,
+            "backward_attempts": 0,
+            "optimizer_updates": 0,
+            "status": "RED_PREIMPORT_AST_SET_COUNT_NO_ARTIFACT_NO_READMISSION",
+        },
+        "parent_ast_set_count_red_exact",
     )
     clear = source["parent_static_clear"]
     require(
@@ -189,6 +210,9 @@ def main():
     called = {node.func.id for node in calls if isinstance(node.func, ast.Name)} | {
         node.func.attr for node in calls if isinstance(node.func, ast.Attribute)
     }
+    migrate_calls = sum(
+        isinstance(node.func, ast.Name) and node.func.id == "migrate" for node in calls
+    )
     require("Adam" not in called, "no_adam_constructor")
     require("migrate" in called, "original_exact_migrate_called")
     source_text = (package / "source_flow.py").read_text()
@@ -196,7 +220,7 @@ def main():
     require("forward_limit: int = 42" in source_text, "forward_cap_literal")
     require("adjoint_limit: int = 2" in source_text, "adjoint_cap_literal")
     require("optimizer_updates: int = 0" in source_text, "optimizer_zero_literal")
-    require(called.count("migrate") >= 2, "freeze_and_runtime_use_exact_migrate")
+    require(migrate_calls == 2, "freeze_and_runtime_use_exact_migrate_twice")
     require("probability[:17] @" not in source_text, "no_prerounded_probability_matmul")
     require("lift_float.T @ content" not in source_text, "no_prerounded_content_matmul")
     require("FD_SCALES = (2e-4, 1e-4)" in probe_text, "fd_literals")
