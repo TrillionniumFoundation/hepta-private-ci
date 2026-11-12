@@ -175,7 +175,10 @@ stream_max_retries = 0
         .arg(&agent.workspace)
         .output()
         .context("run original Notes seed against Standard")?;
-    ensure!(!output.status.success(), "Standard admitted a finite Notes seed");
+    ensure!(
+        !output.status.success(),
+        "Standard admitted a finite Notes seed"
+    );
     ensure!(
         String::from_utf8_lossy(&output.stderr)
             .contains("original Notes effective Core execution profile differs"),
