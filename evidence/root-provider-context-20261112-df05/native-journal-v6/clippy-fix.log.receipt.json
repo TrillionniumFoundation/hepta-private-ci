@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "fix",
+    "-p",
+    "codex-hepta-automation"
+  ],
+  "cwd": "/home/qian-qi/work/root-provider-context-20261112-df05-v6-journal/codex-rs",
+  "exit_code": 101,
+  "timed_out": false,
+  "elapsed_ns": 200445016109,
+  "log": "clippy-fix.log",
+  "executed": true,
+  "process_exit_code": 101,
+  "expected_source": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+  "source_before_verified": true,
+  "source_after_verified": true,
+  "source_verified": true,
+  "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+  "source_observations": [
+    {
+      "verified": true,
+      "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+      "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+      "tracked_entries": 10737,
+      "tracked_bytes": 131625561,
+      "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+      "tracked_worktree_verified": true
+    },
+    {
+      "verified": true,
+      "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+      "source_tree": "07253cfc4ba78f9309976b99a7df1847c13c0d83",
+      "tracked_entries": 10737,
+      "tracked_bytes": 131625561,
+      "complete_map_sha256": "c88bc878a6640bb207d6a027831062b589c1af68d2298c52ca11203006cef45c",
+      "tracked_worktree_verified": true
+    }
+  ],
+  "owned_cleanup_completed": true,
+  "owner_contract": "reviewed ci_observation.run; retained leader through last group signal; escaped sessions and kernel cleanup latency outside contract"
+}

@@ -1,0 +1,23 @@
+{
+  "actor": "ProfHepta",
+  "origin": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+  "source_commit": "b9bbfe37e7643b1f63268ff14dfc895bc8c610ea",
+  "target": "/data/root-provider-context-20261112-df05-v6-target",
+  "base": "c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9",
+  "wrapper_sha256": "c65534e21bdd9b00fcb3985a90d0d33cb0fc226e969626726cb83e984c18e61b",
+  "tool_versions": {
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "rustfmt": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+    "just": "just 1.51.0"
+  },
+  "flags": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "NEXTEST_TEST_THREADS": "2",
+    "CARGO_TERM_COLOR": "never"
+  }
+}

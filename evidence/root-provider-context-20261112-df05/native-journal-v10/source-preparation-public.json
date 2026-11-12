@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "state": "PREPARED",
+  "heads": {
+    "journal": "d5b51f9e72cd69cc07d0bdbcad9b4e692a1d0136",
+    "host": "3eaf41498a5cd2ee6a5f662b20db32ca644d67b2"
+  },
+  "branches": {
+    "journal": "fix/hepta-provider-context-journal-20261112-df05",
+    "host": "fix/hepta-provider-context-host-20261112-df05"
+  },
+  "owned_git_directory": "/data/root-provider-context-20261112-df05-v10-sourceprep/repo.git",
+  "roots": {
+    "journal": "/data/root-provider-context-20261112-df05-v10-sourceprep/journal",
+    "host": "/data/root-provider-context-20261112-df05-v10-sourceprep/host"
+  },
+  "old_physical_source": {
+    "journal": {
+      "tracked_entries": 10788,
+      "tracked_bytes": 132078920,
+      "complete_map_sha256": "2bd60b7ff61cb97d3875e0b59dcd992d59b1d96ec160e0335de8f85786a54885",
+      "tracked_worktree_verified": true
+    },
+    "host": {
+      "tracked_entries": 10790,
+      "tracked_bytes": 132101661,
+      "complete_map_sha256": "cbb7941b49d90283486fc5ffd814be5d6f9ef9de3f3318177a1137caefb05eb5",
+      "tracked_worktree_verified": true
+    }
+  },
+  "new_physical_source": {
+    "journal": {
+      "source_commit": "d5b51f9e72cd69cc07d0bdbcad9b4e692a1d0136",
+      "source_tree": "eb068e2b6059ec520873776f282e6f3f515b7163",
+      "tracked_entries": 10788,
+      "tracked_bytes": 132075670,
+      "complete_map_sha256": "4aec616d2cbce56c47feb1e4ca8ee6d326f16e8e44454b1a9a6e28a25a33ab3b",
+      "tracked_worktree_verified": true
+    },
+    "host": {
+      "source_commit": "3eaf41498a5cd2ee6a5f662b20db32ca644d67b2",
+      "source_tree": "7013e6f781bba96d1aca423f12008fdb1b5d98b6",
+      "tracked_entries": 10790,
+      "tracked_bytes": 132101661,
+      "complete_map_sha256": "cbb7941b49d90283486fc5ffd814be5d6f9ef9de3f3318177a1137caefb05eb5",
+      "tracked_worktree_verified": true
+    }
+  },
+  "old_indexes_preserved": true,
+  "old_refs_preserved": true,
+  "old_shared_config_written": false,
+  "normal_effective_identity_preserved": true,
+  "normal_hook_path": "/home/qian-qi/work/ctrl-cargo-security-20261110-gpt6/.git/hooks",
+  "normal_hook_snapshot_sha256": "5601c13beb05f1c9e99044f68ed00c0a70b00cc23c7ec0199d449e131c38c390",
+  "object_read_dependency": "/home/qian-qi/work/ctrl-cargo-security-20261110-gpt6/.git/objects",
+  "independent_object_storage": false,
+  "shallow_boundary": {
+    "exists": true,
+    "bytes": 41,
+    "sha256": "0bbdddf420b9e4e0d35dbb2bd8a8e4248ab2c6c1455d0c7c3988705e7ac17241"
+  },
+  "free_bytes_at_admission": 193789177856,
+  "required_materialized_bytes": 264177331,
+  "reserved_bytes": 10737418240,
+  "program_sha256": "d8326fe3b3e9f8ba3ff13c0d26a7ea4dfd433fa7c03c6c3687cfc5a36784f32a",
+  "product_source_committed_or_tested": false
+}

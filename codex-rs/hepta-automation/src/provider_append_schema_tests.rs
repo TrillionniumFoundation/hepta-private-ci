@@ -165,46 +165,51 @@ async fn preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_con
     assert!(error.to_string().contains("provider context writer"));
     // Accepted lookup commits a first binding without a new observation row.
     // Prove that its old INSERT is fenced even for a current-profile attempt.
-    let current_insert = old_insert
-        .replace(
-            "started_at_ms,append_profile_version)",
-            "started_at_ms,append_profile_version,provider_context_profile)",
-        )
-        .replace("'v22-writer',26,1 FROM", "'v22-writer',26,1,1 FROM");
+    let current_insert = "INSERT INTO taskflow_effect_dispatch_attempts
+        (owner_agent_id,run_id,step_id,attempt,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,grant_id,grant_nonce_digest,
+         record_command_id,started_at_ms,append_profile_version,provider_context_profile)
+        SELECT owner_agent_id,run_id,step_id,2,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,'v22-writer',payload_digest,
+         'v22-writer',26,1,1 FROM taskflow_effect_dispatch_attempts WHERE attempt=1";
     let mut transaction = connection.begin().await.expect("current barrier fixture");
-    sqlx::query(&current_insert)
+    sqlx::query(current_insert)
         .execute(&mut *transaction)
         .await
         .expect("current writer admitted");
     // No observation or binding exists yet: the reused nonce is the only
     // conflicting key, and REPLACE must not erase the MayHaveBeenSent row.
-    let reused_nonce = current_insert
-        .replace("INSERT INTO", "INSERT OR REPLACE INTO")
-        .replace("step_id,2,intent_digest", "step_id,3,intent_digest");
-    let error = sqlx::query(&reused_nonce)
+    let reused_nonce = "INSERT OR REPLACE INTO taskflow_effect_dispatch_attempts
+        (owner_agent_id,run_id,step_id,attempt,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,grant_id,grant_nonce_digest,
+         record_command_id,started_at_ms,append_profile_version,provider_context_profile)
+        SELECT owner_agent_id,run_id,step_id,3,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,'v22-writer',payload_digest,
+         'v22-writer',26,1,1 FROM taskflow_effect_dispatch_attempts WHERE attempt=1";
+    let error = sqlx::query(reused_nonce)
         .execute(&mut *transaction)
         .await
         .expect_err("nonce replacement refused");
     assert!(error.to_string().contains("provider context writer"));
-    let rowid_replace = current_insert
-        .replace("INSERT INTO", "INSERT OR REPLACE INTO")
-        .replace("(owner_agent_id,", "(rowid,owner_agent_id,")
-        .replace("SELECT owner_agent_id,", "SELECT rowid,owner_agent_id,")
-        .replace("step_id,2,intent_digest", "'rowid-target',3,intent_digest")
-        .replace("'v22-writer',payload_digest", "'rowid-writer',?");
-    let error = sqlx::query(&rowid_replace)
+    let rowid_replace = "INSERT OR REPLACE INTO taskflow_effect_dispatch_attempts
+        (rowid,owner_agent_id,run_id,step_id,attempt,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,grant_id,grant_nonce_digest,
+         record_command_id,started_at_ms,append_profile_version,provider_context_profile)
+        SELECT rowid,owner_agent_id,run_id,'rowid-target',3,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,'rowid-writer',?,
+         'v22-writer',26,1,1 FROM taskflow_effect_dispatch_attempts WHERE attempt=1";
+    let error = sqlx::query(rowid_replace)
         .bind(Sha256Digest::for_bytes(b"fresh-rowid-nonce").as_str())
         .execute(&mut *transaction)
         .await
         .expect_err("rowid-only replacement before child rows refused");
     assert!(error.to_string().contains("provider context writer"));
-    let current_observation = old_observation
-        .replace(
-            "observed_at_ms,append_profile_version)",
-            "observed_at_ms,append_profile_version,provider_context_profile)",
-        )
-        .replace("payload_digest,26,1", "payload_digest,26,1,1");
-    sqlx::query(&current_observation)
+    let current_observation = "INSERT INTO taskflow_effect_dispatch_observations
+        (owner_agent_id,run_id,step_id,attempt,observation,evidence_digest,observed_at_ms,
+         append_profile_version,provider_context_profile)
+        SELECT owner_agent_id,run_id,step_id,attempt,'indeterminate',payload_digest,26,1,1
+        FROM taskflow_effect_dispatch_attempts WHERE attempt=2";
+    sqlx::query(current_observation)
         .execute(&mut *transaction)
         .await
         .expect("current original Unknown");
@@ -215,13 +220,12 @@ async fn preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_con
         .await
         .expect_err("old Accepted-only commit fenced");
     assert!(error.to_string().contains("provider context writer"));
-    let current_binding = old_binding
-        .replace(
-            "observed_at_ms,append_profile_version)",
-            "observed_at_ms,append_profile_version,provider_context_profile)",
-        )
-        .replace("?,?,27,1", "?,?,27,1,1");
-    sqlx::query(&current_binding)
+    let current_binding = "INSERT INTO taskflow_effect_provider_bindings
+        (owner_agent_id,run_id,step_id,attempt,receipt_json,receipt_digest,observed_at_ms,
+         append_profile_version,provider_context_profile)
+        SELECT owner_agent_id,run_id,step_id,attempt,?,?,27,1,1
+        FROM taskflow_effect_dispatch_attempts WHERE attempt=2";
+    sqlx::query(current_binding)
         .bind(&json)
         .bind(digest.as_str())
         .execute(&mut *transaction)
@@ -232,46 +236,58 @@ async fn preopened_v22_writer_cannot_append_barrier_or_bind_accepted_without_con
         SELECT owner_agent_id,run_id,step_id,attempt,'succeeded',payload_digest,28,1,1
         FROM taskflow_effect_dispatch_attempts WHERE attempt=2")
         .execute(&mut *transaction).await.expect("current reconciliation schema fixture");
-    for table in [
-        "taskflow_effect_dispatch_attempts",
-        "taskflow_effect_provider_bindings",
-        "taskflow_effect_dispatch_observations",
-        "taskflow_effect_dispatch_reconciliations",
+    for statement in [
+        "INSERT OR REPLACE INTO taskflow_effect_dispatch_attempts
+         SELECT * FROM taskflow_effect_dispatch_attempts WHERE attempt=2",
+        "INSERT OR REPLACE INTO taskflow_effect_provider_bindings
+         SELECT * FROM taskflow_effect_provider_bindings WHERE attempt=2",
+        "INSERT OR REPLACE INTO taskflow_effect_dispatch_observations
+         SELECT * FROM taskflow_effect_dispatch_observations WHERE attempt=2",
+        "INSERT OR REPLACE INTO taskflow_effect_dispatch_reconciliations
+         SELECT * FROM taskflow_effect_dispatch_reconciliations WHERE attempt=2",
     ] {
-        let statement =
-            format!("INSERT OR REPLACE INTO {table} SELECT * FROM {table} WHERE attempt=2");
-        let error = sqlx::query(&statement)
+        let error = sqlx::query(statement)
             .execute(&mut *transaction)
             .await
             .expect_err("replacement refused");
         assert!(error.to_string().contains("provider context writer"));
-        let columns: Vec<String> =
-            sqlx::query_scalar("SELECT name FROM pragma_table_info(?) ORDER BY cid")
-                .bind(table)
-                .fetch_all(&mut *transaction)
-                .await
-                .expect("actual columns");
-        let projection = columns
-            .iter()
-            .map(|name| match name.as_str() {
-                "step_id" => "'rowid-target'".to_string(),
-                "attempt" => "3".to_string(),
-                "grant_nonce_digest" => format!(
-                    "'{}'",
-                    Sha256Digest::for_bytes(b"fresh-explicit-rowid-nonce").as_str()
-                ),
-                _ => name.clone(),
-            })
-            .collect::<Vec<_>>()
-            .join(",");
-        let columns = columns.join(",");
-        let statement = format!(
-            "INSERT OR REPLACE INTO {table} (rowid,{columns}) SELECT rowid,{projection} FROM {table} WHERE attempt=2"
-        );
-        let error = sqlx::query(&statement)
+    }
+    // The alternate child key has a valid current-profile parent. Without the
+    // context gate, rowid replacement would therefore pass the foreign key and
+    // v22 append checks; the earlier attempt probe has no child-row conflicts.
+    sqlx::query("INSERT INTO taskflow_effect_dispatch_attempts
+        (owner_agent_id,run_id,step_id,attempt,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,grant_id,grant_nonce_digest,
+         record_command_id,started_at_ms,append_profile_version,provider_context_profile)
+        SELECT owner_agent_id,run_id,'rowid-child-target',3,intent_digest,payload_digest,provider_effect_key,
+         wire_payload,binding_digest,destination_id,authority_epoch,'rowid-child-parent',?,
+         'rowid-child-parent',29,1,1 FROM taskflow_effect_dispatch_attempts WHERE attempt=2")
+        .bind(Sha256Digest::for_bytes(b"fresh-rowid-child-parent-nonce").as_str())
+        .execute(&mut *transaction).await.expect("valid alternate parent for child rowid probes");
+    for statement in [
+        "INSERT OR REPLACE INTO taskflow_effect_provider_bindings
+         (rowid,owner_agent_id,run_id,step_id,attempt,receipt_json,receipt_digest,
+          observed_at_ms,append_profile_version,provider_context_profile)
+         SELECT rowid,owner_agent_id,run_id,'rowid-child-target',3,receipt_json,receipt_digest,
+          observed_at_ms,append_profile_version,provider_context_profile
+         FROM taskflow_effect_provider_bindings WHERE attempt=2",
+        "INSERT OR REPLACE INTO taskflow_effect_dispatch_observations
+         (rowid,owner_agent_id,run_id,step_id,attempt,observation,evidence_digest,
+          observed_at_ms,provider_receipt_json,append_profile_version,provider_context_profile)
+         SELECT rowid,owner_agent_id,run_id,'rowid-child-target',3,observation,evidence_digest,
+          observed_at_ms,provider_receipt_json,append_profile_version,provider_context_profile
+         FROM taskflow_effect_dispatch_observations WHERE attempt=2",
+        "INSERT OR REPLACE INTO taskflow_effect_dispatch_reconciliations
+         (rowid,owner_agent_id,run_id,step_id,attempt,observation,evidence_digest,
+          observed_at_ms,provider_receipt_json,append_profile_version,provider_context_profile)
+         SELECT rowid,owner_agent_id,run_id,'rowid-child-target',3,observation,evidence_digest,
+          observed_at_ms,provider_receipt_json,append_profile_version,provider_context_profile
+         FROM taskflow_effect_dispatch_reconciliations WHERE attempt=2",
+    ] {
+        let error = sqlx::query(statement)
             .execute(&mut *transaction)
             .await
-            .expect_err("explicit rowid collision refused");
+            .expect_err("explicit child rowid collision refused");
         assert!(error.to_string().contains("provider context writer"));
     }
     transaction
