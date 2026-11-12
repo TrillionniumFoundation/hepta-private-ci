@@ -180,6 +180,9 @@ impl PostALearningRuntime {
                                 &learning,
                                 Some(session_end),
                                 PublicationVersion::DurableV2,
+                                Some(OriginalPostAPublicationFiles::original_preparation_data(
+                                    files,
+                                )?),
                             )?;
                             let deployment = OriginalPostAPublicationFiles::attach_original_route(
                                 files, initial, capability,

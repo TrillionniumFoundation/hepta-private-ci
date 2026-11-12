@@ -74,7 +74,8 @@ impl RootGenerationPublicationHandoffV1 {
         if raw.len() as u64 != size {
             return Err(refused("publication bootstrap changed"));
         }
-        let bundle: PublicationBootstrap = serde_json::from_slice(&raw)?;
+        let (bundle, _prepared) =
+            crate::authority_host_service::generation_publication::decode_original_publication_bootstrap(&raw)?;
         let version = PublicationVersion::from_purpose(&bundle.purpose)?;
         let (original, identity) = connection.original_launch_binding();
         let socket = original
