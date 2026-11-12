@@ -125,4 +125,33 @@ impl Q24StageOwners {
             }
         }
     }
+
+    pub(super) fn original_evaluation_manifest(
+        &mut self,
+        inner: &Q24StageState,
+        training: &OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<codex_hepta_neuron::CellBackendManifestV2, Error> {
+        if self.root_evaluation.is_some() {
+            // The actual Root re-reads the native execution, physical files and
+            // learning checkpoint before releasing this opaque observation.
+            let observed = self.original_root_evaluation_action(
+                inner,
+                training,
+                snapshot,
+                OriginalRootBEvaluationActionV1::Readback,
+            )?;
+            return Ok(observed.manifest().clone());
+        }
+        let evaluation: &mut OriginalCellQ24EvaluationStageV1 = self
+            .evaluation
+            .as_mut()
+            .ok_or(Error::OwnerUnavailable("original B handoff"))?;
+        let before = evaluation.read_execution()?;
+        let manifest = before.plan().record().candidate.manifest.clone();
+        if evaluation.read_execution()? != before {
+            return Err(Error::CommitUncertain);
+        }
+        Ok(manifest)
+    }
 }
