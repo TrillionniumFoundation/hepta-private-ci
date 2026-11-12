@@ -21,6 +21,57 @@ struct Closed {
     expected: [LedgerRecord; 2],
 }
 
+#[tokio::test]
+async fn historical_wire_budget_counts_actual_signed_ledger_and_source_components()
+-> anyhow::Result<()> {
+    use crate::root_historical_task_read_protocol::HistoricalTaskReadResponseV1;
+    use crate::root_historical_task_read_protocol::PURPOSE;
+    use crate::root_historical_task_read_protocol::WIRE_BOUND;
+    use base64::Engine;
+    use base64::engine::general_purpose::STANDARD;
+
+    let original = Closed::original("history-image-budget").await?;
+    let observed = original.read()?;
+    let bytes = encode_readonly_ledger_data_v1(observed.cut.binding, &original.expected)?;
+    assert_eq!(bytes, fs::read(original.root.path().join("ledger"))?);
+    assert_eq!(
+        decode_readonly_ledger_data_v1(&bytes, observed.cut, /*max_records*/ 2)?,
+        observed.snapshot
+    );
+    // Both components come from actual execution/file fixtures. They are
+    // independent fixtures: this measures serialization budget only, never a
+    // joined Root authorization, retained execution or full learning positive.
+    let (publication, mut ledger, _, _) = crate::circuit_task::publication_data_fixture().await?;
+    ledger.cut.ledger_binding = observed.cut.binding.to_string();
+    ledger.cut.ledger_chain = observed.cut.frontier.anchor.chain_digest.to_string();
+    ledger.cut.ledger_length = observed.cut.ledger_length;
+    ledger.cut.ledger_image = observed.cut.ledger_digest.to_string();
+    ledger.cut.witness_length = observed.cut.witness_length;
+    ledger.cut.witness_image = observed.cut.witness_digest.to_string();
+    ledger.cut.decision_chain = original.expected[0].chain_digest.to_string();
+    ledger.cut.outcome_chain = original.expected[1].chain_digest.to_string();
+    ledger.ledger_image_bytes = STANDARD.encode(&bytes);
+    let ledger_size = serde_json::to_vec(&ledger)?.len();
+    let source_size = serde_json::to_vec(&publication)?.len();
+    let response = HistoricalTaskReadResponseV1 {
+        schema: 1,
+        purpose: PURPOSE.into(),
+        request_id: 1,
+        profile: Digest32::of_bytes(b"data-only-budget-profile").to_string(),
+        data_cut: Digest32::of_bytes(b"data-only-budget-cut").to_string(),
+        ledger,
+        publication,
+    };
+    let reply_size = serde_json::to_vec(&response)?.len();
+    eprintln!(
+        "HISTORICAL_WIRE_COMPONENT_BUDGET ledger_image={} ledger_dto={ledger_size} source_dto={source_size} reply={reply_size} limit={WIRE_BOUND}",
+        bytes.len()
+    );
+    assert!(ledger_size <= 12 * 1024);
+    assert!(reply_size <= WIRE_BOUND);
+    Ok(())
+}
+
 impl Closed {
     async fn original(run: &str) -> anyhow::Result<Self> {
         let mut f = Fixture::new(run, /*lifetime*/ 600, /*automatic*/ true).await?;
