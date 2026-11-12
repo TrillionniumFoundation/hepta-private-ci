@@ -3,6 +3,12 @@
 
 use super::*;
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_data.rs"]
+mod data;
+#[cfg(target_os = "linux")]
+pub(crate) use data::RootHistoricalTaskPublicationDataV1;
+
 pub(super) fn configuration(
     identity: &AgentdIdentity,
     fence: &TaskFlowFence,
