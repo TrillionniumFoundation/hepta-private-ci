@@ -73,8 +73,15 @@ async fn completed_member(
 
 impl PanelFixture {
     async fn completed(peer: TrainingPeer) -> anyhow::Result<Self> {
+        Self::completed_for_publication(peer, PublicationMode::AdoptCandidate).await
+    }
+
+    async fn completed_for_publication(
+        peer: TrainingPeer,
+        publication: PublicationMode,
+    ) -> anyhow::Result<Self> {
         let (original, mut primary_b, mut retention_b, registration) =
-            Box::pin(preregistered()).await?;
+            Box::pin(preregistered_for_publication(publication)).await?;
         assert_eq!(primary_b.at, retention_b.at);
         let at = primary_b.at;
         // Actual retention completes first. Only its original publication

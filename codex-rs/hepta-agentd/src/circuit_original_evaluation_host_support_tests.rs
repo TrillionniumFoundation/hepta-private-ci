@@ -33,6 +33,20 @@ pub(super) type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;
 
 impl HostFixture {
     pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
+        let panel = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
+        Self::from_panel(panel, pending_claim)
+    }
+
+    pub(super) async fn before_adoption() -> anyhow::Result<Self> {
+        let panel = Box::pin(PanelFixture::completed_for_publication(
+            TrainingPeer::Original,
+            PublicationMode::RetainOriginalA,
+        ))
+        .await?;
+        Self::from_panel(panel, /*pending_claim*/ false)
+    }
+
+    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
         let PanelFixture {
             panel,
             original,
@@ -41,7 +55,7 @@ impl HostFixture {
             primary,
             retention,
             at,
-        } = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
+        } = panel;
         let input = &primary.config;
         let config = OriginalCellEvaluationReceiptConfigV1 {
             training: input.training.clone(),

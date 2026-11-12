@@ -17,6 +17,9 @@ use fixture::finish;
 #[path = "circuit_evaluated_retention_context_tests.rs"]
 mod evaluated_retention;
 
+#[path = "circuit_evaluated_retention_publication_tests.rs"]
+mod evaluated_publication;
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_evaluation_host_reads_actual_panel_and_cold_original_signature()
 -> anyhow::Result<()> {

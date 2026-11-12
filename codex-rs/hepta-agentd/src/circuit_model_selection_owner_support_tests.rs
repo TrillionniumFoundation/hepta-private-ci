@@ -52,6 +52,30 @@ pub(super) type Owner = OriginalCircuitModelSelectionReceiptOwnerV1<FileAnchorWi
 pub(super) type SelectionError = OriginalCircuitModelSelectionReceiptErrorV1;
 type PeerThread = std::thread::JoinHandle<anyhow::Result<usize>>;
 
+#[derive(Clone, Copy)]
+enum PublicationMode {
+    AdoptCandidate,
+    RetainOriginalA,
+}
+
+// The retained-publication fixture consumes the same completed A session.
+// Existing positive fixtures keep their ordinary C session until finish.
+pub(super) struct FixtureSession(Option<support::Session>);
+
+impl std::ops::Deref for FixtureSession {
+    type Target = support::Session;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.as_ref().expect("live original task session")
+    }
+}
+
+impl std::ops::DerefMut for FixtureSession {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0.as_mut().expect("live original task session")
+    }
+}
+
 fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
@@ -107,7 +131,7 @@ impl Peers {
 pub(super) struct PositiveFixture {
     root: PathBuf,
     pub(super) config: OriginalCircuitModelSelectionReceiptConfigV1,
-    pub(super) session: support::Session,
+    pub(super) session: FixtureSession,
     pub(super) version: VersionFixture,
     pub(super) definition: CellDefinitionV1,
     pub(super) candidate: CellCompatibilityBundleV1,
@@ -117,7 +141,8 @@ pub(super) struct PositiveFixture {
     // Retain the exact original owner signatures for the Root checkpoint
     // mechanism; never re-sign material to make a later cut authenticate.
     material_evidence: [SignedLearningEvidenceV1; 2],
-    stage: Stage,
+    stage: Arc<Stage>,
+    baseline: Arc<LoadedCellQ24ModelV1>,
     model: CellQ24ModelProposalOwnerV1<FileAnchorWitnessStore>,
     ledger: Arc<Mutex<LedgerWriter>>,
     frozen: DatasetSnapshotReceiptV3,
@@ -155,7 +180,22 @@ impl PositiveFixture {
     async fn ready_with_admission(
         evaluation_profile: Digest32,
         trust_time: u64,
+        a: support::Admission,
+    ) -> anyhow::Result<Self> {
+        Box::pin(Self::ready_for_publication(
+            evaluation_profile,
+            trust_time,
+            a,
+            PublicationMode::AdoptCandidate,
+        ))
+        .await
+    }
+
+    async fn ready_for_publication(
+        evaluation_profile: Digest32,
+        trust_time: u64,
         mut a: support::Admission,
+        publication: PublicationMode,
     ) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         let root = directory.path().canonicalize()?;
@@ -261,7 +301,8 @@ impl PositiveFixture {
         )?;
         let original =
             OriginalCellQ24TrainingStageV1::from_original_owners(training, receipts).await?;
-        let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
+        let stage =
+            Arc::new(SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?);
         let completed = stage
             .execute_training(&source_config.dataset, Arc::new(AtomicBool::new(false)))
             .await?;
@@ -342,57 +383,75 @@ impl PositiveFixture {
             Some(LearningIterationStageV1::Selection)
         );
 
-        let completion_a =
-            a.retirement
-                .drain_completed_task(&a.cell, a.source.as_ref(), &a.runtime.identity)?;
-        a.stop().await?;
         let source_paths = [
             a.runtime.identity.home_root.join("q24-source.journal"),
             a.runtime.identity.home_root.join("q24-source.witness"),
         ];
-        let source_home = std::mem::replace(&mut a.runtime._temp, tempfile::tempdir()?);
-        drop(a); // Release only the stopped version/Cell owners; retain source custody.
+        let (session, source_home) = match publication {
+            PublicationMode::RetainOriginalA => (a, tempfile::tempdir()?),
+            PublicationMode::AdoptCandidate => {
+                let completion_a = a.retirement.drain_completed_task(
+                    &a.cell,
+                    a.source.as_ref(),
+                    &a.runtime.identity,
+                )?;
+                a.stop().await?;
+                let source_home = std::mem::replace(&mut a.runtime._temp, tempfile::tempdir()?);
+                drop(a); // Release only the stopped version/Cell owners; retain source custody.
 
-        let c = support::admission("positive-original-C").await?;
-        let source_c = support::source(&c, [Q / 4, Q])?;
-        let config_c =
-            support::configuration(&candidate_model, &candidate, &definition, &source_c, 2)?;
-        assert_eq!(config_c.manifest, candidate_manifest);
-        assert_ne!(source_a.scope.run_id, source_c.scope.run_id);
-        assert_ne!(source_a.observation, source_c.observation);
-        // Explicit test authority admits this actual candidate through the real
-        // artifact selection and FinalUse owners. No eligibility/grant conversion
-        // is performed by Model or the new Selector receipt owner.
-        let selected =
-            version.publish_next_selection(&config_c.manifest, "positive-original-candidate")?;
-        let operation = crate::learning_updated_task_operation_id_v1(&coordinator)?;
-        let prepared = crate::prepare_agentd_generation_cold_drained_update_v1(
-            version.reopen_current()?,
-            version.authorities()?,
-            AgentdGenerationUpdatePredecessorFilesV1 {
-                file: version.file("target-journal")?,
-                witness: version.witness("target-witness", &config_a)?,
-                config: config_a,
-                max_records: RECORDS,
-            },
-            selected,
-            version.named_target_create("positive-C-journal", "positive-C-witness", config_c)?,
-            AgentdGenerationUpdateRequestV1 {
-                operation_id: operation.to_string(),
-            },
-        )?;
-        let final_use = version.sign(prepared.final_use_binding())?;
-        let published_c = prepared.publish(&final_use)?.into_circuit_feature_task(
-            definition.clone(),
-            source_c,
-            completion_a,
-        )?;
-        let session = support::start(c, published_c, candidate_model, candidate.clone()).await?;
-        assert!(
-            matches!(session.cell.read_learning_selection(&coordinator)?,
+                let c = support::admission("positive-original-C").await?;
+                let source_c = support::source(&c, [Q / 4, Q])?;
+                let config_c = support::configuration(
+                    &candidate_model,
+                    &candidate,
+                    &definition,
+                    &source_c,
+                    2,
+                )?;
+                assert_eq!(config_c.manifest, candidate_manifest);
+                assert_ne!(source_a.scope.run_id, source_c.scope.run_id);
+                assert_ne!(source_a.observation, source_c.observation);
+                // Explicit test authority admits this actual candidate through the real
+                // artifact selection and FinalUse owners. No eligibility/grant conversion
+                // is performed by Model or the new Selector receipt owner.
+                let selected = version
+                    .publish_next_selection(&config_c.manifest, "positive-original-candidate")?;
+                let operation = crate::learning_updated_task_operation_id_v1(&coordinator)?;
+                let prepared = crate::prepare_agentd_generation_cold_drained_update_v1(
+                    version.reopen_current()?,
+                    version.authorities()?,
+                    AgentdGenerationUpdatePredecessorFilesV1 {
+                        file: version.file("target-journal")?,
+                        witness: version.witness("target-witness", &config_a)?,
+                        config: config_a,
+                        max_records: RECORDS,
+                    },
+                    selected,
+                    version.named_target_create(
+                        "positive-C-journal",
+                        "positive-C-witness",
+                        config_c,
+                    )?,
+                    AgentdGenerationUpdateRequestV1 {
+                        operation_id: operation.to_string(),
+                    },
+                )?;
+                let final_use = version.sign(prepared.final_use_binding())?;
+                let published_c = prepared.publish(&final_use)?.into_circuit_feature_task(
+                    definition.clone(),
+                    source_c,
+                    completion_a,
+                )?;
+                let session =
+                    support::start(c, published_c, candidate_model, candidate.clone()).await?;
+                assert!(
+                    matches!(session.cell.read_learning_selection(&coordinator)?,
             LearningIterationObservationV1::Selection { candidate_bundle, .. }
             if candidate_bundle == candidate.digest()?)
-        );
+                );
+                (session, source_home)
+            }
+        };
         let config = OriginalCircuitModelSelectionReceiptConfigV1 {
             decision: coordinator.snapshot().clone(),
             scope: source_config.scope,
@@ -413,7 +472,7 @@ impl PositiveFixture {
         Ok(Self {
             root,
             config,
-            session,
+            session: FixtureSession(Some(session)),
             version,
             definition,
             candidate,
@@ -425,6 +484,7 @@ impl PositiveFixture {
                 source_config.dataset_evidence,
             ],
             stage,
+            baseline,
             model,
             ledger,
             frozen,
@@ -598,7 +658,9 @@ impl PositiveFixture {
     }
 
     pub(super) async fn finish(mut self) -> anyhow::Result<()> {
-        self.session.stop().await?;
+        if let Some(session) = self.session.0.as_mut() {
+            session.stop().await?;
+        }
         drop(self.stage);
         let [first, second] = self.source_threads;
         assert!(first.join().expect("original Experience transport")? > 0);

@@ -22,6 +22,17 @@ async fn preregistered() -> anyhow::Result<(
     BFixture,
     crate::OriginalCellEvaluationPanelRegistrationV1,
 )> {
+    preregistered_for_publication(PublicationMode::AdoptCandidate).await
+}
+
+async fn preregistered_for_publication(
+    publication: PublicationMode,
+) -> anyhow::Result<(
+    PositiveFixture,
+    BFixture,
+    BFixture,
+    crate::OriginalCellEvaluationPanelRegistrationV1,
+)> {
     let preview = support::admission("positive-source-envelope-request").await?;
     let objective = support::source(&preview, [Q, Q / 4])?.objective_digest;
     let at = now()?;
@@ -33,10 +44,11 @@ async fn preregistered() -> anyhow::Result<(
     )?;
     // Keep the complete native-training setup out of every enclosing panel
     // future while retaining the same original Admission and owners.
-    let original = Box::pin(PositiveFixture::ready_with_admission(
+    let original = Box::pin(PositiveFixture::ready_for_publication(
         registration.evaluation_profile(),
         at,
         preview,
+        publication,
     ))
     .await?;
     assert_eq!(
