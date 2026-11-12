@@ -35,8 +35,14 @@ async fn evaluated_retention_publishes_baseline_from_same_a_training_and_indepen
         "agentd.cell-generation.next-task-same-model"
     );
     let signed = f.host.original.version.sign(prepared.final_use_binding())?;
-    let task = prepared.publish_original_retained_task(signed).await?;
-    assert_eq!(peers.finish()?, [4, 4]);
+    let (task, trainer, evaluator) = prepared
+        .publish_and_retain_original_evidence(signed)
+        .await?;
+    assert_eq!(trainer.readback().await?, f.training);
+    assert_eq!(evaluator.readback().await?, f.evaluation);
+    drop(trainer);
+    drop(evaluator);
+    assert_eq!(peers.finish()?, [5, 5]);
     assert_eq!(
         f.host.original.version.authority.capacity()?.used_nonces,
         nonces + 1
@@ -69,6 +75,59 @@ async fn evaluated_retention_publishes_baseline_from_same_a_training_and_indepen
     c.stop().await?;
     drop(c);
     f.finish().await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication()
+-> anyhow::Result<()> {
+    for owner in ["trainer", "evaluator"] {
+        let mut f = Box::pin(PublicationFixture::ready()).await?;
+        let (trainer, evaluator, peers) = f.clients()?;
+        let prepared = prepare_original_circuit_evaluated_retention_v1(
+            f.context()?,
+            trainer,
+            evaluator,
+            f.inputs()?,
+        )
+        .await?;
+        let signed = f.host.original.version.sign(prepared.final_use_binding())?;
+        let (task, trainer, evaluator) = prepared
+            .publish_and_retain_original_evidence(signed)
+            .await?;
+        let published = f.publication_bytes()?;
+        let nonces = f.host.original.version.authority.capacity()?.used_nonces;
+        match owner {
+            "trainer" => {
+                f.host.original.withdraw_original_dataset()?;
+                assert!(matches!(
+                    trainer.readback().await,
+                    Err(crate::OriginalCellQ24TrainingCommandErrorV1::CommitUncertain)
+                ));
+            }
+            "evaluator" => {
+                f.host.retention_b.withdraw_target()?;
+                assert!(matches!(
+                    evaluator.readback().await,
+                    Err(crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain)
+                ));
+            }
+            _ => unreachable!(),
+        }
+        drop(trainer);
+        drop(evaluator);
+        assert_eq!(
+            peers.finish()?,
+            if owner == "trainer" { [5, 4] } else { [4, 5] }
+        );
+        assert_eq!(f.publication_bytes()?, published);
+        assert_eq!(
+            f.host.original.version.authority.capacity()?.used_nonces,
+            nonces
+        );
+        drop(task);
+        f.finish().await?;
+    }
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
