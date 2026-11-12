@@ -3,6 +3,8 @@
 //! The witness is deliberately stored outside the sparse journal. A journal
 //! checksum can prove only the bytes that remain present; this store records the
 //! minimum history the host already acknowledged so rollback is detectable.
+//! Each current read validates the complete original file against its retained
+//! header and history. A mismatch fences this live owner even after restoration.
 
 use std::fs::File;
 use std::fs::TryLockError;
@@ -12,6 +14,9 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::ops::Deref;
 use std::ops::DerefMut;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -68,11 +73,13 @@ impl Drop for WitnessLockedFile {
 }
 
 pub struct FileAnchorWitnessStore {
-    file: WitnessLockedFile,
+    file: Mutex<WitnessLockedFile>,
+    header: [u8; HEADER],
+    history_digest: Digest32,
     max_records: usize,
     records: usize,
     current: Option<JournalAnchor>,
-    poisoned: bool,
+    poisoned: AtomicBool,
 }
 
 impl FileAnchorWitnessStore {
@@ -92,11 +99,12 @@ impl FileAnchorWitnessStore {
         let header = encode_header(scope, generation);
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
-        if length == 0 {
+        let records = if length == 0 {
             file.write_all(&header)
                 .map_err(|_| WitnessStoreError::Indeterminate)?;
             file.sync_all()
                 .map_err(|_| WitnessStoreError::Indeterminate)?;
+            0
         } else {
             if length < HEADER as u64 || !(length - HEADER as u64).is_multiple_of(RECORD as u64) {
                 return Err(WitnessStoreError::Corrupt);
@@ -110,10 +118,10 @@ impl FileAnchorWitnessStore {
             if actual.as_slice() != header {
                 return Err(WitnessStoreError::ContextMismatch);
             }
-        }
-
-        let records = ((file.metadata()?.len() - HEADER as u64) / RECORD as u64) as usize;
+            records
+        };
         let mut current = None;
+        let mut history_digest = Digest32::of_bytes(&header);
         let mut buffer = [0_u8; RECORD];
         for _ in 0..records {
             file.read_exact(&mut buffer)?;
@@ -122,26 +130,94 @@ impl FileAnchorWitnessStore {
                 return Err(WitnessStoreError::Corrupt);
             }
             current = Some(next);
+            history_digest = Digest32::of_parts(&[history_digest.as_array(), &buffer]);
+        }
+        if file.metadata()?.len() != (HEADER + records * RECORD) as u64 {
+            return Err(WitnessStoreError::Corrupt);
         }
         file.sync_data()
             .map_err(|_| WitnessStoreError::Indeterminate)?;
         Ok(Self {
-            file,
+            file: Mutex::new(file),
+            header,
+            history_digest,
             max_records,
             records,
             current,
-            poisoned: false,
+            poisoned: AtomicBool::new(false),
         })
     }
 }
 
 impl AnchorWitnessStore for FileAnchorWitnessStore {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
-        if self.poisoned {
-            Err(WitnessStoreError::Poisoned)
-        } else {
-            Ok(self.current)
+        if self.poisoned.load(Ordering::Acquire) {
+            return Err(WitnessStoreError::Poisoned);
         }
+        // Serialize reads through the original locked description so parallel
+        // shared borrows cannot interfere with its cursor. Retained state only
+        // compares the complete physical history; it cannot replace that read.
+        let result = (|| {
+            let mut file = self
+                .file
+                .lock()
+                .map_err(|_| WitnessStoreError::Indeterminate)?;
+            let result = (|| {
+                if self.poisoned.load(Ordering::Acquire) {
+                    return Err(WitnessStoreError::Poisoned);
+                }
+                let cursor = file.stream_position()?;
+                let actual = (|| {
+                    let expected_length = (HEADER + self.records * RECORD) as u64;
+                    if self.records > self.max_records || file.metadata()?.len() != expected_length
+                    {
+                        return Err(WitnessStoreError::Corrupt);
+                    }
+                    file.seek(SeekFrom::Start(0))?;
+                    let mut header = [0_u8; HEADER];
+                    file.read_exact(&mut header)?;
+                    if header != self.header {
+                        return Err(WitnessStoreError::ContextMismatch);
+                    }
+                    let mut current = None;
+                    let mut history_digest = Digest32::of_bytes(&header);
+                    let mut buffer = [0_u8; RECORD];
+                    for _ in 0..self.records {
+                        file.read_exact(&mut buffer)?;
+                        let (expected, next) = decode_record(&buffer)?;
+                        if expected != current || !is_successor(expected, next) {
+                            return Err(WitnessStoreError::Corrupt);
+                        }
+                        current = Some(next);
+                        history_digest = Digest32::of_parts(&[history_digest.as_array(), &buffer]);
+                    }
+                    if file.metadata()?.len() != expected_length
+                        || current != self.current
+                        || history_digest != self.history_digest
+                    {
+                        return Err(WitnessStoreError::Corrupt);
+                    }
+                    Ok(current)
+                })();
+                let restored = file.seek(SeekFrom::Start(cursor));
+                match (actual, restored) {
+                    (Err(error), _) => Err(error),
+                    (_, Err(error)) => Err(error.into()),
+                    (Ok(current), Ok(position)) if position == cursor => Ok(current),
+                    (Ok(_), Ok(_)) => Err(WitnessStoreError::Indeterminate),
+                }
+            })();
+            // Mark uncertainty before releasing the read mutex. A concurrent
+            // reader cannot succeed after this one has detected a mismatch.
+            if result.is_err() {
+                self.poisoned.store(true, Ordering::Release);
+            }
+            result
+        })();
+        if result.is_err() {
+            self.poisoned.store(true, Ordering::Release);
+        }
+        result
     }
 
     fn compare_and_swap(
@@ -149,10 +225,7 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
         expected: Option<JournalAnchor>,
         next: JournalAnchor,
     ) -> Result<(), WitnessStoreError> {
-        if self.poisoned {
-            return Err(WitnessStoreError::Poisoned);
-        }
-        if self.current != expected {
+        if self.current()? != expected {
             return Err(WitnessStoreError::Conflict);
         }
         if !is_successor(expected, next) {
@@ -163,20 +236,23 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
         }
         let record = encode_record(expected, next);
         let expected_length = (HEADER + self.records * RECORD) as u64;
-        self.poisoned = true;
-        if self.file.seek(SeekFrom::End(0))? != expected_length {
+        self.poisoned.store(true, Ordering::Release);
+        let file = self
+            .file
+            .get_mut()
+            .map_err(|_| WitnessStoreError::Indeterminate)?;
+        if file.seek(SeekFrom::End(0))? != expected_length {
             return Err(WitnessStoreError::Corrupt);
         }
-        self.file
-            .write_all(&record)
+        file.write_all(&record)
             .map_err(|_| WitnessStoreError::Indeterminate)?;
-        self.file
-            .sync_data()
+        file.sync_data()
             .map_err(|_| WitnessStoreError::Indeterminate)?;
         self.records += 1;
         self.current = Some(next);
-        self.poisoned = false;
-        Ok(())
+        self.history_digest = Digest32::of_parts(&[self.history_digest.as_array(), &record]);
+        self.poisoned.store(false, Ordering::Release);
+        self.current().map(|_| ())
     }
 }
 
