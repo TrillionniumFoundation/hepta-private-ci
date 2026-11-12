@@ -25,8 +25,8 @@ jobs:
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
           ignore_words_file: .codespellignore
-          # Original CI diagnostics and a binary ZIP fragment are immutable evidence.
-          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006
+          # Exclude only immutable binary/encoded evidence, not source or human-readable results.
+          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/memory-cell-mem9-causal-20261112/EVIDENCE.tar.xz.b64
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
