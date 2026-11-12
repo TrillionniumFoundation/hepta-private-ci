@@ -129,7 +129,8 @@ impl ResidentRootAuthorityV3 {
             ResidentPurposeV3::Execute
         })?;
         let binding = lease_binding(&expected);
-        let verifier = self.registry.verifier();
+        let verifier: codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier =
+            self.registry.verifier();
         let current = verifier.read_lease(&lease.lease_id).map_err(io::Error::other)?
             .ok_or_else(|| invalid("resident original lease is missing"))?;
         if current.lease != *lease || intent.grant.binding != expected

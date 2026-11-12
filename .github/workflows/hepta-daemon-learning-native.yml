@@ -352,3 +352,70 @@ jobs:
             !${{ runner.temp }}/daemon-learning-records/helpers/bin/**
           if-no-files-found: error
           retention-days: 14
+
+  caller-proof:
+    runs-on: ubuntu-24.04
+    # The complete uncached proof previously took 25 minutes locally and
+    # longer under contention. Keep a separate budget from native compilation.
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the full caller inventory and retain original execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          repo = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          records = Path(os.environ["RUNNER_TEMP"]) / "daemon-learning-caller-proof"
+          records.mkdir(parents=True, exist_ok=True)
+          os.chdir(repo)
+          sys.path.insert(0, str(repo / "scripts"))
+          from hepta_ci_exec import execute_logged
+
+          def identity():
+              def git(*args):
+                  return subprocess.check_output(["git", *args], cwd=repo).decode().strip()
+              return {"head": git("rev-parse", "HEAD"),
+                      "tree": git("rev-parse", "HEAD^{tree}"),
+                      "status": git("status", "--porcelain=v1", "--untracked-files=all")}
+
+          def save(name, value):
+              (records / name).write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+          before = identity()
+          save("source-before.json", before)
+          if before["head"] != os.environ["SOURCE_SHA"] or before["status"]:
+              raise RuntimeError("caller proof requires the exact clean source")
+          try:
+              for phase, timeout in (("self-test", 300), ("verify", 4800)):
+                  command = ["python3", "scripts/verify_hepta_callers.py", phase]
+                  result = execute_logged(command, records / (phase + ".log"),
+                                          timeout_seconds=timeout)
+                  save(phase + ".json", {"source_sha": before["head"],
+                                        "command": command, **result})
+                  if result["returncode"] or result["timed_out"] or result["output_limit_exceeded"]:
+                      raise RuntimeError(phase + " failed; original log and exit status retained")
+          finally:
+              after = identity()
+              save("source-after.json", after)
+              if after != before:
+                  raise RuntimeError("caller proof changed the fixed source")
+          PY
+      - name: Retain complete caller proof evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: daemon-learning-caller-proof-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/daemon-learning-caller-proof
+          if-no-files-found: error
+          retention-days: 14

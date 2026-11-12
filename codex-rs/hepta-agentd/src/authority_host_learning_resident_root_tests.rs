@@ -4,6 +4,8 @@
 use super::super::RootResidentLearningProfileV3;
 use super::super::RootResidentLearningRegistrationV3;
 use super::super::store::ResidentCheckpointV3;
+use codex_hepta_contracts::AuthorityFrontierStore;
+use codex_hepta_contracts::HostAuthorityFrontierStore;
 use codex_hepta_contracts::RootAuthorityDirectory;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -104,6 +106,20 @@ fn resident_root_only_actual_vacant_cas_creates_one_live_continuation() -> anyho
     let fixture = ResidentRootFixture::new(
         metadata.initial.clone(), metadata.scope.clone(), &metadata.verifier,
     )?;
+    // Exercise the actual generic store contract too: an equal next value
+    // cannot turn a stale expected value into another successful CAS.
+    let root = RootAuthorityDirectory::open(&fixture.config.state_dir)?;
+    let strict = HostAuthorityFrontierStore::initialize(
+        Arc::clone(&root), "resident-strict-cas-fixture".into(), 0_u64,
+    )?;
+    strict.compare_and_set("resident-strict-cas-fixture", &0, &1)?;
+    assert!(matches!(
+        strict.compare_and_set("resident-strict-cas-fixture", &0, &1),
+        Err(codex_hepta_contracts::AuthorityTrustError::Conflict),
+    ));
+    assert!(HostAuthorityFrontierStore::initialize(
+        root, "resident-strict-cas-fixture".into(), 1_u64,
+    ).is_err());
     let original = &fixture.registration.as_ref().expect("original registration").owner;
     let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
     runtime.block_on(async {

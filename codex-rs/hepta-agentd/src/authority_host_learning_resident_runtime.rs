@@ -155,6 +155,9 @@ impl RootResidentLearningRuntimeV3 {
                         continue;
                     };
                     if command.reply.is_closed() {
+                        // The validated operation reached this Root queue, but
+                        // its caller no longer observes an admission response.
+                        self.admission_requested = true;
                         continue;
                     }
                     let result = if matches!(command.mode, ResidentRequestModeV3::Admit)
@@ -168,6 +171,12 @@ impl RootResidentLearningRuntimeV3 {
                     } else {
                         self.readback(&root_cancellation).await
                     };
+                    if result.is_err() {
+                        // This request already passed the fixed wire context.
+                        // Another connection cannot promote a refused original
+                        // observation back into a fresh admission attempt.
+                        self.admission_requested = true;
+                    }
                     // An admission response is only the initial cut. A's
                     // original outbox cannot ACK/retire this incomplete cut.
                     let _ = command.reply.send(result);
