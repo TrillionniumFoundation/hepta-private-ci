@@ -353,7 +353,10 @@ impl LearningFixture {
                 inputs.candidate_observations = inputs.baseline_observations.clone();
             }
             IndependentEvaluationDispositionV1::InsufficientEvidence => {
-                inputs.future_window_ids.clear()
+                // A known negative comparison must not turn a missing window
+                // into a complete Ineligible / evaluated NoUpdate decision.
+                inputs.candidate_observations = inputs.baseline_observations.clone();
+                inputs.future_window_ids.clear();
             }
         }
         let plan = checked(match learning_profile {
@@ -618,6 +621,15 @@ fn insufficient_evidence_keeps_the_original_training_cut() {
         /*now*/ 50,
     );
     let original = fixture.snapshot.clone();
+    assert!(
+        !fixture
+            .qualification
+            .product()
+            .decision
+            .decision
+            .failed_metrics
+            .is_empty()
+    );
     for now in [50, 60, 351] {
         assert!(matches!(
             fixture.prepare(now),

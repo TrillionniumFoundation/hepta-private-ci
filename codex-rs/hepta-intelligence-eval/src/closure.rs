@@ -248,10 +248,13 @@ fn decide_with_metric_contract(
         }
     }
 
-    let disposition = if !failed_metrics.is_empty() {
-        IndependentEvaluationDispositionV1::Ineligible
-    } else if insufficient {
+    // A known negative metric does not complete the other evidence gates.
+    // Retain that negative evidence, but only a complete comparison may become
+    // Ineligible for downstream use as an evaluated NoUpdate.
+    let disposition = if insufficient {
         IndependentEvaluationDispositionV1::InsufficientEvidence
+    } else if !failed_metrics.is_empty() {
+        IndependentEvaluationDispositionV1::Ineligible
     } else {
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     };
