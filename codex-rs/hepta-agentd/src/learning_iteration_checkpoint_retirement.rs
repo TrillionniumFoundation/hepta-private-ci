@@ -102,7 +102,7 @@ impl OriginalLearningCheckpointRetirement {
         let root = RootObservationStream::root_lifetime(&channel.transport);
         crate::root_observation_stream::check_lifetime(root.get_ref())
             .map_err(refused)?;
-        phase.shutdown_original_after_root_intent(intent)?;
+        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;
         crate::root_observation_stream::check_lifetime(root.get_ref())
             .map_err(refused)?;
         intent.require_original_origin(&self.identity, self.work.gate())?;

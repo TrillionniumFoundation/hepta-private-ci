@@ -94,8 +94,8 @@ impl<'a> OriginalExecutionAttestor<'a> {
             execution_digest: request.execution().execution_digest.into_array(),
             payload: request.signing_payload(),
         };
-        let (digest, response) = exchange.exchange_original(&raw, self.files, self.wait)?;
-        let signed: OriginalExecutionResponseData = response.parse_original()?;
+        let (digest, response) = OriginalActorExchange::exchange_original(exchange, &raw, self.files, self.wait)?;
+        let signed: OriginalExecutionResponseData = super::files::OriginalPinnedRead::parse_original(&response)?;
         if signed.schema_version != 1
             || signed.request_digest != digest.into_array()
             || signed.execution_digest != raw.execution_digest
@@ -103,7 +103,7 @@ impl<'a> OriginalExecutionAttestor<'a> {
             return Err(deployment_refused("original evaluator response binding differs"));
         }
         let evidence = signed.signed.original()?;
-        response.require_original_pin()?;
+        super::files::OriginalPinnedRead::require_original_pin(&response)?;
         self.wait.require_original_live()?;
         // Signature, role, full principal and objective authentication remains
         // in Product::authenticate immediately after this exact trait return.
@@ -180,9 +180,8 @@ pub(super) fn request_original_qualification(
         evaluator_payload: original.evaluator_payload,
         actual_cell_record: serde_json::to_value(original.plan.record()).map_err(deployment_error)?,
     };
-    let (digest, response) = OriginalActorExchange::new(exchange)?
-        .exchange_original(&request, files, wait)?;
-    let signed: OriginalQualificationResponseData = response.parse_original()?;
+    let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(exchange)?, &request, files, wait)?;
+    let signed: OriginalQualificationResponseData = super::files::OriginalPinnedRead::parse_original(&response)?;
     if signed.schema_version != 1 || signed.request_digest != digest.into_array()
         || signed.execution_digest != request.execution_digest
     {
@@ -192,7 +191,7 @@ pub(super) fn request_original_qualification(
         generator_plan: signed.generator_plan.original()?,
         evaluator_bundle: signed.evaluator_bundle.original()?,
     };
-    response.require_original_pin()?;
+    super::files::OriginalPinnedRead::require_original_pin(&response)?;
     wait.require_original_live()?;
     Ok(evidence)
 }

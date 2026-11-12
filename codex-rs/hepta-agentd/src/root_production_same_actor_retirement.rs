@@ -17,7 +17,7 @@ impl OriginalSameActorRootContext {
                 .map_err(|_| refused("actual deadline watcher custody is poisoned"))?
                 .take().ok_or_else(|| refused("actual deadline watcher was already taken"))?
         };
-        watch.finish_original_after_root_exit(exited, &self.identity)
+        crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch::finish_original_after_root_exit(watch, exited, &self.identity)
     }
 
     pub(crate) fn retire_original_runtime_purposes(

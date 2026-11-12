@@ -72,7 +72,7 @@ impl OriginalDeploymentArtifacts {
         let lock = files.pin_original_artifact_lock(&data.root.join("writer/owner.lock"))?;
         let withdrawal_file = files.read_original(&data.withdrawal_file, 16 * 1024 * 1024)?;
         let withdrawal_registry = read_dataset_withdrawal_snapshot(
-            withdrawal_file.clone_original_file()?,
+            OriginalPinnedRead::clone_original_file(&withdrawal_file)?,
             DatasetWithdrawalSnapshotReceiptV1 {
                 binding: Digest32::from_array(data.withdrawal.binding),
                 scope_digest: Digest32::from_array(data.withdrawal.scope),
@@ -81,7 +81,7 @@ impl OriginalDeploymentArtifacts {
                 records: data.withdrawal.records, encoded_bytes: data.withdrawal.encoded_bytes,
             },
         ).map_err(deployment_error)?;
-        withdrawal_file.require_original_pin()?;
+        OriginalPinnedRead::require_original_pin(&withdrawal_file)?;
         let trust = data.trust.original_owner_trust().map_err(deployment_error)?;
         let verifier = data.selector.original_selector(&trust).map_err(deployment_error)?;
         let writer_lease = data.writer_lease.original()?;
@@ -95,8 +95,8 @@ impl OriginalDeploymentArtifacts {
         if owner.recovery_required().is_some() {
             return Err(deployment_refused("original Artifact operation is not terminal"));
         }
-        for directory in &directories { directory.require_original_directory_pin()?; }
-        lock.require_original_pin()?;
+        for directory in &directories { OriginalDirectoryPin::require_original_directory_pin(directory)?; }
+        OriginalPinnedRead::require_original_pin(&lock)?;
         files.require_original_context()?;
         let material = data.initial_selection.open_original_selection_files(files, &verifier)?;
         let selected = AgentdSelectedGenerationV1::load(
@@ -109,7 +109,7 @@ impl OriginalDeploymentArtifacts {
     pub(super) fn owner(&self) -> &Arc<Mutex<LearningArtifactOwnerService>> { &self.owner }
 
     pub(super) fn require_original_paths(&self) -> Result<(), AgentdError> {
-        for directory in &self.directories { directory.require_original_directory_pin()?; }
+        for directory in &self.directories { OriginalDirectoryPin::require_original_directory_pin(directory)?; }
         self.lock.require_original_pin()
     }
 
@@ -164,13 +164,13 @@ impl OriginalDeploymentArtifacts {
                 ).map_err(deployment_error)?;
                 let request = LearningArtifactPublishRequestV1 {
                     operation_id: StableId::new(&data.operation_id).map_err(deployment_error)?,
-                    admission, payload: payload.bytes().to_vec(),
+                    admission, payload: OriginalPinnedRead::bytes(&payload).to_vec(),
                     signed_current_head: data.signed_current_head.original_current()
                         .map_err(deployment_error)?,
                     expected_registry_predecessor_head: Digest32::from_array(data.expected_registry_predecessor_head),
                     now,
                 };
-                payload.require_original_pin()?;
+                OriginalPinnedRead::require_original_pin(&payload)?;
                 files.require_original_context()?;
                 drop(owner);
                 // Actual publication subsequently reacquires its original
@@ -196,12 +196,12 @@ impl OriginalSelectionData {
         let result = OriginalCellQ24SelectionInputsV1 {
             verifier: verifier.clone(), signed: self.original_signed()?,
             files: AgentdGenerationSelectionFilesV1 {
-                registry_snapshot: registry.clone_original_file()?,
-                payload: payload.clone_original_file()?,
+                registry_snapshot: OriginalPinnedRead::clone_original_file(&registry)?,
+                payload: OriginalPinnedRead::clone_original_file(&payload)?,
             },
         };
-        registry.require_original_pin()?;
-        payload.require_original_pin()?;
+        OriginalPinnedRead::require_original_pin(&registry)?;
+        OriginalPinnedRead::require_original_pin(&payload)?;
         files.require_original_context()?;
         Ok(result)
     }

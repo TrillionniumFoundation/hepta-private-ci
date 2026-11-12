@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "kind": "Root-independent-byte-replay-13-path-24-ops",
+  "packet": "d1fc1e2d04ea3290cd24622377f8a0732286cf79",
+  "source_manifest": "658549a54628df700158c30011f9eb640e21cd78",
+  "source_candidate": "acef73811869b1926c5cfc9858c8912393d53c94",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": {
+        "git_blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "bytes": 11788,
+        "sha256": "74d7a6d168faa960804b7b21ce3bba56ebbe6de3922485736a972356411fe725"
+      },
+      "post": {
+        "git_blob": "811fb02d0b030881bfb4366121e375f09807e0f7",
+        "bytes": 11934,
+        "sha256": "1cd8f7947283a24976ec52e70fd29ff0d89230d2031c1cf09a39fac62dc32e7b"
+      },
+      "operations": 6,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": {
+        "git_blob": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+        "bytes": 6068,
+        "sha256": "dc518defb682662fbef3471774508f1849579ebadef2cd4844dee400cd366d75"
+      },
+      "post": {
+        "git_blob": "53ff12a548e96394241f24892e505ce1e7c4ddf0",
+        "bytes": 6137,
+        "sha256": "4b6c33f35cc29fd94c0599967f6e64e9a309fd429a4974ed4a606d70aa2ad70f"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "pre": {
+        "git_blob": "2a60e2dd058abe2bc73fcff25d0d1bc4bc0d9cbf",
+        "bytes": 5709,
+        "sha256": "13e413e76e7a576dd9957a2b2518fa07e5b4e7f11f67cd1be194e400a51ebe2a"
+      },
+      "post": {
+        "git_blob": "4f6c0c47b4307338af38f7c9f5eadd848f4d2b69",
+        "bytes": 5795,
+        "sha256": "933ec2029a711a681ab907e10a64ebbfa111a0cdc04a88cea54e1188fd61a125"
+      },
+      "operations": 3,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": {
+        "git_blob": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+        "bytes": 12603,
+        "sha256": "a5a0e292391940386e2b5eeff3f9447188a31af973219944ca6f29f1e1da9de0"
+      },
+      "post": {
+        "git_blob": "a34a30406eb5e1092af7aaf5b464b1632a0261cd",
+        "bytes": 12670,
+        "sha256": "e54a0bbafea7769f58128915c0928eb5a77d00a2fcf7c0f8b941fdc4bc1fb09b"
+      },
+      "operations": 3,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "pre": {
+        "git_blob": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a",
+        "bytes": 15007,
+        "sha256": "9a049f1e8ff7f5335f5c8a57bf85a3365d24220443a36a8c805244e13b960ce6"
+      },
+      "post": {
+        "git_blob": "4866091621bed9c08aacd507f9e7c15627df957e",
+        "bytes": 15076,
+        "sha256": "8e5064583a4db6ecfeb1c1a4a21ac5b90e826c64ea2fa735c9b093edb03e57c7"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pre": {
+        "git_blob": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+        "bytes": 22080,
+        "sha256": "fe9d5c8b5538c5ce6ea9f2dbc5004344b279e7cc4f817d32d681e2bcef753dca"
+      },
+      "post": {
+        "git_blob": "77f2fc691e2155eaf14563fb537c4a98eebb8964",
+        "bytes": 22140,
+        "sha256": "11c7b42c83211ec7fad8b5c3a05576bb9cdd5166957f373d9c7b5cbe129266ab"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": {
+        "git_blob": "6dad9c84b41bc21f9b3be7502f49e9287237aa94",
+        "bytes": 22990,
+        "sha256": "afdee5a77850cf5ee65139d186edd153fda9679c0997013cb8224e5ab908d935"
+      },
+      "post": {
+        "git_blob": "ec76465e7e56037f7f7a8bf8388e113ee1cce112",
+        "bytes": 23144,
+        "sha256": "1ee4a042d3bf2f4a834a710f3055568b5c18bcce89084668e161f0c9ea277e74"
+      },
+      "operations": 3,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": {
+        "git_blob": "a691263dce886a35a73b0759b9740e711b76ffb1",
+        "bytes": 15584,
+        "sha256": "d17eba1003b440f1337aacc724223e9174271d2cbf60f0c697ce776a309499b1"
+      },
+      "post": {
+        "git_blob": "3e9446183a443759d8e19edd3d50ad4bf518c57d",
+        "bytes": 15650,
+        "sha256": "29e2e397d82019755d11dd5fa83e67288027c7f485a57e82b246fe06a40a6847"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": {
+        "git_blob": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd",
+        "bytes": 14808,
+        "sha256": "97cf9a82b473ead8a98fbbe4d19aa321c0a334e177b77fec9ceed76afb9a9346"
+      },
+      "post": {
+        "git_blob": "a3af84b4a0481a0e3659959cd80af02b6bf5e485",
+        "bytes": 14874,
+        "sha256": "c37fd969f83ffd537424f6b4ce538c39c1bcc5803203961cf17b35c3df6cdda2"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "pre": {
+        "git_blob": "bc430c0f787237f3e233e66e536b1a1b151811b4",
+        "bytes": 5115,
+        "sha256": "f09ed8840d6c533a9b69e21c03a7559f6a5f67d2bc438da23c6a1855c53c415c"
+      },
+      "post": {
+        "git_blob": "d5015ce8d7a3223fdc0fc5c7bd1207af6e2982f3",
+        "bytes": 5181,
+        "sha256": "2927fc2aa10276167b51f501b6a0ac6e4319eb414aff43725578789c6eeca977"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "pre": {
+        "git_blob": "eea6bbb366386a2320df86692fd37a6ca417cf35",
+        "bytes": 3842,
+        "sha256": "a1c3ea23772244e9b0c09a9db97ac88659bacd739e57fa06d9c701efa147c564"
+      },
+      "post": {
+        "git_blob": "81f63f39581679adfc5849e4d58bd90dcde56143",
+        "bytes": 3908,
+        "sha256": "7274b2b7642288817c0a41a1b7fb6e9d52351de5f36b5a4e7b8a3880a72e40ac"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "pre": {
+        "git_blob": "9ba4eafef98caa9c3c20ff883770204475443a34",
+        "bytes": 2409,
+        "sha256": "3e1417415d0faaa79045658eafcbecaa3ef567aea84bd5f678acb1ba1a12505b"
+      },
+      "post": {
+        "git_blob": "a310ef21a6b786fda5362314f01325ab4d6bad15",
+        "bytes": 2473,
+        "sha256": "c3f1adbb7c4f2b3e3b7aef01decb3faade6673b626bf1fb77b95fb3738cca7a6"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "pre": {
+        "git_blob": "0295dcae5e3ef047a2c4dc4d902388da35694a2d",
+        "bytes": 27869,
+        "sha256": "689a86033a5f5806b08f86821cb0b8f7cb3495150cdd04ce795c6e6f63cdbafb"
+      },
+      "post": {
+        "git_blob": "a14d75a0199087963ce4b6c0ce7d04af6ba6e8e9",
+        "bytes": 28015,
+        "sha256": "a1cd2e7e10ccdcdaafbf829c20dbf1d23eac1b78704b1108b917081bda95a435"
+      },
+      "operations": 1,
+      "unique_forward_reverse": true,
+      "complete_bytes_recovered": true
+    }
+  ],
+  "counts": {
+    "paths": 13,
+    "operations": 24
+  },
+  "nonoverlap_with_runtime_81": true,
+  "type_name_exports": 2,
+  "combined_type_name_exports": 3,
+  "limits": [
+    "Original full pre/post bytes independently GET, Git/SHA256/length checked and exact unique forward/reverse replayed.",
+    "Three crate-only type-name exports are an explicit API-name change; private fields and constructors require peer review, not an inferred compiler PASS.",
+    "Compilation, formatting and original full caller verification remain unperformed for these sources."
+  ]
+}

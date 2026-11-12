@@ -48,7 +48,7 @@ fn main() -> anyhow::Result<()> {
                 // This actual selected entry owns the sealed-context receiver,
                 // concrete material coordinator and original signed ingress.
                 // It returns no successful completion without terminal proof.
-                phase.run_original_deployment(arg0_paths).await?;
+                AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment(phase, arg0_paths).await?;
                 return Ok(());
             }
             #[cfg(target_os = "linux")]

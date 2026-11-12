@@ -79,7 +79,9 @@ impl OriginalDeploymentClient {
         };
         OriginalSameActorRootContext::require_current(&context)?;
         let stream = stream.into_std()?;
-        let required = context.gate().retain_required_original_stream(&stream)?;
+        let required = crate::same_actor_q24_phase_gate::SameActorPhaseGate::retain_required_original_stream(
+            context.gate(), &stream,
+        )?;
         let root_pidfd = OriginalSameActorRootContext::root_pidfd(&context)?;
         let root_exit_pidfd = root_pidfd.try_clone()?;
         let channel = HostAuthorityPeerChannel::from_stream_until(
@@ -141,7 +143,7 @@ impl OriginalDeploymentClient {
             sequence,
             progress,
         };
-        let bytes = request.encode_original()?;
+        let bytes = OriginalDeploymentRequest::encode_original(&request)?;
         self.required.require_open()?;
         HostAuthorityPeerChannel::check_peer_lifetime(&self.channel).map_err(owner_error)?;
         // From the actual call onward a missing, invalid or overdue reply

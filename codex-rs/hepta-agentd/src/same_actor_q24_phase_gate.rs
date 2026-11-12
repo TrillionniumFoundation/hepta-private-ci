@@ -187,7 +187,9 @@ impl RequiredSameActorPhaseChannel {
         &self,
         intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,
     ) -> Result<(), crate::AgentdError> {
-        self.original_retirement_custody().shutdown_original_after_root_intent(intent)
+        OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(
+            &self.original_retirement_custody(), intent,
+        )
     }
 
     /// Only the exact actual ACK2 owner can close its own final peer.

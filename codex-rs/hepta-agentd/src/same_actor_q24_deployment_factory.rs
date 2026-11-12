@@ -51,7 +51,7 @@ pub(super) async fn load_original_deployment(
     OriginalSameActorRootContext::require_current(&context)?;
     let mut files = OriginalDeploymentFiles::for_original_context(Arc::clone(&context))?;
     let pinned = files.read_root_descriptor(&descriptor, 8 * 1024 * 1024)?;
-    let data: OriginalDeploymentData = pinned.parse_original()?;
+    let data: OriginalDeploymentData = OriginalPinnedRead::parse_original(&pinned)?;
     if data.schema_version != 1
         || data.binding != OriginalDeploymentBinding::from_original_phase(context.descriptor())?
     {
@@ -68,22 +68,22 @@ pub(super) async fn load_original_deployment(
     let plasticity = load_plasticity_process_bootstrap_v1(
         &data.plasticity.path, Digest32::from_array(data.plasticity.sha256), context.identity(),
     )?;
-    plasticity_data.require_original_pin()?;
+    OriginalPinnedRead::require_original_pin(&plasticity_data)?;
     let checkpoint = files.open_original_owner(&data.authbus_checkpoint)?;
     // ReplayCheckpointFile later opens this SAME explicitly selected file.
     // This loader does not keep a second writable alias past that handoff.
     drop(checkpoint);
     let objective_a_file = files.read_original(&data.objective_a, 1024 * 1024)?;
     let objective_c_file = files.read_original(&data.objective_c, 1024 * 1024)?;
-    let objective_a: AuthBusObjectiveIngress = objective_a_file.parse_original()?;
-    let objective_c: AuthBusObjectiveIngress = objective_c_file.parse_original()?;
+    let objective_a: AuthBusObjectiveIngress = OriginalPinnedRead::parse_original(&objective_a_file)?;
+    let objective_c: AuthBusObjectiveIngress = OriginalPinnedRead::parse_original(&objective_c_file)?;
     if objective_a.body.run_id == objective_c.body.run_id {
         return Err(deployment_refused("original A and C require distinct actual signed runs"));
     }
     let (artifacts, selected) = OriginalDeploymentArtifacts::open_original(
         &data.artifacts, &mut files, now,
     )?;
-    let (initial, predecessor) = data.initial.open_original(&mut files)?;
+    let (initial, predecessor) = super::task::OriginalInitialData::open_original(&data.initial, &mut files)?;
     let initial_model = Arc::clone(&initial.model);
     let initial_bundle = initial.bundle.clone();
     let task = data.task.open_original_circuit(&context, &mut files)?;
@@ -94,7 +94,7 @@ pub(super) async fn load_original_deployment(
     let ingress = OriginalOrdinaryTaskIngress::for_original_context(Arc::clone(&context))?;
     let client = OriginalDeploymentClient::connect_original(Arc::clone(&context)).await?;
     let business = OriginalSameActorBusinessInputsV1 {
-        artifacts: Arc::clone(artifacts.owner()), selected, initial, task, ledger,
+        artifacts: Arc::clone(OriginalDeploymentArtifacts::owner(&artifacts)), selected, initial, task, ledger,
         authbus_trust_file: data.authbus_trust.path.clone(),
         authbus_checkpoint_file: data.authbus_checkpoint.path.clone(),
         objective_profile_file: data.objective_profile.path.clone(),
@@ -102,7 +102,7 @@ pub(super) async fn load_original_deployment(
     };
     let pins = vec![pinned, authbus, objective_profile, plasticity_data,
         objective_a_file, objective_c_file];
-    for pin in &pins { pin.require_original_pin()?; }
+    for pin in &pins { OriginalPinnedRead::require_original_pin(pin)?; }
     OriginalSameActorRootContext::require_current(&context)?;
     let coordinator = OriginalDeploymentCoordinator::new_original(
         Arc::clone(&context), client, ingress, commands, events,

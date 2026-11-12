@@ -129,7 +129,7 @@ impl OriginalDeploymentCoordinator {
 
     fn require_original_inputs(&self) -> Result<(), AgentdError> {
         OriginalSameActorRootContext::require_current(&self.context)?;
-        for pin in &self.pins { pin.require_original_pin()?; }
+        for pin in &self.pins { OriginalPinnedRead::require_original_pin(pin)?; }
         self.artifacts.require_original_paths()?;
         self.files.require_original_context()
     }
@@ -186,7 +186,7 @@ impl OriginalDeploymentCoordinator {
                     let completion = wait.wait_original_file(
                         &mut self.files, &self.data.completion_a, 1024 * 1024,
                     )?;
-                    let completed: OriginalACompletionData = completion.parse_original()?;
+                    let completed: OriginalACompletionData = OriginalPinnedRead::parse_original(&completion)?;
                     if completed.schema_version != 1
                         || completed.phase != self.context.descriptor().phase
                     {
@@ -198,7 +198,7 @@ impl OriginalDeploymentCoordinator {
                     )?;
                     let now = wait.require_original_live()?;
                     let freeze = self.learning.open_original_freeze(&mut self.files, now)?;
-                    completion.require_original_pin()?;
+                    OriginalPinnedRead::require_original_pin(&completion)?;
                     self.send_original(Command::CompleteOriginalA(Box::new(
                         OriginalSameActorCompletedAInputsV1 {
                             outcome, signed, preparation,
@@ -241,7 +241,7 @@ impl OriginalDeploymentCoordinator {
                     let predecessor = self.predecessor.take()
                         .ok_or_else(|| deployment_refused("actual A predecessor already transferred"))?;
                     let now = wait.require_original_live()?;
-                    let actual = self.data.original_c.open_original(
+                    let actual = super::c::OriginalCData::open_original(&self.data.original_c, 
                         &self.context, &mut self.files,
                         OriginalCResources {
                             initial_model: &self.initial_model, trained_model: self.trained_model.as_ref(),
@@ -270,12 +270,12 @@ impl OriginalDeploymentCoordinator {
                     let response = wait.wait_original_file(
                         &mut self.files, &self.data.outcome_c, 1024 * 1024,
                     )?;
-                    let data: OriginalCOutcomeData = response.parse_original()?;
+                    let data: OriginalCOutcomeData = OriginalPinnedRead::parse_original(&response)?;
                     if data.schema_version != 1 || data.phase != self.context.descriptor().phase {
                         return Err(deployment_refused("actual C Outcome belongs to another phase"));
                     }
                     let (outcome, signed) = data.outcome.into_original()?;
-                    response.require_original_pin()?;
+                    OriginalPinnedRead::require_original_pin(&response)?;
                     wait.require_original_live()?;
                     self.send_original(Command::ObserveOriginalC(Box::new(
                         OriginalSameActorCOutcomeInputsV1 { outcome, signed },

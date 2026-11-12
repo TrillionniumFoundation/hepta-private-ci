@@ -80,9 +80,9 @@ impl OriginalDeploymentCoordinator {
             phase: &self.context.descriptor().phase,
             material_digest: material_digest.into_array(), actual_profile: &profile,
         };
-        let (request, response) = OriginalActorExchange::new(
+        let (request, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(
             self.data.scoped_material_ready.clone(),
-        )?.exchange_original(&notice, &mut self.files, &mut wait)?;
+        )?, &notice, &mut self.files, &mut wait)?;
         require_original_material_ready(&response, request, material_digest)?;
         wait.require_original_live()?;
         // This data-only signal is BEFORE A captures its original first
@@ -122,14 +122,14 @@ impl OriginalDeploymentCoordinator {
         let (notice, model) = OriginalTrainingNotice::from_original(
             &self.context.descriptor().phase, &snapshot, material,
         )?;
-        let (digest, response) = OriginalActorExchange::new(
+        let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(
             self.data.independent_training.clone(),
-        )?.exchange_original(&notice, &mut self.files, &mut wait)?;
-        let data: OriginalEvaluationResponse = response.parse_original()?;
+        )?, &notice, &mut self.files, &mut wait)?;
+        let data: OriginalEvaluationResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;
         if data.schema_version != 1 || data.request_digest != digest.into_array() {
             return Err(deployment_refused("independent B input does not bind this actual Training"));
         }
-        response.require_original_pin()?;
+        super::super::files::OriginalPinnedRead::require_original_pin(&response)?;
         wait.require_original_live()?;
         let OriginalExecutedEvaluation { inputs, evidence_owner } =
             data.original.execute_original(
@@ -156,16 +156,15 @@ impl OriginalDeploymentCoordinator {
         let notice = OriginalDecisionNotice::from_original(
             &self.context.descriptor().phase, &snapshot,
         )?;
-        let (digest, response) = OriginalActorExchange::new(self.data.artifact_decision.clone())?
-            .exchange_original(&notice, &mut self.files, &mut wait)?;
-        let data: OriginalArtifactResponse = response.parse_original()?;
+        let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.artifact_decision.clone())?, &notice, &mut self.files, &mut wait)?;
+        let data: OriginalArtifactResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;
         if data.schema_version != 1 || data.request_digest != digest.into_array() {
             return Err(deployment_refused("Artifact input differs from the actual decision"));
         }
         let command = self.artifacts.original_artifact_command(
             &data.original, &mut self.files, wait.require_original_live()?,
         )?;
-        response.require_original_pin()?;
+        super::super::files::OriginalPinnedRead::require_original_pin(&response)?;
         self.decision_head = Some(snapshot.head_digest);
         self.send_original(Command::Artifact(command))
     }
@@ -182,16 +181,15 @@ impl OriginalDeploymentCoordinator {
             purpose: "hepta.same-actor-q24-deployment.artifact-available.v1",
             phase: &self.context.descriptor().phase, original_decision_head: head.into_array(),
         };
-        let (digest, response) = OriginalActorExchange::new(self.data.independent_selection.clone())?
-            .exchange_original(&notice, &mut self.files, &mut wait)?;
-        let data: OriginalSelectionResponse = response.parse_original()?;
+        let (digest, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.independent_selection.clone())?, &notice, &mut self.files, &mut wait)?;
+        let data: OriginalSelectionResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;
         if data.schema_version != 1 || data.request_digest != digest.into_array() {
             return Err(deployment_refused("independent Selection response differs"));
         }
         let (selection, digest) = self.artifacts.open_original_selection(
             &data.original, &mut self.files, wait.require_original_live()?,
         )?;
-        response.require_original_pin()?;
+        super::super::files::OriginalPinnedRead::require_original_pin(&response)?;
         self.original_selection = Some((data.original, digest));
         self.send_original(Command::Selection(Box::new(selection)))
     }
@@ -206,9 +204,9 @@ impl OriginalDeploymentCoordinator {
             phase: &self.context.descriptor().phase, material_digest: material.into_array(),
             canonical_material: canonical,
         };
-        let (request, response) = OriginalActorExchange::new(
+        let (request, response) = OriginalActorExchange::exchange_original(OriginalActorExchange::new(
             self.data.current_material_ready.clone(),
-        )?.exchange_original(&notice, &mut self.files, wait)?;
+        )?, &notice, &mut self.files, wait)?;
         require_original_material_ready(&response, request, material)?;
         wait.require_original_live()?;
         OriginalSameActorRootContext::require_current(&self.context)

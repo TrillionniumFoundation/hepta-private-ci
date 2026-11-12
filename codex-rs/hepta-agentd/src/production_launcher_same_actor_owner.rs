@@ -30,6 +30,7 @@ use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 mod bootstrap_consumers;
 use bootstrap_consumers::OriginalBootstrapConsumers;
 pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerAdmission;
+pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerJob;
 pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerKind;
 
 #[path = "production_launcher_same_actor_completion_custody.rs"]
@@ -125,7 +126,7 @@ impl OriginalPhaseRunControl {
             || !state.gate.as_ref().is_some_and(|gate| Arc::ptr_eq(gate, context.gate()))
             || self.stopped.load(Ordering::Acquire)
         {
-            context.gate().close();
+            SameActorPhaseGate::close(context.gate());
             return Err(refused("original Startup context cannot be replaced or revived"));
         }
         OriginalSameActorRootContext::require_current(context)?;
@@ -161,7 +162,7 @@ impl OriginalPhaseRunControl {
             let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
             (state.gate.clone(), state.circuit.clone())
         };
-        if let Some(gate) = gate { gate.close(); }
+        if let Some(gate) = gate { SameActorPhaseGate::close(&gate); }
         self.consumers.close();
         codex_app_server::OriginalMcpRuntimeShutdown::request_stop(&self.mcp);
         codex_app_server::OriginalAppServerOwnerCustody::request_stop(&self.app_server);

@@ -93,8 +93,8 @@ impl OriginalEvaluationData {
         {
             return Err(deployment_refused("B principals differ from actual enrolled owners"));
         }
-        let candidate = self.candidate_journal.open_original(files)?;
-        let fixed_expert = self.fixed_expert_journal.open_original(files)?;
+        let candidate = OriginalEvaluationJournalData::open_original(&self.candidate_journal, files)?;
+        let fixed_expert = OriginalEvaluationJournalData::open_original(&self.fixed_expert_journal, files)?;
         let candidate_plan = self.candidate_plan.original()?;
         let baseline_plan = self.baseline_plan.original()?;
         wait.require_original_live()?;
@@ -108,9 +108,9 @@ impl OriginalEvaluationData {
         let material = files.read_original(&self.holdout_material, 16 * 1024 * 1024)?;
         wait.require_original_live()?;
         let mut provider = LockedFileFinalHoldoutProviderV1::open(
-            material.clone_original_file()?, plan.product_plan(),
+            super::files::OriginalPinnedRead::clone_original_file(&material)?, plan.product_plan(),
         ).map_err(deployment_error)?;
-        material.require_original_pin()?;
+        super::files::OriginalPinnedRead::require_original_pin(&material)?;
         let holdout = self.holdout.open_original_holdout(files)?;
         let mut executions = self.executions.open_original_execution(files)?;
         // Its separate original namespace and distinct actual File are
@@ -154,12 +154,12 @@ impl OriginalEvaluationData {
             );
             // Preserve the actual external actor error as well as the
             // original runner's Pending semantics; never dispatch again.
-            if let Some(error) = attestor.take_original_failure() {
+            if let Some(error) = OriginalExecutionAttestor::take_original_failure(&mut attestor) {
                 return Err(error);
             }
             result.map_err(deployment_error)?
         };
-        material.require_original_pin()?;
+        super::files::OriginalPinnedRead::require_original_pin(&material)?;
         wait.require_original_live()?;
         let bundle = runner.qualification_bundle(&receipt, &qualification_context)
             .map_err(deployment_error)?;
@@ -201,7 +201,7 @@ impl OriginalEvaluationData {
             return Err(deployment_refused("B receipt key differs from its actual enrolled Evaluator"));
         }
         let receipt_file = files.open_original_owner(&self.receipt.journal)?;
-        let receipt_witness = self.receipt.witness.open_original(files)?;
+        let receipt_witness = super::witness::OriginalWitnessData::open_original(&self.receipt.witness, files)?;
         let signing = OriginalCellEvaluationSigningConfigV1 {
             plan: plan.product_plan().clone(),
             execution_namespace: Digest32::from_array(self.holdout.binding),

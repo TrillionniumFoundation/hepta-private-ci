@@ -1,0 +1,1495 @@
+{
+  "schema_version": 1,
+  "kind": "root_118_actual_receiver_ufcs_and_crate_name_exports",
+  "status": "All 28 source postimages CREATE+GET verified; source-only uninstalled/unexecuted candidate.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_manifest": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+  "new_boundary_draft": "b9db22f4ddce9907e2674b737e6fa61c06aea99f",
+  "base_context": "196-path successor adds diagnostics outside these paths; all exact preimages here are ef7 source pins.",
+  "reference_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "reference_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "pre": {
+        "blob": "6c7416f4471dd7cdff6fb80e8f312bf626a31b59",
+        "bytes": 19088,
+        "sha256": "8532f7e2bc88f757f97d3c98be9e911c41d2bb670fd27ec5247d62501708debb"
+      },
+      "post": {
+        "blob": "5c4ab053b63cedbdd4e2e11a5b81d7aa8e6b2ca9",
+        "bytes": 19180,
+        "sha256": "7ac9063e20c58bf46eec393447d8d7232341a01d7acb6612b23e15179057cdff",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "                    OriginalDeploymentAcknowledgement::from_actual_registration(\n                        &request, registration,\n                    )?.encode_original(&request)",
+          "new": "                    OriginalDeploymentAcknowledgement::encode_original(\n                        &OriginalDeploymentAcknowledgement::from_actual_registration(\n                            &request, registration,\n                        )?, &request,\n                    )",
+          "old_expression": "                    OriginalDeploymentAcknowledgement::from_actual_registration(\n                        &request, registration,\n                    )?.encode_original(&request)",
+          "new_expression": "                    OriginalDeploymentAcknowledgement::encode_original(\n                        &OriginalDeploymentAcknowledgement::from_actual_registration(\n                            &request, registration,\n                        )?, &request,\n                    )",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs",
+      "pre": {
+        "blob": "c4174a13da61e0dc138648c0bee198e4538a967f",
+        "bytes": 16731,
+        "sha256": "70fb609d1607a01c4e59b65fa198f470471e9e122efc604580b4316b19b9e68a"
+      },
+      "post": {
+        "blob": "db33c17c4d060014075196b3e2b079c3d3506f63",
+        "bytes": 16814,
+        "sha256": "feedb868b91795ce1203c98da998b54123218ecc5fb1a33ea1a3d958ebae9654",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "    OriginalRootRetirementAcknowledgement {\n        schema_version: 1,\n        purpose: RETIREMENT_PURPOSE.into(),\n        binding: request.binding.clone(),\n        sequence: request.sequence,\n        stage: request.stage,\n        original_request: request.digest()?,\n        original_intent: intent.into(),\n    }\n    .encode_original(request, intent)",
+          "new": "    OriginalRootRetirementAcknowledgement::encode_original(\n        &OriginalRootRetirementAcknowledgement {\n            schema_version: 1,\n            purpose: RETIREMENT_PURPOSE.into(),\n            binding: request.binding.clone(),\n            sequence: request.sequence,\n            stage: request.stage,\n            original_request: request.digest()?,\n            original_intent: intent.into(),\n        }, request, intent,\n    )",
+          "old_expression": "    OriginalRootRetirementAcknowledgement {\n        schema_version: 1,\n        purpose: RETIREMENT_PURPOSE.into(),\n        binding: request.binding.clone(),\n        sequence: request.sequence,\n        stage: request.stage,\n        original_request: request.digest()?,\n        original_intent: intent.into(),\n    }\n    .encode_original(request, intent)",
+          "new_expression": "    OriginalRootRetirementAcknowledgement::encode_original(\n        &OriginalRootRetirementAcknowledgement {\n            schema_version: 1,\n            purpose: RETIREMENT_PURPOSE.into(),\n            binding: request.binding.clone(),\n            sequence: request.sequence,\n            stage: request.stage,\n            original_request: request.digest()?,\n            original_intent: intent.into(),\n        }, request, intent,\n    )",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "pre": {
+        "blob": "2f13eb143049dcbf87c0791a036a852abd3d3e4e",
+        "bytes": 8751,
+        "sha256": "f4c1e8427ea6d284626778fe9448d85b48510823523f730c97bdae5c5b393cf6"
+      },
+      "post": {
+        "blob": "36f10fe3decba8cf12308d57e5eddf07b7a18989",
+        "bytes": 8856,
+        "sha256": "638e0280715401fc424d5bf892fda8121b4a12df03517c0ebef35acb5577bc18",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        let required = context.gate().retain_required_original_stream(&stream)?;",
+          "new": "        let required = crate::same_actor_q24_phase_gate::SameActorPhaseGate::retain_required_original_stream(\n            context.gate(), &stream,\n        )?;",
+          "old_expression": "        let required = context.gate().retain_required_original_stream(&stream)?;",
+          "new_expression": "        let required = crate::same_actor_q24_phase_gate::SameActorPhaseGate::retain_required_original_stream(\n            context.gate(), &stream,\n        )?;",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        },
+        {
+          "old": "        let bytes = request.encode_original()?;",
+          "new": "        let bytes = OriginalDeploymentRequest::encode_original(&request)?;",
+          "old_expression": "        let bytes = request.encode_original()?;",
+          "new_expression": "        let bytes = OriginalDeploymentRequest::encode_original(&request)?;",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "pre": {
+        "blob": "9d9cf5a296423f8ca2a0bfe84a4a9b59be2d4312",
+        "bytes": 14216,
+        "sha256": "58e27ed89b9ca2ce7ec26e86b7367d801219121d2f3e28763953512547ad06ba"
+      },
+      "post": {
+        "blob": "cf5a341cfe6acc394ae57bc531140e78903d711a",
+        "bytes": 14261,
+        "sha256": "176e3fb259ee2041a152be84d0bef786040ba50326eacf178919d0f5b3280846",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "                phase.run_original_deployment(arg0_paths).await?;",
+          "new": "                AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment(phase, arg0_paths).await?;",
+          "old_expression": "                phase.run_original_deployment(arg0_paths).await?;",
+          "new_expression": "                AgentdOriginalSameActorDeploymentStartupV1::run_original_deployment(phase, arg0_paths).await?;",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+      "pre": {
+        "blob": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+        "bytes": 8156,
+        "sha256": "afddb4f71668a80d0b86e9a4af2ec17e40fe637fcf7a4c173a0be7efa2750e3b"
+      },
+      "post": {
+        "blob": "8678b9240a582051735d584ee5c32806cc658d8a",
+        "bytes": 8213,
+        "sha256": "ff792688846447bdfe28eb5cc001246063caca72744cf509fc825a44d03aa169",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        {\n            context.gate().close();\n            return Err(refused(\"original MCP custody differs from the actual phase\"));\n",
+          "new": "        {\n            SameActorPhaseGate::close(context.gate());\n            return Err(refused(\"original MCP custody differs from the actual phase\"));\n",
+          "old_expression": "            context.gate().close();",
+          "new_expression": "            SameActorPhaseGate::close(context.gate());",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        },
+        {
+          "old": "        {\n            context.gate().close();\n            return Err(refused(\"original App Server custody differs from the actual phase\"));\n",
+          "new": "        {\n            SameActorPhaseGate::close(context.gate());\n            return Err(refused(\"original App Server custody differs from the actual phase\"));\n",
+          "old_expression": "            context.gate().close();",
+          "new_expression": "            SameActorPhaseGate::close(context.gate());",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        },
+        {
+          "old": "        {\n            context.gate().close();\n            return Err(refused(\"original Circuit custody differs from the actual phase\"));\n",
+          "new": "        {\n            SameActorPhaseGate::close(context.gate());\n            return Err(refused(\"original Circuit custody differs from the actual phase\"));\n",
+          "old_expression": "            context.gate().close();",
+          "new_expression": "            SameActorPhaseGate::close(context.gate());",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "pre": {
+        "blob": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+        "bytes": 17186,
+        "sha256": "ad7480a7bbe96283b73006c4cec706cb58b0623998099c0a16c5496e6d967217"
+      },
+      "post": {
+        "blob": "908c37acf73a0098102940070aae531aa888c4fd",
+        "bytes": 17291,
+        "sha256": "ab6a42dca4b12e3a5d5cb26c57c62789d569ee42017390d4eb965e4902761b4a",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerAdmission;",
+          "new": "pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerAdmission;\npub(crate) use bootstrap_consumers::OriginalBootstrapConsumerJob;",
+          "old_expression": "pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerAdmission;",
+          "new_expression": "pub(crate) use bootstrap_consumers::OriginalBootstrapConsumerAdmission;\npub(crate) use bootstrap_consumers::OriginalBootstrapConsumerJob;",
+          "kind": "crate_private_name_export",
+          "origin": "Already pub(crate) opaque Job, fields and constructors remain private; same owner's actual returned Job named for UFCS."
+        },
+        {
+          "old": "            context.gate().close();",
+          "new": "            SameActorPhaseGate::close(context.gate());",
+          "old_expression": "            context.gate().close();",
+          "new_expression": "            SameActorPhaseGate::close(context.gate());",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        },
+        {
+          "old": "        if let Some(gate) = gate { gate.close(); }",
+          "new": "        if let Some(gate) = gate { SameActorPhaseGate::close(&gate); }",
+          "old_expression": "        if let Some(gate) = gate { gate.close(); }",
+          "new_expression": "        if let Some(gate) = gate { SameActorPhaseGate::close(&gate); }",
+          "kind": "actual_receiver_spelling",
+          "origin": "Recovered exact CREATE+GET postimage from previously verified source; no objects, arguments or ordering changed."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "pre": {
+        "blob": "b66660a510dce52b517c45e30a0a374a8c9ca32a",
+        "bytes": 15470,
+        "sha256": "eb37aea65a4a151ba8dfb7876f173e0760546ed14a9b27ed5844a7ee8bf2417b"
+      },
+      "post": {
+        "blob": "e01dba19c1838ce67719447466511c6dbf730b7d",
+        "bytes": 15596,
+        "sha256": "31e849b6a741770971cf3a92d2cce1803b3a05cdae4ca4efd628dfda2e626403",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "pin.require_original_pin()",
+          "new": "OriginalPinnedRead::require_original_pin(pin)",
+          "old_expression": "pin.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(pin)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "completion.parse_original()",
+          "new": "OriginalPinnedRead::parse_original(&completion)",
+          "old_expression": "completion.parse_original()",
+          "new_expression": "OriginalPinnedRead::parse_original(&completion)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "completion.require_original_pin()",
+          "new": "OriginalPinnedRead::require_original_pin(&completion)",
+          "old_expression": "completion.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&completion)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "self.data.original_c.open_original(",
+          "new": "super::c::OriginalCData::open_original(&self.data.original_c, ",
+          "old_expression": "self.data.original_c.open_original(",
+          "new_expression": "super::c::OriginalCData::open_original(&self.data.original_c, ",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalCData",
+          "method": "open_original",
+          "origin": "OriginalDeploymentData.original_c is OriginalCData; same immutable field borrow."
+        },
+        {
+          "old": "response.parse_original()",
+          "new": "OriginalPinnedRead::parse_original(&response)",
+          "old_expression": "response.parse_original()",
+          "new_expression": "OriginalPinnedRead::parse_original(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "response.require_original_pin()",
+          "new": "OriginalPinnedRead::require_original_pin(&response)",
+          "old_expression": "response.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+      "pre": {
+        "blob": "8e3b7ab14f90587f7430378f3a30ce4e1f79da97",
+        "bytes": 6157,
+        "sha256": "db223d389fd608185314a6e04fb21c4589e83120e70f7e7a36d482972527695b"
+      },
+      "post": {
+        "blob": "8665e2947e56fae29cc78f4126c5065fc2b4907c",
+        "bytes": 6321,
+        "sha256": "3e2e8885a29c32642fb77b36dbd203f898ecd316718bd102ffcfd78b265bc243",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "pinned.parse_original()",
+          "new": "OriginalPinnedRead::parse_original(&pinned)",
+          "old_expression": "pinned.parse_original()",
+          "new_expression": "OriginalPinnedRead::parse_original(&pinned)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "objective_a_file.parse_original()",
+          "new": "OriginalPinnedRead::parse_original(&objective_a_file)",
+          "old_expression": "objective_a_file.parse_original()",
+          "new_expression": "OriginalPinnedRead::parse_original(&objective_a_file)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "objective_c_file.parse_original()",
+          "new": "OriginalPinnedRead::parse_original(&objective_c_file)",
+          "old_expression": "objective_c_file.parse_original()",
+          "new_expression": "OriginalPinnedRead::parse_original(&objective_c_file)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "plasticity_data.require_original_pin()",
+          "new": "OriginalPinnedRead::require_original_pin(&plasticity_data)",
+          "old_expression": "plasticity_data.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&plasticity_data)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.initial.open_original(&mut files)",
+          "new": "super::task::OriginalInitialData::open_original(&data.initial, &mut files)",
+          "old_expression": "data.initial.open_original(&mut files)",
+          "new_expression": "super::task::OriginalInitialData::open_original(&data.initial, &mut files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalInitialData",
+          "method": "open_original",
+          "origin": "OriginalDeploymentData.initial actual OriginalInitialData field."
+        },
+        {
+          "old": "artifacts.owner()",
+          "new": "OriginalDeploymentArtifacts::owner(&artifacts)",
+          "old_expression": "artifacts.owner()",
+          "new_expression": "OriginalDeploymentArtifacts::owner(&artifacts)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalDeploymentArtifacts",
+          "method": "owner",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "pin.require_original_pin()",
+          "new": "OriginalPinnedRead::require_original_pin(pin)",
+          "old_expression": "pin.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(pin)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+      "pre": {
+        "blob": "05895538b32b08bba514cc2741d0787357588482",
+        "bytes": 6832,
+        "sha256": "28e36d72c8702ba6951ec627e75960e696801a3ae17595772ec8745061ed5b7d"
+      },
+      "post": {
+        "blob": "8168198988e0a213370735ae71808dac276ce596",
+        "bytes": 6951,
+        "sha256": "a0134d96e8ce40d69311fd5f852a4903788b547b5d10a3c4eb84491208bddac3",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        let data = &self.data.owners;\n        data.require_fresh()?;\n        files.require_original_context()?;\n",
+          "new": "        let data = &self.data.owners;\n        OriginalLearningOwnersData::require_fresh(data)?;\n        files.require_original_context()?;\n",
+          "old_expression": "data.require_fresh()",
+          "new_expression": "OriginalLearningOwnersData::require_fresh(data)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalLearningOwnersData",
+          "method": "require_fresh",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.training_witness.open_original(files)",
+          "new": "OriginalWitnessData::open_original(&data.training_witness, files)",
+          "old_expression": "data.training_witness.open_original(files)",
+          "new_expression": "OriginalWitnessData::open_original(&data.training_witness, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalWitnessData",
+          "method": "open_original",
+          "origin": "Actual OriginalWitnessData field, same borrowed nested field and files."
+        },
+        {
+          "old": "data.training_receipts.witness.open_original(files)",
+          "new": "OriginalWitnessData::open_original(&data.training_receipts.witness, files)",
+          "old_expression": "data.training_receipts.witness.open_original(files)",
+          "new_expression": "OriginalWitnessData::open_original(&data.training_receipts.witness, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalWitnessData",
+          "method": "open_original",
+          "origin": "Actual OriginalWitnessData field, same borrowed nested field and files."
+        },
+        {
+          "old": "data.local.witness.open_original(files)",
+          "new": "OriginalWitnessData::open_original(&data.local.witness, files)",
+          "old_expression": "data.local.witness.open_original(files)",
+          "new_expression": "OriginalWitnessData::open_original(&data.local.witness, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalWitnessData",
+          "method": "open_original",
+          "origin": "Actual OriginalWitnessData field, same borrowed nested field and files."
+        },
+        {
+          "old": "data.witness.open_original(files)",
+          "new": "OriginalWitnessData::open_original(&data.witness, files)",
+          "old_expression": "data.witness.open_original(files)",
+          "new_expression": "OriginalWitnessData::open_original(&data.witness, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalWitnessData",
+          "method": "open_original",
+          "origin": "Actual OriginalWitnessData field, same borrowed nested field and files."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "pre": {
+        "blob": "24d9b803a93d8b61e183928e797a0622a70e114f",
+        "bytes": 10576,
+        "sha256": "7b30f7ebf3e5a19f77f9fb6d1b788e9df0b375bc981016a9119886def467dfb9"
+      },
+      "post": {
+        "blob": "9ee9b49b979d5e4f8ecefc0941717a0745c24392",
+        "bytes": 10973,
+        "sha256": "ca91838b75db5b14c5b8f0d004854d5a1dae9ff9d2a1b765c0d0ea536edcbcb8",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "data.original_a.signatures.require_fresh()",
+          "new": "OriginalSignedOwnerFilesData::require_fresh(&data.original_a.signatures)",
+          "old_expression": "data.original_a.signatures.require_fresh()",
+          "new_expression": "OriginalSignedOwnerFilesData::require_fresh(&data.original_a.signatures)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalSignedOwnerFilesData",
+          "method": "require_fresh",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.original_c.signatures.require_fresh()",
+          "new": "OriginalSignedOwnerFilesData::require_fresh(&data.original_c.signatures)",
+          "old_expression": "data.original_c.signatures.require_fresh()",
+          "new_expression": "OriginalSignedOwnerFilesData::require_fresh(&data.original_c.signatures)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalSignedOwnerFilesData",
+          "method": "require_fresh",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.freeze.require_fresh()",
+          "new": "OriginalSignedOwnerFilesData::require_fresh(&data.freeze)",
+          "old_expression": "data.freeze.require_fresh()",
+          "new_expression": "OriginalSignedOwnerFilesData::require_fresh(&data.freeze)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalSignedOwnerFilesData",
+          "method": "require_fresh",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.owners.require_fresh()",
+          "new": "OriginalLearningOwnersData::require_fresh(&data.owners)",
+          "old_expression": "data.owners.require_fresh()",
+          "new_expression": "OriginalLearningOwnersData::require_fresh(&data.owners)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalLearningOwnersData",
+          "method": "require_fresh",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "        authority.original_signer(\n            &data.original_a.signatures.principal, LearningEvidenceRoleV1::Generator,\n",
+          "new": "        super::learning_data::OriginalLearningAuthority::original_signer(\n            &authority,\n            &data.original_a.signatures.principal, LearningEvidenceRoleV1::Generator,\n",
+          "old_expression": "authority.original_signer(\n",
+          "new_expression": "super::learning_data::OriginalLearningAuthority::original_signer(\n            &authority,\n",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalLearningAuthority",
+          "method": "original_signer",
+          "origin": "Actual LearningAuthorityData.activate_original return; same borrowed authority and principal/role order."
+        },
+        {
+          "old": "        authority.original_signer(\n            &data.original_a.observer, LearningEvidenceRoleV1::Observer,\n",
+          "new": "        super::learning_data::OriginalLearningAuthority::original_signer(\n            &authority,\n            &data.original_a.observer, LearningEvidenceRoleV1::Observer,\n",
+          "old_expression": "authority.original_signer(\n",
+          "new_expression": "super::learning_data::OriginalLearningAuthority::original_signer(\n            &authority,\n",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalLearningAuthority",
+          "method": "original_signer",
+          "origin": "Actual LearningAuthorityData.activate_original return; same borrowed authority and principal/role order."
+        },
+        {
+          "old": "authority.into_original_parts()",
+          "new": "super::learning_data::OriginalLearningAuthority::into_original_parts(authority)",
+          "old_expression": "authority.into_original_parts()",
+          "new_expression": "super::learning_data::OriginalLearningAuthority::into_original_parts(authority)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalLearningAuthority",
+          "method": "into_original_parts",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.require_fresh()",
+          "new": "OriginalSignedOwnerFilesData::require_fresh(data)",
+          "old_expression": "data.require_fresh()",
+          "new_expression": "OriginalSignedOwnerFilesData::require_fresh(data)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalSignedOwnerFilesData",
+          "method": "require_fresh",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.witness.open_original(files)",
+          "new": "OriginalWitnessData::open_original(&data.witness, files)",
+          "old_expression": "data.witness.open_original(files)",
+          "new_expression": "OriginalWitnessData::open_original(&data.witness, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalWitnessData",
+          "method": "open_original",
+          "origin": "Original freeze SignedOwner.witness, same field borrow."
+        },
+        {
+          "old": "data.signatures.require_fresh()",
+          "new": "OriginalSignedOwnerFilesData::require_fresh(&data.signatures)",
+          "old_expression": "data.signatures.require_fresh()",
+          "new_expression": "OriginalSignedOwnerFilesData::require_fresh(&data.signatures)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalSignedOwnerFilesData",
+          "method": "require_fresh",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "data.signatures.witness.open_original(files)",
+          "new": "OriginalWitnessData::open_original(&data.signatures.witness, files)",
+          "old_expression": "data.signatures.witness.open_original(files)",
+          "new_expression": "OriginalWitnessData::open_original(&data.signatures.witness, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalWitnessData",
+          "method": "open_original",
+          "origin": "Original task SignedOwner.witness, same field borrow."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "pre": {
+        "blob": "0b609bfb7eb16e3a8a0056a4ce8f8cc3f8ae84a4",
+        "bytes": 11458,
+        "sha256": "c8ece815be5e6ee3b1cb0ed7ac36b2dfd1068b90300a674997865b87ff162858"
+      },
+      "post": {
+        "blob": "d003384f9badda26bae38e44c6dcf3361b2b5896",
+        "bytes": 11696,
+        "sha256": "52ea23b25b5b6237bc08bd4e28de0f6bbbb885fb4892557dd4cd4a99edafbf02",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "self.candidate_journal.open_original(files)",
+          "new": "OriginalEvaluationJournalData::open_original(&self.candidate_journal, files)",
+          "old_expression": "self.candidate_journal.open_original(files)",
+          "new_expression": "OriginalEvaluationJournalData::open_original(&self.candidate_journal, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalEvaluationJournalData",
+          "method": "open_original",
+          "origin": "Actual typed Candidate/FixedExpert journal DTO fields; original owner openings remain."
+        },
+        {
+          "old": "self.fixed_expert_journal.open_original(files)",
+          "new": "OriginalEvaluationJournalData::open_original(&self.fixed_expert_journal, files)",
+          "old_expression": "self.fixed_expert_journal.open_original(files)",
+          "new_expression": "OriginalEvaluationJournalData::open_original(&self.fixed_expert_journal, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalEvaluationJournalData",
+          "method": "open_original",
+          "origin": "Actual typed Candidate/FixedExpert journal DTO fields; original owner openings remain."
+        },
+        {
+          "old": "material.clone_original_file()",
+          "new": "super::files::OriginalPinnedRead::clone_original_file(&material)",
+          "old_expression": "material.clone_original_file()",
+          "new_expression": "super::files::OriginalPinnedRead::clone_original_file(&material)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "        ).map_err(deployment_error)?;\n        material.require_original_pin()?;\n        let holdout = self.holdout.open_original_holdout(files)?;\n",
+          "new": "        ).map_err(deployment_error)?;\n        super::files::OriginalPinnedRead::require_original_pin(&material)?;\n        let holdout = self.holdout.open_original_holdout(files)?;\n",
+          "old_expression": "material.require_original_pin()",
+          "new_expression": "super::files::OriginalPinnedRead::require_original_pin(&material)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "        };\n        material.require_original_pin()?;\n        wait.require_original_live()?;\n",
+          "new": "        };\n        super::files::OriginalPinnedRead::require_original_pin(&material)?;\n        wait.require_original_live()?;\n",
+          "old_expression": "material.require_original_pin()",
+          "new_expression": "super::files::OriginalPinnedRead::require_original_pin(&material)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "attestor.take_original_failure()",
+          "new": "OriginalExecutionAttestor::take_original_failure(&mut attestor)",
+          "old_expression": "attestor.take_original_failure()",
+          "new_expression": "OriginalExecutionAttestor::take_original_failure(&mut attestor)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalExecutionAttestor",
+          "method": "take_original_failure",
+          "origin": "Same concrete object from original field/return/loop binding; preserve original shared borrow."
+        },
+        {
+          "old": "self.receipt.witness.open_original(files)",
+          "new": "super::witness::OriginalWitnessData::open_original(&self.receipt.witness, files)",
+          "old_expression": "self.receipt.witness.open_original(files)",
+          "new_expression": "super::witness::OriginalWitnessData::open_original(&self.receipt.witness, files)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalWitnessData",
+          "method": "open_original",
+          "origin": "Actual Evaluation receipt SignedOwner.witness; original owner and File order."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "pre": {
+        "blob": "2d3b10595febddae8c09ef08aac35c7ce3e9f6bf",
+        "bytes": 11054,
+        "sha256": "3699615f5750199ec978d708aefe49c1fa07b028625cae45ed1e69e090624d35"
+      },
+      "post": {
+        "blob": "b7b0d8c7eef3a9f4b7e5ec7d40b7d0c4d1a1e8e6",
+        "bytes": 11394,
+        "sha256": "954a53f7a33e4347e2b3bce348544c69939afee65d931275e57ee93875a39332",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "OriginalActorExchange::new(\n            self.data.scoped_material_ready.clone(),\n        )?.exchange_original(&notice, &mut self.files, &mut wait)",
+          "new": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(\n            self.data.scoped_material_ready.clone(),\n        )?, &notice, &mut self.files, &mut wait)",
+          "old_expression": "OriginalActorExchange::new(\n            self.data.scoped_material_ready.clone(),\n        )?.exchange_original(&notice, &mut self.files, &mut wait)",
+          "new_expression": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(\n            self.data.scoped_material_ready.clone(),\n        )?, &notice, &mut self.files, &mut wait)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalActorExchange",
+          "method": "exchange_original",
+          "origin": "Original new returns owned exchange; consume the identical value after same constructor ? before the same request/files/wait arguments."
+        },
+        {
+          "old": "OriginalActorExchange::new(\n            self.data.independent_training.clone(),\n        )?.exchange_original(&notice, &mut self.files, &mut wait)",
+          "new": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(\n            self.data.independent_training.clone(),\n        )?, &notice, &mut self.files, &mut wait)",
+          "old_expression": "OriginalActorExchange::new(\n            self.data.independent_training.clone(),\n        )?.exchange_original(&notice, &mut self.files, &mut wait)",
+          "new_expression": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(\n            self.data.independent_training.clone(),\n        )?, &notice, &mut self.files, &mut wait)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalActorExchange",
+          "method": "exchange_original",
+          "origin": "Original new returns owned exchange; consume the identical value after same constructor ? before the same request/files/wait arguments."
+        },
+        {
+          "old": "OriginalActorExchange::new(self.data.artifact_decision.clone())?\n            .exchange_original(&notice, &mut self.files, &mut wait)",
+          "new": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.artifact_decision.clone())?, &notice, &mut self.files, &mut wait)",
+          "old_expression": "OriginalActorExchange::new(self.data.artifact_decision.clone())?\n            .exchange_original(&notice, &mut self.files, &mut wait)",
+          "new_expression": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.artifact_decision.clone())?, &notice, &mut self.files, &mut wait)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalActorExchange",
+          "method": "exchange_original",
+          "origin": "Original new returns owned exchange; consume the identical value after same constructor ? before the same request/files/wait arguments."
+        },
+        {
+          "old": "OriginalActorExchange::new(self.data.independent_selection.clone())?\n            .exchange_original(&notice, &mut self.files, &mut wait)",
+          "new": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.independent_selection.clone())?, &notice, &mut self.files, &mut wait)",
+          "old_expression": "OriginalActorExchange::new(self.data.independent_selection.clone())?\n            .exchange_original(&notice, &mut self.files, &mut wait)",
+          "new_expression": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(self.data.independent_selection.clone())?, &notice, &mut self.files, &mut wait)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalActorExchange",
+          "method": "exchange_original",
+          "origin": "Original new returns owned exchange; consume the identical value after same constructor ? before the same request/files/wait arguments."
+        },
+        {
+          "old": "OriginalActorExchange::new(\n            self.data.current_material_ready.clone(),\n        )?.exchange_original(&notice, &mut self.files, wait)",
+          "new": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(\n            self.data.current_material_ready.clone(),\n        )?, &notice, &mut self.files, wait)",
+          "old_expression": "OriginalActorExchange::new(\n            self.data.current_material_ready.clone(),\n        )?.exchange_original(&notice, &mut self.files, wait)",
+          "new_expression": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(\n            self.data.current_material_ready.clone(),\n        )?, &notice, &mut self.files, wait)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalActorExchange",
+          "method": "exchange_original",
+          "origin": "Original new returns owned exchange; consume the identical value after same constructor ? before the same request/files/wait arguments."
+        },
+        {
+          "old": "        let data: OriginalEvaluationResponse = response.parse_original()?;\n",
+          "new": "        let data: OriginalEvaluationResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;\n",
+          "old_expression": "response.parse_original()",
+          "new_expression": "super::super::files::OriginalPinnedRead::parse_original(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        let data: OriginalArtifactResponse = response.parse_original()?;\n",
+          "new": "        let data: OriginalArtifactResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;\n",
+          "old_expression": "response.parse_original()",
+          "new_expression": "super::super::files::OriginalPinnedRead::parse_original(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        let data: OriginalSelectionResponse = response.parse_original()?;\n",
+          "new": "        let data: OriginalSelectionResponse = super::super::files::OriginalPinnedRead::parse_original(&response)?;\n",
+          "old_expression": "response.parse_original()",
+          "new_expression": "super::super::files::OriginalPinnedRead::parse_original(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        }\n        response.require_original_pin()?;\n        wait.require_original_live()?;\n",
+          "new": "        }\n        super::super::files::OriginalPinnedRead::require_original_pin(&response)?;\n        wait.require_original_live()?;\n",
+          "old_expression": "response.require_original_pin()",
+          "new_expression": "super::super::files::OriginalPinnedRead::require_original_pin(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        )?;\n        response.require_original_pin()?;\n        self.decision_head = Some(snapshot.head_digest);\n",
+          "new": "        )?;\n        super::super::files::OriginalPinnedRead::require_original_pin(&response)?;\n        self.decision_head = Some(snapshot.head_digest);\n",
+          "old_expression": "response.require_original_pin()",
+          "new_expression": "super::super::files::OriginalPinnedRead::require_original_pin(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        )?;\n        response.require_original_pin()?;\n        self.original_selection = Some((data.original, digest));\n",
+          "new": "        )?;\n        super::super::files::OriginalPinnedRead::require_original_pin(&response)?;\n        self.original_selection = Some((data.original, digest));\n",
+          "old_expression": "response.require_original_pin()",
+          "new_expression": "super::super::files::OriginalPinnedRead::require_original_pin(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "pre": {
+        "blob": "595ac3b2a66468e222794e7f539873bbb88a6462",
+        "bytes": 8102,
+        "sha256": "74e80f2223b5708f9290f35ead95393978c0e1d82c796238d0370fd971be0608"
+      },
+      "post": {
+        "blob": "7ed8243f0608dea3b1921b7859a53df2cc47c490",
+        "bytes": 8277,
+        "sha256": "a79ffbd6a4b3b73bc3e4a830ec668b31e3baf472153b093e4c28647be9e16acc",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "exchange.exchange_original(&raw, self.files, self.wait)",
+          "new": "OriginalActorExchange::exchange_original(exchange, &raw, self.files, self.wait)",
+          "old_expression": "exchange.exchange_original(&raw, self.files, self.wait)",
+          "new_expression": "OriginalActorExchange::exchange_original(exchange, &raw, self.files, self.wait)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalActorExchange",
+          "method": "exchange_original",
+          "origin": "Actual owned exchange taken from this attestor's Option; same by-value consumption."
+        },
+        {
+          "old": "OriginalActorExchange::new(exchange)?\n        .exchange_original(&request, files, wait)",
+          "new": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(exchange)?, &request, files, wait)",
+          "old_expression": "OriginalActorExchange::new(exchange)?\n        .exchange_original(&request, files, wait)",
+          "new_expression": "OriginalActorExchange::exchange_original(OriginalActorExchange::new(exchange)?, &request, files, wait)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalActorExchange",
+          "method": "exchange_original",
+          "origin": "Original new returns owned exchange; consume the identical value after same constructor ? before the same request/files/wait arguments."
+        },
+        {
+          "old": "        let signed: OriginalExecutionResponseData = response.parse_original()?;\n",
+          "new": "        let signed: OriginalExecutionResponseData = super::files::OriginalPinnedRead::parse_original(&response)?;\n",
+          "old_expression": "response.parse_original()",
+          "new_expression": "super::files::OriginalPinnedRead::parse_original(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "    let signed: OriginalQualificationResponseData = response.parse_original()?;\n",
+          "new": "    let signed: OriginalQualificationResponseData = super::files::OriginalPinnedRead::parse_original(&response)?;\n",
+          "old_expression": "response.parse_original()",
+          "new_expression": "super::files::OriginalPinnedRead::parse_original(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "parse_original",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        response.require_original_pin()?;\n",
+          "new": "        super::files::OriginalPinnedRead::require_original_pin(&response)?;\n",
+          "old_expression": "response.require_original_pin()",
+          "new_expression": "super::files::OriginalPinnedRead::require_original_pin(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "    };\n    response.require_original_pin()?;\n    wait.require_original_live()?;\n",
+          "new": "    };\n    super::files::OriginalPinnedRead::require_original_pin(&response)?;\n    wait.require_original_live()?;\n",
+          "old_expression": "response.require_original_pin()",
+          "new_expression": "super::files::OriginalPinnedRead::require_original_pin(&response)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "pre": {
+        "blob": "81fd249e2d8c53fd2873153332c921356df441d7",
+        "bytes": 11024,
+        "sha256": "9dbf0ea176381fdc3f585becf0b1fdabee994769b1c1f423f92f023654f1d8cf"
+      },
+      "post": {
+        "blob": "28c30716aa6a4d63d3aa88ed128eb095d928a95b",
+        "bytes": 11246,
+        "sha256": "3b88c7be086b486537cbff38d8cd2d9c5fc501f1e946398003f5dcb44791e349",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "withdrawal_file.clone_original_file()",
+          "new": "OriginalPinnedRead::clone_original_file(&withdrawal_file)",
+          "old_expression": "withdrawal_file.clone_original_file()",
+          "new_expression": "OriginalPinnedRead::clone_original_file(&withdrawal_file)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "registry.clone_original_file()",
+          "new": "OriginalPinnedRead::clone_original_file(&registry)",
+          "old_expression": "registry.clone_original_file()",
+          "new_expression": "OriginalPinnedRead::clone_original_file(&registry)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "payload.clone_original_file()",
+          "new": "OriginalPinnedRead::clone_original_file(&payload)",
+          "old_expression": "payload.clone_original_file()",
+          "new_expression": "OriginalPinnedRead::clone_original_file(&payload)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "withdrawal_file.require_original_pin()",
+          "new": "OriginalPinnedRead::require_original_pin(&withdrawal_file)",
+          "old_expression": "withdrawal_file.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&withdrawal_file)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        lock.require_original_pin()?;\n",
+          "new": "        OriginalPinnedRead::require_original_pin(&lock)?;\n",
+          "old_expression": "lock.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&lock)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "                payload.require_original_pin()?;\n",
+          "new": "                OriginalPinnedRead::require_original_pin(&payload)?;\n",
+          "old_expression": "payload.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&payload)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "registry.require_original_pin()",
+          "new": "OriginalPinnedRead::require_original_pin(&registry)",
+          "old_expression": "registry.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&registry)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        OriginalPinnedRead::require_original_pin(&registry)?;\n        payload.require_original_pin()?;\n        files.require_original_context()?;\n",
+          "new": "        OriginalPinnedRead::require_original_pin(&registry)?;\n        OriginalPinnedRead::require_original_pin(&payload)?;\n        files.require_original_context()?;\n",
+          "old_expression": "payload.require_original_pin()",
+          "new_expression": "OriginalPinnedRead::require_original_pin(&payload)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "payload.bytes()",
+          "new": "OriginalPinnedRead::bytes(&payload)",
+          "old_expression": "payload.bytes()",
+          "new_expression": "OriginalPinnedRead::bytes(&payload)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "bytes",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        for directory in &directories { directory.require_original_directory_pin()?; }\n",
+          "new": "        for directory in &directories { OriginalDirectoryPin::require_original_directory_pin(directory)?; }\n",
+          "old_expression": "directory.require_original_directory_pin()",
+          "new_expression": "OriginalDirectoryPin::require_original_directory_pin(directory)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalDirectoryPin",
+          "method": "require_original_directory_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "        for directory in &self.directories { directory.require_original_directory_pin()?; }\n",
+          "new": "        for directory in &self.directories { OriginalDirectoryPin::require_original_directory_pin(directory)?; }\n",
+          "old_expression": "directory.require_original_directory_pin()",
+          "new_expression": "OriginalDirectoryPin::require_original_directory_pin(directory)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalDirectoryPin",
+          "method": "require_original_directory_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+      "pre": {
+        "blob": "7ba5e3e61787dee0064059a46870a1467e62c6f3",
+        "bytes": 2673,
+        "sha256": "a73d7690f8746c5978fbeff88d07191e58f86b1c677d75207e71b417bb4c025b"
+      },
+      "post": {
+        "blob": "307446354758465d91a01ec6ba8dc4832b731049",
+        "bytes": 2874,
+        "sha256": "b6de56fcae3f541a251e114e45f79e88c474e8c40bcb1e462d700ed1c9f604fd",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "base.clone_original_file()",
+          "new": "super::files::OriginalPinnedRead::clone_original_file(&base)",
+          "old_expression": "base.clone_original_file()",
+          "new_expression": "super::files::OriginalPinnedRead::clone_original_file(&base)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "encoder.clone_original_file()",
+          "new": "super::files::OriginalPinnedRead::clone_original_file(&encoder)",
+          "old_expression": "encoder.clone_original_file()",
+          "new_expression": "super::files::OriginalPinnedRead::clone_original_file(&encoder)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "heads.clone_original_file()",
+          "new": "super::files::OriginalPinnedRead::clone_original_file(&heads)",
+          "old_expression": "heads.clone_original_file()",
+          "new_expression": "super::files::OriginalPinnedRead::clone_original_file(&heads)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "            organ_adapter: organ.as_ref().map(|read| read.clone_original_file()).transpose()?,\n",
+          "new": "            organ_adapter: organ.as_ref().map(|read| super::files::OriginalPinnedRead::clone_original_file(read)).transpose()?,\n",
+          "old_expression": "read.clone_original_file()",
+          "new_expression": "super::files::OriginalPinnedRead::clone_original_file(read)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "            cell_adapter: cell.as_ref().map(|read| read.clone_original_file()).transpose()?,\n",
+          "new": "            cell_adapter: cell.as_ref().map(|read| super::files::OriginalPinnedRead::clone_original_file(read)).transpose()?,\n",
+          "old_expression": "read.clone_original_file()",
+          "new_expression": "super::files::OriginalPinnedRead::clone_original_file(read)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "clone_original_file",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        },
+        {
+          "old": "read.require_original_pin()",
+          "new": "super::files::OriginalPinnedRead::require_original_pin(read)",
+          "old_expression": "read.require_original_pin()",
+          "new_expression": "super::files::OriginalPinnedRead::require_original_pin(read)",
+          "kind": "actual_receiver_spelling",
+          "receiver_type": "OriginalPinnedRead",
+          "method": "require_original_pin",
+          "origin": "Same actual object from original field/return/loop; unchanged shared borrow."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": {
+        "blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "bytes": 11788,
+        "sha256": "74d7a6d168faa960804b7b21ce3bba56ebbe6de3922485736a972356411fe725"
+      },
+      "post": {
+        "blob": "811fb02d0b030881bfb4366121e375f09807e0f7",
+        "bytes": 11934,
+        "sha256": "1cd8f7947283a24976ec52e70fd29ff0d89230d2031c1cf09a39fac62dc32e7b",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        self.stopped.require_original_origin(identity, gate)",
+          "new": "        OriginalSameActorRuntimeStopped::require_original_origin(&self.stopped, identity, gate)",
+          "reason": "Shared borrow of the same stopped owner; method is &self."
+        },
+        {
+          "old": "            self.context.gate().close();\n            return Err(runtime_refused(\"actual stopped Runtime custody differs\"));",
+          "new": "            SameActorPhaseGate::close(self.context.gate());\n            return Err(runtime_refused(\"actual stopped Runtime custody differs\"));",
+          "reason": "The same &Arc Gate coerces to &Gate; no clone/move."
+        },
+        {
+          "old": "    pub(super) async fn close_original_runtime_resources(mut self) -> Result<(), AgentdError> {\n        self.context.gate().close();",
+          "new": "    pub(super) async fn close_original_runtime_resources(mut self) -> Result<(), AgentdError> {\n        SameActorPhaseGate::close(self.context.gate());",
+          "reason": "Same first close before resource take/drop."
+        },
+        {
+          "old": "impl Drop for OriginalSameActorRuntimeStopped {\n    fn drop(&mut self) {\n        self.context.gate().close();",
+          "new": "impl Drop for OriginalSameActorRuntimeStopped {\n    fn drop(&mut self) {\n        SameActorPhaseGate::close(self.context.gate());",
+          "reason": "Same Drop close before device invalidation."
+        },
+        {
+          "old": "            context.gate().close();",
+          "new": "            SameActorPhaseGate::close(context.gate());",
+          "reason": "Same error-branch close; original cleanup awaits/return remain."
+        },
+        {
+          "old": "        stopped.require_original_origin(&identity, &gate)?;",
+          "new": "        OriginalSameActorRuntimeStopped::require_original_origin(&stopped, &identity, &gate)?;",
+          "reason": "Shared borrow of newly constructed actual owner; no early move; ? and disarm remain."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": {
+        "blob": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+        "bytes": 6068,
+        "sha256": "dc518defb682662fbef3471774508f1849579ebadef2cd4844dee400cd366d75"
+      },
+      "post": {
+        "blob": "53ff12a548e96394241f24892e505ce1e7c4ddf0",
+        "bytes": 6137,
+        "sha256": "4b6c33f35cc29fd94c0599967f6e64e9a309fd429a4974ed4a606d70aa2ad70f",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        if let Err(error) = coordinator.stop_and_join_original() {",
+          "new": "        if let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {",
+          "reason": "coordinator is already &mut from Option::as_mut; no extra borrow or owner move."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "pre": {
+        "blob": "2a60e2dd058abe2bc73fcff25d0d1bc4bc0d9cbf",
+        "bytes": 5709,
+        "sha256": "13e413e76e7a576dd9957a2b2518fa07e5b4e7f11f67cd1be194e400a51ebe2a"
+      },
+      "post": {
+        "blob": "4f6c0c47b4307338af38f7c9f5eadd848f4d2b69",
+        "bytes": 5795,
+        "sha256": "933ec2029a711a681ab907e10a64ebbfa111a0cdc04a88cea54e1188fd61a125",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        let witness: FileAnchorWitnessStore = self.witness.open_original(files)?;",
+          "new": "        let witness: FileAnchorWitnessStore = OriginalWitnessData::open_original(&self.witness, files)?;",
+          "reason": "Same shared field borrow, mutable files reborrow and ?."
+        },
+        {
+          "old": "        let ledger = learning.open_original_c_task(files, now)?;",
+          "new": "        let ledger = OriginalDeploymentLearning::open_original_c_task(learning, files, now)?;",
+          "reason": "learning is already &'a OriginalDeploymentLearning from OriginalCResources; same reference."
+        },
+        {
+          "old": "        let predecessor = predecessor.reopen_original(files)?;",
+          "new": "        let predecessor = OriginalInitialPredecessorFiles::reopen_original(predecessor, files)?;",
+          "reason": "Same by-value predecessor consumption after ledger; original ? unchanged."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": {
+        "blob": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+        "bytes": 12603,
+        "sha256": "a5a0e292391940386e2b5eeff3f9447188a31af973219944ca6f29f1e1da9de0"
+      },
+      "post": {
+        "blob": "a34a30406eb5e1092af7aaf5b464b1632a0261cd",
+        "bytes": 12670,
+        "sha256": "e54a0bbafea7769f58128915c0928eb5a77d00a2fcf7c0f8b941fdc4bc1fb09b",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        let (model, bundle) = self.model.open_original(files)?;",
+          "new": "        let (model, bundle) = OriginalModelData::open_original(&self.model, files)?;",
+          "reason": "Same shared model borrow and original mutable file-owner argument."
+        },
+        {
+          "old": "        let source_witness = self.source_witness.open_original(files)?;",
+          "new": "        let source_witness = OriginalWitnessData::open_original(&self.source_witness, files)?;",
+          "reason": "Same shared source witness field borrow."
+        },
+        {
+          "old": "        let cell_witness = self.cell_witness.open_original(files)?;",
+          "new": "        let cell_witness = OriginalWitnessData::open_original(&self.cell_witness, files)?;",
+          "reason": "Same shared Cell witness field borrow; original open ordering retained."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "pre": {
+        "blob": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a",
+        "bytes": 15007,
+        "sha256": "9a049f1e8ff7f5335f5c8a57bf85a3365d24220443a36a8c805244e13b960ce6"
+      },
+      "post": {
+        "blob": "4866091621bed9c08aacd507f9e7c15627df957e",
+        "bytes": 15076,
+        "sha256": "8e5064583a4db6ecfeb1c1a4a21ac5b90e826c64ea2fa735c9b093edb03e57c7",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "            retirement\n                .require_original_gate(gate)\n                .map_err(io::Error::other)?;",
+          "new": "            crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime::require_original_gate(\n                retirement, gate,\n            ).map_err(io::Error::other)?;",
+          "reason": "retirement is &Arc<OriginalInitialPhaseLifetime> from borrowed Option; same deref-coerced &self and original error mapping."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pre": {
+        "blob": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+        "bytes": 22080,
+        "sha256": "fe9d5c8b5538c5ce6ea9f2dbc5004344b279e7cc4f817d32d681e2bcef753dca"
+      },
+      "post": {
+        "blob": "77f2fc691e2155eaf14563fb537c4a98eebb8964",
+        "bytes": 22140,
+        "sha256": "11c7b42c83211ec7fad8b5c3a05576bb9cdd5166957f373d9c7b5cbe129266ab",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        self.original_retirement_custody().shutdown_original_after_root_intent(intent)",
+          "new": "        OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(\n            &self.original_retirement_custody(), intent,\n        )",
+          "reason": "Borrow the same one temporary close-only custody; original method is &self; no Intent receiver substitution."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": {
+        "blob": "6dad9c84b41bc21f9b3be7502f49e9287237aa94",
+        "bytes": 22990,
+        "sha256": "afdee5a77850cf5ee65139d186edd153fda9679c0997013cb8224e5ab908d935"
+      },
+      "post": {
+        "blob": "ec76465e7e56037f7f7a8bf8388e113ee1cce112",
+        "bytes": 23144,
+        "sha256": "1ee4a042d3bf2f4a834a710f3055568b5c18bcce89084668e161f0c9ea277e74",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "    let retirement = phase.original_retirement_custody();",
+          "new": "    let retirement = RequiredSameActorPhaseChannel::original_retirement_custody(&phase);",
+          "reason": "phase is the actual owned Required channel before its later move into frontier."
+        },
+        {
+          "old": "    let job = admission.retain_original_bootstrap_consumer_handle(worker);",
+          "new": "    let job = crate::production_launcher::OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle(admission, worker);",
+          "reason": "Same by-value admission and actual worker handle; synchronous retain still precedes receive future."
+        },
+        {
+          "old": "    let owner = job.receive_original().await?;",
+          "new": "    let owner = crate::production_launcher::OriginalBootstrapConsumerJob::receive_original(&job).await?;",
+          "reason": "Same &Arc job receiver; original synchronous failure-scope creation, await and ? remain."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": {
+        "blob": "a691263dce886a35a73b0759b9740e711b76ffb1",
+        "bytes": 15584,
+        "sha256": "d17eba1003b440f1337aacc724223e9174271d2cbf60f0c697ce776a309499b1"
+      },
+      "post": {
+        "blob": "3e9446183a443759d8e19edd3d50ad4bf518c57d",
+        "bytes": 15650,
+        "sha256": "29e2e397d82019755d11dd5fa83e67288027c7f485a57e82b246fe06a40a6847",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "new": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "phase is &Required from Option::as_ref; original idle locks, checks, sticky state and ? remain."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": {
+        "blob": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd",
+        "bytes": 14808,
+        "sha256": "97cf9a82b473ead8a98fbbe4d19aa321c0a334e177b77fec9ceed76afb9a9346"
+      },
+      "post": {
+        "blob": "a3af84b4a0481a0e3659959cd80af02b6bf5e485",
+        "bytes": 14874,
+        "sha256": "c37fd969f83ffd537424f6b4ce538c39c1bcc5803203961cf17b35c3df6cdda2",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "new": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "Same borrowed actual Required under the original populated idle slot and peer checks."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "pre": {
+        "blob": "bc430c0f787237f3e233e66e536b1a1b151811b4",
+        "bytes": 5115,
+        "sha256": "f09ed8840d6c533a9b69e21c03a7559f6a5f67d2bc438da23c6a1855c53c415c"
+      },
+      "post": {
+        "blob": "d5015ce8d7a3223fdc0fc5c7bd1207af6e2982f3",
+        "bytes": 5181,
+        "sha256": "2927fc2aa10276167b51f501b6a0ac6e4319eb414aff43725578789c6eeca977",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "new": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "Same Required borrowed from actual checkpoint client; held idle lock and original origin checks unchanged."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "pre": {
+        "blob": "eea6bbb366386a2320df86692fd37a6ca417cf35",
+        "bytes": 3842,
+        "sha256": "a1c3ea23772244e9b0c09a9db97ac88659bacd739e57fa06d9c701efa147c564"
+      },
+      "post": {
+        "blob": "81f63f39581679adfc5849e4d58bd90dcde56143",
+        "bytes": 3908,
+        "sha256": "7274b2b7642288817c0a41a1b7fb6e9d52351de5f36b5a4e7b8a3880a72e40ac",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "new": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "Same &Required while Model self is &mut, after original permanent fencing; no ownership change."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "pre": {
+        "blob": "9ba4eafef98caa9c3c20ff883770204475443a34",
+        "bytes": 2409,
+        "sha256": "3e1417415d0faaa79045658eafcbecaa3ef567aea84bd5f678acb1ba1a12505b"
+      },
+      "post": {
+        "blob": "a310ef21a6b786fda5362314f01325ab4d6bad15",
+        "bytes": 2473,
+        "sha256": "c3f1adbb7c4f2b3e3b7aef01decb3faade6673b626bf1fb77b95fb3738cca7a6",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "        watch.finish_original_after_root_exit(exited, &self.identity)",
+          "new": "        crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch::finish_original_after_root_exit(watch, exited, &self.identity)",
+          "reason": "watch is the actual by-value Watch taken from Mutex<Option>; consume it once after releasing mutex."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "pre": {
+        "blob": "0295dcae5e3ef047a2c4dc4d902388da35694a2d",
+        "bytes": 27869,
+        "sha256": "689a86033a5f5806b08f86821cb0b8f7cb3495150cdd04ce795c6e6f63cdbafb"
+      },
+      "post": {
+        "blob": "a14d75a0199087963ce4b6c0ce7d04af6ba6e8e9",
+        "bytes": 28015,
+        "sha256": "a1cd2e7e10ccdcdaafbf829c20dbf1d23eac1b78704b1108b917081bda95a435",
+        "create_get_equal": true
+      },
+      "operations": [
+        {
+          "old": "pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerKind;",
+          "new": "pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerKind;\npub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerAdmission;\npub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerJob;",
+          "reason": "Only names of already pub(crate) types are reexported at crate visibility; no field or constructor visibility change."
+        }
+      ],
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true
+    }
+  ],
+  "counts": {
+    "paths": 28,
+    "operations": 105,
+    "receiver_spelling_operations": 103,
+    "crate_private_name_export_operations": 2,
+    "crate_private_name_exports": 3
+  },
+  "component_packets": {
+    "runtime_authored_15": "3393f869fbc81ffc41371e2ba8bf9ab046590d84",
+    "hepta_authored_13": "d1fc1e2d04ea3290cd24622377f8a0732286cf79",
+    "runtime_independent_review_of_hepta_13": "b2875a8c0c4717a6a1375842fb396597295e9094"
+  },
+  "integration": "This package is the union of two disjoint source slices. Apply the combined 105 operations OR each component once, never both. a66a is an obsolete subset of 3393.",
+  "api_name_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "name": "OriginalBootstrapConsumerJob",
+      "visibility": "pub(crate)",
+      "source": "private bootstrap_consumers child"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "name": "OriginalBootstrapConsumerAdmission",
+      "visibility": "pub(crate)",
+      "source": "same_actor_phase::owner"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "name": "OriginalBootstrapConsumerJob",
+      "visibility": "pub(crate)",
+      "source": "same_actor_phase::owner"
+    }
+  ],
+  "semantics": [
+    "Only actual receiver spelling is explicit; same objects, references, mutable reborrows, by-value moves, arguments, ?, await and Drop order remain.",
+    "No generic Product trait call was rewritten as a concrete receiver. The actual attestor generic dispatch is documented separately.",
+    "All 3 type-name exports preserve already pub(crate) types and private fields/constructors; no public capability construction path is added.",
+    "No checker/helper/guard/clock/500ms algorithm changes. Existing Gate.close and CloseOnDrop.disarm are not newly classified as boundaries.",
+    "Formatting has not run; Root will bind markers to actual formatter postimages. Classification/caller deltas and four affected outer guard selectors follow separately."
+  ],
+  "authority": "0 h/native/ref",
+  "review": "Cross-review split by authorship. No independent claim over the author's own source slice; hepta review of 15 runtime-authored sources is pending."
+}

@@ -547,7 +547,7 @@ async fn open_original_phase_consumer(
     let phase = gate.retain_required_original_stream(&stream)?;
     // This is a reference to that exact required registration, not a new FD
     // or authority. The same phase object moves into the actual frontier.
-    let retirement = phase.original_retirement_custody();
+    let retirement = RequiredSameActorPhaseChannel::original_retirement_custody(&phase);
     let root = RootPeerIdentity {
         pid: bundle.root.pid,
         boot_id: bundle.root.boot_id.clone(),
@@ -592,8 +592,8 @@ async fn open_original_phase_consumer(
         closing.disarm();
         Ok(owner)
     });
-    let job = admission.retain_original_bootstrap_consumer_handle(worker);
-    let owner = job.receive_original().await?;
+    let job = crate::production_launcher::OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle(admission, worker);
+    let owner = crate::production_launcher::OriginalBootstrapConsumerJob::receive_original(&job).await?;
     gate.require_open()?;
     closing.disarm();
     Ok((owner, retirement))

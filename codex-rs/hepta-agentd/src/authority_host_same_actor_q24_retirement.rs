@@ -433,14 +433,15 @@ fn retirement_response(
     request: &OriginalRootRetirementRequest,
     intent: &str,
 ) -> io::Result<Vec<u8>> {
-    OriginalRootRetirementAcknowledgement {
-        schema_version: 1,
-        purpose: RETIREMENT_PURPOSE.into(),
-        binding: request.binding.clone(),
-        sequence: request.sequence,
-        stage: request.stage,
-        original_request: request.digest()?,
-        original_intent: intent.into(),
-    }
-    .encode_original(request, intent)
+    OriginalRootRetirementAcknowledgement::encode_original(
+        &OriginalRootRetirementAcknowledgement {
+            schema_version: 1,
+            purpose: RETIREMENT_PURPOSE.into(),
+            binding: request.binding.clone(),
+            sequence: request.sequence,
+            stage: request.stage,
+            original_request: request.digest()?,
+            original_intent: intent.into(),
+        }, request, intent,
+    )
 }

@@ -58,7 +58,7 @@ impl OriginalRuntimeRootPurposesRetired {
     pub(crate) fn require_original_origin(
         &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,
     ) -> Result<(), AgentdError> {
-        self.stopped.require_original_origin(identity, gate)
+        OriginalSameActorRuntimeStopped::require_original_origin(&self.stopped, identity, gate)
     }
 }
 
@@ -69,7 +69,7 @@ impl OriginalSameActorRuntimeStopped {
         if self.context.identity() != identity || !Arc::ptr_eq(self.context.gate(), gate)
             || self.attachment.is_none() || self.device.is_none() || self.mcp.is_none()
         {
-            self.context.gate().close();
+            SameActorPhaseGate::close(self.context.gate());
             return Err(runtime_refused("actual stopped Runtime custody differs"));
         }
         self.app_server_joined.require_original_custody(&self.app_server)
@@ -94,7 +94,7 @@ impl OriginalSameActorRuntimeStopped {
     /// Fault cleanup only. No Root retirement permission or natural Session
     /// completion is inferred from this operation.
     pub(super) async fn close_original_runtime_resources(mut self) -> Result<(), AgentdError> {
-        self.context.gate().close();
+        SameActorPhaseGate::close(self.context.gate());
         drop(self.attachment.take());
         if let Some(device) = self.device.take() { device.invalidate(); }
         let mcp = self.mcp.take()
@@ -110,7 +110,7 @@ impl OriginalSameActorRuntimeStopped {
 
 impl Drop for OriginalSameActorRuntimeStopped {
     fn drop(&mut self) {
-        self.context.gate().close();
+        SameActorPhaseGate::close(self.context.gate());
         if let Some(device) = &self.device { device.invalidate(); }
         // Synchronous Drop requests failure and retains no false join claim.
         // The actual outer owner normally drives the explicit async cleanup.
@@ -196,7 +196,7 @@ impl AgentdProductionLaunch {
         let app_server_joined = match result {
             Ok(joined) => joined,
             Err(error) => {
-            context.gate().close();
+            SameActorPhaseGate::close(context.gate());
             codex_app_server::OriginalAppServerOwnerCustody::request_stop(&app_server);
             if let Err(cleanup) = codex_app_server::OriginalAppServerOwnerCustody::join_original_app_server(&app_server).await {
                 tracing::error!(error = %cleanup, "original App Server cleanup also failed");
@@ -215,7 +215,7 @@ impl AgentdProductionLaunch {
             context, root_pidfd, attachment, device, mcp, app_server, app_server_joined,
             closing: CloseSameActorPhaseOnDrop::new(&gate),
         };
-        stopped.require_original_origin(&identity, &gate)?;
+        OriginalSameActorRuntimeStopped::require_original_origin(&stopped, &identity, &gate)?;
         closing.disarm();
         Ok(stopped)
     }

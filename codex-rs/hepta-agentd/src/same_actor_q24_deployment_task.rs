@@ -89,7 +89,7 @@ impl OriginalInitialData {
         if !matches!(self.witness.mode, OriginalFileMode::Recover) {
             return Err(deployment_refused("Initial requires its existing original witness"));
         }
-        let (model, bundle) = self.model.open_original(files)?;
+        let (model, bundle) = OriginalModelData::open_original(&self.model, files)?;
         let definition = self.definition.original()?;
         let source = self.source.original()?;
         let config = self.observer.original_observer_config().map_err(deployment_error)?;
@@ -165,9 +165,9 @@ impl OriginalTaskFilesData {
             require_fresh_original_file(file)?;
         }
         let source_journal = files.open_original_owner(&self.source_journal)?;
-        let source_witness = self.source_witness.open_original(files)?;
+        let source_witness = OriginalWitnessData::open_original(&self.source_witness, files)?;
         let cell_journal = files.open_original_owner(&self.cell_journal)?;
-        let cell_witness = self.cell_witness.open_original(files)?;
+        let cell_witness = OriginalWitnessData::open_original(&self.cell_witness, files)?;
         let control = files.open_original_owner(&self.inference_control)?;
         files.require_original_context()?;
         // The original inference owner requires O_APPEND. This is the one

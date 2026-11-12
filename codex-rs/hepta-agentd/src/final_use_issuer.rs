@@ -246,7 +246,7 @@ impl AgentdUnixFinalUseGrantProvider {
         self.check_root().map_err(|error| {
             crate::AgentdError::Protocol(format!("original grant peer: {error}"))
         })?;
-        phase.shutdown_original_after_root_intent(intent)?;
+        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;
         self.check_root().map_err(|error| {
             crate::AgentdError::Protocol(format!("original grant peer: {error}"))
         })?;

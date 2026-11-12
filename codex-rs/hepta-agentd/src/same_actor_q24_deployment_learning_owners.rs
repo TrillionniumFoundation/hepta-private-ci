@@ -81,7 +81,7 @@ impl OriginalDeploymentLearning {
         now: u64,
     ) -> Result<OriginalSameActorLearningInputsV1, AgentdError> {
         let data = &self.data.owners;
-        data.require_fresh()?;
+        OriginalLearningOwnersData::require_fresh(data)?;
         files.require_original_context()?;
         prepared.revalidate_source().map_err(deployment_error)?;
         let experience = self.open_original_observer(&data.experience, files, now)?;
@@ -92,16 +92,16 @@ impl OriginalDeploymentLearning {
         let training_key = files.read_original_signing_key(&data.training_receipts.key)?;
         require_original_key(&training_signer, &training_key)?;
         let training = files.open_original_owner(&data.training)?;
-        let training_witness = data.training_witness.open_original(files)?;
+        let training_witness = OriginalWitnessData::open_original(&data.training_witness, files)?;
         let receipts = files.open_original_owner(&data.training_receipts.journal)?;
-        let receipt_witness = data.training_receipts.witness.open_original(files)?;
+        let receipt_witness = OriginalWitnessData::open_original(&data.training_receipts.witness, files)?;
         let local_signer = self.require_original_signer(
             &data.local.principal, LearningEvidenceRoleV1::Selector, now,
         )?;
         let local_key = files.read_original_signing_key(&data.local.key)?;
         require_original_key(&local_signer, &local_key)?;
         let local_journal = files.open_original_owner(&data.local.journal)?;
-        let local_witness = data.local.witness.open_original(files)?;
+        let local_witness = OriginalWitnessData::open_original(&data.local.witness, files)?;
         prepared.revalidate_source().map_err(deployment_error)?;
         files.require_original_context()?;
         Ok(OriginalSameActorLearningInputsV1 {
@@ -145,7 +145,7 @@ impl OriginalDeploymentLearning {
         let key = files.read_original_signing_key(&data.key)?;
         require_original_key(&signer, &key)?;
         let journal = files.open_original_owner(&data.journal)?;
-        let witness = data.witness.open_original(files)?;
+        let witness = OriginalWitnessData::open_original(&data.witness, files)?;
         files.require_original_context()?;
         Ok(OriginalCellQ24SourceJournalV1 {
             journal, witness, signer, key,

@@ -38,14 +38,14 @@ impl OriginalModelData {
         let cell = self.cell_adapter.as_ref()
             .map(|file| files.read_original(file, 16 * 1024 * 1024)).transpose()?;
         let model = LoadedCellQ24ModelV1::open_files(CellQ24ModelFilesV1 {
-            base: base.clone_original_file()?,
-            encoder: encoder.clone_original_file()?,
-            heads: heads.clone_original_file()?,
-            organ_adapter: organ.as_ref().map(|read| read.clone_original_file()).transpose()?,
-            cell_adapter: cell.as_ref().map(|read| read.clone_original_file()).transpose()?,
+            base: super::files::OriginalPinnedRead::clone_original_file(&base)?,
+            encoder: super::files::OriginalPinnedRead::clone_original_file(&encoder)?,
+            heads: super::files::OriginalPinnedRead::clone_original_file(&heads)?,
+            organ_adapter: organ.as_ref().map(|read| super::files::OriginalPinnedRead::clone_original_file(read)).transpose()?,
+            cell_adapter: cell.as_ref().map(|read| super::files::OriginalPinnedRead::clone_original_file(read)).transpose()?,
         }).map_err(deployment_error)?;
         for read in [&base, &encoder, &heads].into_iter().chain(organ.iter()).chain(cell.iter()) {
-            read.require_original_pin()?;
+            super::files::OriginalPinnedRead::require_original_pin(read)?;
         }
         let bundle = self.bundle.original()?;
         bundle.digest().map_err(deployment_error)?;

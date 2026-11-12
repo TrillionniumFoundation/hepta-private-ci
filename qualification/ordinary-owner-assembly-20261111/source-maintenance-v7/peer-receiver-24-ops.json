@@ -1,0 +1,571 @@
+{
+  "schema_version": 1,
+  "kind": "future-only-explicit-actual-receivers-recovery-13paths-24ops",
+  "author": "hepta_audit",
+  "source_scope": "Exactly the 13 paths delegated by runtime_access and authorized by Root. No overlap with runtime_access 15-path 81-op packet 3393f869fbc81ffc41371e2ba8bf9ab046590d84.",
+  "evidence_repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_inventory": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+  "path_count": 13,
+  "operation_count": 24,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": {
+        "git_blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "bytes": 11788,
+        "sha256": "74d7a6d168faa960804b7b21ce3bba56ebbe6de3922485736a972356411fe725"
+      },
+      "post": {
+        "git_blob": "811fb02d0b030881bfb4366121e375f09807e0f7",
+        "bytes": 11934,
+        "sha256": "1cd8f7947283a24976ec52e70fd29ff0d89230d2031c1cf09a39fac62dc32e7b"
+      },
+      "operations": [
+        {
+          "before": "        self.stopped.require_original_origin(identity, gate)",
+          "after": "        OriginalSameActorRuntimeStopped::require_original_origin(&self.stopped, identity, gate)",
+          "reason": "Shared borrow of the same stopped owner; method is &self."
+        },
+        {
+          "before": "            self.context.gate().close();\n            return Err(runtime_refused(\"actual stopped Runtime custody differs\"));",
+          "after": "            SameActorPhaseGate::close(self.context.gate());\n            return Err(runtime_refused(\"actual stopped Runtime custody differs\"));",
+          "reason": "The same &Arc Gate coerces to &Gate; no clone/move."
+        },
+        {
+          "before": "    pub(super) async fn close_original_runtime_resources(mut self) -> Result<(), AgentdError> {\n        self.context.gate().close();",
+          "after": "    pub(super) async fn close_original_runtime_resources(mut self) -> Result<(), AgentdError> {\n        SameActorPhaseGate::close(self.context.gate());",
+          "reason": "Same first close before resource take/drop."
+        },
+        {
+          "before": "impl Drop for OriginalSameActorRuntimeStopped {\n    fn drop(&mut self) {\n        self.context.gate().close();",
+          "after": "impl Drop for OriginalSameActorRuntimeStopped {\n    fn drop(&mut self) {\n        SameActorPhaseGate::close(self.context.gate());",
+          "reason": "Same Drop close before device invalidation."
+        },
+        {
+          "before": "            context.gate().close();",
+          "after": "            SameActorPhaseGate::close(context.gate());",
+          "reason": "Same error-branch close; original cleanup awaits/return remain."
+        },
+        {
+          "before": "        stopped.require_original_origin(&identity, &gate)?;",
+          "after": "        OriginalSameActorRuntimeStopped::require_original_origin(&stopped, &identity, &gate)?;",
+          "reason": "Shared borrow of newly constructed actual owner; no early move; ? and disarm remain."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": {
+        "git_blob": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+        "bytes": 6068,
+        "sha256": "dc518defb682662fbef3471774508f1849579ebadef2cd4844dee400cd366d75"
+      },
+      "post": {
+        "git_blob": "53ff12a548e96394241f24892e505ce1e7c4ddf0",
+        "bytes": 6137,
+        "sha256": "4b6c33f35cc29fd94c0599967f6e64e9a309fd429a4974ed4a606d70aa2ad70f"
+      },
+      "operations": [
+        {
+          "before": "        if let Err(error) = coordinator.stop_and_join_original() {",
+          "after": "        if let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {",
+          "reason": "coordinator is already &mut from Option::as_mut; no extra borrow or owner move."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "pre": {
+        "git_blob": "2a60e2dd058abe2bc73fcff25d0d1bc4bc0d9cbf",
+        "bytes": 5709,
+        "sha256": "13e413e76e7a576dd9957a2b2518fa07e5b4e7f11f67cd1be194e400a51ebe2a"
+      },
+      "post": {
+        "git_blob": "4f6c0c47b4307338af38f7c9f5eadd848f4d2b69",
+        "bytes": 5795,
+        "sha256": "933ec2029a711a681ab907e10a64ebbfa111a0cdc04a88cea54e1188fd61a125"
+      },
+      "operations": [
+        {
+          "before": "        let witness: FileAnchorWitnessStore = self.witness.open_original(files)?;",
+          "after": "        let witness: FileAnchorWitnessStore = OriginalWitnessData::open_original(&self.witness, files)?;",
+          "reason": "Same shared field borrow, mutable files reborrow and ?."
+        },
+        {
+          "before": "        let ledger = learning.open_original_c_task(files, now)?;",
+          "after": "        let ledger = OriginalDeploymentLearning::open_original_c_task(learning, files, now)?;",
+          "reason": "learning is already &'a OriginalDeploymentLearning from OriginalCResources; same reference."
+        },
+        {
+          "before": "        let predecessor = predecessor.reopen_original(files)?;",
+          "after": "        let predecessor = OriginalInitialPredecessorFiles::reopen_original(predecessor, files)?;",
+          "reason": "Same by-value predecessor consumption after ledger; original ? unchanged."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": {
+        "git_blob": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+        "bytes": 12603,
+        "sha256": "a5a0e292391940386e2b5eeff3f9447188a31af973219944ca6f29f1e1da9de0"
+      },
+      "post": {
+        "git_blob": "a34a30406eb5e1092af7aaf5b464b1632a0261cd",
+        "bytes": 12670,
+        "sha256": "e54a0bbafea7769f58128915c0928eb5a77d00a2fcf7c0f8b941fdc4bc1fb09b"
+      },
+      "operations": [
+        {
+          "before": "        let (model, bundle) = self.model.open_original(files)?;",
+          "after": "        let (model, bundle) = OriginalModelData::open_original(&self.model, files)?;",
+          "reason": "Same shared model borrow and original mutable file-owner argument."
+        },
+        {
+          "before": "        let source_witness = self.source_witness.open_original(files)?;",
+          "after": "        let source_witness = OriginalWitnessData::open_original(&self.source_witness, files)?;",
+          "reason": "Same shared source witness field borrow."
+        },
+        {
+          "before": "        let cell_witness = self.cell_witness.open_original(files)?;",
+          "after": "        let cell_witness = OriginalWitnessData::open_original(&self.cell_witness, files)?;",
+          "reason": "Same shared Cell witness field borrow; original open ordering retained."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "pre": {
+        "git_blob": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a",
+        "bytes": 15007,
+        "sha256": "9a049f1e8ff7f5335f5c8a57bf85a3365d24220443a36a8c805244e13b960ce6"
+      },
+      "post": {
+        "git_blob": "4866091621bed9c08aacd507f9e7c15627df957e",
+        "bytes": 15076,
+        "sha256": "8e5064583a4db6ecfeb1c1a4a21ac5b90e826c64ea2fa735c9b093edb03e57c7"
+      },
+      "operations": [
+        {
+          "before": "            retirement\n                .require_original_gate(gate)\n                .map_err(io::Error::other)?;",
+          "after": "            crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime::require_original_gate(\n                retirement, gate,\n            ).map_err(io::Error::other)?;",
+          "reason": "retirement is &Arc<OriginalInitialPhaseLifetime> from borrowed Option; same deref-coerced &self and original error mapping."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pre": {
+        "git_blob": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+        "bytes": 22080,
+        "sha256": "fe9d5c8b5538c5ce6ea9f2dbc5004344b279e7cc4f817d32d681e2bcef753dca"
+      },
+      "post": {
+        "git_blob": "77f2fc691e2155eaf14563fb537c4a98eebb8964",
+        "bytes": 22140,
+        "sha256": "11c7b42c83211ec7fad8b5c3a05576bb9cdd5166957f373d9c7b5cbe129266ab"
+      },
+      "operations": [
+        {
+          "before": "        self.original_retirement_custody().shutdown_original_after_root_intent(intent)",
+          "after": "        OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(\n            &self.original_retirement_custody(), intent,\n        )",
+          "reason": "Borrow the same one temporary close-only custody; original method is &self; no Intent receiver substitution."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": {
+        "git_blob": "6dad9c84b41bc21f9b3be7502f49e9287237aa94",
+        "bytes": 22990,
+        "sha256": "afdee5a77850cf5ee65139d186edd153fda9679c0997013cb8224e5ab908d935"
+      },
+      "post": {
+        "git_blob": "ec76465e7e56037f7f7a8bf8388e113ee1cce112",
+        "bytes": 23144,
+        "sha256": "1ee4a042d3bf2f4a834a710f3055568b5c18bcce89084668e161f0c9ea277e74"
+      },
+      "operations": [
+        {
+          "before": "    let retirement = phase.original_retirement_custody();",
+          "after": "    let retirement = RequiredSameActorPhaseChannel::original_retirement_custody(&phase);",
+          "reason": "phase is the actual owned Required channel before its later move into frontier."
+        },
+        {
+          "before": "    let job = admission.retain_original_bootstrap_consumer_handle(worker);",
+          "after": "    let job = crate::production_launcher::OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle(admission, worker);",
+          "reason": "Same by-value admission and actual worker handle; synchronous retain still precedes receive future."
+        },
+        {
+          "before": "    let owner = job.receive_original().await?;",
+          "after": "    let owner = crate::production_launcher::OriginalBootstrapConsumerJob::receive_original(&job).await?;",
+          "reason": "Same &Arc job receiver; original synchronous failure-scope creation, await and ? remain."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": {
+        "git_blob": "a691263dce886a35a73b0759b9740e711b76ffb1",
+        "bytes": 15584,
+        "sha256": "d17eba1003b440f1337aacc724223e9174271d2cbf60f0c697ce776a309499b1"
+      },
+      "post": {
+        "git_blob": "3e9446183a443759d8e19edd3d50ad4bf518c57d",
+        "bytes": 15650,
+        "sha256": "29e2e397d82019755d11dd5fa83e67288027c7f485a57e82b246fe06a40a6847"
+      },
+      "operations": [
+        {
+          "before": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "after": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "phase is &Required from Option::as_ref; original idle locks, checks, sticky state and ? remain."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": {
+        "git_blob": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd",
+        "bytes": 14808,
+        "sha256": "97cf9a82b473ead8a98fbbe4d19aa321c0a334e177b77fec9ceed76afb9a9346"
+      },
+      "post": {
+        "git_blob": "a3af84b4a0481a0e3659959cd80af02b6bf5e485",
+        "bytes": 14874,
+        "sha256": "c37fd969f83ffd537424f6b4ce538c39c1bcc5803203961cf17b35c3df6cdda2"
+      },
+      "operations": [
+        {
+          "before": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "after": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "Same borrowed actual Required under the original populated idle slot and peer checks."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "pre": {
+        "git_blob": "bc430c0f787237f3e233e66e536b1a1b151811b4",
+        "bytes": 5115,
+        "sha256": "f09ed8840d6c533a9b69e21c03a7559f6a5f67d2bc438da23c6a1855c53c415c"
+      },
+      "post": {
+        "git_blob": "d5015ce8d7a3223fdc0fc5c7bd1207af6e2982f3",
+        "bytes": 5181,
+        "sha256": "2927fc2aa10276167b51f501b6a0ac6e4319eb414aff43725578789c6eeca977"
+      },
+      "operations": [
+        {
+          "before": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "after": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "Same Required borrowed from actual checkpoint client; held idle lock and original origin checks unchanged."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "pre": {
+        "git_blob": "eea6bbb366386a2320df86692fd37a6ca417cf35",
+        "bytes": 3842,
+        "sha256": "a1c3ea23772244e9b0c09a9db97ac88659bacd739e57fa06d9c701efa147c564"
+      },
+      "post": {
+        "git_blob": "81f63f39581679adfc5849e4d58bd90dcde56143",
+        "bytes": 3908,
+        "sha256": "7274b2b7642288817c0a41a1b7fb6e9d52351de5f36b5a4e7b8a3880a72e40ac"
+      },
+      "operations": [
+        {
+          "before": "        phase.shutdown_original_after_root_intent(intent)?;",
+          "after": "        crate::same_actor_q24_phase_gate::RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(phase, intent)?;",
+          "reason": "Same &Required while Model self is &mut, after original permanent fencing; no ownership change."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "pre": {
+        "git_blob": "9ba4eafef98caa9c3c20ff883770204475443a34",
+        "bytes": 2409,
+        "sha256": "3e1417415d0faaa79045658eafcbecaa3ef567aea84bd5f678acb1ba1a12505b"
+      },
+      "post": {
+        "git_blob": "a310ef21a6b786fda5362314f01325ab4d6bad15",
+        "bytes": 2473,
+        "sha256": "c3f1adbb7c4f2b3e3b7aef01decb3faade6673b626bf1fb77b95fb3738cca7a6"
+      },
+      "operations": [
+        {
+          "before": "        watch.finish_original_after_root_exit(exited, &self.identity)",
+          "after": "        crate::same_actor_q24_phase_gate::OriginalSameActorPhaseWatch::finish_original_after_root_exit(watch, exited, &self.identity)",
+          "reason": "watch is the actual by-value Watch taken from Mutex<Option>; consume it once after releasing mutex."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "pre": {
+        "git_blob": "0295dcae5e3ef047a2c4dc4d902388da35694a2d",
+        "bytes": 27869,
+        "sha256": "689a86033a5f5806b08f86821cb0b8f7cb3495150cdd04ce795c6e6f63cdbafb"
+      },
+      "post": {
+        "git_blob": "a14d75a0199087963ce4b6c0ce7d04af6ba6e8e9",
+        "bytes": 28015,
+        "sha256": "a1cd2e7e10ccdcdaafbf829c20dbf1d23eac1b78704b1108b917081bda95a435"
+      },
+      "operations": [
+        {
+          "before": "pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerKind;",
+          "after": "pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerKind;\npub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerAdmission;\npub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerJob;",
+          "reason": "Only names of already pub(crate) types are reexported at crate visibility; no field or constructor visibility change."
+        }
+      ]
+    }
+  ],
+  "per_file_durable_packets": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+      "post": "811fb02d0b030881bfb4366121e375f09807e0f7",
+      "ops": 6,
+      "per_file_packet": {
+        "git_blob": "7897b9bfe1dbda09fb84a08790c99cb6b968206b",
+        "bytes": 3125,
+        "sha256": "729e57d711ccdc0379fb5a08f507be7b45b77030ecb9c08ed3961b65e009c799"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+      "post": "53ff12a548e96394241f24892e505ce1e7c4ddf0",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "1d888f8f064f80f937630ad99c50f54d5875c5f6",
+        "bytes": 1459,
+        "sha256": "b348afb6d18efd79fb58096445528421a5596c103c11010705060b97d2633502"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "pre": "2a60e2dd058abe2bc73fcff25d0d1bc4bc0d9cbf",
+      "post": "4f6c0c47b4307338af38f7c9f5eadd848f4d2b69",
+      "ops": 3,
+      "per_file_packet": {
+        "git_blob": "4238eda659f69caf47f5f5b5b5bdfb27dfbef929",
+        "bytes": 2053,
+        "sha256": "2138b26874fa26b6b4af0f95eb053cd84d8fadbf769262d2def956142c8545b1"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+      "post": "a34a30406eb5e1092af7aaf5b464b1632a0261cd",
+      "ops": 3,
+      "per_file_packet": {
+        "git_blob": "05f64b5109f94b8688b7a1d60aed64facaf39b86",
+        "bytes": 1985,
+        "sha256": "b857ce0f912b936ba242600bcb0d2de98ed75e05c286d571845515bb07366e77"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "pre": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a",
+      "post": "4866091621bed9c08aacd507f9e7c15627df957e",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "3d81bf3e84ecc85e5bb2a4601e0bed3fb494a8d5",
+        "bytes": 1601,
+        "sha256": "97391366870399990586701199d3463e88c300f6754573ce52c5477256e02cc1"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pre": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+      "post": "77f2fc691e2155eaf14563fb537c4a98eebb8964",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "a0a3c1d54af4b9e33d90e2486d3c810d01aa8a17",
+        "bytes": 1514,
+        "sha256": "fb702f34087d85c94d11d5d7378d2433c87cb743ed8e4dc9ab5df53e28868d78"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": "6dad9c84b41bc21f9b3be7502f49e9287237aa94",
+      "post": "ec76465e7e56037f7f7a8bf8388e113ee1cce112",
+      "ops": 3,
+      "per_file_packet": {
+        "git_blob": "a7030f0f1be2f57505032109195fc05bb163bca1",
+        "bytes": 2122,
+        "sha256": "f296a993131063d7b5ae4a53022c516e2e1233a102bc77e38d567e75d522dbe6"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": "a691263dce886a35a73b0759b9740e711b76ffb1",
+      "post": "3e9446183a443759d8e19edd3d50ad4bf518c57d",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "d103f3251176da3374e7d85e063a4a2812fedfa2",
+        "bytes": 1451,
+        "sha256": "0d3ffae3f19424f84db2252a88a02266fbc8fb666cd6b479fcbe88814a78be87"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd",
+      "post": "a3af84b4a0481a0e3659959cd80af02b6bf5e485",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "1f2f782433f61c5194d20f4dc077aeddf613d734",
+        "bytes": 1432,
+        "sha256": "e18212c28db8b3be21e0fbc20314a92f99ebf4dde2578d1b3372883414ef5273"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "pre": "bc430c0f787237f3e233e66e536b1a1b151811b4",
+      "post": "d5015ce8d7a3223fdc0fc5c7bd1207af6e2982f3",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "426c3a8ab07353731b20bcd67640fed895264fce",
+        "bytes": 1475,
+        "sha256": "bce423b1de07a990846bc5ee7aa1e80fb388f9ae8ec2833558ce86c0050c0e44"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "pre": "eea6bbb366386a2320df86692fd37a6ca417cf35",
+      "post": "81f63f39581679adfc5849e4d58bd90dcde56143",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "db30f2bdd1ee25d04bb48e8079e2f299e8522748",
+        "bytes": 1449,
+        "sha256": "bb0f8351bfc50167ada0b0c9ed02c6dbea6f4e797637599f47f3769f49d0bfbb"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "pre": "9ba4eafef98caa9c3c20ff883770204475443a34",
+      "post": "a310ef21a6b786fda5362314f01325ab4d6bad15",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "f972d474df3ce6bb86bdafadd7e8b4ebf5ff13bf",
+        "bytes": 1483,
+        "sha256": "d0c59bb33cd2dab8b7be66c7d10720184d09559f4dbb586ebe7a8547a595eb0f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "pre": "0295dcae5e3ef047a2c4dc4d902388da35694a2d",
+      "post": "a14d75a0199087963ce4b6c0ce7d04af6ba6e8e9",
+      "ops": 1,
+      "per_file_packet": {
+        "git_blob": "f5ae02002957722d2b73e22b8c34c7c80ff2b0e0",
+        "bytes": 1571,
+        "sha256": "8d1ad7b72ab224fd7f426a3c6718bb4930d961d4d5d6ba847f723257703a8a0c"
+      }
+    }
+  ],
+  "actual_signature_evidence": [
+    {
+      "path": "same_actor_q24_phase_gate.rs",
+      "blob": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+      "methods": [
+        "SameActorPhaseGate::close(&self)",
+        "RequiredSameActorPhaseChannel::original_retirement_custody(&self) -> OriginalRequiredPurposeRetirement",
+        "RequiredSameActorPhaseChannel::shutdown_original_after_root_intent(&self, &Intent)",
+        "OriginalSameActorPhaseWatch::finish_original_after_root_exit(mut self, &Exited, &Identity)"
+      ]
+    },
+    {
+      "path": "same_actor_q24_required_purpose_retirement.rs",
+      "blob": "a6f0a27e32047dbb015c3d3de034de2fb2796e79",
+      "methods": [
+        "OriginalRequiredPurposeRetirement::shutdown_original_after_root_intent(&self, &Intent)"
+      ]
+    },
+    {
+      "path": "production_launcher_same_actor_runtime.rs",
+      "blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+      "methods": [
+        "OriginalSameActorRuntimeStopped::require_original_origin(&self, &Identity, &Arc<Gate>)"
+      ]
+    },
+    {
+      "path": "same_actor_q24_deployment_owner.rs",
+      "blob": "76475a83fd3680c9601a6582749e649d626979b8",
+      "methods": [
+        "OriginalDeploymentCoordinatorOwner::stop_and_join_original(&mut self)"
+      ]
+    },
+    {
+      "path": "same_actor_q24_deployment_learning.rs",
+      "blob": "24d9b803a93d8b61e183928e797a0622a70e114f",
+      "methods": [
+        "OriginalDeploymentLearning::open_original_c_task(&self, &mut OriginalDeploymentFiles, u64)"
+      ]
+    },
+    {
+      "path": "same_actor_q24_deployment_witness.rs",
+      "blob": "3a89520c8c07521eb3370a291732dc8ac282c89e",
+      "methods": [
+        "OriginalWitnessData::open_original(&self, &mut OriginalDeploymentFiles)"
+      ]
+    },
+    {
+      "path": "same_actor_q24_deployment_model.rs",
+      "blob": "7ba5e3e61787dee0064059a46870a1467e62c6f3",
+      "methods": [
+        "OriginalModelData::open_original(&self, &mut OriginalDeploymentFiles)"
+      ]
+    },
+    {
+      "path": "same_actor_q24_deployment_task.rs",
+      "blob": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+      "methods": [
+        "OriginalInitialPredecessorFiles::reopen_original(self, &mut OriginalDeploymentFiles)"
+      ],
+      "field_proof": "OriginalCResources.learning is &'a OriginalDeploymentLearning, predecessor is owned OriginalInitialPredecessorFiles; the actual bindings are destructured without a type or ownership change."
+    },
+    {
+      "path": "same_actor_q24_phase_join_client.rs",
+      "blob": "0b64648d28f928dcba6b5dc249b955701d3e6e10",
+      "fixed_source_commit": "cbf6ca7dd619589be3e9e98755f185d34d0f7413",
+      "methods": [
+        "OriginalInitialPhaseLifetime::require_original_gate(&self, &Arc<Gate>)"
+      ]
+    },
+    {
+      "path": "production_launcher_same_actor_consumer_custody.rs",
+      "blob": "62b24247f475dc824bfb920c7e13958248dcc23e",
+      "methods": [
+        "OriginalBootstrapConsumerAdmission::retain_original_bootstrap_consumer_handle(mut self, JoinHandle<Result<FinalUseAuthority,AgentdError>>) -> Arc<OriginalBootstrapConsumerJob>",
+        "OriginalBootstrapConsumerJob::receive_original(self: &Arc<Self>) -> impl Future<Output=Result<FinalUseAuthority,AgentdError>> + Send + 'static"
+      ],
+      "visibility": "Both types already pub(crate); fields remain private; reserve/constructors/handle registry untouched."
+    }
+  ],
+  "permissions_and_ownership": {
+    "type_reexports": "Only two pub(crate) type-name reexports in production_launcher.rs. Depend on runtime_access owner post 908c37acf73a0098102940070aae531aa888c4fd, which separately adds the third pub(crate) type-name reexport. No field/constructor/trait visibility change.",
+    "borrows": "Keep existing & and &mut receiver identity. Shared field accesses become &field; already borrowed bindings pass directly. Required temporary is explicitly borrowed exactly as original method autoref.",
+    "moves": "Original coordinator stays &mut. The actual Initial predecessor, Bootstrap admission+JoinHandle and Watch are consumed by value in their original order; no Clone or second handle.",
+    "await_and_errors": "No await/?/map_err/result-control change; all actual joins and synchronous guard construction stay in the same expression positions.",
+    "unchanged_contracts": "No guard/checker/helper/policy/timeout/clock/nonce/retry/test/metadata edits. Generic trait attestors are not altered by this packet."
+  },
+  "verification": {
+    "pre_get_git_size_sha256": true,
+    "each_operation_unique_forward_reverse": true,
+    "full_forward_post_and_reverse_pre": true,
+    "all_post_create_get_exact": true,
+    "per_file_packet_create_get_exact": true,
+    "compiler_executed": false,
+    "formatter_executed": false,
+    "original_checker_executed": false,
+    "native_executed": false
+  },
+  "review_status": "Author recovery and static signature check; runtime_access independent peer review requested. Root integration and later actual formatter/compile remain separate.",
+  "no_product_tree_or_ref_changes": true
+}

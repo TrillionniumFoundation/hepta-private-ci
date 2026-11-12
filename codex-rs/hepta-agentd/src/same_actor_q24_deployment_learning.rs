@@ -103,21 +103,23 @@ impl OriginalDeploymentLearning {
     ) -> Result<(Self, OriginalCellQ24TaskLedgerInputsV1), AgentdError> {
         require_fresh_original_file(&data.ledger)?;
         require_fresh_original_file(&data.witness)?;
-        data.original_a.signatures.require_fresh()?;
-        data.original_c.signatures.require_fresh()?;
-        data.freeze.require_fresh()?;
-        data.owners.require_fresh()?;
+        OriginalSignedOwnerFilesData::require_fresh(&data.original_a.signatures)?;
+        OriginalSignedOwnerFilesData::require_fresh(&data.original_c.signatures)?;
+        OriginalSignedOwnerFilesData::require_fresh(&data.freeze)?;
+        OriginalLearningOwnersData::require_fresh(&data.owners)?;
         files.require_original_context()?;
         let authority = data.authority.activate_original(now)?;
         // These checks resolve real enrolled principals, not role labels
         // asserted by a caller. Every later signing owner validates them again.
-        authority.original_signer(
+        super::learning_data::OriginalLearningAuthority::original_signer(
+            &authority,
             &data.original_a.signatures.principal, LearningEvidenceRoleV1::Generator,
         )?;
-        authority.original_signer(
+        super::learning_data::OriginalLearningAuthority::original_signer(
+            &authority,
             &data.original_a.observer, LearningEvidenceRoleV1::Observer,
         )?;
-        let (activated, signers) = authority.into_original_parts();
+        let (activated, signers) = super::learning_data::OriginalLearningAuthority::into_original_parts(authority);
         let verifier = activated.verifier().clone();
         let binding = Digest32::from_array(data.ledger_binding);
         let (ledger_file, ledger_directory) =
@@ -177,14 +179,14 @@ impl OriginalDeploymentLearning {
         now: u64,
     ) -> Result<OriginalCellQ24TaskDatasetFreezeInputsV1, AgentdError> {
         let data = &self.data.freeze;
-        data.require_fresh()?;
+        OriginalSignedOwnerFilesData::require_fresh(data)?;
         let signer = self.require_original_signer(
             &data.principal, LearningEvidenceRoleV1::Evaluator, now,
         )?;
         let key = files.read_original_signing_key(&data.key)?;
         require_original_key(&signer, &key)?;
         let journal = files.open_original_owner(&data.journal)?;
-        let witness = data.witness.open_original(files)?;
+        let witness = OriginalWitnessData::open_original(&data.witness, files)?;
         files.require_original_context()?;
         Ok(OriginalCellQ24TaskDatasetFreezeInputsV1 {
             journal, witness, open_mode: CircuitQ24TaskOpenModeV1::Create,
@@ -210,7 +212,7 @@ impl OriginalDeploymentLearning {
         files: &mut OriginalDeploymentFiles,
         now: u64,
     ) -> Result<OriginalCellQ24TaskLedgerInputsV1, AgentdError> {
-        data.signatures.require_fresh()?;
+        OriginalSignedOwnerFilesData::require_fresh(&data.signatures)?;
         let generator = self.require_original_signer(
             &data.signatures.principal, LearningEvidenceRoleV1::Generator, now,
         )?;
@@ -237,7 +239,7 @@ impl OriginalDeploymentLearning {
                 data.signatures.maximum_signature_lifetime_seconds,
         };
         let signature_journal = files.open_original_owner(&data.signatures.journal)?;
-        let signature_witness = data.signatures.witness.open_original(files)?;
+        let signature_witness = OriginalWitnessData::open_original(&data.signatures.witness, files)?;
         files.require_original_context()?;
         Ok(OriginalCellQ24TaskLedgerInputsV1 {
             ledger: Arc::clone(&self.ledger), signature_journal, signature_witness,

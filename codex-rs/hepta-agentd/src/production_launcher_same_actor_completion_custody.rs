@@ -17,7 +17,7 @@ impl OriginalPhaseRunControl {
                 .is_some_and(|original| Arc::ptr_eq(&original, context))
             || !state.gate.as_ref().is_some_and(|gate| Arc::ptr_eq(gate, context.gate()))
         {
-            context.gate().close();
+            SameActorPhaseGate::close(context.gate());
             return Err(refused("original MCP custody differs from the actual phase"));
         }
         context.gate().require_open()?;
@@ -34,7 +34,7 @@ impl OriginalPhaseRunControl {
                 .is_some_and(|original| Arc::ptr_eq(&original, context))
             || !state.gate.as_ref().is_some_and(|gate| Arc::ptr_eq(gate, context.gate()))
         {
-            context.gate().close();
+            SameActorPhaseGate::close(context.gate());
             return Err(refused("original App Server custody differs from the actual phase"));
         }
         context.gate().require_open()?;
@@ -50,7 +50,7 @@ impl OriginalPhaseRunControl {
             || !state.context.as_ref().and_then(Weak::upgrade)
                 .is_some_and(|original| Arc::ptr_eq(&original, context))
         {
-            context.gate().close();
+            SameActorPhaseGate::close(context.gate());
             return Err(refused("original Circuit custody differs from the actual phase"));
         }
         let custody = state.circuit.as_ref()

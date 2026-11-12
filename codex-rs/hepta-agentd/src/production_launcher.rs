@@ -40,6 +40,8 @@ pub use same_actor_phase::AgentdOriginalSameActorPhaseStartupV1;
 pub use same_actor_phase::AgentdOriginalSameActorDeploymentStartupV1;
 pub(crate) use same_actor_phase::owner::OriginalPhaseRunControl;
 pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerKind;
+pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerAdmission;
+pub(crate) use same_actor_phase::owner::OriginalBootstrapConsumerJob;
 
 #[path = "production_launcher_same_actor_runtime.rs"]
 mod same_actor_runtime;

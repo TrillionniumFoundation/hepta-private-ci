@@ -142,9 +142,11 @@ impl BoundDeploymentProgress {
                     // precede encoding. Framing keeps its original request
                     // deadline; the bridge never creates a replacement budget.
                     gate.require_open()?;
-                    OriginalDeploymentAcknowledgement::from_actual_registration(
-                        &request, registration,
-                    )?.encode_original(&request)
+                    OriginalDeploymentAcknowledgement::encode_original(
+                        &OriginalDeploymentAcknowledgement::from_actual_registration(
+                            &request, registration,
+                        )?, &request,
+                    )
                 })();
                 match result {
                     Ok(response) => Ok(response),

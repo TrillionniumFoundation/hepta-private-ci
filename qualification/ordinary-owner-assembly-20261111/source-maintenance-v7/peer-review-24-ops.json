@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "kind": "independent_review_of_hepta_recovered_receiver_only_slice",
+  "reviewer": "runtime_access",
+  "source_packet": "d1fc1e2d04ea3290cd24622377f8a0732286cf79",
+  "base_inventory": "ef7c2c9661e3cbf6808e563817336214259cd4c6",
+  "result": "No confirmed local semantic blocker in 13 paths/24 exact operations; no compiler/checker execution.",
+  "verified_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": {
+        "blob": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+        "bytes": 11788,
+        "sha256": "74d7a6d168faa960804b7b21ce3bba56ebbe6de3922485736a972356411fe725"
+      },
+      "post": {
+        "blob": "811fb02d0b030881bfb4366121e375f09807e0f7",
+        "bytes": 11934,
+        "sha256": "1cd8f7947283a24976ec52e70fd29ff0d89230d2031c1cf09a39fac62dc32e7b",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 6
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": {
+        "blob": "e5834bf6ae84ef7dc30acddfdd05d17b9888bd01",
+        "bytes": 6068,
+        "sha256": "dc518defb682662fbef3471774508f1849579ebadef2cd4844dee400cd366d75"
+      },
+      "post": {
+        "blob": "53ff12a548e96394241f24892e505ce1e7c4ddf0",
+        "bytes": 6137,
+        "sha256": "4b6c33f35cc29fd94c0599967f6e64e9a309fd429a4974ed4a606d70aa2ad70f",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_c.rs",
+      "pre": {
+        "blob": "2a60e2dd058abe2bc73fcff25d0d1bc4bc0d9cbf",
+        "bytes": 5709,
+        "sha256": "13e413e76e7a576dd9957a2b2518fa07e5b4e7f11f67cd1be194e400a51ebe2a"
+      },
+      "post": {
+        "blob": "4f6c0c47b4307338af38f7c9f5eadd848f4d2b69",
+        "bytes": 5795,
+        "sha256": "933ec2029a711a681ab907e10a64ebbfa111a0cdc04a88cea54e1188fd61a125",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pre": {
+        "blob": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+        "bytes": 12603,
+        "sha256": "a5a0e292391940386e2b5eeff3f9447188a31af973219944ca6f29f1e1da9de0"
+      },
+      "post": {
+        "blob": "a34a30406eb5e1092af7aaf5b464b1632a0261cd",
+        "bytes": 12670,
+        "sha256": "e54a0bbafea7769f58128915c0928eb5a77d00a2fcf7c0f8b941fdc4bc1fb09b",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs",
+      "pre": {
+        "blob": "f1e593f3cf5b94b0b7528652673e48d6fdecd85a",
+        "bytes": 15007,
+        "sha256": "9a049f1e8ff7f5335f5c8a57bf85a3365d24220443a36a8c805244e13b960ce6"
+      },
+      "post": {
+        "blob": "4866091621bed9c08aacd507f9e7c15627df957e",
+        "bytes": 15076,
+        "sha256": "8e5064583a4db6ecfeb1c1a4a21ac5b90e826c64ea2fa735c9b093edb03e57c7",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pre": {
+        "blob": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+        "bytes": 22080,
+        "sha256": "fe9d5c8b5538c5ce6ea9f2dbc5004344b279e7cc4f817d32d681e2bcef753dca"
+      },
+      "post": {
+        "blob": "77f2fc691e2155eaf14563fb537c4a98eebb8964",
+        "bytes": 22140,
+        "sha256": "11c7b42c83211ec7fad8b5c3a05576bb9cdd5166957f373d9c7b5cbe129266ab",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_phase_inputs.rs",
+      "pre": {
+        "blob": "6dad9c84b41bc21f9b3be7502f49e9287237aa94",
+        "bytes": 22990,
+        "sha256": "afdee5a77850cf5ee65139d186edd153fda9679c0997013cb8224e5ab908d935"
+      },
+      "post": {
+        "blob": "ec76465e7e56037f7f7a8bf8388e113ee1cce112",
+        "bytes": 23144,
+        "sha256": "1ee4a042d3bf2f4a834a710f3055568b5c18bcce89084668e161f0c9ea277e74",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "pre": {
+        "blob": "a691263dce886a35a73b0759b9740e711b76ffb1",
+        "bytes": 15584,
+        "sha256": "d17eba1003b440f1337aacc724223e9174271d2cbf60f0c697ce776a309499b1"
+      },
+      "post": {
+        "blob": "3e9446183a443759d8e19edd3d50ad4bf518c57d",
+        "bytes": 15650,
+        "sha256": "29e2e397d82019755d11dd5fa83e67288027c7f485a57e82b246fe06a40a6847",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/final_use_issuer.rs",
+      "pre": {
+        "blob": "8d6367a8ee535e3bfe64036ce26c8eaa05bb4afd",
+        "bytes": 14808,
+        "sha256": "97cf9a82b473ead8a98fbbe4d19aa321c0a334e177b77fec9ceed76afb9a9346"
+      },
+      "post": {
+        "blob": "a3af84b4a0481a0e3659959cd80af02b6bf5e485",
+        "bytes": 14874,
+        "sha256": "c37fd969f83ffd537424f6b4ce538c39c1bcc5803203961cf17b35c3df6cdda2",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_retirement.rs",
+      "pre": {
+        "blob": "bc430c0f787237f3e233e66e536b1a1b151811b4",
+        "bytes": 5115,
+        "sha256": "f09ed8840d6c533a9b69e21c03a7559f6a5f67d2bc438da23c6a1855c53c415c"
+      },
+      "post": {
+        "blob": "d5015ce8d7a3223fdc0fc5c7bd1207af6e2982f3",
+        "bytes": 5181,
+        "sha256": "2927fc2aa10276167b51f501b6a0ac6e4319eb414aff43725578789c6eeca977",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_same_actor.rs",
+      "pre": {
+        "blob": "eea6bbb366386a2320df86692fd37a6ca417cf35",
+        "bytes": 3842,
+        "sha256": "a1c3ea23772244e9b0c09a9db97ac88659bacd739e57fa06d9c701efa147c564"
+      },
+      "post": {
+        "blob": "81f63f39581679adfc5849e4d58bd90dcde56143",
+        "bytes": 3908,
+        "sha256": "7274b2b7642288817c0a41a1b7fb6e9d52351de5f36b5a4e7b8a3880a72e40ac",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_same_actor_retirement.rs",
+      "pre": {
+        "blob": "9ba4eafef98caa9c3c20ff883770204475443a34",
+        "bytes": 2409,
+        "sha256": "3e1417415d0faaa79045658eafcbecaa3ef567aea84bd5f678acb1ba1a12505b"
+      },
+      "post": {
+        "blob": "a310ef21a6b786fda5362314f01325ab4d6bad15",
+        "bytes": 2473,
+        "sha256": "c3f1adbb7c4f2b3e3b7aef01decb3faade6673b626bf1fb77b95fb3738cca7a6",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "pre": {
+        "blob": "0295dcae5e3ef047a2c4dc4d902388da35694a2d",
+        "bytes": 27869,
+        "sha256": "689a86033a5f5806b08f86821cb0b8f7cb3495150cdd04ce795c6e6f63cdbafb"
+      },
+      "post": {
+        "blob": "a14d75a0199087963ce4b6c0ce7d04af6ba6e8e9",
+        "bytes": 28015,
+        "sha256": "a1cd2e7e10ccdcdaafbf829c20dbf1d23eac1b78704b1108b917081bda95a435",
+        "create_get_equal": true
+      },
+      "forward_unique": true,
+      "reverse_unique": true,
+      "reverse_full_bytes_equal": true,
+      "operations": 1
+    }
+  ],
+  "actual_callee_definitions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pin": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+      "owner": "SameActorPhaseGate",
+      "method": "close",
+      "source": "    pub(crate) fn close(&self) {\n        self.closed.cancel();\n        // A poisoned guard cannot authorize anything. Its retained socket\n        // aliases are still owned here and must be shut down to wake waiters.\n        let streams = {\n            let mut state = match self.state.lock() {\n                Ok(state) => state,\n                Err(poisoned) => poisoned.into_inner(),\n            };\n            state.closed = true;\n            state.epoch = state.epoch.saturating_add(1);\n            std::mem::take(&mut state.streams)\n        };\n        self.changed.notify_all();\n        for stream in streams.into_values() {\n            stream.shutdown();\n        }\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pin": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+      "owner": "RequiredSameActorPhaseChannel",
+      "method": "original_retirement_custody",
+      "source": "    pub(crate) fn original_retirement_custody(&self) -> OriginalRequiredPurposeRetirement {\n        OriginalRequiredPurposeRetirement {\n            gate: Arc::clone(&self.closing.gate),\n            id: self._stream.id,\n            retired: Arc::clone(&self.retired),\n        }\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pin": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+      "owner": "RequiredSameActorPhaseChannel",
+      "method": "shutdown_original_after_root_intent",
+      "source": "    pub(crate) fn shutdown_original_after_root_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {\n        self.original_retirement_custody().shutdown_original_after_root_intent(intent)\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_gate.rs",
+      "pin": "aa9cebf14f519ef8db11474fc803a3b9b58b9b4d",
+      "owner": "OriginalSameActorPhaseWatch",
+      "method": "finish_original_after_root_exit",
+      "source": "    pub(crate) fn finish_original_after_root_exit(\n        mut self,\n        exited: &crate::same_actor_q24_deployment::OriginalRootProcessExited,\n        identity: &crate::AgentdIdentity,\n    ) -> Result<(), crate::AgentdError> {\n        exited.require_original_cleanup_origin(identity, &self.gate)?;\n        self.gate.close();\n        let worker = self.worker.take().ok_or_else(|| {\n            crate::AgentdError::GenerationFenced(\"actual deadline watcher was already consumed\".into())\n        })?;\n        worker.join().map_err(|_| {\n            crate::AgentdError::GenerationFenced(\"actual deadline watcher panicked\".into())\n        })?;\n        exited.require_original_cleanup_origin(identity, &self.gate)\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_required_purpose_retirement.rs",
+      "pin": "a6f0a27e32047dbb015c3d3de034de2fb2796e79",
+      "owner": "OriginalRequiredPurposeRetirement",
+      "method": "shutdown_original_after_root_intent",
+      "source": "    pub(crate) fn shutdown_original_after_root_intent(\n        &self,\n        intent: &crate::same_actor_q24_deployment::OriginalRootRetirementIntent,\n    ) -> Result<(), crate::AgentdError> {\n        let checked = (|| {\n            intent.require_original_gate(&self.gate)?;\n            if self.retired.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire).is_err() {\n                return Err(refused(\"original purpose retirement was already consumed\").into());\n            }\n            {\n                let mut state = self.gate.state.lock()\n                    .map_err(|_| refused(\"original purpose Gate is poisoned\"))?;\n                self.gate.check_locked(&mut state)?;\n                let Some(OriginalPhaseEndpoint::Stream(stream)) = state.streams.get(&self.id) else {\n                    return Err(refused(\"original purpose stream registration is unavailable\").into());\n                };\n                // The registered alias is a clone of the actual owner's\n                // socket. shutdown affects that same socket and every clone;\n                // merely dropping one FD would leave the peer alive.\n                stream.shutdown(Shutdown::Both)?;\n                self.gate.check_locked(&mut state)?;\n            }\n            intent.require_original_gate(&self.gate)?;\n            Ok::<(), crate::AgentdError>(())\n        })();\n        if checked.is_err() {\n            self.gate.close();\n        }\n        checked\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pin": "29853531e9b0071ac2f6e1aebe60e7b18c3e93c9",
+      "owner": "OriginalSameActorRuntimeStopped",
+      "method": "require_original_origin",
+      "source": "    pub(crate) fn require_original_origin(\n        &self, identity: &AgentdIdentity, gate: &Arc<SameActorPhaseGate>,\n    ) -> Result<(), AgentdError> {\n        if self.context.identity() != identity || !Arc::ptr_eq(self.context.gate(), gate)\n            || self.attachment.is_none() || self.device.is_none() || self.mcp.is_none()\n        {\n            self.context.gate().close();\n            return Err(runtime_refused(\"actual stopped Runtime custody differs\"));\n        }\n        self.app_server_joined.require_original_custody(&self.app_server)\n            .map_err(|error| AgentdError::Protocol(format!(\"original App Server join: {error}\")))?;\n        self.context.gate().require_open()?;\n        crate::root_observation_stream::check_lifetime(&self.root_pidfd)\n            .map_err(|error| AgentdError::Protocol(format!(\"original stopped Root lifetime: {error}\")))\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_owner.rs",
+      "pin": "76475a83fd3680c9601a6582749e649d626979b8",
+      "owner": "OriginalDeploymentCoordinatorOwner",
+      "method": "stop_and_join_original",
+      "source": "    pub(crate) fn stop_and_join_original(&mut self) -> Result<(), AgentdError> {\n        self.context.gate().close();\n        let thread = self.thread.take()\n            .ok_or_else(|| deployment_refused(\"original coordinator result already consumed\"))?;\n        join_original_thread(thread).map(drop)\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "pin": "24d9b803a93d8b61e183928e797a0622a70e114f",
+      "owner": "OriginalDeploymentLearning",
+      "method": "open_original_c_task",
+      "source": "    pub(super) fn open_original_c_task(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n        now: u64,\n    ) -> Result<OriginalCellQ24TaskLedgerInputsV1, AgentdError> {\n        self.open_original_task(&self.data.original_c, files, now)\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_witness.rs",
+      "pin": "3a89520c8c07521eb3370a291732dc8ac282c89e",
+      "owner": "OriginalWitnessData",
+      "method": "open_original",
+      "source": "    pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<FileAnchorWitnessStore, AgentdError> {\n        let scope = JournalScope {\n            scope_digest: Digest32::from_array(self.scope),\n            objective_digest: Digest32::from_array(self.objective),\n        };\n        let generation = Generation::new(self.generation).map_err(deployment_error)?;\n        let file = files.open_original_owner(&self.file)?;\n        files.require_original_context()?;\n        let witness = FileAnchorWitnessStore::open(\n            file, scope, generation, self.maximum_records,\n        )\n        .map_err(deployment_error)?;\n        files.require_original_context()?;\n        Ok(witness)\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+      "pin": "7ba5e3e61787dee0064059a46870a1467e62c6f3",
+      "owner": "OriginalModelData",
+      "method": "open_original",
+      "source": "    pub(super) fn open_original(\n        &self,\n        files: &mut OriginalDeploymentFiles,\n    ) -> Result<(Arc<LoadedCellQ24ModelV1>, CellCompatibilityBundleV1), AgentdError> {\n        files.require_original_context()?;\n        let base = files.read_original(&self.base, 16 * 1024 * 1024)?;\n        let encoder = files.read_original(&self.encoder, 16 * 1024 * 1024)?;\n        let heads = files.read_original(&self.heads, 16 * 1024 * 1024)?;\n        let organ = self.organ_adapter.as_ref()\n            .map(|file| files.read_original(file, 16 * 1024 * 1024)).transpose()?;\n        let cell = self.cell_adapter.as_ref()\n            .map(|file| files.read_original(file, 16 * 1024 * 1024)).transpose()?;\n        let model = LoadedCellQ24ModelV1::open_files(CellQ24ModelFilesV1 {\n            base: base.clone_original_file()?,\n            encoder: encoder.clone_original_file()?,\n            heads: heads.clone_original_file()?,\n            organ_adapter: organ.as_ref().map(|read| read.clone_original_file()).transpose()?,\n            cell_adapter: cell.as_ref().map(|read| read.clone_original_file()).transpose()?,\n        }).map_err(deployment_error)?;\n        for read in [&base, &encoder, &heads].into_iter().chain(organ.iter()).chain(cell.iter()) {\n            read.require_original_pin()?;\n        }\n        let bundle = self.bundle.original()?;\n        bundle.digest().map_err(deployment_error)?;\n        if model.components() != &bundle.components {\n            return Err(deployment_refused(\"actual model components differ from the approved bundle\"));\n        }\n        files.require_original_context()?;\n        Ok((Arc::new(model), bundle))\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_task.rs",
+      "pin": "fee8914c509e93d63109117b818fc2c0b9ebdd3d",
+      "owner": "OriginalInitialPredecessorFiles",
+      "method": "reopen_original",
+      "source": "    pub(super) fn reopen_original(\n        self, files: &mut OriginalDeploymentFiles,\n    ) -> Result<crate::AgentdGenerationUpdatePredecessorFilesV1<codex_hepta_neuron::FileAnchorWitnessStore>, AgentdError> {\n        let journal = self.journal.reopen_original(files)?;\n        let witness_file = self.witness.reopen_original(files)?;\n        files.require_original_context()?;\n        let witness = codex_hepta_neuron::FileAnchorWitnessStore::open(\n            witness_file, self.config.witness_scope, self.config.witness_generation, self.config.witness_records,\n        ).map_err(deployment_error)?;\n        files.require_original_context()?;\n        Ok(crate::AgentdGenerationUpdatePredecessorFilesV1 {\n            file: journal, witness, config: self.config.generation, max_records: self.config.journal_records,\n        })\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "pin": "62b24247f475dc824bfb920c7e13958248dcc23e",
+      "owner": "OriginalBootstrapConsumerAdmission",
+      "method": "retain_original_bootstrap_consumer_handle",
+      "source": "    pub(crate) fn retain_original_bootstrap_consumer_handle(\n        mut self, handle: JoinHandle<Result<FinalUseAuthority, AgentdError>>,\n    ) -> Arc<OriginalBootstrapConsumerJob> {\n        let job = Arc::new(OriginalBootstrapConsumerJob {\n            state: tokio::sync::Mutex::new(ConsumerJobState {\n                handle: Some(handle), output: None, joined: false, receiving: false,\n            }),\n            gate: Arc::clone(&self.gate),\n        });\n        self.state.jobs.push(Arc::clone(&job));\n        self.armed = false;\n        job\n    }"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "pin": "62b24247f475dc824bfb920c7e13958248dcc23e",
+      "owner": "OriginalBootstrapConsumerJob",
+      "method": "receive_original",
+      "source": "    pub(crate) fn receive_original(\n        self: &Arc<Self>,\n    ) -> impl Future<Output = Result<FinalUseAuthority, AgentdError>> + Send + 'static {\n        let job = Arc::clone(self);\n        let mut closing = CloseSameActorPhaseOnDrop::new(&self.gate);\n        async move {\n            let mut state = job.state.lock().await;\n            if state.receiving {\n                return Err(refused(\"original bootstrap consumer result was already received\"));\n            }\n            state.receiving = true;\n            job.join_locked(&mut state).await;\n            let output = state.output.take()\n                .ok_or_else(|| refused(\"original bootstrap consumer output missing\"))?;\n            let owner = output?;\n            job.gate.require_open()?;\n            closing.disarm();\n            Ok(owner)\n        }\n    }"
+    }
+  ],
+  "extra_original_initial_lifetime": {
+    "blob": "0b64648d28f928dcba6b5dc249b955701d3e6e10",
+    "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_join_client.rs",
+    "receiver": "&self; argument &Arc<SameActorPhaseGate>; actual caller borrows &Arc<OriginalInitialPhaseLifetime> from its Option"
+  },
+  "observations": [
+    "OriginalCResources.learning is already &OriginalDeploymentLearning, passed directly; predecessor remains moved by value after original ledger construction.",
+    "Bootstrap Admission consumes the same original MutexGuard-bearing value and actual JoinHandle synchronously; Job receive borrows the same Arc before unchanged await and ?.",
+    "RequiredChannel and close-only retirement custody are different real types; the temporary retirement value remains borrowed only for the same call.",
+    "Watch remains consumed once after original Mutex<Option<Watch>>::take; exact original join/cleanup implementation is unchanged.",
+    "Four Gate close sites remain the first same effect in their original branch/Drop position; no new Gate boundary or changed semantics.",
+    "The two production_launcher exports plus the already reviewed owner export expose names only at pub(crate); both types were already pub(crate), all fields and constructors remain unchanged/private."
+  ],
+  "limits": [
+    "Mechanical source and actual type/source review only. No typecheck, native, h, ref, formatter, full original helper or checker execution.",
+    "Initial-lifetime original source is fetched from fixed Git blob; not inferred from similarly named Intent."
+  ]
+}

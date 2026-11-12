@@ -230,9 +230,9 @@ impl OriginalPublicationStream {
         stream.set_nonblocking(true)?;
         gate.require_open()?;
         if let Some(retirement) = &initial_retirement {
-            retirement
-                .require_original_gate(gate)
-                .map_err(io::Error::other)?;
+            crate::same_actor_q24_phase_join_client::OriginalInitialPhaseLifetime::require_original_gate(
+                retirement, gate,
+            ).map_err(io::Error::other)?;
         }
         // Only the exact first retirement ACK enables this one Initial
         // channel's deliberate owner drop. Any earlier drop closes all lanes.

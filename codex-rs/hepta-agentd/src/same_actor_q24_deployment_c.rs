@@ -74,13 +74,13 @@ impl OriginalCData {
         ).map_err(deployment_error)?;
         let canonical_material = String::from_utf8(material).map_err(deployment_error)?;
         let file = files.open_original_owner(&self.journal)?;
-        let witness: FileAnchorWitnessStore = self.witness.open_original(files)?;
+        let witness: FileAnchorWitnessStore = OriginalWitnessData::open_original(&self.witness, files)?;
         let target = AgentdGenerationUpdateTargetV1 {
             file, witness, config: observer.generation, max_records: observer.journal_records,
         };
         let actual = self.execution.open_original_circuit(context, files)?;
-        let ledger = learning.open_original_c_task(files, now)?;
-        let predecessor = predecessor.reopen_original(files)?;
+        let ledger = OriginalDeploymentLearning::open_original_c_task(learning, files, now)?;
+        let predecessor = OriginalInitialPredecessorFiles::reopen_original(predecessor, files)?;
         let inputs = OriginalSameActorCInputsV1 {
             predecessor, target, definition: self.definition.original()?,
             source: self.source.original()?, model,

@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "kind": "Root-independent-byte-replay-runtime-receiver-81-ops",
+  "packet": "3393f869fbc81ffc41371e2ba8bf9ab046590d84",
+  "source_manifest": "658549a54628df700158c30011f9eb640e21cd78",
+  "source_candidate": "acef73811869b1926c5cfc9858c8912393d53c94",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_deployment_progress.rs",
+      "pre": {
+        "blob": "6c7416f4471dd7cdff6fb80e8f312bf626a31b59",
+        "bytes": 19088,
+        "sha256": "8532f7e2bc88f757f97d3c98be9e911c41d2bb670fd27ec5247d62501708debb"
+      },
+      "post": {
+        "blob": "5c4ab053b63cedbdd4e2e11a5b81d7aa8e6b2ca9",
+        "bytes": 19180,
+        "sha256": "7ac9063e20c58bf46eec393447d8d7232341a01d7acb6612b23e15179057cdff",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_same_actor_q24_retirement.rs",
+      "pre": {
+        "blob": "c4174a13da61e0dc138648c0bee198e4538a967f",
+        "bytes": 16731,
+        "sha256": "70fb609d1607a01c4e59b65fa198f470471e9e122efc604580b4316b19b9e68a"
+      },
+      "post": {
+        "blob": "db33c17c4d060014075196b3e2b079c3d3506f63",
+        "bytes": 16814,
+        "sha256": "feedb868b91795ce1203c98da998b54123218ecc5fb1a33ea1a3d958ebae9654",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_client.rs",
+      "pre": {
+        "blob": "2f13eb143049dcbf87c0791a036a852abd3d3e4e",
+        "bytes": 8751,
+        "sha256": "f4c1e8427ea6d284626778fe9448d85b48510823523f730c97bdae5c5b393cf6"
+      },
+      "post": {
+        "blob": "36f10fe3decba8cf12308d57e5eddf07b7a18989",
+        "bytes": 8856,
+        "sha256": "638e0280715401fc424d5bf892fda8121b4a12df03517c0ebef35acb5577bc18",
+        "create_get_equal": true
+      },
+      "operations": 2,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "pre": {
+        "blob": "9d9cf5a296423f8ca2a0bfe84a4a9b59be2d4312",
+        "bytes": 14216,
+        "sha256": "58e27ed89b9ca2ce7ec26e86b7367d801219121d2f3e28763953512547ad06ba"
+      },
+      "post": {
+        "blob": "cf5a341cfe6acc394ae57bc531140e78903d711a",
+        "bytes": 14261,
+        "sha256": "176e3fb259ee2041a152be84d0bef786040ba50326eacf178919d0f5b3280846",
+        "create_get_equal": true
+      },
+      "operations": 1,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_completion_custody.rs",
+      "pre": {
+        "blob": "e6efe6e1ab44b977121e80f9e4ad5ea5c6f0ff9e",
+        "bytes": 8156,
+        "sha256": "afddb4f71668a80d0b86e9a4af2ec17e40fe637fcf7a4c173a0be7efa2750e3b"
+      },
+      "post": {
+        "blob": "8678b9240a582051735d584ee5c32806cc658d8a",
+        "bytes": 8213,
+        "sha256": "ff792688846447bdfe28eb5cc001246063caca72744cf509fc825a44d03aa169",
+        "create_get_equal": true
+      },
+      "operations": 3,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "pre": {
+        "blob": "1e8e84a345a3350d9b7c520f8a150f8cfac743f1",
+        "bytes": 17186,
+        "sha256": "ad7480a7bbe96283b73006c4cec706cb58b0623998099c0a16c5496e6d967217"
+      },
+      "post": {
+        "blob": "908c37acf73a0098102940070aae531aa888c4fd",
+        "bytes": 17291,
+        "sha256": "ab6a42dca4b12e3a5d5cb26c57c62789d569ee42017390d4eb965e4902761b4a",
+        "create_get_equal": true
+      },
+      "operations": 3,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator.rs",
+      "pre": {
+        "blob": "b66660a510dce52b517c45e30a0a374a8c9ca32a",
+        "bytes": 15470,
+        "sha256": "eb37aea65a4a151ba8dfb7876f173e0760546ed14a9b27ed5844a7ee8bf2417b"
+      },
+      "post": {
+        "blob": "e01dba19c1838ce67719447466511c6dbf730b7d",
+        "bytes": 15596,
+        "sha256": "31e849b6a741770971cf3a92d2cce1803b3a05cdae4ca4efd628dfda2e626403",
+        "create_get_equal": true
+      },
+      "operations": 6,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_factory.rs",
+      "pre": {
+        "blob": "8e3b7ab14f90587f7430378f3a30ce4e1f79da97",
+        "bytes": 6157,
+        "sha256": "db223d389fd608185314a6e04fb21c4589e83120e70f7e7a36d482972527695b"
+      },
+      "post": {
+        "blob": "8665e2947e56fae29cc78f4126c5065fc2b4907c",
+        "bytes": 6321,
+        "sha256": "3e2e8885a29c32642fb77b36dbd203f898ecd316718bd102ffcfd78b265bc243",
+        "create_get_equal": true
+      },
+      "operations": 7,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning_owners.rs",
+      "pre": {
+        "blob": "05895538b32b08bba514cc2741d0787357588482",
+        "bytes": 6832,
+        "sha256": "28e36d72c8702ba6951ec627e75960e696801a3ae17595772ec8745061ed5b7d"
+      },
+      "post": {
+        "blob": "8168198988e0a213370735ae71808dac276ce596",
+        "bytes": 6951,
+        "sha256": "a0134d96e8ce40d69311fd5f852a4903788b547b5d10a3c4eb84491208bddac3",
+        "create_get_equal": true
+      },
+      "operations": 5,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_learning.rs",
+      "pre": {
+        "blob": "24d9b803a93d8b61e183928e797a0622a70e114f",
+        "bytes": 10576,
+        "sha256": "7b30f7ebf3e5a19f77f9fb6d1b788e9df0b375bc981016a9119886def467dfb9"
+      },
+      "post": {
+        "blob": "9ee9b49b979d5e4f8ecefc0941717a0745c24392",
+        "bytes": 10973,
+        "sha256": "ca91838b75db5b14c5b8f0d004854d5a1dae9ff9d2a1b765c0d0ea536edcbcb8",
+        "create_get_equal": true
+      },
+      "operations": 11,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation.rs",
+      "pre": {
+        "blob": "0b609bfb7eb16e3a8a0056a4ce8f8cc3f8ae84a4",
+        "bytes": 11458,
+        "sha256": "c8ece815be5e6ee3b1cb0ed7ac36b2dfd1068b90300a674997865b87ff162858"
+      },
+      "post": {
+        "blob": "d003384f9badda26bae38e44c6dcf3361b2b5896",
+        "bytes": 11696,
+        "sha256": "52ea23b25b5b6237bc08bd4e28de0f6bbbb885fb4892557dd4cd4a99edafbf02",
+        "create_get_equal": true
+      },
+      "operations": 7,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_coordinator_materials.rs",
+      "pre": {
+        "blob": "2d3b10595febddae8c09ef08aac35c7ce3e9f6bf",
+        "bytes": 11054,
+        "sha256": "3699615f5750199ec978d708aefe49c1fa07b028625cae45ed1e69e090624d35"
+      },
+      "post": {
+        "blob": "b7b0d8c7eef3a9f4b7e5ec7d40b7d0c4d1a1e8e6",
+        "bytes": 11394,
+        "sha256": "954a53f7a33e4347e2b3bce348544c69939afee65d931275e57ee93875a39332",
+        "create_get_equal": true
+      },
+      "operations": 11,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_evaluation_signing.rs",
+      "pre": {
+        "blob": "595ac3b2a66468e222794e7f539873bbb88a6462",
+        "bytes": 8102,
+        "sha256": "74e80f2223b5708f9290f35ead95393978c0e1d82c796238d0370fd971be0608"
+      },
+      "post": {
+        "blob": "7ed8243f0608dea3b1921b7859a53df2cc47c490",
+        "bytes": 8277,
+        "sha256": "a79ffbd6a4b3b73bc3e4a830ec668b31e3baf472153b093e4c28647be9e16acc",
+        "create_get_equal": true
+      },
+      "operations": 6,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_artifacts.rs",
+      "pre": {
+        "blob": "81fd249e2d8c53fd2873153332c921356df441d7",
+        "bytes": 11024,
+        "sha256": "9dbf0ea176381fdc3f585becf0b1fdabee994769b1c1f423f92f023654f1d8cf"
+      },
+      "post": {
+        "blob": "28c30716aa6a4d63d3aa88ed128eb095d928a95b",
+        "bytes": 11246,
+        "sha256": "3b88c7be086b486537cbff38d8cd2d9c5fc501f1e946398003f5dcb44791e349",
+        "create_get_equal": true
+      },
+      "operations": 11,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+      "pre": {
+        "blob": "7ba5e3e61787dee0064059a46870a1467e62c6f3",
+        "bytes": 2673,
+        "sha256": "a73d7690f8746c5978fbeff88d07191e58f86b1c677d75207e71b417bb4c025b"
+      },
+      "post": {
+        "blob": "307446354758465d91a01ec6ba8dc4832b731049",
+        "bytes": 2874,
+        "sha256": "b6de56fcae3f541a251e114e45f79e88c474e8c40bcb1e462d700ed1c9f604fd",
+        "create_get_equal": true
+      },
+      "operations": 6,
+      "forward_complete_equal": true,
+      "reverse_complete_equal": true
+    }
+  ],
+  "counts": {
+    "files": 15,
+    "operations": 81
+  },
+  "kinds": {
+    "actual_receiver_spelling": 80,
+    "crate_private_name_export": 1
+  },
+  "limits": [
+    "Every full pre/post fetched and Git/SHA256 checked, every replacement unique in forward/reverse order.",
+    "Source semantic peer review and Rust compilation remain separate; no native qualification claimed.",
+    "This packet replaces a66a partial; do not apply both."
+  ]
+}
