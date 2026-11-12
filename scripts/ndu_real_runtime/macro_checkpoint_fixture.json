@@ -1,0 +1,145 @@
+{
+  "action_sha256": "5a56136caad965d07690732c3d2b799783d1c328381a3744ca9d4d9e6f2b0dc6",
+  "calibration": {
+    "alpha": 0.1,
+    "complete": true,
+    "conditional": {
+      "[false,false,0]": {
+        "lower_residual": 0.0004995004995004271,
+        "rank": 1,
+        "source_groups": 10
+      }
+    },
+    "unconditional": {
+      "lower_residual": 0.0004995004995004271,
+      "rank": 1,
+      "source_groups": 10
+    }
+  },
+  "calibration_sources": [
+    "c0",
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "center": [
+    0.5,
+    1.0,
+    0.0,
+    0.0,
+    2.3978952727983707
+  ],
+  "context": {
+    "action_sha256": "5a56136caad965d07690732c3d2b799783d1c328381a3744ca9d4d9e6f2b0dc6",
+    "answer_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "encoder_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "evaluator_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "generator_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "public_state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "ndu.ctrl.critic-context.v1",
+    "settlement_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tariff_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "utility_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "counts": {
+    "calibration": 10,
+    "calibration_known_value": 10,
+    "fit": 4,
+    "fit_known_value": 4
+  },
+  "fit_sources": [
+    "a",
+    "b"
+  ],
+  "full_cost_observed": true,
+  "input_sha256": {
+    "calibration": "a073853178bc59514aef63ac44f15f95c073be84bc3a5b40a8b7ad369054b480",
+    "fit": "73f238b79833478553001bc846b2af9fbbb6a4f5dc4ebb58131ac579139d9c97"
+  },
+  "light": {
+    "[false,false,0]": 0.5
+  },
+  "maximum": [
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    2.3978952727983707
+  ],
+  "minimum": [
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    2.3978952727983707
+  ],
+  "probability_heads": {
+    "acquired": {
+      "constant": null,
+      "labelled": 0,
+      "positive": 0,
+      "status": "unobserved",
+      "supported_actions": [],
+      "weights": null
+    },
+    "effect_occurred": {
+      "constant": null,
+      "labelled": 0,
+      "positive": 0,
+      "status": "unobserved",
+      "supported_actions": [],
+      "weights": null
+    },
+    "selected_used": {
+      "constant": null,
+      "labelled": 0,
+      "positive": 0,
+      "status": "unobserved",
+      "supported_actions": [],
+      "weights": null
+    }
+  },
+  "production_update": "no-update",
+  "scale": [
+    0.5,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "schema": "ndu.ctrl.frozen-macro-policy.v1",
+  "shape": [
+    1,
+    1
+  ],
+  "source_bindings": {
+    "a": "22dcea3647b31bc139aea1b04fc719a875d81131a1b2aa6b5796e7c8d216f35f",
+    "b": "96b6ee40027bafb0613adb9e5d6599f6c62f8503d4ab32bf14c6f1e19728488c",
+    "c0": "dd4a604bde98edbc85b245829e5ea6837d8cb09a5fe30f2f93137073dd4a7241",
+    "c1": "8ccbb3c6d2fb67b4f61592c15085b6818c263bd0c4457f3deb9d31cd7cfe413a",
+    "c2": "5aeb5d62cefbb1f7f58828d56151db1f48396a08448341753a28aaf3185a70a4",
+    "c3": "94305e1251c67b62125c1b95637d961374533b816c899b7e4f9639fb3c5aa390",
+    "c4": "db4b1168769183c82cb95bb716209c02f5eafdf2eb48461c5e5ff43e71118f05",
+    "c5": "b949f7b65a39d108d736f8fa8fba07e730b9a98b216aa1bf1092b103e9c1da43",
+    "c6": "0b858fb18c52ccc8f036f41a028aee369aec6c097ce909aa238461ec73401cbc",
+    "c7": "7ff14338ff097bdba7a5165d9135b81970ea38f0bc729bd46bf147e81785b018",
+    "c8": "0c1300449cc6be5923b3e6b894b03c386fdd4e184d9b5680c494938f6a44059c",
+    "c9": "07445e2ac7dd3064f6574f323c914edbc81b4f033aa9a5e8de01e5462e20d52b"
+  },
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "tuned_fixed": "READ",
+  "value": [
+    0.4995004995004996,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ]
+}
