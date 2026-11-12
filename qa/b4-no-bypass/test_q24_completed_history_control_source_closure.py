@@ -66,13 +66,14 @@ class OriginalCompletedHistoryControlSourceTests(unittest.TestCase):
     def test_only_actual_runtime_and_control_callers_are_registered(self):
         rows = {r.identifier: r for r in PROOF._boundary_rows(self.manifest)}
         expected = {
-            "q24_completed_history_config_install": (),
+            "q24_completed_history_config_install": (AGENT + "production_post_a_q24.rs",),
             "q24_completed_history_config_take": (AGENT + "runtime.rs",),
             "q24_completed_history_state_attach": (AGENT + "runtime.rs",),
             "q24_completed_history_state_read": (AGENT + "state_control.rs",),
             "q24_completed_history_client": (),
         }
-        paths = {CONFIG, STATE, CLIENT, AGENT + "runtime.rs", AGENT + "state_control.rs"}
+        paths = {CONFIG, STATE, CLIENT, AGENT + "runtime.rs", AGENT + "state_control.rs",
+                 AGENT + "production_post_a_q24.rs"}
         index = {
             p: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / p).read_text()))
             for p in paths
