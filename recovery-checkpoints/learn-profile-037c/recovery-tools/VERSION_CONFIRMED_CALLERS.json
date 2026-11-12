@@ -1,0 +1,45 @@
+{
+  "status": "SOURCE_REVIEW_FACTS_PENDING_ORIGINAL_SCANNER_EXECUTION",
+  "source": "verified actual V3 Version production; independently identified by candidate_audit",
+  "updates": [
+    {
+      "id": "learning_evaluated_retention_context",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs"
+      ],
+      "caller_origin": "actual from_original_evaluation"
+    },
+    {
+      "id": "learning_evaluated_retention_context_recover",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs"
+      ],
+      "external_union": [
+        "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retention_auth.rs"
+      ],
+      "caller_origin": "actual recover_original_evaluation; Root auth caller belongs to Root delta"
+    },
+    {
+      "id": "learning_original_owner_command_channel",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_service.rs"
+      ],
+      "caller_origin": "actual free command-channel binding; retains Version readiness and all original callers"
+    },
+    {
+      "id": "learning_original_owner_snapshot_encode",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs"
+      ],
+      "caller_origin": "actual free snapshot encoding"
+    },
+    {
+      "id": "learning_original_material_dataset_context_check",
+      "add": [
+        "codex-rs/hepta-agentd/src/circuit_evaluated_version_context.rs",
+        "codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs"
+      ],
+      "caller_origin": "actual full UFCS Dataset context binding; retains readiness and all original callers"
+    }
+  ]
+}

@@ -1,0 +1,2849 @@
+{
+  "schema": "a96-training-original-row-extract-v1",
+  "source": {
+    "commit": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "path": "CALLERS.toml",
+    "bytes": 1124758,
+    "sha256": "d1528f92e274a081dd1c77356a10b5ab2944f00f59eb72ef6b0d9d3e95f20903",
+    "git_blob": "6eb79688b56aca6306bc500b96f3b10654660196"
+  },
+  "provenance": "Exact semantic rows extracted with a strict recovery-only TOML subset parser from the SHA-pinned original. This is not a delta or a source/native pass; original row indices and duplicates are preserved. Consumer should recheck with authoritative tomllib before final adoption.",
+  "boundary_rows": [
+    {
+      "id": "cell_q24_original_training_pair_binding",
+      "symbol": "CellQ24TrainingOwnerV1::require_original_dataset_scope",
+      "receiver_type": "CellQ24TrainingOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_dataset_scope("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "caller_markers": [
+        "let training: &mut CellQ24TrainingOwnerV1<TW> = training;",
+        ".require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?"
+      ]
+    },
+    {
+      "id": "learning_source_bound_training_admission",
+      "symbol": "CellQ24TrainingOwnerV1::require_original_source_capture",
+      "receiver_type": "CellQ24TrainingOwnerV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "definition_markers": [
+        "pub(crate) fn require_original_source_capture("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "caller_markers": []
+    },
+    {
+      "id": "learning_original_candidate_material_native",
+      "symbol": "OriginalCellQ24CandidateMaterialV1::from_original_candidate",
+      "receiver_type": "OriginalCellQ24CandidateMaterialV1",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs",
+      "definition_markers": [
+        "pub(crate) fn from_original_candidate("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+      ],
+      "caller_markers": []
+    }
+  ],
+  "protected_rows": [
+    {
+      "index_in_base": 213,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+        "required": [
+          "pub struct OriginalCellQ24TrainingReceiptOwnerV1",
+          "training: &mut CellQ24TrainingOwnerV1<impl AnchorWitnessStore>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "UnixStream::connect",
+          "fit_or_readback(",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "unwrap_or",
+          "permit_all"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn create(",
+            "sequence": [
+              "validate_config(&config, &key)?",
+              "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?",
+              "Ok(Self"
+            ],
+            "top_level": [
+              "let saved = validate_config(&config, &key)?"
+            ]
+          },
+          {
+            "function": "fn recover(",
+            "sequence": [
+              "validate_config(&config, &key)?",
+              "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?",
+              "Ok(Self"
+            ],
+            "top_level": [
+              "let saved = validate_config(&config, &key)?"
+            ]
+          },
+          {
+            "function": "fn attest_original_completion(",
+            "sequence": [
+              "training.read_learning_observation(&self.config.dataset)?",
+              "require_observation(&self.config, &observation)?",
+              "self.journal.commit_once(saved, ||",
+              "training_receipt(config, &observation, now()?)",
+              "learning_iteration_receipt_signing_bytes_v1(&receipt)",
+              "sign_original(config, key, &receipt, &payload, saved.binding_digest)?",
+              "learning_owner_evidence::encode(&payload, &signed)",
+              "self.authenticate_completed(training, &observation, &bytes)"
+            ],
+            "top_level": [
+              "let observation = training.read_learning_observation(&self.config.dataset)?",
+              "require_observation(&self.config, &observation)?",
+              "let bytes = self.journal.commit_once(saved, ||",
+              "self.authenticate_completed(training, &observation, &bytes)"
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "training.read_learning_observation(&self.config.dataset)?",
+              "require_observation(&self.config, &observation)?",
+              "self.journal.read(&self.saved)?",
+              "self.authenticate_completed(training, &observation, &bytes)"
+            ],
+            "top_level": [
+              "let bytes = self.journal.read(&self.saved)?"
+            ]
+          },
+          {
+            "function": "fn authenticate_completed(",
+            "sequence": [
+              "learning_owner_evidence::decode(bytes)?",
+              "training_receipt(&self.config, observation, signed.issued_at)?",
+              "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "self.config.verifier.verify(",
+              "LearningEvidenceRoleV1::Generator",
+              "verified.principal() != &self.config.signer.principal",
+              "verified.controller_id() != &self.config.signer.controller_id",
+              "signed.evidence_id != evidence_id(self.saved.binding_digest)?",
+              "if training.read_learning_observation(&self.config.dataset)? != *observation",
+              "self.journal.read(&self.saved)? != bytes",
+              "Ok((receipt, signed))"
+            ],
+            "top_level": [
+              "if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "let verified = self.config.verifier.verify(",
+              "if training.read_learning_observation(&self.config.dataset)? != *observation"
+            ]
+          },
+          {
+            "function": "fn validate_config(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(config.dataset.clone())?",
+              "config.scope.validate_snapshot(&config.dataset)?",
+              "coordinator.next_stage() != Some(LearningIterationStageV1::Training)",
+              "key.verifying_key().to_bytes() != config.signer.verifying_key",
+              "config.signer.principal.principal_id != config.dataset.owners.trainer",
+              "config.dataset.owners.evidence_trust_digest != config.verifier.trust_digest()",
+              "config.dataset.request.envelope.objective_digest != config.verifier.objective_digest()",
+              "config.verifier.require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "Ok(ProductEvaluationExecutionKeyV1",
+              "config.dataset.head_digest.as_array()",
+              "config.scope.binding().as_array()",
+              "config.verifier.trust_digest().as_array()",
+              "config.signer.principal.principal_id.as_str().as_bytes()",
+              "&config.signer.verifying_key",
+              "&config.maximum_signature_lifetime_seconds.to_be_bytes()"
+            ],
+            "top_level": [
+              "config.scope.validate_snapshot(&config.dataset)?",
+              "config.verifier.require_signer_binding("
+            ]
+          },
+          {
+            "function": "fn require_observation(",
+            "sequence": [
+              "observation.iteration_head() != config.dataset.head_digest",
+              "observation.scope_binding() != config.scope.binding()",
+              "observation.evidence_digest().is_zero()",
+              "config\n        .scope\n        .validate_observation(observation.observation())?"
+            ],
+            "top_level": [
+              "config\n        .scope\n        .validate_observation(observation.observation())?"
+            ]
+          },
+          {
+            "function": "fn training_receipt(",
+            "sequence": [
+              "require_observation(config, observation)?",
+              "operation_id: config.dataset.request.operation_id.clone()",
+              "predecessor: config.dataset.head_digest",
+              "actor_id: config.dataset.owners.trainer.clone()",
+              "evidence_digest: observation.evidence_digest()",
+              "observation: observation.observation().clone()",
+              "LearningIterationCoordinatorV1::from_snapshot(config.dataset.clone())?",
+              "coordinator.record(receipt.clone(), observed_unix_seconds)?",
+              "config.scope.validate_snapshot(coordinator.snapshot())?"
+            ],
+            "top_level": [
+              "coordinator.record(receipt.clone(), observed_unix_seconds)?",
+              "config.scope.validate_snapshot(coordinator.snapshot())?"
+            ]
+          },
+          {
+            "function": "fn sign_original(",
+            "sequence": [
+              "let issued_at = receipt.observed_unix_seconds",
+              "config.verifier.require_signer_binding(",
+              "issued_at",
+              "config.maximum_signature_lifetime_seconds",
+              ".min(config.signer.principal.expires_at)",
+              "evidence_id: evidence_id(identity)?",
+              "role: LearningEvidenceRoleV1::Generator",
+              "key.sign(&signed.signing_bytes()).to_bytes()",
+              "config.verifier.verify(",
+              "Ok(signed)"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 215,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "required": [
+          "struct OriginalCellQ24TrainingStageV1",
+          "Arc<Mutex<Owners<TW, RW>>>",
+          "Semaphore::new(/*permits*/ 1)",
+          "AnchorWitnessStore + Send + 'static"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "UnixStream::connect",
+          ".sign(",
+          ".claim(",
+          ".complete(",
+          "LearningIterationStageOwnerPortsV1",
+          "with_root_learning_stage_owners(",
+          ".acquire().await",
+          ".acquire_owned().await",
+          "unwrap_or",
+          "permit_all",
+          "if false"
+        ],
+        "required_order": [
+          [
+            "async fn in_lane<T:",
+            "let permit = Arc::clone(&self.lane)",
+            ".try_acquire_owned()",
+            "Error::Busy",
+            "tokio::task::spawn_blocking(move ||",
+            "let _permit = permit;",
+            "owners.try_lock()",
+            "training\n                .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?",
+            "work(&mut owners)"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_owners(",
+            "sequence": [
+              "dataset: receipts.config.dataset.clone()",
+              "stage",
+              ".in_lane(",
+              "super::validate_config(",
+              "owners.receipts.journal.read(&owners.receipts.saved)",
+              "Ok(_) => owners.read_original_completion().map(|_| ())",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "Ok(stage)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn execute_training(",
+            "sequence": [
+              "self.require_dataset(dataset)?",
+              ".in_lane(",
+              "owners.receipts.journal.read(&owners.receipts.saved)",
+              "Ok(_) => owners",
+              "Err(LearningOriginalOwnerErrorV1::Store(",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "let retained_outcome = match CellQ24TrainingOwnerV1::readback(training)",
+              "Ok(outcome) => Some(outcome)",
+              "Err(CellQ24TrainingOwnerErrorV1::Store(",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              ")) => None",
+              "Err(error) => return Err(error.into())",
+              "super::now()",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds",
+              "return Err(Error::DeadlineExceeded)",
+              "let outcome = match retained_outcome",
+              "Some(outcome) => outcome",
+              "None => training.fit_or_readback(&cancellation)?",
+              "receipts.attest_original_completion(training)?"
+            ],
+            "top_level": [
+              "self.require_dataset(dataset)?;"
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "self.require_dataset(dataset)?",
+              "self.in_lane(Owners::read_original_completion).await"
+            ],
+            "top_level": [
+              "self.require_dataset(dataset)?;"
+            ]
+          },
+          {
+            "function": "fn receipt_attestation(",
+            "sequence": [
+              "OriginalCellQ24TrainingStageV1::readback(self, dataset).await?",
+              "if &completed.receipt != expected",
+              "return Err(Error::Binding(",
+              "Ok(completed.attestation)"
+            ],
+            "top_level": [
+              "let completed = OriginalCellQ24TrainingStageV1::readback(self, dataset).await?;",
+              "if &completed.receipt != expected"
+            ]
+          },
+          {
+            "function": "fn require_dataset(",
+            "sequence": [
+              "if dataset != &self.dataset",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if dataset != &self.dataset"
+            ]
+          },
+          {
+            "function": "fn read_original_completion(",
+            "sequence": [
+              "OriginalCellQ24TrainingReceiptOwnerV1::readback(&mut self.receipts, training)?",
+              "CellQ24TrainingOwnerV1::readback(training)?",
+              "Ok(OriginalCellQ24TrainingCompletionV1"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 216,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+        "required": [
+          "pub enum OriginalCellQ24TrainingReadbackErrorV1",
+          "AnchorWitnessStore + Send + 'static"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "execute_training(",
+          "fit_or_readback(",
+          "attest_original_completion(",
+          ".checkpoint(",
+          "SystemTime",
+          "Semaphore",
+          "Mutex",
+          "File::open",
+          "UnixStream::connect",
+          "LearningIterationStageOwnerPortsV1",
+          "with_root_learning_stage_owners(",
+          "unwrap_or",
+          "permit_all",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_cell_q24_training_snapshot_v1(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+              "if expected.observation.stage() != LearningIterationStageV1::Training",
+              "LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?",
+              "for retained in &snapshot.receipts",
+              "if retained.observation.stage() == LearningIterationStageV1::Training",
+              "if retained != expected",
+              "break;",
+              "dataset.record(retained.clone(), retained.observed_unix_seconds)?",
+              "if dataset.next_stage() != Some(LearningIterationStageV1::Training)",
+              "let mut extension = dataset.clone()",
+              "extension.record(expected.clone(), expected.observed_unix_seconds)?",
+              "let completed = training.readback(dataset.snapshot()).await?",
+              "if &completed.receipt != expected",
+              "Ok(completed)"
+            ],
+            "top_level": [
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;",
+              "if expected.observation.stage() != LearningIterationStageV1::Training",
+              "let mut dataset =",
+              "for retained in &snapshot.receipts",
+              "if dataset.next_stage() != Some(LearningIterationStageV1::Training)",
+              "extension.record(expected.clone(), expected.observed_unix_seconds)?;",
+              "let completed = training.readback(dataset.snapshot()).await?;",
+              "if &completed.receipt != expected",
+              "Ok(completed)"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 225,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+        "required": [
+          "source: CircuitTaskSourceReadbackV1<SW>",
+          "ledger: Arc<Mutex<LedgerWriter>>",
+          "original: OriginalMaterialSource",
+          "Local(Box<dyn OriginalMaterialReadback>)",
+          "Remote(OriginalCellQ24RemoteMaterialClientV1)",
+          "experience: LearningIterationEvidenceClientV1",
+          "dataset: LearningIterationEvidenceClientV1",
+          "hepta.cell.q24.original-training-source.v1\\0"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          ".claim(",
+          ".complete(",
+          "UnixStream::connect",
+          "File::open",
+          "FrozenLearningScopeV2::freeze(",
+          "CellQ24TrainingBatchV1::new(",
+          "unwrap_or",
+          "permit_all",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn capture_original_cell_q24_training_source_v1(",
+            "sequence": [
+              "let live = LiveOwners {",
+              "original: OriginalMaterialSource::Local(Box::new(SourceOwners {",
+              "source: owners.source",
+              "ledger: owners.ledger",
+              "baseline: owners.baseline",
+              "experience: owners.experience",
+              "dataset: owners.dataset",
+              "capture_live_original_source(live, config).await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn capture_original_remote_cell_q24_training_source_v1(",
+            "sequence": [
+              "OriginalCellQ24RemoteMaterialClientV1::require_source_binding(",
+              "&owners.material",
+              "&config",
+              "&owners.baseline",
+              "let live = LiveOwners {",
+              "original: OriginalMaterialSource::Remote(owners.material)",
+              "baseline: owners.baseline",
+              "experience: owners.experience",
+              "dataset: owners.dataset",
+              "capture_live_original_source(live, config).await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn capture_live_original_source(",
+            "sequence": [
+              "let runtime = Handle::current();",
+              "tokio::task::spawn_blocking(move ||",
+              "runtime.block_on(live.current_material(&config))?",
+              "material.training_plan(",
+              "config.scope.clone()",
+              "config.optimizer",
+              "capture_binding(&config, &material)",
+              "Ok(OriginalCellQ24TrainingSourceV1 {"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_current_material(",
+            "sequence": [
+              "match self",
+              "Self::Local(original) => original.read(config)",
+              "Self::Remote(original) =>",
+              "OriginalCellQ24RemoteMaterialClientV1::require_source_binding(",
+              "original, config, baseline",
+              "OriginalCellQ24RemoteMaterialClientV1::read_current(original)",
+              ".await",
+              ".map_err(|_| Error::OwnerUnavailable)"
+            ],
+            "top_level": [
+              "match self"
+            ]
+          },
+          {
+            "function": "fn read_original_material(",
+            "sequence": [
+              "original.ledger.try_lock()",
+              "CellQ24DatasetReaderV1::new(",
+              "reader.read_current_for_original_receipt(",
+              "config.freeze_plan.clone()",
+              "&config.freeze_evidence"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn current_material(",
+            "sequence": [
+              "let started_at = now()?",
+              "verify_original_evidence(config, started_at)?",
+              "self.read_original_evidence(config).await?",
+              "let before = self",
+              ".original",
+              ".read_current_material(config, &self.baseline)",
+              ".await?",
+              "require_observations(config, &before)?",
+              "self.read_original_evidence(config).await?",
+              "let after = self",
+              ".original",
+              ".read_current_material(config, &self.baseline)",
+              ".await?",
+              "require_same_material(&before, &after)?",
+              "let fresh_now = now()?",
+              "if fresh_now < started_at",
+              "verify_original_evidence(config, fresh_now)?",
+              "Ok(after)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_original_evidence(",
+            "sequence": [
+              "config.dataset.receipts[0]",
+              "config.dataset.receipts[1]",
+              "LearningIterationEvidenceClientV1::readback(",
+              "&self.experience",
+              "&config.dataset",
+              "experience",
+              "if original_experience != config.experience_evidence",
+              "return Err(Error::Binding(",
+              "LearningIterationEvidenceClientV1::readback(",
+              "&self.dataset",
+              "&config.dataset",
+              "dataset",
+              "if original_dataset != config.dataset_evidence",
+              "return Err(Error::Binding("
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_current_in_lane(",
+            "sequence": [
+              ".block_on(self.live.current_material(&self.config))?",
+              "require_same_material(&self.material, &material)?",
+              "capture_binding(&self.config, &material) != self.binding",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn capture_binding(",
+            "sequence": [
+              "config.experience_evidence.signing_bytes()",
+              "experience.extend_from_slice(&config.experience_evidence.signature)",
+              "config.dataset_evidence.signing_bytes()",
+              "dataset.extend_from_slice(&config.dataset_evidence.signature)",
+              "config.dataset.head_digest.as_array()",
+              "config.scope.binding().as_array()",
+              "material.provenance_digest().as_array()",
+              "Digest32::of_bytes(&experience).as_array()",
+              "Digest32::of_bytes(&dataset).as_array()"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 226,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+        "required": [
+          "source: Some(source)",
+          "hepta.cell.q24.original-source-training-job.v1\\0",
+          "ordinary Training requires original source capture"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "File::open",
+          "UnixStream::connect",
+          "FrozenLearningScopeV2::freeze(",
+          "unwrap_or",
+          "permit_all",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn create_from_original_source(",
+            "sequence": [
+              "source.native_inputs()?",
+              "captured_job_key(&plan, &batch, rule, &source)?",
+              "witness.current()?.is_some()",
+              "LockedFileProductEvaluationExecutionStoreV1::create(",
+              ".compare_and_swap(None, anchor(journal.anchor()))",
+              "source: Some(source)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_from_original_source(",
+            "sequence": [
+              "source.native_inputs()?",
+              "captured_job_key(&plan, &batch, rule, &source)?",
+              "let minimum = witness",
+              "LockedFileProductEvaluationExecutionStoreV1::recover(",
+              "key.binding_digest",
+              "let current = anchor(journal.anchor())",
+              "compare_and_swap(Some(minimum), current)",
+              "source: Some(source)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn captured_job_key(",
+            "sequence": [
+              "let original = job_key(plan, batch, rule)?",
+              "binding_digest: Digest32::of_parts(&[",
+              "original.binding_digest.as_array()",
+              "source.source_capture_binding().as_array()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_original_source_capture(",
+            "sequence": [
+              "if self.fenced",
+              "return Err(Error::CommitUncertain)",
+              "let result = self",
+              ".source",
+              ".as_ref()",
+              ".ok_or(Error::Binding(",
+              "OriginalCellQ24TrainingSourceV1::require_current_in_lane(source)",
+              "if result.is_err()",
+              "self.fenced = true",
+              "result"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_live_source_if_captured(",
+            "sequence": [
+              "if self.source.is_some()",
+              "self.require_original_source_capture()?",
+              "Ok(true)",
+              "Ok(false)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_captured_work_deadline(",
+            "sequence": [
+              "if self.source.is_some()",
+              "std::time::SystemTime::now()",
+              "duration_since(std::time::UNIX_EPOCH)",
+              "now >= self.plan.prefix.request.envelope.expiry_unix_seconds",
+              "CellQ24TrainingErrorV1::DeadlineExceeded.into()"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 228,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "required": [],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn execute_training(",
+            "sequence": [
+              "let operation_started_at",
+              "super::now()",
+              "let (completed, new_work_started_at)",
+              "let outcome = match retained_outcome",
+              "training.require_live_source_if_captured()?",
+              "let fresh_now",
+              "fresh_now < now",
+              "receipts.attest_original_completion(training)?",
+              "if let Some(started_at) = new_work_started_at",
+              "fresh_now >= dataset.request.envelope.expiry_unix_seconds",
+              "return Err(Error::CommitUncertain)",
+              "Ok(completed)"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 229,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+        "required": [],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn require_observations(",
+            "sequence": [
+              "config.dataset.receipts[0].observation != material.experience_observation()",
+              "config.dataset.receipts[1].observation != material.dataset_observation()",
+              "config.dataset.receipts[0].evidence_digest != material.provenance_digest()",
+              "config.dataset.receipts[1].evidence_digest != material.provenance_digest()",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if config.dataset.receipts[0].observation != material.experience_observation()"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 231,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+        "required": [],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn verify_original_evidence(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(config.dataset.clone())?",
+              "config.scope.validate_snapshot(&config.dataset)?",
+              "coordinator.next_stage() != Some(LearningIterationStageV1::Training)",
+              "config.dataset.receipts.len() != 2",
+              "config.dataset.owners.evidence_trust_digest != config.verifier.trust_digest()",
+              "config.dataset.request.envelope.objective_digest != config.verifier.objective_digest()",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "let verified =",
+              ".verifier",
+              ".verify(LearningEvidenceRoleV1::Observer, evidence, &payload, at)?",
+              "verified.principal().principal_id != receipt.actor_id",
+              "receipt.observed_unix_seconds != evidence.issued_at",
+              "receipt.observed_unix_seconds > at"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 232,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "required": [],
+        "forbidden": [],
+        "required_order": [
+          [
+            "async fn in_lane<T:",
+            "training.require_live_source_if_captured()?",
+            "let result = work(&mut owners)",
+            "if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",
+            ".map_err(|_| Error::CommitUncertain)?",
+            "&& owners.require_captured_tail_current().is_err()",
+            "owners.source_fenced = true",
+            "return Err(Error::CommitUncertain)",
+            "result"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_captured_tail_current(",
+            "sequence": [
+              ".require_original_dataset_scope(",
+              "&self.receipts.config.dataset,",
+              "&self.receipts.config.scope,",
+              ")?",
+              "match self.receipts.journal.read(&self.receipts.saved)",
+              "Ok(_) =>",
+              "self.read_original_completion()?",
+              "self.require_retained_attestation_current(&completed)?",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "LearningOriginalOwnerErrorV1::Pending",
+              "Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into())",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_retained_attestation_current(",
+            "sequence": [
+              "learning_iteration_receipt_signing_bytes_v1(",
+              "&completed.receipt",
+              "self.receipts",
+              ".verifier",
+              ".verify(",
+              "LearningEvidenceRoleV1::Generator",
+              "&completed.attestation",
+              "&payload",
+              "super::now()",
+              ".map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?",
+              "Ok(())"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 233,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+        "required": [],
+        "forbidden": [],
+        "required_order": [
+          [
+            "fn in_model_lane<T>",
+            "training.require_live_source_if_captured()?",
+            "let original = owners.read_original_completion()?",
+            "let result = work(&mut owners.training, &original)",
+            "let source_bound",
+            "CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",
+            ".map_err(|_| Error::CommitUncertain)?",
+            "let current = owners",
+            ".read_original_completion().map_err(",
+            "if source_bound",
+            "owners.source_fenced = true",
+            "Error::CommitUncertain",
+            "if source_bound",
+            "&& owners",
+            ".require_retained_attestation_current(&current)",
+            ".is_err()",
+            "owners.source_fenced = true",
+            "return Err(Error::CommitUncertain)",
+            "current.receipt != original.receipt || current.attestation != original.attestation",
+            "result"
+          ]
+        ]
+      }
+    },
+    {
+      "index_in_base": 234,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+        "required": [
+          "source_fenced: bool",
+          "source_fenced: false"
+        ],
+        "forbidden": [],
+        "required_order": [
+          [
+            "async fn in_lane<T:",
+            "owners.try_lock()",
+            "if owners.source_fenced",
+            "return Err(Error::CommitUncertain)",
+            "let result = work(&mut owners)",
+            "&& owners.require_captured_tail_current().is_err()",
+            "owners.source_fenced = true",
+            "return Err(Error::CommitUncertain)"
+          ]
+        ]
+      }
+    },
+    {
+      "index_in_base": 235,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+        "required": [],
+        "forbidden": [],
+        "required_order": [
+          [
+            "fn in_model_lane<T>",
+            "self.owners.try_lock()",
+            "if owners.source_fenced",
+            "return Err(Error::CommitUncertain)",
+            "let original = owners.read_original_completion()?",
+            "let current = owners",
+            "if source_bound",
+            "owners.source_fenced = true",
+            "&& owners",
+            ".require_retained_attestation_current(&current)",
+            ".is_err()",
+            "owners.source_fenced = true",
+            "return Err(Error::CommitUncertain)"
+          ]
+        ]
+      }
+    },
+    {
+      "index_in_base": 245,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+        "required": [
+          "Mutex<Option<Channel>>",
+          "Mutex<Option<OriginalCellQ24TrainingCommandReceiptV1>>",
+          "hepta.agentd.original-q24-training-command.v1\\0"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "File::open",
+          "UnixStream::connect",
+          ".try_clone(",
+          "CellQ24TrainingBatchV1::new(",
+          "FrozenLearningScopeV2::freeze(",
+          "permit_all",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn validate(",
+            "sequence": [
+              "LearningIterationCoordinatorV1::from_snapshot(self.dataset.clone())?",
+              "self.scope.validate_snapshot(&self.dataset)?",
+              "coordinator.next_stage() != Some(LearningIterationStageV1::Training)",
+              "self.dataset.receipts.len() != 2",
+              "self.dataset.owners.evidence_trust_digest != self.verifier.trust_digest()",
+              "return Err(Error::Binding(",
+              "LearningIterationCoordinatorV1::new("
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_from_original_stream(",
+            "sequence": [
+              "wire::authenticate_receipt(&context, receipt, attestation, now()?)",
+              ".transpose()?",
+              "Self::bind_original_stream(",
+              "true,\n            retained,"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn bind_original_stream(",
+            "sequence": [
+              "let binding = context.binding()?",
+              "if peer.actor_id != context.dataset.owners.trainer",
+              "return Err(Error::Binding(",
+              "original_owner_command_channel_v1(",
+              "original_owner_pidfd",
+              "next_request_id: 1",
+              "execution_requested",
+              "retained: Mutex::new(retained)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn execute_training(",
+            "sequence": [
+              "cancellation.load(Ordering::Acquire)",
+              "return Err(Error::Cancelled)",
+              "now()? >= self.context.dataset.request.envelope.expiry_unix_seconds",
+              "return Err(Error::DeadlineExceeded)",
+              "self.exchange(",
+              "wire::Action::Execute,",
+              "false,",
+              "Some(cancellation)",
+              ".await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn exchange(",
+            "sequence": [
+              "let started_at = now()?",
+              "self.channel.try_lock()",
+              "channel.execution_requested",
+              "return Err(Error::ReadbackRequired)",
+              "slot.take().ok_or(Error::Unavailable)?",
+              "channel.execution_requested = true",
+              "request_id.checked_add(1)",
+              "wire::Request::new(",
+              "tokio::task::spawn_blocking(move ||",
+              "if cancellation",
+              ".is_some_and(|flag| flag.load(Ordering::Acquire))",
+              "return Err(Error::Cancelled)",
+              "let bytes = channel\n                .peer\n                .request(&encoded)",
+              ".map_err(|_| Error::CommitUncertain)?",
+              "response.require_request(&request)?",
+              "channel.peer.check_peer_lifetime()?",
+              "let fresh_now = now()?",
+              "if fresh_now < started_at",
+              "wire::decode_completed(",
+              "original != &completed",
+              "*retained = Some(completed.clone())",
+              "wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)",
+              "Some(channel)",
+              "result"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "channel.peer.check_peer_lifetime()?",
+              "let fresh_now = now()?",
+              "if fresh_now < started_at"
+            ]
+          },
+          {
+            "function": "fn receipt_attestation(",
+            "sequence": [
+              "OriginalCellQ24TrainingCommandClientV1::readback(self).await?",
+              "if &completed.receipt != expected",
+              "return Err(Error::Binding(",
+              "Ok(completed.attestation)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn now(",
+            "sequence": [
+              "SystemTime::now()",
+              ".duration_since(UNIX_EPOCH)",
+              ".as_secs()"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 246,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+        "required": [
+          "stage: Arc<SourceBoundCellQ24TrainingStageV1<TW, RW>>",
+          "execution_requested: AtomicBool",
+          "connections: Arc<Semaphore>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "File::open",
+          "UnixStream::connect",
+          ".try_clone(",
+          "CellQ24TrainingBatchV1::new(",
+          "FrozenLearningScopeV2::freeze(",
+          "permit_all",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_stage(",
+            "sequence": [
+              "Self::bind_original_stage(",
+              "Admission::OriginalExecution",
+              ").await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_original_stage(",
+            "sequence": [
+              "Self::bind_original_stage(",
+              "Admission::ReadbackOnly",
+              ").await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn bind_original_stage(",
+            "sequence": [
+              "context.validate()?",
+              "context.binding()?",
+              "SourceBoundCellQ24TrainingStageV1::require_original_command_context(",
+              "&stage,\n            &context.dataset,\n            &context.scope,",
+              ")\n        .await?",
+              "execution_requested: AtomicBool::new(matches!(admission, Admission::ReadbackOnly))",
+              "runtime: Handle::current()",
+              "Semaphore::new(4)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_commands(",
+            "sequence": [
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              "tokio::task::spawn_blocking(move ||",
+              "original_owner_command_channel_v1(",
+              "self.serve_command_channel(&mut channel)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_evidence_readback(",
+            "sequence": [
+              "timeout > Duration::from_millis(500)",
+              "return Err(Error::Binding(",
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              "tokio::task::spawn_blocking(move ||",
+              "original_owner_command_channel_v1(",
+              "self.serve_evidence_channel(&mut channel)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_command_channel(",
+            "sequence": [
+              "let mut next_request_id = 1_u64",
+              "for count in 0..128_u64",
+              "channel.exchange(|bytes|",
+              "self.command_response(bytes, next_request_id)",
+              "if !exchanged",
+              "next_request_id = next_request_id\n                .checked_add(1)",
+              "Err(Error::Unavailable)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn command_response(",
+            "sequence": [
+              "serde_json::from_slice(bytes)?",
+              "request.require_context(&self.context, self.binding, next_request_id)?",
+              "self.execution_requested.swap(true, Ordering::AcqRel)",
+              "wire::CommandResult::ReadbackRequired",
+              "now()? >= self.context.dataset.request.envelope.expiry_unix_seconds",
+              "self.cancellation.store(true, Ordering::Release)",
+              "self.runtime",
+              ".block_on(SourceBoundCellQ24TrainingStageV1::execute_training(",
+              "self.completed_response(completed)?",
+              "wire::Action::Readback",
+              "SourceBoundCellQ24TrainingStageV1::readback(",
+              "self.completed_response(completed)?",
+              "wire::Response::from_request(\n            &request, result,\n        )"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn evidence_response(",
+            "sequence": [
+              "serde_json::from_slice(bytes)?",
+              "request.schema != 1",
+              "request.operation != evidence_wire::OPERATION",
+              "request.request_id != next_request_id",
+              "request.binding != self.initial_head.to_string()",
+              "request.actor_id != self.context.dataset.owners.trainer.as_str()",
+              "request.predecessor != self.context.dataset.head_digest.to_string()",
+              "snapshot_head.is_zero()",
+              "return Err(Error::Binding(",
+              "SourceBoundCellQ24TrainingStageV1::readback(",
+              "wire::authenticate_receipt(",
+              "now()?",
+              "request.receipt_digest != original.attestation.payload_digest.to_string()",
+              "evidence_wire::Evidence::from_original(&original.attestation)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn original_state(",
+            "sequence": [
+              "Stage::Busy => wire::CommandResult::Busy",
+              "Native::Pending",
+              "wire::CommandResult::Pending",
+              "Store::Missing",
+              "wire::CommandResult::Missing",
+              "_ => wire::CommandResult::Uncertain"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 247,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+        "required": [
+          "runtime.learning.original-q24-training.command.v1",
+          "#[serde(deny_unknown_fields)]"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "File::open",
+          "UnixStream::connect",
+          ".try_clone(",
+          "CellQ24TrainingBatchV1::new(",
+          "FrozenLearningScopeV2::freeze(",
+          "permit_all",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_context(",
+            "sequence": [
+              "self.schema != 1",
+              "self.operation != OPERATION",
+              "self.request_id != next_request_id",
+              "self.binding != binding.to_string()",
+              "self.operation_id != context.dataset.request.operation_id.as_str()",
+              "self.dataset_head != context.dataset.head_digest.to_string()",
+              "self.scope_binding != context.scope.binding().to_string()",
+              "self.actor_id != context.dataset.owners.trainer.as_str()",
+              "self.action == Action::Readback && self.cancelled",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_request(",
+            "sequence": [
+              "self.schema != request.schema",
+              "self.request_id != request.request_id",
+              "self.binding != request.binding",
+              "self.dataset_head != request.dataset_head",
+              "self.scope_binding != request.scope_binding",
+              "self.actor_id != request.actor_id",
+              "self.action != request.action",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn decode_completed(",
+            "sequence": [
+              "snapshot.len() > 10_924",
+              "STANDARD_NO_PAD",
+              ".decode(&snapshot)",
+              "STANDARD_NO_PAD.encode(&bytes) != snapshot",
+              "decode_original_owner_snapshot_v1(&bytes)?",
+              "require_exact_extension(context, &completed)?",
+              "let attestation = evidence\n        .decode()",
+              "authenticate_receipt(context, receipt.clone(), attestation, at)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_exact_extension(",
+            "sequence": [
+              "completed.request != context.dataset.request",
+              "completed.owners != context.dataset.owners",
+              "completed.receipts.len() != context.dataset.receipts.len() + 1",
+              "completed.receipts[..context.dataset.receipts.len()] != context.dataset.receipts",
+              "return Err(Error::Binding(",
+              "context.scope.validate_snapshot(completed)?",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn authenticate_receipt(",
+            "sequence": [
+              "context.validate()?",
+              "receipt.observation.stage() != LearningIterationStageV1::Training",
+              "receipt.actor_id != context.dataset.owners.trainer",
+              "receipt.predecessor != context.dataset.head_digest",
+              "receipt.observed_unix_seconds != attestation.issued_at",
+              "receipt.observed_unix_seconds > at",
+              "return Err(Error::Binding(",
+              "coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?",
+              "context.scope.validate_snapshot(coordinator.snapshot())?",
+              "learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "context.verifier.verify(",
+              "LearningEvidenceRoleV1::Generator",
+              "&attestation",
+              "&payload",
+              "at",
+              "verified.principal().principal_id != context.dataset.owners.trainer",
+              "Ok(OriginalCellQ24TrainingCommandReceiptV1 {\n        receipt,\n        attestation,\n    })"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 248,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "required": [],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn require_original_command_context(",
+            "sequence": [
+              "self.original.require_dataset(dataset)?",
+              "let scope = scope.clone()",
+              "self.original",
+              ".in_lane(move |owners|",
+              "if owners.receipts.config.scope != scope",
+              "return Err(Error::Binding(",
+              "Ok(())",
+              ".await"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 273,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "required": [
+          "enum Origin {",
+          "Fresh,",
+          "Recovered,",
+          "enum State<",
+          "Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>)",
+          "Starting,",
+          "Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>)",
+          "Fenced,",
+          "dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>",
+          "state: Mutex<State<TW, RW>>",
+          "bootstrap_lane: Semaphore",
+          "connections: Arc<Semaphore>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "UnixStream::connect",
+          "File::open",
+          "OpenOptions",
+          ".claim(",
+          ".complete(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "pub state:",
+          "pub dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>",
+          "pub config:",
+          "pub generator_key: SigningKey =",
+          "fn reset",
+          "pub fn ready",
+          "DatasetV1",
+          "Q24Batch",
+          "Vec<i64>",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_custody(",
+            "sequence": [
+              "fn from_original_custody(",
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)"
+            ],
+            "top_level": [
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)"
+            ]
+          },
+          {
+            "function": "fn recover_original_custody(",
+            "sequence": [
+              "fn recover_original_custody(",
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)"
+            ],
+            "top_level": [
+              "Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)"
+            ]
+          },
+          {
+            "function": "fn bind_original_custody(",
+            "sequence": [
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&dataset",
+              "&config.material",
+              "OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(",
+              "&custody.material_source",
+              "&config.material.initial",
+              "&config.material.scope",
+              "&custody.baseline",
+              "let at = now()?;",
+              "custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key",
+              "config.generator.principal.principal_id != config.material.initial.owners.trainer",
+              "!(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)",
+              "custody.baseline.components()",
+              "!= &config.material.initial.request.selected_bundle.components",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&config.generator",
+              "at",
+              "Ok(Self {",
+              "dataset: Arc::new(dataset)",
+              "state: Mutex::new(State::Awaiting(custody))",
+              "runtime: Handle::current()",
+              "bootstrap_lane: Semaphore::new(1)",
+              "connections: Arc::new(Semaphore::new(4))"
+            ],
+            "top_level": [
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(",
+              "let at = now()?;",
+              "Ok(Self {"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 274,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+        "required": [
+          "impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>",
+          "OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "UnixStream::connect",
+          "File::open",
+          "OpenOptions",
+          ".claim(",
+          ".complete(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "FrozenLearningScopeV2::freeze",
+          "freeze_learning",
+          "clone_from_original",
+          "State::Awaiting",
+          "create_dir",
+          "std::fs::",
+          "serde_json::from",
+          "Vec<i64>",
+          "Q24Batch",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn actual_context(",
+            "sequence": [
+              "let initial = &self.config.material.initial;",
+              "let snapshot = cut.snapshot();",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())",
+              "snapshot.request != initial.request",
+              "snapshot.owners != initial.owners",
+              "snapshot.receipts.len() != 2",
+              "cut.attestations().len() != 2",
+              "coordinator.next_stage() != Some(LearningIterationStageV1::Training)",
+              "return Err(Error::Binding(",
+              "let context = OriginalCellQ24TrainingCommandContextV1 {",
+              "dataset: snapshot.clone()",
+              "scope: self.config.material.scope.clone()",
+              "verifier: self.config.material.verifier.clone()",
+              "request.require_context(&context, context.binding()?, next_request_id)?",
+              "self.require_fresh_cut(cut, started_at)?",
+              "Ok(context)"
+            ],
+            "top_level": [
+              "let initial = &self.config.material.initial;",
+              "let snapshot = cut.snapshot();",
+              "request.require_context(&context, context.binding()?, next_request_id)?",
+              "self.require_fresh_cut(cut, started_at)?",
+              "Ok(context)"
+            ]
+          },
+          {
+            "function": "fn require_fresh_cut(",
+            "sequence": [
+              "OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(",
+              "&self.dataset",
+              "cut",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&self.dataset",
+              "&self.config.material",
+              "at < started_at",
+              "matches!(self.origin, Origin::Fresh)",
+              "at",
+              ">= self",
+              ".config",
+              ".material",
+              ".initial",
+              ".request",
+              ".envelope",
+              ".expiry_unix_seconds",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&self.config.generator",
+              "at",
+              "Ok(())"
+            ],
+            "top_level": [
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn build_original_owner(",
+            "sequence": [
+              "let source_config = OriginalCellQ24TrainingSourceConfigV1 {",
+              "dataset: cut.snapshot().clone()",
+              "scope: self.config.material.scope.clone()",
+              "rule: self.config.material.rule",
+              "optimizer: self.config.optimizer",
+              "freeze_plan: self.config.material.freeze_plan.clone()",
+              "freeze_evidence: self.config.material.freeze_evidence.clone()",
+              "experience_evidence: cut.attestations()[0].clone()",
+              "dataset_evidence: cut.attestations()[1].clone()",
+              "verifier: self.config.material.verifier.clone()",
+              "OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(",
+              "material_source",
+              "source_config.clone()",
+              "capture_original_remote_cell_q24_training_source_v1(",
+              "OriginalCellQ24RemoteTrainingSourceOwnersV1 {",
+              "material",
+              "baseline",
+              "experience",
+              "dataset",
+              "source_config",
+              ".await?",
+              "self.require_fresh_cut(&cut, started_at)?",
+              "let signing = OriginalCellQ24TrainingSigningConfigV1 {",
+              "dataset: context.dataset.clone()",
+              "scope: context.scope.clone()",
+              "signer: self.config.generator.clone()",
+              "verifier: context.verifier.clone()",
+              "maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds",
+              "let origin = self.origin;",
+              "let original_dataset = Arc::clone(&self.dataset);",
+              "let material_config = self.config.material.clone();",
+              "let original_cut = cut.clone();",
+              "tokio::task::spawn_blocking(move || {",
+              "OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?",
+              "OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(",
+              "&original_dataset",
+              "&original_cut",
+              "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(",
+              "&original_dataset",
+              "&material_config",
+              "at < started_at",
+              "matches!(origin, Origin::Fresh)",
+              "at >= material_config.initial.request.envelope.expiry_unix_seconds",
+              "return Err(Error::Binding(",
+              ".require_signer_binding(",
+              "LearningEvidenceRoleV1::Generator",
+              "&signing.signer",
+              "at",
+              "let native = match origin {",
+              "Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(",
+              "native_file",
+              "native_witness",
+              "source",
+              "Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(",
+              "native_file",
+              "native_witness",
+              "source",
+              "let receipts = match origin {",
+              "Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(",
+              "receipt_file",
+              "receipt_witness",
+              "signing",
+              "generator_key",
+              "Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(",
+              "receipt_file",
+              "receipt_witness",
+              "signing",
+              "generator_key",
+              "Ok::<_, Error>((native, receipts))",
+              ".await",
+              ".map_err(|_| Error::Uncertain)??",
+              "OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts)",
+              "SourceBoundCellQ24TrainingStageV1::from_original_stage(original)",
+              "let owner = match self.origin {",
+              "Origin::Fresh => {",
+              "OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(",
+              "stage",
+              "context",
+              "Arc::clone(&self.cancellation)",
+              "Origin::Recovered => {",
+              "OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(",
+              "stage",
+              "context",
+              "Arc::clone(&self.cancellation)",
+              "self.require_fresh_cut(&cut, started_at)?",
+              "Ok(Arc::new(owner))"
+            ],
+            "top_level": [
+              "let source_config = OriginalCellQ24TrainingSourceConfigV1 {",
+              "let origin = self.origin;",
+              "let original_dataset = Arc::clone(&self.dataset);",
+              "let material_config = self.config.material.clone();",
+              "let original_cut = cut.clone();",
+              "let owner = match self.origin {",
+              "Ok(Arc::new(owner))"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 275,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+        "required": [
+          "OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "UnixStream::connect",
+          "File::open",
+          "OpenOptions",
+          ".claim(",
+          ".complete(",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "= State::Awaiting(",
+          "wire::CommandResult::Missing",
+          "wire::CommandResult::Pending",
+          "SigningKey",
+          "LearningIterationSnapshotV1",
+          "source: Vec",
+          "receipt: Vec",
+          "batch:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_commands(",
+            "sequence": [
+              "Arc::clone(&self.connections)",
+              "try_acquire_owned()",
+              "tokio::task::spawn_blocking(move || {",
+              "let _permit = permit;",
+              "original_owner_command_channel_v1(",
+              "stream",
+              "consumer",
+              "consumer_uid",
+              "original_consumer_pidfd",
+              "timeout",
+              "lifetime",
+              "self.serve_command_channel(&mut channel)",
+              ".await",
+              ".map_err(|_| Error::Uncertain)?"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_evidence_readback(",
+            "sequence": [
+              "Arc::clone(&self.connections)",
+              "try_acquire_owned()",
+              ".ready()?",
+              "ok_or(Error::Binding(",
+              "OriginalCellQ24TrainingCommandOwnerV1::serve_evidence_readback(",
+              "original",
+              "stream",
+              "consumer",
+              "consumer_uid",
+              "original_consumer_pidfd",
+              "timeout",
+              "lifetime",
+              ".await?"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn ready(",
+            "sequence": [
+              "self.state.try_lock()",
+              "match &*state {",
+              "State::Awaiting(_) => Ok(None)",
+              "State::Starting => Err(Error::Busy)",
+              "State::Ready(original) => Ok(Some(Arc::clone(original)))",
+              "State::Fenced => Err(Error::Uncertain)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_command_channel(",
+            "sequence": [
+              "for request_id in 1..=128_u64 {",
+              "channel",
+              ".exchange(|bytes| {",
+              "self.command_response(bytes, request_id)",
+              ".map_err(|_| HostIssuerTransportError::InvalidRequest)",
+              "OriginalCellQ24TrainingCommandErrorV1::from",
+              "if !exchanged",
+              "Ok(request_id - 1)",
+              "Err(Error::Uncertain)"
+            ],
+            "top_level": [
+              "for request_id in 1..=128_u64 {",
+              "Err(Error::Uncertain)"
+            ]
+          },
+          {
+            "function": "fn command_response(",
+            "sequence": [
+              "let request: wire::Request =",
+              "serde_json::from_slice(bytes)",
+              "self.require_initial_request(&request, request_id)?",
+              "if let Some(original) = self.ready()?",
+              "return Ok(original.command_response(bytes, request_id)?)",
+              "matches!(self.origin, Origin::Recovered)",
+              "request.action == wire::Action::Execute",
+              "wire::CommandResult::ReadbackRequired",
+              "matches!(self.origin, Origin::Fresh)",
+              "request.action == wire::Action::Readback",
+              "wire::CommandResult::ReadbackRequired",
+              "self.bootstrap_lane.try_acquire()",
+              "if let Some(original) = self.ready()?",
+              "return Ok(original.command_response(bytes, request_id)?)",
+              "let started_at = now()?;",
+              ".runtime",
+              ".block_on(",
+              "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+              "&self.dataset",
+              "Ok(cut) => cut",
+              "Err(OriginalCellQ24MaterialCommandErrorV1::Missing)",
+              "wire::CommandResult::Unavailable",
+              "Err(OriginalCellQ24MaterialCommandErrorV1::Pending)",
+              "wire::CommandResult::Unavailable",
+              "Err(error) => return Err(error.into())",
+              "self.actual_context(&cut, &request, request_id, started_at)?",
+              "let custody = {",
+              "self.state.try_lock()",
+              "std::mem::replace(&mut *state, State::Starting)",
+              "State::Awaiting(custody) => custody",
+              "*state = other",
+              "return Err(Error::Uncertain)",
+              ".runtime",
+              ".block_on(self.build_original_owner(",
+              "custody",
+              "context",
+              "cut",
+              "started_at",
+              "let original = match built {",
+              "Ok(original) => {",
+              "State::Ready(Arc::clone(&original))",
+              "original",
+              "Err(error) => {",
+              "State::Fenced",
+              "return Err(error)",
+              "return Ok(original.command_response(bytes, request_id)?)",
+              "self.response(&request, result)"
+            ],
+            "top_level": [
+              "self.require_initial_request(&request, request_id)?",
+              "self.response(&request, result)"
+            ]
+          },
+          {
+            "function": "fn require_initial_request(",
+            "sequence": [
+              "let initial = &self.config.material.initial;",
+              "let digest = |text: &str|",
+              "text",
+              ".parse()",
+              "if digest.is_zero() || digest.to_string() != text",
+              "return Err(Error::Binding(",
+              "digest(&request.binding)?",
+              "digest(&request.dataset_head)?",
+              "request.schema != 1",
+              "request.operation != wire::OPERATION",
+              "request.request_id != request_id",
+              "request.operation_id != initial.request.operation_id.as_str()",
+              "request.actor_id != initial.owners.trainer.as_str()",
+              "request.scope_binding != self.config.material.scope.binding().to_string()",
+              "request.action == wire::Action::Readback && request.cancelled",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "let initial = &self.config.material.initial;",
+              "digest(&request.binding)?",
+              "digest(&request.dataset_head)?",
+              "Ok(())"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 285,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+        "required": [
+          "bounded blocking lane",
+          "let training: &mut CellQ24TrainingOwnerV1<TW> = training",
+          "fn in_model_lane<T>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "File::open",
+          "OpenOptions",
+          ".try_clone(",
+          "CellQ24TrainingOwnerV1::create(",
+          "CellQ24TrainingOwnerV1::recover(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          "pub fn in_model_lane",
+          "LearningIterationStageOwnerPortsV1",
+          "with_root_learning_stage_owners(",
+          ".acquire().await",
+          ".acquire_owned().await",
+          "unwrap_or",
+          "permit_all",
+          "if false"
+        ],
+        "required_order": [
+          [
+            "fn create_model_owner<",
+            "self.in_model_lane(",
+            "CellQ24ModelProposalOwnerV1::create(file, witness, training, self.dataset.clone())"
+          ],
+          [
+            "fn recover_model_owner<",
+            "self.in_model_lane(",
+            "CellQ24ModelProposalOwnerV1::recover(file, witness, training, self.dataset.clone())"
+          ],
+          [
+            "fn commit_model_or_readback<",
+            "self.in_model_lane(",
+            "require_original_training(inputs, completed)?",
+            "CellQ24ModelProposalOwnerV1::commit_or_readback(model, training, inputs)"
+          ],
+          [
+            "fn read_model_proposal<",
+            "self.in_model_lane(",
+            "require_original_training(inputs, completed)?",
+            "CellQ24ModelProposalOwnerV1::readback(model, training, inputs)"
+          ],
+          [
+            "fn in_model_lane<T>",
+            "let _permit = Arc::clone(&self.lane)",
+            ".try_acquire_owned()",
+            "Error::Busy",
+            "self.owners.try_lock()",
+            "Error::CommitUncertain",
+            "training\n            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?",
+            "let original = owners.read_original_completion()?",
+            "let result = work(&mut owners.training, &original)",
+            "let current = owners",
+            ".read_original_completion().map_err(",
+            "Error::CommitUncertain",
+            "if current.receipt != original.receipt || current.attestation != original.attestation",
+            "return Err(Error::CommitUncertain)",
+            "result"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_original_training(",
+            "sequence": [
+              "if inputs.training_cut.receipts.last() != Some(&completed.receipt)",
+              "|| inputs.training_attestation != &completed.attestation",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if inputs.training_cut.receipts.last() != Some(&completed.receipt)",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn read_candidate_material(",
+            "sequence": [
+              "self.in_model_lane(|training, completed|",
+              "CellQ24TrainingOwnerV1::require_original_source_capture(training)?",
+              "CellQ24TrainingOwnerV1::readback(training)?",
+              "crate::CellQ24TrainingOutcomeV1::Candidate(candidate) => *candidate",
+              "crate::CellQ24TrainingOutcomeV1::NoUpdate",
+              "return Err(crate::OriginalCellQ24CandidateMaterialErrorV1::NoCandidate.into())",
+              "crate::OriginalCellQ24CandidateMaterialV1::from_original_candidate(",
+              "&self.dataset",
+              "candidate",
+              "completed.receipt.clone()",
+              "completed.attestation.clone()"
+            ],
+            "top_level": [
+              "self.in_model_lane(|training, completed|"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 286,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "required": [
+          "original: OriginalCellQ24TrainingStageV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "CellQ24TrainingBatchV1::new(",
+          "File::open",
+          "UnixStream::connect",
+          "permit_all",
+          "unwrap_or",
+          "if false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_stage(",
+            "sequence": [
+              "original",
+              ".in_lane(|owners| {",
+              "CellQ24TrainingOwnerV1::require_original_source_capture(&mut owners.training)?",
+              "Ok(())",
+              ".await?",
+              "Ok(Self { original })"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn execute_training(",
+            "sequence": [
+              "OriginalCellQ24TrainingStageV1::execute_training(",
+              "&self.original",
+              ".await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "OriginalCellQ24TrainingStageV1::readback(",
+              "&self.original",
+              ".await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn receipt_attestation(",
+            "sequence": [
+              "OriginalCellQ24TrainingStageV1::receipt_attestation(",
+              "&self.original",
+              ".await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn commit_model_or_readback(",
+            "sequence": [
+              "OriginalCellQ24TrainingStageV1::commit_model_or_readback(",
+              "&self.original",
+              "model",
+              "inputs"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_model_proposal(",
+            "sequence": [
+              "OriginalCellQ24TrainingStageV1::read_model_proposal(",
+              "&self.original",
+              "model",
+              "inputs"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_candidate_material(",
+            "sequence": [
+              "self.original.require_dataset(dataset)?",
+              "OriginalCellQ24TrainingStageV1::read_candidate_material(&self.original)"
+            ],
+            "top_level": [
+              "self.original.require_dataset(dataset)?",
+              "OriginalCellQ24TrainingStageV1::read_candidate_material(&self.original)"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 287,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+        "required": [
+          "enum Origin {",
+          "Fresh,",
+          "Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>)",
+          "peer: HostAuthorityPeerChannel",
+          "material: OriginalCellQ24MaterialReceiptConfigV1",
+          "initial_binding: Digest32",
+          "origin: Origin"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "HostAuthorityPeerChannel::from_stream",
+          "RootObservationStream",
+          "serde_json",
+          "pub peer:",
+          "pub material:",
+          "pub initial_binding:",
+          "pub origin:",
+          "pub now:",
+          "execution_requested: false",
+          "Origin::Fresh => (true",
+          "Origin::Recovered(expected) => (false",
+          "impl Clone",
+          "derive(Clone",
+          "dyn Fn",
+          "impl Fn",
+          "permit_all",
+          "if false",
+          ".claim(",
+          ".complete(",
+          ".sign("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_stream(",
+            "sequence": [
+              "Self::bind_original_stream(",
+              "stream",
+              "peer",
+              "original_owner_pidfd",
+              "material",
+              "timeout",
+              "lifetime",
+              "Origin::Fresh"
+            ],
+            "top_level": [
+              "Self::bind_original_stream("
+            ]
+          },
+          {
+            "function": "fn recover_from_original_stream(",
+            "sequence": [
+              "expected: Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>",
+              "Self::bind_original_stream(",
+              "stream",
+              "peer",
+              "original_owner_pidfd",
+              "material",
+              "timeout",
+              "lifetime",
+              "Origin::Recovered(expected)"
+            ],
+            "top_level": [
+              "Self::bind_original_stream("
+            ]
+          },
+          {
+            "function": "fn bind_original_stream(",
+            "sequence": [
+              "let (initial_binding, started_at) =",
+              "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(",
+              "&material",
+              "peer.actor_id != material.initial.owners.trainer",
+              "return Err(Error::Binding(",
+              "original_owner_command_channel_v1(",
+              "stream",
+              "AgentdRootAuthorityPeer {",
+              "pid: peer.pid",
+              "boot_id: peer.boot_id",
+              "process_start_ticks: peer.process_start_ticks",
+              "peer.uid",
+              "original_owner_pidfd",
+              "timeout",
+              "lifetime",
+              "peer",
+              ".check_peer_lifetime()",
+              "let (current_binding, fresh_now) =",
+              "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(",
+              "&material",
+              "current_binding != initial_binding || fresh_now < started_at",
+              "return Err(Error::Binding(",
+              "Ok(Self {",
+              "peer",
+              "material",
+              "initial_binding",
+              "origin"
+            ],
+            "top_level": [
+              "let (initial_binding, started_at) =",
+              "let (current_binding, fresh_now) =",
+              "if current_binding != initial_binding || fresh_now < started_at",
+              "Ok(Self {"
+            ]
+          },
+          {
+            "function": "fn bind_original_dataset(",
+            "sequence": [
+              "completed: OriginalCellQ24MaterialCommandReceiptV1",
+              "let started_at = now()?;",
+              "let context = OriginalCellQ24TrainingCommandContextV1 {",
+              "dataset: completed.snapshot().clone()",
+              "scope: self.material.scope.clone()",
+              "verifier: self.material.verifier.clone()",
+              "context.validate()? != self.material.initial",
+              "return Err(Error::Binding(",
+              "let binding = context.binding()?;",
+              "self.peer",
+              ".check_peer_lifetime()",
+              "let (original_binding, fresh_now) =",
+              "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(",
+              "&self.material",
+              "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+              "&completed",
+              "&self.material",
+              "original_binding != self.initial_binding",
+              "fresh_now < started_at",
+              "verified_at < fresh_now",
+              "return Err(Error::Binding(",
+              "let (execution_requested, retained) = match self.origin {",
+              "Origin::Fresh => (false, None)",
+              "Origin::Recovered(expected) => (",
+              "true",
+              "expected",
+              ".map(|(receipt, attestation)|",
+              "wire::authenticate_receipt(",
+              "&context",
+              "receipt,",
+              "attestation,",
+              "verified_at",
+              ".transpose()?",
+              "Ok(OriginalCellQ24TrainingCommandClientV1 {",
+              "channel: Mutex::new(Some(Channel {",
+              "peer: self.peer",
+              "next_request_id: 1",
+              "execution_requested",
+              "context",
+              "binding",
+              "retained: Mutex::new(retained)"
+            ],
+            "top_level": [
+              "let started_at = now()?;",
+              "let context = OriginalCellQ24TrainingCommandContextV1 {",
+              "let binding = context.binding()?;",
+              "let (original_binding, fresh_now) =",
+              "let (execution_requested, retained) = match self.origin {",
+              "Ok(OriginalCellQ24TrainingCommandClientV1 {"
+            ]
+          },
+          {
+            "function": "fn bind_original_candidate_material(",
+            "sequence": [
+              "self,",
+              "dataset: OriginalCellQ24MaterialCommandReceiptV1",
+              "training: super::OriginalCellQ24TrainingCommandReceiptV1",
+              "baseline: std::sync::Arc<crate::LoadedCellQ24ModelV1>",
+              "let material = self.material.clone()",
+              "let retained_dataset = dataset.clone()",
+              "OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(",
+              "self,",
+              "dataset",
+              "super::OriginalCellQ24CandidateReadbackClientV1::from_original_connection(",
+              "original",
+              "material",
+              "retained_dataset",
+              "training",
+              "baseline"
+            ],
+            "top_level": [
+              "let material = self.material.clone()",
+              "let retained_dataset = dataset.clone()",
+              "let original =\n            OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset("
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 289,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "required": [
+          "pub struct OriginalCellQ24CandidateReadbackClientV1",
+          "channel: Mutex<Option<Channel>>",
+          "dataset: OriginalCellQ24MaterialCommandReceiptV1",
+          "expected: OriginalCellQ24TrainingCommandReceiptV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "impl Clone",
+          "derive(Clone",
+          "Deserialize",
+          "pub channel:",
+          "pub expected:",
+          "pub dataset:",
+          "pub baseline:",
+          "original_owner_command_channel_v1(",
+          "HostAuthorityPeerChannel::from_stream",
+          "RootObservationStream",
+          "execution_requested = false",
+          "execution_requested: false",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "timeout:",
+          "lifetime:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_connection(",
+            "sequence": [
+              "let started_at = now()?",
+              "let OriginalCellQ24TrainingCommandClientV1 {",
+              "channel,\n            context,\n            binding,\n            retained",
+              "channel",
+              ".into_inner()",
+              "channel.execution_requested = true",
+              "retained",
+              ".into_inner()",
+              ".as_ref()",
+              ".is_some_and(|pin| pin != &expected)",
+              "context.dataset != *dataset.snapshot()",
+              "context.validate()? != material.initial",
+              "context.scope != material.scope",
+              "context.verifier.trust_digest() != material.verifier.trust_digest()",
+              "baseline.components() != &material.initial.request.selected_bundle.components",
+              "return Err(Error::Binding(",
+              "signed_length(&context, &expected)?",
+              "candidate_wire::completion_digest(",
+              "expected.receipt()",
+              "expected.attestation()",
+              "check_peer_lifetime()",
+              "verify_original_context(",
+              "&context",
+              "&material",
+              "&dataset",
+              "&expected",
+              "started_at",
+              "Ok(Self {",
+              "channel: Mutex::new(Some(channel))"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "channel.execution_requested = true",
+              "let length = signed_length(&context, &expected)?",
+              "let completion =",
+              "verify_original_context(",
+              "Ok(Self {"
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "let started_at = now()?",
+              "self",
+              ".channel",
+              ".try_lock()",
+              ".take()",
+              "if !channel.execution_requested",
+              "return Err(Error::Binding(",
+              "let expected = self.expected.clone()",
+              "let completion = self.completion",
+              "let length = self.length",
+              "tokio::task::spawn_blocking(move || {",
+              "verify_original_context(",
+              "&context",
+              "&material",
+              "&dataset",
+              "&expected",
+              "started_at",
+              "signed_length(&context, &expected)? != length",
+              "let pages = length.div_ceil(candidate_wire::PAGE_BYTES)",
+              "pages == 0 || pages > candidate_wire::MAX_PAGES",
+              "let mut heads = Vec::with_capacity(length)",
+              "for page in 0..pages",
+              "let request_id = channel.next_request_id",
+              "request_id.checked_add(1)",
+              "candidate_wire::Request::new(",
+              "context",
+              "binding",
+              "completion",
+              "request_id",
+              "page",
+              "serde_json::to_vec(&request)",
+              "channel",
+              ".peer",
+              ".request(&encoded)",
+              "serde_json::from_slice(&bytes)",
+              "if response.request != request",
+              "return Err(Error::Binding(",
+              "match response.result",
+              "MaterialResult::Page",
+              "MaterialResult::NoCandidate",
+              "MaterialResult::Missing",
+              "MaterialResult::Pending",
+              "MaterialResult::ReadbackRequired",
+              "MaterialResult::Uncertain",
+              "let expected_offset = page * candidate_wire::PAGE_BYTES",
+              "candidate_wire::PAGE_BYTES.min(length - expected_offset)",
+              "offset as usize != expected_offset",
+              "total as usize != length",
+              "heads.len() != expected_offset",
+              "encoded_heads.len() > candidate_wire::PAGE_BYTES.div_ceil(3) * 4",
+              "return Err(Error::Binding(",
+              "STANDARD_NO_PAD\n                    .decode(&encoded_heads)",
+              "part.len() != expected_page_length",
+              "STANDARD_NO_PAD.encode(&part) != encoded_heads",
+              "check_peer_lifetime()",
+              "last_at =\n                    verify_original_context(",
+              "heads.extend_from_slice(&part)",
+              "if heads.len() != length",
+              "OriginalCellQ24CandidateMaterialV1::from_verified_readback(",
+              "&baseline",
+              "&context.dataset",
+              "heads",
+              "expected.receipt().clone()",
+              "expected.attestation().clone()",
+              "let last_at =\n                verify_original_context(",
+              "Ok::<_, Error>((channel, candidate, last_at))",
+              ".await",
+              ".map_err(|_| Error::Unavailable)??",
+              "check_peer_lifetime()",
+              "verify_original_context(",
+              "&self.context",
+              "&self.material",
+              "&self.dataset",
+              "&self.expected",
+              "last_at",
+              "*self",
+              ".channel",
+              ".try_lock()",
+              "= Some(channel)",
+              "Ok(candidate)"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "if !channel.execution_requested",
+              "let (channel, candidate, last_at) =",
+              "*self",
+              "Ok(candidate)"
+            ]
+          },
+          {
+            "function": "fn signed_length(",
+            "sequence": [
+              "LearningIterationObservationV1::Training { artifact_bytes, .. }",
+              "&expected.receipt().observation",
+              "return Err(Error::NoCandidate)",
+              "usize::try_from(*artifact_bytes)",
+              "!(12..=32_780).contains(&length)",
+              "*artifact_bytes > context.dataset.request.budget.maximum_artifact_bytes",
+              "return Err(Error::Binding(",
+              "Ok(length)"
+            ],
+            "top_level": [
+              "let length = usize::try_from(*artifact_bytes)",
+              "Ok(length)"
+            ]
+          },
+          {
+            "function": "fn verify_original_context(",
+            "sequence": [
+              "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+              "dataset",
+              "material",
+              "let fresh_now = now()?",
+              "checked_at < minimum_now || fresh_now < checked_at",
+              "return Err(Error::Binding(",
+              "wire::authenticate_receipt(",
+              "context",
+              "expected.receipt().clone()",
+              "expected.attestation().clone()",
+              "fresh_now",
+              "if &verified != expected",
+              "return Err(Error::Binding(",
+              "Ok(fresh_now)"
+            ],
+            "top_level": [
+              "let checked_at =",
+              "let fresh_now = now()?",
+              "if checked_at < minimum_now || fresh_now < checked_at",
+              "let verified =",
+              "if &verified != expected",
+              "Ok(fresh_now)"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 290,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+        "required": [
+          "runtime.learning.original-q24-training.candidate-material.v1",
+          "const PAGE_BYTES: usize = 2_048",
+          "const MAX_PAGES: usize = 17",
+          "const FRAME_BYTES: usize = 16_384",
+          "#[serde(deny_unknown_fields)]",
+          "enum SessionDisposition",
+          "ContinueReadback",
+          "CloseReadback"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "Action",
+          "Execute",
+          "TrainingNoUpdate {",
+          "pub receipt:",
+          "pub attestation:",
+          "pub batch:",
+          "pub model:",
+          "pub candidate:",
+          "pub signing_payload:",
+          ".claim(",
+          ".complete(",
+          "pub next_page:",
+          "pub completion: Option"
+        ],
+        "required_order": [
+          [
+            "const PAGE_BYTES: usize = 2_048;",
+            "const MAX_PAGES: usize = 17;",
+            "const FRAME_BYTES: usize = 16_384;"
+          ],
+          [
+            "impl Request",
+            "fn new(",
+            "if page >= MAX_PAGES",
+            "return Err(Error::Binding(",
+            "schema: 1",
+            "operation: OPERATION.into()",
+            "request_id",
+            "binding: binding.to_string()",
+            "operation_id: context.dataset.request.operation_id.to_string()",
+            "dataset_head: context.dataset.head_digest.to_string()",
+            "scope_binding: context.scope.binding().to_string()",
+            "actor_id: context.dataset.owners.trainer.to_string()",
+            "completion: completion.to_string()",
+            "page: page as u8"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_context(",
+            "sequence": [
+              "self.require_common(request_id)?",
+              "self.binding != binding.to_string()",
+              "self.operation_id != context.dataset.request.operation_id.as_str()",
+              "self.dataset_head != context.dataset.head_digest.to_string()",
+              "self.scope_binding != context.scope.binding().to_string()",
+              "self.actor_id != context.dataset.owners.trainer.as_str()",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.require_common(request_id)?",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "self.require_common(request_id)?",
+              "self.operation_id != material.initial.request.operation_id.as_str()",
+              "self.scope_binding != material.scope.binding().to_string()",
+              "self.actor_id != material.initial.owners.trainer.as_str()",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.require_common(request_id)?",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_common(",
+            "sequence": [
+              "self.schema != 1",
+              "self.operation != OPERATION",
+              "self.request_id != request_id",
+              "usize::from(self.page) >= MAX_PAGES",
+              "return Err(Error::Binding(",
+              "for value in [",
+              "&self.binding",
+              "&self.dataset_head",
+              "&self.scope_binding",
+              "&self.completion",
+              "let digest: Digest32 = value\n                .parse()",
+              "digest.is_zero() || digest.to_string() != *value",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if self.schema != 1",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_request(",
+            "sequence": [
+              "request.page != self.next_page",
+              "self",
+              ".completion",
+              ".as_ref()",
+              ".is_some_and(|pin| pin != &request.completion)",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if request.page != self.next_page",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn encode_response(",
+            "sequence": [
+              "self.require_request(&request)?",
+              "MaterialResult::Page {\n            offset,\n            total,\n            heads,\n        }",
+              "STANDARD_NO_PAD\n                .decode(heads)",
+              "(*offset as usize)\n                .checked_add(bytes.len())",
+              "!(12..=32_780).contains(&(*total as usize))",
+              "*offset as usize != usize::from(request.page) * PAGE_BYTES",
+              "*offset as usize >= *total as usize",
+              "bytes.len() != PAGE_BYTES.min(*total as usize - *offset as usize)",
+              "STANDARD_NO_PAD.encode(&bytes) != *heads",
+              "end > *total as usize",
+              "return Err(Error::Binding(",
+              "self.next_page = if end == *total as usize",
+              "0",
+              "else",
+              "request.page + 1",
+              "self.completion = Some(request.completion.clone())",
+              "SessionDisposition::ContinueReadback",
+              "SessionDisposition::CloseReadback",
+              "serde_json::to_vec(&Response { request, result })?",
+              "bytes.len() > FRAME_BYTES",
+              "return Err(Error::Binding(",
+              "Ok((bytes, disposition))"
+            ],
+            "top_level": [
+              "self.require_request(&request)?",
+              "let bytes = serde_json::to_vec(&Response { request, result })?",
+              "if bytes.len() > FRAME_BYTES",
+              "Ok((bytes, disposition))"
+            ]
+          },
+          {
+            "function": "fn completion_digest(",
+            "sequence": [
+              "Digest32::of_parts(&[",
+              "&learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "&attestation.signing_bytes()",
+              "&attestation.signature"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn original_page(",
+            "sequence": [
+              "request.completion",
+              "!= completion_digest(material.receipt(), material.attestation())?.to_string()",
+              "return Err(Error::Binding(",
+              "let bytes = material.heads()",
+              "let offset = usize::from(request.page) * PAGE_BYTES",
+              "if offset >= bytes.len()",
+              "return Err(Error::Binding(",
+              "offset.saturating_add(PAGE_BYTES).min(bytes.len())",
+              "Ok(MaterialResult::Page {",
+              "offset: offset as u32",
+              "total: bytes.len() as u32",
+              "heads: STANDARD_NO_PAD.encode(&bytes[offset..end])"
+            ],
+            "top_level": [
+              "let bytes = material.heads()",
+              "let offset = usize::from(request.page) * PAGE_BYTES",
+              "if offset >= bytes.len()",
+              "Ok(MaterialResult::Page {"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 291,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "required": [
+          "OriginalCellQ24TrainingCommandOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "OriginalCellQ24TrainingCommandClientV1",
+          "wire::Action",
+          "LearningIterationSnapshotV1",
+          "pub now:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_candidate_material_readback(",
+            "sequence": [
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              ".map_err(|_| Error::Busy)?",
+              "tokio::task::spawn_blocking(move || {",
+              "let _permit = permit",
+              "original_owner_command_channel_v1(",
+              "stream",
+              "consumer",
+              "consumer_uid",
+              "original_consumer_pidfd",
+              "timeout",
+              "lifetime",
+              "self.serve_candidate_material_channel(&mut channel)",
+              ".await",
+              ".map_err(|_| Error::CommitUncertain)?"
+            ],
+            "top_level": [
+              "let permit =",
+              "tokio::task::spawn_blocking(move || {"
+            ]
+          },
+          {
+            "function": "fn serve_candidate_material_channel(",
+            "sequence": [
+              "candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64",
+              "candidate_wire::SessionDisposition::CloseReadback",
+              "channel",
+              ".exchange(|bytes|",
+              "self",
+              ".candidate_material_response(",
+              "bytes",
+              "request_id",
+              "&mut session",
+              "HostIssuerTransportError::InvalidRequest",
+              "disposition = next",
+              "Ok(response)",
+              "if !exchanged",
+              "return Ok(request_id - 1)",
+              "if disposition == candidate_wire::SessionDisposition::CloseReadback",
+              "return Ok(request_id)",
+              "Err(Error::"
+            ],
+            "top_level": [
+              "let mut session = candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64"
+            ]
+          },
+          {
+            "function": "fn candidate_material_response(",
+            "sequence": [
+              "let started_at = now()?",
+              "let request: candidate_wire::Request = serde_json::from_slice(bytes)?",
+              "request.require_context(&self.context, self.binding, request_id)?",
+              "session.require_request(&request)?",
+              "SourceBoundCellQ24TrainingStageV1::read_candidate_material(",
+              "self.stage.as_ref()",
+              "&self.context.dataset",
+              "Ok(material) =>",
+              "let fresh_now = now()?",
+              "fresh_now < started_at",
+              "return Err(Error::Binding(",
+              "wire::authenticate_receipt(",
+              "&self.context",
+              "material.receipt().clone()",
+              "material.attestation().clone()",
+              "fresh_now",
+              "candidate_wire::original_page(&request, &material)?",
+              "OriginalCellQ24TrainingStageErrorV1::CandidateMaterial(",
+              "OriginalCellQ24CandidateMaterialErrorV1::NoCandidate",
+              "candidate_wire::MaterialResult::NoCandidate",
+              "match original_state(error)",
+              "wire::CommandResult::Missing => candidate_wire::MaterialResult::Missing",
+              "wire::CommandResult::Pending => candidate_wire::MaterialResult::Pending",
+              "wire::CommandResult::Busy => candidate_wire::MaterialResult::Busy",
+              "_ => candidate_wire::MaterialResult::Uncertain",
+              "session.encode_response(request, result)"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "request.require_context(&self.context, self.binding, request_id)?",
+              "session.require_request(&request)?",
+              "let result =",
+              "session.encode_response(request, result)"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index_in_base": 292,
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "required": [
+          "OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "OriginalCellQ24TrainingCommandClientV1",
+          "wire::Action",
+          "LearningIterationSnapshotV1",
+          "pub now:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_candidate_material_readback(",
+            "sequence": [
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              ".map_err(|_| Error::Busy)?",
+              "tokio::task::spawn_blocking(move || {",
+              "let _permit = permit",
+              "original_owner_command_channel_v1(",
+              "stream",
+              "consumer",
+              "consumer_uid",
+              "original_consumer_pidfd",
+              "timeout",
+              "lifetime",
+              "self.serve_candidate_material_channel(&mut channel)",
+              ".await",
+              ".map_err(|_| Error::Uncertain)?"
+            ],
+            "top_level": [
+              "let permit =",
+              "tokio::task::spawn_blocking(move || {"
+            ]
+          },
+          {
+            "function": "fn serve_candidate_material_channel(",
+            "sequence": [
+              "candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64",
+              "candidate_wire::SessionDisposition::CloseReadback",
+              "channel",
+              ".exchange(|bytes|",
+              "self",
+              ".candidate_material_response(",
+              "bytes",
+              "request_id",
+              "&mut session",
+              "HostIssuerTransportError::InvalidRequest",
+              "disposition = next",
+              "Ok(response)",
+              "if !exchanged",
+              "return Ok(request_id - 1)",
+              "if disposition == candidate_wire::SessionDisposition::CloseReadback",
+              "return Ok(request_id)",
+              "Err(Error::"
+            ],
+            "top_level": [
+              "let mut session = candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64"
+            ]
+          },
+          {
+            "function": "fn candidate_material_response(",
+            "sequence": [
+              "let request: candidate_wire::Request =\n            serde_json::from_slice(bytes)",
+              "request.require_initial(&self.config.material, request_id)?",
+              "session.require_request(&request)?",
+              "if let Some(original) = self.ready()?",
+              "OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(",
+              "original.as_ref()",
+              "bytes",
+              "request_id",
+              "session",
+              "session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)"
+            ],
+            "top_level": [
+              "request.require_initial(&self.config.material, request_id)?",
+              "session.require_request(&request)?",
+              "if let Some(original) = self.ready()?"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
