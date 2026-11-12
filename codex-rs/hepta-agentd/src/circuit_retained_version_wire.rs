@@ -78,6 +78,7 @@ pub(super) enum OriginalResult {
     },
     Busy,
     ReadbackRequired,
+    FinalUseDenied,
     Uncertain,
     Unavailable,
 }
@@ -145,6 +146,7 @@ impl OriginalResult {
             }
             Self::Busy => Err(Error::Busy),
             Self::ReadbackRequired => Err(Error::ReadbackRequired),
+            Self::FinalUseDenied => Err(Error::FinalUseDenied),
             Self::Uncertain => Err(Error::CommitUncertain),
             Self::Unavailable => Err(Error::Unavailable),
         }

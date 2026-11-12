@@ -211,6 +211,7 @@ impl OriginalCircuitRetainedVersionClientV1 {
                 | wire::OriginalResult::ReadbackRequired
                 | wire::OriginalResult::Uncertain
                 | wire::OriginalResult::Unavailable
+                | wire::OriginalResult::FinalUseDenied
         );
         let decoded = response.result.decode(&self.cut);
         match &decoded {

@@ -278,6 +278,8 @@ mod tests;
 pub(crate) use tests::fixture_original_receipt_client;
 
 #[cfg(test)]
+pub(crate) use material::retained_version_dataset_fixture;
+#[cfg(test)]
 pub(crate) use tests::fixture_original_receipt_client_until_close;
 #[cfg(test)]
 pub(crate) use training_command::command_test_support;

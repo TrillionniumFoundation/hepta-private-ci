@@ -13,6 +13,10 @@ const SIGNED_OBJECTIVE: &str = "runtime.authbus.objective.signed.v1";
 #[path = "root_human_text_client.rs"]
 mod human;
 
+#[path = "root_retained_version_issuer.rs"]
+mod retained_version;
+pub(crate) use retained_version::OriginalRootRetainedVersionIssuerV1;
+
 impl AgentdUnixFinalUseGrantProvider {
     /// Typed text signing/lookup over the SAME pre-held registered Root lane.
     /// The original service retains request_id and its exact signed identity.
@@ -111,7 +115,11 @@ impl AgentdUnixFinalUseGrantProvider {
             AgentdFinalUseIssuerPeer { uid, pid: root_pid },
             timeout,
         )?;
-        provider.protected_root = Some(ProtectedRootIssuer { channel, end });
+        provider.protected_root = Some(ProtectedRootIssuer {
+            channel,
+            end,
+            original_uid: uid,
+        });
         Ok(provider)
     }
 

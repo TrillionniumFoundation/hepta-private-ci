@@ -421,10 +421,11 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
     let selector = f.create()?;
     let before = f.bytes()?;
     live.read_current().await?;
-    tokio::time::sleep(
-        Duration::from_secs(expires_at.saturating_sub(now()?)) + Duration::from_millis(100),
-    )
-    .await;
+    // Signature validity uses whole seconds and includes expires_at itself.
+    // The negative case must cross that original boundary, not merely enter it.
+    let wait_seconds = expires_at.saturating_sub(now()?).saturating_add(1);
+    tokio::time::sleep(Duration::from_secs(wait_seconds) + Duration::from_millis(100)).await;
+    assert!(now()? > expires_at);
     assert!(live.read_current().await.is_err());
     assert!(matches!(
         live.read_current().await,

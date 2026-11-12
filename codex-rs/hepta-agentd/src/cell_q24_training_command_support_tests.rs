@@ -278,7 +278,38 @@ pub(crate) fn retained_publication_training_peer(
     OriginalCellQ24TrainingCommandClientV1,
     std::thread::JoinHandle<anyhow::Result<usize>>,
 )> {
-    let (client, mut channel) = client(context.clone(), /*readback_only*/ true, None)?;
+    let (client, channel) = client(context.clone(), /*readback_only*/ true, None)?;
+    Ok((
+        client,
+        serve_retained_training_fixture(channel, context, receipt, signature)?,
+    ))
+}
+
+/// Explicit signed metadata on the existing initial connection. This is not
+/// an execution of Training and never claims to prove native learning.
+pub(crate) fn retained_version_training_connection(
+    material: crate::OriginalCellQ24MaterialReceiptConfigV1,
+    context: OriginalCellQ24TrainingCommandContextV1,
+    receipt: codex_hepta_learning_artifacts::LearningIterationReceiptV1,
+    signature: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+) -> anyhow::Result<(
+    crate::OriginalCellQ24TrainingCommandConnectionV1,
+    std::thread::JoinHandle<anyhow::Result<usize>>,
+)> {
+    let (connection, channel) =
+        super::super::connection::fresh_peer(material, Duration::from_secs(300))?;
+    Ok((
+        connection,
+        serve_retained_training_fixture(channel, context, receipt, signature)?,
+    ))
+}
+
+fn serve_retained_training_fixture(
+    mut channel: HostAuthorityPeerChannel,
+    context: OriginalCellQ24TrainingCommandContextV1,
+    receipt: codex_hepta_learning_artifacts::LearningIterationReceiptV1,
+    signature: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+) -> anyhow::Result<std::thread::JoinHandle<anyhow::Result<usize>>> {
     let binding = context.binding()?;
     let server = std::thread::spawn(move || -> anyhow::Result<usize> {
         let mut next = 1;
@@ -308,5 +339,5 @@ pub(crate) fn retained_publication_training_peer(
             }
         }
     });
-    Ok((client, server))
+    Ok(server)
 }

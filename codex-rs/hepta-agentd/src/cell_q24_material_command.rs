@@ -403,3 +403,8 @@ fn now() -> Result<u64, Error> {
 
 #[cfg(test)]
 pub(crate) use serving::tests::bootstrap_ports;
+#[cfg(test)]
+#[path = "circuit_retained_version_material_support_tests.rs"]
+mod retained_version_tests;
+#[cfg(test)]
+pub(crate) use retained_version_tests::retained_version_dataset_fixture;
