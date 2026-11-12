@@ -1,0 +1,182 @@
+{
+  "schema": "hepta.learn.final-maintenance-static-contract.v1",
+  "status": "prepared_only_no_dispatch_or_future_source_stamp",
+  "source_sha": null,
+  "source_tree": null,
+  "execution_worktree": null,
+  "evidence_directory": null,
+  "original_semantics": [
+    {
+      "path": "AGENTS.md",
+      "blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "lines": [
+        62,
+        64,
+        66,
+        70
+      ],
+      "meaning": "Wait patiently for Rust commands; scoped fix and final fmt run from codex-rs. Do not kill Rust by PID. Do not re-run tests after fix or fmt."
+    },
+    {
+      "path": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "bytes": 7838,
+      "meaning": "working-directory is codex-rs; fix delegates to cargo clippy --fix --tests --allow-dirty; fmt delegates to python3 ../scripts/format.py on Unix."
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "bytes": 2030,
+      "meaning": "Unix adapter replaces the variadic argument placeholder with quoted positional arguments and execs sh; each supplied option/package remains an argument."
+    },
+    {
+      "path": "scripts/format.py",
+      "blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "bytes": 16599,
+      "functions": [
+        "changed_paths",
+        "rust_file_command",
+        "scoped_formatter_groups",
+        "main"
+      ],
+      "meaning": "--base resolves the exact commit and compares its tree to the current working tree, plus untracked nonignored files. Without --base, the revision is HEAD and already committed changes disappear from the scope. This is not a merge-base or three-dot comparison. Existing language/config-scope selection remains unchanged."
+    }
+  ],
+  "prerequisites": [
+    "Root selects the actual final candidate only after the preceding intended validation runs have real terminal results. This document schedules no test or H operation.",
+    "Record the real source SHA/tree and require the intended clean worktree before the first maintenance command. Preserve all prior validation source pins and results unchanged.",
+    "Read back the four original semantic file pins and the exact baseline commit; a mismatch requires reviewing the actual recipes, not silently treating these pins as current.",
+    "Use the existing approved toolchain, target and environment. Do not add budgets, environment overrides, authority, installers, replacement formatter commands or automatic retries."
+  ],
+  "commands": [
+    {
+      "ordinal": 1,
+      "cwd": "<actual repository>/codex-rs",
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      "expanded_recipe_prefix": [
+        "cargo",
+        "clippy",
+        "--fix",
+        "--tests",
+        "--allow-dirty"
+      ],
+      "role": "Scoped linter repairs; --tests selects test targets for Clippy, not a new native test run."
+    },
+    {
+      "ordinal": 2,
+      "cwd": "<same repository>/codex-rs",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "be8adcbb5e9925f72e05330b8fb30509cba4544b"
+      ],
+      "role": "Final formatting includes committed PR changes since the exact fixed baseline, as well as any real local edits from fix."
+    }
+  ],
+  "recording": {
+    "phases": [
+      "before_fix",
+      "after_fix_before_fmt",
+      "after_fmt",
+      "after_actual_postimage_publication_if_changed"
+    ],
+    "source_read_commands": [
+      [
+        "git",
+        "--no-optional-locks",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "--verify",
+        "HEAD"
+      ],
+      [
+        "git",
+        "--no-optional-locks",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "--verify",
+        "HEAD^{tree}"
+      ],
+      [
+        "git",
+        "--no-optional-locks",
+        "-c",
+        "core.fsmonitor=false",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "--untracked-files=all"
+      ]
+    ],
+    "tracked_change_command": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "diff",
+      "--binary",
+      "--full-index",
+      "--no-ext-diff",
+      "--no-textconv",
+      "--no-renames",
+      "HEAD",
+      "--"
+    ],
+    "untracked_inventory_command": [
+      "git",
+      "--no-optional-locks",
+      "-c",
+      "core.fsmonitor=false",
+      "ls-files",
+      "--others",
+      "--exclude-standard",
+      "-z"
+    ],
+    "per_command": [
+      "exact argv and cwd",
+      "real source snapshot before and after",
+      "actual direct process identity and terminal return code",
+      "start/end and monotonic elapsed",
+      "complete original stdout and stderr bytes, sizes and SHA-256",
+      "terminal versus unknown state"
+    ],
+    "per_changed_source_path": [
+      "literal relative path and type/mode",
+      "original tracked blob pin or explicit absent preimage",
+      "complete actual postimage bytes at each phase, with size/SHA-256/Git blob ID",
+      "explicit deletion or rename endpoints; do not fabricate bytes for absent files",
+      "stable identity/readback verification; do not export ignored build artifacts as source postimages"
+    ],
+    "crucial_tree_rule": "HEAD and HEAD^{tree} still identify the committed pre-maintenance tree while local source files are dirty. Record that dirty state and the complete postimages; never call the unchanged HEAD tree a formatted source snapshot.",
+    "postimage_publication": "If files changed, Root reviews and publishes all actual postimages as a separately identifiable commit/tree, then verifies canonical blobs/tree and final checkout status. No final SHA/tree is invented here. If bytes did not change, record the verified unchanged tree and clean status.",
+    "raw_log_rule": "Save each direct command return code separately. Do not replace it with a pipe/tee exit or normalize a nonzero to success. Any formatter group's original reported exit/output stays in the original aggregate log.",
+    "sequencing": "Start fmt only after fix has an actual recorded terminal result and its postimages are preserved. Unknown execution does not authorize advancing or retrying. A later fmt exit zero cannot erase a nonzero fix result."
+  },
+  "provenance": {
+    "validation_before_maintenance": "Remains evidence for the exact original tested SHA/tree.",
+    "changed_source_after_maintenance": "Report maintenance command outcomes and the real new bytes/commit. Do not transplant prior test passes to the new SHA.",
+    "unchanged_source_after_maintenance": "Explicit byte/tree equality is required before describing the source as unchanged.",
+    "after_maintenance_tests": "None are invoked or scheduled by this contract, as required by AGENTS and Root.",
+    "actual_runs_in_preparation": 0,
+    "ordinary_acceptance": 0
+  }
+}
