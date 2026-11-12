@@ -36,6 +36,9 @@ use crate::PreparedAgentdGenerationUpdateV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::PublishedCircuitFeatureTaskV1;
 
+#[path = "circuit_model_version.rs"]
+pub(crate) mod version;
+
 #[path = "circuit_learning_model_binding.rs"]
 mod binding;
 #[path = "circuit_learning_model_context.rs"]
@@ -131,6 +134,22 @@ where
     let started = now()?;
     let observation = model.begin_original_model_read().await?;
     let context = predecessors.with_original_model(observation.model().clone())?;
+    prepare_in_original_model_operation(context, observation, inputs, started).await
+}
+
+async fn prepare_in_original_model_operation<'a, Old, New>(
+    context: OriginalCircuitModelPublicationContextV1,
+    observation: OriginalCellQ24ModelReadV1<'a>,
+    inputs: OriginalCircuitModelPublicationInputsV1<Old, New>,
+    started: u64,
+) -> Result<PreparedOriginalCircuitModelPublicationV1<'a, Old, New>, Error>
+where
+    Old: AnchorWitnessStore + Send + 'static,
+    New: AnchorWitnessStore + Send + 'static,
+{
+    if observation.model() != context.model() {
+        return Err(Error::Binding("same actual Model before original preparation"));
+    }
     observation.require_current(started)?;
     let original_expiry = context.authenticate_material(observation.material(), started, true)?;
     binding::require_inputs(&context, &inputs)?;

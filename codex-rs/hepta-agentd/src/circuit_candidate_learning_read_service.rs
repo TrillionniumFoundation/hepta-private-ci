@@ -110,6 +110,27 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitCandidateLearn
         self.serve_channel(channel)
     }
 
+    /// Original positive Version host retains this same prebound NextUse peer.
+    pub(crate) fn serve_original_next_use_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
+        if wire::mode(&self.context)? != wire::Mode::NextUse {
+            return Err(Error::Binding("positive Version NextUse-only read purpose"));
+        }
+        self.serve_channel(channel)
+    }
+
+    pub(crate) fn serve_original_readiness_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
+        if wire::mode(&self.context)? != wire::Mode::NextUse {
+            return Err(Error::Binding("positive Version NextUse-only readiness"));
+        }
+        self.serve_readiness_channel(channel)
+    }
+
     pub(super) fn serve_channel(
         &self,
         channel: &mut HostAuthorityPeerChannel,
