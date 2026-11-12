@@ -1,0 +1,53 @@
+name: HCSN stdlib controller ledger faults
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_controller_ledger_faults/**
+      - qualification/hcsn_adjoint_adam_resume/native_probe.py
+      - .github/workflows/hcsn-controller-ledger-faults.yml
+permissions:
+  contents: read
+jobs:
+  controller-ledger-faults:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Bind the new fixture and original selected controller AST
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          package=Path('qualification/hcsn_controller_ledger_faults')
+          request=json.loads((package/'REQUEST.json').read_text())
+          inventory=json.loads((package/'SOURCE.json').read_text())
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          assert head==os.environ['CANDIDATE_COMMIT']
+          hashes={name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in request['source_paths']}
+          assert hashes==inventory['source_sha256']
+          assert request['selected_AST_sha256']==inventory['selected_AST_sha256']
+          source=dict(identity=request['identity'],source_commit=head,source_sha256=hashes,selected_AST_sha256=request['selected_AST_sha256'],source_inventory_sha256=hashlib.sha256((package/'SOURCE.json').read_bytes()).hexdigest())
+          Path(os.environ['RUNNER_TEMP'],'ledger-fixture-source.json').write_text(json.dumps(source,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(source,sort_keys=True))
+          PY
+      - name: Execute the sole pure-stdlib fault fixture
+        run: |
+          python -B -m qualification.hcsn_controller_ledger_faults.probe --source "$RUNNER_TEMP/ledger-fixture-source.json" --output "$RUNNER_TEMP/ledger-fixture"
+      - run: git diff --exit-code && git diff --cached --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stdlib-controller-ledger-fault-originals
+          path: |
+            ${{ runner.temp }}/ledger-fixture
+            ${{ runner.temp }}/ledger-fixture-source.json
+          if-no-files-found: error
