@@ -12,7 +12,9 @@ use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
+use codex_hepta_types::Digest32;
 
 use super::OriginalCircuitRetainedPublicationErrorV1 as Error;
 use super::context::PublicationAccess;
@@ -156,6 +158,20 @@ impl OriginalCircuitEvaluatedRetentionContextV1 {
                 "evaluated retention requires a changed Candidate",
             ));
         }
+        self.verify_original_predecessors(at)?;
+        if matches!(access, PublicationAccess::NewWork)
+            && at >= snapshot.request.envelope.expiry_unix_seconds
+        {
+            return Err(Error::DeadlineExceeded);
+        }
+        Ok(coordinator)
+    }
+
+    fn verify_original_predecessors(
+        &self,
+        at: u64,
+    ) -> Result<[VerifiedLearningEvidenceV1; 2], Error> {
+        let snapshot = self.snapshot();
         let original = [
             (
                 LearningEvidenceRoleV1::Generator,
@@ -192,12 +208,77 @@ impl OriginalCircuitEvaluatedRetentionContextV1 {
             verified.push(evidence);
         }
         verify_signed_actor_separation(&verified[0], &verified[1], at)?;
-        if matches!(access, PublicationAccess::NewWork)
-            && at >= snapshot.request.envelope.expiry_unix_seconds
-        {
-            return Err(Error::DeadlineExceeded);
+        verified
+            .try_into()
+            .map_err(|_| Error::Binding("two original evaluated predecessors"))
+    }
+
+    // Receipt owners retain the same opaque pins and origin. This is not an
+    // owner/client getter, a new stream, or a promotion from cold to fresh.
+    pub(crate) fn clone_for_original_receipt(&self) -> Self {
+        Self {
+            scope: self.scope.clone(),
+            verifier: self.verifier.clone(),
+            training: self.training.clone(),
+            evaluation: self.evaluation.clone(),
+            origin: self.origin,
         }
-        Ok(coordinator)
+    }
+
+    pub(crate) fn into_original_receipt_readback(mut self) -> Self {
+        self.origin = Origin::Readback;
+        self
+    }
+
+    pub(crate) fn receipt_configuration(
+        &self,
+    ) -> (
+        FrozenLearningScopeV2,
+        LearningEvidenceVerifierV1,
+        SignedLearningEvidenceV1,
+    ) {
+        (
+            self.scope.clone(),
+            self.verifier.clone(),
+            self.training.attestation().clone(),
+        )
+    }
+
+    pub(crate) fn receipt_context_binding(&self) -> Digest32 {
+        Digest32::of_parts(&[
+            b"hepta.agentd.original-evaluated-retention-receipt-context.v1\0",
+            self.snapshot().head_digest.as_array(),
+            self.scope.binding().as_array(),
+            self.verifier.trust_digest().as_array(),
+            self.verifier.scope_digest().as_array(),
+            self.verifier.objective_digest().as_array(),
+            &self.training.attestation().signing_bytes(),
+            &self.training.attestation().signature,
+            &self.evaluation.attestation().signing_bytes(),
+            &self.evaluation.attestation().signature,
+        ])
+    }
+
+    pub(crate) fn original_receipt_predecessors(
+        &self,
+        at: u64,
+    ) -> Result<[VerifiedLearningEvidenceV1; 2], Error> {
+        self.authenticate(at, PublicationAccess::Readback)?;
+        self.verify_original_predecessors(at)
+    }
+
+    pub(crate) fn require_new_original_receipt(&self, at: u64) -> Result<(), Error> {
+        self.authenticate(at, PublicationAccess::NewWork)
+            .map(|_| ())
+    }
+
+    pub(crate) async fn require_original_receipt_owners(
+        &self,
+        trainer: &OriginalCellQ24TrainingCommandClientV1,
+        evaluator: &OriginalCellEvaluationCommandClientV1,
+    ) -> Result<(), Error> {
+        self.require_current(trainer, evaluator, PublicationAccess::Readback)
+            .await
     }
 
     /// Read both original owners at every publication boundary. A renewed

@@ -142,6 +142,25 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
         self,
         signed: SignedFinalUseGrant,
     ) -> Result<PublishedCircuitFeatureTaskV1, Error> {
+        self.publish_and_retain_original_evidence(signed)
+            .await
+            .map(|(task, _trainer, _evaluator)| task)
+    }
+
+    /// Internal continuation custody of the same finite original connections.
+    /// This consumes the preparation; it cannot clone, reconnect, renew or
+    /// replace either original owner or turn a failed publication into a retry.
+    pub(crate) async fn publish_and_retain_original_evidence(
+        self,
+        signed: SignedFinalUseGrant,
+    ) -> Result<
+        (
+            PublishedCircuitFeatureTaskV1,
+            OriginalCellQ24TrainingCommandClientV1,
+            OriginalCellEvaluationCommandClientV1,
+        ),
+        Error,
+    > {
         self.context
             .require_current(&self.trainer, &self.evaluator, PublicationAccess::NewWork)
             .await
@@ -186,7 +205,7 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
             .require_current(&trainer, &evaluator, PublicationAccess::NewWork)
             .await
             .map_err(uncertain)?;
-        tokio::task::spawn_blocking(move || {
+        let task = tokio::task::spawn_blocking(move || {
             let started = now().map_err(uncertain)?;
             let coordinator = context
                 .authenticate(started, PublicationAccess::NewWork)
@@ -202,6 +221,7 @@ impl<Old: AnchorWitnessStore + Send + 'static, New: AnchorWitnessStore + Send + 
             Ok::<_, Error>(task)
         })
         .await
-        .map_err(uncertain)?
+        .map_err(uncertain)??;
+        Ok((task, trainer, evaluator))
     }
 }

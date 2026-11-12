@@ -236,7 +236,7 @@ impl PositiveFixture {
             initial,
             config: source_config,
             frozen,
-        } = material::material_with_profile(
+        } = material::material_with_profile_and_observer(
             &root,
             &mut writer,
             &credentials,
@@ -246,6 +246,12 @@ impl PositiveFixture {
             &bundle,
             &previous,
             evaluation_profile,
+            match publication {
+                PublicationMode::RetainOriginalA => {
+                    credentials.observer.principal.principal_id.clone()
+                }
+                PublicationMode::AdoptCandidate => id("unused-positive-next-use-role"),
+            },
         )?;
         let ledger = Arc::new(Mutex::new(writer));
         let (experience, first) = fixture_original_receipt_client_until_close(

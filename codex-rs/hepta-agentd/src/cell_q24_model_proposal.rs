@@ -119,7 +119,7 @@ pub struct CellQ24ModelProposalOwnerV1<W: AnchorWitnessStore> {
 impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     pub fn create<T: AnchorWitnessStore>(
         file: File,
-        mut witness: W,
+        witness: W,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         dataset_cut: LearningIterationSnapshotV1,
     ) -> Result<Self, Error> {
@@ -157,7 +157,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     /// becomes a new proposal; completed bytes keep their original timestamp.
     pub fn recover<T: AnchorWitnessStore>(
         file: File,
-        mut witness: W,
+        witness: W,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         dataset_cut: LearningIterationSnapshotV1,
     ) -> Result<Self, Error> {

@@ -52,8 +52,9 @@ async fn evaluated_retained_current_reads_fresh_and_cold_original_owners() -> an
         "agentd.cell-generation.next-task-same-model"
     );
     let signed = f.host.original.version.sign(prepared.final_use_binding())?;
-    let task = prepared.publish_original_retained_task(signed).await?;
-    assert_eq!(peers.finish()?, [4, 4]);
+    let (task, trainer, evaluator) = prepared
+        .publish_and_retain_original_evidence(signed)
+        .await?;
     assert_ne!(f.source_a.scope.run_id, task.source().scope.run_id);
     let mut c = f.start_c(task).await?;
     assert_eq!(c.cell.snapshot(&f.source_c.scope)?.revision, 0);
@@ -102,6 +103,11 @@ async fn evaluated_retained_current_reads_fresh_and_cold_original_owners() -> an
         drop(client);
         assert_eq!(peer.join().expect("original CURRENT read peer")?, 2);
     }
+    assert_eq!(trainer.readback().await?, f.training);
+    assert_eq!(evaluator.readback().await?, f.evaluation);
+    drop(trainer);
+    drop(evaluator);
+    assert_eq!(peers.finish()?, [5, 5]);
     assert_eq!(
         f.host.original.version.authority.capacity()?.used_nonces,
         nonces + 1

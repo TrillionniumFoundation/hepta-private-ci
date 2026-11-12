@@ -244,15 +244,23 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             (SELECTOR, "fn read_remote_selection(", "training_evidence", "authenticate_training"),
             (OBSERVER, "fn read_remote_next_use(", "predecessors", "authenticate_predecessors"),
         ):
+            profile = "&self.profile, " if path == SELECTOR else ""
+            remote_condition = (
+                "if matches!(\n            source.location(),\n"
+                "            ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\n"
+                "        )"
+                if path == SELECTOR
+                else "if matches!(source.location(), ObservationLocation::RemoteOwner)"
+            )
             for marker in (
                 "live.require_original_context(",
                 "live.read_current().await?",
             ):
                 self.rejects(path, function, marker)
             for marker in (
-                "if matches!(source.location(), ObservationLocation::RemoteOwner)",
+                remote_condition,
                 f"self.{predecessor}(&source).await?",
-                f"{verifier}(&self.config, &before, now()?)?",
+                f"{verifier}(&self.config, {profile}&before, now()?)?",
                 "let bytes = self.journal.read(&self.saved)?;",
             ):
                 self.rejects(path, "fn readback_source(", marker)
@@ -263,7 +271,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
                 "self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)",
             ):
                 self.rejects(path, "fn finish_original_readback(", marker)
-            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, evidence, current)?")
+            self.rejects(path, "fn authenticate_completed(", f"{verifier}(&self.config, {profile}evidence, current)?")
             for marker in (
                 "self.config.scope.validate_snapshot(source.snapshot())?",
                 "source.observe(&self.config).await?",

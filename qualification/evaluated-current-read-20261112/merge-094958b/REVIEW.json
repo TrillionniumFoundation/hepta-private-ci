@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.evaluated-current-read.final-integration-review.v1",
+  "observed_at_utc": "2026-11-12 09:24:39 UTC",
+  "source": {
+    "first_parent": "f770564dcd140e279b4df55b88e5268b79aeba6b",
+    "second_parent": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+    "rust_qa_tree": "f034b8fe1c1fd32fa4eac571e4382b48cf3a5f1d",
+    "callers_blob": "cee2bc53c636e366d8b7873349e937181787cddc",
+    "allowlist_blob": "447d6c1e418501c8efa6a4ed2eb0d95b6afc3fd3"
+  },
+  "root_review": {
+    "base_sha": "094958b83a8fd19e3bc6d01a092793c0f420bb75",
+    "context_post_blob": "ba5bb57fb48ec0983050436b48e1b69874c50deb",
+    "context_sha256": "41120b94806e7b502aec1ffdfdc1c1980e60d9753683e25f9f2b0d6772144f6a",
+    "inverse_to_base_equal": true,
+    "proof_struct": "/// Borrowed authenticated facts for a read purpose; no publication or signing\n/// capability is returned, and the original fresh/cold origin remains bound.\npub(crate) struct EvaluatedRetentionReadProofV1<'a> {\n    pub(crate) scope: &'a FrozenLearningScopeV2,\n    pub(crate) verifier: &'a LearningEvidenceVerifierV1,\n    pub(crate) training: &'a SignedLearningEvidenceV1,\n    pub(crate) evaluation: &'a SignedLearningEvidenceV1,\n    pub(crate) origin: &'static [u8],\n}\n\n",
+    "proof_method": "    pub(crate) fn original_read_proof(\n        &self,\n        at: u64,\n    ) -> Result<EvaluatedRetentionReadProofV1<'_>, Error> {\n        self.authenticate(at, PublicationAccess::Readback)?;\n        Ok(EvaluatedRetentionReadProofV1 {\n            scope: &self.scope,\n            verifier: &self.verifier,\n            training: self.training.attestation(),\n            evaluation: self.evaluation.attestation(),\n            origin: match self.origin {\n                Origin::Fresh => b\"fresh\",\n                Origin::Readback => b\"readback\",\n            },\n        })\n    }\n\n",
+    "positive_test_blob": "b500835023c268bf7253049bc2264e93d5117b75",
+    "positive_test_review": "retains same original trainer/evaluator; exact full readbacks; [5,5] plus [2,2] CURRENT; no tests executed",
+    "qa_post_blob": "3f9bb21b78878f85fb43650765320c16d74e0e3e",
+    "qa_review": "Selector-specific profile and evaluated-location markers preserve Observer legacy predicates; guards not removed",
+    "native_tests": "NOT_RUN",
+    "source_guards": "NOT_RUN",
+    "formatting": "NOT_RUN"
+  },
+  "independent_review": {
+    "kind": "read-only GitHub source and tree inspection",
+    "checked_tree": "f034b8fe1c1fd32fa4eac571e4382b48cf3a5f1d",
+    "upstream_rust_qa_blobs_preserved": 16,
+    "context_inverse_restores_exact_upstream": true,
+    "qa_changed_methods": 1,
+    "qa_reject_call_sites_preserved": 7,
+    "qa_loops_preserved": 5,
+    "selector_markers_checked_in_actual_functions": 3,
+    "observer_markers_unchanged": true,
+    "positive_original_clients_retained": true,
+    "tests_executed": false
+  },
+  "complete_original_failure_retained": {
+    "log_blob": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c",
+    "metadata_blob": "e6a5fe8ae695a79a8ec1a0d465bae14bdf2eab8d"
+  },
+  "validation": {
+    "toml_parser": "NOT_RUN",
+    "source_guards": "NOT_RUN",
+    "rust_compilation": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "previous_355_source_tests": "Historical observation on earlier source only; no original local log available."
+  },
+  "qualification": {
+    "status": "HOLD",
+    "owner_decision": null,
+    "ordinary_adopt": 0,
+    "ordinary_evaluated_no_update": 0,
+    "complete_daemon_root_cold_recovery": 0,
+    "scope": "Current read integration only. Same-process fixtures and readback-origin do not establish ordinary different-worker/boot recovery."
+  }
+}

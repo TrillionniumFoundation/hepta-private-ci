@@ -59,6 +59,21 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
         with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
             PROOF._verify_boundary(ROOT, row, sources, ())
 
+    def test_model_observation_edge_does_not_admit_an_unregistered_model_adapter(self):
+        rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
+        row = rows["cell_q24_original_training_observation"]
+        sources = {
+            path: PROOF._strip_rust_non_code((ROOT / path).read_text())
+            for path in (READBACK, RECEIPTS, MODEL_MATERIAL, MODEL_CURRENT)
+        }
+        PROOF._verify_boundary(ROOT, row, sources, ())
+        sources[AGENT + "cell_q24_model_unregistered_admission.rs"] = (
+            "fn unexpected(owner: &CellQ24TrainingOwnerV1) { "
+            "CellQ24TrainingOwnerV1::read_learning_observation(owner); }"
+        )
+        with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+            PROOF._verify_boundary(ROOT, row, sources, ())
+
     def test_readback_requires_original_completed_bytes_scope_and_current_witness(self):
         for marker in (
             "self.require_current()?;", "if original_dataset_cut != &self.plan.prefix",

@@ -24,13 +24,14 @@ CONTEXT = AGENT + "circuit_evaluated_retention_context.rs"
 PUBLICATION = AGENT + "circuit_evaluated_retention_publication.rs"
 RECOVERY = AGENT + "circuit_evaluated_retention_recovery.rs"
 PREPARE = "fn prepare_original_circuit_evaluated_retention_v1<"
-PUBLISH = "fn publish_original_retained_task("
+PUBLISH = "fn publish_and_retain_original_evidence("
 RECOVER = "fn recover_original_circuit_evaluated_retention_v1<"
 EXPECTED = {
     "learning_evaluated_retention_context": (),
     "learning_evaluated_retention_context_recover": (),
     "learning_evaluated_retention_prepare": (),
     "learning_evaluated_retention_publish": (),
+    "learning_evaluated_retention_preserve_original_evidence": (),
     "learning_evaluated_retention_recover": (),
     "learning_original_training_command_client_readback": (
         AGENT + "cell_q24_no_update_stage_state.rs",
@@ -146,10 +147,12 @@ class EvaluatedRetentionClosureTests(unittest.TestCase):
             "&learning_iteration_receipt_signing_bytes_v1(receipt)?",
             "&evidence.principal().principal_id != actor",
             "verify_signed_actor_separation(&verified[0], &verified[1], at)?",
-            "at >= snapshot.request.envelope.expiry_unix_seconds",
         ):
             with self.subTest(marker=marker):
-                self.rejects(CONTEXT, "fn authenticate(", marker)
+                self.rejects(CONTEXT, "fn verify_original_predecessors(", marker)
+
+        self.rejects(CONTEXT, "fn authenticate(", "self.verify_original_predecessors(at)?")
+        self.rejects(CONTEXT, "fn authenticate(", "at >= snapshot.request.envelope.expiry_unix_seconds")
 
     def test_both_original_owners_are_reread_before_final_fresh_authentication(self):
         for marker in (
@@ -205,6 +208,27 @@ class EvaluatedRetentionClosureTests(unittest.TestCase):
                 self.rejects(PUBLICATION, PUBLISH, marker, occurrence=occurrence)
         self.rejects(PUBLICATION, PUBLISH, "require_not_cancelled(&cancelled).map_err(uncertain)?", "require_not_cancelled(&cancelled)?")
         self.rejects(PUBLICATION, PUBLISH, ".map_err(uncertain)?", occurrence=0)
+
+    def test_continuation_custody_keeps_same_clients_behind_the_internal_consuming_call(self):
+        for marker in (
+            "self,", "signed: SignedFinalUseGrant",
+            "self.publish_and_retain_original_evidence(signed)", ".await",
+            ".map(|(task, _trainer, _evaluator)| task)",
+        ):
+            self.rejects(PUBLICATION, "fn publish_original_retained_task(", marker)
+        for marker in (
+            "self,", "OriginalCellQ24TrainingCommandClientV1,",
+            "OriginalCellEvaluationCommandClientV1,",
+            "let task = tokio::task::spawn_blocking(",
+            "Ok((task, trainer, evaluator))",
+        ):
+            self.rejects(PUBLICATION, PUBLISH, marker)
+        source = (ROOT / PUBLICATION).read_text()
+        self.verifies(PUBLICATION, source)
+        with self.assertRaises(PROOF.VerificationFailure):
+            self.verifies(PUBLICATION, source.replace(
+                "pub(crate) async fn publish_and_retain_original_evidence(",
+                "pub async fn publish_and_retain_original_evidence(", 1))
 
     def test_cold_recovery_keeps_original_intent_and_cannot_repeat_effects(self):
         for marker in (

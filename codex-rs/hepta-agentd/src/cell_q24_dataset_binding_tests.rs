@@ -2,9 +2,9 @@
 //! when appended directly without the experience intake. Keys and outcomes are
 //! explicit fixtures; these are source-binding checks, not ordinary A/B runs.
 
-use pretty_assertions::assert_eq;
-
 use super::*;
+use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 #[tokio::test]
 async fn signed_ledger_facts_cannot_substitute_another_source_profile_or_policy()

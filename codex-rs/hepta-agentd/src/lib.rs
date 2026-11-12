@@ -620,6 +620,12 @@ pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
 #[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitEvaluatedSelectionReceiptV1;
+#[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptConfigV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptErrorV1;
@@ -837,6 +843,8 @@ pub use circuit_experience_intake::OriginalCircuitExperienceReceiptV1;
 pub use circuit_experience_intake::OriginalCircuitExperienceRequestV1;
 #[cfg(target_os = "linux")]
 pub use circuit_experience_intake::append_original_circuit_experience_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_experience_intake::append_original_circuit_experience_v2;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
 #[cfg(target_os = "linux")]
@@ -1469,8 +1477,6 @@ pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationComman
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandReceiptV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationHostV1;
-#[cfg(target_os = "linux")]
-pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialClientV1;
 #[cfg(target_os = "linux")]

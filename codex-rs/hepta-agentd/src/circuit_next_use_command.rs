@@ -355,16 +355,15 @@ impl OriginalCircuitNextUseCommandClientV1 {
         let current = now()?;
         require_clock(started_at, current)?;
         context.authenticate(current)?;
-        if let Some(expected) = &retained {
-            if wire::authenticate_completed(
+        if let Some(expected) = &retained
+            && wire::authenticate_completed(
                 &context,
                 expected.snapshot.clone(),
                 expected.attestation.clone(),
                 current,
             )? != *expected
-            {
-                return Err(Error::Binding("exact cold original NextUse"));
-            }
+        {
+            return Err(Error::Binding("exact cold original NextUse"));
         }
         Ok(Self {
             channel: Mutex::new(Some(Channel {
