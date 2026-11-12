@@ -69,7 +69,15 @@ pub(super) fn ledger(
     root: &std::path::Path,
     objective: Digest32,
 ) -> anyhow::Result<(LedgerWriter, Credentials)> {
-    let at = now()?;
+    ledger_at(root, objective, now()?, d("explicit-positive-ledger"))
+}
+
+pub(super) fn ledger_at(
+    root: &std::path::Path,
+    objective: Digest32,
+    at: u64,
+    binding: Digest32,
+) -> anyhow::Result<(LedgerWriter, Credentials)> {
     let credentials = Credentials {
         generator: signer(
             "positive-generator",
@@ -146,12 +154,12 @@ pub(super) fn ledger(
     )?;
     let ledger = DurableLedger::create(
         opened(root, "positive-ledger", true)?,
-        d("explicit-positive-ledger"),
+        binding,
         64,
     )?;
     let witness = LedgerWitnessStore::create(
         opened(root, "positive-ledger-witness", true)?,
-        d("explicit-positive-ledger"),
+        binding,
     )?;
     let directory = File::open(root)?;
     Ok((
@@ -259,6 +267,23 @@ pub(super) fn material(
     bundle: &CellCompatibilityBundleV1,
     publication: &CircuitTaskSourcePublicationV1,
 ) -> anyhow::Result<Material> {
+    material_with_profile(
+        root, writer, credentials, source, identity, baseline, bundle, publication,
+        d("explicit-positive-independent-evaluation-profile"),
+    )
+}
+
+pub(super) fn material_with_profile(
+    root: &std::path::Path,
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+    identity: &crate::AgentdIdentity,
+    baseline: &LoadedCellQ24ModelV1,
+    bundle: &CellCompatibilityBundleV1,
+    publication: &CircuitTaskSourcePublicationV1,
+    evaluation_profile: Digest32,
+) -> anyhow::Result<Material> {
     let input = publication.input();
     let initial = LearningIterationCoordinatorV1::new(
         LearningIterationRequestV1 {
@@ -270,7 +295,7 @@ pub(super) fn material(
             completed_task_receipt: publication.history_digest().as_str().parse()?,
             selected_artifact_digest: bundle.components.base,
             selected_bundle: bundle.clone(),
-            evaluation_profile: d("explicit-positive-independent-evaluation-profile"),
+            evaluation_profile,
             envelope: IterationEnvelopeV1 {
                 envelope_id: id("positive-original-envelope"),
                 base_commit: d("0bfe47e53bae47977c4423362e4d3823edac99fd"),
@@ -417,3 +442,6 @@ pub(super) fn material(
         frozen,
     })
 }
+
+#[path = "circuit_original_evaluation_ledger_support_tests.rs"]
+pub(super) mod evaluation_provider;

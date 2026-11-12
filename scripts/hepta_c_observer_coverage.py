@@ -274,7 +274,20 @@ EVALUATION_PANEL_CASES = tuple(
     )
 )
 
+ORIGINAL_EVALUATION_PROVIDER_PREFIX = (
+    MODEL_SELECTION_PREFIX + "original::evaluation_provider::"
+)
+ORIGINAL_EVALUATION_PROVIDER_CASES = tuple(
+    ORIGINAL_EVALUATION_PROVIDER_PREFIX + name
+    for name in (
+        "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_evaluation_provider", PACKAGE, ORIGINAL_EVALUATION_PROVIDER_CASES),
     ("original_evaluation_panel_registration", PACKAGE, EVALUATION_PANEL_CASES),
     ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),

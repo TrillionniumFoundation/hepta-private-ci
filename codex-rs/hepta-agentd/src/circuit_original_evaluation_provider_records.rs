@@ -203,6 +203,7 @@ fn read_episode<'a>(
         || source.original_record().snapshot.objective_digest != config.rule.objective_digest
         || input.objective_digest != config.rule.objective_digest
         || decision.objective_digest != config.rule.objective_digest
+        || decision.run_snapshot_digest != input.ndu_snapshot_digest
         || decision.selected_candidate_id != *policy.selected()
         || decision.selected_propensity != ProbabilityQ32::ONE
         || decision.candidate_ids != policy.entries().iter().map(|entry| entry.candidate_id.clone()).collect::<Vec<_>>()

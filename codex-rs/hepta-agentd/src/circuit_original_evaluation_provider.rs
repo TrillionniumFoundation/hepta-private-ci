@@ -95,6 +95,14 @@ impl OriginalCircuitEvaluationCohortV1 {
         owners: OriginalCircuitEvaluationSourceOwnersV1,
         config: OriginalCircuitEvaluationCohortConfigV1,
     ) -> Result<Self, Error> {
+        Self::read_original_with_clock(owners, config, now)
+    }
+
+    fn read_original_with_clock(
+        owners: OriginalCircuitEvaluationSourceOwnersV1,
+        config: OriginalCircuitEvaluationCohortConfigV1,
+        clock: impl FnMut() -> Result<u64, Error>,
+    ) -> Result<Self, Error> {
         let rule_digest = binding::validate_configuration(&owners, &config)?;
         let mut owner = Self {
             owners,
@@ -105,7 +113,7 @@ impl OriginalCircuitEvaluationCohortV1 {
             last_observed_at: 0,
             fenced: false,
         };
-        let observed = owner.read_current()?;
+        let observed = owner.read_current_with_clock(clock)?;
         owner.manifest = Some(observed.manifest);
         owner.dataset = Some(observed.dataset);
         Ok(owner)
@@ -132,10 +140,6 @@ impl OriginalCircuitEvaluationCohortV1 {
             plan,
             release_attempted: false,
         })
-    }
-
-    fn read_current(&mut self) -> Result<Materialized, Error> {
-        self.read_current_with_clock(now)
     }
 
     fn read_current_with_clock(
@@ -176,18 +180,35 @@ pub struct OriginalCircuitFinalHoldoutProviderV1 {
 
 impl FinalHoldoutProviderV1 for OriginalCircuitFinalHoldoutProviderV1 {
     fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1> {
-        if self.release_attempted {
-            return Err(ProductProviderErrorV1::Indeterminate);
-        }
-        self.original
-            .read_current()
-            .map(|observed| observed.manifest)
-            .map_err(provider_error)
+        self.manifest_with_clock(now)
     }
 
     fn release_after_consumption(
         &mut self,
         receipt: &FinalHoldoutJournalReceiptV1,
+    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+        self.release_with_clock(receipt, now)
+    }
+}
+
+impl OriginalCircuitFinalHoldoutProviderV1 {
+    fn manifest_with_clock(
+        &mut self,
+        clock: impl FnMut() -> Result<u64, Error>,
+    ) -> Result<Digest32, ProductProviderErrorV1> {
+        if self.release_attempted {
+            return Err(ProductProviderErrorV1::Indeterminate);
+        }
+        self.original
+            .read_current_with_clock(clock)
+            .map(|observed| observed.manifest)
+            .map_err(provider_error)
+    }
+
+    fn release_with_clock(
+        &mut self,
+        receipt: &FinalHoldoutJournalReceiptV1,
+        clock: impl FnMut() -> Result<u64, Error>,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
         if self.release_attempted {
             return Err(ProductProviderErrorV1::Indeterminate);
@@ -220,7 +241,7 @@ impl FinalHoldoutProviderV1 for OriginalCircuitFinalHoldoutProviderV1 {
         {
             return Err(ProductProviderErrorV1::Rejected);
         }
-        let observed = self.original.read_current().map_err(provider_error)?;
+        let observed = self.original.read_current_with_clock(clock).map_err(provider_error)?;
         if observed.manifest != plan.final_holdout_digest {
             return Err(ProductProviderErrorV1::Indeterminate);
         }
@@ -246,3 +267,7 @@ fn now() -> Result<u64, Error> {
         .map_err(|_| Error::Binding("system clock before Unix epoch"))
 }
 
+
+#[cfg(test)]
+#[path = "circuit_original_evaluation_provider_access_tests.rs"]
+pub(crate) mod test_access;

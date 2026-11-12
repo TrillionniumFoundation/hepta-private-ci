@@ -156,3 +156,7 @@ pub(crate) async fn completed(
     store.close().await;
     Ok((identity, owner))
 }
+
+#[path = "circuit_original_evaluation_task_support_tests.rs"]
+mod original_evaluation;
+pub(crate) use original_evaluation::original_evaluation_source;
