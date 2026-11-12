@@ -1,0 +1,249 @@
+[
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "known_zero",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/known_zero"
+    ],
+    "exit_code": 0,
+    "pid": 2231,
+    "scenario": "known_zero",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "no_child",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/no_child"
+    ],
+    "exit_code": 0,
+    "pid": 2233,
+    "scenario": "no_child",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "missing_result",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/missing_result"
+    ],
+    "exit_code": 0,
+    "pid": 2235,
+    "scenario": "missing_result",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "malformed_result",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/malformed_result"
+    ],
+    "exit_code": 0,
+    "pid": 2237,
+    "scenario": "malformed_result",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "unbound_result",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/unbound_result"
+    ],
+    "exit_code": 0,
+    "pid": 2239,
+    "scenario": "unbound_result",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "wrong_pid",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/wrong_pid"
+    ],
+    "exit_code": 0,
+    "pid": 2241,
+    "scenario": "wrong_pid",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "wrong_source",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/wrong_source"
+    ],
+    "exit_code": 0,
+    "pid": 2243,
+    "scenario": "wrong_source",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "wrong_exit",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/wrong_exit"
+    ],
+    "exit_code": 0,
+    "pid": 2245,
+    "scenario": "wrong_exit",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "noninteger_counter",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/noninteger_counter"
+    ],
+    "exit_code": 0,
+    "pid": 2247,
+    "scenario": "noninteger_counter",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "pre_popen_kill",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/pre_popen_kill"
+    ],
+    "exit_code": -9,
+    "pid": 2249,
+    "scenario": "pre_popen_kill",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "post_spawn_pre_pid_kill",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/post_spawn_pre_pid_kill"
+    ],
+    "exit_code": -9,
+    "pid": 2250,
+    "scenario": "post_spawn_pre_pid_kill",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "post_pid_kill",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/post_pid_kill"
+    ],
+    "exit_code": -9,
+    "pid": 2252,
+    "scenario": "post_pid_kill",
+    "state": "TERMINAL"
+  },
+  {
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+      "-B",
+      "-m",
+      "qualification.hcsn_controller_ledger_faults.probe",
+      "--worker",
+      "--scenario",
+      "starting_no_pid",
+      "--source",
+      "/home/runner/work/_temp/ledger-fixture-source.json",
+      "--output",
+      "/home/runner/work/_temp/ledger-fixture/starting_no_pid"
+    ],
+    "exit_code": 0,
+    "pid": 2254,
+    "scenario": "starting_no_pid",
+    "state": "TERMINAL"
+  }
+]

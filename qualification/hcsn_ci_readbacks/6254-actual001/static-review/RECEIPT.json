@@ -1,0 +1,56 @@
+{
+  "independent_parallel_review": "/root/review_spatial/review_adam_controller independently confirmed both fixes by source reads only, with no fixture/worker/toy execution.",
+  "independently_recomputed_original_AST_sha256": {
+    "actor": "c5031bdef2100d90551c5b2c4b124f84705ffa87b9f773298b33c61d29cc910f",
+    "aggregate_assignments": "a3f66b749a2099b1a90177cf1260e853ac47e5532d24687a5b91aa62e6bc5b56",
+    "require": "b45396907fa8ed097f532a409702b967fb4f2e5574af0eef261586e53710d028",
+    "write": "bc0bfe710d2f3d6ac83beebad1efd75fb5f1173cd8da0f3ac85c7a3a01e965dd"
+  },
+  "limits": [
+    "This is a static code/digest review, not fixture execution or dynamic fault qualification.",
+    "Clearance assumes ordinary nonoptimized hosted CPython; assert-based test checks are not an adversarial -O/security certificate.",
+    "The observed SIGKILL list covers normally terminal planned kill scenarios; timeout-kill records remain separately identified in supervisor admissions and do not count as planned-hook successes.",
+    "Post-spawn toys are deliberately reaped before the controller self-kill; the fixture does not test active child/optimizer cleanup, arbitrary orphans or power loss.",
+    "External reconciliation after SIGKILL is distinct from a final report of the killed controller.",
+    "Malformed JSON coverage is syntax/declared cases, not duplicate-key/NaN/hostile JSON qualification.",
+    "No historical UNKNOWN numerical job is resolved and no model, optimizer, n512, full-network, migration, task, energy or adoption qualification transfers from this fixture."
+  ],
+  "new_fixture_worker_toy_model_torch_numpy_scipy_ode_adjoint_optimizer_executions": 0,
+  "other_static_confirmations": [
+    "Original selected function/aggregate ASTs remain unchanged; only injected namespace, Popen toy adapter and external reconciliation wrappers differ as disclosed.",
+    "The adapter never passes original numerical actor argv to real Popen; prefix-only checking is explicitly scoped to the pinned original command construction. No complete original numerical controller execution is claimed.",
+    "Real toy reports true zero numerical calls; nonzero(3,3,2) is only a seeded reservation, never fabricated actual model or Adam work.",
+    "The complete prescribed protocol is 13 fresh workers, 10 executed toy bodies, one failed exec attempt and three planned self-SIGKILL controls. Incomplete protocol exact process totals are null and observed-only data remain separate.",
+    "Supervisor body CPU and child-subtree RUSAGE CPU are separately named; supervisor startup imports are excluded from the body timer and max RSS is not aggregate simultaneous RSS."
+  ],
+  "prior_review_preserved": {
+    "file": "REVIEW-001.json",
+    "git_blob": "12a33a7bf6ea84b035e3cfaa6b90e962b8113cac",
+    "source": "5583d56846b2be9e6d60081fbcb1d00b3ed09395"
+  },
+  "resolved_findings": [
+    {
+      "id": "PLANNED-KILL-COUNT-AS-ACTUAL",
+      "resolution": "Three planned intentional kills are separately labeled. Observed authoritative SIGKILL entries are derived from actual recorded terminal waits of planned kill scenarios; an early failure cannot fabricate three successes."
+    },
+    {
+      "id": "UNBOUND-KILL-HOOK-ACCEPTANCE",
+      "resolution": "inspect_case receives authoritative Popen worker PID and requires exact complete event-kind order; each killed case has one final event with exact expected point/PID, in addition to actual wait=-SIGKILL and ledger/spawn/reap tests. Nonkill cases forbid kill intent and require their complete expected event sequence."
+    }
+  ],
+  "reviewer": "/root/review_spatial",
+  "schema": "hcsn-controller-ledger-fault-independent-static-review-v2",
+  "source_hashes_equal_count": 5,
+  "source_head": "e6d989320e6ad9310b68f650bc8805618cba34fc",
+  "source_manifest_byte_equal_to_git": true,
+  "source_manifest_git_blob": "813b94ab030f54bf8aee0da2208ec911bc39db1b",
+  "source_manifest_sha256": "eed349e79d2b9500c142825c7bc9d394a7f3bb72100a3a0f318e9617c78f8b03",
+  "source_sha256": {
+    ".github/workflows/hcsn-controller-ledger-faults.yml": "15496492ebf9a5a856a1352d524009642ab8e0f0ad09523ceccd73a548f05dcb",
+    "qualification/hcsn_adjoint_adam_resume/native_probe.py": "f2e0b5bf8c4c15bbfd2df967749d949acffe22e4093320aa17c7ff9fbdc84ae2",
+    "qualification/hcsn_controller_ledger_faults/REQUEST.json": "fdbb31bdcfe248eca99328fb2388b8aae6bbd6544e8707ae16e5410ad3af415d",
+    "qualification/hcsn_controller_ledger_faults/SPEC.md": "2a9067bc1d4678f92e5a7d914571bdcc75809cb430646d0e85a39bdb2a3d8ae6",
+    "qualification/hcsn_controller_ledger_faults/probe.py": "930174547def4fdab1fe4ebb7797f09edd82b6ed5a6f111683a0e0d9ab91c448"
+  },
+  "status": "FINITE_STATIC_CLEAR"
+}

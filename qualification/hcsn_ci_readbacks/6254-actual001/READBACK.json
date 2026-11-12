@@ -1,0 +1,100 @@
+{
+  "schema": "hcsn.controller-ledger-faults.evidence-readback.v1",
+  "archivist": "/root/c2_integrity/ci_replay_profile",
+  "source_commit": "e6d989320e6ad9310b68f650bc8805618cba34fc",
+  "identity": "hcsn-controller-ledger-fault-fixture-20261112-c06d-stage1",
+  "run_id": 43233514011,
+  "run_attempt": 1,
+  "job_id": 131234720335,
+  "conclusion": "success",
+  "artifact_id": 13951651852,
+  "artifact_bytes": 70427,
+  "artifact_sha256": "591680f81beb90e6509f529b74ddda31d9b1099b7d10a5c6474ee5a65a022222",
+  "members": 119,
+  "producer_result": {
+    "status": "PASS",
+    "scenarios": 13,
+    "stdlib_controllers": 13,
+    "stdlib_toys": 10,
+    "failed_exec_cases": 1,
+    "authoritative_SIGKILL_exits": [
+      {
+        "exit_code": -9,
+        "pid": 2249,
+        "scenario": "pre_popen_kill"
+      },
+      {
+        "exit_code": -9,
+        "pid": 2250,
+        "scenario": "post_spawn_pre_pid_kill"
+      },
+      {
+        "exit_code": -9,
+        "pid": 2252,
+        "scenario": "post_pid_kill"
+      }
+    ],
+    "numerical_calls": {
+      "adam_updates": 0,
+      "adjoints": 0,
+      "forwards": 0
+    },
+    "numerical_imports": 0,
+    "uncertain_cases_retaining_null_exact_calls": 11,
+    "exact_protocol_totals_status": "KNOWN_FOR_COMPLETE_PROTOCOL"
+  },
+  "cost": {
+    "supervisor_body_wall_seconds": 1.9660728309999982,
+    "supervisor_body_cpu_seconds": 0.09174101799999998,
+    "supervisor_startup_imports_included_in_cpu": false,
+    "child_cpu_seconds": 0.9650269999999999,
+    "child_reported_max_rss_kib": 20188,
+    "max_rss_is_simultaneous_aggregate": false,
+    "payload_bytes_before_report": 136562,
+    "payload_limit_is_post_execution_check": true
+  },
+  "verification": {
+    "runtime_manifest_vs_5_fresh_source_sha256": "PASS",
+    "source_bytes": {
+      "qualification/hcsn_controller_ledger_faults/REQUEST.json": {
+        "sha256": "fdbb31bdcfe248eca99328fb2388b8aae6bbd6544e8707ae16e5410ad3af415d",
+        "git_blob_sha1": "0cce1ccce3a90ab39d1d66c97543e161246bd721"
+      },
+      ".github/workflows/hcsn-controller-ledger-faults.yml": {
+        "sha256": "15496492ebf9a5a856a1352d524009642ab8e0f0ad09523ceccd73a548f05dcb",
+        "git_blob_sha1": "2128a5341e55afe8042213035999d3c797cc8088"
+      },
+      "qualification/hcsn_controller_ledger_faults/probe.py": {
+        "sha256": "930174547def4fdab1fe4ebb7797f09edd82b6ed5a6f111683a0e0d9ab91c448",
+        "git_blob_sha1": "4c86b2156bb9e32a7264cb1f39f30eb2de52d8f7"
+      },
+      "qualification/hcsn_controller_ledger_faults/SPEC.md": {
+        "sha256": "2a9067bc1d4678f92e5a7d914571bdcc75809cb430646d0e85a39bdb2a3d8ae6",
+        "git_blob_sha1": "e56bad38868858e50a7dc806ce757288d729843c"
+      },
+      "qualification/hcsn_adjoint_adam_resume/native_probe.py": {
+        "sha256": "f2e0b5bf8c4c15bbfd2df967749d949acffe22e4093320aa17c7ff9fbdc84ae2",
+        "git_blob_sha1": "86c08b6b2c4c6db47283cf2e2438d00ae38e72e2"
+      }
+    },
+    "whole_zip_all_member_crc_and_size_sha256": "PASS_BY_PRIMARY_RECEIPT",
+    "source_of_byte_crc_credit": "PRIMARY-BYTE-READBACK.json",
+    "independent_actual_operational_audit": "PENDING_AT_CORE_ARCHIVE",
+    "this_archivist_executed_fixture_or_worker_or_toy": false,
+    "this_archivist_executed_model_or_Torch_or_forward_or_adjoint_or_optimizer": false,
+    "v8_sha256_known_vectors": [
+      "empty",
+      "abc",
+      "standard 56-byte multi-block",
+      "one million ASCII a"
+    ]
+  },
+  "limits": [
+    "Selected original controller AST in stdlib toy closure, not the original numerical subprocess argv.",
+    "Two post-spawn kill controls reap their zero-work toy before controller SIGKILL; this does not prove termination of a live optimizer or orphan cleanup.",
+    "Synthetic unresolved reservation (3 forward,3 adjoint,2 Adam) is an upper bound only, with null actual work; no such numerical work was executed.",
+    "Does not resolve prior C2 UNKNOWN/OOM attempts, independent full-training replay 0/6, power-loss durability, active orphan cleanup, hostile Python/JSON or full-network qualification.",
+    "Finite scenario PASS is not exhaustive state-space proof. Independent actual event/JSON audit pending separately."
+  ],
+  "mutation_scope": "Only new files under qualification/hcsn_ci_readbacks/6254-actual001; source head unchanged; no workflow rerun or native key."
+}
