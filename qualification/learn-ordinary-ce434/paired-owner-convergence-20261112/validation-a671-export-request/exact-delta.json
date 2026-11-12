@@ -1,0 +1,144 @@
+{
+  "schema": "hepta.learn.a671.validation-exporter.exact-delta.v1",
+  "original": {
+    "git_blob": "5f481b44c4cfce909f6d65e75591041f85d160fc",
+    "bytes": 9297,
+    "sha256": "58bac74e4a962931a8995e302cdf8f2e5315477e9318542abd9c0ac61a55d90c"
+  },
+  "after": {
+    "git_blob": "e48609203bc9fc60a5142619666875838393759e",
+    "bytes": 10412,
+    "sha256": "ac9bd6ab2b59ceab22d7246aaced661160a3fad8b9d743a51ebe642f76f2960d"
+  },
+  "exact_edits": [
+    {
+      "label": "source_sha",
+      "before": "source=\"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\"",
+      "after": "source=\"a6717d7228045e6cb60532966f06e6e02c4a6abe\""
+    },
+    {
+      "label": "source_tree",
+      "before": "tree=\"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\"",
+      "after": "tree=\"647b9e78151299c1e7de455eae9c530ca93b28c9\""
+    },
+    {
+      "label": "original_outer_directory",
+      "before": "base=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-e5c7dbd90938-diagnostic-v2\")",
+      "after": "base=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1\")"
+    },
+    {
+      "label": "original_native_directory",
+      "before": "native=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-e5c7dbd90938-diagnostic-v2\")",
+      "after": "native=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1\")"
+    },
+    {
+      "label": "fresh_observer_directory",
+      "before": "out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/native-export-e5c7dbd90938-diagnostic-v2\")",
+      "after": "out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/native-export-a6717d722804-full-v1\")"
+    },
+    {
+      "label": "fresh_evidence_branch",
+      "before": "branch=\"codex/learn-e5c7-three-diagnostics-evidence-ce434-20261112-v2\"",
+      "after": "branch=\"codex/learn-a671-full-validation-evidence-ce434-20261112-v1\""
+    },
+    {
+      "label": "evidence_path_prefix",
+      "before": "prefix=\"qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/diagnostic-e5c7-recovered-native/\"",
+      "after": "prefix=\"qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/\""
+    },
+    {
+      "label": "outer_tree_identity",
+      "before": " if outer[\"source_sha\"]!=source or state[\"source_sha\"]!=source or state[\"source_tree\"]!=tree:",
+      "after": " if outer[\"source_sha\"]!=source or outer[\"source_tree\"]!=tree or state[\"source_sha\"]!=source or state[\"source_tree\"]!=tree:"
+    },
+    {
+      "label": "retain_old_fixed_inventory_add_three_source_files",
+      "before": "  (\"helpers-codex-hepta-infer-worker-host.stderr.log\",native/\"helpers/codex-hepta-infer-worker-host.stderr.log\")]",
+      "after": "  (\"helpers-codex-hepta-infer-worker-host.stderr.log\",native/\"helpers/codex-hepta-infer-worker-host.stderr.log\"),\n  (\"source-suite.json\",base/\"source-suite.json\"),\n  (\"source-suite.log\",base/\"source-suite.log\"),\n  (\"caller-scanner-self-test.log\",base/\"caller-scanner-self-test.log\")]"
+    },
+    {
+      "label": "completed_source_original_full_file_pins",
+      "before": " actual={name:raw for name,raw in pending}\n execution=None",
+      "after": " actual={name:raw for name,raw in pending}\n source_steps=[step for step in outer.get(\"steps\",[]) if step.get(\"name\")==\"source-suite\"]\n if len(source_steps)>1:raise RuntimeError(\"duplicate original source step\")\n if source_steps:\n  step=source_steps[0]\n  if \"source-suite.log\" not in actual or len(actual[\"source-suite.log\"])!=step[\"bytes\"] or sha(actual[\"source-suite.log\"])!=step[\"sha256\"]:\n   raise RuntimeError(\"full original source log differs\")\n if \"source_suite\" in outer:\n  pin=outer[\"source_suite\"]\n  if \"source-suite.json\" not in actual or len(actual[\"source-suite.json\"])!=pin[\"bytes\"] or sha(actual[\"source-suite.json\"])!=pin[\"sha256\"]:\n   raise RuntimeError(\"original source JSON differs from outer pin\")\n execution=None"
+    },
+    {
+      "label": "observation_schema_inventory_not_pass",
+      "before": "\"schema\":\"original-e5c7-recovered-three-diagnostic-observation-v1\",\"source_sha\":source",
+      "after": "\"schema\":\"original-a671-full-source-native-validation-observation-v1\",\"expected_source_methods\":443,\"expected_native_cases\":201,\"expected_native_groups\":43,\"source_sha\":source"
+    },
+    {
+      "label": "honest_export_scope",
+      "before": "\"scope\":\"Reads only original owned qualification files. Initial snapshot is not terminal. No tests rerun, source edit, process signal or production authority. A bounded observer timeout cannot imply native failure or no effect.\"",
+      "after": "\"scope\":\"Observes original 443-source-method and 201-native-case validation evidence; expected inventory is not a pass claim. Original result bytes and actual exits remain authoritative. Initial snapshot is not terminal. Reads only original owned qualification files. No tests rerun, source edit, process signal or production authority. A bounded observer timeout cannot imply native failure or no effect.\""
+    },
+    {
+      "label": "evidence_commit_message",
+      "before": "(\"LEARN: retain original e5c7 three-diagnostic \"+label+\" evidence\\n\")",
+      "after": "(\"LEARN: retain original a671 source443 native201 \"+label+\" evidence\\n\")"
+    }
+  ],
+  "forward_and_inverse_whole_file_equal": true,
+  "original_data_names": [
+    "outer-as-observed.json",
+    "native-as-observed.json",
+    "outer-native.log",
+    "v8-private-input-readback.json",
+    "target-initialization-readback.json",
+    "helper-build.driver.log",
+    "helper-verify.driver.log",
+    "focused-native.driver.log",
+    "focused-junit.driver.log",
+    "focused-native.json",
+    "focused-native.junit.xml",
+    "focused-native.junit.summary.json",
+    "helpers-manifest.json",
+    "helpers-env.json",
+    "helpers-codex-hepta-infer-worker-host.jsonl",
+    "helpers-codex-hepta-infer-worker-host.stderr.log",
+    "focused-native.execution.log"
+  ],
+  "added_names": [
+    "source-suite.json",
+    "source-suite.log",
+    "caller-scanner-self-test.log"
+  ],
+  "preserved_sections": [
+    {
+      "name": "bounded_stable_read",
+      "byte_identical": true,
+      "bytes": 825,
+      "sha256": "87a5fd66c68f29faf3d6e3c2ce1fd441aa3d8c40aa055f80398b91dfd40d0e81"
+    },
+    {
+      "name": "git_transport",
+      "byte_identical": true,
+      "bytes": 258,
+      "sha256": "199e45c796483fe34e48a1dc8aa5092f995bce4a882cee3259bd79029b6b0ef3"
+    },
+    {
+      "name": "private_index_and_parts",
+      "byte_identical": true,
+      "bytes": 1034,
+      "sha256": "6baada3b68e167763c5b45e88d9efe50c2526da9072b0d52a848330e71d60a65"
+    },
+    {
+      "name": "remote_publication_parent_chain",
+      "byte_identical": true,
+      "bytes": 918,
+      "sha256": "ee893c1d87481f4556850b2ee3ad162b27d4674296f8d16183fac02c26146f11"
+    },
+    {
+      "name": "two_hour_observe_no_signal",
+      "byte_identical": true,
+      "bytes": 386,
+      "sha256": "1b67de4e78beaa7b31e7b85223bc2df2cbc79b1a4635f366b825ea426c7b2ee5"
+    }
+  ],
+  "validation": {
+    "pure_v8_byte_replay": true,
+    "full_github_blob_readback": true,
+    "python_execution": false,
+    "h_execution": false,
+    "observer_dispatched": false
+  }
+}
