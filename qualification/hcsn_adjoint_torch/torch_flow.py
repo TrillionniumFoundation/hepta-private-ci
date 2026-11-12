@@ -184,6 +184,9 @@ class _Amplitude(torch.autograd.Function):
             options,
             budget,
         )
+        ctx.live_inputs = tuple(
+            inputs
+        )  # Independent live references also cover SavedVariable packing.
         ctx.input_signatures = tuple(_signature(value) for value in inputs)
         ctx.save_for_backward(*inputs, *(v.detach().clone() for v in inputs))
         ctx.set_materialize_grads(False)
@@ -196,7 +199,7 @@ class _Amplitude(torch.autograd.Function):
         budget.backward_attempts += 1
         try:
             saved = ctx.saved_tensors  # Standard Torch version checks read originals.
-            originals, copies = saved[:4], saved[4:]
+            originals, copies = ctx.live_inputs, saved[4:]
             if tuple(_signature(value) for value in originals) != ctx.input_signatures:
                 raise RuntimeError("initial amplitude tensor metadata/storage changed")
             if any(
