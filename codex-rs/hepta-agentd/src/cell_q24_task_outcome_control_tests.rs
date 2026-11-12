@@ -24,6 +24,9 @@ use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::cell_q24_task_ledger::control::encode;
 
+#[path = "cell_q24_task_observation_control_tests.rs"]
+mod observation;
+
 struct Control {
     client: AgentdClient,
     cancel: CancellationToken,
