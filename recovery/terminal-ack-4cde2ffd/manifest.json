@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "kind": "frozen-source-and-source-validation-only",
+  "source_commit": "4cde2ffd2b842ee7848df773a55471ee7513d462",
+  "source_tree": "c13afdb91993a56a45375c77ae1c7f5eb46eca66",
+  "prerequisite_commit": "f48cc04b3bc22da7704bb841d76dc8286106288d",
+  "commits": [
+    {
+      "commit": "5c16a0b7cc4436bccb46e5dd3093084f6a3d8759",
+      "tree": "d247ab867ca34907f935c6b5c7477e11c11278b4",
+      "subject": "feat(agentd): expose only an acknowledged original terminal acceptance"
+    },
+    {
+      "commit": "e30d43f92a3c630a9be4a7f8268b1be768fb343b",
+      "tree": "32e76c1757838000911b5460c1ecd45ab935a4fa",
+      "subject": "Expose terminal acknowledgement only after the actual delivery postchecks"
+    },
+    {
+      "commit": "e009101d28657980467c084abba43c0b658ac6db",
+      "tree": "f26316e017c3fa6dfa90550f4d648070ed25495a",
+      "subject": "test(agentd): reject fabricated or unavailable terminal acknowledgement data"
+    },
+    {
+      "commit": "568221a921aa3c5581dcf4895dfdc4ccd50c3f04",
+      "tree": "61532a1810a3eabfa0cecf0182b34a5b924db85d",
+      "subject": "test(agentd): wait for the received terminal ACK before stopping ordinary processes"
+    },
+    {
+      "commit": "cbcceda8020cc9495a9e26efdb5371e1ef0c91e8",
+      "tree": "aa7ace2665b65785db355999179647b3601d8fc2",
+      "subject": "refactor(agentd): name the actual historical data receiver in control paths"
+    },
+    {
+      "commit": "4cde2ffd2b842ee7848df773a55471ee7513d462",
+      "tree": "c13afdb91993a56a45375c77ae1c7f5eb46eca66",
+      "subject": "test(agentd): close fresh terminal acknowledgement and received-ACK wait paths"
+    }
+  ],
+  "artifacts": {
+    "source.bundle": {
+      "bytes": 19630,
+      "sha256": "1445015fc7557590eb3210029e384bb4760dfb78ca13720a7e07eff5acd4c80d",
+      "git_blob": "74d904598b5098371e4d9036e3333cec45a69906"
+    },
+    "source-validation.tar.xz": {
+      "bytes": 302372,
+      "sha256": "d09807547b370bdece199c6016fbfdce068623f171ff0b5836aa202eca1ecfd2",
+      "git_blob": "412b5e15f84a89f403c799b45d0f1b1d5cda5247"
+    }
+  },
+  "validation": {
+    "source_qa_methods": 44,
+    "source_qa_passed": 44,
+    "selected_boundaries": 10,
+    "selected_boundaries_passed": 10,
+    "rust_index_files": 6885,
+    "frozen_input_files": 7150,
+    "all_inputs_unchanged": true,
+    "head_unchanged": true,
+    "tracked_clean": true,
+    "elapsed_seconds": 22.34600884000247,
+    "native_executed": false,
+    "whole_cold_pass": false,
+    "full_caller_scan": false
+  },
+  "first_failure_retained": "first guard preview 8/9; first 44-method source QA failed with 71 subtest errors; full original log retained; successor restores exact markers and actual typed receivers without changing verifier",
+  "guard_union": {
+    "old_boundaries_retained": 1098,
+    "old_protected_rows_retained": 861,
+    "old_protected_rows_equivalently_rebound": 3,
+    "added_boundaries": 6,
+    "added_protected_rows": 9,
+    "manifest_sha256": "51454c5ebf9b4f4fd17609cf49a068f14794771fecec90eb8b24b0a84b03b6a5"
+  },
+  "native_cases": "six new protocol/state tests and actual ordinary/cold parent remain pending native; no Root/cold positive inferred from these source tests"
+}

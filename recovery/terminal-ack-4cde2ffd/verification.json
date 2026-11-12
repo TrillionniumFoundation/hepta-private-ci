@@ -1,0 +1,163 @@
+{
+  "all_inputs_unchanged": true,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "test_q24_terminal_acceptance_source_closure",
+    "test_completed_learning_client_source_closure",
+    "test_q24_completed_history_control_source_closure",
+    "test_completed_learning_route_source_closure",
+    "-v"
+  ],
+  "elapsed_seconds": 22.34600884000247,
+  "finished_at": "2026-11-12T21:43:29.336489+00:00",
+  "full_caller_scan": false,
+  "head_unchanged": true,
+  "input_files": 7150,
+  "native_executed": false,
+  "rust_files": 6885,
+  "selected_boundaries": [
+    {
+      "id": "q24_completed_history_config_install",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "q24_completed_history_config_install",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "AgentdConfig",
+        "symbol": "AgentdConfig::with_original_q24_completed_history"
+      }
+    },
+    {
+      "id": "root_completed_read_original",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "root_completed_read_original",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "RootHistoricalTaskReadClientV1",
+        "symbol": "RootHistoricalTaskReadClientV1::read_original_completed_history"
+      }
+    },
+    {
+      "id": "root_completed_retain_acceptance",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "root_completed_retain_acceptance",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "RootHistoricalTaskReadClientV1",
+        "symbol": "RootHistoricalTaskReadClientV1::retain_original_completed_acceptance"
+      }
+    },
+    {
+      "id": "root_completed_accept_capsule",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "root_completed_accept_capsule",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_terminal_acceptance.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "OriginalCompletedLearningAcceptanceV1",
+        "symbol": "OriginalCompletedLearningAcceptanceV1::accept"
+      }
+    },
+    {
+      "id": "root_completed_acknowledgement_construct",
+      "pass": true,
+      "receipt": {
+        "callPattern": "\\bOriginalCompletedLearningAcknowledgementV1\\s*\\{\\s*(?:(?:client|identity|data)\\b|\\.\\.)",
+        "id": "root_completed_acknowledgement_construct",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "OriginalCompletedLearningAcknowledgementV1"
+      }
+    },
+    {
+      "id": "root_completed_acknowledgement_data",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "root_completed_acknowledgement_data",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_terminal_acceptance.rs",
+          "codex-rs/hepta-agentd/src/state_q24_completed_history.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "OriginalCompletedLearningAcknowledgementV1",
+        "symbol": "OriginalCompletedLearningAcknowledgementV1::data"
+      }
+    },
+    {
+      "id": "root_completed_acknowledgement_current",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "root_completed_acknowledgement_current",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/state_q24_completed_history.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "OriginalCompletedLearningAcknowledgementV1",
+        "symbol": "OriginalCompletedLearningAcknowledgementV1::require_original_current"
+      }
+    },
+    {
+      "id": "q24_terminal_acceptance_state_attach",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "q24_terminal_acceptance_state_attach",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_terminal_acceptance.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "AgentdState",
+        "symbol": "AgentdState::attach_original_q24_terminal_acceptance"
+      }
+    },
+    {
+      "id": "q24_terminal_acceptance_state_read",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "q24_terminal_acceptance_state_read",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/state_control.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "AgentdState",
+        "symbol": "AgentdState::read_original_q24_terminal_acceptance"
+      }
+    },
+    {
+      "id": "q24_terminal_acceptance_client",
+      "pass": true,
+      "receipt": {
+        "callPattern": null,
+        "id": "q24_terminal_acceptance_client",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": "AgentdClient",
+        "symbol": "AgentdClient::original_q24_terminal_acceptance"
+      }
+    }
+  ],
+  "source_commit": "4cde2ffd2b842ee7848df773a55471ee7513d462",
+  "source_qa_exit": 0,
+  "source_tree": "c13afdb91993a56a45375c77ae1c7f5eb46eca66",
+  "tracked_clean": true
+}
