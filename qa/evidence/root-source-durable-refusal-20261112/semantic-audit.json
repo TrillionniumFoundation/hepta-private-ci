@@ -1,0 +1,35 @@
+{
+  "base": "106f5e41f2ff8421c5aad10eeb746d453ed00563",
+  "validated_local_commit": "e4b9579c9d6183145859e16cfbb0d6b1ba2a75ca",
+  "validated_remote_commit": "c5dde97e8ee7b3d7e109b4586118124af12578a2",
+  "validated_tree": "3fb64f7e99b05ed83270f85d12b011f8696a3a65",
+  "callers_sha256": "c23085a53367a1f751e17709b905802a658f873a94a9bb964b17df092d0ae41c",
+  "old_boundaries": 504,
+  "new_boundaries": 510,
+  "changed_old_boundaries": [
+    "root_historical_source_handoff_ack",
+    "root_historical_source_handoff_existing",
+    "root_historical_source_pin_publisher"
+  ],
+  "added_boundaries": [
+    "root_historical_source_armed_capture",
+    "root_historical_source_armed_record",
+    "root_initial_data_refusal_existing",
+    "root_initial_data_refusal_fresh",
+    "root_initial_data_refusal_inspect",
+    "root_initial_data_refusal_refuse"
+  ],
+  "old_protected_rows": 369,
+  "new_protected_rows": 371,
+  "unchanged_old_protected_rows": 366,
+  "modified_protected_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_handoff.rs",
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs",
+    "codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs"
+  ],
+  "old_required_inventory_preserved_in_order": true,
+  "old_forbidden_sets_preserved": true,
+  "other_allowlist_lines_preserved": true,
+  "full_caller_scan": false,
+  "native_executed": false
+}
