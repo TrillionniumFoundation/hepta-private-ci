@@ -492,6 +492,8 @@ mod learning_iteration_research_external;
 mod learning_iteration_research_external_material;
 #[cfg(target_os = "linux")]
 mod learning_owner_command_channel;
+#[cfg(target_os = "linux")]
+mod artifact_original_head;
 mod learning_owner_evidence;
 mod learning_owner_journal;
 mod neuron_cell_evaluation;
@@ -1430,3 +1432,16 @@ pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationComman
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandReceiptV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationHostV1;
+
+#[cfg(target_os = "linux")]
+pub use artifact_original_head::ArtifactHeadSigningConfigV1;
+#[cfg(target_os = "linux")]
+pub use artifact_original_head::OriginalArtifactHeadConnectionV1;
+#[cfg(target_os = "linux")]
+pub use artifact_original_head::OriginalArtifactHeadErrorV1;
+#[cfg(target_os = "linux")]
+pub use artifact_original_head::OriginalArtifactHeadOwnerV1;
+#[cfg(target_os = "linux")]
+pub use artifact_original_head::OriginalArtifactRegistrySourceClientV1;
+#[cfg(target_os = "linux")]
+pub use artifact_original_head::OriginalArtifactRegistrySourceOwnerV1;

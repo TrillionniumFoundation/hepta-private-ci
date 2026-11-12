@@ -57,6 +57,13 @@ mod readback;
 #[path = "owner_host_registry_durable.rs"]
 mod registry_durable;
 
+#[path = "owner_head_source.rs"]
+mod head_source;
+pub use head_source::ArtifactHeadSigningConfigV1;
+pub use head_source::UntrustedArtifactRegistryDurableV1;
+pub use head_source::decode_artifact_head_bytes_v1;
+pub use head_source::encode_artifact_head_bytes_v1;
+
 pub use registry_durable::OriginalArtifactRegistryDurableV1;
 pub use readback::OriginalArtifactPublicationReadbackErrorV1;
 pub use readback::OriginalArtifactPublicationReadbackV1;

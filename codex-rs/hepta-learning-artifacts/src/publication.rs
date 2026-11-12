@@ -398,7 +398,7 @@ fn validate_snapshot_shape(
     Ok(())
 }
 
-fn digest_intent(
+pub(crate) fn digest_intent(
     operation_id: &StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
     expected_registry_predecessor_head: Digest32,
