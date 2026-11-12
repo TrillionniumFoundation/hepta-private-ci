@@ -1,0 +1,49 @@
+{
+  "schema": "finite-source-format-reconciliation-v1",
+  "just_fmt": {
+    "exit_code": 127,
+    "reason": "just executable missing in recovered environment",
+    "stderr": "FMT.stderr"
+  },
+  "additional_ruff": {
+    "exit_code": 127,
+    "reason": "ruff executable/module missing; no source edit performed"
+  },
+  "direct_repository_formatter": {
+    "command": [
+      "python",
+      "scripts/format.py"
+    ],
+    "exit_code": 0,
+    "scope": "repository formatter has no owner for qualification Python inputs",
+    "stdout": "FORMAT_DIRECT.stdout",
+    "stderr": "FORMAT_DIRECT.stderr"
+  },
+  "files": {
+    "qualification/hcsn_finite_review/verify.py": {
+      "before_sha256": "daf657c17b01b10070cf3bfa627edcec565e36fe7ec497891b4fcb63cbbaed2f",
+      "after_sha256": "daf657c17b01b10070cf3bfa627edcec565e36fe7ec497891b4fcb63cbbaed2f",
+      "bytes_unchanged": true,
+      "ast_equal": true
+    },
+    "qualification/hcsn_finite_review/audit_short_gap.py": {
+      "before_sha256": "07a46f19ca9c9427a44f3b4a6787956534d38d54a76b04742f5f08fa61d0b888",
+      "after_sha256": "07a46f19ca9c9427a44f3b4a6787956534d38d54a76b04742f5f08fa61d0b888",
+      "bytes_unchanged": true,
+      "ast_equal": true
+    },
+    "qualification/hcsn_finite_review/run.py": {
+      "before_sha256": "a69ee7c58c3d81b41d9cbcc44588038ad60fe72e034072aca73a90a59f086889",
+      "after_sha256": "a69ee7c58c3d81b41d9cbcc44588038ad60fe72e034072aca73a90a59f086889",
+      "bytes_unchanged": true,
+      "ast_equal": true
+    },
+    "qualification/hcsn_finite_review/actual_candidate_kernels.py": {
+      "before_sha256": "222e86299074b93f6253d5e2de7f431585fc83ec503db736cb6cf0a099ff03e6",
+      "after_sha256": "222e86299074b93f6253d5e2de7f431585fc83ec503db736cb6cf0a099ff03e6",
+      "bytes_unchanged": true,
+      "ast_equal": true
+    }
+  },
+  "numeric_or_test_runs_after_formatting": 0
+}
