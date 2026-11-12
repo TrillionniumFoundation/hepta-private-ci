@@ -3,6 +3,7 @@
 
 use codex_hepta_agent_protocol::OriginalQ24CompletedHistoryDataV1;
 
+use super::completed_deployment::CompletedLearningRuntime;
 use super::completed_deployment::CompletedMode;
 use super::completed_files::CompletedFiles;
 use super::completed_record::CompletedLearningRecord;
@@ -23,7 +24,7 @@ impl HistoricalTaskReadRuntime {
         end: Instant,
     ) -> io::Result<Vec<u8>> {
         require_end(end)?;
-        let fixed = self
+        let fixed: &CompletedLearningRuntime = self
             .completed
             .as_ref()
             .ok_or_else(|| io::Error::other("original completed deployment missing"))?;
