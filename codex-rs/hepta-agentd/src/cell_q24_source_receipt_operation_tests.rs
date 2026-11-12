@@ -2,14 +2,15 @@
 //! enrollment or ordinary-loop qualification.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn source_operation_rejects_another_actual_prepared_owner() -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
     let other_root = tempfile::tempdir()?;
-    let (session, dataset, prepared, _current) =
+    let (mut session, dataset, prepared, _current) =
         source_fixture(root.path(), "source-operation-original").await?;
-    let (other, _other_dataset, other_prepared, _other_current) =
+    let (mut other, _other_dataset, other_prepared, _other_current) =
         source_fixture(other_root.path(), "source-operation-other").await?;
     let files = tempfile::tempdir()?;
     let mut experience = owner(files.path(), &prepared, &dataset, Stage::Experience)?;
