@@ -26,6 +26,10 @@ use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
 
+#[cfg(target_os = "linux")]
+#[path = "runtime_source_capture.rs"]
+pub(crate) mod source_capture;
+
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const APP_SERVER_PROBE_TIMEOUT: Duration = Duration::from_secs(2);
