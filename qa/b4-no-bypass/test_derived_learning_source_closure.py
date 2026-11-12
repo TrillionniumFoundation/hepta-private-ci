@@ -25,7 +25,7 @@ POST_A = A + "authority_host_post_a_learning.rs"
 CALLERS = {
     "root_learning_derived_checkpoint": (POST_A,),
     "root_learning_original_store_core": (DERIVED,),
-    "root_q24_factory_reserve_same_service": (POST_A,),
+    "root_q24_factory_reserve_same_service": (),
 }
 
 

@@ -308,9 +308,9 @@ fn run_installation(
         remaining()?,
     )
     .map_err(io::Error::other)?;
+    gate.require_original(end)?;
+    owner_alive(owner, end)?;
     if let (Some(handoff), Some(offer)) = (inputs.publication_handoff, publication_offer) {
-        gate.require_original(end)?;
-        owner_alive(owner, end)?;
         crate::send_root_generation_publication_handoff(
             handoff,
             offer,

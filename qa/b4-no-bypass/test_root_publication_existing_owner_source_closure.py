@@ -34,6 +34,7 @@ CALLERS = {
         AGENT + "authority_host_historical_read_session.rs",
         AGENT + "authority_host_derived_learning_registration.rs",
         AGENT + "authority_host_post_a_provider.rs",
+        AGENT + "authority_host_q24_model_registration_v2.rs",
     ),
     "q24_publication_original_b_manifest": (
         AGENT + "cell_q24_publication_driver.rs",

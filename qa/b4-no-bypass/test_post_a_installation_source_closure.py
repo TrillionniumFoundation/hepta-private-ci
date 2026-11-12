@@ -80,8 +80,12 @@ def require_structure(path, source):
                        "verify_pinned_process(", "super::super::learning::BoundLearning::bind(",
                        "crate::send_root_learning_handoff(", "crate::send_root_q24_model_factory_handoff(",
                        "submission.acknowledgement.try_send(())",
-                       "super::super::learning::serve_optional_until("):
+                       "publication::serve_original_material("):
             at_depth(body, marker, 1)
+        begin, end = route.original.span(body, "publication::serve_original_material(")
+        at_depth(body, "super::super::learning::serve_optional_until(", 2)
+        if not begin < body.index("super::super::learning::serve_optional_until(") < end:
+            raise PROOF.VerificationFailure("original learning serve escaped the joined material worker")
 
 
 class PostAInstallationSourceTests(unittest.TestCase):
