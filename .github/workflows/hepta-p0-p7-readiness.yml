@@ -2,8 +2,8 @@ name: Hepta P0-P7 source-exact CI readiness (non-authorizing)
 on:
   pull_request:
     paths:
-      - 'qa/hepta-p0-p7-readiness/**'
-      - '.github/workflows/hepta-p0-p7-readiness.yml'
+      - "qa/hepta-p0-p7-readiness/**"
+      - ".github/workflows/hepta-p0-p7-readiness.yml"
   workflow_dispatch:
 permissions:
   contents: read

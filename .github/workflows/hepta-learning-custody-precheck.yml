@@ -3,8 +3,8 @@ name: Hepta learning original custody precheck (HOLD only)
 on:
   pull_request:
     paths:
-      - 'qualification/learning-original-custody/**'
-      - '.github/workflows/hepta-learning-custody-precheck.yml'
+      - "qualification/learning-original-custody/**"
+      - ".github/workflows/hepta-learning-custody-precheck.yml"
   workflow_dispatch:
 
 permissions:

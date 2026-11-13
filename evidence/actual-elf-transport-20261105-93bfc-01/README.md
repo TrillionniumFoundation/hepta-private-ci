@@ -10,11 +10,11 @@ The original evidence is under archives/ and transport-index.json. The original 
 
 ## Original results remain failed
 
-| Original phase | Retained result and limitation |
-| --- | --- |
-| H1 | FAILED: 65 selected cases passed and two failed. Three selected processes were not individually captured. Follow-up gates were not run. |
-| H2 | FAILED: 70 selected cases passed and one timed out. A retained prefix does not establish a complete second-daemon process binding. Follow-up gates were not run. |
-| H3 | FAILED: the required exact per-case final-use image correspondence was missing, despite recorded passing test outcomes. |
+| Original phase | Retained result and limitation                                                                                                                                   |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| H1             | FAILED: 65 selected cases passed and two failed. Three selected processes were not individually captured. Follow-up gates were not run.                          |
+| H2             | FAILED: 70 selected cases passed and one timed out. A retained prefix does not establish a complete second-daemon process binding. Follow-up gates were not run. |
+| H3             | FAILED: the required exact per-case final-use image correspondence was missing, despite recorded passing test outcomes.                                          |
 
 Archive integrity is verified. The historical execution environment and observations were not independently reproduced. This archive grants no production or scientific qualification, deployment approval, recovery authority or replacement for current CI.
 
