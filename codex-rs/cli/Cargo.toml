@@ -125,6 +125,7 @@ insta = { workspace = true }
 predicates = { workspace = true }
 pretty_assertions = { workspace = true }
 sqlx = { workspace = true }
+tokio = { workspace = true, features = ["sync", "test-util"] }
 tokio-tungstenite = { workspace = true }
 wiremock = { workspace = true }
 zstd = { workspace = true }
