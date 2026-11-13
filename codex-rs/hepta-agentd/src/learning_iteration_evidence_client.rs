@@ -254,6 +254,22 @@ impl LearningIterationEvidenceClientV1 {
             .transport
             .read(&request)
             .await
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                {
+                    use crate::root_writer_proof::AgentdRootAuthorityError as AuthorityError;
+
+                    let message: &[u8] = match _error {
+                        AuthorityError::Refused => {
+                            b"owner_diag_v1 stage=evidence_client_exchange class=refused\n"
+                        }
+                        AuthorityError::Unavailable => {
+                            b"owner_diag_v1 stage=evidence_client_exchange class=unavailable\n"
+                        }
+                    };
+                    let _ = std::io::Write::write(&mut std::io::stderr().lock(), message);
+                }
+            })
             .map_err(|_| unavailable())?;
         if response.schema != 1
             || response.operation != request.operation

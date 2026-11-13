@@ -115,21 +115,78 @@ impl<W: AnchorWitnessStore + Send + 'static>
         let host = Arc::clone(self);
         let peer = std::thread::spawn(move || {
             for request_id in 1..=128_u64 {
-                if !channel.exchange(|bytes| {
-                    let response = host
-                        .evidence_response(bytes, request_id)
-                        .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                    if let Some((after, file)) = &invalidate_source_after_read
-                        && request_id == *after
-                    {
-                        // The actual S response already passed its final
-                        // T/B/Cell read. Only C's final Source check sees
-                        // this durable original Source becoming unreadable.
-                        file.set_len(0)
-                            .map_err(|_| HostIssuerTransportError::Unavailable)?;
-                    }
-                    Ok(response)
-                })? {
+                if !channel
+                    .exchange(|bytes| {
+                        let response = host
+                            .evidence_response(bytes, request_id)
+                            .inspect_err(|_error| {
+                                #[cfg(test)]
+                                {
+                                    let message: &[u8] = match _error {
+                                        Error::Binding(_) => {
+                                            b"owner_diag_v1 stage=s_remote_callback class=binding\n"
+                                        }
+                                        Error::Unavailable => {
+                                            b"owner_diag_v1 stage=s_remote_callback class=unavailable\n"
+                                        }
+                                        Error::Busy => {
+                                            b"owner_diag_v1 stage=s_remote_callback class=busy\n"
+                                        }
+                                        Error::Receipt(_) => {
+                                            b"owner_diag_v1 stage=s_remote_callback class=receipt\n"
+                                        }
+                                        Error::Transport(_) => {
+                                            b"owner_diag_v1 stage=s_remote_callback class=transport\n"
+                                        }
+                                        Error::Encoding(_) => {
+                                            b"owner_diag_v1 stage=s_remote_callback class=encoding\n"
+                                        }
+                                    };
+                                    let _ = std::io::Write::write(
+                                        &mut std::io::stderr().lock(),
+                                        message,
+                                    );
+                                }
+                            })
+                            .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
+                        if let Some((after, file)) = &invalidate_source_after_read
+                            && request_id == *after
+                        {
+                            // The actual S response already passed its final
+                            // T/B/Cell read. Only C's final Source check sees
+                            // this durable original Source becoming unreadable.
+                            file.set_len(0)
+                                .map_err(|_| HostIssuerTransportError::Unavailable)?;
+                        }
+                        Ok(response)
+                    })
+                    .inspect_err(|_error| {
+                        #[cfg(test)]
+                        {
+                            let message: &[u8] = match _error {
+                                HostIssuerTransportError::InvalidConfiguration => {
+                                    b"owner_diag_v1 stage=s_remote_exchange class=invalid_configuration\n"
+                                }
+                                HostIssuerTransportError::PeerDenied => {
+                                    b"owner_diag_v1 stage=s_remote_exchange class=peer_denied\n"
+                                }
+                                HostIssuerTransportError::Closed => {
+                                    b"owner_diag_v1 stage=s_remote_exchange class=closed\n"
+                                }
+                                HostIssuerTransportError::InvalidRequest => {
+                                    b"owner_diag_v1 stage=s_remote_exchange class=invalid_request\n"
+                                }
+                                HostIssuerTransportError::DeadlineElapsed => {
+                                    b"owner_diag_v1 stage=s_remote_exchange class=deadline_elapsed\n"
+                                }
+                                HostIssuerTransportError::Unavailable => {
+                                    b"owner_diag_v1 stage=s_remote_exchange class=unavailable\n"
+                                }
+                            };
+                            let _ = std::io::Write::write(&mut std::io::stderr().lock(), message);
+                        }
+                    })?
+                {
                     return Ok(request_id - 1);
                 }
             }

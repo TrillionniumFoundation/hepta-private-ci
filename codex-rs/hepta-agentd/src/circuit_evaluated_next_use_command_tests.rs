@@ -340,6 +340,13 @@ async fn evaluated_next_use_command_once_reads_originals_and_readonly_evidence()
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> anyhow::Result<()> {
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_ready_enter class=boundary\n",
+        );
+    }
     let actual = Box::pin(ActualNextCommand::ready(OpenReceipt::Fresh)).await?;
     let empty = actual.files.bytes()?;
     let original_s = actual.common.files.bytes()?;
@@ -347,6 +354,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
     let (client, channel) =
         next_commands::stage_client(&actual.material, &actual.dataset, &actual.selection, false)?;
     let peer = next_commands::lose_ack(Arc::clone(&actual.host), channel);
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_attest_enter class=boundary\n",
+        );
+    }
     assert!(matches!(
         client.attest_completed_task().await,
         Err(NextCommandError::CommitUncertain)
@@ -363,6 +377,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
     let original = peer.join().expect("actual C before lost ACK")?;
     let committed = actual.files.bytes()?;
     assert_ne!(committed, empty);
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_recover_enter class=boundary\n",
+        );
+    }
     let actual = actual.recover_original_owner()?;
     next_commands::refuse_evidence_without_pin(&actual.host)?;
     // Supplying a fresh original S cannot turn a recovered C host into a
@@ -373,6 +394,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
         fresh_reader.attest_completed_task().await,
         Err(NextCommandError::ReadbackRequired)
     ));
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_fresh_readback_enter class=boundary\n",
+        );
+    }
     let read = fresh_reader.readback().await?;
     exact_next_use(&read, &original);
     assert!(matches!(
@@ -394,6 +422,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
         cold.attest_completed_task().await,
         Err(NextCommandError::ReadbackRequired)
     ));
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_cold_readback_enter class=boundary\n",
+        );
+    }
     let read = cold.readback().await?;
     exact_next_use(&read, &original);
     assert!(matches!(
@@ -418,6 +453,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
     );
     drop(cold);
     assert_eq!(peer.join().expect("cold original C command peer")?, 1);
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_finish_enter class=boundary\n",
+        );
+    }
     actual.finish([26, 26], 17, 7, 6).await
 }
 

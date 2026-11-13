@@ -17,10 +17,97 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitEvaluatedSelectionCo
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
-            if !channel.exchange(|bytes| {
-                self.evidence_response(bytes, request_id)
-                    .map_err(|_| HostIssuerTransportError::InvalidRequest)
-            })? {
+            if !channel
+                .exchange(|bytes| {
+                    self.evidence_response(bytes, request_id)
+                        .inspect_err(|_error| {
+                            #[cfg(test)]
+                            {
+                                let message: &[u8] = match _error {
+                                    Error::Binding(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=binding\n"
+                                    }
+                                    Error::Unavailable => {
+                                        b"owner_diag_v1 stage=s_command_callback class=unavailable\n"
+                                    }
+                                    Error::CommitUncertain => {
+                                        b"owner_diag_v1 stage=s_command_callback class=commit_uncertain\n"
+                                    }
+                                    Error::ReadbackRequired => {
+                                        b"owner_diag_v1 stage=s_command_callback class=readback_required\n"
+                                    }
+                                    Error::Busy => {
+                                        b"owner_diag_v1 stage=s_command_callback class=busy\n"
+                                    }
+                                    Error::Missing => {
+                                        b"owner_diag_v1 stage=s_command_callback class=missing\n"
+                                    }
+                                    Error::Pending => {
+                                        b"owner_diag_v1 stage=s_command_callback class=pending\n"
+                                    }
+                                    Error::DeadlineExceeded => {
+                                        b"owner_diag_v1 stage=s_command_callback class=deadline_exceeded\n"
+                                    }
+                                    Error::Transport(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=transport\n"
+                                    }
+                                    Error::Owner(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=owner\n"
+                                    }
+                                    Error::Retention(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=retention\n"
+                                    }
+                                    Error::Readback(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=readback\n"
+                                    }
+                                    Error::Iteration(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=iteration\n"
+                                    }
+                                    Error::Evidence(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=evidence\n"
+                                    }
+                                    Error::Checkpoint(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=checkpoint\n"
+                                    }
+                                    Error::Encoding(_) => {
+                                        b"owner_diag_v1 stage=s_command_callback class=encoding\n"
+                                    }
+                                };
+                                let _ = std::io::Write::write(
+                                    &mut std::io::stderr().lock(),
+                                    message,
+                                );
+                            }
+                        })
+                        .map_err(|_| HostIssuerTransportError::InvalidRequest)
+                })
+                .inspect_err(|_error| {
+                    #[cfg(test)]
+                    {
+                        let message: &[u8] = match _error {
+                            HostIssuerTransportError::InvalidConfiguration => {
+                                b"owner_diag_v1 stage=s_command_exchange class=invalid_configuration\n"
+                            }
+                            HostIssuerTransportError::PeerDenied => {
+                                b"owner_diag_v1 stage=s_command_exchange class=peer_denied\n"
+                            }
+                            HostIssuerTransportError::Closed => {
+                                b"owner_diag_v1 stage=s_command_exchange class=closed\n"
+                            }
+                            HostIssuerTransportError::InvalidRequest => {
+                                b"owner_diag_v1 stage=s_command_exchange class=invalid_request\n"
+                            }
+                            HostIssuerTransportError::DeadlineElapsed => {
+                                b"owner_diag_v1 stage=s_command_exchange class=deadline_elapsed\n"
+                            }
+                            HostIssuerTransportError::Unavailable => {
+                                b"owner_diag_v1 stage=s_command_exchange class=unavailable\n"
+                            }
+                        };
+                        let _ = std::io::Write::write(&mut std::io::stderr().lock(), message);
+                    }
+                })?
+            {
                 return Ok(request_id - 1);
             }
         }
