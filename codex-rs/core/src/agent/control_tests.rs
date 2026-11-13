@@ -317,12 +317,28 @@ fn history_contains_text<'a>(
 }
 
 async fn wait_for_recorded_user_message(thread: &CodexThread, needle: &str) {
-    timeout(Duration::from_secs(5), async {
+    let mut events_seen = 0_usize;
+    let mut completed_user_messages = 0_usize;
+    let mut last_error = None;
+    let result = timeout(Duration::from_secs(5), async {
         loop {
             let event = thread
                 .next_event()
                 .await
                 .expect("event stream should stay open");
+            events_seen += 1;
+            if let EventMsg::Error(error) = &event.msg {
+                last_error = Some(error.message.chars().take(/*n*/ 512).collect::<String>());
+            }
+            if matches!(
+                &event.msg,
+                EventMsg::ItemCompleted(ItemCompletedEvent {
+                    item: TurnItem::UserMessage(_),
+                    ..
+                })
+            ) {
+                completed_user_messages += 1;
+            }
             if let EventMsg::ItemCompleted(ItemCompletedEvent {
                 item: TurnItem::UserMessage(item),
                 ..
@@ -335,8 +351,12 @@ async fn wait_for_recorded_user_message(thread: &CodexThread, needle: &str) {
             }
         }
     })
-    .await
-    .expect("timed out waiting for user message recording");
+    .await;
+    result.unwrap_or_else(|error| {
+        panic!(
+            "timed out waiting for user message recording: {error:?}; events_seen={events_seen}; completed_user_messages={completed_user_messages}; last_error={last_error:?}"
+        )
+    });
 }
 
 fn history_contains_assistant_inter_agent_communication<'a>(
