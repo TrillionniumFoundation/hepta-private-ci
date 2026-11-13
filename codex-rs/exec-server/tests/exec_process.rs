@@ -1178,10 +1178,10 @@ async fn assert_exec_process_write_then_read_without_tty(use_remote: bool) -> Re
     Ok(())
 }
 
-async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
+async fn assert_remote_windows_sandbox_rejects_unqualified_legacy_policy() -> Result<()> {
     let context = create_process_context(/*use_remote*/ true).await?;
     let workspace = TempDir::new()?;
-    let blocked_file = workspace.path().join("blocked.txt");
+    let unexpected_child = workspace.path().join("unexpected-child.txt");
     let cwd = PathUri::from_host_native_path(workspace.path())?;
     let mut sandbox = FileSystemSandboxContext::from_legacy_sandbox_policy(
         SandboxPolicy::new_read_only_policy(),
@@ -1189,27 +1189,23 @@ async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
     )?;
     sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
 
-    let session = match context
+    let error = match context
         .backend
         .start(ExecParams {
-            process_id: ProcessId::from("proc-windows-sandbox-stdin"),
+            process_id: ProcessId::from("proc-windows-unqualified-legacy-sandbox"),
             argv: vec![
                 r"C:\Windows\System32\cmd.exe".to_string(),
                 "/D".to_string(),
-                "/V:ON".to_string(),
                 "/S".to_string(),
                 "/C".to_string(),
-                format!(
-                    "set /P line= & echo blocked > \"{}\" & echo from-stdin:!line!",
-                    blocked_file.display()
-                ),
+                format!("echo launched > \"{}\"", unexpected_child.display()),
             ],
             cwd,
             shell_snapshot: None,
             env_policy: /*env_policy*/ None,
             env: Default::default(),
             tty: false,
-            pipe_stdin: true,
+            pipe_stdin: false,
             arg0: None,
             sandbox: Some(sandbox),
             enforce_managed_network: false,
@@ -1218,23 +1214,16 @@ async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
         })
         .await
     {
-        Ok(session) => session,
-        Err(err) => return Err(err.into()),
+        Ok(_) => anyhow::bail!("unqualified legacy Windows sandbox unexpectedly admitted a process"),
+        Err(error) => error,
     };
-
-    let write_response = session.process.write(b"hello\n".to_vec()).await?;
-    assert_eq!(write_response.status, WriteStatus::Accepted);
-    let StartedExecProcess { process, .. } = session;
-    let wake_rx = process.subscribe_wake();
-    let (output, exit_code, closed) = collect_process_output_from_reads(process, wake_rx).await?;
-
     assert!(
-        output.contains("from-stdin:hello"),
-        "unexpected output: {output:?}"
+        error
+            .to_string()
+            .contains("legacy Windows sandbox isolation is unavailable"),
+        "unexpected rejection: {error}"
     );
-    assert_eq!(exit_code, Some(0));
-    assert!(closed);
-    assert!(!blocked_file.exists());
+    assert!(!unexpected_child.exists());
     Ok(())
 }
 
@@ -1637,8 +1626,8 @@ async fn exec_process_write_then_read_without_tty(use_remote: bool) -> Result<()
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[cfg_attr(not(windows), ignore = "Windows-only exec-server sandbox process test")]
 #[serial_test::serial(remote_exec_server)]
-async fn remote_windows_sandbox_process_accepts_process_write() -> Result<()> {
-    assert_remote_windows_sandbox_process_write().await
+async fn remote_windows_sandbox_rejects_unqualified_legacy_policy() -> Result<()> {
+    assert_remote_windows_sandbox_rejects_unqualified_legacy_policy().await
 }
 
 #[test_case(false ; "local")]
