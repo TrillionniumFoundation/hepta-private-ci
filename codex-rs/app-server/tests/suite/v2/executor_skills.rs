@@ -257,21 +257,26 @@ stream_max_retries = 0
         .await?
         .capabilities
         .stable_handle_authorized_read;
-    let reference_read_supported = match file_system
-        .read_file_bounded_authorized(&reference_path, &sandbox, reference_contents.len())
-        .await
-    {
-        Ok(bytes) => {
-            assert_eq!(bytes, reference_contents.as_bytes());
-            true
-        }
-        Err(error) => {
-            assert!(
-                !advertised_stable_read,
-                "an executor advertising stable authorized reads must read this valid reference"
-            );
-            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
-            false
+    let reference_read_supported = if file_system_policy.has_full_disk_read_access() {
+        // Full-disk read-only skills use ordinary bounded reads without a sandbox.
+        true
+    } else {
+        match file_system
+            .read_file_bounded_authorized(&reference_path, &sandbox, reference_contents.len())
+            .await
+        {
+            Ok(bytes) => {
+                assert_eq!(bytes, reference_contents.as_bytes());
+                true
+            }
+            Err(error) => {
+                assert!(
+                    !advertised_stable_read,
+                    "an executor advertising stable authorized reads must read this valid reference"
+                );
+                assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+                false
+            }
         }
     };
     #[cfg(unix)]
