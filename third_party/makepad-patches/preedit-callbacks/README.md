@@ -174,3 +174,22 @@ live widget phase. Rejected edits restore the last accepted committed snapshot
 and rotate scope, fencing already-produced successors. Raw OS IME session
 origin remains a separate unresolved boundary. No donor execution counts or
 window receipts transfer to this source identity.
+
+The five historical RoomScreen IME regression IDs remain present in both
+profiles. The legacy profile sends its original full-state synchronization
+packets. The native profile uses the existing desktop preview, commit and empty
+preedit cancellation events, captures the SDK-produced actions, and delivers
+them through the original router and RoomScreen before redraw. Both profiles
+retain the committed draft/title, composition, rejected-edit checkpoint and
+retired-focus assertions. Their real Changed notifications differ: a native
+same-text commit emits Changed alongside its typed committed outcome, while a
+legacy full-state commit can emit no Changed notification.
+
+The native duplicate-delivery case replays the exact previously captured
+Event::Actions object; it does not resend a raw OS text-input event or fabricate
+a Changed/outcome action. This checks typed delivery replay fencing, not raw
+native IME deduplication or session provenance. A second raw text-input event can
+be a new edit. The exact prepared SDK graph, native feature build and these
+RoomScreen cases still require execution on the combined source. Until that
+validation and the product acceptance above succeed, this remains
+**SOURCE_ONLY_HOLD**.

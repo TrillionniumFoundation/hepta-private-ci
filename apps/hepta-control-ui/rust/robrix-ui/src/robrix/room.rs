@@ -306,6 +306,7 @@ pub struct RoomScreen {
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        #[cfg(not(feature = "native-ime-sdk"))]
         let mut composition_commit = None;
         if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
             let input = self.view.text_input(cx, ids!(message_input));
@@ -313,6 +314,7 @@ impl Widget for RoomScreen {
                 .checkpoint(&input, workspace, self.active_key);
             // A full-state commit can end preedit without changing its text,
             // so the pinned SDK emits no Changed action for that transition.
+            #[cfg(not(feature = "native-ime-sdk"))]
             if input.is_composing()
                 && input.area().is_valid(cx)
                 && cx.key_focus() == input.area()
@@ -331,6 +333,7 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        #[cfg(not(feature = "native-ime-sdk"))]
         if composition_commit == Some((source, input.widget_uid()))
             && input.area().is_valid(cx)
             && cx.key_focus() == input.area()
@@ -450,7 +453,8 @@ impl Widget for RoomScreen {
             }
             #[cfg(feature = "native-ime-sdk")]
             for outcome in input.edit_outcomes(actions) {
-                self.composer_transaction.outcome(cx, &input, workspace, outcome);
+                self.composer_transaction
+                    .outcome(cx, &input, workspace, outcome);
                 self.view.redraw(cx);
             }
             #[cfg(not(feature = "native-ime-sdk"))]
