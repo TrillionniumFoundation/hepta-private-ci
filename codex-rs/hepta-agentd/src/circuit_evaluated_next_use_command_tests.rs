@@ -20,7 +20,7 @@ use std::sync::Arc;
 type NextCommandOwner = OriginalCircuitEvaluatedNextUseCommandOwnerV1<FileAnchorWitnessStore>;
 
 struct ActualNextCommand {
-    common: ActualCommand,
+    common: Box<ActualCommand>,
     material: OriginalCellQ24MaterialReceiptConfigV1,
     dataset: OriginalCellQ24MaterialCommandReceiptV1,
     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
@@ -59,7 +59,7 @@ fn next_owner(
 }
 
 impl ActualNextCommand {
-    async fn ready(mode: OpenReceipt) -> anyhow::Result<Self> {
+    async fn ready(mode: OpenReceipt) -> anyhow::Result<Box<Self>> {
         let common = Box::pin(ActualCommand::ready(OpenReceipt::Fresh)).await?;
         let original_dataset = Box::pin(version_material::original_dataset(&common.f)).await?;
         let material = original_dataset.config;
@@ -125,7 +125,7 @@ impl ActualNextCommand {
             Arc::clone(&common.evaluator),
             selector,
         )?);
-        Ok(Self {
+        Ok(Box::new(Self {
             common,
             material,
             dataset,
@@ -137,10 +137,10 @@ impl ActualNextCommand {
             task_peer,
             files,
             host,
-        })
+        }))
     }
 
-    fn recover_original_owner(self) -> anyhow::Result<Self> {
+    fn recover_original_owner(self: Box<Self>) -> anyhow::Result<Box<Self>> {
         let Self {
             common,
             material,
@@ -153,7 +153,7 @@ impl ActualNextCommand {
             task_peer,
             files,
             host,
-        } = self;
+        } = *self;
         let (live, selector) = next_commands::release_original_read_peers(host)?;
         let owner = next_owner(&files, &common.f, &selection, OpenReceipt::Readback)?;
         let host = Arc::new(owner.into_evaluated_command_owner(
@@ -162,7 +162,7 @@ impl ActualNextCommand {
             Arc::clone(&common.evaluator),
             selector,
         )?);
-        Ok(Self {
+        Ok(Box::new(Self {
             common,
             material,
             dataset,
@@ -174,11 +174,11 @@ impl ActualNextCommand {
             task_peer,
             files,
             host,
-        })
+        }))
     }
 
     fn finish(
-        self,
+        self: Box<Self>,
         counts: [u64; 2],
         selection_reads: u64,
         next_reads: u64,
@@ -198,7 +198,7 @@ impl ActualNextCommand {
                 task_peer,
                 files,
                 host,
-            } = owned;
+            } = *owned;
             drop(host);
             assert_eq!(
                 task_peer
