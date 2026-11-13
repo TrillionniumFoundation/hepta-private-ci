@@ -1,12 +1,19 @@
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import { mkdir, open, realpath } from "node:fs/promises";
-import { dirname, isAbsolute, resolve } from "node:path";
+import { dirname, isAbsolute, parse, resolve, sep } from "node:path";
+import { isDeepStrictEqual } from "node:util";
 
 const SCHEMA = "hepta.browser.operation-journal.v1";
 const MAX_LINE_BYTES = 262_144;
 const MAX_FILE_BYTES = 64 * 1024 * 1024;
 const UTF8 = new TextEncoder();
+const OBSERVATION_FIELDS = new Set([
+  "status",
+  "terminalObserved",
+  "outcomeDigest",
+  "observationReason",
+]);
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -27,41 +34,141 @@ function keyOf(record) {
   return `${record.profileId}\u0000${record.generation}\u0000${record.operationId}`;
 }
 
-function freezeRecord(record) {
-  return Object.freeze({ ...record });
+function deepFreeze(value) {
+  if (value === null || typeof value !== "object" || Object.isFrozen(value)) return value;
+  for (const child of Object.values(value)) deepFreeze(child);
+  return Object.freeze(value);
 }
 
-async function ensureCanonicalPrivateParent(path) {
-  const parent = dirname(path);
-  await mkdir(parent, { recursive: true, mode: 0o700 });
+function snapshotRecord(value, name) {
+  requireRecord(value, name);
+  let snapshot;
+  try {
+    snapshot = structuredClone(value);
+  } catch (error) {
+    throw new TypeError(`${name} must contain cloneable data`, { cause: error });
+  }
+  return deepFreeze(requireRecord(snapshot, name));
+}
+
+function immutableProjection(record) {
+  return Object.fromEntries(
+    Object.entries(record).filter(([name]) => !OBSERVATION_FIELDS.has(name)),
+  );
+}
+
+function assertSameSemantics(prior, next) {
+  if (!isDeepStrictEqual(immutableProjection(prior), immutableProjection(next))) {
+    throw new TypeError("journal operation identity was reused with changed immutable semantics");
+  }
+}
+
+function applyDispatch(records, snapshot) {
+  const key = keyOf(snapshot);
+  const prior = records.get(key);
+  if (prior) {
+    assertSameSemantics(prior, snapshot);
+    return false;
+  }
+  records.set(key, snapshot);
+  return true;
+}
+
+function applyObservation(records, snapshot) {
+  const key = keyOf(snapshot);
+  const prior = records.get(key);
+  if (!prior) throw new TypeError("journal observation has no dispatch intent");
+  assertSameSemantics(prior, snapshot);
+  const merged = snapshotRecord({ ...prior, ...snapshot }, "merged observation record");
+  if (prior.terminalObserved === true) {
+    if (snapshot.terminalObserved !== true || !isDeepStrictEqual(prior, merged)) {
+      throw new TypeError("journal terminal observation cannot be changed or rolled back");
+    }
+    return false;
+  }
+  if (isDeepStrictEqual(prior, merged)) return false;
+  records.set(key, merged);
+  return true;
+}
+
+function pathComponents(path) {
+  const absolute = resolve(path);
+  const root = parse(absolute).root;
+  const names = absolute.slice(root.length).split(sep).filter(Boolean);
+  const output = [];
+  let current = root;
+  for (const name of names) {
+    current = resolve(current, name);
+    output.push(current);
+  }
+  return output;
+}
+
+async function closePreserving(handle, primaryError) {
+  try {
+    await handle.close();
+    return primaryError;
+  } catch (closeError) {
+    return primaryError ?? closeError;
+  }
+}
+
+async function syncDirectory(path) {
+  const noFollow = constants.O_NOFOLLOW ?? 0;
+  const directory = constants.O_DIRECTORY ?? 0;
+  const handle = await open(path, constants.O_RDONLY | directory | noFollow);
+  let error = null;
+  try {
+    const info = await handle.stat();
+    if (!info.isDirectory()) throw new TypeError("browser journal parent is not a directory");
+    await handle.sync();
+  } catch (caught) {
+    error = caught;
+  }
+  error = await closePreserving(handle, error);
+  if (error) throw error;
+}
+
+async function ensureCanonicalPrivateParent(path, onMutation) {
+  const parent = resolve(dirname(path));
+  for (const component of pathComponents(parent)) {
+    let created = false;
+    try {
+      await mkdir(component, { mode: 0o700 });
+      created = true;
+      onMutation();
+    } catch (error) {
+      if (error?.code !== "EEXIST") throw error;
+    }
+    const actual = await realpath(component);
+    if (actual !== component) {
+      throw new TypeError("browser journal parent path contains a symlink");
+    }
+    if (created) await syncDirectory(dirname(component));
+  }
+  return parent;
+}
+
+async function validateCanonicalParent(path) {
+  const parent = resolve(dirname(path));
   const actual = await realpath(parent);
-  if (actual !== resolve(parent)) {
+  if (actual !== parent) {
     throw new TypeError("browser journal parent path contains a symlink");
   }
+  return parent;
 }
 
 export class MemoryBrowserOperationJournal {
   #records = new Map();
 
   async recordDispatch(record) {
-    const snapshot = freezeRecord(requireRecord(record, "dispatch record"));
-    const key = keyOf(snapshot);
-    const prior = this.#records.get(key);
-    if (prior && prior.requestDigest !== snapshot.requestDigest) {
-      throw new TypeError("journal operation identity was reused with changed semantics");
-    }
-    this.#records.set(key, snapshot);
+    const snapshot = snapshotRecord(record, "dispatch record");
+    applyDispatch(this.#records, snapshot);
   }
 
   async recordObservation(record) {
-    const snapshot = freezeRecord(requireRecord(record, "observation record"));
-    const key = keyOf(snapshot);
-    const prior = this.#records.get(key);
-    if (!prior) throw new TypeError("journal observation has no dispatch intent");
-    if (prior.requestDigest !== snapshot.requestDigest || prior.semanticDigest !== snapshot.semanticDigest) {
-      throw new TypeError("journal observation changed immutable semantics");
-    }
-    this.#records.set(key, freezeRecord({ ...prior, ...snapshot }));
+    const snapshot = snapshotRecord(record, "observation record");
+    applyObservation(this.#records, snapshot);
   }
 
   async getOperation(profileId, generation, operationId) {
@@ -79,64 +186,61 @@ export class MemoryBrowserOperationJournal {
 export class FileBrowserOperationJournal {
   #path;
   #tail = Promise.resolve();
+  #parentReady = false;
+  #recoveryCause = null;
 
   constructor(path) {
     if (typeof path !== "string" || !isAbsolute(path)) {
       throw new TypeError("browser journal path must be absolute");
     }
-    this.#path = path;
+    this.#path = resolve(path);
   }
 
   async recordDispatch(record) {
+    const snapshot = snapshotRecord(record, "dispatch record");
     return this.#serialize(async () => {
-      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
-      if (prior && prior.requestDigest !== record.requestDigest) {
-        throw new TypeError("journal operation identity was reused with changed semantics");
-      }
-      await this.#append({ type: "dispatch", record: requireRecord(record, "dispatch record") });
+      const records = await this.#load();
+      if (!applyDispatch(records, snapshot)) return;
+      await this.#append({ type: "dispatch", record: snapshot });
     });
   }
 
   async recordObservation(record) {
+    const snapshot = snapshotRecord(record, "observation record");
     return this.#serialize(async () => {
-      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
-      if (!prior) throw new TypeError("journal observation has no dispatch intent");
-      if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
-        throw new TypeError("journal observation changed immutable semantics");
-      }
-      await this.#append({ type: "observation", record: requireRecord(record, "observation record") });
+      const records = await this.#load();
+      if (!applyObservation(records, snapshot)) return;
+      await this.#append({ type: "observation", record: snapshot });
     });
   }
 
   async getOperation(profileId, generation, operationId) {
-    return this.#serialize(() => this.#getOperationUnlocked(profileId, generation, operationId));
+    const key = `${profileId}\u0000${generation}\u0000${operationId}`;
+    return this.#serialize(async () => (await this.#load()).get(key) ?? null);
   }
 
   async listOperations(profileId, generation) {
-    return this.#serialize(async () => {
-      const records = await this.#load();
-      const prefix = `${profileId}\u0000${generation}\u0000`;
-      return [...records.entries()].filter(([key]) => key.startsWith(prefix)).map(([, value]) => value);
-    });
-  }
-
-  async #getOperationUnlocked(profileId, generation, operationId) {
-    const records = await this.#load();
-    return records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
+    const prefix = `${profileId}\u0000${generation}\u0000`;
+    return this.#serialize(async () =>
+      [...(await this.#load()).entries()]
+        .filter(([key]) => key.startsWith(prefix))
+        .map(([, value]) => value),
+    );
   }
 
   async #load() {
     const noFollow = constants.O_NOFOLLOW ?? 0;
     let handle;
     try {
-      await ensureCanonicalPrivateParent(this.#path);
       handle = await open(this.#path, constants.O_RDONLY | noFollow);
     } catch (error) {
       if (error?.code === "ENOENT") return new Map();
       throw error;
     }
     let bytes;
+    let error = null;
     try {
+      await validateCanonicalParent(this.#path);
       const info = await handle.stat();
       if (!info.isFile() || info.size > MAX_FILE_BYTES) {
         throw new TypeError("browser journal is not a bounded regular file");
@@ -145,12 +249,16 @@ export class FileBrowserOperationJournal {
         throw new TypeError("browser journal permissions are too broad");
       }
       bytes = await handle.readFile({ encoding: "utf8" });
-    } finally {
-      await handle.close();
+    } catch (caught) {
+      error = caught;
+    }
+    error = await closePreserving(handle, error);
+    if (error) throw error;
+    if (bytes.length > 0 && !bytes.endsWith("\n")) {
+      throw new TypeError("browser journal contains an incomplete final record");
     }
     const records = new Map();
-    const lines = bytes.length === 0 ? [] : bytes.split("\n");
-    if (lines.at(-1) === "") lines.pop();
+    const lines = bytes.length === 0 ? [] : bytes.slice(0, -1).split("\n");
     for (const line of lines) {
       if (UTF8.encode(line).byteLength > MAX_LINE_BYTES) {
         throw new TypeError("browser journal line exceeds limit");
@@ -173,20 +281,11 @@ export class FileBrowserOperationJournal {
       if (checksum(unsigned) !== envelope.checksum) {
         throw new TypeError("browser journal checksum mismatch");
       }
-      const record = freezeRecord(requireRecord(envelope.record, "journal record"));
-      const key = keyOf(record);
-      const prior = records.get(key);
+      const record = snapshotRecord(envelope.record, "journal record");
       if (envelope.type === "dispatch") {
-        if (prior && prior.requestDigest !== record.requestDigest) {
-          throw new TypeError("browser journal contains conflicting dispatch identity");
-        }
-        records.set(key, record);
+        applyDispatch(records, record);
       } else if (envelope.type === "observation") {
-        if (!prior) throw new TypeError("browser journal observation precedes dispatch");
-        if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
-          throw new TypeError("browser journal observation changed semantics");
-        }
-        records.set(key, freezeRecord({ ...prior, ...record }));
+        applyObservation(records, record);
       } else {
         throw new TypeError("browser journal record type is unsupported");
       }
@@ -201,30 +300,71 @@ export class FileBrowserOperationJournal {
     if (lineBytes > MAX_LINE_BYTES) {
       throw new TypeError("browser journal record exceeds line limit");
     }
-    await ensureCanonicalPrivateParent(this.#path);
-    const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags = constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
-    const handle = await open(this.#path, flags, 0o600);
+
+    let mutationStarted = false;
+    const markMutation = () => { mutationStarted = true; };
+    let handle = null;
+    let error = null;
+    let parent;
     try {
-      const info = await handle.stat();
-      if (!info.isFile()) {
-        throw new TypeError("browser journal is not a regular file");
+      if (this.#parentReady) {
+        parent = await validateCanonicalParent(this.#path);
+      } else {
+        parent = await ensureCanonicalPrivateParent(this.#path, markMutation);
+        this.#parentReady = true;
       }
+      const noFollow = constants.O_NOFOLLOW ?? 0;
+      try {
+        handle = await open(
+          this.#path,
+          constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | constants.O_EXCL | noFollow,
+          0o600,
+        );
+        markMutation();
+      } catch (caught) {
+        if (caught?.code !== "EEXIST") throw caught;
+        handle = await open(this.#path, constants.O_WRONLY | constants.O_APPEND | noFollow);
+      }
+      const info = await handle.stat();
+      if (!info.isFile()) throw new TypeError("browser journal is not a regular file");
       if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
         throw new TypeError("browser journal permissions are too broad");
       }
       if (info.size + lineBytes > MAX_FILE_BYTES) {
         throw new TypeError("browser journal capacity exhausted");
       }
+      markMutation();
       await handle.writeFile(line, "utf8");
       await handle.sync();
-    } finally {
-      await handle.close();
+    } catch (caught) {
+      error = caught;
+    }
+    if (handle) error = await closePreserving(handle, error);
+    if (!error) {
+      try {
+        await syncDirectory(parent);
+      } catch (caught) {
+        error = caught;
+      }
+    }
+    if (error) {
+      if (mutationStarted) this.#recoveryCause ??= error;
+      throw error;
     }
   }
 
+  #assertHealthy() {
+    if (!this.#recoveryCause) return;
+    throw new Error("browser journal owner recovery is required after an uncertain durable mutation", {
+      cause: this.#recoveryCause,
+    });
+  }
+
   #serialize(operation) {
-    const run = this.#tail.catch(() => {}).then(operation);
+    const run = this.#tail.then(async () => {
+      this.#assertHealthy();
+      return operation();
+    });
     this.#tail = run.catch(() => {});
     return run;
   }
