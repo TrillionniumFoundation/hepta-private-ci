@@ -1,0 +1,100 @@
+{
+  "admission": "HOLD_NO_NUMERICAL_EXECUTION",
+  "all_closed": false,
+  "candidate_structured": {
+    "container_bytes": 2716636,
+    "largest_capsule_payload_bytes": 415596,
+    "packet_dimension_sum": 49104,
+    "packet_vector_coordinates": 294624,
+    "state_coordinates": 36400,
+    "unique_operator_bytes_with_metadata": 45092
+  },
+  "capsules": 14,
+  "conceptual_coordinate_denominator_unchanged": true,
+  "conceptual_dual_dense_bytes": 291600448,
+  "conceptual_fp64_coordinates": 18225028,
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponentials": 0,
+    "optimizer_steps": 0,
+    "oracle_numeric_calls": 0,
+    "serializer_numeric_calls": 0,
+    "torch_calls": 0,
+    "training_runs": 0
+  },
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "largegrid_qualification": false,
+  "nonclaims": [
+    "dynamic resource safety",
+    "full-state numerical qualification",
+    "historical N256 recovery",
+    "third or later cycles",
+    "continuum or rare-tail qualification",
+    "Torch, optimizer, training, fullnetwork, or task benefit",
+    "production adoption"
+  ],
+  "oracle_stream": {
+    "candidate_reconstruction": "implicit-zero expansion from canonical CSR",
+    "chunk_bytes": 524288,
+    "chunk_coordinates": 65536,
+    "frames": 279,
+    "iteration_order": "capsule/state/packet/alpha/generator-row-major/output",
+    "manifest_bytes": 13392,
+    "payload_bytes": 145800224
+  },
+  "packet_tuples": 185,
+  "preservation": {
+    "evidence_reserve_bytes": 1048576,
+    "peak_compare_buffers_bytes": 1048576,
+    "retained_caps": {
+      "canonical_archive_bytes": 268435456,
+      "cumulative_preserved_bytes": 201326592,
+      "per_buffer_bytes": 8388608
+    },
+    "storage_caps_satisfied": true,
+    "total_bytes": 149578828
+  },
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "schema": "hcsn-n256-streaming-fullstate-static-plan-v1",
+  "source_dependency_commit": "8b0d34034902a699b7a437a4076fbe76ad032368",
+  "status": "PASS_STREAM_STORAGE_HOLD_DYNAMIC",
+  "unclosed": [
+    "N256 numerical candidate implementation",
+    "independent numerical oracle implementation",
+    "expm workspace and actual RSS profile",
+    "canonical serializer and cold-loader execution",
+    "host and ancestor-cgroup allocation",
+    "concurrency and calendar reservation",
+    "warm/cold byte equality on actual N256 state"
+  ]
+}
+{
+  "all_closed": false,
+  "candidate_container_bytes": 2716636,
+  "conceptual_fp64_coordinates": 18225028,
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponentials": 0,
+    "optimizer_steps": 0,
+    "oracle_numeric_calls": 0,
+    "serializer_numeric_calls": 0,
+    "torch_calls": 0,
+    "training_runs": 0
+  },
+  "forbidden_calls_present": [],
+  "forbidden_imports_present": [],
+  "imports": [
+    "argparse",
+    "hashlib",
+    "json",
+    "math",
+    "pathlib"
+  ],
+  "largegrid_qualification": false,
+  "oracle_payload_bytes": 145800224,
+  "result_sha256": "5200a73ded53f421b658ecf84863d28563e25ca7c5ca9b010df09184b99e952d",
+  "schema": "hcsn-n256-streaming-fullstate-independent-review-v1",
+  "source_sha256": "f24c2b562d67135eafc1dc60142e2f0eacbf7beafb9e7e783c80d64b589726aa",
+  "status": "PASS_STATIC_REVIEW_HOLD_DYNAMIC",
+  "total_preserved_bytes": 149578828
+}

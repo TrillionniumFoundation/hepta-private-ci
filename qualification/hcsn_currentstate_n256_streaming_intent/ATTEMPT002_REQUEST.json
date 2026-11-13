@@ -1,0 +1,20 @@
+{
+  "schema": "hcsn-n256-streaming-fullstate-static-attempt002-request-v1",
+  "source_commit": "f2a83b0f7b818c01ad3dd991e5679c7119ff46e5",
+  "prior_failed_key": "hcsn-n256-streaming-fullstate-static-20261113-c06d-001",
+  "prior_failed_job": "1a1d3b29d99-392-1ad",
+  "prior_exit_code": 125,
+  "prior_failure": "GNU /usr/bin/time rejected macOS-only -l before Python entry",
+  "identity_key": "hcsn-n256-streaming-fullstate-static-20261113-c06d-002-after-time-cli-red",
+  "only_command_change": "/usr/bin/time -l to /usr/bin/time -v",
+  "source_files_changed": false,
+  "forbidden_execution": [
+    "dynamic propagation",
+    "matrix exponential",
+    "numeric oracle",
+    "numeric serializer or cold loader",
+    "Torch, backward, optimizer, or training"
+  ],
+  "largegrid_qualification": false,
+  "all_closed": false
+}
