@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.learning-plasticity.cell-split.v1",
+  "title": "CellSplitV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "planId",
+    "generatorId",
+    "evaluatorId",
+    "reviewerId",
+    "operatorId",
+    "baselineGeneration",
+    "candidateGeneration",
+    "signalId",
+    "signalDigest",
+    "predecessorDigest",
+    "candidateDigest",
+    "budget",
+    "risk",
+    "rollback",
+    "guardrails",
+    "candidates",
+    "planDigest",
+    "status",
+    "authority"
+  ],
+  "properties": {
+    "planId": { "type": "string", "minLength": 1 },
+    "generatorId": { "type": "string", "minLength": 1 },
+    "evaluatorId": { "type": "string", "minLength": 1 },
+    "reviewerId": { "type": "string", "minLength": 1 },
+    "operatorId": { "type": "string", "minLength": 1 },
+    "baselineGeneration": { "type": "integer", "minimum": 1 },
+    "candidateGeneration": { "type": "integer", "minimum": 1 },
+    "signalId": { "type": "string", "minLength": 1 },
+    "signalDigest": { "$ref": "#/$defs/digest" },
+    "predecessorDigest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "candidateDigest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "budget": { "$ref": "#/$defs/budget" },
+    "risk": { "$ref": "#/$defs/risk" },
+    "rollback": { "$ref": "#/$defs/rollback" },
+    "guardrails": { "$ref": "#/$defs/guardrails" },
+    "candidates": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "$ref": "#/$defs/candidate" }
+    },
+    "planDigest": { "$ref": "#/$defs/digest" },
+    "status": { "const": "requires_independent_review" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime", "productionWriter", "modelInvocation", "providerDispatch", "externalEffect", "selection", "promotion", "release"],
+      "properties": {
+        "runtime": { "const": false },
+        "productionWriter": { "const": false },
+        "modelInvocation": { "const": false },
+        "providerDispatch": { "const": false },
+        "externalEffect": { "const": false },
+        "selection": { "const": false },
+        "promotion": { "const": false },
+        "release": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["computeMicros", "memoryBytes", "storageBytes", "networkBytes"],
+      "properties": {
+        "computeMicros": { "type": "integer", "minimum": 1 },
+        "memoryBytes": { "type": "integer", "minimum": 1 },
+        "storageBytes": { "type": "integer", "minimum": 1 },
+        "networkBytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["riskPpm", "maximumRiskPpm", "riskEvidenceDigest"],
+      "properties": {
+        "riskPpm": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "maximumRiskPpm": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "riskEvidenceDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predecessorDigest", "procedureDigest", "timeoutMicros"],
+      "properties": {
+        "predecessorDigest": { "$ref": "#/$defs/digest" },
+        "procedureDigest": { "$ref": "#/$defs/digest" },
+        "timeoutMicros": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "guardrails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canary", "quarantine", "holdout"],
+      "properties": {
+        "canary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cohortDigest", "maximumExposurePpm", "durationMicros"],
+          "properties": {
+            "cohortDigest": { "$ref": "#/$defs/digest" },
+            "maximumExposurePpm": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+            "durationMicros": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "quarantine": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["triggerDigest", "durationMicros"],
+          "properties": {
+            "triggerDigest": { "$ref": "#/$defs/digest" },
+            "durationMicros": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "holdout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cohortDigest", "evaluationDigest", "minimumObservations"],
+          "properties": {
+            "cohortDigest": { "$ref": "#/$defs/digest" },
+            "evaluationDigest": { "$ref": "#/$defs/digest" },
+            "minimumObservations": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateId", "kind", "cellId", "evidenceDigest"],
+      "properties": {
+        "candidateId": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["no_change", "change"] },
+        "operation": { "enum": ["add", "split", "merge", "rewire", "retire"] },
+        "cellId": { "type": "string", "minLength": 1 },
+        "evidenceDigest": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}
