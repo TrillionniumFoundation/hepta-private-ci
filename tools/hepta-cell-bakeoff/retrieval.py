@@ -32,6 +32,10 @@ def evaluate(gold_rows: list[dict], observed_rows: list[dict], plan: dict, decis
     bakeoff.require(groups["future_1"].isdisjoint(groups["future_2"]), "retrieval future split leakage")
     bakeoff.require(times["future_1"] and times["future_2"] and
                     max(times["future_1"]) < min(times["future_2"]), "retrieval time leakage")
+    for split in ("train", "calibration"):
+        fitted_times = [row["timestamp"] for row in decision_data.values() if row["split"] == split]
+        bakeoff.require(fitted_times and max(fitted_times) < min(times["future_1"]),
+                        f"retrieval future_1 not held out after decision {split}")
     predictions = defaultdict(dict)
     pins = {m["name"]: m for m in plan["models"]}
     for obs in observed_rows:

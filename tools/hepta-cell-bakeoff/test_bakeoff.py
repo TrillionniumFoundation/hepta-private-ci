@@ -1,10 +1,13 @@
 import json
+import io
 import base64
 import shutil
 import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from contextlib import contextmanager, redirect_stderr
+from unittest import mock
 
 import bakeoff
 import run_live
@@ -18,6 +21,42 @@ def h64(c):
 def h40(c):
     return c * 40
 
+
+
+@contextmanager
+def replace_after_first_read(replacements):
+    """Ordinary small-file fixture: replace each path after its first read returns."""
+    real_open = Path.open
+    replaced = set()
+
+    class Reader:
+        def __init__(self, source, path):
+            self.source, self.path = source, path
+
+        def __enter__(self):
+            self.source.__enter__()
+            return self
+
+        def __exit__(self, *args):
+            return self.source.__exit__(*args)
+
+        def read(self, *args, **kwargs):
+            value = self.source.read(*args, **kwargs)
+            if self.path not in replaced:
+                with real_open(self.path, "wb") as target:
+                    target.write(replacements[self.path])
+                replaced.add(self.path)
+            return value
+
+    def opening(path, *args, **kwargs):
+        source = real_open(path, *args, **kwargs)
+        mode = args[0] if args else kwargs.get("mode", "r")
+        if path in replacements and path not in replaced and "r" in mode:
+            return Reader(source, path)
+        return source
+
+    with mock.patch.object(Path, "open", opening):
+        yield replaced
 
 class BakeoffTests(unittest.TestCase):
     def setUp(self):
@@ -229,6 +268,189 @@ class BakeoffTests(unittest.TestCase):
         with self.assertRaisesRegex(bakeoff.EvidenceError, "invalid owner Ed25519 signature"):
             bakeoff.check_lifecycle(receipt, self.plan, public, bakeoff.digest(public))
 
+
+
+
+    def test_paired_interval_ties_match_score_option_order(self):
+        row = {**self.data[-1], "id": "tie", "label": "yes", "options": ["yes", "no"]}
+        data = {"tie": row}
+        base = {"tie": {"probabilities": {"no": 0.5, "yes": 0.5},
+                        "abstain": False, "latency_ms": 1}}
+        challenger = {"tie": {**base["tie"], "probabilities": {"yes": 0.5, "no": 0.5}}}
+        self.assertEqual(bakeoff.score(["tie"], data, base, 1, 0.6)["accuracy"], 1.0)
+        self.assertEqual(bakeoff.score(["tie"], data, challenger, 1, 0.6)["accuracy"], 1.0)
+        self.assertEqual(bakeoff.paired_interval(["tie"], data, base, challenger, 1, 1),
+                         (0.0, 0.0))
+
+    def test_retrieval_future_one_follows_decision_train_and_calibration(self):
+        decision = bakeoff.validate_data(self.data)
+        gold = [{"query_id": "q1", "source_group": "ret-1", "split": "future_1",
+                 "timestamp": 208, "candidate_ids": ["a", "b"], "relevant": {"a": 3}},
+                {"query_id": "q2", "source_group": "ret-2", "split": "future_2",
+                 "timestamp": 800, "candidate_ids": ["a", "b"], "relevant": {"b": 1}}]
+        rows = [{"model": model, "query_id": row["query_id"], "revision": h40('a'),
+                 "weights_sha256": h64('b'), "ranked_ids": ["a", "b"],
+                 "origin": "live-model-observation"}
+                for model in retrieval.ENCODERS for row in gold]
+        for timestamp, split in [(107, "train"), (206, "calibration"), (207, "calibration")]:
+            with self.subTest(timestamp=timestamp, split=split):
+                gold[0]["timestamp"] = timestamp
+                with self.assertRaisesRegex(bakeoff.EvidenceError,
+                                            f"retrieval future_1 not held out after decision {split}"):
+                    retrieval.evaluate(gold, rows, self.plan, decision)
+        gold[0]["timestamp"] = 208
+        scores, blockers = retrieval.evaluate(gold, rows, self.plan, decision)
+        self.assertEqual(scores["arctic-305m"]["future_1"]["ndcg_at_10"], 1.0)
+        self.assertIn("retrieval-independent-groups-insufficient:future_1", blockers)
+
+    def _head_declarations(self):
+        entry = dict(self.models[-1])
+        # Metadata only: these fixtures contain no model or head weight array.
+        learned = {"schema": "hepta.cell.bakeoff.head.v1", "model": entry["name"],
+                   "revision": entry["revision"], "weights_sha256": entry["weights_sha256"],
+                   "train_dataset_sha256": entry["train_data_sha256"],
+                   "steps": entry["head_steps"], "seed": entry["head_seed"],
+                   "learning_rate": entry["head_lr"], "optimizer": entry["head_optimizer"]}
+        return entry, learned
+
+    def test_encoder_head_training_declarations_reject_before_runtime_load(self):
+        entry, learned = self._head_declarations()
+        head, out = self.folder / "head.json", self.folder / "prediction.jsonl"
+        changes = {"train_dataset_sha256": h64('1'), "steps": 101, "seed": 43,
+                   "learning_rate": 0.2, "optimizer": "adam"}
+        for field, value in changes.items():
+            for missing in (False, True):
+                with self.subTest(field=field, missing=missing):
+                    submitted = dict(learned)
+                    if missing:
+                        del submitted[field]
+                    else:
+                        submitted[field] = value
+                    head.write_text(json.dumps(submitted), encoding="utf-8")
+                    entry["head_sha256"] = bakeoff.digest(head)
+                    with mock.patch.dict("sys.modules", {"numpy": None}), \
+                         mock.patch.object(run_live, "load_encoder") as load, \
+                         self.assertRaisesRegex(bakeoff.EvidenceError,
+                                                "encoder head training declaration mismatch"):
+                        run_live.run_predictions(entry, self.folder, [], out, head, False)
+                    load.assert_not_called()
+                    self.assertFalse(out.exists())
+
+    def test_evaluation_rows_and_hashes_use_the_consumed_snapshot(self):
+        dataset_sha = bakeoff.digest(self.dataset_file)
+        predictions_sha = bakeoff.digest(self.pred_file)
+        changed_data = [{**r, "label": "no" if r["label"] == "yes" else "yes"}
+                        for r in self.data]
+        changed_predictions = [{**r, "probabilities": {"yes": 0.5, "no": 0.5}}
+                               for r in self.preds]
+
+        def encode(rows):
+            return "".join(json.dumps(row) + "\n" for row in rows).encode("utf-8")
+
+        replacements = {self.dataset_file: encode(changed_data),
+                        self.pred_file: encode(changed_predictions)}
+        with replace_after_first_read(replacements) as replaced:
+            report = bakeoff.evaluate(self.plan, self.dataset_file, self.pred_file)
+        self.assertEqual(replaced, set(replacements))
+        self.assertEqual(report["dataset_sha256"], dataset_sha)
+        self.assertEqual(report["predictions_sha256"], predictions_sha)
+        self.assertGreater(report["scores"]["laya-english"]["future_1"]["accuracy"], 0.9)
+        self.assertFalse(report["production_qualified"])
+        self.assertNotEqual(bakeoff.digest(self.dataset_file), dataset_sha)
+        self.assertNotEqual(bakeoff.digest(self.pred_file), predictions_sha)
+
+    def test_head_hash_and_declarations_use_one_read(self):
+        entry, learned = self._head_declarations()
+        original = {**learned, "steps": entry["head_steps"] + 1}
+        head, out = self.folder / "head.json", self.folder / "prediction.jsonl"
+        head.write_text(json.dumps(original), encoding="utf-8")
+        entry["head_sha256"] = bakeoff.digest(head)
+        replacement = json.dumps(learned).encode("utf-8")
+        with replace_after_first_read({head: replacement}) as replaced, \
+             mock.patch.dict("sys.modules", {"numpy": None}), \
+             mock.patch.object(run_live, "load_encoder") as load, \
+             self.assertRaisesRegex(bakeoff.EvidenceError,
+                                    "encoder head training declaration mismatch"):
+            run_live.run_predictions(entry, self.folder, [], out, head, False)
+        self.assertEqual(replaced, {head})
+        load.assert_not_called()
+        self.assertFalse(out.exists())
+
+    def test_fit_train_hash_and_split_validation_use_one_read(self):
+        gold = self.folder / "training.jsonl"
+        self._write(gold, self.data)
+        entry = {**self.models[-1], "train_data_sha256": bakeoff.digest(gold)}
+        train_only = [r for r in self.data if r["split"] == "train"]
+        replacement = "".join(json.dumps(r) + "\n" for r in train_only).encode("utf-8")
+        with replace_after_first_read({gold: replacement}) as replaced, \
+             mock.patch.object(run_live, "load_encoder") as load, \
+             self.assertRaisesRegex(bakeoff.EvidenceError, "fit only permits train rows"):
+            run_live.fit_encoder_head(entry, self.folder, gold, self.folder / "head.json", False)
+        self.assertEqual(replaced, {gold})
+        load.assert_not_called()
+        self.assertFalse((self.folder / "head.json").exists())
+
+    @unittest.skipUnless(shutil.which("openssl"), "OpenSSL CLI unavailable")
+    def test_lifecycle_verification_uses_the_fingerprinted_key_bytes(self):
+        key, public = self.folder / "private.pem", self.folder / "issuer.pub.pem"
+        subprocess.run(["openssl", "genpkey", "-algorithm", "ED25519", "-out", str(key)],
+                       check=True, capture_output=True)
+        subprocess.run(["openssl", "pkey", "-in", str(key), "-pubout", "-out", str(public)],
+                       check=True, capture_output=True)
+        fingerprint = bakeoff.digest(public)
+        payload = {"model": "laya-english", "event": "artifact-cas", "issuer": "learning.artifacts",
+                   "source_head": self.plan["source_head"], "weights_sha256": h64('b'),
+                   "receipt_id": "snapshot-fixture", "generation": 1}
+        message, signature = self.folder / "message.json", self.folder / "signature.bin"
+        message.write_text(json.dumps(payload, sort_keys=True, separators=(",", ":")),
+                           encoding="utf-8")
+        subprocess.run(["openssl", "pkeyutl", "-sign", "-inkey", str(key), "-rawin",
+                        "-in", str(message), "-out", str(signature)], check=True, capture_output=True)
+        receipt = self.folder / "signed.jsonl"
+        self._write(receipt, [{"payload": payload,
+                              "signature_b64": base64.b64encode(signature.read_bytes()).decode("ascii")}])
+        with replace_after_first_read({public: b"replaced public-key fixture\n"}) as replaced:
+            blockers, verified = bakeoff.check_lifecycle(receipt, self.plan, public, fingerprint)
+        self.assertEqual(replaced, {public})
+        self.assertTrue(verified)
+        self.assertIn("owner-receipt-replay-and-real-world-effect-not-independently-verified", blockers)
+        self.assertNotEqual(bakeoff.digest(public), fingerprint)
+
+    def test_oversized_public_key_snapshot_is_rejected_before_verifier(self):
+        public = self.folder / "oversized.pub.pem"
+        public.write_bytes(b"X" * (64 * 1024 + 1))
+        receipt = self.folder / "oversized-key-receipt.jsonl"
+        self._write(receipt, [{"payload": {
+            "model": "laya-english", "event": "artifact-cas", "issuer": "learning.artifacts",
+            "source_head": self.plan["source_head"], "weights_sha256": h64("b"),
+            "receipt_id": "oversized-key-fixture", "generation": 1,
+        }}])
+        with mock.patch.object(bakeoff.subprocess, "run") as verify, \
+             self.assertRaisesRegex(bakeoff.EvidenceError, "owner public key exceeds 64 KiB"):
+            bakeoff.check_lifecycle(receipt, self.plan, public, bakeoff.digest(public))
+        verify.assert_not_called()
+
+    def test_prediction_plan_entry_is_validated_from_the_same_read(self):
+        invalid = json.loads(json.dumps(self.plan))
+        invalid["models"][0]["weights_sha256"] = None
+        path = self.folder / "plan.json"
+        path.write_text(json.dumps(invalid), encoding="utf-8")
+        replacement = json.dumps(self.plan).encode("utf-8")
+        argv = ["run_live.py", "predict", "--plan", str(path), "--model", "laya-english",
+                "--checkpoint", str(self.folder), "--blind", str(self.folder / "blind.jsonl"),
+                "--output", str(self.folder / "out.jsonl")]
+        stderr = io.StringIO()
+        with replace_after_first_read({path: replacement}) as replaced, \
+             mock.patch("sys.argv", argv), \
+             mock.patch.object(run_live, "verified_local_model") as verify, \
+             mock.patch.object(run_live, "run_predictions") as predict, \
+             redirect_stderr(stderr), self.assertRaises(SystemExit) as exited:
+            run_live.main()
+        self.assertEqual(replaced, {path})
+        self.assertEqual(exited.exception.code, 2)
+        self.assertIn("missing weights_sha256", stderr.getvalue())
+        verify.assert_not_called()
+        predict.assert_not_called()
 
 
 if __name__ == "__main__":

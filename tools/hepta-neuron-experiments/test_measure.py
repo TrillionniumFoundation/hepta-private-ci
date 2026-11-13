@@ -4,9 +4,11 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -299,20 +301,108 @@ class ExperimentEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(m.EvidenceError, "incomplete/failed model execution"):
             m.audit(plan, self.repo, [rec])
 
-    def test_v2_receipt_cannot_claim_v3_postrun_conformance(self) -> None:
+    def test_v3_receipt_cannot_claim_v4_postrun_conformance(self) -> None:
         command = [sys.executable, "-c", "pass"]
-        plan = self.plan_with_commands("v2-rejected", {"multi_head": command})
-        rec = self.root / "v2-old.json"
+        plan = self.plan_with_commands("v3-rejected", {"multi_head": command})
+        rec = self.root / "v3-old.json"
         m.run(self.repo, plan, "multi_head", rec, 5, command)
         value = json.loads(rec.read_text())
-        self.assertEqual(value["schema"], "hepta.neuron.experiment-run.v3")
+        self.assertEqual(value["schema"], "hepta.neuron.experiment-run.v4")
+        self.assertEqual(m.verify_plan(plan, self.repo)["schema"], "hepta.neuron.experiment-plan.v2")
+        self.assertEqual(m.audit(plan, self.repo, [rec])["schema"], "hepta.neuron.experiment-audit.v4")
         value.pop("receipt_digest")
-        value["schema"] = "hepta.neuron.experiment-run.v2"
-        value.pop("postrun_binding_verified")
+        value["schema"] = "hepta.neuron.experiment-run.v3"
         value["receipt_digest"] = m.digest(value)
         rec.write_text(json.dumps(value))
         with self.assertRaisesRegex(m.EvidenceError, "invalid receipt schema"):
             m.audit(plan, self.repo, [rec])
+
+    def test_rehashed_plan_and_input_change_during_run_still_fails(self) -> None:
+        dataset = self.artifacts / "dataset"
+        plan = self.root / "rebound-plan.plan.json"
+        command = [sys.executable, "-c", (
+            "import hashlib,json\n"
+            "from pathlib import Path\n"
+            f"dataset = Path({str(dataset)!r})\n"
+            f"plan = Path({str(plan)!r})\n"
+            "dataset.write_bytes(b'updated fixture input')\n"
+            "value = json.loads(plan.read_text())\n"
+            "value['shared']['dataset']['sha256'] = hashlib.sha256(dataset.read_bytes()).hexdigest()\n"
+            "value.pop('plan_digest')\n"
+            "body = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()\n"
+            "value['plan_digest'] = hashlib.sha256(body).hexdigest()\n"
+            "plan.write_text(json.dumps(value))\n"
+        )]
+        self.assertEqual(self.plan_with_commands("rebound-plan", {"multi_head": command}), plan)
+        original_digest = m.verify_plan(plan, self.repo)["plan_digest"]
+        rec = self.root / "rebound-plan.json"
+        with self.assertRaisesRegex(m.EvidenceError, "postrun_binding_drift"):
+            m.run(self.repo, plan, "multi_head", rec, 5, command)
+        value = json.loads(rec.read_text())
+        self.assertEqual(value["exit_code"], 0)
+        self.assertEqual(value["status"], "postrun_binding_drift")
+        self.assertFalse(value["postrun_binding_verified"])
+        self.assertEqual(value["plan_digest"], original_digest)
+        # The new plan is internally valid; it is still not the launched plan.
+        self.assertNotEqual(m.verify_plan(plan, self.repo)["plan_digest"], original_digest)
+        with self.assertRaisesRegex(m.EvidenceError, "receipt plan/source/host mismatch"):
+            m.audit(plan, self.repo, [rec])
+
+    def test_failed_parent_still_terminates_its_same_group_helper(self) -> None:
+        fifo = self.root / "helper-lifetime.fifo"
+        group_file = self.root / "helper-group.txt"
+        os.mkfifo(fifo)
+        helper = (
+            "import time\n"
+            f"with open({str(fifo)!r}, 'wb', buffering=0) as lifetime:\n"
+            "    lifetime.write(b'1')\n"
+            "    print('ready', flush=True)\n"
+            "    time.sleep(10)\n"
+        )
+        command = [sys.executable, "-c", (
+            "import os,subprocess,sys\n"
+            "from pathlib import Path\n"
+            f"Path({str(group_file)!r}).write_text(f'{{os.getpid()}} {{os.getpgrp()}}')\n"
+            f"helper = subprocess.Popen([sys.executable, '-c', {helper!r}], stdout=subprocess.PIPE, text=True)\n"
+            "assert helper.stdout.readline() == 'ready\\n'\n"
+            "raise SystemExit(7)\n"
+        )]
+        plan = self.plan_with_commands("failed-helper", {"multi_head": command})
+        rec = self.root / "failed-helper.json"
+        reader = os.open(fifo, os.O_RDONLY | os.O_NONBLOCK)
+        try:
+            with self.assertRaisesRegex(m.EvidenceError, "run failed"):
+                m.run(self.repo, plan, "multi_head", rec, 5, command)
+            value = json.loads(rec.read_text())
+            self.assertEqual(value["status"], "failed")
+            self.assertEqual(value["exit_code"], 7)
+            own_pid, own_group = map(int, group_file.read_text().split())
+            self.assertEqual(own_group, own_pid)
+            self.assertNotEqual(own_group, os.getpgrp())
+            self.assertEqual(os.read(reader, 1), b"1")
+            # EOF proves the real helper closed its sole writer. This is a
+            # cleanup watchdog, not an extension of the command's deadline.
+            deadline = time.monotonic() + 1
+            while True:
+                try:
+                    tail = os.read(reader, 1)
+                except BlockingIOError:
+                    self.assertLess(time.monotonic(), deadline, "same-group helper still running")
+                    time.sleep(.01)
+                else:
+                    self.assertEqual(tail, b"")
+                    break
+            with self.assertRaisesRegex(m.EvidenceError, "incomplete/failed model execution"):
+                m.audit(plan, self.repo, [rec])
+        finally:
+            os.close(reader)
+            if group_file.exists():
+                own_pid, own_group = map(int, group_file.read_text().split())
+                if own_group == own_pid and own_group > 0 and own_group != os.getpgrp():
+                    try:
+                        os.killpg(own_group, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
 
     def test_timeout_receipt_and_no_success_laundering(self) -> None:
         rec = self.root / "timeout.json"

@@ -7,7 +7,10 @@ independent outcome observation, signed artifact, or E0 acceptance.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import hashlib
+import importlib.abc
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -16,6 +19,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import tempfile
 import time
 
 HF_SOURCE_COMMIT = "be511bd63aaae8813c415a116d50f01fe54baba5"
@@ -31,7 +35,11 @@ FILES = ("config.json", "model.safetensors", "tokenizer.json", "tokenizer_config
 WIDTH = 768
 NATIVE_WIDTH = 256
 Q = 1 << 24
-SCHEMA = "hepta.e0.public-pretrained-q24-shadow.v1"
+SCHEMA = "hepta.e0.public-pretrained-q24-shadow.v2"
+SOURCE_PREFIX = "qualification/stem-cell-v1/"
+MAX_SOURCE_FILES = 128
+MAX_SOURCE_FILE_BYTES = 1 << 20
+MAX_SOURCE_TOTAL_BYTES = 8 << 20
 
 
 def require(ok: bool, why: str) -> None:
@@ -48,15 +56,124 @@ def file_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def git_bytes(path: Path, *args: str) -> bytes:
+    env = dict(os.environ, GIT_NO_LAZY_FETCH="1", GIT_OPTIONAL_LOCKS="0")
+    return subprocess.run(["git", "--no-replace-objects", "-C", str(path), *args],
+                          capture_output=True, check=True, env=env).stdout
+
+
 def source_checkout(path: Path, commit: str, tree: str) -> Path:
     require(path.is_dir() and not path.is_symlink(), "source checkout absent")
-    observed = subprocess.run(["git", "-C", str(path), "rev-parse", "HEAD", "HEAD^{tree}"],
-                              capture_output=True, text=True, check=True).stdout.splitlines()
+    observed = git_bytes(path, "rev-parse", "HEAD", "HEAD^{tree}").decode().splitlines()
     require(observed == [commit, tree], "source checkout SHA/tree mismatch")
-    require(not subprocess.run(["git", "-C", str(path), "status", "--porcelain",
-                                "--untracked-files=no"], capture_output=True,
-                               text=True, check=True).stdout.strip(), "dirty source checkout")
+    require(not git_bytes(path, "status", "--porcelain", "--untracked-files=no").strip(),
+            "dirty source checkout")
     return path / "qualification" / "stem-cell-v1"
+
+
+def project_source_bytes(path: Path, commit: str, tree: str, names=None) -> dict:
+    """Read regular flat Python blobs from the fixed tree, never the worktree."""
+    source_checkout(path, commit, tree)
+    entries = git_bytes(path, "ls-tree", "-rlz", "--full-tree", tree, "--", SOURCE_PREFIX)
+    found, total = {}, 0
+    for entry in entries.split(b"\0"):
+        if not entry:
+            continue
+        header, raw_path = entry.split(b"\t", 1)
+        relative = raw_path.decode("utf-8")
+        if not relative.endswith(".py"):
+            continue
+        require(relative.startswith(SOURCE_PREFIX), "project source escaped its prefix")
+        leaf = relative[len(SOURCE_PREFIX):]
+        module = leaf[:-3]
+        require("/" not in leaf and module.isascii() and module.isidentifier()
+                and module != "__init__", "project Python sources must be flat modules")
+        if names is not None and module not in names:
+            continue
+        mode, kind, oid, size = header.split()
+        require(mode in (b"100644", b"100755") and kind == b"blob",
+                "project Python source must be a regular blob")
+        oid = oid.decode("ascii")
+        require(len(oid) == 40 and all(c in "0123456789abcdef" for c in oid),
+                "invalid project blob identity")
+        size = int(size)
+        total += size
+        require(0 < size <= MAX_SOURCE_FILE_BYTES and total <= MAX_SOURCE_TOTAL_BYTES
+                and len(found) < MAX_SOURCE_FILES, "project Python source exceeds bounds")
+        raw = git_bytes(path, "cat-file", "blob", oid)
+        require(len(raw) == size, "project Python blob size mismatch")
+        actual_oid = hashlib.sha1(b"blob " + str(size).encode() + b"\0" + raw).hexdigest()
+        require(actual_oid == oid, "project Python blob identity mismatch")
+        require(module not in found, "duplicate project module")
+        found[module] = {
+            "bytes": raw,
+            "identity": {"module": module, "commit": commit, "tree": tree, "path": relative,
+                         "git_blob": oid, "bytes": size, "sha256": hashlib.sha256(raw).hexdigest()},
+        }
+    require(bool(found) and (names is None or set(found) == set(names)),
+            "required project Python source missing")
+    return found
+
+
+class ProjectSourceLoader(importlib.abc.MetaPathFinder, importlib.abc.Loader):
+    """Compile the verified buffers; filesystem source/bytecode loaders are bypassed."""
+
+    def __init__(self, modules):
+        self.modules = modules
+        self.created = {}
+        self.loaded = {}
+
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname not in self.modules:
+            return None
+        return importlib.util.spec_from_loader(
+            fullname, self, origin=str(self.modules[fullname]["snapshot"]))
+
+    def create_module(self, spec):
+        return None
+
+    def exec_module(self, module):
+        source = self.modules[module.__name__]
+        self.created[module.__name__] = module
+        module.__file__ = str(source["snapshot"])
+        module.__cached__ = None
+        exec(compile(source["bytes"], module.__file__, "exec", dont_inherit=True),
+             module.__dict__)
+        self.loaded[module.__name__] = dict(source["identity"])
+
+    def loaded_sources(self):
+        return [self.loaded[name] for name in sorted(self.loaded)]
+
+
+@contextmanager
+def bound_project_sources(specifications):
+    """One-process scope for project Python only; external runtimes stay external."""
+    modules = {}
+    for path, commit, tree, names in specifications:
+        found = project_source_bytes(path, commit, tree, names)
+        require(not (modules.keys() & found.keys()), "ambiguous project module ownership")
+        modules.update(found)
+    require(sum(len(source["bytes"]) for source in modules.values()) <= MAX_SOURCE_TOTAL_BYTES,
+            "combined project Python source exceeds bounds")
+    require(not (modules.keys() & sys.modules.keys()), "project module already loaded")
+    with tempfile.TemporaryDirectory(prefix="hepta-e0-source-") as directory:
+        for source in modules.values():
+            identity = source["identity"]
+            snapshot = Path(directory) / identity["commit"] / identity["path"]
+            snapshot.parent.mkdir(parents=True, exist_ok=True)
+            snapshot.write_bytes(source["bytes"])
+            snapshot.chmod(0o400)
+            source["snapshot"] = snapshot
+        loader = ProjectSourceLoader(modules)
+        sys.meta_path.insert(0, loader)
+        try:
+            yield loader
+        finally:
+            if loader in sys.meta_path:
+                sys.meta_path.remove(loader)
+            for name, module in loader.created.items():
+                if sys.modules.get(name) is module:
+                    del sys.modules[name]
 
 
 def make_diagnostic_projection(Projection, *, encoder: str, preprocessor: str,
@@ -123,13 +240,16 @@ def ensure_snapshot(root: Path, *, hf_source: Path) -> Path:
 
 def run(*, hf_checkout: Path, projection_checkout: Path, output: Path) -> dict:
     require(not output.exists(), "nonempty/existing output is never overwritten")
-    hf_source = source_checkout(hf_checkout, HF_SOURCE_COMMIT, HF_SOURCE_TREE)
-    proj_source = source_checkout(projection_checkout, PROJECTION_SOURCE_COMMIT,
-                                  PROJECTION_SOURCE_TREE)
-    require(hf_source.is_dir() and proj_source.is_dir(), "missing exact model/projection sources")
-    # Both imported modules are pinned by verified repository commits/trees.
-    sys.path.insert(0, str(proj_source))
-    sys.path.insert(0, str(hf_source))
+    specifications = (
+        (hf_checkout, HF_SOURCE_COMMIT, HF_SOURCE_TREE, None),
+        (projection_checkout, PROJECTION_SOURCE_COMMIT, PROJECTION_SOURCE_TREE,
+         ("stem_projection", "native_bridge")),
+    )
+    with bound_project_sources(specifications) as sources:
+        return _run_bound(output=output, sources=sources)
+
+
+def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
     import torch
     import transformers
     from transformers import AutoTokenizer
@@ -143,6 +263,7 @@ def run(*, hf_checkout: Path, projection_checkout: Path, output: Path) -> dict:
     output.mkdir(parents=True)
     started = time.perf_counter_ns()
     try:
+        hf_source = sources.modules["hf_encoder_kernel"]["snapshot"].parent
         snapshot = ensure_snapshot(output, hf_source=hf_source)
         checkpoint, encoder, loading = load_complete_mlm(snapshot)
         require(encoder.config.hidden_size == WIDTH, "source hidden size changed")
@@ -172,11 +293,11 @@ def run(*, hf_checkout: Path, projection_checkout: Path, output: Path) -> dict:
                     torch, encoder, tokenizer,
                     {"state": text, "question": "Identify the subject.",
                      "options": ["person", "place"]}, "cpu", max_tokens=128)
-                elapsed = time.perf_counter_ns() - tick
                 require(feature.ndim == 1 and len(feature) == WIDTH,
                         "non-768 actual encoder result")
                 vector = feature.tolist()
                 projected = projection.project_float32(vector)
+                elapsed = time.perf_counter_ns() - tick
                 require(len(projected) == NATIVE_WIDTH, "native width bound violated")
                 logits = control_readout(native_bridge, projected)
                 values.append((feature_hash(vector), tuple(projected)))
@@ -203,8 +324,14 @@ def run(*, hf_checkout: Path, projection_checkout: Path, output: Path) -> dict:
         require(snapshot_digest(snapshot) == SNAPSHOT_SHA256 and
                 file_sha256(snapshot / "model.safetensors") == MODEL_WEIGHT_SHA256,
                 "snapshot drift after physical forward")
+        peak_rss_kib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        if sys.platform == "darwin":
+            peak_rss_kib //= 1024
         record = {
             "schema": SCHEMA,
+            "project_python_sources": sources.loaded_sources(),
+            "project_python_binding": "verified_git_blobs_compiled_from_same_bytes",
+            "external_runtime_binding": "existing_version_checks_only",
             "exact_hf_source": {"commit": HF_SOURCE_COMMIT, "tree": HF_SOURCE_TREE},
             "exact_projection_source": {"commit": PROJECTION_SOURCE_COMMIT,
                                         "tree": PROJECTION_SOURCE_TREE},
@@ -223,7 +350,7 @@ def run(*, hf_checkout: Path, projection_checkout: Path, output: Path) -> dict:
             "observations": result,
             "repeat_input_exact": True, "distinct_input_survived": True,
             "checkpoint_reverified_after_execution": True,
-            "process_lifetime_peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+            "process_lifetime_peak_rss_kib": peak_rss_kib,
             "elapsed_including_download_load_ns": time.perf_counter_ns() - started,
             "real_pretrained_model_loaded": True,
             "trained_cell_head": False, "native_worker_invoked": False,

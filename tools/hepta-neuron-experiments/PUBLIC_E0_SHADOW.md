@@ -22,12 +22,30 @@ modify Neuron V1's input maximum of 512 dimensions.
 
 The hosted research branch has already executed the real pretrained CPU Encoder, but
 not the Q24 cross-branch stitch. **Its historical receipt is not claimed as a pass
-for this new executable/commit.**
+for this new executable/commit.** New records use schema
+`hepta.e0.public-pretrained-q24-shadow.v2`; historical v1 records are not relabeled
+as evidence of the new source binding or timing semantics.
 
 ## Physical read-only path
 
-`public_e0_shadow.py` verifies the exact two source commits/trees and clean
-working copies, downloads only the named checkpoint files at the immutable HF
+`public_e0_shadow.py` checks the two Git commit/tree identities with replacement
+objects disabled and keeps the existing tracked-status check. Project Python
+comes from regular blobs in those fixed trees, with a 1 MiB per-file, 128-file
+per-source and 8 MiB combined bound. Each blob's size, Git object identity and
+SHA-256 are checked. A private temporary snapshot supplies `__file__` paths;
+the project import loader compiles the same verified in-memory bytes, without
+reading the original worktree or its Python bytecode. Controlled project names
+already present in `sys.modules` are refused. Only this scope's loader and newly
+imported project modules are removed on exit.
+
+This binding covers the HF source's flat Python namespace and the two projection
+modules actually used here, `stem_projection` and `native_bridge`. The fixed HF
+tree contains neither of those two names. Auxiliary files accessed through
+`__file__`, the interpreter, external packages and concurrent in-process mutation
+are not a complete authenticated runtime. Torch/Transformers retain only the
+existing version checks; this is a fresh-process opt-in research command.
+
+The command downloads only the named checkpoint files at the immutable HF
 revision, copies them to a clean local snapshot, checks all weight/snapshot
 digests **before loading**, loads the real complete MLM model with the registered
 Transformers 4.57.1 / Torch 2.10.0 CPU-eager profile and calculates three actual
@@ -45,8 +63,11 @@ synthetic Q24 affine readout runs through the **existing**
 is not a genuine trained Cell Head or a native Rust Worker call.
 
 Actual source model bytes are rechecked after the computation. Create-only
-`shadow.json` includes source and model SHA, numeric vector hashes, observed
-forward timing and process-lifetime (not request-level) RSS, along with **false**
+`shadow.json` includes the actually imported project Python blob/hash inventory,
+source and model SHA, and numeric vector hashes. The recorded forward-plus-
+projection interval ends after Q24 projection, before the diagnostic readout.
+Process-lifetime (not request-level) peak RSS is expressed in KiB, including
+conversion from Darwin's byte units. These observations still carry **false**
 for every production/learning acceptance field. Failures are recorded in
 `FAILED.json` where the output directory has been reserved. Test fixtures in
 `public_e0_shadow_checks.py` are clearly separate from the real pretrained

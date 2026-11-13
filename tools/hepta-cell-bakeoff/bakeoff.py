@@ -10,6 +10,7 @@ import argparse
 import base64
 import binascii
 import hashlib
+import io
 import json
 import math
 import random
@@ -25,6 +26,7 @@ SPLITS = ("train", "calibration", "future_1", "future_2")
 SCALES = (64, 256, 1024, 4096)
 TEMPERATURES = (0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 5.0)
 HEX = set("0123456789abcdef")
+MAX_PUBLIC_KEY_BYTES = 64 * 1024
 
 
 class EvidenceError(ValueError):
@@ -48,11 +50,18 @@ def is_hex(value: object, size: int = 64) -> bool:
     return isinstance(value, str) and len(value) == size and set(value) <= HEX and any(c != "0" for c in value)
 
 
-def jsonl(path: Path) -> list[dict]:
+def jsonl_bytes(path: Path) -> bytes:
     require(path.is_file(), f"missing {path}")
     require(path.stat().st_size <= 512 * 1024 * 1024, f"oversize {path}")
+    with path.open("rb") as source:
+        contents = source.read(512 * 1024 * 1024 + 1)
+    require(len(contents) <= 512 * 1024 * 1024, f"oversize {path}")
+    return contents
+
+
+def parse_jsonl(contents: bytes, path: Path) -> list[dict]:
     rows = []
-    with path.open(encoding="utf-8") as source:
+    with io.StringIO(contents.decode("utf-8"), newline=None) as source:
         for idx, line in enumerate(source, 1):
             require(len(line) <= 65536, f"oversize line {idx} in {path}")
             if not line.strip():
@@ -67,8 +76,16 @@ def jsonl(path: Path) -> list[dict]:
     return rows
 
 
+
+def jsonl(path: Path) -> list[dict]:
+    return parse_jsonl(jsonl_bytes(path), path)
+
+
 def load_plan(path: Path) -> dict:
-    plan = json.loads(path.read_text(encoding="utf-8"))
+    return validate_plan(json.loads(path.read_text(encoding="utf-8")))
+
+
+def validate_plan(plan: dict) -> dict:
     require(plan.get("schema") == SCHEMA, "unsupported plan schema")
     require(is_hex(plan.get("source_head"), 40), "source head must be exact 40-hex SHA")
     require(is_hex(plan.get("dataset_sha256")), "dataset must be pinned by SHA-256")
@@ -225,7 +242,7 @@ def paired_interval(ids: list[str], data: dict, base: dict, challenger: dict,
         result = {}
         for uid in ids:
             ps = tempered(predictions[uid]["probabilities"], temp)
-            result[uid] = int(max(ps, key=ps.get) == data[uid]["label"])
+            result[uid] = int(max(data[uid]["options"], key=lambda option: ps[option]) == data[uid]["label"])
         return result
     base_hits = hits(base, base_t)
     challenge_hits = hits(challenger, challenge_t)
@@ -275,8 +292,13 @@ def check_lifecycle(path: Path, plan: dict, trusted_key: Path | None, trusted_ke
     observed = defaultdict(set)
     model_pins = {m["name"]: m for m in plan["models"]}
     verify = trusted_key is not None and is_hex(trusted_key_sha256)
+    key_bytes = None
     if verify:
-        require(trusted_key.is_file() and digest(trusted_key) == trusted_key_sha256,
+        require(trusted_key.is_file(), "owner key fingerprint mismatch")
+        with trusted_key.open("rb") as source:
+            key_bytes = source.read(MAX_PUBLIC_KEY_BYTES + 1)
+        require(len(key_bytes) <= MAX_PUBLIC_KEY_BYTES, "owner public key exceeds 64 KiB")
+        require(hashlib.sha256(key_bytes).hexdigest() == trusted_key_sha256,
                 "owner key fingerprint mismatch")
     else:
         blockers.append("lifecycle-ed25519-key-or-independent-trust-anchor-missing")
@@ -306,9 +328,11 @@ def check_lifecycle(path: Path, plan: dict, trusted_key: Path | None, trusted_ke
             with tempfile.TemporaryDirectory() as directory:
                 payload_file = Path(directory) / "payload.json"
                 sig_file = Path(directory) / "receipt.sig"
+                key_file = Path(directory) / "issuer.pub.pem"
                 payload_file.write_bytes(message)
                 sig_file.write_bytes(sig)
-                cmd = ["openssl", "pkeyutl", "-verify", "-pubin", "-inkey", str(trusted_key.resolve()),
+                key_file.write_bytes(key_bytes)
+                cmd = ["openssl", "pkeyutl", "-verify", "-pubin", "-inkey", str(key_file),
                        "-rawin", "-in", str(payload_file), "-sigfile", str(sig_file)]
                 try:
                     verified = subprocess.run(cmd, capture_output=True, check=False, timeout=5)
@@ -328,9 +352,14 @@ def evaluate(plan: dict, data_path: Path, predictions_path: Path,
              resource_path: Path | None = None, lifecycle_path: Path | None = None,
              trusted_key: Path | None = None, trusted_key_sha256: str | None = None,
              retrieval_gold: Path | None = None, retrieval_observations: Path | None = None) -> dict:
-    require(digest(data_path) == plan["dataset_sha256"], "dataset digest mismatch")
-    data = validate_data(jsonl(data_path))
-    raw = validate_predictions(jsonl(predictions_path), data, plan)
+    dataset_bytes = jsonl_bytes(data_path)
+    require(hashlib.sha256(dataset_bytes).hexdigest() == plan["dataset_sha256"],
+            "dataset digest mismatch")
+    data = validate_data(parse_jsonl(dataset_bytes, data_path))
+    prediction_bytes = jsonl_bytes(predictions_path)
+    raw = validate_predictions(parse_jsonl(prediction_bytes, predictions_path), data, plan)
+    predictions_sha256 = hashlib.sha256(prediction_bytes).hexdigest()
+    del dataset_bytes, prediction_bytes
     calibration_ids = [i for i, row in data.items() if row["split"] == "calibration"]
     ts = {m: temperature(calibration_ids, data, ps) for m, ps in raw.items()}
     scores = {}
@@ -394,7 +423,7 @@ def evaluate(plan: dict, data_path: Path, predictions_path: Path,
     blockers.append("independent-host-and-dataset-provenance-not-authenticated")
     return {"schema": SCHEMA, "authority": "research-only-no-model-selection-or-release",
             "source_head": plan["source_head"], "dataset_sha256": plan["dataset_sha256"],
-            "predictions_sha256": digest(predictions_path), "temperature_fit_calibration_only": ts,
+            "predictions_sha256": predictions_sha256, "temperature_fit_calibration_only": ts,
             "scores": scores, "paired_comparisons": comparisons,
             "retrieval_scores": retrieval_scores,
             "resource_coverage": ({k: sorted(v) for k, v in resource_summary.items()} if resource_summary is not None else None),

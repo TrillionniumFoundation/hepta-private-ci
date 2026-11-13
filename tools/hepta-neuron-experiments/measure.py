@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 PLAN_SCHEMA = "hepta.neuron.experiment-plan.v2"
-RUN_SCHEMA = "hepta.neuron.experiment-run.v3"
+RUN_SCHEMA = "hepta.neuron.experiment-run.v4"
 ARMS = {
     "E0": ("no_change",),
     "E1": ("multi_head", "fixed_moe", "dynamic_moe", "cell_graph"),
@@ -68,7 +68,8 @@ def sha256_file(path: Path) -> str:
 
 
 def git(repo: Path, *args: str) -> str:
-    r = subprocess.run(["git", "-C", str(repo), *args], capture_output=True, text=True, check=True)
+    r = subprocess.run(["git", "--no-replace-objects", "-C", str(repo), *args],
+                       capture_output=True, text=True, check=True)
     return r.stdout.strip()
 
 
@@ -222,6 +223,7 @@ def sample_linux_process_group(pgid: int) -> tuple[int, int]:
 def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
         command: list[str], trial: int = 0, sample_group_rss: bool = False) -> None:
     plan = verify_plan(plan_file, repo)
+    plan_digest = plan["plan_digest"]
     require(arm in ARMS[plan["stage"]], "unregistered arm")
     require(type(trial) is int and 0 <= trial < plan["repetitions"], "unregistered trial")
     require(command and command[0] != "--", "missing executable")
@@ -279,16 +281,17 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
                 break
             time.sleep(min(.02, max(.001, deadline - time.monotonic())))
     elapsed = time.monotonic_ns() - t0
-    # The direct child can exit successfully while a same-session helper still
-    # writes evidence or executes model code. A complete run must settle its
-    # isolated process group, not just the first PID.
-    if status == "completed":
+    # A reaped direct child can leave helpers in its process group after either
+    # a zero or nonzero exit. Clean up only our start_new_session group, while
+    # preserving an already-failed result.
+    if status in ("completed", "failed"):
         try:
             os.killpg(process.pid, 0)
         except ProcessLookupError:
             pass
         else:
-            status = "unsettled_descendants"
+            if status == "completed":
+                status = "unsettled_descendants"
             try:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
@@ -299,13 +302,14 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
         executable_after = None
     if executable_after != executable_digest:
         status = "executable_drift"
-    # Reopen and rehash the ENTIRE frozen source/artifact/argument inventory
-    # after the executable has finished. Checking only argv[0] leaves an
-    # ordinary input mutation during execution undetected. This remains a
-    # before/after check, not an attestation of bytes actually consumed.
+    # Recheck Git metadata and the explicitly bound files after the child exits.
+    # The verified plan must still have the digest captured before launch.
+    # These endpoint observations do not attest to every worktree byte or to
+    # the bytes actually consumed by the command.
     postrun_binding_verified = False
     try:
-        verify_plan(plan_file, repo)
+        postrun_plan = verify_plan(plan_file, repo)
+        require(postrun_plan["plan_digest"] == plan_digest, "frozen plan digest drift during run")
         postrun_binding_verified = True
     except (EvidenceError, OSError, subprocess.CalledProcessError, ValueError):
         if status == "completed":
@@ -316,7 +320,7 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
         rss //= 1024
     receipt = {
         "schema": RUN_SCHEMA, "stage": plan["stage"], "arm": arm, "trial": trial,
-        "plan_digest": plan["plan_digest"], "source": plan["source"], "host": plan["host"],
+        "plan_digest": plan_digest, "source": plan["source"], "host": plan["host"],
         "performance_environment": plan["performance_environment"],
         "artifact_sha256": plan["arms"][arm]["sha256"],
         "command_sha256": digest(command), "executable_path": str(executable),
@@ -412,7 +416,7 @@ def audit(plan_file: Path, repo: Path, receipt_paths: list[Path]) -> dict:
         }
         for arm in ARMS[plan["stage"]]
     }
-    return {"schema": "hepta.neuron.experiment-audit.v3", "stage": plan["stage"],
+    return {"schema": "hepta.neuron.experiment-audit.v4", "stage": plan["stage"],
             "plan_digest": plan["plan_digest"], "frozen_repetitions_per_arm": plan["repetitions"],
             "executed_arms": {arm: n for arm, n in found.items() if n},
             "missing_arms": sorted(arm for arm, n in found.items() if not n),

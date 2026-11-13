@@ -80,8 +80,11 @@ def option_features(model, state: str, options: list[str]):
 
 def fit_encoder_head(entry: dict, root: Path, gold: Path, out: Path, reviewed_remote_code: bool):
     import numpy as np
-    bakeoff.require(bakeoff.digest(gold) == entry.get("train_data_sha256"), "training corpus SHA mismatch")
-    train = bakeoff.jsonl(gold)
+    train_bytes = bakeoff.jsonl_bytes(gold)
+    train_sha256 = hashlib.sha256(train_bytes).hexdigest()
+    bakeoff.require(train_sha256 == entry.get("train_data_sha256"), "training corpus SHA mismatch")
+    train = bakeoff.parse_jsonl(train_bytes, gold)
+    del train_bytes
     # The fit process never receives calibration/future labels or other split rows.
     bakeoff.require(all(r.get("split") == "train" for r in train), "fit only permits train rows")
     bakeoff.require(len({r.get("id") for r in train}) == len(train), "duplicate training id")
@@ -108,7 +111,7 @@ def fit_encoder_head(entry: dict, root: Path, gold: Path, out: Path, reviewed_re
         w -= lr * (x.T @ probs + 0.0001 * w)
     artifact = {"schema": "hepta.cell.bakeoff.head.v1", "model": entry["name"],
                 "revision": entry["revision"], "weights_sha256": entry["weights_sha256"],
-                "train_dataset_sha256": bakeoff.digest(gold), "steps": steps, "seed": seed,
+                "train_dataset_sha256": train_sha256, "steps": steps, "seed": seed,
                 "learning_rate": lr, "optimizer": "sgd", "weights": w.tolist()}
     out.write_text(json.dumps(artifact, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     print(json.dumps({"head_file": str(out), "head_sha256": bakeoff.digest(out), "steps": steps}))
@@ -122,12 +125,21 @@ def run_predictions(entry: dict, root: Path, rows: list[dict], out: Path,
         import laya
         agent = laya.load(str(root), expected_sha256=entry["files_sha256"])
     else:
-        bakeoff.require(head is not None and bakeoff.digest(head) == entry["head_sha256"],
+        bakeoff.require(head is not None, "trained encoder head missing or hash mismatch")
+        head_bytes = head.read_bytes()
+        bakeoff.require(hashlib.sha256(head_bytes).hexdigest() == entry["head_sha256"],
                         "trained encoder head missing or hash mismatch")
-        learned = json.loads(head.read_text(encoding="utf-8"))
+        learned = json.loads(head_bytes.decode("utf-8"))
         bakeoff.require(learned["revision"] == entry["revision"] and
                         learned["weights_sha256"] == entry["weights_sha256"] and
                         learned["model"] == name, "encoder head lineage mismatch")
+        declarations = (("train_dataset_sha256", "train_data_sha256"), ("steps", "head_steps"),
+                        ("seed", "head_seed"), ("learning_rate", "head_lr"),
+                        ("optimizer", "head_optimizer"))
+        bakeoff.require(type(learned.get("steps")) is int and type(learned.get("seed")) is int and
+                        type(learned.get("learning_rate")) in (int, float) and
+                        all(learned.get(field) == entry[declared] for field, declared in declarations),
+                        "encoder head training declaration mismatch")
         import numpy as np
         w = np.asarray(learned["weights"], dtype=np.float64)
         bakeoff.require(w.ndim == 1 and 1 <= len(w) <= 2048 and np.isfinite(w).all(), "invalid head")
@@ -213,9 +225,10 @@ def main():
     args = parser.parse_args()
     try:
         raw_plan = json.loads(args.plan.read_text(encoding="utf-8"))
+        if args.mode in ("predict", "retrieve"):
+            raw_plan = bakeoff.validate_plan(raw_plan)
         entry = next(m for m in raw_plan["models"] if m["name"] == args.model)
         if args.mode in ("predict", "retrieve"):
-            bakeoff.load_plan(args.plan)
             bakeoff.require(args.gold is None, "inference cannot receive gold labels")
             if args.mode == "predict":
                 bakeoff.require(args.blind is not None and args.retrieval_blind is None,
