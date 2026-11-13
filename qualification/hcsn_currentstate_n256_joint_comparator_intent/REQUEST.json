@@ -1,0 +1,54 @@
+{
+  "schema": "hcsn-n256-joint-full-coordinate-comparator-source-intent-v1",
+  "identity": "hcsn-n256-joint-full-coordinate-comparator-source-20261113-c06d-001",
+  "base_commit": "976962fb89c92f023918bc3e1e756d0b52f4c21d",
+  "parent_draft": 6304,
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+  "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+  "serializer_source_sha256": "3107fb296043de8f3e3c78e13aa940aea38aa64c16dfe68d342d2adb0c7aa97a",
+  "resource_snapshot_source_freeze_sha256": "f58815dc902d9129a99a91770ce644af2e3b56b00a8d0bd02440b3d7055467e9",
+  "coordinate_denominator": 18225028,
+  "capsules": 14,
+  "lane_capsules": {
+    "warm": 8,
+    "coarse": 3,
+    "cold": 3
+  },
+  "byte_pair_names": [
+    "warm_saved_state_roundtrip",
+    "coarse_saved_state_roundtrip",
+    "cold_saved_state_roundtrip"
+  ],
+  "scope": "freeze independent comparator and joint-runner source contract with small stdlib fixtures only",
+  "numerical_execution_allowed": false,
+  "numerical_idempotency_key": null,
+  "admission_sha256": null,
+  "required_external_freeze": {
+    "runtime_profile_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null,
+    "candidate_admission_sha256": null,
+    "oracle_admission_sha256": null,
+    "serializer_admission_sha256": null,
+    "joint_admission_sha256": null
+  },
+  "preserved_history": {
+    "red_6295": true,
+    "red_unknown_6302": true,
+    "red_joint_hold_6303": true
+  },
+  "interface_gap": "frozen candidate and oracle sources do not yet emit a shared independent reference stream required for separate error gates",
+  "forbidden_in_this_source_attempt": [
+    "N256 dynamic propagation or matrix exponential action",
+    "candidate, oracle, serializer, or cold-loader numerical call",
+    "numerical idempotency-key allocation or use",
+    "Torch, backward, optimizer, training, or production adoption"
+  ],
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}
