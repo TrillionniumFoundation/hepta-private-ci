@@ -62,12 +62,12 @@ impl HostFixture {
         Self::from_panel(panel, /*pending_claim*/ false)
     }
 
-    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Box<Self>> {
+    fn from_panel(panel: Box<PanelFixture>, pending_claim: bool) -> anyhow::Result<Box<Self>> {
         Self::from_panel_with_training(panel, pending_claim, TrainingComposition::Fixture)
     }
 
     fn from_panel_with_training(
-        panel: PanelFixture,
+        panel: Box<PanelFixture>,
         pending_claim: bool,
         training: TrainingComposition,
     ) -> anyhow::Result<Box<Self>> {
@@ -79,7 +79,7 @@ impl HostFixture {
             primary,
             retention,
             at,
-        } = panel;
+        } = *panel;
         let input = &primary.config;
         let config = OriginalCellEvaluationReceiptConfigV1 {
             training: input.training.clone(),

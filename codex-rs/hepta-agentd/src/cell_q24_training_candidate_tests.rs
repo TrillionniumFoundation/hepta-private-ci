@@ -337,6 +337,11 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel()
 -> anyhow::Result<()> {
+    let observed_at = std::time::Instant::now();
+    let report_phase = |phase: &str| {
+        let elapsed_ms = observed_at.elapsed().as_millis();
+        eprintln!("candidate_material_refusal phase={phase} elapsed_ms={elapsed_ms}");
+    };
     for fault in [
         Fault::WrongPage,
         Fault::WrongCompletion,
@@ -345,7 +350,9 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         Fault::CorruptHeads,
         Fault::CloseAfterFirst,
     ] {
+        report_phase(&format!("page_fault:{fault:?}:start"));
         let run = completed_candidate().await?;
+        report_phase(&format!("page_fault:{fault:?}:ready"));
         let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
         let (connection, peer) = page_peer(
             Arc::clone(&run.owner),
@@ -412,10 +419,13 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
             original
         );
         run.close()?;
+        report_phase(&format!("page_fault:{fault:?}:complete"));
     }
 
+    report_phase("renewal_and_expiry:start");
     let run = completed_candidate().await?;
     let context = support::context(&run.fixture, &run.dataset);
+    report_phase("renewal_and_expiry:ready");
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let mut renewed = run.training.attestation().clone();
     renewed.expires_at += 1;
@@ -537,7 +547,10 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     );
     run.close()?;
 
+    report_phase("renewal_and_expiry:complete");
+    report_phase("withdrawal:start");
     let mut run = completed_candidate().await?;
+    report_phase("withdrawal:ready");
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
@@ -564,8 +577,10 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         async move { client.readback().await }
     });
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    report_phase("withdrawal:gate_reached");
     run.fixture.withdraw()?;
     release.send(())?;
+    report_phase("withdrawal:gate_released");
     assert!(matches!(
         pending.await?,
         Err(CandidateError::Command(CommandError::CommitUncertain))
@@ -580,6 +595,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         (run.fixture.training_bytes()?, run.fixture.bytes()?),
         original
     );
+    report_phase("withdrawal:readback_rejected");
     drop(run.owner);
     let mut source_failure = false;
     for peer in run.peers {
@@ -593,8 +609,11 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         "a real original source/evidence read must reject withdrawal"
     );
 
+    report_phase("withdrawal:complete");
+    report_phase("cancellation:start");
     let run = completed_candidate().await?;
     let original = (run.fixture.training_bytes()?, run.fixture.bytes()?);
+    report_phase("cancellation:ready");
     let reached = Arc::new(tokio::sync::Notify::new());
     let (release, released) = std::sync::mpsc::channel();
     let (connection, peer) = page_peer(
@@ -620,17 +639,20 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         async move { client.readback().await }
     });
     tokio::time::timeout(Duration::from_secs(30), reached.notified()).await?;
+    report_phase("cancellation:gate_reached");
     pending.abort();
     match pending.await {
         Err(error) => assert!(error.is_cancelled()),
         Ok(_) => anyhow::bail!("Candidate await was not cancelled"),
     }
+    report_phase("cancellation:await_cancelled");
     assert!(matches!(
         client.readback().await,
         Err(CandidateError::Unavailable)
     ));
     release.send(())?;
     drop(client);
+    report_phase("cancellation:gate_released");
     // Already running read-only work may finish, but its result/channel is
     // discarded; no successful prefix is available to a later connection.
     assert_eq!(peer.finish()?, 3);
@@ -639,6 +661,7 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
         original
     );
     run.close()?;
+    report_phase("cancellation:complete");
     Ok(())
 }
 
