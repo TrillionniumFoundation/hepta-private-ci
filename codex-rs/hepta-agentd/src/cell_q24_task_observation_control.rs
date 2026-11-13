@@ -7,6 +7,49 @@ use codex_hepta_agent_protocol::Q24OriginalTaskObservationV1;
 use super::*;
 
 impl OriginalCellQ24TaskLedgerProducerV1 {
+    pub(crate) fn require_original_initial_request(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+    ) -> Result<(), crate::AgentdError> {
+        self.require_original_control_identity(identity)?;
+        let OriginalTaskCustodyV1::Active { published, .. } = &self.task else {
+            return Err(initial_error("live original Initial task required"));
+        };
+        PublishedCircuitFeatureTaskV1::require_original_initial_run(
+            published,
+            &record.snapshot.run_id,
+        )
+    }
+
+    pub(crate) fn read_original_initial_task_observation(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+    ) -> Result<(Q24OriginalTaskObservationV1, CircuitTaskSourcePublicationV1), crate::AgentdError>
+    {
+        OriginalCellQ24TaskLedgerProducerV1::require_original_initial_request(
+            self, identity, record,
+        )?;
+        let before = OriginalCellQ24TaskLedgerProducerV1::read_original_task_observation(self)
+            .map_err(initial_error)?;
+        let publication = self
+            .source
+            .read_run_publication(identity, &record.snapshot.run_id)
+            .map_err(initial_error)?;
+        if publication.original_record() != record
+            || before.run_id != record.snapshot.run_id.as_str()
+            || before.source_publication_digest != publication.publication_digest().to_string()
+            || before.source_history_digest != publication.history_digest().as_str()
+        {
+            return Err(initial_error("original Initial Source/RunStart differs"));
+        }
+        OriginalCellQ24TaskLedgerProducerV1::require_original_initial_request(
+            self, identity, record,
+        )?;
+        Ok((before, publication))
+    }
+
     pub(crate) fn read_original_task_observation(
         &self,
     ) -> Result<Q24OriginalTaskObservationV1, Error> {
@@ -76,4 +119,8 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         }
         Ok(observation)
     }
+}
+
+fn initial_error(error: impl std::fmt::Display) -> crate::AgentdError {
+    crate::AgentdError::Protocol(format!("original Initial task observation: {error}"))
 }

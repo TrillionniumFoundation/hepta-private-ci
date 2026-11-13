@@ -19,6 +19,19 @@ pub struct PublishedCircuitFeatureControlV1<P> {
 }
 
 impl PublishedCircuitFeatureTaskV1 {
+    pub(crate) fn require_original_initial_run(
+        &self,
+        run_id: &StableId,
+    ) -> Result<(), AgentdError> {
+        self.require_active()?;
+        if !matches!(&self.0.publication, Publication::Initial(_))
+            || &self.source().scope.run_id != run_id
+        {
+            return Err(invalid("original Initial task run differs"));
+        }
+        self.require_active()
+    }
+
     pub fn control<W: NeuronFeatureWorkerV1>(
         &self,
         original: DurableInferenceControl,
