@@ -274,19 +274,39 @@ async fn lost_circuit_completion_ack_reads_the_original_committed_cell_result() 
 #[tokio::test]
 async fn delayed_feedback_waits_without_appending_empty_scheduling_events() {
     let (mut definition, bindings) = configuration();
-    definition.programs[0].edges[0].feedback_delay_ms = Some(30);
+    let feedback_delay_ms = 30;
+    definition.programs[0].edges[0].feedback_delay_ms = Some(feedback_delay_ms);
     let (_directory, mut driver, request, calls) = fixture(definition, bindings).await;
+    let clock = Arc::new(AtomicU64::new(20));
+    let store = driver.store.clone();
+    let advance_clock = async {
+        loop {
+            if checked(store.bounded_circuit_committed_trace("run-1").await)
+                .is_some_and(|trace| !trace.completions().is_empty())
+            {
+                // Advance the injected Circuit clock only after the real
+                // completion schedules feedback and its delay has elapsed.
+                tokio::time::sleep(Duration::from_millis(feedback_delay_ms)).await;
+                clock.store(20 + feedback_delay_ms, Ordering::SeqCst);
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(1)).await;
+        }
+    };
     let started = Instant::now();
-    let receipt = checked(
-        driver
-            .execute(&request, CircuitTaskModeV1::Drive, || {
-                Ok(CircuitCellTimeV1 {
-                    circuit_millis: 20 + started.elapsed().as_millis() as u64,
-                    cell_micros: 20,
-                })
+    let receipt = {
+        let drive = driver.execute(&request, CircuitTaskModeV1::Drive, || {
+            Ok(CircuitCellTimeV1 {
+                circuit_millis: clock.load(Ordering::SeqCst),
+                cell_micros: 20,
             })
-            .await,
-    );
+        });
+        tokio::pin!(drive);
+        checked(tokio::select! {
+            result = &mut drive => result,
+            () = advance_clock => drive.await,
+        })
+    };
     assert_eq!(
         receipt.trace().run().outcome(),
         Some(CircuitExitV2::Succeeded)
@@ -294,6 +314,7 @@ async fn delayed_feedback_waits_without_appending_empty_scheduling_events() {
     assert_eq!(receipt.trace().run().revision(), 4);
     assert!(started.elapsed().as_millis() >= 30);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(clock.load(Ordering::SeqCst), 20 + feedback_delay_ms);
     driver.store.close().await;
 }
 
