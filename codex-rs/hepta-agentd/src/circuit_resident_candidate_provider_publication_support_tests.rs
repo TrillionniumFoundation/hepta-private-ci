@@ -662,10 +662,10 @@ impl FreshPublication {
                 tempfile::tempdir()?,
             ));
         }
-        if let Some(stages) = self.stages.take() {
-            if let Err(error) = stages.finish().await {
-                errors.push(error.to_string());
-            }
+        if let Some(stages) = self.stages.take()
+            && let Err(error) = stages.finish().await
+        {
+            errors.push(error.to_string());
         }
         drop(self.c_home.take());
         drop(self.source_home.take());

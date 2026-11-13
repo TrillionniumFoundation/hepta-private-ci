@@ -475,15 +475,15 @@ impl SameHostCase {
         {
             connections::collect_peer_cleanup(peers, &mut errors);
         }
-        if let Some(mut task) = self.task.take() {
-            if let Err(error) = task.stop().await {
-                errors.push(error.to_string());
-            }
+        if let Some(mut task) = self.task.take()
+            && let Err(error) = task.stop().await
+        {
+            errors.push(error.to_string());
         }
-        if let Some(fixture) = self.fixture.take() {
-            if let Err(error) = (*fixture).finish().await {
-                errors.push(error.to_string());
-            }
+        if let Some(fixture) = self.fixture.take()
+            && let Err(error) = (*fixture).finish().await
+        {
+            errors.push(error.to_string());
         }
         anyhow::ensure!(errors.is_empty(), "same-owner S/C cleanup: {errors:?}");
         Ok(())

@@ -25,10 +25,8 @@ impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {
         recovery: AgentdGenerationUpdateRecoveryV1,
     ) -> Result<Self, AgentdError> {
         require_root()?;
-        let original = current.recover_initial_operation(
-            &recovery.operation_id,
-            recovery.intent_digest,
-        )?;
+        let original =
+            current.recover_initial_operation(&recovery.operation_id, recovery.intent_digest)?;
         let binding = original.final_use_binding().clone();
         let before = current.read_initial_operation(&original)?;
         let ready = recover_agentd_generation_initial_v1(
@@ -48,7 +46,9 @@ impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {
             binding,
         };
         if operation.read_original()? != before {
-            return Err(invalid("original initial publication changed across cold recovery"));
+            return Err(invalid(
+                "original initial publication changed across cold recovery",
+            ));
         }
         Ok(Self {
             operation,

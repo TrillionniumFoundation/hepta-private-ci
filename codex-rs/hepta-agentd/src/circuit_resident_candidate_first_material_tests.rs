@@ -242,14 +242,14 @@ async fn first_pending_material_uses_full_original_signatures_and_preheld_policy
                 .is_err(),
             "canonical causal replay is not original signature authentication"
         );
-        let mut added = base.clone();
+        let mut added = base;
         added["host_trust"] = serde_json::json!("child-selected");
         anyhow::ensure!(
             RootMaterialContract::from_preheld(held.clone())?
                 .verify_report(&serde_json::to_vec(&added)?)
                 .is_err()
         );
-        let mut trailing = raw.clone();
+        let mut trailing = raw;
         trailing.push(b' ');
         anyhow::ensure!(
             RootMaterialContract::from_preheld(held.clone())?

@@ -36,7 +36,7 @@ impl Release {
         let mut released = self
             .released
             .lock()
-            .unwrap_or_else(|error| error.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         *released = true;
         self.changed.notify_all();
     }

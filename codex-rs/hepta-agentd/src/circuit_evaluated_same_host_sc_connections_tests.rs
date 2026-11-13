@@ -90,8 +90,7 @@ pub(super) async fn two_original_sets(
                 Err(error) => {
                     drop(dataset);
                     let cleanup = material_ports::finish(dataset_peer);
-                    return Err(anyhow::Error::from(error)
-                        .context(format!("original T channel cleanup: {cleanup:?}")));
+                    return Err(error.context(format!("original T channel cleanup: {cleanup:?}")));
                 }
             };
             let trainer_peer = commands::serve(Arc::clone(&fixture.trainer), channel);

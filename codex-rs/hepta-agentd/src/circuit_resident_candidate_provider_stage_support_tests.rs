@@ -320,10 +320,10 @@ impl FreshStages {
         if let Err(error) = self.close_evaluation_clients() {
             errors.push(error.to_string());
         }
-        if let Some(panel) = self.panel.take() {
-            if let Err(error) = panel.finish() {
-                errors.push(error.to_string());
-            }
+        if let Some(panel) = self.panel.take()
+            && let Err(error) = panel.finish()
+        {
+            errors.push(error.to_string());
         }
         drop(self.candidate_client.take());
         drop(self.root_trainer.take());
@@ -332,10 +332,10 @@ impl FreshStages {
         drop(self.version_dataset.take());
         drop(self.experience.take());
         drop(self.dataset.take());
-        if let Some(peers) = self.training_peers.take() {
-            if let Err(error) = peers.finish_shared() {
-                errors.push(error.to_string());
-            }
+        if let Some(peers) = self.training_peers.take()
+            && let Err(error) = peers.finish_shared()
+        {
+            errors.push(error.to_string());
         }
         for peer in self.training_servers.drain(..) {
             match peer.join() {
@@ -349,10 +349,10 @@ impl FreshStages {
                 errors.push(error.to_string());
             }
         }
-        if let Some(original) = self.original.take() {
-            if let Err(error) = (*original).finish().await {
-                errors.push(error.to_string());
-            }
+        if let Some(original) = self.original.take()
+            && let Err(error) = (*original).finish().await
+        {
+            errors.push(error.to_string());
         }
         anyhow::ensure!(
             errors.is_empty(),

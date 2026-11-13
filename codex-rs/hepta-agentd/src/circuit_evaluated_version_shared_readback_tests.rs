@@ -226,8 +226,11 @@ impl Case {
         // Join every held peer even when an earlier one has the expected
         // exhaustion/transport error. Parent HeldPeers::finish short-circuits.
         let dataset = self.dataset_peer.take().map(material_ports::finish);
-        let trainer = self.trainer_peer.take().map(|thread| thread.join());
-        let evaluator = self.evaluator_peer.take().map(|thread| thread.join());
+        let trainer = self.trainer_peer.take().map(std::thread::JoinHandle::join);
+        let evaluator = self
+            .evaluator_peer
+            .take()
+            .map(std::thread::JoinHandle::join);
         let mut failures = Vec::new();
         if let Some(Err(error)) = dataset {
             failures.push(format!("original D peer: {error:?}"));

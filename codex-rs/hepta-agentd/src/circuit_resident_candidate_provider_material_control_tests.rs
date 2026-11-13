@@ -440,14 +440,14 @@ async fn fresh_original_material_control_preserves_complete_inputs_and_rejects_s
         );
         let mut changed_freeze_payload = fixture.original_material_inputs.freeze_payload.clone();
         changed_freeze_payload.push(0);
-        let mut changed_payload = base.clone();
+        let mut changed_payload = base;
         changed_payload["freeze_payload"] =
             serde_json::json!(STANDARD_NO_PAD.encode(changed_freeze_payload));
         anyhow::ensure!(
             held.decode_report(&canonical_report(&changed_payload)?)
                 .is_err()
         );
-        let mut trailing = raw.clone();
+        let mut trailing = raw;
         trailing.push(b' ');
         anyhow::ensure!(held.decode_report(&trailing).is_err());
         anyhow::ensure!(held.decode_report(&vec![0_u8; CONTROL_LIMIT + 1]).is_err());

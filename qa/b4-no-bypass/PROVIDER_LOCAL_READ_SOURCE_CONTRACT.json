@@ -1,4 +1,13 @@
 {
+  "actual_maintenance_refresh": {
+    "actual_final_physical_tree": "c026a8d7e93c958b39a36c666debecb3dba4be14",
+    "actual_final_postimages": "88b9299120113937610da4a84b344eda76011674",
+    "actual_result": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+    "base_physical_tree": "a489b394666b8141840275128a780605b024cde0",
+    "no_new_scope_selector_boundary_or_attack": true,
+    "qualification": false,
+    "source_commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+  },
   "attacks": {
     "local_budget": [
       {
@@ -9225,8 +9234,8 @@
         }
       },
       {
-        "literal_source_sha256": "ed23200f13480690ba27e287be81b3ad7ba8d11cfd1f169606f8ac58da815775",
-        "masked_sha256": "82806fb863fe84b9e40617da2384ba78df45827ac7d7d83a2d789a17d18c4f1e",
+        "literal_source_sha256": "a08bc79cdadf4f9a9033890bf17bd655a7f35062c2b8aa6e1ccfdfe5eb9a006f",
+        "masked_sha256": "20ebe626a372589e72e5f977796d98814df09eb4b24a899cd80c9de0f35ca7df",
         "selector": {
           "header": "impl OriginalCircuitPublishedLocalReadV1",
           "kind": "root_container"
@@ -10456,8 +10465,8 @@
     ],
     "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs": [
       {
-        "literal_source_sha256": "fb963a2d3b625717b201ae56f0473624ff83e277f408264363608f830e8ce6fd",
-        "masked_sha256": "2885e21c9ec4ea924258cf282a07bbea5cae733e7868cc71d175fa1f0e71b5d9",
+        "literal_source_sha256": "eb3bf78793d3e2ac018655824c4261dd3aeab65a6898761d9591d17e19a51326",
+        "masked_sha256": "1289eaccdffcb32e1f90a491b80d566a2b680a319c3f263c1af991d0ffa26069",
         "selector": {
           "header": "impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W>",
           "kind": "root_container"
@@ -10493,24 +10502,24 @@
         }
       },
       {
-        "literal_source_sha256": "36ea14447f02aa3805ffa70d0e38ea9c1334ff53843c7589d4bc236a0094d935",
-        "masked_sha256": "76f820f1532f173717c1a0ead91dc996688f2250755ae0c5eef95fa098f0158f",
+        "literal_source_sha256": "043b5edeb48b2aaaa0c2fd57a604b2b2a2ffdf7f7c505019b965d31e6710912c",
+        "masked_sha256": "066513c5c67877e6a53b39fd3506bf5a8becb7aaa603e885ee45d139bb9326f5",
         "selector": {
           "header": "impl OriginalInitialOperation",
           "kind": "root_container"
         }
       },
       {
-        "literal_source_sha256": "b8740801e418a3b3f0ce6d0bc867d7c1e55f046b7db4e694c56902344ec1663a",
-        "masked_sha256": "e815fd06a117c5666094bc93cbfef81fcb82c83fe180879ddaf72129f3c69631",
+        "literal_source_sha256": "529bcaeda0b52428856d5a08bc8c9c89485229de1f9442b189ff8035ead20c41",
+        "masked_sha256": "b56066b19b0cb9e296454f7868a1122785dd7c17178845d12eb4fb8003309d0e",
         "selector": {
           "header": "impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W>",
           "kind": "root_container"
         }
       },
       {
-        "literal_source_sha256": "7cc589df97fa11c450cc52d121a072e114215adc8bbcd5fda98611253e4298f9",
-        "masked_sha256": "cf1779ad2ee2481033adb9fc62de51079b99b5be8bd650c4a67afd762235c660",
+        "literal_source_sha256": "451c6965ad7ed5c1dba38d21ec8b310fce0f12cda2f245072d1d3042c9e46cce",
+        "masked_sha256": "bc672f65c01d2ea8ffef68024e5500a016ceb3920db9c28b69dde194592eb18f",
         "selector": {
           "kind": "root_function",
           "name": "require_root"

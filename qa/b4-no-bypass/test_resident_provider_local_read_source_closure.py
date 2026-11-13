@@ -31,7 +31,7 @@ PROOF = SCOPES.PROOF
 # Exact prepared data; final formatting must be frozen again.
 CONTRACT_PATH = ROOT / "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json"
 CONTRACT_BYTES = CONTRACT_PATH.read_bytes()
-if hashlib.sha256(CONTRACT_BYTES).hexdigest() != 'bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7':
+if hashlib.sha256(CONTRACT_BYTES).hexdigest() != '0b3e56804dc2e6a1138ac8fdc24376e7189597fceed7543102ec12bec93b8644':
     raise PROOF.VerificationFailure("exact reviewed provider source contract required")
 CONTRACT = json.loads(CONTRACT_BYTES)
 

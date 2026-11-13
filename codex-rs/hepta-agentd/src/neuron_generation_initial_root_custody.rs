@@ -51,10 +51,9 @@ struct OriginalInitialOperation {
 impl OriginalInitialOperation {
     fn read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {
         require_root()?;
-        let original = self.current.recover_initial_operation(
-            &self.recovery.operation_id,
-            self.recovery.intent_digest,
-        )?;
+        let original = self
+            .current
+            .recover_initial_operation(&self.recovery.operation_id, self.recovery.intent_digest)?;
         if original.final_use_binding() != &self.binding {
             return Err(invalid("original initial operation binding changed"));
         }
@@ -86,7 +85,9 @@ impl<W: AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {
         if original.final_use_binding() != prepared.final_use_binding()
             || original.target() != prepared.prepared.target()
         {
-            return Err(invalid("Root custody differs from the original preparation"));
+            return Err(invalid(
+                "Root custody differs from the original preparation",
+            ));
         }
         let operation = OriginalInitialOperation {
             current,
@@ -173,7 +174,9 @@ fn require_root() -> Result<(), AgentdError> {
     // The existing Root directory/current factories remain authoritative.
     // This additional local boundary rejects a process that dropped Root UID.
     if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
-        return Err(invalid("original generation custody requires the Root host"));
+        return Err(invalid(
+            "original generation custody requires the Root host",
+        ));
     }
     Ok(())
 }

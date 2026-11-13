@@ -179,10 +179,10 @@ impl OriginalCircuitPublishedLocalReadV1 {
             )
             .map_err(|error| Error::Owner(crate::AgentdError::Invalid(error.to_string())));
             #[cfg(test)]
-            if response.is_ok() {
-                if let Some(terminal) = &terminal {
-                    terminal.pause_after_original_response(deadline)?;
-                }
+            if response.is_ok()
+                && let Some(terminal) = &terminal
+            {
+                terminal.pause_after_original_response(deadline)?;
             }
             response
         });

@@ -301,10 +301,10 @@ impl NextUseCase {
             }
             drop(task);
         }
-        if let Some(fixture) = self.fixture.take() {
-            if let Err(error) = (*fixture).finish().await {
-                failures.push(error.to_string());
-            }
+        if let Some(fixture) = self.fixture.take()
+            && let Err(error) = (*fixture).finish().await
+        {
+            failures.push(error.to_string());
         }
         anyhow::ensure!(
             failures.is_empty(),
@@ -576,7 +576,7 @@ async fn deadline_case(already_expired: bool) -> anyhow::Result<()> {
         anyhow::ensure!(first.is_err(), "no expired original response is successful");
         anyhow::ensure!(matches!(after, Err(ReadError::Unavailable)), "failure consumes the same channel without retry");
         anyhow::ensure!(served.is_err(), "actual server preserves refusal");
-        anyhow::ensure!(observed.load(Ordering::Acquire) == !already_expired,
+        anyhow::ensure!(observed.load(Ordering::Acquire) != already_expired,
             "pre-expiry refuses before IO; crossing case first produced the actual original response");
         anyhow::ensure!(case.original_bytes()? == before, "deadline failure cannot repair or publish");
         anyhow::ensure!(case.task()?.cell.snapshot(&case.fixture()?.source_c.scope)?.revision == 0,

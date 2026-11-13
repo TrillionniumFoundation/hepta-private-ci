@@ -139,10 +139,10 @@ impl ExportCase {
             }
             drop(task);
         }
-        if let Some(fixture) = self.fixture.take() {
-            if let Err(error) = (*fixture).finish().await {
-                failures.push(error.to_string());
-            }
+        if let Some(fixture) = self.fixture.take()
+            && let Err(error) = (*fixture).finish().await
+        {
+            failures.push(error.to_string());
         }
         anyhow::ensure!(
             failures.is_empty(),

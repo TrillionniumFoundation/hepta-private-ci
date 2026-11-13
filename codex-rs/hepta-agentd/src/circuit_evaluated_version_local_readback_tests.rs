@@ -333,14 +333,14 @@ async fn paused_local_read_case(mode: PausedLocalReadCase) -> anyhow::Result<()>
     // No serving lane is detached merely to turn cleanup into a pass.
     probe.release();
     let mut cleanup_error = None;
-    if let Some(task) = task.take() {
-        if !consumed_join {
-            task.abort();
-            match task.await {
-                Ok(_) => {}
-                Err(error) if error.is_cancelled() => {}
-                Err(error) => cleanup_error = Some(anyhow::anyhow!("local read join: {error}")),
-            }
+    if let Some(task) = task.take()
+        && !consumed_join
+    {
+        task.abort();
+        match task.await {
+            Ok(_) => {}
+            Err(error) if error.is_cancelled() => {}
+            Err(error) => cleanup_error = Some(anyhow::anyhow!("local read join: {error}")),
         }
     }
     if probe.original_submitted() {
