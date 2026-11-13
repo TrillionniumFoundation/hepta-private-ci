@@ -157,6 +157,7 @@ pub struct TestAppServer {
     pending_messages: VecDeque<JSONRPCMessage>,
     auto_env: Option<TestEnv>,
     json_logs: JsonLogCapture,
+    initialization_phase: &'static str,
     // Fields drop in declaration order. Tear down the delayed child before
     // removing an owned CODEX_HOME that may still be its cwd on Windows.
     _delayed_exec_server: Option<(LocalWebsocketExecServer, WebsocketDelayInterposer)>,
@@ -314,11 +315,22 @@ impl TestAppServer {
             pending_messages: VecDeque::new(),
             auto_env: None,
             json_logs,
+            initialization_phase: "not_started",
             _delayed_exec_server: None,
             _attribution_settings_server: None,
             _owned_install_dir: None,
             _owned_codex_home: None,
         })
+    }
+
+    /// Snapshots startup state after a caller's existing initialization timeout.
+    pub fn initialization_timeout_context(&mut self) -> String {
+        let pid = self.process.id();
+        let child_status = self.process.try_wait();
+        format!(
+            "timed out waiting for app-server initialization; phase={}; pid={pid:?}; child_status={child_status:?}",
+            self.initialization_phase
+        )
     }
 
     /// Performs the initialization handshake with the MCP server.
@@ -369,7 +381,9 @@ impl TestAppServer {
         params: InitializeParams,
     ) -> anyhow::Result<JSONRPCMessage> {
         let params = Some(serde_json::to_value(params)?);
+        self.initialization_phase = "write_initialize";
         let request_id = self.send_request("initialize", params).await?;
+        self.initialization_phase = "read_initialize_response";
         let message = self.read_jsonrpc_message().await?;
         match message {
             JSONRPCMessage::Response(response) => {
@@ -382,8 +396,10 @@ impl TestAppServer {
                 }
 
                 // Send notifications/initialized to ack the response.
+                self.initialization_phase = "write_initialized";
                 self.send_notification(ClientNotification::Initialized)
                     .await?;
+                self.initialization_phase = "initialized";
 
                 Ok(JSONRPCMessage::Response(response))
             }
@@ -1932,7 +1948,9 @@ impl TestAppServerBuilder {
         timeout: Duration,
     ) -> anyhow::Result<TestAppServer> {
         let mut server = self.build().await?;
-        tokio::time::timeout(timeout, server.initialize()).await??;
+        tokio::time::timeout(timeout, server.initialize())
+            .await
+            .with_context(|| server.initialization_timeout_context())??;
         Ok(server)
     }
 
