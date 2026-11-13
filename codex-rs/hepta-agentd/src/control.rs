@@ -247,6 +247,21 @@ impl<P: ControlProfile> ControlConnection<P> {
         let (reader, mut writer) = tokio::io::split(stream);
         let frame = frames::read_frame(reader).await?;
         let request: AgentdRequest = serde_json::from_slice(&frame)?;
+        let original_started = std::time::Instant::now();
+        let original_request_id = request.request_id;
+        let original_method = match &request.method {
+            crate::AgentdMethod::ObjectiveStart { .. } => Some("objective_start"),
+            crate::AgentdMethod::Q24OriginalInitialTaskProgress { .. } => {
+                Some("initial_task_progress")
+            }
+            _ => None,
+        };
+        trace_original_control_phase(
+            original_started,
+            original_method,
+            original_request_id,
+            "request-received",
+        );
         let circuit_admission = request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
             && state.circuit_task_enabled()
             && matches!(&request.method, crate::AgentdMethod::ObjectiveStart { .. });
@@ -266,6 +281,12 @@ impl<P: ControlProfile> ControlConnection<P> {
             // ACK must not cancel the continuation after durable computation.
             // The installed task owner still authenticates RunStart and enforces
             // its admission, AuthBus expiry, Circuit budget and lifecycle bounds.
+            trace_original_control_phase(
+                original_started,
+                original_method,
+                original_request_id,
+                "response-before",
+            );
             let outcome = if circuit_admission {
                 P::response(&state, request).await
             } else {
@@ -275,6 +296,12 @@ impl<P: ControlProfile> ControlConnection<P> {
                         AgentdError::Protocol("agentd control response timed out".into())
                     })?
             };
+            trace_original_control_phase(
+                original_started,
+                original_method,
+                original_request_id,
+                "response-returned",
+            );
             match outcome {
                 Ok(response) => response,
                 Err(error) => error_response(
@@ -296,6 +323,12 @@ impl<P: ControlProfile> ControlConnection<P> {
         let completed_circuit = circuit_admission
             && matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)
                 if receipt.disposition.eq("circuit_succeeded"));
+        trace_original_control_phase(
+            original_started,
+            original_method,
+            original_request_id,
+            "write-before",
+        );
         match frames::write_frame(&mut writer, &bytes).await {
             // The original owner and all task postchecks already returned.
             // Losing only its terminal transport ACK cannot undo that work or
@@ -307,9 +340,28 @@ impl<P: ControlProfile> ControlConnection<P> {
                         ErrorKind::BrokenPipe | ErrorKind::ConnectionReset
                     ) =>
             {
+                trace_original_control_phase(
+                    original_started,
+                    original_method,
+                    original_request_id,
+                    "write-lost-after-completion",
+                );
                 Ok(())
             }
-            result => result,
+            result => {
+                let phase = if result.is_ok() {
+                    "write-completed"
+                } else {
+                    "write-failed"
+                };
+                trace_original_control_phase(
+                    original_started,
+                    original_method,
+                    original_request_id,
+                    phase,
+                );
+                result
+            }
         }
     }
 }
@@ -457,3 +509,21 @@ mod tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "control_circuit_completion_test_support.rs"]
 mod circuit_completion_test_support;
+
+fn trace_original_control_phase(
+    started: std::time::Instant,
+    method: Option<&'static str>,
+    request_id: u64,
+    phase: &'static str,
+) {
+    use std::io::Write;
+
+    let Some(method) = method else {
+        return;
+    };
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "original control method={method}; request_id={request_id}; phase={phase}; elapsed_micros={}",
+        started.elapsed().as_micros(),
+    );
+}

@@ -214,11 +214,15 @@ impl AgentdState {
             self.circuit_task_admissions.fetch_add(1, Ordering::AcqRel);
             AdmittedTask(Arc::clone(&self.circuit_task_admissions))
         };
+        let original_started = std::time::Instant::now();
+        trace_original_circuit_phase(original_started, "build-before");
         let request = provider.build(self.identity(), record)?;
+        trace_original_circuit_phase(original_started, "build-returned");
         request
             .validate_record(record, record.snapshot.generation)
             .map_err(task_error)?;
         self.require_current_run_start(record)?;
+        trace_original_circuit_phase(original_started, "submit-before");
         let receipt = match handle.submit(request.clone(), record.clone()).await {
             Err(CircuitTaskErrorV1::CommitUncertain) => {
                 // Observation only: never resubmit computation after ACK loss.
@@ -229,16 +233,22 @@ impl AgentdState {
             }
             result => result.map_err(task_error)?,
         };
+        trace_original_circuit_phase(original_started, "receipt-returned");
         if receipt.trace().run().outcome().is_none() || receipt.trace().run().unresolved() != 0 {
             return Err(task_error(CircuitTaskErrorV1::ReconciliationRequired));
         }
         self.require_current_run_start(record)?;
+        trace_original_circuit_phase(original_started, "publish-before");
         provider.publish_result(self.identity(), record, &receipt)?;
+        trace_original_circuit_phase(original_started, "publish-returned");
         self.require_current_run_start(record)?;
         // Task/source publication is already committed. Learning may await
         // independent business observation or original-owner reconciliation.
         // Never turn that state into another task execution or a reward label.
+        trace_original_circuit_phase(original_started, "observe-before");
         let readiness = self.observe_circuit_learning(record, receipt.trace()).await;
+        trace_original_circuit_phase(original_started, "observe-returned");
+        trace_original_circuit_phase(original_started, "enqueue-before");
         if let Err(error) = self
             .enqueue_original_circuit_learning(record, receipt.trace(), readiness)
             .await
@@ -248,11 +258,25 @@ impl AgentdState {
                 record.snapshot.run_id
             );
         }
+        trace_original_circuit_phase(original_started, "enqueue-returned");
+        trace_original_circuit_phase(original_started, "final-run-start-before");
         self.require_current_run_start(record)?;
+        trace_original_circuit_phase(original_started, "final-run-start-returned");
+        trace_original_circuit_phase(original_started, "receipt-return");
         Ok(Some(receipt))
     }
 }
 
 fn task_error(error: CircuitTaskErrorV1) -> AgentdError {
     AgentdError::Protocol(format!("Circuit task execution failed: {error}"))
+}
+
+fn trace_original_circuit_phase(started: std::time::Instant, phase: &'static str) {
+    use std::io::Write;
+
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "original Objective completion phase={phase}; elapsed_micros={}",
+        started.elapsed().as_micros(),
+    );
 }

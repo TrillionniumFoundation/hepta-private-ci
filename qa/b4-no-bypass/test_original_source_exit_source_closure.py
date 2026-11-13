@@ -150,7 +150,7 @@ CASES = [['control.rs',
    'capture.capture_after_close(closed).await']]]
 
 
-CASES.append(['control.rs', 'fn serve_connection(', ['request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION', 'state.circuit_task_enabled()', 'crate::AgentdMethod::ObjectiveStart', 'P::response(&state, request).await', 'let completed_circuit = circuit_admission', 'matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)', 'if receipt.disposition', '.eq("circuit_succeeded")', 'match frames::write_frame(&mut writer, &bytes).await', 'Err(AgentdError::Io(error))', 'if completed_circuit', 'ErrorKind::BrokenPipe | ErrorKind::ConnectionReset', 'result => result']])
+CASES.append(['control.rs', 'fn serve_connection(', ['request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION', 'state.circuit_task_enabled()', '&& matches!(&request.method, crate::AgentdMethod::ObjectiveStart { .. })', 'P::response(&state, request).await', 'let completed_circuit = circuit_admission', 'matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)', 'if receipt.disposition', '.eq("circuit_succeeded")', 'match frames::write_frame(&mut writer, &bytes).await', 'Err(AgentdError::Io(error))', 'if completed_circuit', 'ErrorKind::BrokenPipe | ErrorKind::ConnectionReset', 'result => {', 'let phase = if result.is_ok()', '\n                result\n']])
 
 class OriginalSourceExitClosureTests(unittest.TestCase):
     setUpClass = classmethod(component.InitialArtifactReadviewClosureTests.setUpClass.__func__)
