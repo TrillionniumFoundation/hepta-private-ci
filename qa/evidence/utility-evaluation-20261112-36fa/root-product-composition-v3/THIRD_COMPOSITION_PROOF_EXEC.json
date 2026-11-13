@@ -1,0 +1,13 @@
+{
+  "scope": "Pure local merged-source byte checker, before any composed source output",
+  "failure": {
+    "chunk_id": "1811d3",
+    "wall_time_seconds": 0.451062998,
+    "exit_code": 1,
+    "original_token_count": 143,
+    "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-product-composition-v3/compose_v3.py\", line 176, in <module>\n    result = mapped_line_splices(before, value, minimal, path)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-root-product-composition-v3/compose_v3.py\", line 108, in mapped_line_splices\n    assert len(candidates) == 1, ('ambiguous or overlapping original-line splice', a, b, sorted(candidates))\n           ^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('ambiguous or overlapping original-line splice', 17, 18, [])\n"
+  },
+  "finding": "Both frozen layers extend the same FLAGS array from 19 to 20 with distinct options. The merged array needs 21 and must keep both flags; accepting either frozen 20 would be an actual combined-source error.",
+  "resolution": "Add one explicit Root integration override 19 + independent additions => 21, with all flag names counted and checked unique. All source packets remain immutable.",
+  "H_calls": 0
+}

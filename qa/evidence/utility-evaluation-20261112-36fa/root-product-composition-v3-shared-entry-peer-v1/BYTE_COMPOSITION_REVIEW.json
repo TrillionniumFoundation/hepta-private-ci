@@ -1,0 +1,305 @@
+{
+  "all_fd_distinct_check_precedes_any_take": true,
+  "both_new_exports_and_existing_cfg_scope_preserved": true,
+  "explicit_caller_dependencies": [
+    {
+      "after": {
+        "bytes": 4430,
+        "git_blob": "435274b3467d2cfc0efe010d46d826abab85fb69",
+        "sha256": "c1cf6afbb04103ba0278b9e786cd3250fd34ea22b30a4196d5ac41878c909513"
+      },
+      "before": {
+        "bytes": 4377,
+        "git_blob": "bb1285e584a756337a7f9ebc81649b981fbeaff6",
+        "sha256": "d8a31e6f723e041831be1be184d74db224c3fa8f02247434d6eb07871f4f73a1"
+      },
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs"
+    },
+    {
+      "after": {
+        "bytes": 4554,
+        "git_blob": "795919fba7d105b4515b9e1188e3613806f33652",
+        "sha256": "d3efc2e86c9bcf8f69dd7ce99417fa414ea429e772fdf4e594da1646612986ab"
+      },
+      "before": {
+        "bytes": 4491,
+        "git_blob": "9967f902e6527823eb478fc972046612ae8e19d1",
+        "sha256": "da35e6364e0bf0b7c23870224f7cd5e9a07cc47cbf1d6f5e5275058bf0c8cafa"
+      },
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs"
+    },
+    {
+      "after": {
+        "bytes": 8638,
+        "git_blob": "a6f8ef7d478477d9072747ddb530cf1105e2c3e3",
+        "sha256": "b67e6343872301af145054827ba27cd01cc09a0d76e98f5b9a3bd20de78789ea"
+      },
+      "before": {
+        "bytes": 8605,
+        "git_blob": "f4e3d8619f0d369d693a690afdaa9676d61aaa08",
+        "sha256": "fce1c945c548f1651e0ebfc5f9a20f682c008c2883e89e46f20e45dfe5699a34"
+      },
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs"
+    },
+    {
+      "after": {
+        "bytes": 2302,
+        "git_blob": "437bf64d0ad7fc535e9bda389e27a6e0520a7b12",
+        "sha256": "c2f0c204d115cfd1e44594432795d8c01a96bc6bcb07e8e89edaba7f41774674"
+      },
+      "before": {
+        "bytes": 2261,
+        "git_blob": "63d22a2370d87c3a85fb66eea7ffeaae7f389d62",
+        "sha256": "e6cba8e0930cbcbb3812f8b3173fdb831a012122352b385062bb064fa59da6cc"
+      },
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-agentd/src/production_resident_enrollment.rs"
+    },
+    {
+      "after": {
+        "bytes": 4531,
+        "git_blob": "3850ae525188a7b676be62f5e4f01596cdc5ee3b",
+        "sha256": "5357b294625baa8aaf88f6bc6146b4516640e1ccf2b5935adeec6195523678a1"
+      },
+      "before": {
+        "bytes": 4518,
+        "git_blob": "6549521642a0989f351591d2b10f91c85e168cf2",
+        "sha256": "a27ce568d2a3e73fd9c3a73c44be7ccdffa2bacc2ecb7b4c302bb863223cb529"
+      },
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs"
+    }
+  ],
+  "fd_numbers": [
+    "Some(handoff)",
+    "learning_handoff",
+    "resident_handoff",
+    "original_task_handoff",
+    "Some(control)",
+    "Some(app_server)",
+    "payload",
+    "notes",
+    "notes_deployment",
+    "notes_listener",
+    "notes_session",
+    "desktop_handoff",
+    "desktop_deployment",
+    "desktop_session"
+  ],
+  "flag_names": [
+    "--root-production-profile",
+    "--root-production-handoff-fd",
+    "--root-learning-handoff-fd",
+    "--root-resident-learning-handoff-fd",
+    "--root-original-task-handoff-fd",
+    "--root-production-uid",
+    "--root-production-gid",
+    "--root-production-control-fd",
+    "--root-production-app-server-fd",
+    "--android-runtime-server",
+    "--android-runtime-environment",
+    "--android-original-payload-fd",
+    "--android-original-deadline-ns",
+    "--notes-production-handoff-fd",
+    "--root-production-lifetime-ms",
+    "--notes-literal-deployment-fd",
+    "--notes-literal-ui-fd",
+    "--notes-session-pidfd",
+    "--desktop-production-handoff-fd",
+    "--desktop-thread-deployment-fd",
+    "--desktop-session-pidfd"
+  ],
+  "format": "hepta-e2-e3-v3-shared-entry-independent-byte-proof-v1",
+  "four_files": [
+    {
+      "E2": {
+        "bytes": 19719,
+        "git_blob": "9a9792a4c3750943e70fd8b21e7dd24240cffa69",
+        "sha256": "52c79f00e1c9922bb59bdbfacd6c89f05c8a6d720ce1bf45b07702debae35cf6"
+      },
+      "E3": {
+        "bytes": 19432,
+        "git_blob": "f29e59294cd29d1d65cef57e9fc3d036ce172c9e",
+        "sha256": "c3d0cdc497d60897a5f84acafbc7d3605b5d9838fa8505c15d607c0ddb72b79c"
+      },
+      "base": {
+        "bytes": 18594,
+        "git_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+        "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097"
+      },
+      "coincident_insertions": [
+        {
+          "E2_insert": "    original_task_handoff: Option<crate::RootOriginalTaskHandoffV1>,\n",
+          "E3_insert": "    resident_handoff: Option<UnixDatagram>,\n    resident_end: Option<Instant>,\n",
+          "line_boundary": 69
+        },
+        {
+          "E2_insert": "                    original_task_handoff,\n",
+          "E3_insert": "                    resident_handoff,\n",
+          "line_boundary": 86
+        },
+        {
+          "E2_insert": "                    original_task_handoff,\n",
+          "E3_insert": "                    resident_handoff,\n                    resident_end: None,\n",
+          "line_boundary": 117
+        },
+        {
+          "E2_insert": "            original_task_handoff: _,\n",
+          "E3_insert": "            resident_handoff,\n            resident_end,\n",
+          "line_boundary": 211
+        }
+      ],
+      "composed": {
+        "bytes": 20557,
+        "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+        "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+      },
+      "independently_woven_exact": true,
+      "only_noninsert_overlap": null,
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+    },
+    {
+      "E2": {
+        "bytes": 16586,
+        "git_blob": "486b554be2934865521e59fb6df89f254264e186",
+        "sha256": "8039a1bbd3fbe50218302127b1c90b6ec725d0dc763a91fce2ac41c85ee30690"
+      },
+      "E3": {
+        "bytes": 16728,
+        "git_blob": "4c9e7fc3cff82305c4b6efb557a08a780816567f",
+        "sha256": "bf0fa5c09ff44581d3ba10a5e0d57ca2f94895c721d0883a2a687f0345076f87"
+      },
+      "base": {
+        "bytes": 16134,
+        "git_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+        "sha256": "2f756431d4f8749930a6cfc7c1c1647f7131770d785bc1b1986774954e44659e"
+      },
+      "coincident_insertions": [
+        {
+          "E2_insert": "    \"--root-original-task-handoff-fd\",\n",
+          "E3_insert": "    \"--root-resident-learning-handoff-fd\",\n",
+          "line_boundary": 21
+        },
+        {
+          "E2_insert": "    pub(super) original_task_handoff: Option<UnixDatagram>,\n",
+          "E3_insert": "    pub(super) resident_handoff: Option<UnixDatagram>,\n",
+          "line_boundary": 49
+        },
+        {
+          "E2_insert": "    let original_task_handoff = selected\n        .remove(\"--root-original-task-handoff-fd\")\n        .map(descriptor_number)\n        .transpose()?;\n",
+          "E3_insert": "    let resident_handoff = selected\n        .remove(\"--root-resident-learning-handoff-fd\")\n        .map(descriptor_number)\n        .transpose()?;\n    if resident_handoff.is_some() && learning_handoff.is_some() {\n        return Err(invalid(\"resident V3 and original V1 learning handoffs are exclusive\"));\n    }\n",
+          "line_boundary": 150
+        },
+        {
+          "E2_insert": "        original_task_handoff,\n",
+          "E3_insert": "        resident_handoff,\n",
+          "line_boundary": 227
+        },
+        {
+          "E2_insert": "        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let original_task_handoff = original_task_handoff\n",
+          "E3_insert": "        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let resident_handoff = resident_handoff\n",
+          "line_boundary": 261
+        },
+        {
+          "E2_insert": "            original_task_handoff,\n",
+          "E3_insert": "            resident_handoff,\n",
+          "line_boundary": 307
+        }
+      ],
+      "composed": {
+        "bytes": 17180,
+        "git_blob": "22d033fd7e565eb7b09d26699d931407a7f2c643",
+        "sha256": "4d428571bf71c4c248f649a475a68b1f6ea8e3954699a756a5c416c1ac00c4d8"
+      },
+      "independently_woven_exact": true,
+      "only_noninsert_overlap": "FLAGS 19 -> 20 + 20 explicitly composed to 21",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+    },
+    {
+      "E2_splices": [
+        {
+          "after": "pub use root_production_handoff::RootOriginalTaskHandoffV1;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::receive_root_original_task_handoff;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::RootProductionWriterDescriptor;",
+          "before": "pub use root_production_handoff::RootProductionWriterDescriptor;",
+          "path": "codex-rs/hepta-agentd/src/lib.rs"
+        },
+        {
+          "after": "mod root_production_handoff;\n#[cfg(target_os = \"linux\")]\n#[path = \"root_original_task_descriptor.rs\"]\nmod root_original_task_descriptor;",
+          "before": "mod root_production_handoff;",
+          "path": "codex-rs/hepta-agentd/src/lib.rs"
+        }
+      ],
+      "E3_added_suffix": {
+        "bytes": 418,
+        "git_blob": "01c3a92e24f35794931338e7dcb5b13233091355",
+        "sha256": "f9400a61f3648abab9f257fe73c8c17fdd66d53346318a744d9b705f411b02dc"
+      },
+      "complete_inverse_equal": true,
+      "composed": {
+        "bytes": 73959,
+        "git_blob": "049281fe0eb99c95f307d9e8b42d05a40af27254",
+        "sha256": "72f25ccf4aa8123eb8fd971f823a0677db9a20593861f91143dcf0d2adda5977"
+      },
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "previous_v2": {
+        "bytes": 73248,
+        "git_blob": "4b1d8dc4807161906a61950c8830a7ff6ba34c5c",
+        "sha256": "6e027778820c896c4dc3328fd2c20b5ca57acf6170f574820ba5d780389e5af6"
+      }
+    },
+    {
+      "before": {
+        "bytes": 13038,
+        "git_blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+        "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+      },
+      "composed": {
+        "bytes": 13161,
+        "git_blob": "6ccf0bb873caaad408cf3fbf3bb489216b80f5a9",
+        "sha256": "9914e00a4bf762a89c15990e30d25d6c21719b29fd161af608a13b8ec142537d"
+      },
+      "exact_E2_after": true,
+      "path": "codex-rs/hepta-agentd/src/main.rs"
+    }
+  ],
+  "input_packets": [
+    {
+      "bytes": 426837,
+      "git_blob": "388bfb3f3ab70e5f39d847c26d2d48daa2c7ead1",
+      "path": "/tmp/hepta-36fa-root-product-e3-proposal-v1/late-enrollment-layer-v1/SOURCE_PACKET.json",
+      "sha256": "461a98580f070c8d1a355704732ef0a961249cc019d6c0143d46d04b8cf16933"
+    },
+    {
+      "bytes": 556937,
+      "git_blob": "65e62f807885cd890d8fa9944c58e232dc55ae01",
+      "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/SOURCE_PACKET.json",
+      "sha256": "37dd57a99c5ca3c029e4d8a41fd3e4d0a221559cd33245a21a610946139395cc"
+    },
+    {
+      "bytes": 53303,
+      "git_blob": "f1306c1243c83a758385cb592710e4fd30010a78",
+      "path": "/tmp/hepta-36fa-root-product-e3-proposal-v1/explicit-callers-increment-v1/SOURCE_PACKET.json",
+      "sha256": "740b8d167a862ec666c6c80a77d77b212dcba4ba70fea9899ef3fff32de7167d"
+    }
+  ],
+  "legacy_v1_and_resident_v3_exclusion_preserved": true,
+  "not_performed": [
+    "project imports",
+    "formatter",
+    "compiler",
+    "tests",
+    "QA",
+    "H",
+    "source Git/ref changes"
+  ],
+  "root_composition_review": {
+    "bytes": 78780,
+    "git_blob": "0f4c064a865c44a648e8e8b6c3f6e0b5741ae744",
+    "path": "/tmp/hepta-36fa-root-product-composition-v3/PREQUALIFICATION_COMPOSITION_REVIEW.json",
+    "sha256": "0202156c9cda660305df3245a767ee247a9307e1320d6173dbe2dd92ef95842d"
+  },
+  "scope": "Four shared entry files plus five spelling-only dependency mappings. No full79 semantic review claim.",
+  "task_install_before_launch_run_and_enrollment": true
+}

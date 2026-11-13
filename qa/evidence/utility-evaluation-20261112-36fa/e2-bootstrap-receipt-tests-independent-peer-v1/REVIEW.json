@@ -1,0 +1,104 @@
+{
+  "actual_reproducer_response": {
+    "bytes": 413,
+    "git_blob": "c56d6c2ffc8b01356180e0b36020ebbfd25450e3",
+    "path": "/tmp/hepta-36fa-e2-bootstrap-receipt-tests-independent-review-v1/BYTE_VERIFIER_EXEC.original.json",
+    "sha256": "c749a17ae9089d066847411d2e2da4f59c0d84498fb7d2577bd840df3a44353c"
+  },
+  "byte_review": {
+    "bytes": 5489,
+    "git_blob": "bd8c6a106e5162db816f62af7c6c940556528b9a",
+    "path": "/tmp/hepta-36fa-e2-bootstrap-receipt-tests-independent-review-v1/BYTE_REVIEW.json",
+    "sha256": "0b740ae154f1f90f5e15a112622ada341eb1abeffe587edeaa0c24d18164bcb8"
+  },
+  "findings": [
+    {
+      "finding": "The test creates the original CircuitCellRegistryV1 from the retained configuration fixture, decodes its complete encoding, compares the exact definition and definition digest, and compares the whole re-encoded registry. Every original Cell is separately encoded/decoded and compared as the complete typed CellDefinitionV1 after EOF. This exercises the full immutable model/calibration/resource/SparseConfig/candidate fields rather than only a digest.",
+      "id": "T1",
+      "limit": "It does not exercise the sealed task descriptor, credential drop, Source bootstrap fence/lease projection or real socket endpoints.",
+      "method": "original_root_bootstrap_preserves_complete_registry_and_cells"
+    },
+    {
+      "finding": "A valid decode is established first. Five exact negative cases cover trailing data, truncation, semantically parseable but noncanonical leading JSON whitespace with its length adjusted, excessive binding count and aggregate frame size65537. Every case requires exact Error::InvalidBinding. A final re-encode of the untouched original registry remains equal. The bad-count test writes the count immediately after the full definition JSON length/body, not a guessed unrelated offset.",
+      "id": "T2",
+      "limit": "These are pure configuration-codec cases, not malformed network-session, pidfd or authorization tests.",
+      "method": "original_root_bootstrap_rejects_noncanonical_or_incomplete_data"
+    },
+    {
+      "finding": "The preceding IPC driver90075e64 and its actual Cell/AutomationStore fixture produce first via Drive; no Receipt/trace/admission literal is constructed by this new test. One actual completed dispatch and its retained input feed original_completion_bytes. A subsequent Readback of the same driver must yield equality of complete Receipt and completion bytes. The controlled model call counter must stay1.",
+      "id": "T3",
+      "limit": "This is same-process original-owner readback in the controlled inference fixture. It is not real Root/daemon IPC, real-model-quality evidence or process cold recovery.",
+      "method": "original_completion_loan_encodes_the_actual_receipt_and_readback"
+    },
+    {
+      "finding": "The positive completion bytes come from the actual original Driver Receipt. Independent changes to request run ID, retained input scope and retained input source frontier each require exact InvalidBinding. Rechecking the original legal input must yield the same complete completion bytes, and inference count remains1. No Source publication method or authorization-issuing constructor is invoked.",
+      "id": "T4",
+      "limit": "The test does not prove the live reverse-lane loan, authenticated Source owner publication or true caller/runtime delivery.",
+      "method": "original_completion_loan_refuses_foreign_run_and_saved_input"
+    },
+    {
+      "finding": "Both new async bodies return Result and then await driver.store.close before returning that Result, so normal success and propagated Result errors share the original store close. New assertions in those bodies use anyhow::ensure and error propagation. The tests do not spawn detached workers or expose a new hook.",
+      "id": "T5",
+      "limit": "The inherited fixture itself uses expect/checked, and outer test-future cancellation/panic is not a demonstrated joined cleanup path. The source comments correctly disclaim such a claim.",
+      "subject": "Cleanup and uncertainty"
+    },
+    {
+      "finding": "The complete13058-byte parent equals the frozen IPC06daf after image9a84dfc4. Its only change is the116-byte terminal Linux-gated mount; every old test and helper remains byte-identical. The7105-byte new test file is absent from canonical b608 and the fixed v3 view. Full patch regeneration matches. The private Driver90075e64, original_completion_bytes provider and four production codec files match the frozen preceding packets and the current v3 view.",
+      "id": "T6",
+      "limit": "The canonical pre-IPC Driver uses a different generic shape; this review deliberately binds the actual IPC after image used by these tests and does not substitute the older reference file.",
+      "subject": "Whole-byte parent and dependency binding"
+    }
+  ],
+  "format": "hepta-e2-bootstrap-receipt-tests-independent-review-v1",
+  "limitations": {
+    "H_calls": 0,
+    "QA_executed": false,
+    "Rust_compilation": false,
+    "formatter_or_fix": false,
+    "no_live_source_preservation_claim": true,
+    "not_a_qualification_pass": true,
+    "not_an_execution_approval": true,
+    "publication": "Only local computed content identities; no reviewer Git upload/fullGET claimed.",
+    "source_execution_state_remains": "Unknown",
+    "source_or_ref_mutations_by_reviewer": 0,
+    "tests_run": 0
+  },
+  "pure_reproducer": {
+    "bytes": 5971,
+    "git_blob": "9e621bbc8efc284ee993376aa27e6fb8fb55a1b6",
+    "path": "/tmp/hepta-36fa-e2-bootstrap-receipt-tests-independent-review-v1/verify_test_layer.py",
+    "sha256": "43fab7f18c5a32e4e20a4e1c118eb81d80a681396b58c05785db7b8c38aad1a7"
+  },
+  "registration": {
+    "candidate_registry_update_pending": true,
+    "four_fqns_match_exact_source_attributes": true,
+    "linux_only_child_mount": true,
+    "no_root_workflow_parent_increase_from_this_layer": true,
+    "original_tests_rewritten_or_deleted": 0
+  },
+  "reviewer": "/root/native_ci_audit",
+  "scope": {
+    "async_tests": 2,
+    "modified_test_files": 1,
+    "new_test_files": 1,
+    "new_test_methods": 4,
+    "paths": 2,
+    "production_edits": 0,
+    "production_test_hooks_added": 0,
+    "root_ignored_cases_added": 0,
+    "sync_tests": 2
+  },
+  "source_manifest": {
+    "bytes": 1704,
+    "git_blob": "f07684c21688a76e306c85145cf9128df9f832b3",
+    "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/bootstrap-receipt-tests-layer-v1/MANIFEST.json",
+    "sha256": "01bb2559e9a0fd281c84b3f0f97e71297226e4a997427060c6c7e7519275c47e"
+  },
+  "source_packet": {
+    "bytes": 35549,
+    "git_blob": "3ce8abde6fd4ddb09d1b020d0be1eb004cabbc54",
+    "path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/bootstrap-receipt-tests-layer-v1/SOURCE_PACKET.json",
+    "sha256": "b1412eb987ffc9ca2a86bbc593808e158f7ef0a11f2346cb53dc7fca07c2194a"
+  },
+  "status": "NO_NEW_CONCRETE_STATIC_BLOCKER_IN_FIXED_TWO_FILE_TEST_LAYER"
+}

@@ -1,0 +1,445 @@
+{
+  "actual_reproducer_response": {
+    "bytes": 537,
+    "git_blob": "004156977e0d9ed49c45968f59f12c95d94415cb",
+    "local_path": "/tmp/hepta-36fa-root-product-e2-ordinary-handoff-independent-review-v1/BYTE_VERIFIER_EXEC.original.json",
+    "sha256": "db2fb945c08f61758385b6d3ff7784f6c214fd9af9854d6c1c96e09bc4842cda"
+  },
+  "byte_proof": {
+    "bytes": 64091,
+    "git_blob": "ab0e2ce899c139054f30d95a5780258d488a54b4",
+    "local_path": "/tmp/hepta-36fa-root-product-e2-ordinary-handoff-independent-review-v1/BYTE_AND_PREIMAGE_REVIEW.json",
+    "sha256": "f54a456540ebd70c167dee9aeb794c19259950d57659fa6ef67a5a48a27bf24f"
+  },
+  "findings": [
+    {
+      "conclusion": "The same retained Root session supplies both the original host lanes and the unique original task lane.",
+      "evidence": [
+        {
+          "lines": "39-68",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+          "pin": {
+            "bytes": 6524,
+            "git_blob": "6d5e38822bc2cace461f3dab10adf9b11f393474",
+            "sha256": "913c266ac06a429003c94134ceaf8e2d905f0215335e4ab959ec41f4f962042f"
+          },
+          "supports": "current-generation reads, same session registration/bootstrap, lane take before bind/seal/send"
+        },
+        {
+          "lines": "8-36",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_task_host.rs",
+          "pin": {
+            "bytes": 1633,
+            "git_blob": "0755d66f8d722f2d258fbddb6dffe022a46f6476",
+            "sha256": "bac461284445a0378df7a5db93c3cc4ba66055698ad5121bae5932a390ef5e76"
+          },
+          "supports": "private borrowed service/config/registration/owner and original BoundLanes"
+        }
+      ],
+      "id": "E2-ORD-01",
+      "qualification": "Original host configuration always includes three base lanes and permits the Device/Notes pair only together. Calling this five lanes is accurate only for that five-lane configuration. root_admin and legacy learning retained owners are explicitly rejected rather than silently discarded.",
+      "reasoning": "The new private borrow has no replacement service, issuer, clock, writer, registry or callback authority. It uses the already-open session service and original bind_runtime_lanes/serve_bound_lanes. The one task lane is consumed before any new listener or handoff effect. Failures do not restore that lane. The read-only full registry/source projection before take does not consume or replace the original owners."
+    },
+    {
+      "conclusion": "The two handoffs have distinct markers and real credential, rights and pidfd checks.",
+      "evidence": [
+        {
+          "lines": "1-109",
+          "path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+          "pin": {
+            "bytes": 5858,
+            "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+            "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+          },
+          "supports": "separate task marker, exact two rights, actual non-Root receiver and same original Root pidfd"
+        },
+        {
+          "lines": "1-171",
+          "path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+          "pin": {
+            "bytes": 8203,
+            "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+            "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+          },
+          "supports": "sealed immutable descriptor and recipient identity binding"
+        }
+      ],
+      "id": "E2-ORD-02",
+      "qualification": "Decoded data are not proof that a task ran. The matching Root process must still own the actual retained Cell/Source service and satisfy its live checks.",
+      "reasoning": "The new task marker is HEPTA_ROOT_ORIGINAL_TASK_HANDOFF_V1; the retained original marker is HEPTA_ROOT_PRODUCTION_INPUTS_V1. The new marker is sent on a distinct inherited Root-created pair. The old root_pair, require_root_pin, seal and send_packet helpers are not modified. MSG_CMSG_CLOEXEC, exact payload/rights/truncation checks, repeated original Root pidfd checks, actual real/effective nonzero daemon UID/GID and recipient PID are retained on the new receive path. Only immutable bounded data plus the original Root pidfd are transferred; no durable writer or executable Cell handle is decoded."
+    },
+    {
+      "conclusion": "The daemon performs its original credential drop before either task receipt or task socket connection, and installs into the same Config.",
+      "evidence": [
+        {
+          "lines": "83-131,198-221",
+          "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "pin": {
+            "bytes": 19719,
+            "git_blob": "9a9792a4c3750943e70fd8b21e7dd24240cffa69",
+            "sha256": "52c79f00e1c9922bb59bdbfacd6c89f05c8a6d720ce1bf45b07702debae35cf6"
+          },
+          "supports": "drop_to_owner before receives; consuming Option::take install; refusal of unconsumed task handoff"
+        },
+        {
+          "lines": "53-109",
+          "path": "codex-rs/hepta-agentd/src/root_original_task_handoff.rs",
+          "pin": {
+            "bytes": 5858,
+            "git_blob": "745afe8685bb1bb76393d56f178129668e62a9f1",
+            "sha256": "af49272ac8e0e9af92052a3aec310b650774afcfe73e4e3f81ecd7ce6603ff88"
+          },
+          "supports": "two async real connects and same-config installation"
+        },
+        {
+          "lines": "1-32",
+          "path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+          "pin": {
+            "bytes": 1210,
+            "git_blob": "c45c8b0beb595f9a121c4436225a48d9bbf01df6",
+            "sha256": "50daef2871fcbce54bdf071ecdcc9f032ffc310b5dd2ab203b73f7125c887c6e"
+          },
+          "supports": "same original task-bootstrap gate"
+        },
+        {
+          "lines": "228-247",
+          "path": "codex-rs/hepta-agentd/src/main.rs",
+          "pin": {
+            "bytes": 13161,
+            "git_blob": "6ccf0bb873caaad408cf3fbf3bb489216b80f5a9",
+            "sha256": "9914e00a4bf762a89c15990e30d25d6c21719b29fd161af608a13b8ec142537d"
+          },
+          "supports": "install before launch.run"
+        }
+      ],
+      "id": "E2-ORD-03",
+      "qualification": "This layer adds the optional daemon-side path; it does not add the missing Root binary/CLI loader which supplies the actual authority host inputs and invokes the new Root handoff method.",
+      "reasoning": "The existing config.prepare_root_handoff(uid,gid)?.drop_to_owner()? expression remains unchanged. The task offer is received after this expression. install takes the one stored offer and passes the already-configured AgentdConfig through its original bootstrap installer. Root UID/PID, daemon identity, original full source binding, pidfd liveness and both real SO_PEERCRED channels are checked. No replacement Config, Store, RunStart or writer is constructed. A failed or cancelled consuming install does not reinsert the offer."
+    },
+    {
+      "conclusion": "Startup uses one existing maximum 30-second boundary, and task traffic retains its original fixed end, 500ms exchanges and shared 128-operation budget.",
+      "evidence": [
+        {
+          "lines": "39-96",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+          "pin": {
+            "bytes": 6524,
+            "git_blob": "6d5e38822bc2cace461f3dab10adf9b11f393474",
+            "sha256": "913c266ac06a429003c94134ceaf8e2d905f0215335e4ab959ec41f4f962042f"
+          },
+          "supports": "one startup_end used for both sends, both accepts and passive first-frame wait"
+        },
+        {
+          "lines": "61-116",
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+          "pin": {
+            "bytes": 5139,
+            "git_blob": "7ebfbb75fc66786188d09db8318551490c42836e",
+            "sha256": "3c6c6d5d91031803a4143dddb67f1588752531382ceaff9fa0ac891131b48913"
+          },
+          "supports": "bounded accepts and non-consuming readiness poll"
+        },
+        {
+          "lines": "116-171",
+          "path": "codex-rs/hepta-agentd/src/root_original_task_descriptor.rs",
+          "pin": {
+            "bytes": 8203,
+            "git_blob": "4834095d235e5027ba500e620a6b7adb801e24bf",
+            "sha256": "dbe1f7a644cab04a7ba34b12bfc1f71ea1b4b0f9fabdd475c6562bca1ee1cea8"
+          },
+          "supports": "absolute monotonic conversion conservatively shortens the original end"
+        },
+        {
+          "lines": "72-104",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "pin": {
+            "bytes": 10937,
+            "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+            "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+          },
+          "supports": "Budget::new(end), two purposes share one Arc budget and final expiry check"
+        },
+        {
+          "lines": "1-120",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+          "pin": {
+            "bytes": 4376,
+            "git_blob": "c3da579114e1b4b2af2dd52785afc67980595051",
+            "sha256": "72b6616733eaa6213c17a44a9f7ceaf7caa3eb93b56194fa88435c9ea47c9a0c"
+          },
+          "supports": "old entry wrapper and explicit until entry"
+        }
+      ],
+      "id": "E2-ORD-04",
+      "qualification": "The separately retained original host-lane service still uses its own original configured lifetime. This review does not claim all host threads terminate at the task end, or that an operation is known NotApplied after timeout.",
+      "reasoning": "Root computes startup_end before projections and takes min(now+30s, self.end). The task first-frame poll does not consume protocol bytes or start a new 30-second timer. The descriptor transports the existing absolute operation end; both clock-conversion directions subtract later samples conservatively. On the daemon the original bootstrap deadline remains common across receipts, and each actual task connect is bounded by min(now+500ms, descriptor.end). Purpose Task and Loan stay distinct. The original purpose-layer wire implementation is unchanged: both task/reverse lanes share one local Budget with limit128, per-call TIMEOUT500ms, no queue/reconnect and permanent loss of a taken channel on uncertain I/O."
+    },
+    {
+      "conclusion": "Root listener ownership and exact peer checks remain on the real socket path.",
+      "evidence": [
+        {
+          "lines": "1-116",
+          "path": "codex-rs/hepta-agentd/src/authority_host_task_listeners.rs",
+          "pin": {
+            "bytes": 5139,
+            "git_blob": "7ebfbb75fc66786188d09db8318551490c42836e",
+            "sha256": "3c6c6d5d91031803a4143dddb67f1588752531382ceaff9fa0ac891131b48913"
+          },
+          "supports": "original safe parent/path validation, create-only binds, inode-scoped cleanup and owner checks"
+        },
+        {
+          "lines": "73-96",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+          "pin": {
+            "bytes": 6524,
+            "git_blob": "6d5e38822bc2cace461f3dab10adf9b11f393474",
+            "sha256": "913c266ac06a429003c94134ceaf8e2d905f0215335e4ab959ec41f4f962042f"
+          },
+          "supports": "real accepted task and loan streams and original HostAuthorityPeerChannel"
+        }
+      ],
+      "id": "E2-ORD-05",
+      "qualification": "The passive first-frame poll watches task readiness and repeats owner/deadline checks; it can wait until the common startup boundary when only the owner changes. No claim of immediate peer-death wakeup is made.",
+      "reasoning": "Both task paths must be distinct absolute paths under the original Root:peer-gid mode02710 runtime directory. Listeners are created by binding those paths, retain actual device/inode identities, require exact socket owner/group/mode and use nonblocking accepts. Cleanup only removes the still-matching listener inode. HostAuthorityPeerChannel repeats actual SO_PEERCRED uid/pid and original held-pidfd checks. The source binding, nonce and typed purpose remain checked by the original remote protocol."
+    },
+    {
+      "conclusion": "The complete immutable Cell registry and Source configuration are transported as bounded data and validated again.",
+      "evidence": [
+        {
+          "lines": "1-108",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs",
+          "pin": {
+            "bytes": 5242,
+            "git_blob": "bdb472b75ef0677e6561bb9f8f139c796c2dd820",
+            "sha256": "885ea09f3719b951da7eb3679530bfbb273c415de974fa2ef4b7b4afd4ae2ece"
+          },
+          "supports": "65536-byte aggregate, checked lengths/counts, canonical JSON and trailing-byte rejection"
+        },
+        {
+          "lines": "1-184",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_cell.rs",
+          "pin": {
+            "bytes": 7905,
+            "git_blob": "101254a1284fcad26f6da8127a76a6ba5e46d2b5",
+            "sha256": "b8a4f0ba7e2817422e37cf87a50a0fa333e543af3ca40f000fd400b7e61aca94"
+          },
+          "supports": "complete Cell/runtime/calibration/resource/SparseConfig encoding and semantic_digest checks"
+        },
+        {
+          "lines": "1-50",
+          "path": "codex-rs/hepta-agentd/src/circuit_cell_registry_bootstrap.rs",
+          "pin": {
+            "bytes": 2086,
+            "git_blob": "67095dd0685e6a921d525ad41e95619cc1b118f8",
+            "sha256": "5592b070b410a3feec1add96fea824288343d9db5ff50ce5c331fca234e65d7f"
+          },
+          "supports": "full original definition, bindings, routes and constructor/reencode checks"
+        },
+        {
+          "lines": "1-40",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_bootstrap.rs",
+          "pin": {
+            "bytes": 1960,
+            "git_blob": "aebdc81d5abc60ab64df221f6cf50d2cbc45e48d",
+            "sha256": "efc324d5d42e0d973529c2eaabd852ec57e5c5e46aad40d6435bc983832fdcba"
+          },
+          "supports": "current Source lock and original complete inner input bytes"
+        }
+      ],
+      "id": "E2-ORD-06",
+      "qualification": "Legitimate configuration exceeding the aggregate bound is rejected; this is not a new capacity increase. Structural field-presence evidence is separate from human codec-order review and is not a Rust roundtrip execution.",
+      "reasoning": "The decoder never returns a writer, model service, execution permission or task receipt. Full canonical definition/fence JSON and all original immutable Cell data fields are carried. Count limits are explicit (16 bindings, 256 candidates/routes/edges, 4096 inhibition entries); allocation follows bounded input and validated counts. Registry construction and semantic validation are original, and full canonical re-encoding must match. Source snapshot requires the actual owner current before and after, one source, full original fence/input/lease data. The final outer offer remains bounded to 65536 bytes."
+    },
+    {
+      "conclusion": "The new inner Source decoder is a mechanical extraction, not a synthetic dispatch wrapper.",
+      "evidence": [
+        {
+          "lines": "256-376",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+          "pin": {
+            "bytes": 19407,
+            "git_blob": "934e400e9f88fd779ee7fa8a0d8cf2538b89c2b1",
+            "sha256": "1acaa1c500da3191a23cf8a7aa8ec4d511fd6029294c8d8fe3735b19fdaf57d5"
+          },
+          "supports": "unchanged encoder body and complete inner decode body"
+        },
+        {
+          "lines": "20-40",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_bootstrap.rs",
+          "pin": {
+            "bytes": 1960,
+            "git_blob": "aebdc81d5abc60ab64df221f6cf50d2cbc45e48d",
+            "sha256": "efc324d5d42e0d973529c2eaabd852ec57e5c5e46aad40d6435bc983832fdcba"
+          },
+          "supports": "decodes configuration bytes directly"
+        }
+      ],
+      "id": "E2-ORD-07",
+      "reasoning": "Independent byte comparison proves the full 1372-byte old inner decode body, including bounded candidate parsing, EOF check, original encode_input validation and canonical equality, is identical. The encoder body is also identical except visibility. Original decode_input still requires HCSTINP1 and its original serialized dispatch before calling the extracted decoder. The new configuration path does not invent a dispatch or feed a fake HCSTINP1 frame. Existing Source publication/receipt methods are unchanged."
+    },
+    {
+      "conclusion": "Original task execution and publication remain behind the previously reviewed real IPC/owner path.",
+      "evidence": [
+        {
+          "lines": "1-120",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+          "pin": {
+            "bytes": 5080,
+            "git_blob": "acad0d860dc14149cdf34e4bf690e2145584b7da",
+            "sha256": "5d5503329768728ce8e8ff6b200f4c3fcf6fa7d1f931919e881111238b7410ed"
+          },
+          "supports": "sealed factory projection and original take semantics"
+        },
+        {
+          "lines": "1-34",
+          "path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+          "pin": {
+            "bytes": 1401,
+            "git_blob": "833ece2e3a40d6ad7b1d7f98f56fab925436013c",
+            "sha256": "e5d6874d4994b55da6492b38a6d0bc024b2acf5ee7be42a72dce6ceadfc4773c"
+          },
+          "supports": "same source/readback and Cell pump"
+        },
+        {
+          "lines": "106-211",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "pin": {
+            "bytes": 10937,
+            "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+            "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+          },
+          "supports": "original loans, actual computation admission and real Cell decision readback"
+        }
+      ],
+      "id": "E2-ORD-08",
+      "reasoning": "The purpose-layer original remote service was read in full. It retains actual original source/custody checks before and after requests, exact record and dispatch checks, the original Cell pump, terminal reporting after synchronous execution, durable Source publication and readback. This ordinary layer does not edit that service, the TaskDriver, the AutomationStore transaction flow or the daemon loan responder. It does not use direct Receipt construction as product evidence."
+    },
+    {
+      "conclusion": "Scoped threads retain real borrowed host ownership, while errors preserve uncertainty.",
+      "evidence": [
+        {
+          "lines": "68-107",
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs",
+          "pin": {
+            "bytes": 6524,
+            "git_blob": "6d5e38822bc2cace461f3dab10adf9b11f393474",
+            "sha256": "913c266ac06a429003c94134ceaf8e2d905f0215335e4ab959ec41f4f962042f"
+          },
+          "supports": "scoped host worker, original task service and explicit join result"
+        },
+        {
+          "lines": "115-145",
+          "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+          "pin": {
+            "bytes": 10937,
+            "git_blob": "3cceebf10fc009d75a272d507bfc28c41b42e1b6",
+            "sha256": "8939528e6cf5803e26fc09fde9dd9e921ede986eada6efa36cda65f6220fc23e"
+          },
+          "supports": "original reverse worker terminal and termination-only duplicate stream"
+        }
+      ],
+      "id": "E2-ORD-09",
+      "qualification": "host.join can wait for the old host lifetime after a task-side error. This is an existing service contract, not proof of forced physical exit at the new task deadline.",
+      "reasoning": "The host worker is a scoped borrow of the same session. The parent waits for its actual return and maps its panic/failure; it does not detach it and claim completion. Both task and host errors are retained. A task lane or offer lost after consumption is not restored. Original reverse worker cleanup still shuts down its private termination-only duplicate and joins the actual worker. Late cancellation or lost responses are not converted into NotApplied or successful task evidence."
+    },
+    {
+      "conclusion": "The exact layer preserves old interfaces and limits its new public/registration obligations.",
+      "evidence": [
+        {
+          "lines": "module and public export splice sites",
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "pin": {
+            "bytes": 73251,
+            "git_blob": "6f2de0d5801ac8139dc1d6023eea8852686015b9",
+            "sha256": "08f561395a4630742bb01828e0adfe1f4f6a1521e34fb5aff7729710b671c2b1"
+          },
+          "supports": "each Linux export retains a cfg gate"
+        },
+        {
+          "lines": "full original parser plus seven exact splices",
+          "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+          "pin": {
+            "bytes": 16586,
+            "git_blob": "486b554be2934865521e59fb6df89f254264e186",
+            "sha256": "8039a1bbd3fbe50218302127b1c90b6ec725d0dc763a91fce2ac41c85ee30690"
+          },
+          "supports": "20 exact flags, common deadline and all-FD uniqueness"
+        },
+        {
+          "lines": "1-32",
+          "path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+          "pin": {
+            "bytes": 1210,
+            "git_blob": "c45c8b0beb595f9a121c4436225a48d9bbf01df6",
+            "sha256": "50daef2871fcbce54bdf071ecdcc9f032ffc310b5dd2ab203b73f7125c887c6e"
+          },
+          "supports": "old by-value entry remains"
+        }
+      ],
+      "id": "E2-ORD-10",
+      "qualification": "Root later supplied a separate v3 composition containing both E2 and E3 CLI additions. Its four shared files and 21-flag merged parser require a separate narrow composition review; they are not silently included in this 65e62 layer result.",
+      "reasoning": "All 40 literal changes invert to the exact 17 prior bodies, with 9 new paths absent from both b608 and the complete preceding composition. The full unified patch was independently reproduced. Existing Root production helpers, Root sealing, original lane service, public local/by-value task constructors and remote entry remain. The new public Root method, opaque task handoff and receiver/installer require accurate CALLERS, protected-method, allowlist, QA and final source registration before acceptance."
+    }
+  ],
+  "format": "hepta-e2-ordinary-handoff-independent-review-v1",
+  "input_manifest": {
+    "bytes": 12578,
+    "git_blob": "5f23ed381264cc704c726aca7a58d7c1baa83d04",
+    "local_path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/MANIFEST.json",
+    "sha256": "6e092ecb4fc34aa601050cb9b6a538c3810721510ef857e90481c2bc91ff8486"
+  },
+  "input_packet": {
+    "bytes": 556937,
+    "git_blob": "65e62f807885cd890d8fa9944c58e232dc55ae01",
+    "local_path": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ordinary-handoff-layer-v1/SOURCE_PACKET.json",
+    "sha256": "37dd57a99c5ca3c029e4d8a41fd3e4d0a221559cd33245a21a610946139395cc"
+  },
+  "remaining_work": [
+    "No compiler, formatter, fix, QA method, Rust test, Root process or H operation was run for this review.",
+    "The Root CLI loader and real authority-owner assembly/caller that invokes the new Root handoff API remain unimplemented in this exact layer.",
+    "Root and non-Root cross-process socket/startup/cancellation behaviors remain unexecuted; static review is not actual capability, task or qualification evidence.",
+    "Separate bootstrap/receipt test packet 3ce8abde6fd4ddb09d1b020d0be1eb004cabbc54 was announced after this assignment and is not included in this report.",
+    "The E3 late-enrollment overlay and Root v3 shared-file composition are distinct source layers; their combined four-file review will be a separate artifact.",
+    "Final precise source registrations, applicable gates and original budgeted qualification remain required; no gate budget or filter is changed here."
+  ],
+  "reproducer": {
+    "bytes": 14993,
+    "git_blob": "85352fd480a8ecf97776b3aacd8b1aff8380e5b2",
+    "local_path": "/tmp/hepta-36fa-root-product-e2-ordinary-handoff-independent-review-v1/verify_exact_layer.py",
+    "sha256": "25a60c5efa90310abd1545614f46a014242ace022cea45d8320b07ce8d64c266"
+  },
+  "reviewer": "/root/native_ci_audit",
+  "reviewer_metadata_inspection_notes": [
+    "Two preliminary local metadata inspections assumed an entries key for E1 packets; those packets use images plus manifest. Those inspections returned KeyError and accepted no proof. The final independent checker explicitly normalizes both formats and its first execution returned exit0. No source, packet or project code was changed."
+  ],
+  "safety_of_scope_statement": {
+    "H_calls_during_review": 0,
+    "git_publication": "Local computed identities only; this reviewer has not created or full-GETed these E2 review or source objects.",
+    "job_id": null,
+    "no_source_or_ref_mutation_statement_scope": "Describes this local review only, not a live physical preservation finding for the Unknown H request.",
+    "not_a_qualification_pass": true,
+    "not_a_runtime_root_grant": true,
+    "not_an_execution_approval": true,
+    "prior_b608_v2_source_start_state": "Unknown",
+    "project_execution_count": 0,
+    "source_or_ref_mutations_by_review": 0
+  },
+  "scope": {
+    "all_new_production_files_read_in_full": true,
+    "canonical_b608_identity_bound_via_full_inventory": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+    "exact_layer": "65e62f807885cd890d8fa9944c58e232dc55ae01",
+    "modified": 17,
+    "new": 9,
+    "new_runtime_or_source_changes_performed_by_reviewer": false,
+    "paths": 26,
+    "predecessors": [
+      "1ca7a06948fcae69bf7c8e4c7823627a872c0c62",
+      "36cd9a693ce75070e1225a978575ca6dea5f72c2",
+      "62ad5a5363ca91c335f2d599128f763c355b33bf",
+      "12459a8255be0358c822a825d2445fa48828a7e1",
+      "06dafdbdeb53eb5ccf6480993596bbb4d939f203",
+      "69d6d5eda401ff59f7e89b1e659f77a431274248"
+    ]
+  },
+  "status": "STATIC_REVIEW_COMPLETE_NO_NEW_CONCRETE_BLOCKER_WITHIN_EXACT_LAYER"
+}

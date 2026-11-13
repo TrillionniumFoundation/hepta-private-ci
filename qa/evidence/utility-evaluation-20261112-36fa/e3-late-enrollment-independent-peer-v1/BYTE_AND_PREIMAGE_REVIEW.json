@@ -1,0 +1,913 @@
+{
+  "all_exact_forward_and_inverse_equal": true,
+  "canonical_inventory": {
+    "bytes": 5631947,
+    "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+    "path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.exact_recovered.json",
+    "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+  },
+  "counts": {
+    "b608_preimages": 4,
+    "first_layer_preimages": 6,
+    "ignored_root_test_methods": 3,
+    "modified": 10,
+    "new": 10,
+    "new_production": 8,
+    "new_test_files": 2,
+    "new_test_methods": 5,
+    "reference_bodies": 50,
+    "source_paths": 20
+  },
+  "executed_author_script": false,
+  "executed_project_code": false,
+  "first_layer_dependencies": [
+    {
+      "after": {
+        "bytes": 4377,
+        "git_blob": "bb1285e584a756337a7f9ebc81649b981fbeaff6",
+        "sha256": "d8a31e6f723e041831be1be184d74db224c3fa8f02247434d6eb07871f4f73a1"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs"
+    },
+    {
+      "after": {
+        "bytes": 5298,
+        "git_blob": "bfec72b7a3366cc9cded94e7e9961921922c8d12",
+        "sha256": "dc9011bd441be7459e368f0e4739357490eea497b480ecba1a4c6a1698abfcbc"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+    },
+    {
+      "after": {
+        "bytes": 11105,
+        "git_blob": "0656f538ff206a1bde4b02363bb2f09b6717cb02",
+        "sha256": "cbdc808cc43b01812a67c2b588946f32069fd3225da0c3b81ef4e841535c039e"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+    },
+    {
+      "after": {
+        "bytes": 5154,
+        "git_blob": "beaed17ac89f25fae4c93c988a478d9f8923c824",
+        "sha256": "c3008a33c74bba91e86b698cecfc08442f15dead50010a7b94ef0841584f2e88"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs"
+    },
+    {
+      "after": {
+        "bytes": 20258,
+        "git_blob": "3daf01cca84cee32742ab63d6328a8c9792b2963",
+        "sha256": "4d86762f9e8d624830a27cb49a0c64325629fa8d887de6506785f2072c4d8171"
+      },
+      "before": {
+        "bytes": 20005,
+        "git_blob": "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+        "sha256": "97ceda651034181eda5e4c4951f5cf9ba567d6caeaa1b877937330d21bcb95ae"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "after": {
+        "bytes": 13764,
+        "git_blob": "7dac9227f6bdb1edb66762b8a004c408f46841dd",
+        "sha256": "7a8d54eb452b080738b3add3310da643d36f0b04cd6d1cdd303f11c00481ec8a"
+      },
+      "before": {
+        "bytes": 13220,
+        "git_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+        "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446"
+      },
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "after": {
+        "bytes": 72679,
+        "git_blob": "d304e4919f6d40aac479374fd4857caa2b388eca",
+        "sha256": "c5e19f94499558bc69d7f62b2874d28a4810d59b9f94f8b86fe46967749f7f15"
+      },
+      "before": {
+        "bytes": 72389,
+        "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+        "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+      },
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    }
+  ],
+  "format": "hepta-e3-late-enrollment-independent-byte-review-v1",
+  "metadata_payloads": [
+    {
+      "bytes": 426837,
+      "git_blob": "388bfb3f3ab70e5f39d847c26d2d48daa2c7ead1",
+      "path": "SOURCE_PACKET.json",
+      "sha256": "461a98580f070c8d1a355704732ef0a961249cc019d6c0143d46d04b8cf16933"
+    },
+    {
+      "bytes": 54727,
+      "git_blob": "be8898cf566e38e1e37f038ed810e0a54cc4ba6c",
+      "path": "SOURCE_DELTA.patch",
+      "sha256": "ad67a8f79f519ec6195a4302e776281661758d1b7024a100ebb12318f54454b6"
+    },
+    {
+      "bytes": 58974,
+      "git_blob": "5e0a07ab8616d4077703da7dfaae0e02682e6abf",
+      "path": "EXACT_SOURCE_SPLICES.json",
+      "sha256": "a545e8d34a2aef3fd694b38e5278ec6779deb6721c9319fcd8ce608bb1e9b096"
+    },
+    {
+      "bytes": 13978,
+      "git_blob": "85665314e6330196b2181dae2b7742e7c5e9d417",
+      "path": "SOURCE_REFERENCES.json",
+      "sha256": "01876407d27fdc5cdff1dd72e525335fedd4db5a17a71d03bba4699741bdf158"
+    },
+    {
+      "bytes": 1924,
+      "git_blob": "b241b19e48a83ab898ecf0ccbdf6c0774db65795",
+      "path": "STATIC_BYTE_REVIEW.json",
+      "sha256": "936ae656d224871a95beb848df601fbc150f43b70ed866788774984f8a206b1c"
+    },
+    {
+      "bytes": 8445,
+      "git_blob": "7accf4f751eab186097f0e95f9a6e5a625755631",
+      "path": "README.md",
+      "sha256": "9d182d84011e3b98eea02e2f411fd819bfdfa132374796c22e982bc9253ff4f5"
+    },
+    {
+      "bytes": 6441,
+      "git_blob": "d6636fc3215957f0737af79f8c2ac60a5fbc6d57",
+      "path": "freeze_layer.py",
+      "sha256": "502d4a36f19172964084ddd6455edca4aca7d16169fa9cbd985319e5c2b4377d"
+    }
+  ],
+  "not_a_compile_or_qualification_result": true,
+  "packet": {
+    "bytes": 426837,
+    "git_blob": "388bfb3f3ab70e5f39d847c26d2d48daa2c7ead1",
+    "sha256": "461a98580f070c8d1a355704732ef0a961249cc019d6c0143d46d04b8cf16933"
+  },
+  "prerequisite_packet": {
+    "bytes": 249900,
+    "git_blob": "0dc5e98ff38ed0c4c4defe277d21a5cb90bae37b",
+    "sha256": "b2f1b2aa681cea702b14ebb7ec0095d93b4896969013ca9280247dde4d306d4c"
+  },
+  "reference_checks": [
+    {
+      "bytes": 4846,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "17437fa8aa1cb93b237e05f1420837796a05ac93",
+      "original_sdk_available_author_claim": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs",
+      "sha256": "389e96c89371278f1e09c28e9ff34b431cf00aec35f50024c4ffc555ca4e49be"
+    },
+    {
+      "bytes": 7060,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "24c49866fdd994f8bc2c1b9fdc40342149525bca",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "sha256": "d940d9ed0cd645bb911c7545a1094cdb6168949972859e4e27cee1f1e65c2d62"
+    },
+    {
+      "bytes": 7783,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "7dbd6bdc856fffcd2aa2657f72535a95886c6cc4",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "sha256": "671da3ee0159259421c5544270e52f235b672775b29c853a19584c5e1a83144b"
+    },
+    {
+      "bytes": 8819,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "63ee2a518a8b897cfaafb64d36c0b1cf9b5e7811",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "sha256": "9977181546655beea0044f2ea8be59cfea71994bb29f541844a3ac63a2a056a0"
+    },
+    {
+      "bytes": 13228,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "3847fb705928cfe116470cc115a56f110513d495",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "sha256": "104ea8575161a59a15f81229f409e25322301b710400500624365a3f0e268396"
+    },
+    {
+      "bytes": 8197,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "41ad5a933ad6a169b62ae216bde159e56800ed3c",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "sha256": "6b9f30ad0e65aa584e6fb5bf5892edfce7cbb4dedbded013b079c2b68bdb54b2"
+    },
+    {
+      "bytes": 11164,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "0cb2317f282814db87c0eb355f3aabb7c0ce6143",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+      "sha256": "71fc4129fb952dd3b1034ef306bbaf91fac2511d6e8d764f5f7e184b5e0282bf"
+    },
+    {
+      "bytes": 20694,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "sha256": "85b277723db22d79923f7fe33375ebce96e035d4b9d410124cde25b049b66a7f"
+    },
+    {
+      "bytes": 7048,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+      "original_sdk_available_author_claim": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "sha256": "8d55a7e5dbb51f26b51cc2c4d2c2c77cf6208bf61613019e21fb4e479acc82ee"
+    },
+    {
+      "bytes": 2043,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "b98abbaf3dd53d92c4c094115c606680896f68eb",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+      "sha256": "297c3b76fc3390a5d0852bc056c63175096d4fb4cc0ed870c2003f6442e92fd4"
+    },
+    {
+      "bytes": 20005,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "sha256": "97ceda651034181eda5e4c4951f5cf9ba567d6caeaa1b877937330d21bcb95ae"
+    },
+    {
+      "bytes": 13220,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446"
+    },
+    {
+      "bytes": 18012,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "9f75442ee855f28746ee21a5cd38c97549ec93e2",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24.rs",
+      "sha256": "242ae74f3c36463ec5c11ce2fe2b0b25e8c080f0d3b327ce2b9ccd87661e9e3a"
+    },
+    {
+      "bytes": 4927,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "5c0b624e739a1b1a7ecb50d3a266dc44d84e27ed",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_codec.rs",
+      "sha256": "55fd3398c0fb018f68edabda4857196a5ba9aec0a2b563a7e2ff9465c4cc00f2"
+    },
+    {
+      "bytes": 6614,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "4d48a46967db39d0258d00c9ff0876a3dca53de2",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "sha256": "f68a71fd637a3f23b0e8c4f19a9712a34f14bdda84cf4fec61e98d811ac76f65"
+    },
+    {
+      "bytes": 12686,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "aa70d902152de9db292956e4dd996212551c7107",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "sha256": "e5c4ac78a150daf3417dd2fd0ae29c2ec1e18a968b633cccd2f42d11c20ba1e2"
+    },
+    {
+      "bytes": 23883,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "ffb3b82e610f5d7d4905185a4f306ae49998e66b",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "sha256": "1ac1f1fef376155512418850822d38ebc41bdb194a26de7bab8c7eb46eb940b5"
+    },
+    {
+      "bytes": 15219,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "8cbfa41153ddc401ca7cc5aace42592be909de2f",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+      "sha256": "11e55727e50e64c8c0173753cf7b2e23ad1b019004d8314926a468ea3a40c77a"
+    },
+    {
+      "bytes": 13866,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "58afc356fff945a5377c3556fa0ba79139d3fad6",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+      "sha256": "aedb443b6bb07f497960ceedfb4889dac690511556c91452db1c3e3366a413c2"
+    },
+    {
+      "bytes": 12812,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "2319720bc255c2a12ab551092bb944b5a95f917f",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+      "sha256": "99097cce640dac0c0680fc475fc4effce380c21f8db65f267f115bfb00dc9bb3"
+    },
+    {
+      "bytes": 14603,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "c9c80876c1d5e8c589bbf1663a67f36c87f1937b",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+      "sha256": "5488c7371b1813caabb4ca547cb122299bc663ca76a04e404fa68c691b404216"
+    },
+    {
+      "bytes": 20959,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "sha256": "3acf8e3a56434b003fe68498f67ac1c93daaa98bfd23c5dc624736b8e2372e53"
+    },
+    {
+      "bytes": 8471,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "sha256": "baa469c2e6fb690ddf7a0dd1d19b6443b309f7090d48ccbb2df0d293e794d13d"
+    },
+    {
+      "bytes": 7489,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "c2618413b04cc2196ac365b7f721dc062fc715e1",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "sha256": "03bafcdcecb5d3ac6938bdc9810f25f482829dd5e5f1336e7a5206d947578ca8"
+    },
+    {
+      "bytes": 7779,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "35bf372850718a41f245c996ee91a71c184bed89",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "sha256": "7ad1512d08b9f49b0bcdc949081638ad714c96761ba74e89845d8b8ff9a02d23"
+    },
+    {
+      "bytes": 9196,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "bc335ec8347176510dea0ae425ff5ac42b099eea",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+      "sha256": "be568062c8aeb35296278194d2a16095379900698d5ba2e520f708abbb1770d9"
+    },
+    {
+      "bytes": 20389,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "bba6305de3212ab31c2fef8edf0ef78e63ebc522",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "sha256": "d5a236690ad87b9faf2ed2f0c3713427b960801da8674b10741a68c31da83643"
+    },
+    {
+      "bytes": 1546,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "e4918f2febdc8f64773bb263905b4090b78ce79b",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+      "sha256": "546830ede024926726eae1bdedc50ec89f6890a93e687acc7599b2fc65e0fe0f"
+    },
+    {
+      "bytes": 4347,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "703245c0c27815e7395810ae065fdc17741923d4",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/deployment_learning_resident.rs",
+      "sha256": "9f5c080b1ad3d56b4d71a17d74ad7986c39ecd27e279226d58f2e6d6746c8520"
+    },
+    {
+      "bytes": 15797,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "ee8aeb1f072c7b8b44cee69ccf4622e87ce9ce90",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "sha256": "6642ca9169cca03becbbe925edcdbf31c435ca937010d76b808979048ffeac0f"
+    },
+    {
+      "bytes": 20018,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "9564a0973714028d37484d84d3a8a1cab6e372b4",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs",
+      "sha256": "f2d003729bfdfd85cc1cb42841d0161b5f7df0a6a76221c05e912ef1dc3a70ac"
+    },
+    {
+      "bytes": 2841,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "f42d9f385ecafa17e02d993677ca261e02926beb",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "sha256": "f2c5a466095a8c7648b1865d48278c81eea5e2007980bc91290eaad67b311406"
+    },
+    {
+      "bytes": 72389,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+    },
+    {
+      "bytes": 5940,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "c0c67017117f71982a9d294b5b6d61e37844da6d",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+      "sha256": "0b51a44ac006db18ae4b67a31040fcb0704cc5bb13e312c919cdfb0f50ed0efe"
+    },
+    {
+      "bytes": 18594,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097"
+    },
+    {
+      "bytes": 16134,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "sha256": "2f756431d4f8749930a6cfc7c1c1647f7131770d785bc1b1986774954e44659e"
+    },
+    {
+      "bytes": 12153,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "c8a96234b75aa56cfbd95fee7ae612fb800cc6e0",
+      "original_sdk_available_author_claim": true,
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "sha256": "f36041d896017f40ea9fd219fa5a50e17ceac5dda185e5454247294a7e300f99"
+    },
+    {
+      "bytes": 12216,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "7c247c1f377e9889b3678fb6ae984ea188c5440a",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+      "sha256": "25f4ec6d1bcbd525419b1169c0213a12aeb9b2a2399444359706a7241d391592"
+    },
+    {
+      "bytes": 8040,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "17379b330222563dfa78ad4ea4c92ff1a534b191",
+      "original_sdk_available_author_claim": true,
+      "path": "codex-rs/hepta-agentd/src/root_bound_socket.rs",
+      "sha256": "ceeec4d57488ea3ec4318ebaa549401f662fe3d918d1023ff9f1f3e25827dcb6"
+    },
+    {
+      "bytes": 14737,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "406590d3d6537f2538a4d19615df6193eb415886",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "sha256": "9945cf398eae2373f6c6fd3a0fde1586b3d9dee097c4b663cb317368ff5e8dc6"
+    },
+    {
+      "bytes": 9788,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "9d3d24bd5104be99372c8a55859360e792120605",
+      "original_sdk_available_author_claim": true,
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "sha256": "e2e6f4d977f2648aafef7717ce670228856019ff6fa5f201f0571b68db94cefb"
+    },
+    {
+      "bytes": 9613,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f"
+    },
+    {
+      "bytes": 12923,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "d41e9127a9d9f982ba9ff2469de7cdd9d2631a65",
+      "original_sdk_available_author_claim": true,
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "sha256": "c46260717d90ee9da91bd9a252ea233996843acf328bf3e938501d8b3ee2df56"
+    },
+    {
+      "bytes": 4136,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+      "original_sdk_available_author_claim": true,
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+      "sha256": "daec53d03c4f9e34323c5903354529c5f151bb5c08a1f030f7ab9c870009d78e"
+    },
+    {
+      "bytes": 5176,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "a702abce92903e1c8e4c411baff1fa82ad8bcdf4",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+      "sha256": "51281b59b332c472acb4a7fbe91d71d784ee164386ef4bd6e58fb89eab6c5e71"
+    },
+    {
+      "bytes": 19100,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "2bd6de5896b2cf1db2a65d82aeb3046dfa1a36af",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+      "sha256": "5ce584b61e976a8d3bb5f96a612531f367d1d14fb8f704233c87bb5451297f36"
+    },
+    {
+      "bytes": 50534,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "af3990dfed96acafa7ea8a874c3d416c80a730c4",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "sha256": "bd2dccb81b16ff6dd78b439e95259801a6441a78565ff00ada5c2eab1f972e25"
+    },
+    {
+      "bytes": 16986,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "19c1c8804bf05a0b8eba70f0e930995d4b9cecd8",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-learning-ledger/src/protocol.rs",
+      "sha256": "cf455d3595ff482a53c541bc5af378601a143ff79b133da1631c6bb81a493a58"
+    },
+    {
+      "bytes": 15660,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "sha256": "6b8f65d3324cd4531c0a5f94ac321068b4a2661132944472b8176838b335590a"
+    },
+    {
+      "bytes": 9534,
+      "full_local_body_and_canonical_inventory_equal": true,
+      "git_blob": "4a077f8f9601b0ca1dc5973c044da2201b8c6686",
+      "original_sdk_available_author_claim": false,
+      "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+      "sha256": "d2bb2d34091aabe350a71785d8d32cf40fa669cfdc3cf1e25a5152ae566fd03b"
+    }
+  ],
+  "reference_sdk_claims_not_independently_replayed_by_this_script": true,
+  "rust_or_formatter_or_tests_or_h": false,
+  "source_checks": [
+    {
+      "after": {
+        "bytes": 7122,
+        "git_blob": "329de5de23da714d7fbeb4a6f4dff3296d3cdced",
+        "sha256": "11b150698df9b78e3b088e66a117f1242c636d4a083c3918e22b709c5c0a6259"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact b608 body and canonical inventory row",
+      "before": {
+        "bytes": 7048,
+        "git_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+        "sha256": "8d55a7e5dbb51f26b51cc2c4d2c2c77cf6208bf61613019e21fb4e479acc82ee"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 8605,
+        "git_blob": "f4e3d8619f0d369d693a690afdaa9676d61aaa08",
+        "sha256": "fce1c945c548f1651e0ebfc5f9a20f682c008c2883e89e46f20e45dfe5699a34"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 4491,
+        "git_blob": "9967f902e6527823eb478fc972046612ae8e19d1",
+        "sha256": "da35e6364e0bf0b7c23870224f7cd5e9a07cc47cbf1d6f5e5275058bf0c8cafa"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 4518,
+        "git_blob": "6549521642a0989f351591d2b10f91c85e168cf2",
+        "sha256": "a27ce568d2a3e73fd9c3a73c44be7ccdffa2bacc2ecb7b4c302bb863223cb529"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 2309,
+        "git_blob": "0a783de800e172185fa8b4d2c64be96f8d309e07",
+        "sha256": "cc4d676c1a0188bfbab8083de72372eaea07858be961940bb5db8eddcfadd5a6"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 6155,
+        "git_blob": "4d2ccdc0e20944d75b1d1de6751ec9a852b65c36",
+        "sha256": "8338f70c61ba3d0fef9e6e42d616791a3d81dc37286bbf8186ffe49389dfedf3"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 797,
+        "git_blob": "d87c755bbde7e0a96ffb9c3abf2a159deee454a4",
+        "sha256": "077eb07a3345562f70580932bc47395cddbff90097962225d5b35f7c6dbdcff3"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 5687,
+        "git_blob": "e3a9b5cff03c79fd53be781d34b109a719824a4f",
+        "sha256": "7145bfebd876cf03ea349014e3e52c616f32bf42f24827114cfb3bbbe3896136"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact first-layer postimage",
+      "before": {
+        "bytes": 5298,
+        "git_blob": "bfec72b7a3366cc9cded94e7e9961921922c8d12",
+        "sha256": "dc9011bd441be7459e368f0e4739357490eea497b480ecba1a4c6a1698abfcbc"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 11696,
+        "git_blob": "ee8000d9e727420ef2e662f755a76aee1924813f",
+        "sha256": "c94cf992e29eb2fb458fe252db61bfa1a26d66ce49304f42f26d8d812d1e5083"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact first-layer postimage",
+      "before": {
+        "bytes": 11105,
+        "git_blob": "0656f538ff206a1bde4b02363bb2f09b6717cb02",
+        "sha256": "cbdc808cc43b01812a67c2b588946f32069fd3225da0c3b81ef4e841535c039e"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+      "splice_count": 8
+    },
+    {
+      "after": {
+        "bytes": 2998,
+        "git_blob": "f70dbb2633afa2ce2ff10bbf5227e0199d855a95",
+        "sha256": "048b76f8da77f7e5b8e3e89cf8b9977b6ba3bde75cb52d5acfcbff4b21e0104b"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 5933,
+        "git_blob": "382545203959f626ecb6db6f1ace8f029b6157d2",
+        "sha256": "30b7447392ba93537ca951a547065dc25d1355d733a9a9fb8b4b08ca1412c2fd"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact first-layer postimage",
+      "before": {
+        "bytes": 5154,
+        "git_blob": "beaed17ac89f25fae4c93c988a478d9f8923c824",
+        "sha256": "c3008a33c74bba91e86b698cecfc08442f15dead50010a7b94ef0841584f2e88"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "splice_count": 9
+    },
+    {
+      "after": {
+        "bytes": 20606,
+        "git_blob": "eca594091f2cec791823927413326de0b7ea5bab",
+        "sha256": "290bcee25bbcc89a4a3b183d1f0d6a009fb0446f66017348eefd95fef5050a9d"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact first-layer postimage",
+      "before": {
+        "bytes": 20258,
+        "git_blob": "3daf01cca84cee32742ab63d6328a8c9792b2963",
+        "sha256": "4d86762f9e8d624830a27cb49a0c64325629fa8d887de6506785f2072c4d8171"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 14374,
+        "git_blob": "b18250b0b559b3540479d4a19717fcc34c2dab37",
+        "sha256": "e8be9fb1474294be2a41f9260796b8de1474fc5956d7044ee65cd9626fd882f6"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact first-layer postimage",
+      "before": {
+        "bytes": 13764,
+        "git_blob": "7dac9227f6bdb1edb66762b8a004c408f46841dd",
+        "sha256": "7a8d54eb452b080738b3add3310da643d36f0b04cd6d1cdd303f11c00481ec8a"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "splice_count": 2
+    },
+    {
+      "after": {
+        "bytes": 73097,
+        "git_blob": "c3673add1112472e6f8949c3d0c5502d87254408",
+        "sha256": "e03309dcaa0c53d1faf92bb2749f19ca6d042c2d48b28189178e426cd0c3c561"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact first-layer postimage",
+      "before": {
+        "bytes": 72679,
+        "git_blob": "d304e4919f6d40aac479374fd4857caa2b388eca",
+        "sha256": "c5e19f94499558bc69d7f62b2874d28a4810d59b9f94f8b86fe46967749f7f15"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 19432,
+        "git_blob": "f29e59294cd29d1d65cef57e9fc3d036ce172c9e",
+        "sha256": "c3d0cdc497d60897a5f84acafbc7d3605b5d9838fa8505c15d607c0ddb72b79c"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact b608 body and canonical inventory row",
+      "before": {
+        "bytes": 18594,
+        "git_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+        "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "splice_count": 8
+    },
+    {
+      "after": {
+        "bytes": 16728,
+        "git_blob": "4c9e7fc3cff82305c4b6efb557a08a780816567f",
+        "sha256": "bf0fa5c09ff44581d3ba10a5e0d57ca2f94895c721d0883a2a687f0345076f87"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact b608 body and canonical inventory row",
+      "before": {
+        "bytes": 16134,
+        "git_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+        "sha256": "2f756431d4f8749930a6cfc7c1c1647f7131770d785bc1b1986774954e44659e"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "splice_count": 7
+    },
+    {
+      "after": {
+        "bytes": 2261,
+        "git_blob": "63d22a2370d87c3a85fb66eea7ffeaae7f389d62",
+        "sha256": "e6cba8e0930cbcbb3812f8b3173fdb831a012122352b385062bb064fa59da6cc"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/production_resident_enrollment.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 9907,
+        "git_blob": "73b1994e922166f73274d98f21b68f60188ce29e",
+        "sha256": "badb77553e324e498be6ef541574bd5dfb1d542d6cebbbb07a39b597f3a34f37"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "complete exact b608 body and canonical inventory row",
+      "before": {
+        "bytes": 9613,
+        "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+        "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f"
+      },
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 3977,
+        "git_blob": "f21b1acc16bdd39fdcef0631d912b15023ec671f",
+        "sha256": "0acbafc24343285a4b32eff8bf7f96f7838849904b16d678c5748e9effc548e0"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "splice_count": 1
+    },
+    {
+      "after": {
+        "bytes": 3161,
+        "git_blob": "407d194c80f2fd23343edf848d5fa5581f5235a3",
+        "sha256": "cfcde7bc7c479b782aa81b013a628fd0120d9675495e640b301a5247054d1755"
+      },
+      "all_unlisted_line_ranges_equal": true,
+      "basis": "absent from full b608 inventory and first layer",
+      "before": null,
+      "complete_forward_equal": true,
+      "complete_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs",
+      "splice_count": 1
+    }
+  ],
+  "source_or_refs_written": false,
+  "status": "PURE_BYTE_AND_PREIMAGE_VERIFICATION_COMPLETED",
+  "test_methods": [
+    {
+      "name": "translated_monotonic_deadline_never_renews_the_original_window",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs"
+    },
+    {
+      "name": "expired_and_overlong_original_windows_are_refused_without_waiting",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs"
+    },
+    {
+      "name": "exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd",
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs"
+    },
+    {
+      "name": "v1_marker_cannot_enter_the_v3_resident_handoff",
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs"
+    },
+    {
+      "name": "sealed_file_alias_cannot_replace_the_original_root_pidfd",
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs"
+    }
+  ],
+  "unmodified_original_cores": [
+    "config_resident_learning.rs",
+    "resident_learning_delivery.rs",
+    "authority_host_learning_resident_transport.rs",
+    "learning_owner_command_channel.rs",
+    "authority_host_learning_candidate_service.rs"
+  ]
+}

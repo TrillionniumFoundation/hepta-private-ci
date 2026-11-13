@@ -1,0 +1,161 @@
+{
+  "format": "hepta-e3-late-enrollment-independent-source-review-v1",
+  "reviewer": "/root/native_ci_audit",
+  "state": "STATIC_REVIEW_COMPLETE_WITH_EXPLICIT_INTEGRATION_LIMITS",
+  "packet": {
+    "path": "/tmp/hepta-36fa-root-product-e3-proposal-v1/late-enrollment-layer-v1/SOURCE_PACKET.json",
+    "bytes": 426837,
+    "sha256": "461a98580f070c8d1a355704732ef0a961249cc019d6c0143d46d04b8cf16933",
+    "git_blob": "388bfb3f3ab70e5f39d847c26d2d48daa2c7ead1",
+    "storage_status": "complete local original verified; this reviewer observed one Git 404 before Root publication, preserved separately; no retry or source publication"
+  },
+  "prerequisite_packet": "0dc5e98ff38ed0c4c4defe277d21a5cb90bae37b",
+  "base_commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+  "base_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "conclusion": "No concrete new static blocker was established in this fixed late-enrollment layer. It is suitable for subsequent composition and required review, not a complete, compiled, executed, or qualified normal product path. The original task Config, actual Material Source edge, external Root loader/descriptor custody, registration, and integration tests remain explicit prerequisites.",
+  "confirmed_blockers": [],
+  "byte_review": {
+    "path": "BYTE_AND_PREIMAGE_REVIEW.json",
+    "bytes": 37448,
+    "sha256": "5b430873731b711a551163737648277519f9a0b6b65abd0b25a256508cb86721",
+    "git_blob": "32d45c36ec8d874ae0ebc9a77c0d747b67c0750b",
+    "verified": [
+      "All 20 embedded source bodies and ten existing before bodies match the fixed manifest and corresponding local files in all three content identities.",
+      "Six modified preimages equal the complete first-layer postimages; four equal complete original b608 bodies and their rows in the 15,243-entry canonical inventory.",
+      "Ten new paths are absent from both the complete b608 inventory and the first-layer packet; eight are production files and two are test files.",
+      "Every explicit splice reconstructs the full after bytes and inversely reconstructs the full before bytes, including all untouched gaps and trailing bytes.",
+      "All seven local metadata payloads match the exact manifest pins. Fifty complete original reference bodies match their pinned bytes and canonical inventory rows.",
+      "The original five Config/delivery/resident transport/command channel/candidate-service core paths are absent from both proposal edit sets.",
+      "Five added test methods are present, of which three are ignored Root methods; helper functions are not counted as tests. No test method was executed."
+    ],
+    "reviewer_initial_error": "The initial pure checker counted two test helper functions as test methods and stopped at its assertion. INITIAL_REVIEWER_ERROR.json and the unchanged original checker preserve this reviewer-only error. V2 limits the count to exact #[test] declarations and completes. No proposal bytes changed."
+  },
+  "semantic_checks": [
+    {
+      "topic": "Actual Root issuer and registration custody",
+      "evidence": [
+        "authority_host_resident_enrollment.rs:51-73,95-110",
+        "authority_host_runtime.rs:365-422",
+        "authority_host_resident_registration.rs: original registration entry points"
+      ],
+      "finding": "Both actual Root UIDs are required. A single validated HostAuthorityServiceConfig supplies the recipient and the original open-only issuer/Registry/Root factory. The new path does not re-read config to choose a second issuer. The original lease state existence checks, protected issuer opening, exact key pin and real register/recover constructors remain. Registration occurs before listener/send/accept, so a later transport failure cannot establish NotApplied or restore fresh custody."
+    },
+    {
+      "topic": "Controlled listener and exact node identity",
+      "evidence": [
+        "authority_host_resident_listener.rs:18-67",
+        "authority_host_listeners.rs: original validate_lane_paths and SocketGuard"
+      ],
+      "finding": "The new socket is created without pre-unlinking under the original Root-owned peer-group 02710 parent. Original ancestor and directory checks remain. The bound node is checked for Root owner, peer group, nlink 1, mode 0660 and exact device/inode. The guard remains through the original service terminal join and only unlinks its matching node. A 128-bit profile prefix selects a bounded name, while the complete profile and exact socket identity authenticate use. An occupied path is a refusal, not a reconnect/replace path."
+    },
+    {
+      "topic": "Exactly two original rights and purpose separation",
+      "evidence": [
+        "root_resident_enrollment_handoff.rs:6-46,49-73",
+        "root_production_handoff.rs:92-151,201-250",
+        "authority_host_bootstrap_seal.rs: original seal_bytes and validate_sealed"
+      ],
+      "finding": "The separate V3 marker requires exactly two rights and rejects payload/control truncation, malformed ancillary data, other markers and other FD counts. They are the original Root-owned sealed memfd and that Root process's actual pidfd. The sender must be the retained creator PID of the anonymous Root datagram. The consumer independently repeats Root pair, memfd and pidfd checks. No descriptor, signer, role owner, LedgerWriter or execute capability is reconstructed from the public JSON."
+    },
+    {
+      "topic": "Actual daemon credential transition and connection",
+      "evidence": [
+        "production_launcher.rs: original prepare_root_handoff(...).drop_to_owner() before new receiving path",
+        "production_launcher_inputs.rs: fixed new flag, original pre-ownership duplicate check and optional adoption",
+        "authority_host_resident_enrollment_connect.rs:18-66",
+        "learning_owner_command_channel.rs:21-61",
+        "authority_host_peer.rs:41-67"
+      ],
+      "finding": "The optional V3 FD is adopted with the original duplicate/ownership checks and is exclusive with the V1 learning FD. The daemon performs the original credential drop first, checks all current UID/GID slots, groups, capability sets and NoNewPrivileges, then makes exactly one new UnixStream connection. Original SO_PEERCRED checks therefore inspect the post-drop peer rather than a Root-created inherited stream. Root repeats the exact recipient identity and held pidfd before service construction. Original same-UID/same-PID refusal is preserved. Tokio into_std nonblocking streams are compatible with the original HostAuthorityPeerChannel, which explicitly sets and operates nonblocking I/O."
+    },
+    {
+      "topic": "Full profile, authorization and request identity",
+      "evidence": [
+        "authority_host_resident_enrollment_profile.rs: full file",
+        "authority_host_resident_trust_file.rs: OriginalHostTrust::from_root_enrollment/from_value",
+        "authority_host_learning_resident_profile.rs:184-284,291-304",
+        "authority_host_learning_resident_transport.rs:159-220,283-409,422-480"
+      ],
+      "finding": "The packet carries bounded public original initial/profile/signature/lease/trust data. The private Root-pinned reconstruction repeats canonical initial encoding, empty-cut identity, frozen scope, trust/objective digest, complete profile binding and distinct Execute versus Readback artifact bindings. The unchanged resident protocol retains its existing profile plus authorization digest and exact request IDs 1..128. This layer adds no new nonce-authorizing fallback, counter reset, replacement connection or retry. Readback constructs the original read-only client and cannot become fresh on a failed exchange."
+    },
+    {
+      "topic": "Absolute deadlines and cancellation",
+      "evidence": [
+        "authority_host_resident_enrollment_wire.rs:93-118",
+        "authority_host_resident_enrollment_connect.rs:29-30,39-65",
+        "authority_host_resident_enrollment.rs:74-80,111-142,153-168",
+        "authority_host_resident_enrollment_cli.rs:52-85",
+        "authority_host_learning_candidate_service.rs:141-193",
+        "authority_host_channel.rs:23-79,82-173"
+      ],
+      "finding": "The original monotonic end is captured before the Root registration/handoff work; receiver translation samples Instant first and bounds the positive remaining interval. Connect and accept use the same absolute handoff cap and repeat it after construction, while connect is additionally limited to 500 ms. Daemon caps both ends at its original production session end. Root's outer service cancels at the captured absolute end, then awaits the original candidate service and owns the socket guard until that join. No new receive or accept thread is detached. Original relative HAP lifetime internals are not asserted numerically identical to the external end; original timeout/128-frame bounds and post-handler checks are preserved. Cancellation does not establish rollback or terminal worker completion if an API caller itself abandons its future."
+    },
+    {
+      "topic": "Original enrollment, claim and outbox chain",
+      "evidence": [
+        "production_resident_enrollment.rs:18-56",
+        "config_resident_learning.rs: complete unchanged opt-in guard",
+        "resident_learning_delivery.rs: original enroll, run, prepare and deliver methods"
+      ],
+      "finding": "The client is passed only to the original single-channel enroll_original_root interface while the original crate::run is polled. The exclusive Config guard still requires real Circuit bootstrap/invocation, Objective profile and AuthBus trust. The original actor performs Source/current-owner/request/outbox/Root-readback checks, controls the durable claim, chooses fresh Admit versus readback, and alone retires/ACKs the actual complete cut. The new wrapper does not manufacture an ACK or add another delivery loop. Enrollment errors are logged and returned after the original daemon cleanup rather than silently dropping its future."
+    }
+  ],
+  "nonblocking_qualifications": [
+    {
+      "id": "ORDINARY_EXIT_IS_NOT_ENROLLMENT_RESULT",
+      "evidence": "production_resident_enrollment.rs:28-31 versus39-47",
+      "finding": "If the original daemon finishes before the late handoff branch wins, the wrapper returns that original daemon result, possibly Ok. Once enroll_original_root is pending, normal daemon exit returns the explicit enrollment-ACK-unknown error. Therefore the daemon exit code alone is not an enrollment-completion receipt and cannot establish that Root registration was unwritten. This review does not classify the first branch as an authorization bypass: it never emits a claim or learning ACK, and the original work has actually terminated. Future integration receipts/tests must preserve the distinction."
+    },
+    {
+      "id": "LOADER_CUSTODY_AND_E2_TASK_PREREQUISITES",
+      "finding": "The real external Root orchestrator must preserve the original datagram creator PID, pre-held pidfds and same operation, and must supply the actual ten-role handoff, model files and trusted deployment. E2 must install the real task Config before V3 opt-in. This source layer does not implement or prove that complete loader path or the missing actual Material Source loan. No extra UID, manufactured input, same-UID relaxation or test fixture may stand in for it."
+    },
+    {
+      "id": "REGISTRATION_AND_EXECUTION_PENDING",
+      "finding": "CALLERS/protected scopes/allowlist and the three ignored Root-parent registrations remain pending in this frozen layer. No formatting, Rust type checking, compilation, native tests, complete source gates, integration tests or owner chain was executed by this review. A static scope conclusion cannot substitute for those gates."
+    }
+  ],
+  "five_test_semantics": [
+    {
+      "name": "translated_monotonic_deadline_never_renews_the_original_window",
+      "classification": "ordinary test, not executed",
+      "meaning": "Checks a near one-second monotonic translation and remaining bound; it does not exercise transport queueing, cross-process translation, cancellation, or every delayed scheduling case. The no-renew ordering was reviewed directly in absolute()."
+    },
+    {
+      "name": "expired_and_overlong_original_windows_are_refused_without_waiting",
+      "classification": "ordinary test, not executed",
+      "meaning": "Checks zero/current/algebraically overlong absolute ends, without sleeps; no service or authority is created."
+    },
+    {
+      "name": "exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd",
+      "classification": "ignored actual-Root mechanism test, not executed",
+      "meaning": "Uses real memfd seals, SCM_RIGHTS and a held self pidfd and checks exact transferred arbitrary framing bytes. It deliberately stops before any valid profile, client, service or enrollment."
+    },
+    {
+      "name": "v1_marker_cannot_enter_the_v3_resident_handoff",
+      "classification": "ignored actual-Root mechanism test, not executed",
+      "meaning": "Sends real rights with the older purpose marker and asserts exact-purpose refusal; it does not prove all arbitrary malformed ancillary cases."
+    },
+    {
+      "name": "sealed_file_alias_cannot_replace_the_original_root_pidfd",
+      "classification": "ignored actual-Root mechanism test, not executed",
+      "meaning": "Transfers two aliases of a real sealed file and asserts that the second cannot pass the original pidfd check. It does not replace a real cross-UID recipient test."
+    }
+  ],
+  "additional_original_contracts_read": [
+    {"path":"codex-rs/hepta-contracts/src/authority_host_issuer_transport.rs","bytes":8628,"sha256":"20b0121aa8d1d4d0a7fa3d2d0f459000459d01b8db268820b0d9c74fd42138b4","git_blob":"83acf4c92c2d6192454508d57f4998dbd1eac2f3"},
+    {"path":"codex-rs/hepta-contracts/src/authority_host_peer.rs","bytes":6672,"sha256":"3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352","git_blob":"36e4524baea04320b7610325579f0ff206690fab"},
+    {"path":"codex-rs/hepta-contracts/src/authority_host_channel.rs","bytes":6221,"sha256":"cdb79e489fd1759eba1118fa31daa42d06ab77ca816d1f1194d5f9a7a7beda78","git_blob":"867822ffc4de4aa548771108853f1a4d9fd4ef63"}
+  ],
+  "additional_contracts_basis": "Complete local bodies were independently read and hashed against their actual b608 full inventory rows. No new Git or H fetch was needed for these bodies.",
+  "side_effects": {
+    "h_calls": 0,
+    "project_code_executed": false,
+    "author_script_executed": false,
+    "rust_formatter_compiler_tests_or_gates_executed": false,
+    "proposal_source_or_refs_modified": false,
+    "root_source_objects_created": false,
+    "review_files_only": true
+  },
+  "source_execution_status_remains": "Unknown for the separately dispatched b608-v2 source request; this source review provides no new admission or execution observation."
+}

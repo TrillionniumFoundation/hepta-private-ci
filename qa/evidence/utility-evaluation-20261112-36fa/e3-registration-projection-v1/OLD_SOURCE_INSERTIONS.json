@@ -1,0 +1,383 @@
+[
+  {
+    "after": {
+      "bytes": 7122,
+      "git_blob": "329de5de23da714d7fbeb4a6f4dff3296d3cdced",
+      "sha256": "11b150698df9b78e3b088e66a117f1242c636d4a083c3918e22b709c5c0a6259"
+    },
+    "before": {
+      "bytes": 7048,
+      "git_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+      "sha256": "8d55a7e5dbb51f26b51cc2c4d2c2c77cf6208bf61613019e21fb4e479acc82ee"
+    },
+    "operations": [
+      {
+        "after_utf8": "\n#[path = \"authority_host_resident_listener.rs\"]\npub(super) mod resident;\n",
+        "before_utf8": "",
+        "new_lines": [
+          193,
+          196
+        ],
+        "old_lines": [
+          193,
+          193
+        ]
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs"
+  },
+  {
+    "after": {
+      "bytes": 20606,
+      "git_blob": "eca594091f2cec791823927413326de0b7ea5bab",
+      "sha256": "290bcee25bbcc89a4a3b183d1f0d6a009fb0446f66017348eefd95fef5050a9d"
+    },
+    "before": {
+      "bytes": 20005,
+      "git_blob": "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+      "sha256": "97ceda651034181eda5e4c4951f5cf9ba567d6caeaa1b877937330d21bcb95ae"
+    },
+    "operations": [
+      {
+        "after_utf8": "\n#[path = \"authority_host_resident_launch.rs\"]\nmod resident_launch;\npub use resident_launch::RootResidentCandidateProcessInputsV3;\npub use resident_launch::prepare_host_resident_candidate_v3;\npub use resident_launch::recover_host_resident_candidate_v3;\n",
+        "before_utf8": "",
+        "new_lines": [
+          53,
+          59
+        ],
+        "old_lines": [
+          53,
+          53
+        ]
+      },
+      {
+        "after_utf8": "\npub use resident_launch::RootResidentCandidateEnrollmentInputsV3;\npub use resident_launch::RootResidentCandidateEnrollmentServiceV3;\npub use resident_launch::prepare_host_resident_candidate_enrollment_v3;\npub use resident_launch::recover_host_resident_candidate_enrollment_v3;\npub(crate) use resident_launch::connect_original_resident_enrollment;\n",
+        "before_utf8": "",
+        "new_lines": [
+          557,
+          563
+        ],
+        "old_lines": [
+          551,
+          551
+        ]
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+  },
+  {
+    "after": {
+      "bytes": 14374,
+      "git_blob": "b18250b0b559b3540479d4a19717fcc34c2dab37",
+      "sha256": "e8be9fb1474294be2a41f9260796b8de1474fc5956d7044ee65cd9626fd882f6"
+    },
+    "before": {
+      "bytes": 13220,
+      "git_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+      "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446"
+    },
+    "operations": [
+      {
+        "after_utf8": "\n#[cfg(target_os = \"linux\")]\n#[path = \"../authority_host_resident_cli.rs\"]\nmod resident_cli;\n#[cfg(target_os = \"linux\")]\n#[path = \"../authority_host_resident_enrollment_cli.rs\"]\nmod resident_enrollment_cli;\n",
+        "before_utf8": "",
+        "new_lines": [
+          1,
+          8
+        ],
+        "old_lines": [
+          1,
+          1
+        ]
+      },
+      {
+        "after_utf8": "    }\n    if command == \"serve-resident-learning-late\" || command == \"recover-resident-learning-late\" {\n        if pidfd_stdin {\n            return Err(\"late resident service requires its named original pidfds\".into());\n        }\n        let purpose = if command == \"serve-resident-learning-late\" {\n            resident_enrollment_cli::Command::Fresh\n        } else {\n            resident_enrollment_cli::Command::Recover\n        };\n        return resident_enrollment_cli::run(options, purpose);\n    }\n    if command == \"serve-resident-learning\" || command == \"recover-resident-learning\" {\n        if pidfd_stdin {\n            return Err(\"resident service requires its named original consumer pidfd\".into());\n        }\n        let purpose = if command == \"serve-resident-learning\" {\n            resident_cli::Command::Fresh\n        } else {\n            resident_cli::Command::Recover\n        };\n        return resident_cli::run(options, purpose);\n",
+        "before_utf8": "",
+        "new_lines": [
+          31,
+          53
+        ],
+        "old_lines": [
+          24,
+          24
+        ]
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+  },
+  {
+    "after": {
+      "bytes": 73097,
+      "git_blob": "c3673add1112472e6f8949c3d0c5502d87254408",
+      "sha256": "e03309dcaa0c53d1faf92bb2749f19ca6d042c2d48b28189178e426cd0c3c561"
+    },
+    "before": {
+      "bytes": 72389,
+      "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+      "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+    },
+    "operations": [
+      {
+        "after_utf8": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootResidentCandidateProcessInputsV3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::prepare_host_resident_candidate_v3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::recover_host_resident_candidate_v3;\n",
+        "before_utf8": "",
+        "new_lines": [
+          152,
+          158
+        ],
+        "old_lines": [
+          152,
+          152
+        ]
+      },
+      {
+        "after_utf8": "\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootResidentCandidateEnrollmentInputsV3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootResidentCandidateEnrollmentServiceV3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::prepare_host_resident_candidate_enrollment_v3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::recover_host_resident_candidate_enrollment_v3;\n",
+        "before_utf8": "",
+        "new_lines": [
+          1548,
+          1557
+        ],
+        "old_lines": [
+          1542,
+          1542
+        ]
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/lib.rs"
+  },
+  {
+    "after": {
+      "bytes": 19432,
+      "git_blob": "f29e59294cd29d1d65cef57e9fc3d036ce172c9e",
+      "sha256": "c3d0cdc497d60897a5f84acafbc7d3605b5d9838fa8505c15d607c0ddb72b79c"
+    },
+    "before": {
+      "bytes": 18594,
+      "git_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+      "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097"
+    },
+    "operations": [
+      {
+        "after_utf8": "\n#[path = \"production_resident_enrollment.rs\"]\nmod resident_enrollment;\n",
+        "before_utf8": "",
+        "new_lines": [
+          26,
+          29
+        ],
+        "old_lines": [
+          26,
+          26
+        ]
+      },
+      {
+        "after_utf8": "    resident_handoff: Option<UnixDatagram>,\n    resident_end: Option<Instant>,\n",
+        "before_utf8": "",
+        "new_lines": [
+          72,
+          74
+        ],
+        "old_lines": [
+          69,
+          69
+        ]
+      },
+      {
+        "after_utf8": "                    resident_handoff,\n",
+        "before_utf8": "",
+        "new_lines": [
+          91,
+          92
+        ],
+        "old_lines": [
+          86,
+          86
+        ]
+      },
+      {
+        "after_utf8": "                    resident_handoff,\n                    resident_end: None,\n",
+        "before_utf8": "",
+        "new_lines": [
+          123,
+          125
+        ],
+        "old_lines": [
+          117,
+          117
+        ]
+      },
+      {
+        "after_utf8": "                    mut inputs,\n",
+        "before_utf8": "                    inputs,\n",
+        "new_lines": [
+          166,
+          167
+        ],
+        "old_lines": [
+          158,
+          159
+        ]
+      },
+      {
+        "after_utf8": "                inputs.resident_end = inputs.resident_handoff.as_ref().map(|_| session_end);\n",
+        "before_utf8": "",
+        "new_lines": [
+          169,
+          170
+        ],
+        "old_lines": [
+          161,
+          161
+        ]
+      },
+      {
+        "after_utf8": "            resident_handoff,\n            resident_end,\n",
+        "before_utf8": "",
+        "new_lines": [
+          220,
+          222
+        ],
+        "old_lines": [
+          211,
+          211
+        ]
+      },
+      {
+        "after_utf8": "            let result = match (resident_handoff, resident_end) {\n                (None, None) => crate::run(config, arg0_paths).await,\n                (Some(socket), Some(end)) => resident_enrollment::run_original(\n                    config, arg0_paths,\n                    resident_enrollment::PendingResidentEnrollment { socket, end },\n                ).await,\n                _ => Err(AgentdError::Invalid(\"resident original session boundary missing\".into())),\n            };\n",
+        "before_utf8": "            let result = crate::run(config, arg0_paths).await;\n",
+        "new_lines": [
+          439,
+          447
+        ],
+        "old_lines": [
+          428,
+          429
+        ]
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": {
+      "bytes": 16728,
+      "git_blob": "4c9e7fc3cff82305c4b6efb557a08a780816567f",
+      "sha256": "bf0fa5c09ff44581d3ba10a5e0d57ca2f94895c721d0883a2a687f0345076f87"
+    },
+    "before": {
+      "bytes": 16134,
+      "git_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+      "sha256": "2f756431d4f8749930a6cfc7c1c1647f7131770d785bc1b1986774954e44659e"
+    },
+    "operations": [
+      {
+        "after_utf8": "const FLAGS: [&str; 20] = [\n",
+        "before_utf8": "const FLAGS: [&str; 19] = [\n",
+        "new_lines": [
+          17,
+          18
+        ],
+        "old_lines": [
+          17,
+          18
+        ]
+      },
+      {
+        "after_utf8": "    \"--root-resident-learning-handoff-fd\",\n",
+        "before_utf8": "",
+        "new_lines": [
+          21,
+          22
+        ],
+        "old_lines": [
+          21,
+          21
+        ]
+      },
+      {
+        "after_utf8": "    pub(super) resident_handoff: Option<UnixDatagram>,\n",
+        "before_utf8": "",
+        "new_lines": [
+          50,
+          51
+        ],
+        "old_lines": [
+          49,
+          49
+        ]
+      },
+      {
+        "after_utf8": "    let resident_handoff = selected\n        .remove(\"--root-resident-learning-handoff-fd\")\n        .map(descriptor_number)\n        .transpose()?;\n    if resident_handoff.is_some() && learning_handoff.is_some() {\n        return Err(invalid(\"resident V3 and original V1 learning handoffs are exclusive\"));\n    }\n",
+        "before_utf8": "",
+        "new_lines": [
+          152,
+          159
+        ],
+        "old_lines": [
+          150,
+          150
+        ]
+      },
+      {
+        "after_utf8": "        resident_handoff,\n",
+        "before_utf8": "",
+        "new_lines": [
+          236,
+          237
+        ],
+        "old_lines": [
+          227,
+          227
+        ]
+      },
+      {
+        "after_utf8": "        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let resident_handoff = resident_handoff\n",
+        "before_utf8": "",
+        "new_lines": [
+          271,
+          275
+        ],
+        "old_lines": [
+          261,
+          261
+        ]
+      },
+      {
+        "after_utf8": "            resident_handoff,\n",
+        "before_utf8": "",
+        "new_lines": [
+          321,
+          322
+        ],
+        "old_lines": [
+          307,
+          307
+        ]
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": {
+      "bytes": 9907,
+      "git_blob": "73b1994e922166f73274d98f21b68f60188ce29e",
+      "sha256": "badb77553e324e498be6ef541574bd5dfb1d542d6cebbbb07a39b597f3a34f37"
+    },
+    "before": {
+      "bytes": 9613,
+      "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+      "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f"
+    },
+    "operations": [
+      {
+        "after_utf8": "\n#[path = \"root_resident_enrollment_handoff.rs\"]\nmod resident_enrollment;\npub(crate) use resident_enrollment::receive_original_resident_enrollment;\npub(crate) use resident_enrollment::send_original_resident_enrollment;\npub(crate) use resident_enrollment::require_original_resident_process_pin;\n",
+        "before_utf8": "",
+        "new_lines": [
+          259,
+          265
+        ],
+        "old_lines": [
+          259,
+          259
+        ]
+      }
+    ],
+    "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+  }
+]

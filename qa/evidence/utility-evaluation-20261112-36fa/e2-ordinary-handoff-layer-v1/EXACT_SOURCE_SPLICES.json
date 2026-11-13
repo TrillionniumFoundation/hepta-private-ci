@@ -1,0 +1,202 @@
+[
+  {
+    "after": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_cell_registry_bootstrap.rs\"]\npub(crate) mod root_bootstrap;\n\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct CircuitCellRouteV1",
+    "before": "#[derive(Clone, Debug, Eq, PartialEq)]\npub struct CircuitCellRouteV1",
+    "path": "codex-rs/hepta-agentd/src/circuit_cell_binding.rs"
+  },
+  {
+    "after": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_root_bootstrap_codec.rs\"]\npub(crate) mod root_bootstrap_codec;\n#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_root_bootstrap_cell.rs\"]\npub(crate) mod root_bootstrap_cell;\n#[cfg(target_os = \"linux\")]\npub(crate) use source::root_bootstrap::decode as decode_original_root_source;\n#[cfg(target_os = \"linux\")]\npub(crate) use source::remote_source::original_binding as original_root_source_binding;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::original_remote_channel_until;\n\n#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_remote.rs\"]",
+    "before": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_remote.rs\"]",
+    "path": "codex-rs/hepta-agentd/src/circuit_task.rs"
+  },
+  {
+    "after": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_source_bootstrap.rs\"]\npub(crate) mod root_bootstrap;\n\n#[path = \"circuit_task_source_codec.rs\"]",
+    "before": "#[path = \"circuit_task_source_codec.rs\"]",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs"
+  },
+  {
+    "after": "pub(super) fn encode_input(input: &CellStepInputV1)",
+    "before": "fn encode_input(input: &CellStepInputV1)",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs"
+  },
+  {
+    "after": "    outer.end()?;\n    decode_configuration_input(encoded)\n}\n\n/// The immutable Source configuration has no dispatch yet. Decode only the\n/// same original input bytes; this creates data, never a Source or receipt.\npub(super) fn decode_configuration_input(encoded: &[u8]) -> Result<CellStepInputV1, Error> {\n    let mut r = Reader(encoded);",
+    "before": "    outer.end()?;\n    let mut r = Reader(encoded);",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs"
+  },
+  {
+    "after": "    fn original_handoff_registry(&self) -> Result<(Vec<u8>, usize), Error>;\n    fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error>;",
+    "before": "    fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error>;",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs"
+  },
+  {
+    "after": "struct OriginalFactory<O, P, E, I, C>(Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>, usize);",
+    "before": "struct OriginalFactory<O, P, E, I, C>(Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>);",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs"
+  },
+  {
+    "after": "    owners: Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>,\n    capacity: usize,\n) -> Box",
+    "before": "    owners: Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>,\n) -> Box",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs"
+  },
+  {
+    "after": "{ Box::new(OriginalFactory(owners, capacity)) }",
+    "before": "{ Box::new(OriginalFactory(owners)) }",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs"
+  },
+  {
+    "after": "    fn original_handoff_registry(&self) -> Result<(Vec<u8>, usize), Error> {\n        let owners = self.0.try_lock().map_err(|_| Error::Unavailable)?;\n        let original = owners.as_ref().ok_or(Error::Unavailable)?;\n        Ok((crate::circuit_cell_binding::root_bootstrap::encode(original.cells.registry())?, self.1))\n    }\n\n    fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error> {",
+    "before": "    fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error> {",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs"
+  },
+  {
+    "after": "pub(crate) use original_remote::channel as original_remote_channel;\n#[cfg(target_os = \"linux\")]\npub(crate) use original_remote::channel_until as original_remote_channel_until;",
+    "before": "pub(crate) use original_remote::channel as original_remote_channel;",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+  },
+  {
+    "after": "original_root: Some(super::root_lane::retain(Arc::clone(&original_owners), capacity)),",
+    "before": "original_root: Some(super::root_lane::retain(Arc::clone(&original_owners))),",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+  },
+  {
+    "after": "impl CircuitTaskRuntimeBootstrapV1 {\n    #[cfg(target_os = \"linux\")]\n    pub(crate) fn original_root_handoff_registry(&self) -> Result<(Vec<u8>, usize), Error> {\n        self.original_root.as_ref().ok_or(Error::Unavailable)?.original_handoff_registry()\n    }\n\n",
+    "before": "impl CircuitTaskRuntimeBootstrapV1 {\n",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs"
+  },
+  {
+    "after": "    pub(crate) fn original_root_handoff_data(&self)\n        -> Result<(codex_hepta_types::Digest32, Vec<u8>, Vec<u8>, usize), AgentdError>\n    {\n        let (registry, capacity) = self.bootstrap.original_root_handoff_registry()\n            .map_err(|error| AgentdError::Protocol(format!(\"original Root registry: {error}\")))?;\n        let (binding, source) = self.invocation.original_root_handoff_source()\n            .map_err(|error| AgentdError::Protocol(format!(\"original Root Source: {error}\")))?;\n        Ok((binding, registry, source, capacity))\n    }\n\n    pub(crate) fn take_original_root_lane(&mut self)",
+    "before": "    pub(crate) fn take_original_root_lane(&mut self)",
+    "path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs"
+  },
+  {
+    "after": "    pub(crate) fn new_until(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,\n        pending: Arc<AtomicUsize>, end: Instant) -> Result<(Arc<Self>, usize), Error>\n    {\n        if Instant::now() >= end || end.saturating_duration_since(Instant::now()) > Duration::from_secs(300) {\n            return Err(Error::DeadlineExceeded);\n        }",
+    "before": "    pub(crate) fn new(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,\n        pending: Arc<AtomicUsize>) -> Result<(Arc<Self>, usize), Error>\n    {",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+  },
+  {
+    "after": "        let budget = Budget::new(end)?;",
+    "before": "        let end = Instant::now() + inputs.lifetime;\n        let budget = Budget::new(end)?;",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+  },
+  {
+    "after": "        if Instant::now() >= end { return Err(Error::DeadlineExceeded); }\n        Ok((Arc::new(client), inputs.queue_capacity))",
+    "before": "        Ok((Arc::new(client), inputs.queue_capacity))",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs"
+  },
+  {
+    "after": "{\n    let end = std::time::Instant::now() + inputs.lifetime;\n    channel_until(identity, inputs, end)\n}\n\npub(crate) fn channel_until(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,\n    end: std::time::Instant) -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<DaemonClient>), AgentdError>\n{\n    TaskFlowFence::new(inputs.fence.owner_agent_id.clone()",
+    "before": "{\n    TaskFlowFence::new(inputs.fence.owner_agent_id.clone()",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+  },
+  {
+    "after": "DaemonClient::new_until(identity, inputs, Arc::clone(&pending), end)",
+    "before": "DaemonClient::new(identity, inputs, Arc::clone(&pending))",
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs"
+  },
+  {
+    "after": "impl AgentdConfig {\n    pub(crate) fn with_original_root_circuit_task_until(\n        self, inputs: crate::OriginalRootCircuitTaskDaemonInputsV1, end: std::time::Instant,\n    ) -> Result<Self, AgentdError> {\n        self.require_no_circuit_task_profile()?;\n        self.require_circuit_task_execution_profile()?;\n        let (bootstrap, invocation) = crate::circuit_task::original_remote_channel_until(\n            self.identity(), inputs, end)?;\n        self.with_circuit_task_bootstrap(bootstrap, invocation)\n    }\n\n",
+    "before": "impl AgentdConfig {\n",
+    "path": "codex-rs/hepta-agentd/src/config_original_root_task.rs"
+  },
+  {
+    "after": "#[path = \"root_original_task_handoff.rs\"]\nmod original_task;\npub use original_task::RootOriginalTaskHandoffV1;\npub use original_task::receive_root_original_task_handoff;\npub(crate) use original_task::send_original_task_handoff;\n\n#[path = \"root_production_writer_handoff.rs\"]",
+    "before": "#[path = \"root_production_writer_handoff.rs\"]",
+    "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs"
+  },
+  {
+    "after": "mod original_service;\n\n#[path = \"authority_host_session_generation_task_handoff.rs\"]\nmod ordinary_handoff;\n",
+    "before": "mod original_service;\n",
+    "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs"
+  },
+  {
+    "after": "#[path = \"authority_host_session_task_host.rs\"]\nmod original_task_host;\n\n#[path = \"authority_host_session_material.rs\"]",
+    "before": "#[path = \"authority_host_session_material.rs\"]",
+    "path": "codex-rs/hepta-agentd/src/authority_host_session.rs"
+  },
+  {
+    "after": "const FLAGS: [&str; 20]",
+    "before": "const FLAGS: [&str; 19]",
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": "    \"--root-learning-handoff-fd\",\n    \"--root-original-task-handoff-fd\",",
+    "before": "    \"--root-learning-handoff-fd\",",
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": "    pub(super) learning_handoff: Option<UnixDatagram>,\n    pub(super) original_task_handoff: Option<UnixDatagram>,",
+    "before": "    pub(super) learning_handoff: Option<UnixDatagram>,",
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": "    let original_task_handoff = selected\n        .remove(\"--root-original-task-handoff-fd\")\n        .map(descriptor_number)\n        .transpose()?;\n    let notes = selected\n",
+    "before": "    let notes = selected\n",
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": "        learning_handoff,\n        original_task_handoff,\n        Some(control),",
+    "before": "        learning_handoff,\n        Some(control),",
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": "    let original_task_handoff = original_task_handoff\n        .map(take_descriptor)\n        .transpose()?\n        .map(UnixDatagram::from);\n    let control = take_descriptor(control)?;",
+    "before": "    let control = take_descriptor(control)?;",
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": "            learning_handoff,\n            original_task_handoff,\n            uid,",
+    "before": "            learning_handoff,\n            uid,",
+    "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs"
+  },
+  {
+    "after": "    notes_ui: Option<NotesUiInputs>,\n    original_task_handoff: Option<crate::RootOriginalTaskHandoffV1>,\n}\n",
+    "before": "    notes_ui: Option<NotesUiInputs>,\n}\n",
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": "                    learning_handoff,\n                    original_task_handoff,\n                    uid,",
+    "before": "                    learning_handoff,\n                    uid,",
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": "                let original_task_handoff = original_task_handoff.map(|handoff| {\n                    crate::receive_root_original_task_handoff(handoff, remaining(bootstrap_deadline)?)\n                }).transpose()?;\n                let inputs = RuntimeInputs {\n",
+    "before": "                let inputs = RuntimeInputs {\n",
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": "                    notes_ui,\n                    original_task_handoff,\n                };",
+    "before": "                    notes_ui,\n                };",
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": "impl AgentdProductionLaunch {\n    /// Consume the same sealed task offer after the ordinary Objective/AuthBus\n    /// configuration, and before original V3 enrollment and daemon startup.\n    /// No replacement Config, Store, RunStart or writer is created here.\n    pub async fn install_original_root_task(&mut self, config: AgentdConfig)\n        -> Result<AgentdConfig, AgentdError>\n    {\n        match self.inputs.original_task_handoff.take() {\n            Some(handoff) => handoff.install(config, &self.root).await,\n            None => Ok(config),\n        }\n    }\n\n",
+    "before": "impl AgentdProductionLaunch {\n",
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": "        if self.inputs.original_task_handoff.is_some() {\n            return Err(AgentdError::Invalid(\"original task handoff must be consumed before runtime\".into()));\n        }\n        config.require_root_learning_assembled()?;",
+    "before": "        config.require_root_learning_assembled()?;",
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": "            notes_ui,\n            original_task_handoff: _,\n        } = self.inputs;",
+    "before": "            notes_ui,\n        } = self.inputs;",
+    "path": "codex-rs/hepta-agentd/src/production_launcher.rs"
+  },
+  {
+    "after": "                Some(mut launch) => {\n                    config = launch.install_original_root_task(config).await?;\n                    launch.run(config, arg0_paths).await?;\n                }",
+    "before": "                Some(launch) => launch.run(config, arg0_paths).await?,",
+    "path": "codex-rs/hepta-agentd/src/main.rs"
+  },
+  {
+    "after": "pub use root_production_handoff::RootOriginalTaskHandoffV1;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::receive_root_original_task_handoff;\n#[cfg(target_os = \"linux\")]\npub use root_production_handoff::RootProductionWriterDescriptor;",
+    "before": "pub use root_production_handoff::RootProductionWriterDescriptor;",
+    "path": "codex-rs/hepta-agentd/src/lib.rs"
+  },
+  {
+    "after": "mod root_production_handoff;\n#[cfg(target_os = \"linux\")]\n#[path = \"root_original_task_descriptor.rs\"]\nmod root_original_task_descriptor;",
+    "before": "mod root_production_handoff;",
+    "path": "codex-rs/hepta-agentd/src/lib.rs"
+  }
+]

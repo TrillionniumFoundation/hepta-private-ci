@@ -1,0 +1,13 @@
+{
+  "scope": "Pure local byte-composition checker, before writing any composed source",
+  "failure": {
+    "chunk_id": "1a67ef",
+    "wall_time_seconds": 0.188653296,
+    "exit_code": 1,
+    "original_token_count": 131,
+    "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-product-composition-v3/compose.py\", line 152, in <module>\n    assert replace_sequence(before, operations) == after\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-root-product-composition-v3/compose.py\", line 50, in replace_sequence\n    assert before and value.count(before) == 1, ('nonunique replacement', before[:100])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ('nonunique replacement', '    task_lane: bool,')\n"
+  },
+  "reason": "A four-space whole-line field replacement also appeared as a substring of an eight-space constructor parameter. The proof now distinguishes complete-line boundaries when a textual fragment is nonunique; source packets are unchanged.",
+  "source_changes": false,
+  "H_calls": 0
+}

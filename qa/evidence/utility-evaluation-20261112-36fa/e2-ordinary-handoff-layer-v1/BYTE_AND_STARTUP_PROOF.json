@@ -1,0 +1,214 @@
+{
+  "all_exact_splices_and_inverse": true,
+  "format": "hepta-e2-ordinary-task-handoff-byte-proof-v1",
+  "not_executed": [
+    "Rust compilation",
+    "fmt/fix",
+    "QA/collector",
+    "H",
+    "cross-process task",
+    "source Git objects"
+  ],
+  "original_data_fields": [
+    "CellDefinitionV1, full NeuronRuntimeConfigV1, full calibration/resources and SparseConfig/inhibition, candidates, routes and definition are encoded without an owner handle.",
+    "Source uses the original complete configuration input codec, full fence, and original lease duration; the source binding is recomputed from the same actual daemon identity."
+  ],
+  "preimages": [
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/after/codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "pin": {
+        "bytes": 17831,
+        "git_blob": "5d647fe0367eb4f863fa35f474bcb5fb8e255aad",
+        "sha256": "9b7c31fc469e436d1889b8187248f94b64e87754c28e74b121ad466131026027"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+      "pin": {
+        "bytes": 5608,
+        "git_blob": "00d9f5b09196d7f23f5975a0f75b789d97a6d4dc",
+        "sha256": "a4163266fb6ce15d7137581fac99dd78471007aa25d1f71e33238523a340d78a"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_cell_binding.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_binding.rs",
+      "pin": {
+        "bytes": 11831,
+        "git_blob": "d67f5a628c1729105205564df359ec154240747a",
+        "sha256": "2557725b0e01450791be17dd2af9dcfcacdab5bb00e88efe79343d1ab57d215f"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "pin": {
+        "bytes": 843,
+        "git_blob": "8640ba89b7c0cb00b4442ffc7e787f2548570432",
+        "sha256": "8df3451197cc76aa0ea072cf3f92c3507d7ddf0f508ca51ece1c9bf8f17d9af8"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "pin": {
+        "bytes": 5612,
+        "git_blob": "105a9d873b7d03387a311dd471da58854d2132f5",
+        "sha256": "331206d0a7bd3ee822a03a7c7fd4701aeb2e938e29eab34978d584b1bb31b4cb"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-purpose-increment-v1/after/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "pin": {
+        "bytes": 10725,
+        "git_blob": "613616a1fd9b4dd19fa602cc3fcad5ccf9a650f3",
+        "sha256": "70d524c79cceee3561e12a4cd472ac0b312b5a25148368ceece82310b9bd896b"
+      },
+      "splices": 3
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "pin": {
+        "bytes": 4054,
+        "git_blob": "ac301f06b99fc271a9ac7c88374c7cd0787a1480",
+        "sha256": "3d87959ceda91aba7c9c94e6449c18d43b5d8a714ac08471c0e5de35cd8a6b7b"
+      },
+      "splices": 2
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "pin": {
+        "bytes": 4640,
+        "git_blob": "10915b8deac0fb34dfc210645cf5d2af53db4e18",
+        "sha256": "4abbd0ac081cfad05a93ac12ddc1fdea501d93ada1c5a91481eab739833d702b"
+      },
+      "splices": 5
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "pin": {
+        "bytes": 11449,
+        "git_blob": "b8adbd07f42827bcb733d4061c72c6a57be3d662",
+        "sha256": "7660817414a0bb6bb9055bda2f317a51e9a9a11a19580160095f927ff27a964b"
+      },
+      "splices": 3
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "pin": {
+        "bytes": 16139,
+        "git_blob": "4091836886e118a9f94413b55e06881df3d3c608",
+        "sha256": "a248eb5f9a5d4ffe5ea9e2c73c6ca95af1b6f6d8698eb20b24b5338ae8291599"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+      "pin": {
+        "bytes": 19107,
+        "git_blob": "59b25f0c4e38b192e8357e86ad06564ac3da7342",
+        "sha256": "6fae0f458f10269dd44ac14128d314d851603d4abad2c6c3f8b7ef45a99a3904"
+      },
+      "splices": 2
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "path": "codex-rs/hepta-agentd/src/config_original_root_task.rs",
+      "pin": {
+        "bytes": 713,
+        "git_blob": "aee9324f0a451842d5e6f761964ac5bc9d954e20",
+        "sha256": "2136802ed486fc873824d34f7c004f3b81e8586863afd27df746212fa4c8fa59"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1/after/codex-rs/hepta-agentd/src/lib.rs",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "pin": {
+        "bytes": 72958,
+        "git_blob": "bc3c04ccbbe034b538e4eb857aa8ef986ba88edf",
+        "sha256": "ec60bfe7752e73c369882857c8c3d9e974b44acea5238527946c0d10d039e7c3"
+      },
+      "splices": 2
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/main.rs",
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "pin": {
+        "bytes": 13038,
+        "git_blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+        "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+      },
+      "splices": 1
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "pin": {
+        "bytes": 18594,
+        "git_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+        "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097"
+      },
+      "splices": 7
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "pin": {
+        "bytes": 16134,
+        "git_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+        "sha256": "2f756431d4f8749930a6cfc7c1c1647f7131770d785bc1b1986774954e44659e"
+      },
+      "splices": 7
+    },
+    {
+      "exact_inverse": true,
+      "origin": "/tmp/hepta-36fa-root-product-e2-proposal-v1/references/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "pin": {
+        "bytes": 9613,
+        "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+        "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f"
+      },
+      "splices": 1
+    }
+  ],
+  "source_inner_input_decoder_body_verbatim": true,
+  "splice_count": 40,
+  "unchanged_boundaries": [
+    "All original Source publication/receipt functions, except a mechanical private inner-input decoder extraction; no receipt constructor is added.",
+    "Original Task Driver body and daemon Store transaction flow are not edited in this layer.",
+    "Original drop_to_owner expression and ordering before Root descriptor receipt.",
+    "Original root_pair/require_root_pin/send_packet, Root seal and five-lane service bodies are not edited.",
+    "Original public local task factory and prior remote entry remain available."
+  ]
+}

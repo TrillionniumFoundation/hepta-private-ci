@@ -1,0 +1,77 @@
+{
+  "actual_non_test_daemon_call_chain": [
+    "main after original Objective/AuthBus configuration",
+    "AgentdProductionLaunch::install_original_root_task",
+    "sealed RootOriginalTaskHandoffV1::install",
+    "original Config guards and original task bootstrap/invocation",
+    "original AgentdState / CircuitTaskDriver / AutomationStore and actual signed RunStart"
+  ],
+  "bounds": {
+    "aggregate_requests": 128,
+    "exchange_milliseconds": 500,
+    "no_retry_or_queue_increase": true,
+    "operation_end": "Root original end converted conservatively through CLOCK_MONOTONIC and retained as the actual daemon Budget end; relative HAP lifetime cannot extend this fixed end.",
+    "operation_max_seconds": 300,
+    "startup_scope": "one fixed minimum with original Host end, established before data projection, binding, two handoffs, both accepts and passive first-frame readiness; no first-frame bytes are decoded during this barrier.",
+    "startup_seconds": 30
+  },
+  "e3_merge": "E3 late enrollment splices share main/launcher/lib context but use distinct field/flag/module names. Merge in the order task Config install first, then the original V3 enrollment opt-in. Preserve every original descriptor duplicate check and all pre-existing flags.",
+  "existing": 17,
+  "format": "hepta-e2-ordinary-root-task-handoff-local-review-v1",
+  "handoff": {
+    "consumer": "Actual dedicated non-Root uid/gid/pid captured by Root; receives only after original drop_to_owner and connects its own sockets.",
+    "flag": "--root-original-task-handoff-fd",
+    "marker": "HEPTA_ROOT_ORIGINAL_TASK_HANDOFF_V1",
+    "paths": "Original validate_lane_paths retains root:peer-gid mode02710 and Root-owned non-writable ancestors; bound sockets are mode0660 and cleaned only at matching device/inode.",
+    "rights": 2,
+    "same_root": "Root-created unnamed datagram creator + matching original pidfd, Root-sealed memfd; later task/loan HAP SO_PEERCRED and pidfds; same Root PID as original writer/bootstrap. The creator credentials are never attributed to the daemon.",
+    "sealed_bound": 65536
+  },
+  "new_production": 9,
+  "new_tests_in_this_layer": 0,
+  "optional_services": "This first same-session five-lane composition explicitly rejects an already-registered root_admin or legacy learning lane, instead of silently dropping those owners. It is not a replacement for those consuming serving APIs.",
+  "paths": 26,
+  "qualification": false,
+  "registration": {
+    "changed_private_boundaries": [
+      "full Source input codec visibility and mechanical inner decoder extraction",
+      "sealed Root lane factory readonly data projection and capacity",
+      "original remote client receives a fixed absolute end",
+      "same-session closed Root service borrow"
+    ],
+    "collector_and_protected_refresh_pending": true,
+    "ignored_paths_or_existing_forbidden_rules_changed": false,
+    "new_opaque_type": "RootOriginalTaskHandoffV1 has no Clone, raw constructor/getter or deserializer.",
+    "new_public_entries": [
+      "receive_root_original_task_handoff",
+      "AgentdProductionLaunch::install_original_root_task",
+      "PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task"
+    ]
+  },
+  "remaining": [
+    "Root CLI protected typed loader and real owner material inputs.",
+    "Purpose-fixed Source readonly loan to a non-Root Material host; same-UID original command rejection remains.",
+    "Meaningful mechanism tests and actual cross-process signed task execution.",
+    "Full Adopt or complete evaluated NoUpdate to actual consumer C; true daemon and Root process cold recovery."
+  ],
+  "role_boundaries": {
+    "daemon": [
+      "same Config and its writer",
+      "same AgentdState and AutomationStore",
+      "original private admission, committed trace and receipt",
+      "original signed RunStart authentication before/after original operations"
+    ],
+    "root": [
+      "same concrete protected generation operation and host Session",
+      "same original PublishedTask/Cell/Source/drain custody",
+      "unique Cell writer/computation pump",
+      "unchanged original five-lane service from the same service object"
+    ]
+  },
+  "root_cli_caller_status": "No hepta-authority-host CLI loader invokes this new typed method in this layer. A protected loader for actual Artifact, FinalUse, selected material, target journal/witness and task files/model remains necessary; the new daemon main caller does not prove that missing Root deployment input has been supplied.",
+  "root_entry": "PreparedRootHostCircuitTaskV1::handoff_and_serve_original_root_circuit_task consumes the one original factory lane before bind/seal/send; it borrows this same already-open Session for the unchanged Root five-lane service and pumps the actual same task/Cell/Source in the same real Root process.",
+  "runtime_source_changed": false,
+  "source_git_created": false,
+  "status": "PREPARED_UNEXECUTED",
+  "uncertainty": "A factory lane is consumed before handoff side effects. Failures do not restore it or recreate paths. The synchronous Root service owns work until return; exact thread joins are attempted. Timeout/outer process cancellation is not represented as completion or a joined process. Lost completion or Source ACK stays same-operation Unknown/readback."
+}

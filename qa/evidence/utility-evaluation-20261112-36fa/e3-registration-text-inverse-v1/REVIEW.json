@@ -1,0 +1,29 @@
+{
+  "bounded_encoding_full_roundtrip_equal": true,
+  "callers_complete_inverse_equal": true,
+  "changed_old_rows": 18,
+  "e1_contract_only_two_complete_composed_source_identities_changed": [
+    "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+    "codex-rs/hepta-agentd/src/lib.rs"
+  ],
+  "final_e2_union_requires_separate_exact_registration_binding": true,
+  "new_guards_removed_for_inverse": 19,
+  "new_rows_removed_for_inverse": 16,
+  "not_performed": [
+    "collector",
+    "QA",
+    "Rust",
+    "H",
+    "Git source writes",
+    "ref updates"
+  ],
+  "only_exact_callers_sha_allowlist_append": true,
+  "packet": {
+    "bytes": 4628695,
+    "git_blob": "43f723f2de9d8910cf9958ba21f63f2201f8fc79",
+    "sha256": "7085385105a3af327248d37a2b5716be941a74f4fac28527cd8ba1779261ae3e"
+  },
+  "paths": 7,
+  "root_workflow_complete_inverse_equal": true,
+  "scope": "Pure independent exact text/object inversion of the frozen E1+E3 registration projection; no scanner or QA module imported."
+}

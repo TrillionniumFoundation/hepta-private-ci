@@ -1,3 +1,48 @@
+# Current checkpoint: merged ordinary Root source review; execution remains Unknown
+
+Cutoff: 2026-11-13 15:20:52 UTC. **qualification=false; actual qualified authorized A → independent B → new C → daemon/Root process cold-recovery chains=0.** Source proposals, byte checks, archive closure and prepared tests do not establish real utility or runtime authorization.
+
+## Newly closed source-review work
+
+The [Root v3 composition](root-product-composition-v3/PREQUALIFICATION_COMPOSITION_REVIEW.json), `0f4c064a865c44a648e8e8b6c3f6e0b5741ae744`, now covers **79 changed paths: 50 new and 29 modified original files**, with 15,293 total source paths. It composes the previous 53-path preview with the private LanePurpose correction, E3 late enrollment, E3 explicit caller receivers, and the ordinary daemon/Root handoff layer. Exact known before-images, each original forward/inverse edit, and preservation of unrelated prior-layer bytes were checked. It remains a local reproducible source view, not a new source commit or qualification result.
+
+Two source layers independently changed a 19-entry launch flag array to 20. The actual merged source needs **21**. Root made that one explicit integration correction, retained both distinct handoff flags, and preserved ten coincident insertions in declared layer order. The [independent shared-entry review](root-product-composition-v3-shared-entry-peer-v1/REVIEW.json), `d81d3601e529f95213f253b63e2ff6a5972b699b`, separately checked the four shared entry files: all 21 flags, all 14 descriptor slots, uniqueness before taking descriptors, actual UID drop before receiving task handoff, and Task installation before V3 enrollment/runtime. This narrow review does not claim full semantic verification of all 79 files.
+
+The preceding composition proof attempts are retained. A whole-line/sub-string matching correction and coincident-insertion handling were proof-tool changes; the final FLAGS count was an actual combined-source correction. The frozen contributor packets were not overwritten.
+
+## Original owners and ordinary handoff
+
+The [ordinary handoff independent review](e2-ordinary-handoff-independent-peer-v1/REVIEW.json), `ac17e23812796e022d1b6e9208316db07ba616e2`, checked the complete 26-path layer: 17 exact old before-images, 9 new production files, 40 forward/inverse edits and the unchanged original Source inner decoder.
+
+The same retained Root Session serves the original **three mandatory host lanes plus two paired optional lanes**, alongside the fixed Task lane. The daemon retains its original Config, AutomationStore, authenticated ingress, admission, Trace and private Receipt. Root retains original Source/Cell custody. Distinct production and task handoff markers are not interchangeable. This is source-level construction; no real cross-UID task execution is claimed.
+
+The exact 556,937-byte ordinary packet `65e62f807885cd890d8fa9944c58e232dc55ae01` is preserved in [three bounded parts](e2-ordinary-handoff-bounded-packet-v1/MANIFEST.json). [Root readback verification](e2-ordinary-handoff-bounded-packet-v1/ROOT_GIT_READBACK_REVIEW.json) reconstructed the complete packet from actual Git full-GET bytes and rechecked all 26 full before/after entries. The packet is not claimed to have been separately published as one blob.
+
+## Prepared tests and E3 registration projection
+
+Four new mechanism cases are frozen in packet `3ce8abde6fd4ddb09d1b020d0be1eb004cabbc54`. They cover complete bootstrap/Cell data, exact malformed-frame rejection, the actual original Driver/AutomationStore Receipt and same-process readback, and refusal of foreign run/input data. The [independent test review](e2-bootstrap-receipt-tests-independent-peer-v1/REVIEW.json), `1fbd2f92e6eedc9e2831730e746359b4e3467895`, confirms one new test file and only a 116-byte Linux test mount after the complete old parent test body. **None of these tests has run.** They do not establish real IPC, original Source publication authority, cancellation join or process cold recovery. This test layer is not yet included in the 79-path view.
+
+E3's seven-file [registration proposal](e3-registration-projection-v1/REVIEW.json), `858272c9ea8bb21ccc1a4d00313cb9d94b4a9034`, is explicitly an **E1-plus-E3 isolated projection**: 650→666 boundaries, 24 appended caller edges across 18 old rows, 451→470 protections, 54→57 Root parents, and two prepared QA methods. Old scanner rules, authority flags, ignored paths, forbidden rows and execution budgets are not changed. Three bounded parts retain its complete 4,628,695-byte packet `43f723f2de9d8910cf9958ba21f63f2201f8fc79`; [Root verified](e3-registration-projection-v1/ROOT_FULL_GIT_READBACK_REVIEW.json) their complete actual Git readback, bounded decompression and all seven source rows against the exact E1 candidate.
+
+Those isolated counts and source identities are not the final E2/E3 union. The [integration obligations](e3-registration-projection-v1/INTEGRATION_OBLIGATIONS.json) require exact merged caller sets, complete final source identities, full-file protections and Root test parents. A changed protected file must bind to its reviewed complete final bytes; stale or relaxed guards cannot substitute.
+
+## Work still in progress
+
+- A dedicated Material readonly Source lane must bind the actual Material actor and actual supervisor-provided process identity/pidfd. The daemon identity cannot stand in for Material. Its complete freeze/history is available only after real A has completed.
+- The ordinary Root loader must open existing Artifact, FinalUse, selection, journal and witness state through original constructors. Recovery cannot replace missing state with fresh initialization. The existing witness open writes a header on an empty file, so recovery must explicitly reject that case.
+- Task, Material and V3 orchestration must share the same retained original issuer/session and absolute end. The existing standalone E3 CLI opens its own issuer and cannot simply be embedded beside an already owned Task session. An actual same-session path is being implemented separately.
+- Complete registration, original formatter/compiler/source/native gates, actual independent evaluation, a real new consumer C and actual daemon/Root process cold recovery remain unproved.
+
+## Runtime observation and source refs are unchanged
+
+The b608 source-only request remains **Unknown** after the one original timeout, one unavailable fixed result path, and one bounded metadata snapshot that ended in an inventory-entry-bound refusal. No job id, authoritative status or gate result was obtained. H remains stopped. There was no new executable, repeated start, new key, inventory refresh or other-job probe.
+
+The original draft PR source remains `cc57c7198db6293ccca562253c42fffbe2a04633`; the E1 review branch remains `99fada80470f175ba14004ea9fcb006853c7d98f`. The history-stage success and complete 61-file / 755-original closure described below remain valid within their stated scope. The old 65a failed contract remains failed. Unknown is not failure, non-execution or NotApplied.
+
+---
+
+# Earlier checkpoint content retained verbatim below
+
 # Current checkpoint: complete history readback, source execution Unknown
 
 Cutoff: 2026-11-13 14:56:57 UTC. This is an evidence and source-review checkpoint. **qualification=false; real qualified A→B→C→daemon/Root cold-recovery chains=0.** An engineering approval, source commit, transport success, static byte review or mechanism test cannot substitute for actual task utility or runtime owner authorization.

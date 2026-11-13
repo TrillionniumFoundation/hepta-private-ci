@@ -1,0 +1,14 @@
+{
+  "format": "hepta-independent-reviewer-initial-error-v1",
+  "initial_script": "verify_exact_layer.py",
+  "actual_tool_chunk_id": "3481b2",
+  "observed_exit_code": 1,
+  "observed_traceback": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-product-e3-late-enrollment-independent-review-v1/verify_exact_layer.py\", line 200, in <module>\n    assert test_count == len(methods)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "record_source": "verbatim failure text from actual exec tool response, not a separately preserved full SDK",
+  "cause": "Reviewer counted every fn as a test, including the two Root test helpers root_pin and require_root.",
+  "correction": "Independent verifier v2 selects only fn declarations preceded by the exact #[test] attribute and optional intervening attributes; original script and all proposal files unchanged.",
+  "source_or_h_failure": false,
+  "changed_source": false,
+  "old_expression": "methods = re.findall(r'^fn ([A-Za-z0-9_]+)\\(', body, re.M)",
+  "new_expression": "methods = re.findall(r'^#\\[test\\]\\n(?:#\\[[^\\n]*\\]\\n)*fn ([A-Za-z0-9_]+)\\(', body, re.M)"
+}

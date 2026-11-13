@@ -1,0 +1,112 @@
+{
+  "actual_reproducer_response": {
+    "bytes": 459,
+    "git_blob": "3a5b3c2ebe2891eba9d6d4ef33ebf30713644e60",
+    "path": "/tmp/hepta-36fa-root-product-composition-v3-shared-entry-independent-review-v1/BYTE_VERIFIER_EXEC.original.json",
+    "sha256": "4141b27b0d5e8ecc1b909eb5245c0626a0ae1e9ab412b97bd2bd703ba53e9a75"
+  },
+  "byte_proof": {
+    "bytes": 12090,
+    "git_blob": "26c3b149023bebb0449cebc94fc69939d6101e5b",
+    "path": "/tmp/hepta-36fa-root-product-composition-v3-shared-entry-independent-review-v1/BYTE_COMPOSITION_REVIEW.json",
+    "sha256": "fd7d05c64bc4d4c3faa9af6259fe470926b73051a97e124f658bd9c2e71d9973"
+  },
+  "findings": [
+    {
+      "evidence": "production_launcher_inputs.rs18-40 and pure flag list",
+      "finding": "The complete shared parser contains exactly21 distinct flags. The only overlapping non-insertion edit is the explicit FLAGS19\u219221 merge of E3 and E2 additions. Both --root-resident-learning-handoff-fd and --root-original-task-handoff-fd are present, parsed once, retained in separate typed fields and transferred once. The old19 flags are unchanged.",
+      "subject": "Explicit 19+2 flag merge"
+    },
+    {
+      "evidence": "production_launcher_inputs.rs153-166,238-299; byte proof fd_numbers",
+      "finding": "The combined numbers list contains14 distinct syntactic slots including both new handoffs, all original required inputs and all optional Notes/Desktop inputs. One full BTreeSet cardinality check precedes every take_descriptor. Standard FD rejection, FD_CLOEXEC and readonly-file checks retain their original complete code. Resident V3 versus old learning V1 mutual exclusion also precedes ownership.",
+      "subject": "All inherited descriptors remain unique before ownership"
+    },
+    {
+      "evidence": "production_launcher.rs106-136,215-250,459-467; main.rs235-243",
+      "finding": "The original prepare_root_handoff(...).drop_to_owner() remains before both sealed task receipt and actual task connect. main installs the consumed task offer into the already-configured original AgentdConfig before calling launch.run. launch.run refuses an unconsumed task offer, then reaches V3 run_original only after original primary application assembly. The new task Config is not replaced before original enrollment.",
+      "subject": "Credential drop, same Config and order"
+    },
+    {
+      "evidence": "two parser fields; explicit f130 six receiver/argument facts from five exact splices; production_resident_enrollment.rs37",
+      "finding": "Task and resident enrollment continue through their different opaque handoff types, markers, descriptor schemas, real socket peers and private installers. No shared parser field aliases either FD or replaces one protocol by the other. E3 explicit caller layer preserves the same by-value RootCandidate service and the same borrowed enrollment receiver.",
+      "subject": "Purpose separation and scope"
+    },
+    {
+      "finding": "Task handoff keeps the original 30s startup boundary and Root-selected task absolute end. E3 resident_end is set once from the original production session boundary in receive and carried to run_original; late enrollment then uses its own original packet connect/session checks. The merge changes neither wire counters nor 500ms request bounds, and never reconstructs task fresh authority on an enrollment failure.",
+      "qualification": "Task end, original host lifetime and late resident session end are separate existing bounds. This report does not claim they are numerically equal or that one grants extra time to another.",
+      "subject": "No new end or retry reset from composition"
+    },
+    {
+      "evidence": "authority_host_resident_enrollment.rs run; production_resident_enrollment.rs fullbody",
+      "finding": "The f130 follow-up is five exact spelling-only changes. The same concrete service is passed by value, the same cancellation.clone/bounded.clone token is used, and deadline cancellation still awaits the original work future before dropping its socket guard. Production enrollment keeps the original daemon future alive after an enrollment error and awaits its existing shutdown path.",
+      "subject": "Same service and actual cancellation completion"
+    },
+    {
+      "finding": "The existing first select may return the original daemon result before receiving the late offer. This is not enrollment completion and cannot establish NotApplied. If daemon completion wins during the active join, the code explicitly reports ACK Unknown. Root registration can precede listener/send completion, so failed handoff remains a retained uncertainty rather than fresh permission.",
+      "subject": "Uncertain enrollment is not a task or activation pass"
+    },
+    {
+      "evidence": "BYTE_COMPOSITION_REVIEW.json full four-file identities and insertion ledger",
+      "finding": "Both E2 public exports and its private module retain Linux cfg attributes; the four E3 public enrollment exports also retain their separate Linux gates. The shared lib is exactly previous v2 plus the frozen E3 suffix and the two E2 edits, and a full inverse returns previous v2 bytes. main is exactly the frozen E2 after image. The two launcher files were independently woven from their identical original b608 base, E3 insertions first and E2 insertions second; the only non-insertion overlap is FLAGS21.",
+      "subject": "lib cfg boundaries and exact source preservation"
+    }
+  ],
+  "format": "hepta-e2-e3-v3-shared-entry-independent-review-v1",
+  "pure_reproducer": {
+    "bytes": 9570,
+    "git_blob": "1c706a3fa82dab6ed11e2329ed92cc68e7ccaad8",
+    "path": "/tmp/hepta-36fa-root-product-composition-v3-shared-entry-independent-review-v1/verify_shared_entries.py",
+    "sha256": "d04b24d4dab60594faad071b0b224b61d0313ecc448c7b0fe7b6aa482e990dc8"
+  },
+  "qualification": {
+    "H_calls": 0,
+    "complete_registrations_and_original_gates_still_required": true,
+    "git_publication": "All listed report/source identities are computed local pins; reviewer did not upload source or review blobs.",
+    "local_file_observation_not_live_native_preservation": true,
+    "new_tests_not_in_this_report": true,
+    "not_a_qualification_pass": true,
+    "not_a_runtime_root_grant": true,
+    "not_an_execution_approval": true,
+    "not_full_79_path_semantic_review": true,
+    "only_static_four_file_integration_review": true,
+    "project_or_Rust_execution": 0,
+    "root_cli_task_loader_still_missing": true,
+    "runtime_source_start_state_remains": "Unknown",
+    "source_or_ref_mutations_by_reviewer": 0
+  },
+  "reviewed_files": [
+    {
+      "bytes": 20557,
+      "git_blob": "9df526e0bf4178e47d8e380ac887712cafb8ec3c",
+      "path": "/tmp/hepta-36fa-root-product-composition-v3/after/codex-rs/hepta-agentd/src/production_launcher.rs",
+      "sha256": "d86da78b08522c24f579d4a0fe1f84958992c4f6d9b38c881b89a0a1a86d0ab4"
+    },
+    {
+      "bytes": 17180,
+      "git_blob": "22d033fd7e565eb7b09d26699d931407a7f2c643",
+      "path": "/tmp/hepta-36fa-root-product-composition-v3/after/codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "sha256": "4d428571bf71c4c248f649a475a68b1f6ea8e3954699a756a5c416c1ac00c4d8"
+    },
+    {
+      "bytes": 13161,
+      "git_blob": "6ccf0bb873caaad408cf3fbf3bb489216b80f5a9",
+      "path": "/tmp/hepta-36fa-root-product-composition-v3/after/codex-rs/hepta-agentd/src/main.rs",
+      "sha256": "9914e00a4bf762a89c15990e30d25d6c21719b29fd161af608a13b8ec142537d"
+    },
+    {
+      "bytes": 73959,
+      "git_blob": "049281fe0eb99c95f307d9e8b42d05a40af27254",
+      "path": "/tmp/hepta-36fa-root-product-composition-v3/after/codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "72f25ccf4aa8123eb8fd971f823a0677db9a20593861f91143dcf0d2adda5977"
+    }
+  ],
+  "reviewer": "/root/native_ci_audit",
+  "root_composition": {
+    "bytes": 78780,
+    "git_blob": "0f4c064a865c44a648e8e8b6c3f6e0b5741ae744",
+    "path": "/tmp/hepta-36fa-root-product-composition-v3/PREQUALIFICATION_COMPOSITION_REVIEW.json",
+    "sha256": "0202156c9cda660305df3245a767ee247a9307e1320d6173dbe2dd92ef95842d"
+  },
+  "status": "NO_NEW_CONCRETE_STATIC_BLOCKER_IN_FOUR_FILE_COMPOSITION"
+}

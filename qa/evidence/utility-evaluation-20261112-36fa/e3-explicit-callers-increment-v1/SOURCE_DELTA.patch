@@ -1,0 +1,55 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_cli.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_cli.rs
+@@ -95,7 +95,7 @@
+                 original,
+             )?,
+         };
+-        let work = service.run(cancellation.clone());
++        let work = codex_hepta_agentd::RootResidentCandidateServiceV1::run(service, cancellation.clone());
+         tokio::pin!(work);
+         tokio::select! {
+             result = &mut work => result?,
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs
+@@ -73,7 +73,7 @@
+             }
+         };
+         let cancellation = CancellationToken::new();
+-        let work = service.run(cancellation.clone());
++        let work = codex_hepta_agentd::RootResidentCandidateEnrollmentServiceV3::run(service, cancellation.clone());
+         tokio::pin!(work);
+         tokio::select! {
+             result = &mut work => result?,
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs
+@@ -154,7 +154,7 @@
+     pub async fn run(self, cancellation: tokio_util::sync::CancellationToken) -> Result<(), crate::AgentdError> {
+         let Self { service, socket_guard, session_end } = self;
+         let bounded = cancellation.child_token();
+-        let work = service.run(bounded.clone());
++        let work = RootResidentCandidateServiceV1::run(service, bounded.clone());
+         tokio::pin!(work);
+         let result = tokio::select! {
+             result = &mut work => result,
+--- a/codex-rs/hepta-agentd/src/production_resident_enrollment.rs
++++ b/codex-rs/hepta-agentd/src/production_resident_enrollment.rs
+@@ -34,7 +34,7 @@
+         Ok(root) => {
+             // This ACK confirms only the original local outbox/source join.
+             // Root's actual Admit remains solely in the original delivery code.
+-            let join = enrollment.enroll_original_root(root);
++            let join = crate::AgentdRootResidentEnrollmentV3::enroll_original_root(&enrollment, root);
+             tokio::pin!(join);
+             tokio::select! {
+                 result = &mut original => {
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs
+@@ -56,7 +56,7 @@
+             let authorization = RootResidentLearningReadbackAuthorizationV3::from_original_root(&profile, intent, lease)?;
+             AgentdRootResidentLearningClientV3::recover_original_root_stream(
+                 stream.into_std()?, packet.root.into_peer(), held_root_pidfd,
+-                profile, authorization, trust.verifier, None, timeout, wire::remaining(session_end)?,
++                profile, authorization, trust.verifier, /*expected*/ None, timeout, wire::remaining(session_end)?,
+             )
+         }
+     }.map_err(io::Error::other)?;

@@ -1,0 +1,1397 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_session.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session.rs
+@@ -11,6 +11,9 @@
+ #[path = "root_notes_startup.rs"]
+ mod notes_startup;
+ pub use notes_startup::RootNotesPolicyPredecessor;
++
++#[path = "authority_host_session_task_host.rs"]
++mod original_task_host;
+ 
+ #[path = "authority_host_session_material.rs"]
+ mod material;
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
+@@ -3,6 +3,9 @@
+ 
+ #[path = "authority_host_session_generation_task_service.rs"]
+ mod original_service;
++
++#[path = "authority_host_session_generation_task_handoff.rs"]
++mod ordinary_handoff;
+ 
+ use codex_hepta_neuron::AnchorWitnessStore;
+ 
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task_handoff.rs
+@@ -0,0 +1,107 @@
++//! Ordinary Root handoff and service for the same retained task factory. The
++//! non-Clone lane is taken before handoff side effects. Failure never puts the
++//! writer back or emits a new operation; only original custody readback remains.
++
++use std::os::fd::{AsRawFd, OwnedFd};
++use std::os::unix::net::UnixDatagram;
++use std::path::{Path, PathBuf};
++use std::time::{Duration, Instant};
++
++use codex_hepta_contracts::{HostAuthorityPeerChannel, HostAuthorityPeerPolicy, HostIssuerPeer};
++use codex_hepta_neuron::AnchorWitnessStore;
++
++use super::PreparedRootHostCircuitTaskV1;
++use crate::AgentdError;
++use crate::circuit_task::remote::OriginalRootTaskStreams;
++use crate::root_original_task_descriptor::{protocol, require_before};
++
++#[path = "authority_host_task_listeners.rs"]
++mod listeners;
++
++impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>
++where SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,
++{
++    /// Send one sealed task offer on a distinct inherited Root-created pair,
++    /// then accept only the same registered daemon after its credential drop.
++    /// The original writer/issuer/checkpoint lanes use this SAME retained
++    /// session and its original sealed bootstrap on a separate original pair.
++    /// Both paths must use the existing Root:peer-gid mode02710 runtime parent.
++    /// No Config, SQL store, grant or caller-selected Cell is constructed here.
++    ///
++    /// The factory's one lane is consumed before bind/seal/send. Partial handoff,
++    /// timeout and lost ACK retain only same-operation readback/drain custody;
++    /// this method supplies no automatic rebind or second execution lane.
++    pub fn handoff_and_serve_original_root_circuit_task(
++        &mut self, production_handoff: UnixDatagram, task_handoff: UnixDatagram,
++        original_root_pidfd: OwnedFd, consumer_state_root: &Path,
++        task_path: PathBuf, loan_path: PathBuf, session_nonce: [u8; 16],
++    ) -> Result<u64, AgentdError> {
++        let startup_end = (Instant::now() + Duration::from_secs(30)).min(self.end);
++        self.read_original_root_task_generation()?;
++        let identity = self.session.registration.registered_identity.identity()?;
++        if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0
++            || self.session.config.peer_uid == 0
++            || self.session.registration.peer_pid == std::process::id()
++            || session_nonce == [0; 16]
++        { return Err(AgentdError::Invalid("original Root task registration differs".into())); }
++        let (binding, registry, source, capacity) = self.runtime.original_root_handoff_data()?;
++        let lane = self.runtime.take_original_root_lane()?;
++        let bound = listeners::TaskListeners::bind(&task_path, &loan_path, self.session.config.peer_gid)?;
++        let original_host = self.session.bind_original_task_host_lanes()?;
++        let original_bootstrap = self.session.seal_bootstrap(consumer_state_root)?;
++        let descriptor = crate::root_original_task_descriptor::seal(
++            std::process::id(), self.session.registration.peer_pid,
++            self.session.config.peer_uid, self.session.config.peer_gid,
++            &task_path, &loan_path, session_nonce, self.end, capacity, binding, &registry, &source,
++        )?;
++        self.read_original_root_task_generation()?;
++        let remaining = startup_end.checked_duration_since(Instant::now())
++            .filter(|value| !value.is_zero()).ok_or_else(|| AgentdError::Invalid("Root task startup expired".into()))?;
++        crate::send_root_production_handoff(production_handoff, &original_bootstrap,
++            &original_root_pidfd, remaining)?;
++        let remaining = startup_end.checked_duration_since(Instant::now())
++            .filter(|value| !value.is_zero()).ok_or_else(|| AgentdError::Invalid("Root task startup expired".into()))?;
++        crate::root_production_handoff::send_original_task_handoff(
++            task_handoff, &descriptor, &original_root_pidfd, remaining,
++        )?;
++        let root: &PreparedRootHostCircuitTaskV1<SW, CW> = self;
++        std::thread::scope(|scope| {
++            // This is a real, already-Root host process. The ordinary daemon
++            // performs its own process credential drop before either connect.
++            let host = scope.spawn(move || original_host.serve());
++            let task_result = (|| {
++                let (task, loan) = bound.accept(&root.session.owner_pidfd, startup_end)?;
++                root.read_original_root_task_generation()?;
++                require_before(startup_end)?;
++                let lifetime = root.end.checked_duration_since(Instant::now())
++                    .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))
++                    .ok_or_else(|| AgentdError::Invalid("original Root task scope expired".into()))?;
++                let policy = HostAuthorityPeerPolicy {
++                    peer: HostIssuerPeer { uid: root.session.config.peer_uid, pid: root.session.registration.peer_pid },
++                    timeout: Duration::from_millis(root.session.config.timeout_ms.min(500)), lifetime,
++                    request_bound: 65_536, response_bound: 65_536,
++                };
++                let task_fd = task.as_raw_fd();
++                let task = HostAuthorityPeerChannel::from_stream(task, policy, root.session.owner_pidfd.try_clone()?)
++                    .map_err(protocol)?;
++                let loan = HostAuthorityPeerChannel::from_stream(loan, policy, root.session.owner_pidfd.try_clone()?)
++                    .map_err(protocol)?;
++                listeners::wait_first_frame(task_fd, &root.session.owner_pidfd, startup_end)?;
++                root.read_original_root_task_generation()?;
++                let end = root.end;
++                crate::circuit_task::remote::serve(root, &identity, lane,
++                    OriginalRootTaskStreams::new(task, loan, session_nonce, end)).map_err(protocol)
++            })();
++            let host_result = host.join()
++                .map_err(|_| AgentdError::Protocol("original Root service panicked".into()))?
++                .map_err(AgentdError::from);
++            match (task_result, host_result) {
++                (Ok(count), Ok(())) => Ok(count),
++                (Err(task), Ok(())) => Err(task),
++                (Ok(_), Err(host)) => Err(host),
++                (Err(task), Err(host)) => Err(AgentdError::Protocol(format!(
++                    "original task result Unknown: {task}; original host termination: {host}"))),
++            }
++        })
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_task_host.rs
+@@ -0,0 +1,36 @@
++//! Closed internal borrow of the already-open Root service. This lets one
++//! retained task custody serve the original five lanes without reopening its
++//! issuer, clock, checkpoint, lease registry or original writer proof.
++
++use super::*;
++
++pub(crate) struct OriginalTaskHostLanes<'a> {
++    service: &'a HostAuthorityService,
++    config: &'a HostAuthorityServiceConfig,
++    registration: &'a HostAuthorityRegistration,
++    owner: &'a OwnedFd,
++    bound: super::super::listeners::BoundLanes,
++}
++
++impl PreparedHostAuthoritySession {
++    pub(crate) fn bind_original_task_host_lanes(&self) -> io::Result<OriginalTaskHostLanes<'_>> {
++        if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0 {
++            return Err(io::Error::other("same actual Root service required"));
++        }
++        // Those optional services have their own consuming original serving
++        // APIs. This bounded composition never silently drops either owner.
++        if self.root_admin.is_some() || self.learning.is_some() {
++            return Err(io::Error::other("original task host cannot discard optional retained lanes"));
++        }
++        let bound = super::super::listeners::bind_runtime_lanes(&self.config, || Ok(()))?;
++        Ok(OriginalTaskHostLanes { service: &self.service, config: &self.config,
++            registration: &self.registration, owner: &self.owner_pidfd, bound })
++    }
++}
++
++impl OriginalTaskHostLanes<'_> {
++    pub(crate) fn serve(self) -> io::Result<()> {
++        super::super::listeners::serve_bound_lanes(self.service, self.config,
++            self.registration, self.owner, self.bound)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_task_listeners.rs
+@@ -0,0 +1,116 @@
++//! Two purpose-fixed listeners in the original Root-controlled runtime parent.
++//! Existing paths are never removed for bind. Cleanup removes only the sockets
++//! whose exact device/inode this scope created, and accepts each peer once.
++
++use std::fs;
++use std::os::fd::OwnedFd;
++use std::os::fd::RawFd;
++use std::os::unix::fs::{MetadataExt, PermissionsExt};
++use std::os::unix::net::{UnixListener, UnixStream};
++use std::path::PathBuf;
++use std::time::{Duration, Instant};
++
++use crate::AgentdError;
++use crate::root_original_task_descriptor::{protocol, require_before};
++
++pub(super) struct TaskListeners {
++    task: UnixListener,
++    loan: UnixListener,
++    guard: SocketGuard,
++}
++
++struct SocketGuard(Vec<(PathBuf, u64, u64)>);
++
++impl Drop for SocketGuard {
++    fn drop(&mut self) {
++        for (path, device, inode) in &self.0 {
++            if fs::symlink_metadata(path).is_ok_and(|entry| entry.dev() == *device && entry.ino() == *inode) {
++                let _ = fs::remove_file(path);
++            }
++        }
++    }
++}
++
++impl TaskListeners {
++    pub(super) fn bind(task: &PathBuf, loan: &PathBuf, gid: u32) -> Result<Self, AgentdError> {
++        crate::authority_host_runtime::validate_lane_paths(&[task, loan], gid)?;
++        let mut guard = SocketGuard(Vec::new());
++        let task = bind_one(task, gid, &mut guard)?;
++        let loan = bind_one(loan, gid, &mut guard)?;
++        Ok(Self { task, loan, guard })
++    }
++
++    pub(super) fn accept(&self, owner: &OwnedFd, end: Instant) -> Result<(UnixStream, UnixStream), AgentdError> {
++        // The same fixed end covers both accepts; no per-lane startup renewal.
++        let task = accept_one(&self.task, owner, end)?;
++        let loan = accept_one(&self.loan, owner, end)?;
++        for (path, device, inode) in &self.guard.0 {
++            let entry = fs::symlink_metadata(path)?;
++            if entry.dev() != *device || entry.ino() != *inode {
++                return Err(AgentdError::Invalid("original task listener changed".into()));
++            }
++        }
++        require_before(end)?;
++        Ok((task, loan))
++    }
++}
++
++fn bind_one(path: &PathBuf, gid: u32, guard: &mut SocketGuard) -> Result<UnixListener, AgentdError> {
++    let listener = UnixListener::bind(path)?;
++    let entry = fs::symlink_metadata(path)?;
++    guard.0.push((path.clone(), entry.dev(), entry.ino()));
++    fs::set_permissions(path, fs::Permissions::from_mode(0o660))?;
++    let after = fs::symlink_metadata(path)?;
++    if entry.dev() != after.dev() || entry.ino() != after.ino() || after.uid() != 0
++        || after.gid() != gid || after.mode() & 0o7777 != 0o660
++    { return Err(AgentdError::Invalid("original task socket ownership differs".into())); }
++    listener.set_nonblocking(true)?;
++    Ok(listener)
++}
++
++fn accept_one(listener: &UnixListener, owner: &OwnedFd, end: Instant) -> Result<UnixStream, AgentdError> {
++    loop {
++        require_before(end)?;
++        crate::root_observation_stream::check_lifetime(owner).map_err(protocol)?;
++        match listener.accept() {
++            Ok((stream, _)) => {
++                require_before(end)?;
++                crate::root_observation_stream::check_lifetime(owner).map_err(protocol)?;
++                return Ok(stream);
++            }
++            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
++                std::thread::sleep(Duration::from_millis(5).min(end.saturating_duration_since(Instant::now())));
++            }
++            Err(error) => return Err(error.into()),
++        }
++    }
++}
++
++/// No bytes are decoded here. The caller retains an already peer-authenticated
++/// original HAP channel owning this FD. The same startup end covers bind,
++/// handoff, accepts and this first-frame barrier; each exchange still has its
++/// original 500 ms timeout, 128 aggregate count and original operation end.
++pub(super) fn wait_first_frame(fd: RawFd, owner: &OwnedFd, end: Instant) -> Result<(), AgentdError> {
++    loop {
++        require_before(end)?;
++        crate::root_observation_stream::check_lifetime(owner).map_err(protocol)?;
++        let left = end.saturating_duration_since(Instant::now());
++        let millis = i32::try_from(left.as_millis().saturating_add(1))
++            .map_err(|_| AgentdError::Invalid("original task startup bound differs".into()))?;
++        let mut entry = libc::pollfd { fd, events: libc::POLLIN, revents: 0 };
++        // SAFETY: poll borrows one live descriptor held by the original HAP
++        // channel and writes only this initialized scalar pollfd.
++        let result = unsafe { libc::poll(&mut entry, 1, millis) };
++        if result < 0 {
++            let error = std::io::Error::last_os_error();
++            if error.kind() == std::io::ErrorKind::Interrupted { continue; }
++            return Err(error.into());
++        }
++        require_before(end)?;
++        crate::root_observation_stream::check_lifetime(owner).map_err(protocol)?;
++        if result == 0 || entry.revents & (libc::POLLERR | libc::POLLHUP | libc::POLLNVAL) != 0 {
++            return Err(AgentdError::Protocol("original task peer ended before its first request".into()));
++        }
++        if entry.revents & libc::POLLIN != 0 { return Ok(()); }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_cell_binding.rs
++++ b/codex-rs/hepta-agentd/src/circuit_cell_binding.rs
+@@ -18,6 +18,10 @@
+ use crate::CircuitCellErrorV1;
+ use crate::circuit_cell_output::circuit_cell_output_schema_v1;
+ use crate::circuit_cell_ports::circuit_cell_output_schema_v2;
++
++#[cfg(target_os = "linux")]
++#[path = "circuit_cell_registry_bootstrap.rs"]
++pub(crate) mod root_bootstrap;
+ 
+ #[derive(Clone, Debug, Eq, PartialEq)]
+ pub struct CircuitCellRouteV1 {
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_cell_registry_bootstrap.rs
+@@ -0,0 +1,50 @@
++//! Private, full data projection of the original immutable registry. The
++//! decode path can only call the existing validating registry constructor.
++
++use super::*;
++use crate::circuit_task::CircuitTaskErrorV1 as Error;
++use crate::circuit_task::root_bootstrap_codec::{Reader, Writer};
++use crate::circuit_task::root_bootstrap_cell;
++
++pub(crate) fn encode(registry: &CircuitCellRegistryV1) -> Result<Vec<u8>, Error> {
++    let mut out = Writer::new(b"HCRTRGY1");
++    out.json(&registry.definition)?;
++    out.count(registry.bindings.len(), 16)?;
++    for binding in &registry.bindings {
++        out.text(&binding.program_id)?;
++        out.text(&binding.node_id)?;
++        root_bootstrap_cell::encode(&mut out, &binding.cell)?;
++        out.count(binding.routes.len(), 256)?;
++        for route in &binding.routes {
++            out.id(&route.candidate_id)?;
++            out.json(&route.outcome)?;
++            out.count(route.selected_edges.len(), 256)?;
++            for edge in &route.selected_edges { out.text(edge)?; }
++        }
++    }
++    Ok(out.finish())
++}
++
++pub(crate) fn decode(bytes: &[u8]) -> Result<CircuitCellRegistryV1, Error> {
++    let mut input = Reader::new(bytes, b"HCRTRGY1")?;
++    let definition = input.json()?;
++    let mut bindings = Vec::new();
++    for _ in 0..input.count(16)? {
++        let program_id = input.text()?;
++        let node_id = input.text()?;
++        let cell = root_bootstrap_cell::decode(&mut input)?;
++        let mut routes = Vec::new();
++        for _ in 0..input.count(256)? {
++            let candidate_id = input.id()?;
++            let outcome = input.json()?;
++            let mut selected_edges = Vec::new();
++            for _ in 0..input.count(256)? { selected_edges.push(input.text()?); }
++            routes.push(CircuitCellRouteV1 { candidate_id, outcome, selected_edges });
++        }
++        bindings.push(CircuitCellBindingV1 { program_id, node_id, cell, routes });
++    }
++    input.end()?;
++    let registry = CircuitCellRegistryV1::new(definition, bindings)?;
++    if encode(&registry)? != bytes { return Err(Error::InvalidBinding); }
++    Ok(registry)
++}
+--- a/codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs
++++ b/codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs
+@@ -7,6 +7,16 @@
+ impl<SW, CW> CircuitQ24TaskRuntimeV1<SW, CW>
+ where SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,
+ {
++    pub(crate) fn original_root_handoff_data(&self)
++        -> Result<(codex_hepta_types::Digest32, Vec<u8>, Vec<u8>, usize), AgentdError>
++    {
++        let (registry, capacity) = self.bootstrap.original_root_handoff_registry()
++            .map_err(|error| AgentdError::Protocol(format!("original Root registry: {error}")))?;
++        let (binding, source) = self.invocation.original_root_handoff_source()
++            .map_err(|error| AgentdError::Protocol(format!("original Root Source: {error}")))?;
++        Ok((binding, registry, source, capacity))
++    }
++
+     pub(crate) fn take_original_root_lane(&mut self)
+         -> Result<crate::circuit_task::OriginalRootTaskLane<SW>, AgentdError>
+     {
+--- a/codex-rs/hepta-agentd/src/circuit_task.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task.rs
+@@ -21,6 +21,19 @@
+ pub(crate) mod cell_q24_dataset_source_test_support;
+ #[path = "circuit_task_cell_port.rs"]
+ mod cell_port;
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_root_bootstrap_codec.rs"]
++pub(crate) mod root_bootstrap_codec;
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_root_bootstrap_cell.rs"]
++pub(crate) mod root_bootstrap_cell;
++#[cfg(target_os = "linux")]
++pub(crate) use source::root_bootstrap::decode as decode_original_root_source;
++#[cfg(target_os = "linux")]
++pub(crate) use source::remote_source::original_binding as original_root_source_binding;
++#[cfg(target_os = "linux")]
++pub(crate) use runtime::original_remote_channel_until;
++
+ #[cfg(target_os = "linux")]
+ #[path = "circuit_task_remote.rs"]
+ pub(crate) mod remote;
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs
+@@ -70,9 +70,12 @@
+ }
+ 
+ impl DaemonClient {
+-    pub(crate) fn new(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,
+-        pending: Arc<AtomicUsize>) -> Result<(Arc<Self>, usize), Error>
+-    {
++    pub(crate) fn new_until(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,
++        pending: Arc<AtomicUsize>, end: Instant) -> Result<(Arc<Self>, usize), Error>
++    {
++        if Instant::now() >= end || end.saturating_duration_since(Instant::now()) > Duration::from_secs(300) {
++            return Err(Error::DeadlineExceeded);
++        }
+         if rustix::process::getuid().as_raw() == 0 || rustix::process::geteuid().as_raw() == 0
+             || inputs.original_root.uid != 0 || inputs.original_root.pid == std::process::id()
+             || inputs.lifetime.is_zero() || inputs.lifetime > Duration::from_secs(300)
+@@ -81,7 +84,6 @@
+             || identity.spawn_generation.checked_add(1) != Some(inputs.fence.generation)
+         { return Err(Error::InvalidBinding); }
+         let binding = remote_source::original_binding(identity, &inputs.fence, &inputs.registry, &inputs.source)?;
+-        let end = Instant::now() + inputs.lifetime;
+         let budget = Budget::new(end)?;
+         let policy = HostAuthorityPeerPolicy { peer: inputs.original_root, timeout: TIMEOUT,
+             lifetime: inputs.lifetime, request_bound: FRAME_LIMIT, response_bound: FRAME_LIMIT };
+@@ -95,6 +97,7 @@
+             task: Mutex::new(Lane::new(task, binding, inputs.session_nonce, LanePurpose::Task, Arc::clone(&budget))?),
+             reverse: Mutex::new(Some(Lane::new(reverse, binding, inputs.session_nonce, LanePurpose::Loan, budget)?)),
+             loans: DaemonLoans::new(pending), resolved: Mutex::new(None), stop_reverse };
++        if Instant::now() >= end { return Err(Error::DeadlineExceeded); }
+         Ok((Arc::new(client), inputs.queue_capacity))
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs
+@@ -8,12 +8,19 @@
+ pub(crate) fn channel(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1)
+     -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<DaemonClient>), AgentdError>
+ {
++    let end = std::time::Instant::now() + inputs.lifetime;
++    channel_until(identity, inputs, end)
++}
++
++pub(crate) fn channel_until(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,
++    end: std::time::Instant) -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<DaemonClient>), AgentdError>
++{
+     TaskFlowFence::new(inputs.fence.owner_agent_id.clone(), &inputs.fence.owner_id,
+         inputs.fence.owner_epoch, inputs.fence.generation, &inputs.fence.fencing_token)
+         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+     let pending = Arc::new(AtomicUsize::new(0));
+     let fence = inputs.fence.clone();
+-    let (client, capacity) = DaemonClient::new(identity, inputs, Arc::clone(&pending)).map_err(agent_error)?;
++    let (client, capacity) = DaemonClient::new_until(identity, inputs, Arc::clone(&pending), end).map_err(agent_error)?;
+     let (sender, mut receiver) = mpsc::channel::<Command>(capacity);
+     let handle = CircuitTaskHandleV1 { sender, generation: fence.generation, pending,
+         original_remote: Some(Arc::clone(&client)) };
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_cell.rs
+@@ -0,0 +1,184 @@
++//! Full immutable Cell model/routing configuration, encoded as data only.
++//! Construction repeats the original semantic validators; no writer, model
++//! service, grant, inference port or task receipt is decoded from these bytes.
++
++use codex_hepta_neuron::{CellCandidateKindV1, CellCandidateV1, CellDefinitionV1,
++    InhibitoryEdge, NeuronCalibrationProfileV1, NeuronResourceEnvelopeV1,
++    NeuronRuntimeConfigV1, SparseConfig};
++use super::CircuitTaskErrorV1 as Error;
++use super::root_bootstrap_codec::{Reader, Writer};
++
++pub(crate) fn encode(out: &mut Writer, cell: &CellDefinitionV1) -> Result<(), Error> {
++    cell.semantic_digest().map_err(|_| Error::InvalidBinding)?;
++    out.id(&cell.cell_id)?;
++    out.digest(cell.bundle_digest)?;
++    out.digest(cell.state_schema_digest)?;
++    runtime(out, &cell.runtime)?;
++    native(out, &cell.native)?;
++    out.count(cell.candidates.len(), 256)?;
++    for candidate in &cell.candidates {
++        out.id(&candidate.candidate_id)?;
++        out.size(candidate.activation_index)?;
++        out.byte(match candidate.kind { CellCandidateKindV1::Action => 1,
++            CellCandidateKindV1::Abstain => 2, CellCandidateKindV1::SlowPath => 3 })?;
++    }
++    out.size(cell.max_input_bytes)?;
++    out.u64(cell.max_queue_age_micros)?;
++    out.u64(cell.max_resident_bytes)
++}
++
++pub(crate) fn decode(input: &mut Reader<'_>) -> Result<CellDefinitionV1, Error> {
++    let cell_id = input.id()?;
++    let bundle_digest = input.digest()?;
++    let state_schema_digest = input.digest()?;
++    let runtime = read_runtime(input)?;
++    let native = read_native(input)?;
++    let mut candidates = Vec::new();
++    for _ in 0..input.count(256)? {
++        candidates.push(CellCandidateV1 { candidate_id: input.id()?, activation_index: input.size()?,
++            kind: match input.byte()? { 1 => CellCandidateKindV1::Action, 2 => CellCandidateKindV1::Abstain,
++                3 => CellCandidateKindV1::SlowPath, _ => return Err(Error::InvalidBinding) } });
++    }
++    let cell = CellDefinitionV1 { cell_id, bundle_digest, state_schema_digest, runtime, native, candidates,
++        max_input_bytes: input.size()?, max_queue_age_micros: input.u64()?, max_resident_bytes: input.u64()? };
++    cell.semantic_digest().map_err(|_| Error::InvalidBinding)?;
++    Ok(cell)
++}
++
++fn runtime(out: &mut Writer, value: &NeuronRuntimeConfigV1) -> Result<(), Error> {
++    out.id(&value.config_id)?;
++    out.generation(value.generation)?;
++    out.id(&value.model_id)?;
++    out.digest(value.model_manifest_digest)?;
++    out.digest(value.encoder_digest)?;
++    out.digest(value.head_digest)?;
++    out.digest(value.weights_digest)?;
++    out.digest(value.tokenizer_digest)?;
++    out.digest(value.preprocessor_digest)?;
++    out.digest(value.quantization_digest)?;
++    out.digest(value.runtime_digest)?;
++    out.digest(value.device_digest)?;
++    out.digest(value.normalization_digest)?;
++    out.digest(value.native_config_digest)?;
++    out.size(value.input_feature_dimension)?;
++    out.size(value.state_width)?;
++    out.size(value.modulator_dimension)?;
++    out.digest(value.calibration.calibration_artifact_digest)?;
++    out.digest(value.calibration.ood_artifact_digest)?;
++    out.generation(value.calibration.generation)?;
++    out.u64(value.calibration.valid_from_sequence)?;
++    out.u64(value.calibration.expires_after_sequence)?;
++    out.i64(value.calibration.zero_confidence_error_q24)?;
++    out.i64(value.calibration.maximum_in_domain_error_q24)?;
++    out.u32(value.calibration.minimum_confidence_ppm)?;
++    out.u32(value.calibration.maximum_ood_ppm)?;
++    out.u32(value.calibration.minimum_active_ppm)?;
++    out.u32(value.calibration.maximum_active_ppm)?;
++    out.u32(value.calibration.maximum_projection_count)?;
++    out.u32(value.calibration.measured_ece_ppm)?;
++    out.u32(value.calibration.maximum_ece_ppm)?;
++    out.u32(value.calibration.measured_false_acceptance_ppm)?;
++    out.u32(value.calibration.maximum_false_acceptance_ppm)?;
++    out.u64(value.resource_envelope.p95_latency_micros)?;
++    out.u64(value.resource_envelope.p99_latency_micros)?;
++    out.u64(value.resource_envelope.transient_allocation_bytes)?;
++    out.u64(value.resource_envelope.checkpoint_bytes)?;
++    out.u32(value.resource_envelope.write_amplification_ppm)?;
++    Ok(())
++}
++
++fn read_runtime(input: &mut Reader<'_>) -> Result<NeuronRuntimeConfigV1, Error> {
++    Ok(NeuronRuntimeConfigV1 {
++        config_id: input.id()?,
++        generation: input.generation()?,
++        model_id: input.id()?,
++        model_manifest_digest: input.digest()?,
++        encoder_digest: input.digest()?,
++        head_digest: input.digest()?,
++        weights_digest: input.digest()?,
++        tokenizer_digest: input.digest()?,
++        preprocessor_digest: input.digest()?,
++        quantization_digest: input.digest()?,
++        runtime_digest: input.digest()?,
++        device_digest: input.digest()?,
++        normalization_digest: input.digest()?,
++        native_config_digest: input.digest()?,
++        input_feature_dimension: input.size()?,
++        state_width: input.size()?,
++        modulator_dimension: input.size()?,
++        calibration: NeuronCalibrationProfileV1 {
++        calibration_artifact_digest: input.digest()?,
++        ood_artifact_digest: input.digest()?,
++        generation: input.generation()?,
++        valid_from_sequence: input.u64()?,
++        expires_after_sequence: input.u64()?,
++        zero_confidence_error_q24: input.i64()?,
++        maximum_in_domain_error_q24: input.i64()?,
++        minimum_confidence_ppm: input.u32()?,
++        maximum_ood_ppm: input.u32()?,
++        minimum_active_ppm: input.u32()?,
++        maximum_active_ppm: input.u32()?,
++        maximum_projection_count: input.u32()?,
++        measured_ece_ppm: input.u32()?,
++        maximum_ece_ppm: input.u32()?,
++        measured_false_acceptance_ppm: input.u32()?,
++        maximum_false_acceptance_ppm: input.u32()?,
++        },
++        resource_envelope: NeuronResourceEnvelopeV1 {
++        p95_latency_micros: input.u64()?,
++        p99_latency_micros: input.u64()?,
++        transient_allocation_bytes: input.u64()?,
++        checkpoint_bytes: input.u64()?,
++        write_amplification_ppm: input.u32()?,
++        },
++    })
++}
++
++fn native(out: &mut Writer, value: &SparseConfig) -> Result<(), Error> {
++    out.digest(value.model_digest)?;
++    out.digest(value.normalization_digest)?;
++    out.generation(value.generation)?;
++    out.size(value.width)?;
++    out.size(value.top_k)?;
++    out.i64(value.temporal_decay_q24)?;
++    out.i64(value.inhibition_gain_q24)?;
++    out.count(value.inhibition.len(), 4096)?;
++    for edge in &value.inhibition { out.size(edge.source)?; out.size(edge.target)?; out.i64(edge.weight_q24)?; }
++    out.i64(value.activity_decay_q24)?;
++    out.i64(value.target_activity_q24)?;
++    out.i64(value.threshold_rate_q24)?;
++    out.i64(value.threshold_min_q24)?;
++    out.i64(value.threshold_max_q24)?;
++    out.i64(value.eligibility_decay_q24)?;
++    Ok(())
++}
++
++fn read_native(input: &mut Reader<'_>) -> Result<SparseConfig, Error> {
++    let model_digest = input.digest()?;
++    let normalization_digest = input.digest()?;
++    let generation = input.generation()?;
++    let width = input.size()?;
++    let top_k = input.size()?;
++    let temporal_decay_q24 = input.i64()?;
++    let inhibition_gain_q24 = input.i64()?;
++    let mut inhibition = Vec::new();
++    for _ in 0..input.count(4096)? {
++        inhibition.push(InhibitoryEdge { source: input.size()?, target: input.size()?, weight_q24: input.i64()? });
++    }
++    Ok(SparseConfig {
++        model_digest,
++        normalization_digest,
++        generation,
++        width,
++        top_k,
++        temporal_decay_q24,
++        inhibition_gain_q24,
++        inhibition,
++        activity_decay_q24: input.i64()?,
++        target_activity_q24: input.i64()?,
++        threshold_rate_q24: input.i64()?,
++        threshold_min_q24: input.i64()?,
++        threshold_max_q24: input.i64()?,
++        eligibility_decay_q24: input.i64()?,
++    })
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_root_bootstrap_codec.rs
+@@ -0,0 +1,108 @@
++//! Bounded data encoding for one original Root task handoff. No decoder here
++//! constructs a task receipt, admission, source owner or publication authority.
++
++use codex_hepta_types::{Digest32, Generation, StableId};
++use serde::Serialize;
++use serde::de::DeserializeOwned;
++
++use super::CircuitTaskErrorV1 as Error;
++
++pub(crate) const BOUND: usize = 65_536;
++
++pub(crate) struct Writer(Vec<u8>);
++
++impl Writer {
++    pub(crate) fn new(domain: &[u8]) -> Self { Self(domain.to_vec()) }
++    pub(crate) fn raw(&mut self, data: &[u8]) -> Result<(), Error> {
++        if self.0.len().checked_add(data.len()).is_none_or(|n| n > BOUND) {
++            return Err(Error::InvalidBinding);
++        }
++        self.0.extend_from_slice(data);
++        Ok(())
++    }
++    pub(crate) fn byte(&mut self, value: u8) -> Result<(), Error> { self.raw(&[value]) }
++    pub(crate) fn u32(&mut self, value: u32) -> Result<(), Error> { self.raw(&value.to_be_bytes()) }
++    pub(crate) fn u64(&mut self, value: u64) -> Result<(), Error> { self.raw(&value.to_be_bytes()) }
++    pub(crate) fn i64(&mut self, value: i64) -> Result<(), Error> { self.raw(&value.to_be_bytes()) }
++    pub(crate) fn size(&mut self, value: usize) -> Result<(), Error> {
++        self.u64(u64::try_from(value).map_err(|_| Error::InvalidBinding)?)
++    }
++    pub(crate) fn count(&mut self, value: usize, bound: usize) -> Result<(), Error> {
++        if value > bound { return Err(Error::InvalidBinding); }
++        self.u32(u32::try_from(value).map_err(|_| Error::InvalidBinding)?)
++    }
++    pub(crate) fn bytes(&mut self, value: &[u8]) -> Result<(), Error> {
++        self.u32(u32::try_from(value.len()).map_err(|_| Error::InvalidBinding)?)?;
++        self.raw(value)
++    }
++    pub(crate) fn text(&mut self, value: &str) -> Result<(), Error> {
++        if value.is_empty() || value.len() > 128 || value.chars().any(char::is_control) {
++            return Err(Error::InvalidBinding);
++        }
++        self.bytes(value.as_bytes())
++    }
++    pub(crate) fn id(&mut self, value: &StableId) -> Result<(), Error> { self.text(value.as_str()) }
++    pub(crate) fn digest(&mut self, value: Digest32) -> Result<(), Error> { self.raw(value.as_array()) }
++    pub(crate) fn generation(&mut self, value: Generation) -> Result<(), Error> { self.u64(value.get()) }
++    pub(crate) fn json<T: Serialize>(&mut self, value: &T) -> Result<(), Error> {
++        self.bytes(&serde_json::to_vec(value).map_err(|_| Error::InvalidBinding)?)
++    }
++    pub(crate) fn finish(self) -> Vec<u8> { self.0 }
++}
++
++pub(crate) struct Reader<'a>(&'a [u8]);
++
++impl<'a> Reader<'a> {
++    pub(crate) fn new(data: &'a [u8], domain: &[u8]) -> Result<Self, Error> {
++        if data.len() > BOUND { return Err(Error::InvalidBinding); }
++        Ok(Self(data.strip_prefix(domain).ok_or(Error::InvalidBinding)?))
++    }
++    pub(crate) fn take<const N: usize>(&mut self) -> Result<[u8; N], Error> {
++        let (value, rest) = self.0.split_at_checked(N).ok_or(Error::InvalidBinding)?;
++        self.0 = rest;
++        value.try_into().map_err(|_| Error::InvalidBinding)
++    }
++    pub(crate) fn byte(&mut self) -> Result<u8, Error> { Ok(self.take::<1>()?[0]) }
++    pub(crate) fn u32(&mut self) -> Result<u32, Error> { Ok(u32::from_be_bytes(self.take()?)) }
++    pub(crate) fn u64(&mut self) -> Result<u64, Error> { Ok(u64::from_be_bytes(self.take()?)) }
++    pub(crate) fn i64(&mut self) -> Result<i64, Error> { Ok(i64::from_be_bytes(self.take()?)) }
++    pub(crate) fn size(&mut self) -> Result<usize, Error> {
++        usize::try_from(self.u64()?).map_err(|_| Error::InvalidBinding)
++    }
++    pub(crate) fn count(&mut self, bound: usize) -> Result<usize, Error> {
++        let n = self.u32()? as usize;
++        if n > bound || n > self.0.len() { return Err(Error::InvalidBinding); }
++        Ok(n)
++    }
++    pub(crate) fn bytes(&mut self) -> Result<&'a [u8], Error> {
++        let n = self.u32()? as usize;
++        let (value, rest) = self.0.split_at_checked(n).ok_or(Error::InvalidBinding)?;
++        self.0 = rest;
++        Ok(value)
++    }
++    pub(crate) fn text(&mut self) -> Result<String, Error> {
++        let value = std::str::from_utf8(self.bytes()?).map_err(|_| Error::InvalidBinding)?;
++        if value.is_empty() || value.len() > 128 || value.chars().any(char::is_control) {
++            return Err(Error::InvalidBinding);
++        }
++        Ok(value.to_owned())
++    }
++    pub(crate) fn id(&mut self) -> Result<StableId, Error> {
++        StableId::new(self.text()?).map_err(|_| Error::InvalidBinding)
++    }
++    pub(crate) fn digest(&mut self) -> Result<Digest32, Error> { Ok(Digest32::from_array(self.take()?)) }
++    pub(crate) fn generation(&mut self) -> Result<Generation, Error> {
++        Generation::new(self.u64()?).map_err(|_| Error::InvalidBinding)
++    }
++    pub(crate) fn json<T: DeserializeOwned + Serialize>(&mut self) -> Result<T, Error> {
++        let bytes = self.bytes()?;
++        let value: T = serde_json::from_slice(bytes).map_err(|_| Error::InvalidBinding)?;
++        if serde_json::to_vec(&value).map_err(|_| Error::InvalidBinding)? != bytes {
++            return Err(Error::InvalidBinding);
++        }
++        Ok(value)
++    }
++    pub(crate) fn end(self) -> Result<(), Error> {
++        if self.0.is_empty() { Ok(()) } else { Err(Error::InvalidBinding) }
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task_root_lane.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_root_lane.rs
+@@ -46,10 +46,11 @@
+ /// Consuming erasure of the same private factory slot. Only OriginalFactory
+ /// below implements it; callers cannot provide a replacement writer factory.
+ pub(super) trait OriginalRootLaneFactory: sealed::OriginalFactory + Send {
++    fn original_handoff_registry(&self) -> Result<(Vec<u8>, usize), Error>;
+     fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error>;
+ }
+ 
+-struct OriginalFactory<O, P, E, I, C>(Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>);
++struct OriginalFactory<O, P, E, I, C>(Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>, usize);
+ struct OriginalPump<O, P, E, C> { cells: AgentdCircuitCellOwnerV1<O, P, E>, clock: C }
+ 
+ impl<O, P, E, I, C> sealed::OriginalFactory for OriginalFactory<O, P, E, I, C> {}
+@@ -57,6 +58,7 @@
+ 
+ pub(super) fn retain<O, P, E, I, C>(
+     owners: Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>,
++    capacity: usize,
+ ) -> Box<dyn OriginalRootLaneFactory>
+ where
+     O: CellStateOwnerV1 + Send + 'static,
+@@ -64,7 +66,7 @@
+     E: CellInputEncoderV1 + Send + 'static,
+     I: CircuitTaskInputProviderV1 + 'static,
+     C: FnMut() -> CircuitCellTimeV1 + Send + 'static,
+-{ Box::new(OriginalFactory(owners)) }
++{ Box::new(OriginalFactory(owners, capacity)) }
+ 
+ impl<O, P, E, I, C> OriginalRootLaneFactory for OriginalFactory<O, P, E, I, C>
+ where
+@@ -74,6 +76,12 @@
+     I: CircuitTaskInputProviderV1 + 'static,
+     C: FnMut() -> CircuitCellTimeV1 + Send + 'static,
+ {
++    fn original_handoff_registry(&self) -> Result<(Vec<u8>, usize), Error> {
++        let owners = self.0.try_lock().map_err(|_| Error::Unavailable)?;
++        let original = owners.as_ref().ok_or(Error::Unavailable)?;
++        Ok((crate::circuit_cell_binding::root_bootstrap::encode(original.cells.registry())?, self.1))
++    }
++
+     fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error> {
+         let owners = self.0.try_lock().map_err(|_| Error::Unavailable)?
+             .take().ok_or(Error::Unavailable)?;
+--- a/codex-rs/hepta-agentd/src/circuit_task_runtime.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_runtime.rs
+@@ -35,6 +35,8 @@
+ mod original_remote;
+ #[cfg(target_os = "linux")]
+ pub(crate) use original_remote::channel as original_remote_channel;
++#[cfg(target_os = "linux")]
++pub(crate) use original_remote::channel_until as original_remote_channel_until;
+ 
+ struct PendingWork(Arc<AtomicUsize>);
+ 
+@@ -190,7 +192,7 @@
+         identity: identity.clone(),
+         handle: handle.clone(),
+         #[cfg(target_os = "linux")]
+-        original_root: Some(super::root_lane::retain(Arc::clone(&original_owners))),
++        original_root: Some(super::root_lane::retain(Arc::clone(&original_owners), capacity)),
+         owner: Box::new(move |store, state, cancellation| {
+             Box::pin(async move {
+                 #[cfg(target_os = "linux")]
+@@ -256,6 +258,11 @@
+ 
+ impl CircuitTaskRuntimeBootstrapV1 {
+     #[cfg(target_os = "linux")]
++    pub(crate) fn original_root_handoff_registry(&self) -> Result<(Vec<u8>, usize), Error> {
++        self.original_root.as_ref().ok_or(Error::Unavailable)?.original_handoff_registry()
++    }
++
++    #[cfg(target_os = "linux")]
+     pub(crate) fn take_original_root_lane(&mut self)
+         -> Result<Box<dyn super::root_lane::OriginalRootCellPump>, Error>
+     {
+--- a/codex-rs/hepta-agentd/src/circuit_task_source.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source.rs
+@@ -46,6 +46,10 @@
+ #[cfg(target_os = "linux")]
+ #[path = "circuit_task_source_remote.rs"]
+ pub(crate) mod remote_source;
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_source_bootstrap.rs"]
++pub(crate) mod root_bootstrap;
++
+ #[path = "circuit_task_source_codec.rs"]
+ mod codec;
+ #[path = "circuit_task_source_journal.rs"]
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_bootstrap.rs
+@@ -0,0 +1,40 @@
++//! Read only the exact original Source configuration while it is current.
++//! These data describe expected input and never create a Source publication.
++
++use super::*;
++use crate::circuit_task::root_bootstrap_codec::{Reader, Writer};
++
++impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W> {
++    pub(crate) fn original_root_handoff_source(&self) -> Result<(Digest32, Vec<u8>), Error> {
++        let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
++        owner.require_current()?;
++        if owner.sources.len() != 1 { return Err(Error::InvalidBinding); }
++        let source = owner.sources.values().next().ok_or(Error::InvalidBinding)?;
++        let bytes = encode(&owner.fence, source)?;
++        let binding = owner.binding;
++        owner.require_current()?;
++        Ok((binding, bytes))
++    }
++}
++
++fn encode(fence: &TaskFlowFence, source: &CircuitTaskSourceInputV1) -> Result<Vec<u8>, Error> {
++    let mut out = Writer::new(b"HCRTSRC1");
++    out.json(fence)?;
++    let id = StableId::new("circuit-source").map_err(|_| Error::InvalidBinding)?;
++    out.bytes(&codec::encode_input(&source.input(id))?)?;
++    out.u64(source.lease_duration_ms)?;
++    Ok(out.finish())
++}
++
++pub(crate) fn decode(bytes: &[u8]) -> Result<(TaskFlowFence, CircuitTaskSourceInputV1), Error> {
++    let mut reader = Reader::new(bytes, b"HCRTSRC1")?;
++    let fence = reader.json()?;
++    let input = codec::decode_configuration_input(reader.bytes()?)?;
++    let source = CircuitTaskSourceInputV1 { scope: input.scope, source_frontier: input.source_frontier,
++        objective_digest: input.objective_digest, ndu_snapshot_digest: input.ndu_snapshot_digest,
++        monotonic_micros: input.monotonic_micros, deadline_micros: input.deadline_micros,
++        observation: input.observation, candidates: input.candidates, lease_duration_ms: reader.u64()? };
++    reader.end()?;
++    if encode(&fence, &source)? != bytes { return Err(Error::InvalidBinding); }
++    Ok((fence, source))
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task_source_codec.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_codec.rs
+@@ -263,7 +263,7 @@
+     Ok(bytes)
+ }
+ 
+-fn encode_input(input: &CellStepInputV1) -> Result<Vec<u8>, Error> {
++pub(super) fn encode_input(input: &CellStepInputV1) -> Result<Vec<u8>, Error> {
+     if input.scope.principal_digest.is_zero()
+         || input.source_frontier.is_zero()
+         || input.objective_digest.is_zero()
+@@ -315,6 +315,12 @@
+     outer.blob()?; // Original serialized dispatch, compared in resolve/publish.
+     let encoded = outer.blob()?;
+     outer.end()?;
++    decode_configuration_input(encoded)
++}
++
++/// The immutable Source configuration has no dispatch yet. Decode only the
++/// same original input bytes; this creates data, never a Source or receipt.
++pub(super) fn decode_configuration_input(encoded: &[u8]) -> Result<CellStepInputV1, Error> {
+     let mut r = Reader(encoded);
+     let input = CellStepInputV1 {
+         operation_id: r.id()?,
+--- a/codex-rs/hepta-agentd/src/config_original_root_task.rs
++++ b/codex-rs/hepta-agentd/src/config_original_root_task.rs
+@@ -5,6 +5,16 @@
+ use crate::{AgentdError, OriginalRootCircuitTaskDaemonInputsV1};
+ 
+ impl AgentdConfig {
++    pub(crate) fn with_original_root_circuit_task_until(
++        self, inputs: crate::OriginalRootCircuitTaskDaemonInputsV1, end: std::time::Instant,
++    ) -> Result<Self, AgentdError> {
++        self.require_no_circuit_task_profile()?;
++        self.require_circuit_task_execution_profile()?;
++        let (bootstrap, invocation) = crate::circuit_task::original_remote_channel_until(
++            self.identity(), inputs, end)?;
++        self.with_circuit_task_bootstrap(bootstrap, invocation)
++    }
++
+     pub fn with_original_root_circuit_task(self, inputs: OriginalRootCircuitTaskDaemonInputsV1)
+         -> Result<Self, AgentdError>
+     {
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -235,6 +235,9 @@
+ #[cfg(target_os = "linux")]
+ mod root_production_handoff;
+ #[cfg(target_os = "linux")]
++#[path = "root_original_task_descriptor.rs"]
++mod root_original_task_descriptor;
++#[cfg(target_os = "linux")]
+ pub use config::PreparedRootAgentdConfig;
+ #[cfg(target_os = "linux")]
+ pub use config::drop_root_native_owner_credentials;
+@@ -242,6 +245,10 @@
+ pub use root_production_handoff::RootCandidateStageHandoffV1;
+ #[cfg(target_os = "linux")]
+ pub use root_production_handoff::RootLearningHandoffV1;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::RootOriginalTaskHandoffV1;
++#[cfg(target_os = "linux")]
++pub use root_production_handoff::receive_root_original_task_handoff;
+ #[cfg(target_os = "linux")]
+ pub use root_production_handoff::RootProductionWriterDescriptor;
+ #[cfg(target_os = "linux")]
+--- a/codex-rs/hepta-agentd/src/main.rs
++++ b/codex-rs/hepta-agentd/src/main.rs
+@@ -235,7 +235,10 @@
+ 
+             #[cfg(target_os = "linux")]
+             match production {
+-                Some(launch) => launch.run(config, arg0_paths).await?,
++                Some(mut launch) => {
++                    config = launch.install_original_root_task(config).await?;
++                    launch.run(config, arg0_paths).await?;
++                }
+                 None => codex_hepta_agentd::run(config, arg0_paths).await?,
+             }
+             #[cfg(not(target_os = "linux"))]
+--- a/codex-rs/hepta-agentd/src/production_launcher.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher.rs
+@@ -67,6 +67,7 @@
+     primary: PrimaryInputs,
+     notes: Option<UnixDatagram>,
+     notes_ui: Option<NotesUiInputs>,
++    original_task_handoff: Option<crate::RootOriginalTaskHandoffV1>,
+ }
+ 
+ impl AgentdProductionStartup {
+@@ -84,6 +85,7 @@
+                 let LaunchInputs {
+                     handoff,
+                     learning_handoff,
++                    original_task_handoff,
+                     uid,
+                     gid,
+                     control,
+@@ -111,10 +113,14 @@
+                         )
+                     })
+                     .transpose()?;
++                let original_task_handoff = original_task_handoff.map(|handoff| {
++                    crate::receive_root_original_task_handoff(handoff, remaining(bootstrap_deadline)?)
++                }).transpose()?;
+                 let inputs = RuntimeInputs {
+                     primary,
+                     notes,
+                     notes_ui,
++                    original_task_handoff,
+                 };
+                 Startup::Root(Box::new(RootStartup {
+                     config,
+@@ -195,6 +201,18 @@
+ }
+ 
+ impl AgentdProductionLaunch {
++    /// Consume the same sealed task offer after the ordinary Objective/AuthBus
++    /// configuration, and before original V3 enrollment and daemon startup.
++    /// No replacement Config, Store, RunStart or writer is created here.
++    pub async fn install_original_root_task(&mut self, config: AgentdConfig)
++        -> Result<AgentdConfig, AgentdError>
++    {
++        match self.inputs.original_task_handoff.take() {
++            Some(handoff) => handoff.install(config, &self.root).await,
++            None => Ok(config),
++        }
++    }
++
+     /// Start the original configured MCP manager and retain its exact selected
+     /// peer beside the same Root session and recovered writer until Agentd exits.
+     /// This is a newly initialized original startup session, not a connector or
+@@ -204,11 +222,15 @@
+         mut config: AgentdConfig,
+         arg0_paths: Arg0DispatchPaths,
+     ) -> Result<(), AgentdError> {
++        if self.inputs.original_task_handoff.is_some() {
++            return Err(AgentdError::Invalid("original task handoff must be consumed before runtime".into()));
++        }
+         config.require_root_learning_assembled()?;
+         let RuntimeInputs {
+             primary,
+             notes,
+             notes_ui,
++            original_task_handoff: _,
+         } = self.inputs;
+         let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None;
+         let mut android_device: Option<Arc<crate::AgentdAndroidTextDevice>> = None;
+--- a/codex-rs/hepta-agentd/src/production_launcher_inputs.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_inputs.rs
+@@ -15,10 +15,11 @@
+ use crate::AgentdError;
+ use crate::calculator_deadline::Deadline;
+ 
+-const FLAGS: [&str; 19] = [
++const FLAGS: [&str; 20] = [
+     "--root-production-profile",
+     "--root-production-handoff-fd",
+     "--root-learning-handoff-fd",
++    "--root-original-task-handoff-fd",
+     "--root-production-uid",
+     "--root-production-gid",
+     "--root-production-control-fd",
+@@ -47,6 +48,7 @@
+ pub(super) struct LaunchInputs {
+     pub(super) handoff: UnixDatagram,
+     pub(super) learning_handoff: Option<UnixDatagram>,
++    pub(super) original_task_handoff: Option<UnixDatagram>,
+     pub(super) uid: u32,
+     pub(super) gid: u32,
+     pub(super) control: OwnedFd,
+@@ -148,6 +150,10 @@
+         .remove("--root-learning-handoff-fd")
+         .map(descriptor_number)
+         .transpose()?;
++    let original_task_handoff = selected
++        .remove("--root-original-task-handoff-fd")
++        .map(descriptor_number)
++        .transpose()?;
+     let notes = selected
+         .remove("--notes-production-handoff-fd")
+         .map(descriptor_number)
+@@ -225,6 +231,7 @@
+     let numbers = [
+         Some(handoff),
+         learning_handoff,
++        original_task_handoff,
+         Some(control),
+         Some(app_server),
+         payload,
+@@ -262,6 +269,10 @@
+         .map(take_descriptor)
+         .transpose()?
+         .map(UnixDatagram::from);
++    let original_task_handoff = original_task_handoff
++        .map(take_descriptor)
++        .transpose()?
++        .map(UnixDatagram::from);
+     let control = take_descriptor(control)?;
+     let app_server = take_descriptor(app_server)?;
+     let primary = match profile {
+@@ -305,6 +316,7 @@
+         Some(LaunchInputs {
+             handoff,
+             learning_handoff,
++            original_task_handoff,
+             uid,
+             gid,
+             control,
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_original_task_descriptor.rs
+@@ -0,0 +1,171 @@
++//! One sealed, purpose-fixed Root task offer. Its bounded data are not task
++//! authority: the receiver still authenticates the same Root on both live
++//! lanes, and only the daemon's original signed RunStart can borrow them.
++
++use std::ffi::OsString;
++use std::fs::File;
++use std::os::unix::ffi::{OsStrExt, OsStringExt};
++use std::os::unix::fs::FileExt;
++use std::path::{Path, PathBuf};
++use std::time::{Duration, Instant};
++
++use codex_hepta_types::Digest32;
++
++use crate::{AgentdError, AgentdIdentity, CircuitCellRegistryV1, CircuitTaskSourceInputV1};
++use crate::circuit_task::root_bootstrap_codec::{BOUND, Reader, Writer};
++use codex_hepta_automation::TaskFlowFence;
++
++const DOMAIN: &[u8] = b"HEPTA_ROOT_ORIGINAL_TASK_OFFER_V1";
++
++pub(crate) struct Descriptor {
++    pub(crate) root_pid: u32,
++    pub(crate) daemon_pid: u32,
++    pub(crate) daemon_uid: u32,
++    pub(crate) daemon_gid: u32,
++    pub(crate) task_path: PathBuf,
++    pub(crate) loan_path: PathBuf,
++    pub(crate) nonce: [u8; 16],
++    pub(crate) end: Instant,
++    pub(crate) capacity: usize,
++    pub(crate) binding: Digest32,
++    pub(crate) fence: TaskFlowFence,
++    pub(crate) registry: CircuitCellRegistryV1,
++    pub(crate) source: CircuitTaskSourceInputV1,
++}
++
++/// Called only while the retained Root factory and Source are still current.
++/// No caller supplies a decoded Source, Cell, request or permission object.
++pub(crate) fn seal(
++    root_pid: u32, daemon_pid: u32, daemon_uid: u32, daemon_gid: u32,
++    task_path: &Path, loan_path: &Path, nonce: [u8; 16], end: Instant,
++    capacity: usize, binding: Digest32, registry: &[u8], source: &[u8],
++) -> Result<File, AgentdError> {
++    if root_pid != std::process::id()
++        || rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0
++        || daemon_pid == 0 || daemon_pid == root_pid || daemon_uid == 0 || daemon_gid == 0
++        || nonce == [0; 16] || !(1..=64).contains(&capacity) || binding.is_zero()
++    { return Err(refused("original Root task offer identity differs")); }
++    let mut out = Writer::new(DOMAIN);
++    for value in [root_pid, daemon_pid, daemon_uid, daemon_gid] { out.u32(value).map_err(protocol)?; }
++    for path in [task_path, loan_path] {
++        validate_path(path)?;
++        out.bytes(path.as_os_str().as_bytes()).map_err(protocol)?;
++    }
++    out.raw(&nonce).map_err(protocol)?;
++    out.u64(to_monotonic_end(end)?).map_err(protocol)?;
++    out.size(capacity).map_err(protocol)?;
++    out.digest(binding).map_err(protocol)?;
++    out.bytes(registry).map_err(protocol)?;
++    out.bytes(source).map_err(protocol)?;
++    require_before(end)?;
++    let sealed = crate::authority_host_bootstrap_seal::seal_bytes(&out.finish())?;
++    require_before(end)?;
++    Ok(sealed)
++}
++
++pub(crate) fn read(file: &File, root_pid: u32) -> Result<Descriptor, AgentdError> {
++    let length = file.metadata()?.len();
++    if length == 0 || length > BOUND as u64 { return Err(refused("bounded task offer required")); }
++    crate::authority_host_bootstrap_seal::validate_sealed(file, length)?;
++    let mut bytes = vec![0; length as usize];
++    file.read_exact_at(&mut bytes, 0)?;
++    let mut reader = Reader::new(&bytes, DOMAIN).map_err(protocol)?;
++    let captured_root = reader.u32().map_err(protocol)?;
++    let daemon_pid = reader.u32().map_err(protocol)?;
++    let daemon_uid = reader.u32().map_err(protocol)?;
++    let daemon_gid = reader.u32().map_err(protocol)?;
++    if captured_root != root_pid || root_pid == std::process::id()
++        || daemon_pid != std::process::id() || daemon_uid == 0 || daemon_gid == 0
++        || daemon_uid != rustix::process::getuid().as_raw()
++        || daemon_uid != rustix::process::geteuid().as_raw()
++        || daemon_gid != rustix::process::getgid().as_raw()
++        || daemon_gid != rustix::process::getegid().as_raw()
++    { return Err(refused("original task offer is for a different real process")); }
++    let task_path = read_path(&mut reader)?;
++    let loan_path = read_path(&mut reader)?;
++    crate::authority_host_runtime::validate_lane_paths(&[&task_path, &loan_path], daemon_gid)?;
++    let nonce = reader.take().map_err(protocol)?;
++    let end = from_monotonic_end(reader.u64().map_err(protocol)?)?;
++    let capacity = reader.size().map_err(protocol)?;
++    let binding = reader.digest().map_err(protocol)?;
++    let registry = crate::circuit_cell_binding::root_bootstrap::decode(reader.bytes().map_err(protocol)?)
++        .map_err(protocol)?;
++    let (fence, source) = crate::circuit_task::decode_original_root_source(reader.bytes().map_err(protocol)?)
++        .map_err(protocol)?;
++    reader.end().map_err(protocol)?;
++    if nonce == [0; 16] || !(1..=64).contains(&capacity) || binding.is_zero() {
++        return Err(refused("original task offer data differs"));
++    }
++    require_before(end)?;
++    Ok(Descriptor { root_pid, daemon_pid, daemon_uid, daemon_gid, task_path, loan_path,
++        nonce, end, capacity, binding, fence, registry, source })
++}
++
++impl Descriptor {
++    pub(crate) fn require_original_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
++        let binding = crate::circuit_task::original_root_source_binding(
++            identity, &self.fence, &self.registry, &self.source).map_err(protocol)?;
++        if self.binding != binding || self.daemon_pid != std::process::id()
++            || self.daemon_uid != rustix::process::geteuid().as_raw()
++            || self.daemon_gid != rustix::process::getegid().as_raw()
++        { return Err(refused("task offer does not match the same original daemon Config")); }
++        require_before(self.end)
++    }
++}
++
++fn read_path(reader: &mut Reader<'_>) -> Result<PathBuf, AgentdError> {
++    let path = PathBuf::from(OsString::from_vec(reader.bytes().map_err(protocol)?.to_vec()));
++    validate_path(&path)?;
++    Ok(path)
++}
++
++fn validate_path(path: &Path) -> Result<(), AgentdError> {
++    if !path.is_absolute() || path.as_os_str().as_bytes().len() >= 108
++        || path.components().any(|part| !matches!(part, std::path::Component::RootDir | std::path::Component::Normal(_)))
++    { return Err(refused("canonical absolute original task socket path required")); }
++    Ok(())
++}
++
++fn monotonic_nanos() -> Result<u64, AgentdError> {
++    let mut now = libc::timespec { tv_sec: 0, tv_nsec: 0 };
++    // SAFETY: clock_gettime writes one initialized scalar timespec.
++    if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now) } != 0 {
++        return Err(std::io::Error::last_os_error().into());
++    }
++    if now.tv_sec < 0 || !(0..1_000_000_000).contains(&now.tv_nsec) {
++        return Err(refused("invalid original monotonic clock"));
++    }
++    (now.tv_sec as u64).checked_mul(1_000_000_000)
++        .and_then(|value| value.checked_add(now.tv_nsec as u64))
++        .ok_or_else(|| refused("original task monotonic clock overflow"))
++}
++
++fn to_monotonic_end(end: Instant) -> Result<u64, AgentdError> {
++    // Kernel clock first, Instant second: conversion can only shorten the end.
++    let now = monotonic_nanos()?;
++    let remaining = end.checked_duration_since(Instant::now())
++        .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))
++        .ok_or_else(|| refused("original task operation expired"))?;
++    now.checked_add(u64::try_from(remaining.as_nanos()).map_err(|_| refused("task end overflow"))?)
++        .ok_or_else(|| refused("original task end overflow"))
++}
++
++fn from_monotonic_end(end: u64) -> Result<Instant, AgentdError> {
++    // Instant first, kernel clock second: receipt never renews Root's end.
++    let local = Instant::now();
++    let remaining = end.checked_sub(monotonic_nanos()?)
++        .filter(|value| *value > 0 && *value <= 300_000_000_000)
++        .ok_or_else(|| refused("original task offer expired"))?;
++    local.checked_add(Duration::from_nanos(remaining)).ok_or_else(|| refused("task end overflow"))
++}
++
++pub(crate) fn require_before(end: Instant) -> Result<(), AgentdError> {
++    if Instant::now() >= end { return Err(refused("original task operation expired")); }
++    Ok(())
++}
++
++pub(crate) fn protocol(error: impl std::fmt::Display) -> AgentdError {
++    AgentdError::Protocol(format!("original Root task handoff: {error}"))
++}
++
++fn refused(message: &str) -> AgentdError { AgentdError::Invalid(message.into()) }
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_original_task_handoff.rs
+@@ -0,0 +1,109 @@
++//! Separate two-right purpose for the actual Root task service. The inherited
++//! pair authenticates only the Root creator; the daemon opens both task streams
++//! after credential drop and each original channel verifies SO_PEERCRED/pidfd.
++
++use super::*;
++use std::time::Instant;
++use std::os::unix::net::UnixStream;
++use codex_hepta_contracts::HostIssuerPeer;
++use crate::root_original_task_descriptor::{Descriptor, require_before};
++
++const TASK_FRAME: &[u8] = b"HEPTA_ROOT_ORIGINAL_TASK_HANDOFF_V1";
++
++/// Consumed once by the ordinary launcher. There is no public descriptor,
++/// raw-FD, Clone or deserialization path for manufacturing this offer.
++pub struct RootOriginalTaskHandoffV1 {
++    descriptor: Descriptor,
++    root_pidfd: OwnedFd,
++}
++
++pub fn receive_root_original_task_handoff(
++    socket: UnixDatagram, timeout: Duration,
++) -> Result<RootOriginalTaskHandoffV1, AgentdError> {
++    if rustix::process::getuid().as_raw() == 0 || rustix::process::geteuid().as_raw() == 0 {
++        return Err(refused("original task receiver must already have dropped credentials"));
++    }
++    let root = root_pair(&socket, timeout)?;
++    socket.set_nonblocking(false)?;
++    socket.set_read_timeout(Some(timeout))?;
++    let mut bytes = [0_u8; TASK_FRAME.len() + 1];
++    let mut control = [0_usize; 32];
++    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: bytes.len() };
++    // SAFETY: initialized below with bounded, live, aligned buffers.
++    let mut message: libc::msghdr = unsafe { mem::zeroed() };
++    message.msg_iov = &mut vector;
++    message.msg_iovlen = 1;
++    message.msg_control = control.as_mut_ptr().cast();
++    message.msg_controllen = mem::size_of_val(&control);
++    // SAFETY: recvmsg writes only the live buffers and gives rights CLOEXEC.
++    let length = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
++    if length < 0 { return Err(io::Error::last_os_error().into()); }
++    // SAFETY: the same original parser owns every received descriptor.
++    let (mut rights, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
++    if !valid || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
++        || rights.len() != 2 || length as usize != TASK_FRAME.len() || &bytes[..TASK_FRAME.len()] != TASK_FRAME
++    { return Err(refused("exact original task marker and two ordered rights required")); }
++    let root_pidfd = rights.pop().ok_or_else(|| refused("original Root pidfd missing"))?;
++    let file = File::from(rights.pop().ok_or_else(|| refused("original task offer missing"))?);
++    require_root_pin(&root_pidfd, root.pid as u32)?;
++    let descriptor = crate::root_original_task_descriptor::read(&file, root.pid as u32)?;
++    require_root_pin(&root_pidfd, root.pid as u32)?;
++    require_before(descriptor.end)?;
++    Ok(RootOriginalTaskHandoffV1 { descriptor, root_pidfd })
++}
++
++pub(crate) fn send_original_task_handoff(
++    socket: UnixDatagram, descriptor: &File, root_pidfd: &OwnedFd, timeout: Duration,
++) -> Result<(), AgentdError> {
++    if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0 {
++        return Err(refused("actual Root task sender required"));
++    }
++    let root = root_pair(&socket, timeout)?;
++    if root.pid as u32 != std::process::id() {
++        return Err(refused("original task pair must belong to this same Root"));
++    }
++    validate_bootstrap(descriptor)?;
++    require_root_pin(root_pidfd, std::process::id())?;
++    send_packet(&socket, TASK_FRAME, &[descriptor.as_raw_fd(), root_pidfd.as_raw_fd()], timeout)
++}
++
++impl RootOriginalTaskHandoffV1 {
++    pub(crate) async fn install(self, config: crate::AgentdConfig,
++        original_root: &crate::AgentdRootProductionInputs) -> Result<crate::AgentdConfig, AgentdError>
++    {
++        let Self { descriptor, root_pidfd } = self;
++        descriptor.require_original_identity(config.identity())?;
++        if original_root.bootstrap.root.pid != descriptor.root_pid
++            || original_root.bootstrap.root.uid != 0
++        { return Err(refused("task and writer handoffs must pin the same original Root")); }
++        require_root_pin(&root_pidfd, descriptor.root_pid)?;
++        crate::authority_host_runtime::validate_lane_paths(
++            &[&descriptor.task_path, &descriptor.loan_path], descriptor.daemon_gid)?;
++        let task_stream = connect(&descriptor.task_path, descriptor.end).await?;
++        let loan_stream = connect(&descriptor.loan_path, descriptor.end).await?;
++        descriptor.require_original_identity(config.identity())?;
++        require_root_pin(&root_pidfd, descriptor.root_pid)?;
++        let lifetime = descriptor.end.checked_duration_since(Instant::now())
++            .filter(|value| !value.is_zero()).ok_or_else(|| refused("original task expired"))?;
++        let inputs = crate::OriginalRootCircuitTaskDaemonInputsV1 {
++            fence: descriptor.fence, registry: descriptor.registry, source: descriptor.source,
++            task_stream, loan_stream,
++            original_root: HostIssuerPeer { uid: 0, pid: descriptor.root_pid },
++            original_root_task_pidfd: root_pidfd.try_clone()?, original_root_loan_pidfd: root_pidfd,
++            session_nonce: descriptor.nonce, lifetime, queue_capacity: descriptor.capacity,
++        };
++        config.with_original_root_circuit_task_until(inputs, descriptor.end)
++    }
++}
++
++async fn connect(path: &Path, end: Instant) -> Result<UnixStream, AgentdError> {
++    require_before(end)?;
++    let deadline = (Instant::now() + Duration::from_millis(500)).min(end);
++    let stream = tokio::time::timeout_at(deadline.into(), tokio::net::UnixStream::connect(path))
++        .await.map_err(|_| refused("original task connect deadline elapsed"))??;
++    require_before(deadline)?;
++    let stream = stream.into_std()?;
++    stream.set_nonblocking(false)?;
++    require_before(deadline)?;
++    Ok(stream)
++}
+--- a/codex-rs/hepta-agentd/src/root_production_handoff.rs
++++ b/codex-rs/hepta-agentd/src/root_production_handoff.rs
+@@ -17,6 +17,12 @@
+ use crate::HOST_AUTHORITY_BOOTSTRAP_BOUND;
+ 
+ const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
++
++#[path = "root_original_task_handoff.rs"]
++mod original_task;
++pub use original_task::RootOriginalTaskHandoffV1;
++pub use original_task::receive_root_original_task_handoff;
++pub(crate) use original_task::send_original_task_handoff;
+ 
+ #[path = "root_production_writer_handoff.rs"]
+ mod writer;

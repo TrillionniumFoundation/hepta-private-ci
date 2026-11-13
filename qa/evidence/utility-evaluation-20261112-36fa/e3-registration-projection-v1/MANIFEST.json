@@ -1,0 +1,174 @@
+{
+  "durability": "local complete bytes and computed identities; no Git create or full GET asserted",
+  "format": "hepta-local-registration-proposal-v1",
+  "payloads": [
+    {
+      "bytes": 1326,
+      "git_blob": "84b3c0a2111b2cf0c4f96c9c0d694167b238a265",
+      "path": "ENCODING_MANIFEST.json",
+      "sha256": "c66099a2ba6e2b5a72742134a2d7c3a1ac4863595a6b9c6832ccc7f45affb2d8"
+    },
+    {
+      "bytes": 2054,
+      "git_blob": "a4c365bfc24bc164cab70687b203a9e9e22277ed",
+      "path": "INTEGRATION_OBLIGATIONS.json",
+      "sha256": "038f201ad309523a59b623afeb4d9973dae3488b2dd62f5ecdfe7d71933077d7"
+    },
+    {
+      "bytes": 12454,
+      "git_blob": "5c328e4ddfd35db871d64be2ee913fb7c5e80828",
+      "path": "OLD_SOURCE_INSERTIONS.json",
+      "sha256": "a30aa0661bdda6621f8d95e1248d21615e26cf02c2fa7196f9c3c5ff616dcfb3"
+    },
+    {
+      "bytes": 4612,
+      "git_blob": "ce548a2287315ddf2ea22ba50ad5823dea6116d3",
+      "path": "QA_METHOD_PRESERVATION.json",
+      "sha256": "d68cd3ae178957595333c2b01d5c88942de7aa3b086ea3d9d692e4b6794826c0"
+    },
+    {
+      "bytes": 111315,
+      "git_blob": "b9966f638478e449b44cee3e0a8c1898d7c15921",
+      "path": "REGISTRATION_DELTA.json",
+      "sha256": "3f52036bfdb4d7503a92cb3488f780469546021ad987a883704a8c73c71209f2"
+    },
+    {
+      "bytes": 9629,
+      "git_blob": "858272c9ea8bb21ccc1a4d00313cb9d94b4a9034",
+      "path": "REVIEW.json",
+      "sha256": "6cba3dfe461e384b3ecd901b1b29df60e5c821f0810ade4cf05c0fe8096409b7"
+    },
+    {
+      "bytes": 302042,
+      "git_blob": "e419576cb5f9df3f02293ad08d0cbe731c7c91d5",
+      "path": "SOURCE_DELTA.patch",
+      "sha256": "622af93492ebf9bfe9d6b40c555b9ba88268ee65ce2425d81e23996cb0eead58"
+    },
+    {
+      "bytes": 5811,
+      "git_blob": "9ca30710b558e00014a5418b1e6fc2d745d82ce1",
+      "path": "SOURCE_IDENTITIES.json",
+      "sha256": "8f96aeb58282aa5d715452763eb71b81f8ea14ee6ce54a44e025097bf69d7929"
+    },
+    {
+      "bytes": 4628695,
+      "git_blob": "43f723f2de9d8910cf9958ba21f63f2201f8fc79",
+      "path": "SOURCE_PACKET.json",
+      "sha256": "7085385105a3af327248d37a2b5716be941a74f4fac28527cd8ba1779261ae3e"
+    },
+    {
+      "bytes": 36435,
+      "git_blob": "feb9f924c0da4dc22c154afb9400c8c341e3cacf",
+      "path": "prepare_registration.py",
+      "sha256": "a59ce8369b22ad8947717f75ba5d4ef199568805a7181c2a5c89a1782419baa3"
+    },
+    {
+      "bytes": 409600,
+      "git_blob": "1814de54d78ef8f280391d6a9bec06adc5876a3e",
+      "path": "encoded/SOURCE_PACKET_json.part-00.b64",
+      "sha256": "7aeb8167394c3aa4a4b00e3cfa067c3257e8f9dfb368b6b61876af20ae6e7826"
+    },
+    {
+      "bytes": 409600,
+      "git_blob": "af0898142fcf600260866b5793a4902fd3f30698",
+      "path": "encoded/SOURCE_PACKET_json.part-01.b64",
+      "sha256": "f98fad5972d9d80ba6108c43aef4537a96377a3907b36e6ec32de3fe243c802d"
+    },
+    {
+      "bytes": 31628,
+      "git_blob": "73708c5c8495a15dd346df0e6f4501f5a83bcd5b",
+      "path": "encoded/SOURCE_PACKET_json.part-02.b64",
+      "sha256": "f02d0324e4a59be194bc78eebd94f6f7c908cd081cfcf5d6467e7ffe5d066891"
+    }
+  ],
+  "source_entries": [
+    {
+      "after": {
+        "bytes": 13807,
+        "git_blob": "6e88ec79a665df34db28f473da12712c9a6efc49",
+        "sha256": "35f8356e9c32e3d48dfe5285592f173915c15bba17f2b8cd8cb13bfd9aee6c49"
+      },
+      "before": {
+        "bytes": 13640,
+        "git_blob": "1d66a6491b51bff9015ca08b5a82b77312053519",
+        "sha256": "5abdc36185e94baa0cb4c3804d7ccdfa5bec9692b18d5cea1b7feab07aedf5ce"
+      },
+      "path": ".github/blob-size-allowlist.txt"
+    },
+    {
+      "after": {
+        "bytes": 32237,
+        "git_blob": "0df5b0462cf0652cf4e162e641dc796b44bab1fa",
+        "sha256": "0d5de8a96269837ff0204f4ca3278035b4f5e1f8387f0ab0162763a37e8a5698"
+      },
+      "before": {
+        "bytes": 31859,
+        "git_blob": "a0bec30999e6c4db87682312685dfc7f474349f1",
+        "sha256": "50b8c216d016d1d5006497219a2ab824a2e023194fb3a70795ea15bf0e95bc10"
+      },
+      "path": ".github/workflows/hepta-daemon-learning-native.yml"
+    },
+    {
+      "after": {
+        "bytes": 1984125,
+        "git_blob": "b5e0e965c59dfe784d29ff09e4806127c3079474",
+        "sha256": "5f6473f5aae82e0596c12b0acc8699b12889ed3e75ec567b10910b66b3d6da66"
+      },
+      "before": {
+        "bytes": 1902614,
+        "git_blob": "8875892749c45665abdce90310a7a47d90308b9b",
+        "sha256": "4032c99e77d9aa7c36f987e927962be470eb469ee30911ef16d577f257ec56ac"
+      },
+      "path": "CALLERS.toml"
+    },
+    {
+      "after": {
+        "bytes": 24089,
+        "git_blob": "0cf34a9d72a6d6a08c3092768310a2515c7c6ee6",
+        "sha256": "ec2af1b4f1bce2d92d203c0081162b7804c162a5b605f9f2478fb0fc587cef70"
+      },
+      "before": {
+        "bytes": 24089,
+        "git_blob": "e13f932f605cc21a5b2e042bed07a4e4fbc38221",
+        "sha256": "459bebbd0b0f7bdb6057e30fed598a133ea7b4ce39507bd221e6766190e5c8ca"
+      },
+      "path": "qa/b4-no-bypass/ROOT_HOST_INITIAL_PRODUCT_SOURCE_CONTRACT.json"
+    },
+    {
+      "after": {
+        "bytes": 117682,
+        "git_blob": "91d905b4e4fac2103e4659a94202c34ce8094cd7",
+        "sha256": "7cb71aa57b749340d4169ba92203bf6e0788c8203a4f718cac555f8d4a2aeff1"
+      },
+      "before": null,
+      "path": "qa/b4-no-bypass/ROOT_RESIDENT_E3_PRODUCT_SOURCE_CONTRACT.json"
+    },
+    {
+      "after": {
+        "bytes": 102696,
+        "git_blob": "4817cdb1cf0d900f4458e29e0ccd5e7cb6e9a6ee",
+        "sha256": "274d488d0f184d7657293b175ca5fc00a951de838ccf1b317bf4e0d177dc3384"
+      },
+      "before": {
+        "bytes": 102696,
+        "git_blob": "7dccad723474327be22ba0ecf1905c34648ce0d9",
+        "sha256": "0db587196a1c860c6a3627f3d3970ad12e22765937b1a36f3f31399ea0866acf"
+      },
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py"
+    },
+    {
+      "after": {
+        "bytes": 43065,
+        "git_blob": "0e743b735b3ca1ac616fd22f18ec921196965b1d",
+        "sha256": "9065db98d7a465f1546d1bead3641d29734a73811f114618cd0eecc2385f63d6"
+      },
+      "before": {
+        "bytes": 36942,
+        "git_blob": "8d64d3059e4ffaf5e38fe484685a85560cf7ed31",
+        "sha256": "c9e4663474f4ed44d238c677ee0f8f19a3302e3107071e4d96975de71ccc5011"
+      },
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py"
+    }
+  ],
+  "state": "ISOLATED_E1_PLUS_E3_PROJECTION_NOT_FINAL_ROOT_UNION"
+}

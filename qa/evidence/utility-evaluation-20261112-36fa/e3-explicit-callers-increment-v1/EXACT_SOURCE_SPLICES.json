@@ -1,0 +1,42 @@
+[
+  {
+    "after_text": "let work = codex_hepta_agentd::RootResidentCandidateServiceV1::run(service, cancellation.clone());",
+    "before_text": "let work = service.run(cancellation.clone());",
+    "inverse_full_bytes_equal": true,
+    "occurrences": 1,
+    "path": "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs",
+    "reason": "The exact same owned service and cancellation argument enter the original by-value run method."
+  },
+  {
+    "after_text": "let work = codex_hepta_agentd::RootResidentCandidateEnrollmentServiceV3::run(service, cancellation.clone());",
+    "before_text": "let work = service.run(cancellation.clone());",
+    "inverse_full_bytes_equal": true,
+    "occurrences": 1,
+    "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs",
+    "reason": "The exact same owned enrollment service and cancellation argument enter its by-value run method."
+  },
+  {
+    "after_text": "let work = RootResidentCandidateServiceV1::run(service, bounded.clone());",
+    "before_text": "let work = service.run(bounded.clone());",
+    "inverse_full_bytes_equal": true,
+    "occurrences": 1,
+    "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+    "reason": "The destructured original service is explicitly named; the child cancellation token is unchanged."
+  },
+  {
+    "after_text": "let join = crate::AgentdRootResidentEnrollmentV3::enroll_original_root(&enrollment, root);",
+    "before_text": "let join = enrollment.enroll_original_root(root);",
+    "inverse_full_bytes_equal": true,
+    "occurrences": 1,
+    "path": "codex-rs/hepta-agentd/src/production_resident_enrollment.rs",
+    "reason": "The original method has an &self receiver; this spelling retains the same borrow and owned root argument."
+  },
+  {
+    "after_text": "profile, authorization, trust.verifier, /*expected*/ None, timeout, wire::remaining(session_end)?,",
+    "before_text": "profile, authorization, trust.verifier, None, timeout, wire::remaining(session_end)?,",
+    "inverse_full_bytes_equal": true,
+    "occurrences": 1,
+    "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs",
+    "reason": "The original expected Option argument is unchanged; only its original parameter name is documented."
+  }
+]

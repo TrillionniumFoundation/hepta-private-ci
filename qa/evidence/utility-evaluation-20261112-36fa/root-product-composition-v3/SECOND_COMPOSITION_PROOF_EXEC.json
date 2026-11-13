@@ -1,0 +1,13 @@
+{
+  "scope": "Pure local byte composition, before any composed source output",
+  "failure": {
+    "chunk_id": "1889f5",
+    "wall_time_seconds": 0.247678024,
+    "exit_code": 1,
+    "original_token_count": 133,
+    "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-root-product-composition-v3/compose_v2.py\", line 158, in <module>\n    result = replace_sequence(value, operations)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-root-product-composition-v3/compose_v2.py\", line 55, in replace_sequence\n    assert len(positions) == 1, ('nonunique exact-line replacement', before[:100])\n           ^^^^^^^^^^^^^^^^^^^\nAssertionError: ('nonunique exact-line replacement', '    notes_ui: Option<NotesUiInputs>,\\n}\\n')\n"
+  },
+  "reason": "E3 late enrollment and E2 ordinary handoff insert distinct fields at the same original RuntimeInputs boundary. Whole context replacement cannot match the already extended structure. The successor composes minimal line edits, keeps both insertions in declared layer order, and refuses any overlapping deletion or replacement.",
+  "source_packets_unchanged": true,
+  "H_calls": 0
+}
