@@ -592,13 +592,17 @@ async fn project_import_is_atomic_and_notifies_after_commit_in_order() -> Result
         })
         .await?;
 
-    let JSONRPCMessage::Notification(project_changed) = server.read_next_message().await? else {
+    let JSONRPCMessage::Notification(project_changed) =
+        read_next_message_ignoring_global_skills_changes(&mut server).await?
+    else {
         panic!("project/import must emit project/changed before its response");
     };
     assert_eq!(project_changed.method, "project/changed");
     let project_changed: ProjectChangedNotification =
         serde_json::from_value(project_changed.params.expect("notification params"))?;
-    let JSONRPCMessage::Notification(thread_updated) = server.read_next_message().await? else {
+    let JSONRPCMessage::Notification(thread_updated) =
+        read_next_message_ignoring_global_skills_changes(&mut server).await?
+    else {
         panic!("project/import must emit thread/project/updated after project/changed");
     };
     assert_eq!(thread_updated.method, "thread/project/updated");
@@ -609,7 +613,9 @@ async fn project_import_is_atomic_and_notifies_after_commit_in_order() -> Result
         thread_updated.project_id,
         Some(project_changed.project_id.clone())
     );
-    let JSONRPCMessage::Response(response) = server.read_next_message().await? else {
+    let JSONRPCMessage::Response(response) =
+        read_next_message_ignoring_global_skills_changes(&mut server).await?
+    else {
         panic!("project/import must respond after commit notifications");
     };
     assert_eq!(response.id, RequestId::Integer(import_id));
