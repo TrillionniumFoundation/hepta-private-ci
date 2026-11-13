@@ -311,6 +311,7 @@ fn terminal_control_reopen_reads_original_bytes_without_running_another_worker()
 #[test]
 fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
     let mut fixture = Fixture::new();
+    let normal_rpc_timeout = fixture.config.rpc_timeout;
     fixture.config.rpc_timeout = Duration::from_millis(30);
     let worker = FixtureWorker::new(WorkerMode::Cooperative);
     worker.release.store(true, Ordering::Release);
@@ -349,6 +350,7 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
     );
     checked(port.shutdown());
     let bytes = checked(fs::read(fixture.path()));
+    fixture.config.rpc_timeout = normal_rpc_timeout;
     let mut port = fixture.port(Arc::clone(&worker), Arc::new(|| 20));
     let mut changed = fixture.request.clone();
     changed.input.push(8);
