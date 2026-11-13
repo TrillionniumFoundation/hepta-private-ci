@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "head": "5e2426ad737fc5f8bef5c69e4a49f4b9a0275be4",
+  "tree": "d9e8346daaa98162d583b7b5c8aad5b49cf960ed",
+  "full_caller": {
+    "status": "completed",
+    "exit_code": 0,
+    "started": "2026-11-13T01:48:41.243888+00:00",
+    "finished": "2026-11-13T02:00:14.281319+00:00",
+    "elapsed_seconds": 693.0373068030021,
+    "source_unchanged": true,
+    "command": [
+      "python3",
+      "scripts/verify_hepta_callers.py",
+      "verify",
+      "--root",
+      "/workspace/scratch/ff41dfc0f7bf/hepta-current-history-guards-cloud"
+    ],
+    "files": {
+      "fullcallers.stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "fullcallers.stdout.log": {
+        "bytes": 534529,
+        "sha256": "090d7b2761fc331aca3bfb069e80a2a3a1934551b5985160ad8109fb1574ce47"
+      }
+    }
+  },
+  "rust_files": 6892,
+  "boundaries": 1113,
+  "inventory": 1113,
+  "protected": 878,
+  "authority_granted": false,
+  "source_snapshot": {
+    "head": "5e2426ad737fc5f8bef5c69e4a49f4b9a0275be4",
+    "tree": "d9e8346daaa98162d583b7b5c8aad5b49cf960ed",
+    "status": "",
+    "tracked_files": 15500,
+    "tracked_bytes": 234446573,
+    "tracked_sha256": "60df345e7700fc84d422370878e5af9aaf5902a12491be830b946e324992bb6b",
+    "callers_sha256": "86cc52079c610b02d50fd5b3c2e56846ef9dc238e9afbfc4d577b9924dedd216"
+  },
+  "whole_driver_exit": 1,
+  "source_qa_exit": -9,
+  "whole_driver_all_gates_passed": false,
+  "different_candidate_cli_claimed": false,
+  "native_tests_executed": 0,
+  "whole_qualification_counts": [
+    0,
+    0,
+    0
+  ],
+  "previous_evidence_head": "a2fc53ba8037c0577e61b8a5c1d78d5a5df0b1b5"
+}
