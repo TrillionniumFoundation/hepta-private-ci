@@ -1,0 +1,960 @@
+{
+  "schema": 1,
+  "scope": "Source-preflight failure, read-only observer, exact original-byte hydration, compile-only successor, and not-launched collector preparation.",
+  "head": "bfee5aa363cb63897c28c8f74fd6b167de5e859b",
+  "tree": "d24d13a0d716036319a6b814dd89b8e913689b00",
+  "archive": "originals-and-preparation.tar.xz",
+  "archive_bytes": 55924,
+  "archive_sha256": "d67a4be0cf7e71cedc17238a548fbc4a7b73a7f63145e19bbdfbb26b8050c520",
+  "member_count": 59,
+  "input_bytes": 373203,
+  "members": [
+    {
+      "path": "archive_bfee_source_preflight_originals_ci_v1.py",
+      "bytes": 12543,
+      "sha256": "6bde781fc01745e0b958771b8cd343f69cf6a335c3743daf530618b38e0d6476",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2262716,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 12543,
+        "st_mtime_ns": 1794532338540031088,
+        "st_ctime_ns": 1794532338540031088
+      }
+    },
+    {
+      "path": "observe_bfee5aa3_source_preflight_v1.py",
+      "bytes": 4090,
+      "sha256": "b8afed8b3eeeed55aa1896ed81541cbe4e13a1ec129e56ab6e1a4b1da226422e",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2262691,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 4090,
+        "st_mtime_ns": 1794530959463872369,
+        "st_ctime_ns": 1794530959463872369
+      }
+    },
+    {
+      "path": "root_bfee5aa3_scoped_fix_v1.py",
+      "bytes": 9111,
+      "sha256": "1ef836ff1c12f5f2b074853713bcea4d9437227be673f4b1a9eae3718d572f45",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2262687,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 9111,
+        "st_mtime_ns": 1794530523754022851,
+        "st_ctime_ns": 1794530523754022851
+      }
+    },
+    {
+      "path": "root_bfee5aa3_scoped_fix_v2.py",
+      "bytes": 23728,
+      "sha256": "6855c20cdc77efa47dbba273da6ca1893666cb11c66b21b5090caa9e4daecad3",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2262700,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 23728,
+        "st_mtime_ns": 1794531588401327189,
+        "st_ctime_ns": 1794531588401327189
+      }
+    },
+    {
+      "path": "validation/completed-chain-collector-bfee5aa3-v2-prepared/collector-frozen.py",
+      "bytes": 40095,
+      "sha256": "0e7a050beb25b0bcbba18ae8fc1c1aabce7f09fca9e7182cd686cd1ba609dd77",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759721,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 40095,
+        "st_mtime_ns": 1794532041430290716,
+        "st_ctime_ns": 1794532041430290716
+      }
+    },
+    {
+      "path": "validation/completed-chain-collector-bfee5aa3-v2-prepared/native-driver-frozen.py",
+      "bytes": 18513,
+      "sha256": "ccb1c75b85f6af5953cf019db13716237b58d684fe68796af4c39783330e72ca",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759722,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 18513,
+        "st_mtime_ns": 1794532041430519790,
+        "st_ctime_ns": 1794532041430519790
+      }
+    },
+    {
+      "path": "validation/completed-chain-collector-bfee5aa3-v2-prepared/prepared-bfee5aa3-v2.json",
+      "bytes": 2470,
+      "sha256": "257c48d41d6bd8721d433a28b77d96f8b7aa5b314c3285dc39e594cbaf7d2746",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759720,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2470,
+        "st_mtime_ns": 1794532041430233910,
+        "st_ctime_ns": 1794532041430233910
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-budget-driver-review-v1/README.md",
+      "bytes": 669,
+      "sha256": "89d1ffa3b929ecb139803355ade9d4b58cbbdb5a94eda7e6da12911fac9b933a",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759616,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 669,
+        "st_mtime_ns": 1794530681453074823,
+        "st_ctime_ns": 1794530681453074823
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-budget-driver-review-v1/after-retag-exact-changes.diff",
+      "bytes": 3919,
+      "sha256": "87959ea442ed8a68a6c43fb24b4fdc0041b275df86b0b3995ddeba55ae57d6be",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759614,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 3919,
+        "st_mtime_ns": 1794530681452981002,
+        "st_ctime_ns": 1794530681452981002
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-budget-driver-review-v1/exact-text-patches.json",
+      "bytes": 2276,
+      "sha256": "6f5260b9d82d00b9f20b54ece269bde1e6adc6567b09d5ff45b8b356311940d5",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759615,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2276,
+        "st_mtime_ns": 1794530681453040362,
+        "st_ctime_ns": 1794530681453040362
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-budget-driver-review-v1/manifest.json",
+      "bytes": 1771,
+      "sha256": "3bc155d3ebcee2b7aaee166fac7318af9bc593c9117e19a8231fb0a93dc68fdd",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759613,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 1771,
+        "st_mtime_ns": 1794530681452437584,
+        "st_ctime_ns": 1794530681452437584
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/README-final.md",
+      "bytes": 1006,
+      "sha256": "6c87163c3b7768513c577489d13a073479a60157f6c8fd9b1930c1fa8ded5212",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759678,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 1006,
+        "st_mtime_ns": 1794531588418898493,
+        "st_ctime_ns": 1794531588418898493
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/README.md",
+      "bytes": 1868,
+      "sha256": "05f8afcfc14d66d535b68f4384dcd65a2613d58a088706da430e295030435093",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759671,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 1868,
+        "st_mtime_ns": 1794531505870219299,
+        "st_ctime_ns": 1794531505870219299
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/a-driver-exact-replacements.json",
+      "bytes": 532,
+      "sha256": "509476fd3371d1b87dd49d9b8df0d70ce32e65f59c7fcdf4c3e204bfcf11ea2d",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759664,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 532,
+        "st_mtime_ns": 1794531417678262569,
+        "st_ctime_ns": 1794531417678262569
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/a-driver-v2.diff",
+      "bytes": 2870,
+      "sha256": "45aa9426d405d35fc6717a54d15b878a687e3dccfa909350c30bc1098d7cd00c",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759663,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2870,
+        "st_mtime_ns": 1794531417678133054,
+        "st_ctime_ns": 1794531417678133054
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/hydration-helper-source.py",
+      "bytes": 13024,
+      "sha256": "0b0191fa39310b60ae40fcdb0baa8be2c37c5125735740e848cf2d97f79b034c",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759659,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 13024,
+        "st_mtime_ns": 1794531417674205101,
+        "st_ctime_ns": 1794531417674205101
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/removed-v1-import-and-checkout-block.py",
+      "bytes": 2498,
+      "sha256": "99c7dc63ed2098974bb7e8b8a3a21be4c56479185778bfc71902d7084dbdfab6",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759661,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2498,
+        "st_mtime_ns": 1794531417674256398,
+        "st_ctime_ns": 1794531417674256398
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/scoped-fix-v2-final.diff",
+      "bytes": 24011,
+      "sha256": "a3e52247806405ef5a1d72d1465db5092691c14c4019fead79788b8e974013d0",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759673,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 24011,
+        "st_mtime_ns": 1794531588402249127,
+        "st_ctime_ns": 1794531588402249127
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/scoped-fix-v2-index-read-refinement.diff",
+      "bytes": 2135,
+      "sha256": "755e7a30c0be8f1828305630a3fa8ed9e1f5c0ac60e8f8d6c9ae4f46ee424ea7",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759675,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2135,
+        "st_mtime_ns": 1794531588402641217,
+        "st_ctime_ns": 1794531588402641217
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/scoped-fix-v2-initial.py",
+      "bytes": 23342,
+      "sha256": "e08a1453e83df0346d5753f0239e4f81a4a88380c798194e206c5ca1711430ba",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759641,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 23342,
+        "st_mtime_ns": 1794531588396646332,
+        "st_ctime_ns": 1794531588396646332
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/scoped-fix-v2.diff",
+      "bytes": 23427,
+      "sha256": "d8a67f8b517a0af63f13e8aff34a4bb70cb78ffaaeef710ace3174a730e1de21",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759662,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 23427,
+        "st_mtime_ns": 1794531417674598563,
+        "st_ctime_ns": 1794531417674598563
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/static-verification-final.json",
+      "bytes": 3853,
+      "sha256": "5976ee3a84229f9ce44b7e212f4d10a2f827a2bd4f9485fd450bb4f4d3491df6",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759677,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 3853,
+        "st_mtime_ns": 1794531588418815358,
+        "st_ctime_ns": 1794531588418815358
+      }
+    },
+    {
+      "path": "validation/ordinary-bfee5aa3-hydration-v2-review/static-verification.json",
+      "bytes": 3232,
+      "sha256": "d43233bbe062e66f714cc16d8c44b036370bd61658ace9de3a8b1f27e83aa30a",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759668,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 3232,
+        "st_mtime_ns": 1794531505869942452,
+        "st_ctime_ns": 1794531505869942452
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/assemble-launch.py",
+      "bytes": 2880,
+      "sha256": "a7ed19227b8eff91262e2d8fda3166e87c17917dfa6f21929a632776b89ad3ee",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759565,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2880,
+        "st_mtime_ns": 1794530523754952361,
+        "st_ctime_ns": 1794530523754952361
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/compile-result-preflight-failed.original.json",
+      "bytes": 2396,
+      "sha256": "d3af1532991ce3b16c53557780a182d82bc36fd1dafd966662903eb3effcc49e",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759645,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2396,
+        "st_mtime_ns": 1794530897042771655,
+        "st_ctime_ns": 1794530897042771655
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/manifest.json",
+      "bytes": 1661,
+      "sha256": "a448f3896851ddbd13fa29f28febc3cd2594d5d9d9861c2888e9c3b7bf93f646",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759567,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 1661,
+        "st_mtime_ns": 1794530523755060303,
+        "st_ctime_ns": 1794530523755060303
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/root-bfee5aa3-source.bundle",
+      "bytes": 3348,
+      "sha256": "df4c76b4b462936fe791619d983b7535e2595d60e4a3b22f2e92c737aea978ba",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759563,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 3348,
+        "st_mtime_ns": 1794530523749391741,
+        "st_ctime_ns": 1794530523749391741
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-failure-logs.mcp.json",
+      "bytes": 187,
+      "sha256": "3bd8acb8f7946d382eefaec582465048d35cb71310bfc056fb8f522d63d0114a",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759583,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 187,
+        "st_mtime_ns": 1794530855018315530,
+        "st_ctime_ns": 1794530855018315530
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-launch-intent.json",
+      "bytes": 260,
+      "sha256": "2dccf878af7f97c673b05c26061c4939ca7645579e375b8ca6c0fc33345541dd",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759596,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 260,
+        "st_mtime_ns": 1794530616362766681,
+        "st_ctime_ns": 1794530616362766681
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-launch.mcp.json",
+      "bytes": 542,
+      "sha256": "da85d5a0920aeb464b15b8f8890040510ea5a5e9d821454c82323edc8ac88f63",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759600,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 542,
+        "st_mtime_ns": 1794530632863943973,
+        "st_ctime_ns": 1794530632863943973
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-read-1.mcp.json",
+      "bytes": 3476,
+      "sha256": "e15ed1f4556a4223090fd253491f555b42c0ef2e817617b37ca941ec0606e430",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759626,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 3476,
+        "st_mtime_ns": 1794530702184043388,
+        "st_ctime_ns": 1794530702184043388
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-v2-launch-intent.json",
+      "bytes": 780,
+      "sha256": "b1cd4824bf18ab1ce85966e5f5bd024f42d08a175140af4a1ef170734822c987",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759683,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 780,
+        "st_mtime_ns": 1794531689694744803,
+        "st_ctime_ns": 1794531689694744803
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-v2-launch.mcp.json",
+      "bytes": 542,
+      "sha256": "c41b27d9e546f3d83fbca3136db52922a5946552ce8d644db35141843d3a785d",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759685,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 542,
+        "st_mtime_ns": 1794531692477881324,
+        "st_ctime_ns": 1794531692477881324
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-v2-pty-read-1.mcp.json",
+      "bytes": 1890,
+      "sha256": "d47200e145ec7c7984509de38b10333861634abbecf82a7cbcde09a866aef9f5",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759687,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 1890,
+        "st_mtime_ns": 1794531782311991430,
+        "st_ctime_ns": 1794531782311991430
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-v2-read-1.mcp.json",
+      "bytes": 6627,
+      "sha256": "80cfaa6d75cc114787f11cf255651abb7984c09735bbdf18fb155e5f7395f3e1",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759689,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 6627,
+        "st_mtime_ns": 1794531951466369043,
+        "st_ctime_ns": 1794531951466369043
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/scoped-fix-v2-upload.mcp.json",
+      "bytes": 285,
+      "sha256": "63d0b4443eba0e2f61f6d14b5a7cafb073f60b14a17444f3b9afe3441ba19360",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759682,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 285,
+        "st_mtime_ns": 1794531649066139215,
+        "st_ctime_ns": 1794531649066139215
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/source-hydration-expected.json",
+      "bytes": 3214,
+      "sha256": "359b763edf5c2ad108c41946639144257bfe63eedc92c099b5fe3a458521b9c7",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759654,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 3214,
+        "st_mtime_ns": 1794531113810779990,
+        "st_ctime_ns": 1794531113810779990
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/source-observer-launch-intent.json",
+      "bytes": 4480,
+      "sha256": "c57378f099762f4c59e1e5e13883768f832c6c2afed0d58685c0c23d2fd75938",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759646,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 4480,
+        "st_mtime_ns": 1794530959775877019,
+        "st_ctime_ns": 1794530959775877019
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/source-observer-launch.mcp.json",
+      "bytes": 542,
+      "sha256": "0f4347625384d8af4b299e1b67acf0c5bb09e3c675487ac42b992b7a167608d0",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759648,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 542,
+        "st_mtime_ns": 1794531003220524536,
+        "st_ctime_ns": 1794531003220524536
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/source-observer-observation.derived.json",
+      "bytes": 4640,
+      "sha256": "16be62d66598c45423d4634cd2a5fc526039c2bd6e9b0071be90888ebe2af5df",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759653,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 4640,
+        "st_mtime_ns": 1794531110470565125,
+        "st_ctime_ns": 1794531110470565125
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/source-observer-output-original.jsonl",
+      "bytes": 3865,
+      "sha256": "1d216a345da342fdf348205fc14326abb031170b8d2f0f39edeec7ab17dc8224",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759652,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 3865,
+        "st_mtime_ns": 1794531110470039353,
+        "st_ctime_ns": 1794531110470039353
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/source-observer-read-1.mcp.json",
+      "bytes": 13333,
+      "sha256": "0f6d113aa159e26f0d3527b613fd7b8f59f1e75b2f64b1b0582bee1d610ee298",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759651,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 13333,
+        "st_mtime_ns": 1794531016364720293,
+        "st_ctime_ns": 1794531016364720293
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/transfer-parts-1.py",
+      "bytes": 17635,
+      "sha256": "7956a3952a4790cd471f86348cd4abc249346190b79319d92f775521bf63dfbc",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759564,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 17635,
+        "st_mtime_ns": 1794530523754521292,
+        "st_ctime_ns": 1794530523754521292
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/upload-1.mcp.json",
+      "bytes": 282,
+      "sha256": "db87ae9346e746b63616199aec1153118ce8b2519ab48470dac640a3c5c85c67",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759587,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 282,
+        "st_mtime_ns": 1794530575462159650,
+        "st_ctime_ns": 1794530575462159650
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-native-inputs-v1/upload-2.mcp.json",
+      "bytes": 282,
+      "sha256": "8212ba6afa4476ed94f9129c463d2874d8b6c53a2ae502be738df3283ee12806",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759589,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 282,
+        "st_mtime_ns": 1794530597534487091,
+        "st_ctime_ns": 1794530597534487091
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-observed-progress-v2/compile-result-final.original.json",
+      "bytes": 5009,
+      "sha256": "a778a419714d86407d766a799636687fc017073e2b6194e72f0d0093f5ba679d",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759705,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 5009,
+        "st_mtime_ns": 1794532000115553686,
+        "st_ctime_ns": 1794532000115553686
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-scoped-fix-v1/bundle-verify-import.log",
+      "bytes": 395,
+      "sha256": "8c34356584b05f49b7fe53e550691162866749c4ff3fd7a7df4a337938f9b962",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759701,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 395,
+        "st_mtime_ns": 1794531961370633547,
+        "st_ctime_ns": 1794531961370633547
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-scoped-fix-v1/driver-error.log",
+      "bytes": 1059,
+      "sha256": "38aacaa1c1e95d2dc0ce3f46962a9d2102126abf5e511fccfee2abab377181b7",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759699,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 1059,
+        "st_mtime_ns": 1794531961368049920,
+        "st_ctime_ns": 1794531961368049920
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-scoped-fix-v1/result.json",
+      "bytes": 2396,
+      "sha256": "d3af1532991ce3b16c53557780a182d82bc36fd1dafd966662903eb3effcc49e",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759696,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2396,
+        "st_mtime_ns": 1794531961366359866,
+        "st_ctime_ns": 1794531961366359866
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-scoped-fix-v1/source-import.log",
+      "bytes": 470,
+      "sha256": "e5f07ac4902d0443b45e40a4fc617718d33783bd59e6816f1162210cff4d2069",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759700,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 470,
+        "st_mtime_ns": 1794531961370039884,
+        "st_ctime_ns": 1794531961370039884
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-scoped-fix-v2/source-hydration.json",
+      "bytes": 18402,
+      "sha256": "ebc7c55b3ab2043183c00cad97528008ede0d45c6aba67c2c9973b3126525335",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759703,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 18402,
+        "st_mtime_ns": 1794531961372959958,
+        "st_ctime_ns": 1794531961372959958
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-source-preflight-observation-v1/original-bundle-verify-import.log",
+      "bytes": 395,
+      "sha256": "8c34356584b05f49b7fe53e550691162866749c4ff3fd7a7df4a337938f9b962",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759717,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 395,
+        "st_mtime_ns": 1794532041407344511,
+        "st_ctime_ns": 1794532041407344511
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-source-preflight-observation-v1/original-driver-error.log",
+      "bytes": 1059,
+      "sha256": "38aacaa1c1e95d2dc0ce3f46962a9d2102126abf5e511fccfee2abab377181b7",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759714,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 1059,
+        "st_mtime_ns": 1794532041406294821,
+        "st_ctime_ns": 1794532041406294821
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-source-preflight-observation-v1/original-result.json",
+      "bytes": 2396,
+      "sha256": "d3af1532991ce3b16c53557780a182d82bc36fd1dafd966662903eb3effcc49e",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759712,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 2396,
+        "st_mtime_ns": 1794532041405351371,
+        "st_ctime_ns": 1794532041405351371
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-source-preflight-observation-v1/original-source-import.log",
+      "bytes": 470,
+      "sha256": "e5f07ac4902d0443b45e40a4fc617718d33783bd59e6816f1162210cff4d2069",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759716,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 470,
+        "st_mtime_ns": 1794532041406824618,
+        "st_ctime_ns": 1794532041406824618
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-files/validation/root-bfee5aa3-source-preflight-observation-v1/result.json",
+      "bytes": 4640,
+      "sha256": "16be62d66598c45423d4634cd2a5fc526039c2bd6e9b0071be90888ebe2af5df",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759711,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 4640,
+        "st_mtime_ns": 1794532041404061540,
+        "st_ctime_ns": 1794532041404061540
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-read-batch-1.original.json",
+      "bytes": 26127,
+      "sha256": "87d4522f3bf12e85105a958f1df0c4db1517c4587918f67fdee6b20f1c8ef2ed",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759691,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 26127,
+        "st_mtime_ns": 1794531961365889428,
+        "st_ctime_ns": 1794531961365889428
+      }
+    },
+    {
+      "path": "validation/root-bfee5aa3-source-preflight-originals-ci-v1/h-read-batch-2.original.json",
+      "bytes": 11203,
+      "sha256": "acb53bc852b6d46a7601ce2b98de89bf1e2f064e3aac62de3575dc38b5039317",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759709,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 11203,
+        "st_mtime_ns": 1794532041403272212,
+        "st_ctime_ns": 1794532041403272212
+      }
+    },
+    {
+      "path": "validation/sticky-bfee-driver-readonly-review-v1/result.json",
+      "bytes": 5052,
+      "sha256": "28ce371b3de94e49f74706b82ac71f7c8767fa4f0e7b0e494e1ff341d6817b6f",
+      "source_stat": {
+        "st_dev": 27,
+        "st_ino": 2759644,
+        "st_mode": 33188,
+        "st_uid": 1000,
+        "st_gid": 1000,
+        "st_nlink": 1,
+        "st_size": 5052,
+        "st_mtime_ns": 1794530809701641229,
+        "st_ctime_ns": 1794530809701641229
+      }
+    }
+  ],
+  "all_member_bytes_verified": true,
+  "all_originals_rechecked_unchanged": true,
+  "large_existing_git_archives_included": false
+}

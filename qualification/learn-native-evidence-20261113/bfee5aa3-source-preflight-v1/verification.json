@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "source_head": "bfee5aa363cb63897c28c8f74fd6b167de5e859b",
+  "source_tree": "d24d13a0d716036319a6b814dd89b8e913689b00",
+  "v1": {
+    "status": "preflight_failed",
+    "rust_started": false,
+    "test_execution_count": 0,
+    "original_result_sha256": "d3af1532991ce3b16c53557780a182d82bc36fd1dafd966662903eb3effcc49e",
+    "original_mcp_read_timeout_preserved": true
+  },
+  "observer": {
+    "status": "completed",
+    "original_copies_exact": true,
+    "result_sha256": "16be62d66598c45423d4634cd2a5fc526039c2bd6e9b0071be90888ebe2af5df"
+  },
+  "hydration": {
+    "created_files": 9,
+    "all_original_git_blobs_match": true,
+    "index_flags_and_local_config_unchanged": true,
+    "prior_evidence_unchanged": true,
+    "tracked_files": 15497,
+    "virtual_and_actual_sha256": "dfed7872d8cb0158e556de66d1499fbc10d03bad19c6038874eaefe0d2ffd847",
+    "sha256": "ebc7c55b3ab2043183c00cad97528008ede0d45c6aba67c2c9973b3126525335"
+  },
+  "compile_v2": {
+    "status": "completed",
+    "exit_code": 0,
+    "started": "2026-11-13T01:01:30.829331+00:00",
+    "compile_started": "2026-11-13T01:01:33.352213+00:00",
+    "finished": "2026-11-13T01:03:25.506792+00:00",
+    "elapsed": 114.67738890391774,
+    "source_unchanged": true,
+    "result_sha256": "a778a419714d86407d766a799636687fc017073e2b6194e72f0d0093f5ba679d",
+    "scope": "Actual seven-package scoped just fix, including test compilation; no test execution, JUnit, UID0 custody or whole-chain qualification.",
+    "tests_executed": 0
+  },
+  "collector": {
+    "status": "prepared_not_uploaded_or_launched",
+    "prepared_spec": "validation/completed-chain-collector-bfee5aa3-v2-prepared/prepared-bfee5aa3-v2.json"
+  },
+  "business_recovery_claimed": false,
+  "whole_chain_pass_claimed": false
+}
