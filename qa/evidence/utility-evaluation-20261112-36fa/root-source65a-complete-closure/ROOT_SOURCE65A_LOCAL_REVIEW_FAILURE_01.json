@@ -1,0 +1,10 @@
+{
+  "format": "root-pure-review-local-failure-v1",
+  "exit_code": 1,
+  "error": "KeyError: git_blob",
+  "site": "check(raw, root_gets[entry[path]])",
+  "cause": "Older prior-verified pin schema in v1 Root ledger omitted git_blob field. Full actual body pins are recomputed in separate normalized ledger; original v1 remains.",
+  "native_failure": false,
+  "H_calls": 0,
+  "original_script": "/tmp/hepta-36fa-current-workspace-reconstruction-v3/review_source65a_complete_closure.original.py"
+}

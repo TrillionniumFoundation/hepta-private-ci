@@ -1,0 +1,110 @@
+{
+  "bootstrap": {
+    "bytes": 6301,
+    "git_blob": "f8f7d607f3e06ead370d9fa00c1fdfbb56ddbc73",
+    "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/SOURCE_BOOTSTRAP.candidate.py",
+    "sha256": "aa3e588b2511b9d70d3489b5e25f5aa1766626fd1395ad52c8111e431102f038"
+  },
+  "bootstrap_diff": {
+    "bytes": 3280,
+    "git_blob": "fbaff0b425928c1a076f86eebe1b399fc33300f1",
+    "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/FROM_CC57_V2_BOOTSTRAP.diff",
+    "sha256": "091e3bb9380ad7f5d63bec750c2166eee8b3d11ea9a0a590c9527d67eb0f0601"
+  },
+  "cfg_and_admission_changed_by_preparer": false,
+  "cfg_owner": "/root/ordinary_path",
+  "control": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1",
+  "expected_source": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+  "expected_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "format": "hepta-final-source-eight-input-exact-launch-manifest-v1",
+  "inputs": [
+    {
+      "bytes": 87654,
+      "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/qualification-admission.py",
+      "name": "qualification-admission.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/qualification-admission.py",
+      "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+    },
+    {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/source-gates-wrapper.py",
+      "name": "source-gates-wrapper.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/source-gates-wrapper.py",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    },
+    {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/native-wrapper.py",
+      "name": "native-wrapper.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/native-wrapper.py",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/native-driver.original.py",
+      "name": "native-driver.original.py",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/native-driver.original.py",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/PLAN.original.json",
+      "name": "PLAN.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/PLAN.original.json",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    {
+      "bytes": 24155,
+      "git_blob": "720abbdfa96bca8c7e6aaf633a800693960d80db",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/APPROVED_QUALIFICATION_INPUT.json",
+      "name": "APPROVED_QUALIFICATION_INPUT.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/APPROVED_QUALIFICATION_INPUT.json",
+      "sha256": "ac5663c711d2d47669c334052e09151d2fbda34776ff41b0b8727804d322a840"
+    },
+    {
+      "bytes": 831,
+      "git_blob": "b97682c5a95bb7f09241e54f0b3d13bf7fa791a4",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/SOURCE_GATES_CONFIG.json",
+      "name": "SOURCE_GATES_CONFIG.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/SOURCE_GATES_CONFIG.json",
+      "sha256": "f08beb0e1a0c87117bd7a091ec3c7b4390285cf47a291c0d7569fd0f1d2e197c"
+    },
+    {
+      "bytes": 950,
+      "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+      "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/inputs/CANONICAL_SUPERVISOR.original.json",
+      "name": "CANONICAL_SUPERVISOR.original.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/CANONICAL_SUPERVISOR.original.json",
+      "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+    }
+  ],
+  "key": "hepta-utility-36fa-final-source-gates-b608-v1",
+  "native_main_not_started": true,
+  "original_template_git": "3ebc2777182d88bcec1e0a3ad8546af93d5b25f0",
+  "outer_seconds": 7200,
+  "root_execution_decision": null,
+  "static_review": {
+    "bytes": 4827,
+    "git_blob": "6ddbd924836d3a97aac2523503b133538355b7bc",
+    "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/EXACT_SOURCE_LAUNCH_REVIEW.json",
+    "sha256": "91f72cfb5e8265fbd504ab7e26261154b0781e9f75b883bf50d847058f885b81"
+  },
+  "status": "CANDIDATE_ONLY_ROOT_EXACT_APPROVAL_REQUIRED",
+  "stdin": {
+    "bytes": 240049,
+    "git_blob": "348f8b7a0cb06713ea855bddeaa7c1151d8ebd01",
+    "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/SOURCE_STDIN.candidate.json",
+    "sha256": "dd55a559356195d845f7d9a84b1c1573f5886d4d072dd70349101e7eec00eec5"
+  },
+  "typed_request": {
+    "bytes": 246727,
+    "git_blob": "465e0eaa1f387ad6bb167a4931328e199a5bf793",
+    "local_path": "/tmp/hepta-36fa-final-source-qualification-b608-preparation-v1/execution-candidate-v1/SOURCE_PROCESS_INPUT.candidate.json",
+    "sha256": "1737f34278a277d0d3003efdf6a9539e11e63d40326544542d81da024947aa16"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "format": "hepta-completed-source-original-file-read-reconciliation-v1",
+  "job_id": "1a1d4f0c3d4-392-65a",
+  "recovery": {
+    "status": "complete_chunk_coverage",
+    "version": "2050:51119093:87654:1794573912483305032:1794573912483305032",
+    "next_offset": 87654,
+    "chunks": [
+      {
+        "request": {
+          "host": "desktop",
+          "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/qualification-admission.py",
+          "offset": 0,
+          "limit": 65536
+        },
+        "sdk": {
+          "name": "FILE.staging.qualification-admission.py.RECOVERY_READ_OFFSET_000000.original.json",
+          "path": "/tmp/hepta-36fa-final-source-qualification-b608-runtime-v1/FILE.staging.qualification-admission.py.RECOVERY_READ_OFFSET_000000.original.json",
+          "bytes": 87865,
+          "sha256": "cc11747c37a31d874f412ba0b4493d4325c27229c1599efcdf33a8e433d9f87d",
+          "git_blob": "ee4c9ece53103a921306d12bb21f0bd456a0c935"
+        }
+      },
+      {
+        "request": {
+          "host": "desktop",
+          "path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/qualification-admission.py",
+          "offset": 65536,
+          "limit": 65536,
+          "expected_version": "2050:51119093:87654:1794573912483305032:1794573912483305032"
+        },
+        "sdk": {
+          "name": "FILE.staging.qualification-admission.py.RECOVERY_READ_OFFSET_065536.original.json",
+          "path": "/tmp/hepta-36fa-final-source-qualification-b608-runtime-v1/FILE.staging.qualification-admission.py.RECOVERY_READ_OFFSET_065536.original.json",
+          "bytes": 29976,
+          "sha256": "fff255a978d703c856d931268806caa20090b5fba20bb735e5aef1ce3fa534a2",
+          "git_blob": "4178a3cde851027d4b8e06c867b1174e8675cd8a"
+        }
+      }
+    ]
+  },
+  "original_failed_read_preserved": true,
+  "new_process_dispatches": 0
+}

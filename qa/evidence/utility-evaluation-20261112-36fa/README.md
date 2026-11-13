@@ -1,3 +1,57 @@
+# 当前检查点：65a 原验收预检失败已完整保留；真实合格任务链仍为 0
+
+本区段固定实际 canonical 对齐之后的精确 source 请求、唯一原执行及完整失败读回。**qualification=false；source driver main 未进入，三个 source gates 和 native phases 均未开始。** 原失败不被静态准备、归档成功或另一个阶段的通过改写。
+
+## 版本与真实执行边界
+
+- 源分支仍为 `cc57c7198db6293ccca562253c42fffbe2a04633`，PR #6203 保持 draft。
+- 实际隔离候选为 `b6084394a4a38ab495c16eaba09e879f04a96f8e`，tree `8ebb37e523ad3932a58cf016af0a9f4e0eeb6638`。此前 5a9 已完成实际 canonical 对齐及完整源码/index/uid-gid 元数据闭合；其证据检查点为 `efc88e95478754a43ad3c26fedb1241041f9cfab`。
+- 后续原 source 请求 `465e0eaa1f387ad6bb167a4931328e199a5bf793` 只启动一次，job `1a1d4f0c3d4-392-65a`；正常终态为 failed / exit 1，非 timeout、cancel 或 automatic retry。
+- 工程执行审批只覆盖这一确切 source 请求与同 job 读回，不构成 Hepta 运行时 owner/grant 授权，也不涵盖另一个 source main 或 native 14 phases。
+
+精确原输入、bootstrap、8 payloads、原预算与逆变更证明：[准备包](final-source-qualification-b608-preparation-v1/PLACEMENT.json)；[独立 exact 审查](final-source-b608-exact-independent-peer-v1/PLACEMENT.json)；[Root 审查](root-b608-exact-source-launch-review/ROOT_B608_EXACT_SOURCE_LAUNCH_REVIEW.json)；[已消耗的精确审批](root-b608-exact-source-launch-review/ROOT_B608_SOURCE_EXACT_APPROVAL.json)。
+
+## 65a 实际失败与完整原读回
+
+| 项目 | 实际结果 | 结论范围 |
+| --- | --- | --- |
+| 原 source driver | `driver_main_entered=false`，returncode 为 null | 三个源码门槛及行为测试均未开始 |
+| Primary error | 打开历史 3bb `.../provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json` 时 FileNotFoundError | 该次 pathname lookup/open 不可用；缺失的具体路径组件、原因与行为人均 Unknown |
+| Secondary error | finally 比较 current Git 与尚为 None 的 initial_git，记录 SourceChanged | 保留原错误；不能据此证明源码发生变更，更不是确定性欺诈证据 |
+| 原 normal 与 streams | failed/exit 1；complete、durable、terminal publication confirmed；stdout 838 B、stderr 0 B | 不用空 stderr 或有输出推定成功 |
+| 完整文件读回 | 30 个实际 native 文件，37 个成功 binary chunks，固定 version、连续 offset、末尾 EOF 与完整三重身份均核对 | 其中 18 个 handoff 文件、11 个 staging 原件及 staging manifest |
+| 原读取失败 | 首次读取 qualification-admission.py 时 helper255；初始 version Unknown | 原失败保留；仅同一路径完成首个成功 version 及同 version 后续分片，无新 main |
+| Staging | 11 原件完整外部读回，与原 request 中 bootstrap、argv、stdin 及 8 payloads 逐字相等 | staged native wrapper 不等于 native 执行 |
+| Partial final Git | 原 `GIT_STATE.after.json` 与实际 5a9 canonical 终点完整字节相同 | 本次没有到完整物理 inventory 和 live environment preflight；不能扩张为完整当前源码/环境不变 |
+
+[94 件实际归档清单](final-source-qualification-b608-runtime-v1/PLACEMENT.json)保留 88 件固定原输入和收据，以及完整归档证明；全部由 Root 再次完整 Git GET 核对。Root 独立重放全部 37 成功 binary chunks，恢复 30 条完整路径，核对 original job、staging 和失败语义：[Root 完整失败窗口审查](root-source65a-complete-closure/ROOT_SOURCE65A_COMPLETE_FAILED_WINDOW_REVIEW.json)、[纯字节校验脚本](root-source65a-complete-closure/review_source65a_complete_closure.py)、[完整 Git 读回账](root-source65a-complete-closure/ROOT_SOURCE65A_COMPLETE_GIT_READBACK.normalized.json)。
+
+Root 本地纯审查的第一轮因旧 pin 对象使用 sha 字段而新脚本期待 git_blob，发生 KeyError；原脚本、原 ledger 和错误保留。后继 ledger 从同一批已完整 GET 的 raw body 重算三重身份，原始收据未变，第二次纯审查退出 0。此本地 schema 错误与 H source 失败分别保存，不相互替代。
+
+## 路径来源与后继输入的限制
+
+失败的历史 RESULT 路径与原 3bb 成功 SDK `31b73eb7a77109df0fb3e0b885f83a65712578e5` 完全一致，原成功读取的 14,663 B body 也满足完整 bytes/SHA256/Git 身份。原 3bb 与本次 65a 均选择 desktop / desktop-ts；相同 selector 本身不能证明服务器、文件系统或 mount namespace 持续相同。因此，**没有证据支持把此失败称为“路径拼错”或直接改一个路径重试**。
+
+有限静态集合包含 c77e 的 54 个明确历史/终点收据路径，以及原 V5 的一个额外历史环境输入。其中 45 条有完整原 binary SDK，4 条有原 staging 证据，2 条按原 producer catalog 与压缩材料绑定；其余 3 条只在该有限输入集合中见到内容 pin，未找到原路径完整 SDK。已有可比对路径与 pin 没有冲突。这一分类不证明任何历史原路径现在仍可用。
+
+[独立路径来源审查](source65a-path-provenance-independent-review-v1/REVIEW.json)、[逐路径矩阵](source65a-path-provenance-independent-review-v1/CAPTURED_PATH_MATRIX.json)、[原 V5 历史输入补项](source65a-path-provenance-independent-review-v1/ORIGINAL_V5_HISTORY_ADDENDUM.json)与[transported-original 设计边界](source65a-path-provenance-independent-review-v1/TRANSPORTED_ORIGINAL_OPTION.json)均保留。
+
+后继方案仅在隔离本地准备：明确传送完整原历史字节，保留原 job/path/pins 与新 transport path 的区别，不回填旧路径、不重写旧 JSON、不制造别名。当前 source、HEAD/index、uid/gid 元数据、真实材料、权限、环境与锁仍必须检查原活态对象。原 5118/8607/de3/b92/3aef 门槛、14 phases、48 exact Root FQNs、预算和 no-retry 约束保持。尚无新 source/native 执行审批或通过结果。
+
+## 普通产品入口仍有实质工作
+
+[完整功能矩阵](section6-functional-completion-matrix-v1/FUNCTIONAL_COMPLETION_MATRIX.md)明确区分现有机制与真实产品路径：在实际 b608 有限源码集合中，12 个新增 custody 公共 API 尚无 non-test 普通调用者；现有同进程 reopen 不能充当 daemon/Root 真实进程冷恢复。
+
+E1 的真实 Root typed assembly 正在独立隔离 proposal 中实现；尚未进入本源码候选或完成 Rust 验收。其必须保留原完整 signed grant、当前 revoked/head/frontier、原 Artifact/selected/FinalUse、同 operation readback/recovery。验签不等于撤销同步；lease 前后观察不证明跨 publication 连续原子保护。E2 的实际 Root task service 与 sealed daemon client、E3 的真实角色通道、E4 的消费者与实际冷恢复、E5 的独立 B 和完整成本仍需逐项完成。缺少外部真实材料和权限不能被编造；可实现的接线工程也不能据此省略。
+
+最终验收仍是：**真实授权任务 A → 原 Training owner → 独立评价 B → Adopt 或完整 NoUpdate → 实际新消费者 C → daemon 与 Root 冷恢复。** 缺结果、成本、来源、独立性、材料或原 owner 权限保持 InsufficientEvidence/Unknown。完整不采用比较与可复现的确定性欺诈保留各自语义。完整部署组合、最强可部署对照、旧/稀有/必过任务与全部冻结成本账不能由提交身份或内容根替代。
+
+[此前 efc88 检查点发布闭合](publication-post-efc88/ROOT_POST_EFC88_PUBLICATION_CLOSURE.json)保留第一次 Git API 错误、完整树读回、后继 flat-blob tree 创建、commit/ref 成功读回。其 API 错误原因保持 Unknown，不作为 H 失败或资格结果。
+
+---
+
+以下历史检查点按原字节保留；其中“下一步”与尚未执行状态仅对原区段的冻结时间有效，当前状态以上述 65a 失败闭合为准。
+
 # Actual final canonical alignment; qualification remains pending
 
 This checkpoint adds the original evidence for canonical job `1a1d4cbd33e-392-5a9` and the separately reviewed qualification-admission code/configuration layers. It preserves the preceding `012066007240146d41bc2e1609aec965c411ae2b` checkpoint and every historical non-README path. The preceding README follows verbatim below.

@@ -1,0 +1,54 @@
+{
+  "H_calls": 0,
+  "created_at": "2026-11-13T12:41:05.886405+00:00",
+  "entries": [
+    {
+      "actual_create": true,
+      "bytes": 11550,
+      "full_readback_equal": true,
+      "git_blob": "87c00eacb529b6666404f93e95ad98e1b6840e53",
+      "local_path": "/tmp/hepta-36fa-final-source-b608-exact-independent-peer-v1/REVIEW.json",
+      "name": "REVIEW.json",
+      "original_sdk_local_path": "/tmp/hepta-36fa-final-source-b608-exact-independent-peer-v1/github/REVIEW.json.PUBLISH.original.json",
+      "original_sdk_pin": {
+        "bytes": 25273,
+        "git_blob": "5275079082d714ff638628782e1d6d941a1e2a90",
+        "sha256": "09da10275d9456176c89cf95e79e42444bdd27ab39e3aa532c5d26293b904d44"
+      },
+      "sha256": "967e11896f1ba0db71cee5e0c4f499d8d101dac23dd9758440227378ae6a4a8a"
+    },
+    {
+      "actual_create": true,
+      "bytes": 7423,
+      "full_readback_equal": true,
+      "git_blob": "d9b94b1fdb67cf01acfdc8e2a50871c7b184cfad",
+      "local_path": "/tmp/hepta-36fa-final-source-b608-exact-independent-peer-v1/EXACT_SOURCE_DATAFLOW.json",
+      "name": "EXACT_SOURCE_DATAFLOW.json",
+      "original_sdk_local_path": "/tmp/hepta-36fa-final-source-b608-exact-independent-peer-v1/github/EXACT_SOURCE_DATAFLOW.json.PUBLISH.original.json",
+      "original_sdk_pin": {
+        "bytes": 17003,
+        "git_blob": "e9be9173c0360e1ff80f36e12d6ea7416c2f9394",
+        "sha256": "f8b0200756a9dc7b98eeae252b55b5658b98edbddb7ceaf2163c396d7fc1e61e"
+      },
+      "sha256": "f540fa8f0d927a7895486aeea98fe03aeb5d6d04041630aaeee415e668479bd9"
+    },
+    {
+      "actual_create": true,
+      "bytes": 12225,
+      "full_readback_equal": true,
+      "git_blob": "ea97fae7631d888f6fcace96ae4c318a91648d50",
+      "local_path": "/tmp/hepta-36fa-final-source-b608-exact-independent-peer-v1/audit_exact_source_request.py",
+      "name": "audit_exact_source_request.py",
+      "original_sdk_local_path": "/tmp/hepta-36fa-final-source-b608-exact-independent-peer-v1/github/audit_exact_source_request.py.PUBLISH.original.json",
+      "original_sdk_pin": {
+        "bytes": 25727,
+        "git_blob": "56bcf1073d58567eb5deca940b6a0af09914f9e4",
+        "sha256": "30766809e63b0f553e2b120d7195cfb25c484a354804840cedc8f083533b6032"
+      },
+      "sha256": "79d16e8e3d416b0143c04d0ce48fdc6ef1e7aaea551214f2eefe034a3ada1720"
+    }
+  ],
+  "format": "hepta-independent-peer-git-readback-v1",
+  "note": "Three immutable core outputs, all full Git readback. Seven complete original input GET SDK wrappers are retained locally; original input source objects remain referenced rather than duplicated in this small placement.",
+  "qualification": false
+}

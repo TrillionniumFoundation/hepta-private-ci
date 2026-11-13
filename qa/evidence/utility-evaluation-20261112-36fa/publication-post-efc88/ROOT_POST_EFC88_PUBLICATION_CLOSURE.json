@@ -1,0 +1,37 @@
+{
+  "format": "root-5a9-evidence-checkpoint-publication-v1",
+  "evidence_branch": "codex/utility-eval-evidence-20261112-36fa",
+  "parent": "012066007240146d41bc2e1609aec965c411ae2b",
+  "commit": "efc88e95478754a43ad3c26fedb1241041f9cfab",
+  "tree": "d4c69eb0745bd2205926abb8464437bcf8be2f55",
+  "evidence_leaf": "3a27386caa6b5d38c3847a60f93d9811e5ca91d4",
+  "readme_blob": "3a68c99e3e896d5760980d6241384778fe3ba175",
+  "new_non_readme_files": 262,
+  "total_files": 7637,
+  "tree_nodes": 965,
+  "prior_non_readme_preserved": 7374,
+  "retained_legacy_oversized": 31,
+  "full_recursive_get": {
+    "truncated": false,
+    "entries": 8601,
+    "url_parameter": "recursive=true"
+  },
+  "root_tree_get_typed_hash_and_entries_verified": true,
+  "commit_get_parent_and_tree_verified": true,
+  "expected_sha_compare_and_swap": true,
+  "ref_full_get_verified": true,
+  "source_branch_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_branch_moved": false,
+  "pr_kept_draft": true,
+  "qualification": false,
+  "qualified_real_task_chains": 0,
+  "publication_transport": {
+    "initial_leaf_create": "HTTP422 timeout; exact leaf complete GET reconciled without leaf recreation",
+    "directory_reference_tree_writes": "MCP internal errors, then exact trees complete GET verified",
+    "first_commit_create": "HTTP422 Tree SHA does not exist, no commit SHA returned",
+    "flat_blob_delta_create": "263 full-path blob entries against old root returned expected d4c; complete root GET verified",
+    "subsequent_commit_and_ref": "create succeeded, commit verified, non-force expected-old ref update and full GET succeeded",
+    "cause_of_earlier_api_failures": "Unknown"
+  },
+  "scope": "Frozen checkpoint stops before source request execution. Later same reviewed source request 465e/job65a failed before original driver; preserved separately, not a qualification pass."
+}

@@ -1,0 +1,49 @@
+{
+  "actual_admission_matches_frozen_request": true,
+  "actual_request": {
+    "bytes": 246727,
+    "git_blob": "465e0eaa1f387ad6bb167a4931328e199a5bf793",
+    "sha256": "1737f34278a277d0d3003efdf6a9539e11e63d40326544542d81da024947aa16"
+  },
+  "driver_main_entered": false,
+  "driver_returncode": null,
+  "format": "hepta-b608-source-first-attempt-core-readback-v1",
+  "gate_results_not_produced": true,
+  "job_id": "1a1d4f0c3d4-392-65a",
+  "native_fourteen_phases_started": false,
+  "no_retry_or_path_repair": true,
+  "primary_error": "FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json'",
+  "qualification": false,
+  "result": {
+    "bytes": 656,
+    "git_blob": "496a2d5c9310cb4ddb2223b2ba5e481179bdee0a",
+    "path": "/tmp/hepta-36fa-final-source-qualification-b608-runtime-v1/SOURCE_HANDOFF_RESULT.json",
+    "sha256": "4a7397446702d4e2f4d942bd3aa7ff74205ae1788421c12d9ded1992553c130c"
+  },
+  "result_native_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/source-handoff/RESULT.json",
+  "result_version": "2050:51119235:656:1794573912679176074:1794573912679176074",
+  "secondary_error_interpretation": "Preserved verbatim; not independently treated as proof of a physical source change. Original partial final records are still being collected.",
+  "secondary_final_evidence_error": "SourceChanged: actual raw Git state changed during qualification",
+  "streams": {
+    "stderr": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "/tmp/hepta-36fa-final-source-qualification-b608-runtime-v1/stderr.complete",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 838,
+      "git_blob": "d9675e1e03f481ea74271652fd18e814f99e20ad",
+      "path": "/tmp/hepta-36fa-final-source-qualification-b608-runtime-v1/stdout.complete",
+      "sha256": "9dbf3ebafb0671f4cfb2a311364c04d52b372b0aacbd8107f8f2c014fc05a7da"
+    }
+  },
+  "supervisor": {
+    "bytes": 947,
+    "git_blob": "e3360166c70f533fba61f7e36e6f1ebeaa7e9965",
+    "sha256": "7527aa146d81ea5b38c266ab4456c13c9fdabacb2816471de662daf0e560a9be"
+  },
+  "supervisor_exit_code": 1,
+  "supervisor_state": "failed",
+  "timed_out": false
+}

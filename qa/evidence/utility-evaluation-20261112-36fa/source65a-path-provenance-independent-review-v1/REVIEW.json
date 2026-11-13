@@ -1,0 +1,179 @@
+{
+  "actual_core": {
+    "body_matches_original_result": true,
+    "body_pin": {
+      "bytes": 14663,
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+    },
+    "both_host_selectors": {
+      "host": "desktop",
+      "ssh_target": "desktop-ts"
+    },
+    "eof": true,
+    "failed_job_id": "1a1d4f0c3d4-392-65a",
+    "historical_job_id": "1a1d468462a-392-3bb",
+    "historical_successful_read_sdk": {
+      "bytes": 20047,
+      "git_blob": "31b73eb7a77109df0fb3e0b885f83a65712578e5",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-runtime-v1/RESULT_READ_01.original.json",
+      "sha256": "421312eacadc5c842b8b426a24c2480d2eecfbcddee82f5bb6aa4361f3a0f09c"
+    },
+    "host_selector_limit": "A matching host selector is not independent proof of unchanged server, filesystem or mount namespace.",
+    "new_normal_pin": {
+      "bytes": 947,
+      "git_blob": "e3360166c70f533fba61f7e36e6f1ebeaa7e9965",
+      "sha256": "7527aa146d81ea5b38c266ab4456c13c9fdabacb2816471de662daf0e560a9be"
+    },
+    "new_result": {
+      "driver_main_entered": false,
+      "driver_returncode": null,
+      "error": "FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json'",
+      "final_evidence_error": "SourceChanged: actual raw Git state changed during qualification",
+      "finished_at": "2026-11-13T12:45:12.678961+00:00",
+      "format": "hepta-final-source-gates-handoff-v1",
+      "qualification": false,
+      "source": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+      "started_at": "2026-11-13T12:45:12.508031+00:00",
+      "status": "failed",
+      "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+    },
+    "new_result_pin": {
+      "bytes": 656,
+      "git_blob": "496a2d5c9310cb4ddb2223b2ba5e481179bdee0a",
+      "sha256": "4a7397446702d4e2f4d942bd3aa7ff74205ae1788421c12d9ded1992553c130c"
+    },
+    "next_offset": 14663,
+    "no_tests_started": true,
+    "observed_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json",
+    "offset": 0,
+    "path_typo_hypothesis": "Not supported: configured path is byte-identical to actual successful historical read path.",
+    "proven_failure": "The historical RESULT pathname lookup/open raised ENOENT during 65a before original source-driver main.",
+    "stdout_pin": {
+      "bytes": 838,
+      "git_blob": "d9675e1e03f481ea74271652fd18e814f99e20ad",
+      "sha256": "9dbf3ebafb0671f4cfb2a311364c04d52b372b0aacbd8107f8f2c014fc05a7da"
+    },
+    "unknown": [
+      "which path component was absent",
+      "cause or actor of absence",
+      "deletion versus any other filesystem/context explanation",
+      "current availability of other historical proof paths",
+      "current source equality; no initial Git baseline had been installed"
+    ],
+    "version": "2050:51121883:14663:1794565145256086279:1794565145256086279"
+  },
+  "all_written_artifacts_local_only": true,
+  "artifacts": [
+    {
+      "bytes": 128105,
+      "git_blob": "290142d50173071ea888fbfacdead1a2b37944e2",
+      "path": "/tmp/hepta-36fa-source65a-path-provenance-independent-review-v1/CAPTURED_PATH_MATRIX.json",
+      "sha256": "77e3a7848eef9a6ed63ba66ecb20a04129775c07a68caf5922cff0a3dc6333d2"
+    },
+    {
+      "bytes": 902,
+      "git_blob": "f6ff7909a0a41e8478d1f58a6066c03e2ce65346",
+      "path": "/tmp/hepta-36fa-source65a-path-provenance-independent-review-v1/ORIGINAL_V5_HISTORY_ADDENDUM.json",
+      "sha256": "68c85e72d21e0d6dd5c626b7c385b1e8637aa9b2f250c408828ddb99aa99b4b2",
+      "storage": "local only; not Git created in this read-only task"
+    },
+    {
+      "bytes": 4661,
+      "git_blob": "a073b7fbbce0885f600577125b56a668881fa57b",
+      "path": "/tmp/hepta-36fa-source65a-path-provenance-independent-review-v1/TRANSPORTED_ORIGINAL_OPTION.json",
+      "sha256": "78da529f6c9b1fe353d7dd14a7d5c1aa92716fca4040f44e1a16a6a9aae7afc8",
+      "storage": "local only; not Git created in this read-only task"
+    },
+    {
+      "bytes": 14454,
+      "git_blob": "fb8d251409f146507445ceedab7645923565037c",
+      "path": "/tmp/hepta-36fa-source65a-path-provenance-independent-review-v1/review_captured_paths.py",
+      "sha256": "04a0a7d4993f69e9c414ac706ea5f74be6a10fc2bce4aa125610ed06c0d0e5a9"
+    }
+  ],
+  "bounded_static_crosscheck": {
+    "classifications": {
+      "actual_complete_binary_read": 45,
+      "actual_staging_record": 4,
+      "captured_producer_artifact_binding": 2,
+      "content_pin_known_no_original_path_read_in_finite_input_set": 3
+    },
+    "path_or_pin_disagreements_in_complete_reads_and_staging": 0,
+    "unique_historical_or_canonical_receipt_paths": 54
+  },
+  "causal_source_references": [
+    {
+      "fact": "initial_git initialized to None; original historical/current modules and fixed input checks precede admission.",
+      "function": "Admission.__init__",
+      "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+      "lines": [
+        538,
+        574
+      ],
+      "path": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/qualification-admission.HOLD.py"
+    },
+    {
+      "fact": "canonical proof read precedes validate_materialization; initial_git assigned only after materialization/archive/maintenance/final-format history checks.",
+      "function": "Admission.acquire_and_validate",
+      "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+      "lines": [
+        600,
+        655
+      ]
+    },
+    {
+      "fact": "The configured exact original 3bb result path is opened through original V5 read_input; normal follows result.",
+      "functions": [
+        "validate_materialization",
+        "_observed_known",
+        "observed_proof",
+        "read"
+      ],
+      "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9"
+    },
+    {
+      "fact": "current_git != self.initial_git raises SourceChanged even when no initial baseline was installed.",
+      "function": "Admission.finish",
+      "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+      "lines": [
+        688,
+        723
+      ]
+    },
+    {
+      "fact": "Original wrapper passes runtime=True, enters original driver only after acquire_and_validate, and invokes finish in finally. It preserves the primary error plus final_evidence_error.",
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3"
+    }
+  ],
+  "conclusion": [
+    "65a successfully staged its fixed source bootstrap, then failed while opening the historical 3bb RESULT receipt. It did not enter original 5118 driver main; no source-closure/self-test/verify stage or behavioral test ran.",
+    "The historical RESULT pathname is byte-identical to the actual successful 3bb native read SDK. The old body full-read matches all three expected pins, not merely a printed filename. The same host/ssh selector appears in both admissions.",
+    "Therefore a configured-path typo is not established. The proven immediate condition is ENOENT during the 65a historical receipt open; the missing component, filesystem continuity, cause and actor remain Unknown.",
+    "The secondary SourceChanged comes from finalization while initial_git was still None. It does not demonstrate changed source bytes or Git state and does not imply ObjectiveFraud."
+  ],
+  "crosscheck_declared_origin_only": [
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.audit.json.gz",
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.inventory.json.gz"
+  ],
+  "crosscheck_limit": "54 explicit c77e historical/canonical receipt paths plus one separately listed unchanged-V5 historical environment input. No current-availability inference from any old record. The original current source/runtime subjects are not historical proof copies.",
+  "crosscheck_unknown_paths": [
+    "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json",
+    "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json"
+  ],
+  "format": "source65a-independent-failure-provenance-review-v1",
+  "minimal_config_typo_changes": [],
+  "new_Git_objects_created": 0,
+  "new_H_calls": 0,
+  "next_action_authority": "Root alone decides a concrete successor after exact review; this report is not execution approval.",
+  "observed_job": "1a1d4f0c3d4-392-65a",
+  "original_consumed_request": {
+    "bytes": 246727,
+    "git_blob": "465e0eaa1f387ad6bb167a4931328e199a5bf793",
+    "sha256": "1737f34278a277d0d3003efdf6a9539e11e63d40326544542d81da024947aa16"
+  },
+  "prior_review_limit": "Earlier admission/code/config reviews established immutable bytes, producer-consumer schemas and captured proof content. They did not establish historical native path availability at the later 65a execution time. This outcome is retained separately without rewriting their cutoffs.",
+  "read_only_scope": "Only complete captured originals, existing local SDKs, five independent Git GETs, Python AST/JSON/base64/hash. No H, live native probe, admission import, main, project test, source/ref/Git write or old alias creation.",
+  "status": "PRE_DRIVER_FAILURE_CONFIRMED_HISTORICAL_PATH_MATCHED_CAUSE_OF_ENOENT_UNKNOWN"
+}

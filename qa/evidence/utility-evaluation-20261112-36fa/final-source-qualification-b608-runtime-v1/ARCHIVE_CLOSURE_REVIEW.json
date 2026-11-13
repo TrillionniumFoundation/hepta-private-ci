@@ -1,0 +1,51 @@
+{
+  "archive_publication_errors": 0,
+  "closed_index": {
+    "bytes": 47251,
+    "git_blob": "1e8a1fab4ddbb63a8f14f4fced8a8ab21ce6cfcf",
+    "sha256": "1ad75fd2029c8da94a86e7f30c5e30021ae4bb4b0f29c78a06ec3b997b9bb201"
+  },
+  "driver_main_entered": false,
+  "fixed_runtime_members": 88,
+  "follow_on_execution_authorized_by_this_record": false,
+  "format": "hepta-completed-failed-source-runtime-archive-closure-v1",
+  "full_physical_inventory_or_runtime_environment_not_reached": true,
+  "full_readback_ledger": {
+    "bytes": 86930,
+    "git_blob": "cce23edf9e6a9c772939aaff2a8b045cbdf25066",
+    "path": "/tmp/hepta-36fa-final-source-qualification-b608-runtime-v1/ARCHIVE_FULL_READBACK_LEDGER.json",
+    "sha256": "7fa3240a21a1109c1c1c39ae558bc7dbf11aadd9e8f0dd04d210096cb8c8b3c0"
+  },
+  "job_id": "1a1d4f0c3d4-392-65a",
+  "leaf_cap_bytes": 512000,
+  "maximum_leaf_bytes": 246727,
+  "native_fourteen_phases_started": false,
+  "new_members": 75,
+  "no_historical_materialization_path_probe": true,
+  "no_original_source_or_index_or_ref_repair": true,
+  "no_second_main": true,
+  "original_wrapper_status": "failed",
+  "primary_error_scope": "FileNotFoundError for the fixed historical materialization RESULT path. The cause of current unavailability is not established.",
+  "prior_full_get_claims_revalidated": 13,
+  "qualified": false,
+  "secondary_error_scope": "Original SourceChanged preserved; complete retained control flow shows the initial Git baseline was not assigned. The actual final raw Git state is byte-equal to the canonical endpoint.",
+  "source_gates_started": 0,
+  "status": "FIXED_88_MEMBERS_ALL_ACTUAL_GIT_FULL_GET_EQUAL",
+  "supervisor": {
+    "exit_code": 1,
+    "state": "failed",
+    "timed_out": false
+  },
+  "transport_observations": {
+    "complete_original_native_file_paths": 30,
+    "native_binary_read_calls": 38,
+    "original_connection_closed_255_errors": 1,
+    "same_file_first_successful_version_then_bound_tail_reconciled": true,
+    "stream_bytes": {
+      "stderr": 0,
+      "stdout": 838
+    },
+    "successful_chunks": 37
+  },
+  "unique_blob_count": 79
+}
