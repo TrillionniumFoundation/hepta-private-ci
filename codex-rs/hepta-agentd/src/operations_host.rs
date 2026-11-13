@@ -321,43 +321,25 @@ async fn reconcile_reopened_operations(
     }
 }
 
-/// Classify a missing destination receipt after an operation-owner error.
+/// Preserve uncertainty after an owner error and a missing receipt observation.
 ///
-/// Only deterministic failures proven to occur before the destination owner can
-/// commit are eligible for `NotApplied`. Other owner errors remain uncertain
-/// and are quarantined without authorizing another dispatch.
+/// An error label is not an authenticated absence proof: even `AccessDenied`
+/// can arise while reading the task after its transaction has committed. The
+/// caller handles a present authoritative receipt before reaching this path.
+/// A missing receipt snapshot alone does not fence an outstanding effect, so
+/// no error here authorizes another dispatch.
 ///
 /// `Quarantined` is an immutable terminal state in the current source store.
 /// Reopen reconciliation skips it, and a later destination receipt cannot
 /// replace it through this host. An authenticated quarantine-recovery path is
 /// still missing; this terminal marker is not proof that no effect committed.
 fn classify_destination_absence(error: &AutomationError) -> (ReconciliationOutcome, Digest32) {
-    match error {
-        // These are rejected while validating the operation/draft or checking
-        // the destination's owner contract, before a destination transaction
-        // can commit. They are the only absence outcomes safe to terminalize
-        // as NotApplied without a later owner lookup.
-        AutomationError::Invalid | AutomationError::AccessDenied => (
-            ReconciliationOutcome::NotApplied,
-            Digest32::of_bytes(NOT_APPLIED_DOMAIN),
-        ),
-        // Preserve uncertainty as a quarantined terminal result. The current
-        // source store has no transition that releases quarantine, even when
-        // the original destination owner later supplies an exact receipt.
-        AutomationError::Conflict
-        | AutomationError::Corrupt
-        | AutomationError::TimerFenced
-        | AutomationError::Unavailable
-        | AutomationError::Dispatch
-        | AutomationError::DispatchUnknown => {
-            let mut bytes = UNKNOWN_EFFECT_DOMAIN.to_vec();
-            bytes.extend_from_slice(error.to_string().as_bytes());
-            (
-                ReconciliationOutcome::Quarantined,
-                Digest32::of_bytes(&bytes),
-            )
-        }
-    }
+    let mut bytes = UNKNOWN_EFFECT_DOMAIN.to_vec();
+    bytes.extend_from_slice(error.to_string().as_bytes());
+    (
+        ReconciliationOutcome::Quarantined,
+        Digest32::of_bytes(&bytes),
+    )
 }
 
 fn queue_digest(domain: &[u8], intent: &OperationIntentV1, fence: u64) -> Digest32 {
