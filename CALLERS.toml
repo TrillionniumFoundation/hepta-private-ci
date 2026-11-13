@@ -15941,3 +15941,61 @@ required_function_order = [{ function = "fn response(", sequence = ["spawn_gener
 path = "codex-rs/hepta-agent-protocol/src/q24_initial_task_progress.rs"
 required = ["#[serde(deny_unknown_fields)]", "pub struct Q24OriginalInitialTaskCompletionV1", "pub admission: ObjectiveAdmissionPublication", "pub observation: Q24OriginalTaskObservationV1", "pub circuit_revision: u64", "pub circuit_history_digest: String", "#[serde(tag = \"status\", rename_all = \"snake_case\", deny_unknown_fields)]", "pub enum Q24OriginalInitialTaskProgressV1", "InFlight {}", "Completed {", "data: Box<Q24OriginalInitialTaskCompletionV1>"]
 forbidden = ["ObjectiveRunAdmission", "SigningKey", "impl From", "pub owner:", "pub capability:", "Option<"]
+
+# Root observation cache: nonblocking snapshots and ordered revocation updates.
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_observation_cache.rs"
+required = [
+  "pub(crate) const MAX_AGE_NS: u64 = 500_000_000;",
+  "retained: ArcSwapOption<Retained>",
+  "writer: Mutex<()>",
+  "high_water: AtomicU64",
+  "update_generation: AtomicU64",
+  "self.fenced.store(true, Ordering::Release)",
+  "self.advance_update_generation(/*expected_odd*/ false)",
+  "self.advance_update_generation(/*expected_odd*/ true)",
+  "generation.checked_add(1)",
+  "self.accept_with_clock(observation, started, ended, boottime_ns)",
+  "self.current_with_clock(boottime_ns)",
+  "self.writer.is_poisoned()",
+  "clock.boot_id != self.boot_id",
+  "started > ended",
+  "ended > now",
+  "now < baseline",
+  "age > MAX_AGE_NS",
+  "request_started_ns: started",
+  "observation.authority_epoch != old.authority_epoch",
+  "observation.registered_agent_id != old.registered_agent_id",
+  "observation.spawn_generation != old.spawn_generation",
+  "observation.writer.authority_lease != old.writer.authority_lease",
+  "observation.writer.owner_epoch != old.writer.owner_epoch",
+  "observation.writer.local_lease_id != old.writer.local_lease_id",
+  "observation.writer.store_revision < old.writer.store_revision",
+  "head.revision < old.revocations.revision",
+  "(head.revision == old.revocations.revision && *head != old.revocations)",
+  ".is_superset(&old.revocations.revoked_grant_ids)",
+  "observation.observed_unix_ms < old.observed_unix_ms",
+  "projected < project_unbounded(old, now)?",
+  "projected > value.clock.ceiling_unix_ms",
+  "libc::CLOCK_BOOTTIME",
+]
+forbidden = [
+  "AllowVerifier",
+  "permit_all",
+  "self.high_water.store(",
+  "self.high_water.swap(",
+  "wrapping_add(",
+  "self.fenced.store(false",
+  "pub fn current_with_clock",
+  "pub(crate) fn current_with_clock",
+  "pub(super) fn current_with_clock",
+  "pub fn accept_with_clock",
+  "pub(crate) fn accept_with_clock",
+  "pub(super) fn accept_with_clock",
+]
+required_function_order = [
+  { function = "fn advance_update_generation(", sequence = ["generation & 1 != 0","generation.checked_add(1)","None",".is_err()","self.fence();"] },
+  { function = "fn accept_with_clock(", sequence = ["let _writer =","self.writer.lock()","self.fenced.load(Ordering::Acquire)","let baseline =","self.high_water.load(Ordering::Acquire)","let now = sample()","now < baseline","let prior =",".load_full()","projected < project_unbounded(old, now)?","self.fenced.load(Ordering::Acquire)","self.high_water.fetch_max(now, Ordering::AcqRel)","self.retained.store(","self.fenced.load(Ordering::Acquire)","Ok(())"] },
+  { function = "fn current_with_clock(", sequence = ["self.require_writer_not_poisoned()?","let generation =","self.update_generation.load(Ordering::Acquire)","self.fenced.load(Ordering::Acquire)","generation & 1 != 0","let retained =",".load_full()","let baseline =","self.high_water.load(Ordering::Acquire)","let now = sample()","if now < baseline","let projected = project(&retained.observation, now)?","self.high_water.fetch_max(now, Ordering::AcqRel)","let value = result?","self.require_writer_not_poisoned()?","let after =","self.update_generation.load(Ordering::Acquire)","self.fenced.load(Ordering::Acquire)","after != generation","Ok(value)"] },
+  { function = "fn require_writer_not_poisoned(", sequence = ["self.writer.is_poisoned()","self.fence();","return Err(AgentdRootAuthorityError::Unavailable)"] },
+]

@@ -3,55 +3,73 @@
 use crate::AgentdRootAuthorityError;
 use crate::HOST_AUTHORITY_OBSERVATION_V2;
 use crate::HostAuthorityObservationResponseV2;
+use arc_swap::ArcSwapOption;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 pub(crate) const MAX_AGE_NS: u64 = 500_000_000;
 struct Retained {
     observation: Arc<HostAuthorityObservationResponseV2>,
     request_started_ns: u64,
-    last_checked_ns: u64,
 }
 pub(crate) struct RootObservationCache {
     boot_id: String,
-    retained: Mutex<Option<Retained>>,
+    retained: ArcSwapOption<Retained>,
+    writer: Mutex<()>,
+    high_water: AtomicU64,
     fenced: AtomicBool,
-    updating: AtomicBool,
+    update_generation: AtomicU64,
 }
 impl RootObservationCache {
     pub(crate) fn new(boot_id: String) -> Self {
         Self {
             boot_id,
-            retained: Mutex::new(None),
+            retained: ArcSwapOption::empty(),
+            writer: Mutex::new(()),
+            high_water: AtomicU64::new(0),
             fenced: AtomicBool::new(false),
-            updating: AtomicBool::new(false),
+            update_generation: AtomicU64::new(0),
         }
     }
     pub(crate) fn fence(&self) {
         self.fenced.store(true, Ordering::Release);
     }
     pub(crate) fn begin_update(&self) {
-        self.updating.store(true, Ordering::Release);
+        self.advance_update_generation(/*expected_odd*/ false);
     }
     pub(crate) fn end_update(&self) {
-        self.updating.store(false, Ordering::Release);
+        self.advance_update_generation(/*expected_odd*/ true);
+    }
+    fn advance_update_generation(&self, expected_odd: bool) {
+        if self
+            .update_generation
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |generation| {
+                if (generation & 1 != 0) == expected_odd {
+                    generation.checked_add(1)
+                } else {
+                    None
+                }
+            })
+            .is_err()
+        {
+            self.fence();
+        }
     }
     pub(crate) fn revocations_match(
         &self,
         head: &codex_hepta_contracts::FinalUseRevocations,
     ) -> bool {
+        if self.require_writer_not_poisoned().is_err() || self.fenced.load(Ordering::Acquire) {
+            return false;
+        }
         self.retained
-            .lock()
-            .ok()
-            .and_then(|slot| {
-                slot.as_ref()
-                    .map(|value| value.observation.revocations == *head)
-            })
-            .unwrap_or(false)
+            .load_full()
+            .is_some_and(|value| value.observation.revocations == *head)
     }
     pub(crate) fn accept(
         &self,
@@ -59,17 +77,9 @@ impl RootObservationCache {
         started: u64,
         ended: u64,
     ) -> Result<(), AgentdRootAuthorityError> {
-        self.accept_at(
-            observation,
-            started,
-            ended,
-            boottime_ns().inspect_err(|_error| {
-                root_cache_diagnostic(format_args!(
-                    "ROOT_OBSERVATION_CACHE phase=accept reason=boottime-sample-failed"
-                ));
-            })?,
-        )
+        self.accept_with_clock(observation, started, ended, boottime_ns)
     }
+    #[cfg(test)]
     fn accept_at(
         &self,
         observation: HostAuthorityObservationResponseV2,
@@ -77,18 +87,40 @@ impl RootObservationCache {
         ended: u64,
         now: u64,
     ) -> Result<(), AgentdRootAuthorityError> {
+        self.accept_with_clock(observation, started, ended, || Ok(now))
+    }
+    fn accept_with_clock(
+        &self,
+        observation: HostAuthorityObservationResponseV2,
+        started: u64,
+        ended: u64,
+        sample: impl FnOnce() -> Result<u64, AgentdRootAuthorityError>,
+    ) -> Result<(), AgentdRootAuthorityError> {
         if self.fenced.load(Ordering::Acquire) {
             root_cache_diagnostic(format_args!(
-                "ROOT_OBSERVATION_CACHE phase=accept reason=already-fenced now={now} started={started} ended={ended}"
+                "ROOT_OBSERVATION_CACHE phase=accept reason=already-fenced started={started} ended={ended}"
             ));
             return Err(AgentdRootAuthorityError::Unavailable);
         }
         let result = (|| {
-            let mut slot = self.retained.lock().map_err(|_| {
+            // Only publishers serialize. Authority callbacks never acquire this lock.
+            let _writer = self.writer.lock().map_err(|_| {
                 root_cache_diagnostic(format_args!(
-                    "ROOT_OBSERVATION_CACHE phase=accept reason=retained-lock-poisoned"
+                    "ROOT_OBSERVATION_CACHE phase=accept reason=publisher-lock-poisoned"
                 ));
                 AgentdRootAuthorityError::Unavailable
+            })?;
+            if self.fenced.load(Ordering::Acquire) {
+                root_cache_diagnostic(format_args!(
+                    "ROOT_OBSERVATION_CACHE phase=accept reason=fenced-after-writer-acquisition"
+                ));
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+            let baseline = self.high_water.load(Ordering::Acquire);
+            let now = sample().inspect_err(|_| {
+                root_cache_diagnostic(format_args!(
+                    "ROOT_OBSERVATION_CACHE phase=accept reason=boottime-sample-failed"
+                ));
             })?;
             let clock = &observation.clock;
             let head = &observation.revocations;
@@ -111,6 +143,7 @@ impl RootObservationCache {
                 || clock.ceiling_unix_ms < clock.anchor_unix_ms
                 || started > ended
                 || ended > now
+                || now < baseline
                 || now.checked_sub(started).is_none_or(|age| age > MAX_AGE_NS)
                 || clock.anchor_boottime_ns > ended
                 || observation.observed_unix_ms < clock.anchor_unix_ms
@@ -140,12 +173,12 @@ impl RootObservationCache {
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
             let projected = project(&observation, now)?;
-            if let Some(previous) = slot.as_ref() {
+            let prior = self.retained.load_full();
+            if let Some(previous) = prior.as_ref() {
                 let old = &previous.observation;
                 if now
                     .checked_sub(previous.request_started_ns)
                     .is_none_or(|age| age > MAX_AGE_NS)
-                    || now < previous.last_checked_ns
                     || observation.authority_epoch != old.authority_epoch
                     || observation.registered_agent_id != old.registered_agent_id
                     || observation.spawn_generation != old.spawn_generation
@@ -170,9 +203,9 @@ impl RootObservationCache {
                     root_cache_diagnostic(format_args!(
                         "ROOT_OBSERVATION_CACHE phase=accept reason=retained-validation now={now} started={started} ended={ended} old_started={} old_last_checked={} old_age_ns={:?} time_regressed={} epoch_changed={} agent_changed={} spawn_changed={} lease_changed={} lease_digest_changed={} writer_digest_changed={} owner_changed={} local_lease_changed={} local_generation_changed={} old_store_revision={} new_store_revision={} old_head_revision={} new_head_revision={} equal_revision_changed_head={} revocations_shrunk={} old_observed_unix_ms={} new_observed_unix_ms={} projected_unix_ms={projected} old_anchor_boottime_ns={} old_anchor_unix_ms={}",
                         previous.request_started_ns,
-                        previous.last_checked_ns,
+                        baseline,
                         now.checked_sub(previous.request_started_ns),
-                        now < previous.last_checked_ns,
+                        now < baseline,
                         observation.authority_epoch != old.authority_epoch,
                         observation.registered_agent_id != old.registered_agent_id,
                         observation.spawn_generation != old.spawn_generation,
@@ -201,16 +234,29 @@ impl RootObservationCache {
                     return Err(AgentdRootAuthorityError::Unavailable);
                 }
             }
-            *slot = Some(Retained {
+            if self.fenced.load(Ordering::Acquire) {
+                root_cache_diagnostic(format_args!(
+                    "ROOT_OBSERVATION_CACHE phase=accept reason=fenced-before-publication"
+                ));
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+            // A late reader of the previous Arc must not lose its clock observation.
+            self.high_water.fetch_max(now, Ordering::AcqRel);
+            self.retained.store(Some(Arc::new(Retained {
                 observation: Arc::new(observation),
                 request_started_ns: started,
-                last_checked_ns: now,
-            });
+            })));
+            if self.fenced.load(Ordering::Acquire) {
+                root_cache_diagnostic(format_args!(
+                    "ROOT_OBSERVATION_CACHE phase=accept reason=fenced-after-publication"
+                ));
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
             Ok(())
         })();
         if result.is_err() {
             root_cache_diagnostic(format_args!(
-                "ROOT_OBSERVATION_CACHE phase=accept reason=original-error-fence now={now} started={started} ended={ended}"
+                "ROOT_OBSERVATION_CACHE phase=accept reason=original-error-fence started={started} ended={ended}"
             ));
             self.fence();
         }
@@ -219,81 +265,91 @@ impl RootObservationCache {
     pub(crate) fn current(
         &self,
     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
-        let now = boottime_ns().inspect_err(|_| {
-            root_cache_diagnostic(format_args!(
-                "ROOT_OBSERVATION_CACHE phase=current reason=boottime-sample-failed"
-            ));
-            self.fence();
-        })?;
-        self.current_at(now)
+        self.current_with_clock(boottime_ns)
     }
+    #[cfg(test)]
     fn current_at(
         &self,
         now: u64,
     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
-        if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {
+        self.current_with_clock(|| Ok(now))
+    }
+    fn current_with_clock(
+        &self,
+        sample: impl FnOnce() -> Result<u64, AgentdRootAuthorityError>,
+    ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
+        self.require_writer_not_poisoned()?;
+        let generation = self.update_generation.load(Ordering::Acquire);
+        if self.fenced.load(Ordering::Acquire) || generation & 1 != 0 {
             root_cache_diagnostic(format_args!(
-                "ROOT_OBSERVATION_CACHE phase=current reason=already-fenced-or-updating now={now} fenced_sample={} updating_sample={} sample_is_failure_diagnostic=true",
-                self.fenced.load(Ordering::Acquire),
-                self.updating.load(Ordering::Acquire),
+                "ROOT_OBSERVATION_CACHE phase=current reason=already-fenced-or-updating generation={generation}"
             ));
             return Err(AgentdRootAuthorityError::Unavailable);
         }
-        // Contention is a local unavailable read, never a wait behind a writer.
-        // Unlike invalid evidence, contention alone does not destroy the feed.
-        let mut slot = self.retained.try_lock().map_err(|_error| {
-            match _error {
-                std::sync::TryLockError::WouldBlock => root_cache_diagnostic(format_args!(
-                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now={now}"
-                )),
-                std::sync::TryLockError::Poisoned(_) => root_cache_diagnostic(format_args!(
-                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-poisoned now={now}"
-                )),
-            }
-            AgentdRootAuthorityError::Unavailable
-        })?;
         let result = (|| {
-            let retained = slot
-                .as_mut()
+            let retained = self
+                .retained
+                .load_full()
                 .ok_or(AgentdRootAuthorityError::Unavailable)
-                .inspect_err(|_error| {
+                .inspect_err(|_| {
                     root_cache_diagnostic(format_args!(
-                        "ROOT_OBSERVATION_CACHE phase=current reason=cache-absent now={now}"
+                        "ROOT_OBSERVATION_CACHE phase=current reason=cache-absent"
                     ));
                 })?;
-            if now < retained.last_checked_ns
+            // Compare only the high-water observed BEFORE this actual sample.
+            // A concurrent later sample is not evidence that our clock regressed.
+            let baseline = self.high_water.load(Ordering::Acquire);
+            let now = sample().inspect_err(|_| {
+                root_cache_diagnostic(format_args!(
+                    "ROOT_OBSERVATION_CACHE phase=current reason=boottime-sample-failed"
+                ));
+            })?;
+            if now < baseline
                 || now
                     .checked_sub(retained.request_started_ns)
                     .is_none_or(|age| age > MAX_AGE_NS)
             {
                 root_cache_diagnostic(format_args!(
-                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-time now={now} last_checked={} request_started={} age_ns={:?} time_regressed={}",
-                    retained.last_checked_ns,
+                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-time now={now} baseline={baseline} request_started={} age_ns={:?} time_regressed={}",
                     retained.request_started_ns,
                     now.checked_sub(retained.request_started_ns),
-                    now < retained.last_checked_ns,
+                    now < baseline,
                 ));
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
             let projected = project(&retained.observation, now)?;
-            retained.last_checked_ns = now;
-            if self.fenced.load(Ordering::Acquire) || self.updating.load(Ordering::Acquire) {
-                root_cache_diagnostic(format_args!(
-                    "ROOT_OBSERVATION_CACHE phase=current reason=fenced-or-updating-after-projection now={now} fenced_sample={} updating_sample={} sample_is_failure_diagnostic=true",
-                    self.fenced.load(Ordering::Acquire),
-                    self.updating.load(Ordering::Acquire),
-                ));
-                return Err(AgentdRootAuthorityError::Unavailable);
-            }
+            // Never clamp actual time or judge a concurrent fetch_max return as rollback.
+            self.high_water.fetch_max(now, Ordering::AcqRel);
             Ok((Arc::clone(&retained.observation), projected))
         })();
-        if result.is_err() && !self.updating.load(Ordering::Acquire) {
+        if result.is_err() {
             root_cache_diagnostic(format_args!(
-                "ROOT_OBSERVATION_CACHE phase=current reason=original-error-fence now={now}"
+                "ROOT_OBSERVATION_CACHE phase=current reason=original-error-fence"
             ));
             self.fence();
         }
-        result
+        let value = result?;
+        self.require_writer_not_poisoned()?;
+        let after = self.update_generation.load(Ordering::Acquire);
+        if self.fenced.load(Ordering::Acquire) || after != generation {
+            // An entire revocation barrier may finish while this Arc is held.
+            // Refuse that old read, without poisoning the newly synchronized feed.
+            root_cache_diagnostic(format_args!(
+                "ROOT_OBSERVATION_CACHE phase=current reason=barrier-or-fence generation={generation} after={after}"
+            ));
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        Ok(value)
+    }
+    fn require_writer_not_poisoned(&self) -> Result<(), AgentdRootAuthorityError> {
+        if self.writer.is_poisoned() {
+            root_cache_diagnostic(format_args!(
+                "ROOT_OBSERVATION_CACHE phase=current reason=publisher-lock-poisoned"
+            ));
+            self.fence();
+            return Err(AgentdRootAuthorityError::Unavailable);
+        }
+        Ok(())
     }
 }
 impl AuthorityClock for RootObservationCache {

@@ -149,3 +149,6 @@ fn revocations_only_accumulate_and_update_barrier_does_not_publish_early() {
             .is_err()
     );
 }
+
+#[path = "root_observation_cache_concurrency_tests.rs"]
+mod concurrency;
