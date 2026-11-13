@@ -280,6 +280,11 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
                 .iter()
                 .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
         );
+        assert!(queued.events.iter().any(|event| matches!(
+            &event.kind,
+            SupervisorEventKind::AutomaticRestartQueued { attempt }
+                if *attempt == expected_attempt
+        )));
         assert_eq!(control.spawn_count(&agent_id), index + 1);
 
         assert_eq!(
@@ -319,6 +324,10 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
         &event.kind, SupervisorEventKind::DriverFault(message) if message == &budget_fault
+    )));
+    assert!(snapshot.events.iter().any(|event| matches!(
+        &event.kind,
+        SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
     assert_eq!(
         persisted_restart_budget(&run_root)?,

@@ -680,6 +680,10 @@ fn unexpected_running_exit_uses_durable_restart_budget_and_backoff() -> Result<(
     assert!(!crashed.active);
     assert!(crashed.restart_pending);
     assert_eq!(crashed.restart_attempt, 1);
+    assert!(crashed.events.iter().any(|event| matches!(
+        &event.kind,
+        SupervisorEventKind::AutomaticRestartQueued { attempt: 1 }
+    )));
     assert_eq!(control.spawn_count(&fleet.first), 1);
 
     assert_eq!(
@@ -737,6 +741,10 @@ fn flapping_running_agent_stops_after_restart_budget_is_exhausted() -> Result<()
     assert!(!stopped.active);
     assert!(!stopped.restart_pending);
     assert_eq!(stopped.restart_attempt, 3);
+    assert!(stopped.events.iter().any(|event| matches!(
+        &event.kind,
+        SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+    )));
     assert_eq!(control.spawn_count(&fleet.first), 4);
 
     assert_eq!(

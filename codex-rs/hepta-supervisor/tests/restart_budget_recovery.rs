@@ -410,6 +410,10 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert!(snapshot.events.iter().any(|event| matches!(
         &event.kind, SupervisorEventKind::DriverFault(message) if message == &budget_fault
     )));
+    assert!(snapshot.events.iter().any(|event| matches!(
+        &event.kind,
+        SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+    )));
     assert_eq!(
         persisted_restart_budget(&run_root)?,
         RestartBudgetProjection {

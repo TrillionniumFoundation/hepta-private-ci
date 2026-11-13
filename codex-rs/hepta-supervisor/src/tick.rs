@@ -109,11 +109,28 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
                 );
+                // Preserve the existing queue event and expose the durable
+                // automatic-attempt identity to typed observers.
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
+                );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                slot.restart_attempt = self.config.restart_max_attempts;
+                // Add a typed terminal observation without removing the
+                // existing TickReport fault or resetting the durable budget.
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {
