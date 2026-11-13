@@ -1,0 +1,403 @@
+runtime.codex exact compile diagnostic
+source branch: review/runtime-codex-convergence-20260927
+
+[1m[92m    Checking[0m codex-state v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/state)
+[1m[92m    Checking[0m codex-login v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/login)
+[1m[92m    Checking[0m backtrace v0.3.76
+[1m[92m   Compiling[0m prost-types v0.14.3
+[1m[92m   Compiling[0m darling v0.24.0
+[1m[92m    Checking[0m rfc6979 v0.4.0
+[1m[92m   Compiling[0m schemars_derive v1.2.1
+[1m[92m   Compiling[0m sentry-contexts v0.46.1
+[1m[92m   Compiling[0m rmcp v3.1.3
+[1m[92m    Checking[0m xmlparser v0.13.6
+[1m[92m   Compiling[0m prost-build v0.14.3
+[1m[92m    Checking[0m aws-smithy-xml v0.60.13
+[1m[92m    Checking[0m ecdsa v0.16.9
+[1m[92m   Compiling[0m rmcp-macros v3.1.3
+[1m[92m    Checking[0m sentry-backtrace v0.46.1
+[1m[92m    Checking[0m schemars v1.2.1
+[1m[92m   Compiling[0m tonic-build v0.14.3
+[1m[92m    Checking[0m primeorder v0.13.6
+[1m[92m    Checking[0m oauth2 v5.0.0
+[1m[92m    Checking[0m codex-utils-output-truncation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/output-truncation)
+[1m[92m    Checking[0m aws-smithy-query v0.60.9
+[1m[92m    Checking[0m process-wrap v9.0.1
+[1m[92m    Checking[0m reqwest v0.13.4
+[1m[92m    Checking[0m sse-stream v0.2.5
+[1m[92m    Checking[0m hostname v0.4.2
+[1m[92m    Checking[0m uname v0.1.1
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-x86_32 v3.2.0
+[1m[92m   Compiling[0m pastey v0.2.1
+[1m[92m   Compiling[0m protoc-bin-vendored-macos-x86_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-ppcle_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-s390_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-aarch_64 v3.2.0
+[1m[92m    Checking[0m base64 v0.23.0
+[1m[92m   Compiling[0m protoc-bin-vendored-macos-aarch_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-win32 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-x86_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored v3.2.0
+[1m[92m    Checking[0m codex-install-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/install-context)
+[1m[92m    Checking[0m aws-sdk-sts v1.95.0
+[1m[92m    Checking[0m p256 v0.13.2
+[1m[92m   Compiling[0m tonic-prost-build v0.14.3
+[1m[92m    Checking[0m sentry-debug-images v0.46.1
+[1m[92m    Checking[0m sentry-panic v0.46.1
+[1m[92m    Checking[0m codex-utils-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/plugins)
+[1m[92m    Checking[0m aws-sdk-signin v1.2.0
+[1m[92m    Checking[0m aws-sdk-ssooidc v1.93.0
+[1m[92m    Checking[0m aws-sdk-sso v1.91.0
+[1m[92m    Checking[0m codex-plugin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/plugin)
+[1m[92m    Checking[0m aws-config v1.8.12
+[1m[92m   Compiling[0m codex-code-mode-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode-protocol)
+[1m[92m    Checking[0m sentry v0.46.1
+[1m[92m    Checking[0m codex-collaboration-mode-templates v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/collaboration-mode-templates)
+[1m[92m    Checking[0m codex-models-manager v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/models-manager)
+[1m[92m    Checking[0m codex-feedback v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/feedback)
+[1m[92m    Checking[0m codex-response-debug-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/response-debug-context)
+[1m[92m    Checking[0m codex-connectors v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/connectors)
+[1m[92m    Checking[0m codex-exec-server-test-support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server/tests/support)
+[1m[92m    Checking[0m codex-diagnostics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/diagnostics)
+[1m[92m    Checking[0m jsonptr v0.7.1
+[1m[92m    Checking[0m codex-aws-auth v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/aws-auth)
+[1m[92m    Checking[0m predicates-core v1.0.9
+[1m[92m    Checking[0m codex-model-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider)
+[1m[92m    Checking[0m symphonia-core v0.6.0
+[1m[92m    Checking[0m codex-code-mode v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode)
+[1m[92m    Checking[0m nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+[1m[92m    Checking[0m rayon v1.11.0
+[1m[92m    Checking[0m termtree v0.5.1
+[1m[92m    Checking[0m difflib v0.4.0
+[1m[92m   Compiling[0m assert_cmd v2.1.2
+[1m[92m    Checking[0m predicates v3.1.3
+[1m[92m    Checking[0m predicates-tree v1.0.12
+[1m[92m    Checking[0m codex-context-fragments v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/context-fragments)
+[1m[92m    Checking[0m ignore v0.4.25
+[1m[92m    Checking[0m wait-timeout v0.2.1
+[1m[92m    Checking[0m symphonia-metadata v0.6.0
+[1m[92m    Checking[0m runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+[1m[92m    Checking[0m codex-utils-cargo-bin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cargo-bin)
+[1m[92m   Compiling[0m lzma-sys v0.1.20
+[1m[92m   Compiling[0m bzip2-sys v0.1.13+1.0.8
+[1m[92m    Checking[0m nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+[1m[92m   Compiling[0m codex-experimental-api-macros v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-experimental-api-macros)
+[1m[92m   Compiling[0m codex-app-server-protocol-noop-macros v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol-noop-macros)
+[1m[92m    Checking[0m codex-file-search v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-search)
+[1m[92m    Checking[0m codex-rollout v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout)
+[1m[92m    Checking[0m symphonia-common v0.6.0
+[1m[92m   Compiling[0m darling_core v0.20.11
+[1m[92m   Compiling[0m include_dir_macros v0.7.4
+[1m[92m    Checking[0m unsafe-libyaml v0.2.11
+[1m[92m   Compiling[0m codex-skills v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/skills)
+[1m[92m    Checking[0m serde_yaml v0.9.34+deprecated
+[1m[92m   Compiling[0m darling_macro v0.20.11
+[1m[92m    Checking[0m codex-rmcp-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rmcp-client)
+[1m[92m    Checking[0m codex-tools v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/tools)
+[1m[92m    Checking[0m codex-app-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol)
+[1m[92m    Checking[0m include_dir v0.7.4
+[1m[92m   Compiling[0m zip v2.4.2
+[1m[92m    Checking[0m bzip2 v0.5.2
+[1m[92m   Compiling[0m darling v0.20.11
+[1m[92m    Checking[0m zopfli v0.8.3
+[1m[92m    Checking[0m lzma-rs v0.3.0
+[1m[92m   Compiling[0m stop-words v0.9.0
+[1m[92m    Checking[0m filetime v0.2.27
+[1m[92m    Checking[0m extended v0.1.0
+[1m[92m    Checking[0m codex-mcp v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-mcp)
+[1m[92m    Checking[0m deflate64 v0.1.10
+[1m[92m   Compiling[0m pulldown-cmark v0.10.3
+[1m[92m    Checking[0m symphonia-format-riff v0.6.0
+[1m[92m    Checking[0m tar v0.4.45
+[1m[92m   Compiling[0m cached_proc_macro v0.25.0
+[1m[92m    Checking[0m symphonia-format-mkv v0.6.0
+[1m[92m    Checking[0m codex-extension-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/extension-api)
+[1m[92m    Checking[0m xz2 v0.1.7
+[1m[92m    Checking[0m symphonia-format-isomp4 v0.6.0
+[1m[92m    Checking[0m symphonia-format-ogg v0.6.0
+[1m[92m    Checking[0m symphonia-bundle-mp3 v0.6.0
+[1m[92m    Checking[0m codex-hooks v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hooks)
+[1m[92m    Checking[0m cached_proc_macro_types v0.1.1
+[1m[92m    Checking[0m web-time v1.1.0
+[1m[92m    Checking[0m cached v0.56.0
+[1m[92m    Checking[0m symphonia v0.6.0
+[1m[92m    Checking[0m codex-apply-patch v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/apply-patch)
+[1m[92m    Checking[0m codex-shell-escalation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-escalation)
+[1m[92m    Checking[0m rust-stemmers v1.2.0
+[1m[92m    Checking[0m deunicode v1.6.2
+[1m[92m    Checking[0m codex-utils-audio v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/audio)
+[1m[92m    Checking[0m codex-prompts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/prompts)
+[1m[92m    Checking[0m codex-rollout-trace v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout-trace)
+[1m[92m    Checking[0m bm25 v2.3.2
+[1m[92m    Checking[0m codex-agent-graph-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-graph-store)
+[1m[92m    Checking[0m codex-memories-read v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/read)
+[1m[92m    Checking[0m whoami v1.6.1
+[1m[92m    Checking[0m codex-utils-stream-parser v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/stream-parser)
+[1m[92m    Checking[0m codex-hepta-cognitive-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-types)
+[1m[92m    Checking[0m codex-hepta-paths v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-paths)
+[1m[92m    Checking[0m codex-hepta-prompt-registry v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-prompt-registry)
+[1m[92m    Checking[0m codex-hepta-operations v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-operations)
+[1m[92m    Checking[0m codex-hepta-memory-retrieval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory-retrieval)
+[1m[92m    Checking[0m codex-hepta-kg v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-kg)
+[1m[92m    Checking[0m codex-hepta-cognitive-read v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-read)
+[1m[92m    Checking[0m codex-backend-openapi-models v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-backend-openapi-models)
+[1m[92m    Checking[0m inotify-sys v0.1.5
+[1m[92m   Compiling[0m codex-linux-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/linux-sandbox)
+[1m[92m    Checking[0m inotify v0.11.0
+[1m[92m    Checking[0m codex-hepta-memory-federation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory-federation)
+[1m[92m    Checking[0m notify-types v2.1.0
+[1m[92m    Checking[0m codex-process-hardening v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/process-hardening)
+[1m[92m    Checking[0m is_ci v1.2.0
+[1m[92m    Checking[0m notify v8.2.0
+[1m[92m    Checking[0m codex-backend-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/backend-client)
+[1m[92m    Checking[0m codex-hepta-memory v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory)
+[1m[92m    Checking[0m is-terminal v0.4.17
+[1m[92m   Compiling[0m owo-colors v4.3.0
+[1m[92m    Checking[0m supports-color v2.1.0
+[1m[92m    Checking[0m codex-arg0 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/arg0)
+[1m[92m    Checking[0m supports-color v3.0.2
+[1m[92m    Checking[0m codex-home v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-home)
+[1m[92m    Checking[0m codex-hepta-authbus v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-authbus)
+[1m[92m    Checking[0m codex-hepta-intuition v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intuition)
+[1m[92m    Checking[0m codex-uds v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/uds)
+[1m[92m    Checking[0m codex-hepta-learning-ledger v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-ledger)
+[1m[92m    Checking[0m codex-hepta-evidence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-evidence)
+[1m[92m    Checking[0m codex-utils-cli v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cli)
+[1m[92m    Checking[0m codex-git-attribution v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/git-attribution)
+[1m[92m    Checking[0m codex-file-watcher v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-watcher)
+[1m[92m    Checking[0m codex-hepta-prompt-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-prompt)
+[1m[92m    Checking[0m codex-hepta-governance v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-governance)
+[1m[92m    Checking[0m codex-hepta-wire v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-wire)
+[1m[92m    Checking[0m codex-hepta-infer-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core)
+[1m[92m    Checking[0m codex-utils-json-to-toml v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/json-to-toml)
+[1m[92m    Checking[0m codex-hepta-automation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-automation)
+[1m[92m    Checking[0m codex-hepta-fleet v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-fleet)
+[1m[92m    Checking[0m codex-hepta-ndu v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-ndu)
+[1m[33mwarning[0m[1m: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2[0m
+  [1m[94m--> [0mhepta-ndu/src/lib.rs:50:20
+   [1m[94m|[0m
+[1m[94m50[0m [1m[94m|[0m pub use evaluator::evaluate_candidates;
+   [1m[94m|[0m                    [1m[33m^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(deprecated)]` on by default
+
+[1m[33mwarning[0m: `codex-hepta-ndu` (lib) generated 1 warning
+[1m[92m    Checking[0m codex-hepta-intelligence-eval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+[1m[92m    Checking[0m codex-hepta-control-plane v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-control-plane)
+[1m[92m    Checking[0m codex-hepta-neuron v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron)
+[1m[92m    Checking[0m codex-hepta-agent-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agent-protocol)
+[1m[92m    Checking[0m codex-hepta-context-compiler v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-context-compiler)
+[1m[92m    Checking[0m codex-hepta-prompt-optimizer v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+[1m[92m    Checking[0m codex-hepta-memory-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-memory)
+[1m[92m    Checking[0m codex-hepta-objective v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-objective)
+[1m[92m    Checking[0m codex-hepta-learning-artifacts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-artifacts)
+[1m[92m    Checking[0m codex-hepta-plasticity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-plasticity)
+[1m[92m    Checking[0m codex-hepta-cognitive-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-store)
+[1m[92m    Checking[0m codex-hepta-bellman-operator v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-bellman-operator)
+[1m[92m    Checking[0m codex-hepta-intelligence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence)
+[1m[92m    Checking[0m codex-analytics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/analytics)
+[1m[33mwarning[0m[1m: associated function `new` is never used[0m
+   [1m[94m--> [0mext/hepta-memory/src/cognitive/mod.rs:274:19
+    [1m[94m|[0m
+[1m[94m273[0m [1m[94m|[0m impl CognitiveExtension {
+    [1m[94m|[0m [1m[94m-----------------------[0m [1m[94massociated function in this implementation[0m
+[1m[94m274[0m [1m[94m|[0m     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    [1m[94m|[0m                   [1m[33m^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: function `api_digest` is never used[0m
+   [1m[94m--> [0mext/hepta-memory/src/cognitive/federation.rs:864:4
+    [1m[94m|[0m
+[1m[94m864[0m [1m[94m|[0m fn api_digest(
+    [1m[94m|[0m    [1m[33m^^^^^^^^^^[0m
+
+[1m[92m    Checking[0m codex-thread-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/thread-store)
+[1m[33mwarning[0m: `codex-hepta-memory-extension` (lib) generated 2 warnings
+[1m[92m    Checking[0m num_cpus v1.17.0
+[1m[92m    Checking[0m deadpool-runtime v0.1.4
+[1m[92m   Compiling[0m dtor-proc-macro v0.0.6
+[1m[92m    Checking[0m deadpool v0.12.3
+[1m[92m    Checking[0m dtor v0.1.1
+[1m[92m    Checking[0m assert-json-diff v2.0.2
+[1m[92m   Compiling[0m ctor-proc-macro v0.0.7
+[1m[92m    Checking[0m wiremock v0.6.5
+[1m[92m    Checking[0m ctor v0.6.3
+[1m[92m    Checking[0m codex-hepta-matrix-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-matrix-protocol)
+[1m[92m    Checking[0m codex-core-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core-plugins)
+[1m[92m    Checking[0m codex-skills-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/skills)
+[1m[92m    Checking[0m codex-hepta-supervisor v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor)
+[1m[33mwarning[0m[1m: function `read_restart_journal` is never used[0m
+   [1m[94m--> [0mhepta-supervisor/src/restart_journal.rs:313:15
+    [1m[94m|[0m
+[1m[94m313[0m [1m[94m|[0m pub(crate) fn read_restart_journal(
+    [1m[94m|[0m               [1m[33m^^^^^^^^^^^^^^^^^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: function `restore_window` is never used[0m
+   [1m[94m--> [0mhepta-supervisor/src/restart_journal.rs:356:15
+    [1m[94m|[0m
+[1m[94m356[0m [1m[94m|[0m pub(crate) fn restore_window(
+    [1m[94m|[0m               [1m[33m^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used[0m
+  [1m[94m--> [0mhepta-supervisor/src/restart_state.rs:37:19
+   [1m[94m|[0m
+[1m[94m19[0m [1m[94m|[0m impl<D: ProcessDriver> Supervisor<D> {
+   [1m[94m|[0m [1m[94m------------------------------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m37[0m [1m[94m|[0m     pub(crate) fn reset_restart_budget_for_release(
+   [1m[94m|[0m                   [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m47[0m [1m[94m|[0m     pub(crate) fn reset_restart_budget(
+   [1m[94m|[0m                   [1m[33m^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m64[0m [1m[94m|[0m     pub(crate) fn restore_restart_budget(
+   [1m[94m|[0m                   [1m[33m^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: function `reset_slot_restart_budget` is never used[0m
+   [1m[94m--> [0mhepta-supervisor/src/restart_state.rs:147:4
+    [1m[94m|[0m
+[1m[94m147[0m [1m[94m|[0m fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
+    [1m[94m|[0m    [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: fields `restart_window_started_at`, `restart_window_started_unix_millis`, `restart_retry_at`, `restart_automatic`, `restart_after_exit`, and `restart_exhausted` are never read[0m
+   [1m[94m--> [0mhepta-supervisor/src/runtime.rs:153:9
+    [1m[94m|[0m
+[1m[94m145[0m [1m[94m|[0m pub(crate) struct AgentSlot<P> {
+    [1m[94m|[0m                   [1m[94m---------[0m [1m[94mfields in this struct[0m
+[1m[94m...[0m
+[1m[94m153[0m [1m[94m|[0m     pub restart_window_started_at: Option<Instant>,
+    [1m[94m|[0m         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m154[0m [1m[94m|[0m     pub restart_window_started_unix_millis: Option<u64>,
+    [1m[94m|[0m         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m155[0m [1m[94m|[0m     pub restart_retry_at: Option<Instant>,
+    [1m[94m|[0m         [1m[33m^^^^^^^^^^^^^^^^[0m
+[1m[94m156[0m [1m[94m|[0m     pub restart_automatic: bool,
+    [1m[94m|[0m         [1m[33m^^^^^^^^^^^^^^^^^[0m
+[1m[94m157[0m [1m[94m|[0m     pub restart_after_exit: bool,
+    [1m[94m|[0m         [1m[33m^^^^^^^^^^^^^^^^^^[0m
+[1m[94m158[0m [1m[94m|[0m     pub restart_exhausted: bool,
+    [1m[94m|[0m         [1m[33m^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m: `codex-hepta-supervisor` (lib) generated 5 warnings
+[1m[92m    Checking[0m codex-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core)
+[1m[92m    Checking[0m codex-connectors-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/connectors)
+[1m[92m    Checking[0m codex-memories-write v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/write)
+[1m[92m    Checking[0m codex-memories-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/memories)
+[1m[92m    Checking[0m codex-goal-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/goal)
+[1m[92m    Checking[0m codex-agent-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/agent)
+[1m[92m    Checking[0m codex-app-server-transport v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-transport)
+[1m[92m    Checking[0m codex-guardian-v2 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/guardian-v2)
+[1m[92m    Checking[0m codex-external-agent-migration v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/external-agent-migration)
+[1m[92m    Checking[0m codex-cloud-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cloud-config)
+[1m[92m    Checking[0m codex-queue-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue)
+[1m[92m    Checking[0m codex-chatgpt v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/chatgpt)
+[1m[92m    Checking[0m codex-mcp-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/mcp)
+[1m[92m    Checking[0m codex-history-notes-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/history-notes)
+[1m[92m    Checking[0m codex-web-search-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/web-search)
+[1m[92m    Checking[0m codex-image-generation-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/image-generation)
+[1m[92m    Checking[0m core_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core/tests/common)
+[1m[92m    Checking[0m codex-app-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server)
+[1m[92m    Checking[0m app_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server/tests/common)
+[1m[92m    Checking[0m codex-app-server-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-client)
+[1m[92m    Checking[0m codex-hepta-codex-adapter v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-codex-adapter)
+[1m[92m    Checking[0m codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)
+[1m[33mwarning[0m[1m: field `sequence` is never read[0m
+   [1m[94m--> [0mhepta-agentd/src/browser_servo.rs:317:5
+    [1m[94m|[0m
+[1m[94m316[0m [1m[94m|[0m struct DecodedFrame {
+    [1m[94m|[0m        [1m[94m------------[0m [1m[94mfield in this struct[0m
+[1m[94m317[0m [1m[94m|[0m     sequence: u64,
+    [1m[94m|[0m     [1m[33m^^^^^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: methods `append` and `append_with_delivery` are never used[0m
+  [1m[94m--> [0mhepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   [1m[94m|[0m
+[1m[94m24[0m [1m[94m|[0m impl CognitiveRetrievalLearningSink {
+   [1m[94m|[0m [1m[94m-----------------------------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m32[0m [1m[94m|[0m     pub(crate) fn append(
+   [1m[94m|[0m                   [1m[33m^^^^^^[0m
+[1m[94m...[0m
+[1m[94m52[0m [1m[94m|[0m     pub(crate) fn append_with_delivery(
+   [1m[94m|[0m                   [1m[33m^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: field `handle` is never read[0m
+  [1m[94m--> [0mhepta-agentd/src/plasticity_learning_producer.rs:24:5
+   [1m[94m|[0m
+[1m[94m23[0m [1m[94m|[0m pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   [1m[94m|[0m                   [1m[94m----------------------------------[0m [1m[94mfield in this struct[0m
+[1m[94m24[0m [1m[94m|[0m     handle: PlasticityRuntimeHandleV1,
+   [1m[94m|[0m     [1m[33m^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+[1m[33mwarning[0m[1m: methods `submit_parameter` and `submit_topology` are never used[0m
+  [1m[94m--> [0mhepta-agentd/src/plasticity_learning_producer.rs:32:25
+   [1m[94m|[0m
+[1m[94m27[0m [1m[94m|[0m impl AgentdLearningPlasticityProducerV1 {
+   [1m[94m|[0m [1m[94m---------------------------------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m32[0m [1m[94m|[0m     pub(crate) async fn submit_parameter(
+   [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m40[0m [1m[94m|[0m     pub(crate) async fn submit_topology(
+   [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used[0m
+   [1m[94m--> [0mhepta-agentd/src/state.rs:178:25
+    [1m[94m|[0m
+[1m[94m 76[0m [1m[94m|[0m impl AgentdState {
+    [1m[94m|[0m [1m[94m----------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m178[0m [1m[94m|[0m     pub(crate) async fn submit_parameter_plasticity_v1(
+    [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m195[0m [1m[94m|[0m     pub(crate) async fn submit_topology_plasticity_v1(
+    [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m: `codex-hepta-agentd` (lib) generated 5 warnings
+[1m[92m    Checking[0m codex-hepta-infer-worker-host v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host)
+[1m[91merror[E0308][0m[1m: mismatched types[0m
+   [1m[94m--> [0mhepta-infer-worker-host/src/final_use_authorizer.rs:158:37
+    [1m[94m|[0m
+[1m[94m158[0m [1m[94m|[0m             validate_issuer_process(peer_pid, self.issuer_process.as_ref())?;
+    [1m[94m|[0m             [1m[94m-----------------------[0m [1m[91m^^^^^^^^[0m [1m[91mexpected `Option<u32>`, found `Option<i32>`[0m
+    [1m[94m|[0m             [1m[94m|[0m
+    [1m[94m|[0m             [1m[94marguments to this function are incorrect[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: expected enum `std::option::Option<[1m[35mu32[0m>`
+               found enum `std::option::Option<[1m[35mi32[0m>`
+[1m[92mnote[0m: function defined here
+   [1m[94m--> [0mhepta-infer-worker-host/src/final_use_authorizer.rs:271:4
+    [1m[94m|[0m
+[1m[94m271[0m [1m[94m|[0m fn validate_issuer_process(
+    [1m[94m|[0m    [1m[92m^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m272[0m [1m[94m|[0m     actual_pid: Option<u32>,
+    [1m[94m|[0m     [1m[94m-----------------------[0m
+
+[1m[91merror[E0382][0m[1m: borrow of moved value: `client`[0m
+    [1m[94m--> [0mhepta-infer-worker-host/src/native_app_server.rs:1178:36
+     [1m[94m|[0m
+[1m[94m 474[0m [1m[94m|[0m         let mut client = timeout(
+     [1m[94m|[0m             [1m[94m----------[0m [1m[94mmove occurs because `client` has type `RemoteAppServerClient`, which does not implement the `Copy` trait[0m
+[1m[94m...[0m
+[1m[94m 521[0m [1m[94m|[0m         let execution_result: Result<NativeRunOutput> = async {
+     [1m[94m|[0m                                                         [1m[94m-----[0m [1m[94mvalue moved here[0m
+[1m[94m...[0m
+[1m[94m 525[0m [1m[94m|[0m                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+     [1m[94m|[0m                                              [1m[94m------[0m [1m[94mvariable moved due to use in coroutine[0m
+[1m[94m...[0m
+[1m[94m1178[0m [1m[94m|[0m             thread_lifecycle.close(&mut client, RPC_TIMEOUT).await;
+     [1m[94m|[0m                                    [1m[91m^^^^^^^^^^^[0m [1m[91mvalue borrowed here after move[0m
+
+[1mSome errors have detailed explanations: E0308, E0382.[0m
+[1mFor more information about an error, try `rustc --explain E0308`.[0m
+[1m[91merror[0m: could not compile `codex-hepta-infer-worker-host` (lib) due to 2 previous errors
+[1m[33mwarning[0m: build failed, waiting for other jobs to finish...
+[1m[91merror[0m: could not compile `codex-hepta-infer-worker-host` (lib test) due to 2 previous errors

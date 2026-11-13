@@ -1,0 +1,39 @@
+name: Operations Windows retained identity diagnostic
+on:
+  push:
+    branches: [dot/operations-windows-identity-diagnostic-20261006]
+permissions:
+  contents: read
+jobs:
+  identity:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify reviewed source before setup
+        run: python scripts/diagnostics/windows_retained_identity_ci.py before
+      - name: Install official pinned compiler without security changes
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustc +1.96.0 --version --verbose
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile and execute all nine native fixture controls
+        run: python scripts/diagnostics/windows_retained_identity_ci.py native
+      - name: Verify source remains unchanged
+        if: always()
+        run: python scripts/diagnostics/windows_retained_identity_ci.py after
+      - name: Hash bounded diagnostic receipts
+        if: always()
+        run: python scripts/diagnostics/windows_retained_identity_ci.py manifest
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: windows-identity-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-identity-evidence/
+          if-no-files-found: error
+          retention-days: 7

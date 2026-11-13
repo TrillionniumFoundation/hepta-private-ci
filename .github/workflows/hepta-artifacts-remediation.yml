@@ -1,0 +1,96 @@
+name: Learning artifacts remediation
+
+on:
+  push:
+    branches: [fix/learning-artifacts-qualification-20260927]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: artifacts-remediation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind source and retain review inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/artifacts-review
+          git rev-parse HEAD HEAD^{tree} > /tmp/artifacts-review/source.txt
+          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          git archive --format=tar.gz HEAD AGENTS.md codex-rs/hepta-learning-artifacts codex-rs/hepta-agentd/src/cognitive_ranker.rs codex-rs/Cargo.toml codex-rs/Cargo.lock docs/lane-e docs/modules/learning.artifacts qualification/lane-e scripts .github/workflows > /tmp/artifacts-review/source.tar.gz
+      - name: Retain exact-source review inputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: artifacts-review-source-${{ github.sha }}
+          path: /tmp/artifacts-review/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Diagnose closed world
+        id: closed_world
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test 2>&1 | tee /tmp/artifacts-review/self-test.log
+          python3 scripts/hepta-lane-e-closure.py verify 2>&1 | tee /tmp/artifacts-review/verify.log
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Locked all-target artifact compilation
+        id: compile
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-learning-artifacts --all-targets 2>&1 | tee /tmp/artifacts-review/check.log
+      - name: Artifact tests
+        id: tests
+        if: always() && steps.compile.outcome == 'success'
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-learning-artifacts --all-targets 2>&1 | tee /tmp/artifacts-review/tests.log
+      - name: Artifact strict lint
+        id: lint
+        if: always() && steps.compile.outcome == 'success'
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings 2>&1 | tee /tmp/artifacts-review/clippy.log
+      - name: Retain diagnostics even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: artifacts-review-diagnostics-${{ github.sha }}
+          path: /tmp/artifacts-review/*.log
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Fail closed on failed or skipped obligations
+        if: always()
+        env:
+          CLOSED_WORLD: ${{ steps.closed_world.outcome }}
+          COMPILE: ${{ steps.compile.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+          LINT: ${{ steps.lint.outcome }}
+        run: |
+          test "$CLOSED_WORLD" = success
+          test "$COMPILE" = success
+          test "$TESTS" = success
+          test "$LINT" = success

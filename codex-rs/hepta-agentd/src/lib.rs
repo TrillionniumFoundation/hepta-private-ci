@@ -333,6 +333,7 @@ mod automation_effect_host;
 mod automation_effect_payload;
 mod automation_recovery;
 mod browser_servo;
+pub mod cell_split_owner;
 mod client;
 #[cfg(target_os = "linux")]
 mod cognitive_checkpoint_unix;

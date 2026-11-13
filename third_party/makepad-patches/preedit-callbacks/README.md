@@ -1,3 +1,8 @@
+> SOURCE-ONLY LOCAL INTEGRATION: the additional native-ime-outcomes.patch and
+> its new tree have zero Rust/UI executions. Donor runtime statements below
+> describe the prior donor only, not this combined source. The profile now
+> requires native-ime-sdk; Desktop feature/notices/graph integration is pending.
+
 # Explicit X11 callback preedit candidate
 
 This candidate changes the existing Makepad XIM negotiation and caret update
@@ -158,3 +163,14 @@ Only then select and package an explicit product profile, including the exact
 source/patch/license notices and runtime evidence. The historical five-file
 clipboard notice contract must not be relabelled as this different SDK.
 Until those steps pass, this remains an unpromoted candidate.
+
+## Local typed-outcome integration (unqualified)
+
+The final additive patch layers production-time scope/sequence and typed
+Preview/Committed/Cancelled on the single CompositionEdit implementation.
+Snapshots are committed projections, including legal outside edits while
+composition stays active. The composer no longer infers event type from the
+live widget phase. Rejected edits restore the last accepted committed snapshot
+and rotate scope, fencing already-produced successors. Raw OS IME session
+origin remains a separate unresolved boundary. No donor execution counts or
+window receipts transfer to this source identity.

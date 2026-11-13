@@ -1,0 +1,42 @@
+name: Hepta neuroscience shadow qualification
+
+on:
+  pull_request:
+    paths:
+      - "qualification/neuroscience-20261110/**"
+      - "codex-rs/hepta-neuron/src/lib.rs"
+      - "codex-rs/hepta-neuron/src/plasticity.rs"
+      - "codex-rs/hepta-neuron/src/plasticity/**"
+      - ".github/workflows/hepta-neuroscience-shadow.yml"
+  push:
+    branches: [main]
+    paths:
+      - "qualification/neuroscience-20261110/**"
+      - "codex-rs/hepta-neuron/src/lib.rs"
+      - "codex-rs/hepta-neuron/src/plasticity.rs"
+      - "codex-rs/hepta-neuron/src/plasticity/**"
+      - ".github/workflows/hepta-neuroscience-shadow.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  shadow-mechanisms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate research-only mechanism gates
+        run: python3 -m unittest discover -v -s qualification/neuroscience-20261110 -p 'test_*.py'
+
+  q24-temporal-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Q24 read-only temporal credit against native tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-neuron --lib

@@ -26,7 +26,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway,browserIdentity,...(testInfo.project.metadata.diagnosticOnly?{diagnosticOnly:true,project:testInfo.project.name}:{})};
  await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
  await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
- const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[],finishedResponses=[];const pendingFonts=new Set();
+ const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[],finishedResponses=[],ownerHoldDiagnostics=[];const pendingFonts=new Set();
  // Diagnostic observers only: do not consume bodies, cancel requests, alter cache,
  // replace SDK APIs, or waive any existing font/console/lifecycle assertion.
  const diagnosticStart=performance.now(),fontRequests=[],fontEvents=[],fontResponseFinished=[],consoleEvents=[],cdpFontEvents=[],diagnosticWaits=[];
@@ -121,7 +121,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   if(!requestRecords.has(request)){const record={id:++nextRequestId,url:request.url(),method:request.method(),phase};requestRecords.set(request,record);requests.push(record);}
   return requestRecords.get(request);
  }
- function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults,apiDiagnostics:{network:apiNetworkEvents,waits:apiWaits},fontDiagnostics:{fontRequests,fontEvents,cdpFontEvents,consoleEvents,browserLifecycle,diagnosticOverflow,diagnosticWaits}};}
+ function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults,ownerHoldDiagnostics,apiDiagnostics:{network:apiNetworkEvents,waits:apiWaits},fontDiagnostics:{fontRequests,fontEvents,cdpFontEvents,consoleEvents,browserLifecycle,diagnosticOverflow,diagnosticWaits}};}
  async function audit(name){
   await Promise.all(finishedResponses);
   await settleFontObservations(name);
@@ -196,7 +196,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  }
  const pendingHolds=new Set();
  async function holdOwner(name){
-  const held=await holdOwnerResponse(page,ownerUrl,request=>requestRecord(request).id,name);
+  const held=await holdOwnerResponse(page,ownerUrl,request=>requestRecord(request).id,name,{onRecord:record=>ownerHoldDiagnostics.push(record)});
   pendingHolds.add(held);
   return {ready:held.ready,get requestId(){return held.requestId;},async finish(){const record=await held.finish();pendingHolds.delete(held);faultCases.push(record);}};
  }

@@ -1,0 +1,44 @@
+name: learning.plasticity source snapshot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Record exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > SOURCE_SHA
+          git rev-parse HEAD^{tree} > SOURCE_TREE
+      - name: Build source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="${RUNNER_TEMP}/hepta-private-ci-source.tar.gz"
+          tar \
+            --exclude=.git \
+            --exclude=target \
+            --exclude='**/__pycache__' \
+            --exclude=hepta-private-ci-source.tar.gz \
+            -czf "${archive}" .
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-plasticity-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-source.tar.gz
+            SOURCE_SHA
+            SOURCE_TREE
+          retention-days: 3
+          if-no-files-found: error

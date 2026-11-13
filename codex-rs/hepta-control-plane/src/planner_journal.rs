@@ -41,6 +41,28 @@ impl PlannerJournalKindV1 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct PlannerJournalHeadV1 {
+    pub sequence: u64,
+    pub entry_digest: Digest32,
+}
+
+impl PlannerJournalHeadV1 {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self {
+            sequence: 0,
+            entry_digest: Digest32::ZERO,
+        }
+    }
+}
+
+impl Default for PlannerJournalHeadV1 {
+    fn default() -> Self {
+        Self::empty()
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlannerJournalEntryV1 {
     pub sequence: u64,
@@ -55,6 +77,8 @@ pub struct PlannerJournalEntryV1 {
 pub struct PlannerJournalV1 {
     entries: Vec<PlannerJournalEntryV1>,
     identities: BTreeMap<Digest32, (PlannerJournalKindV1, Digest32)>,
+    decisions: BTreeSet<Digest32>,
+    revocations: BTreeSet<Digest32>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -69,7 +93,10 @@ pub enum PlannerJournalError {
     CorruptPredecessor,
     CorruptEntryDigest,
     UnknownKind(u8),
+    InvalidSnapshotRecord,
+    InvalidDecisionRecord,
     DecisionNotRecorded,
+    RevocationTargetNotRecorded,
     RevokedPlan,
 }
 
@@ -93,12 +120,41 @@ impl PlannerJournalV1 {
         Self {
             entries: Vec::new(),
             identities: BTreeMap::new(),
+            decisions: BTreeSet::new(),
+            revocations: BTreeSet::new(),
         }
     }
 
     #[must_use]
     pub fn entries(&self) -> &[PlannerJournalEntryV1] {
         &self.entries
+    }
+
+    #[must_use]
+    pub fn head(&self) -> PlannerJournalHeadV1 {
+        self.entries.last().map_or_else(PlannerJournalHeadV1::empty, |entry| {
+            PlannerJournalHeadV1 {
+                sequence: entry.sequence,
+                entry_digest: entry.entry_digest,
+            }
+        })
+    }
+
+    #[must_use]
+    pub fn contains_head(&self, head: PlannerJournalHeadV1) -> bool {
+        if head.sequence == 0 {
+            return head.entry_digest.is_zero();
+        }
+        let Some(index) = head
+            .sequence
+            .checked_sub(1)
+            .and_then(|value| usize::try_from(value).ok())
+        else {
+            return false;
+        };
+        self.entries
+            .get(index)
+            .is_some_and(|entry| entry.entry_digest == head.entry_digest)
     }
 
     pub fn record_snapshot(
@@ -128,15 +184,6 @@ impl PlannerJournalV1 {
         operation_identity_digest: Digest32,
         receipt: &FeasiblePlanReceiptV1,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        if !self.entries.iter().any(|entry| {
-            entry.kind == PlannerJournalKindV1::Decision
-                && entry.payload_digest == receipt.receipt_digest()
-        }) {
-            return Err(PlannerJournalError::DecisionNotRecorded);
-        }
-        if self.revoked_digests().contains(&receipt.receipt_digest()) {
-            return Err(PlannerJournalError::RevokedPlan);
-        }
         self.append(
             PlannerJournalKindV1::SelectedPlan,
             operation_identity_digest,
@@ -158,13 +205,12 @@ impl PlannerJournalV1 {
 
     #[must_use]
     pub fn selected_plan_digest(&self) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
         let mut selected = None;
         for entry in &self.entries {
             match entry.kind {
                 PlannerJournalKindV1::SelectedPlan => {
-                    selected =
-                        (!revoked.contains(&entry.payload_digest)).then_some(entry.payload_digest);
+                    selected = (!self.revocations.contains(&entry.payload_digest))
+                        .then_some(entry.payload_digest);
                 }
                 PlannerJournalKindV1::Revocation if selected == Some(entry.payload_digest) => {
                     selected = None;
@@ -172,10 +218,10 @@ impl PlannerJournalV1 {
                 _ => {}
             }
         }
-        selected.filter(|digest| !revoked.contains(digest))
+        selected.filter(|digest| !self.revocations.contains(digest))
     }
 
-    pub fn append(
+    fn append(
         &mut self,
         kind: PlannerJournalKindV1,
         identity_digest: Digest32,
@@ -195,6 +241,7 @@ impl PlannerJournalV1 {
             }
             return Err(PlannerJournalError::IdentityConflict);
         }
+        self.validate_semantics(kind, identity_digest, payload_digest)?;
         if self.entries.len() >= MAX_RECORDS {
             return Err(PlannerJournalError::RecordLimitExceeded);
         }
@@ -223,8 +270,58 @@ impl PlannerJournalV1 {
         };
         self.identities
             .insert(identity_digest, (kind, payload_digest));
+        self.apply_semantics(kind, payload_digest);
         self.entries.push(entry.clone());
         Ok(entry)
+    }
+
+    fn validate_semantics(
+        &self,
+        kind: PlannerJournalKindV1,
+        identity_digest: Digest32,
+        payload_digest: Digest32,
+    ) -> Result<(), PlannerJournalError> {
+        match kind {
+            PlannerJournalKindV1::Snapshot => {
+                if identity_digest != payload_digest {
+                    return Err(PlannerJournalError::InvalidSnapshotRecord);
+                }
+            }
+            PlannerJournalKindV1::Decision => {
+                if identity_digest != payload_digest {
+                    return Err(PlannerJournalError::InvalidDecisionRecord);
+                }
+            }
+            PlannerJournalKindV1::SelectedPlan => {
+                if !self.decisions.contains(&payload_digest) {
+                    return Err(PlannerJournalError::DecisionNotRecorded);
+                }
+                if self.revocations.contains(&payload_digest) {
+                    return Err(PlannerJournalError::RevokedPlan);
+                }
+            }
+            PlannerJournalKindV1::Revocation => {
+                if !self.decisions.contains(&payload_digest) {
+                    return Err(PlannerJournalError::RevocationTargetNotRecorded);
+                }
+                if self.revocations.contains(&payload_digest) {
+                    return Err(PlannerJournalError::RevokedPlan);
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn apply_semantics(&mut self, kind: PlannerJournalKindV1, payload_digest: Digest32) {
+        match kind {
+            PlannerJournalKindV1::Decision => {
+                self.decisions.insert(payload_digest);
+            }
+            PlannerJournalKindV1::Revocation => {
+                self.revocations.insert(payload_digest);
+            }
+            PlannerJournalKindV1::Snapshot | PlannerJournalKindV1::SelectedPlan => {}
+        }
     }
 
     #[must_use]
@@ -314,9 +411,11 @@ impl PlannerJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(PlannerJournalError::DuplicateSerializedIdentity);
             }
+            journal.validate_semantics(kind, identity_digest, payload_digest)?;
             journal
                 .identities
                 .insert(identity_digest, (kind, payload_digest));
+            journal.apply_semantics(kind, payload_digest);
             journal.entries.push(PlannerJournalEntryV1 {
                 sequence,
                 kind,
@@ -327,14 +426,6 @@ impl PlannerJournalV1 {
             });
         }
         Ok(journal)
-    }
-
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
-        self.entries
-            .iter()
-            .filter(|entry| entry.kind == PlannerJournalKindV1::Revocation)
-            .map(|entry| entry.payload_digest)
-            .collect()
     }
 }
 

@@ -1,0 +1,215 @@
+name: Frozen Hepta original scope archive qualification
+
+# CI-only supplement: preserve the product source and every required workflow.
+# The original de0 -> 4223 planner selects 124 packages, including Fleet.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hepta-scoped-archive-qualification.yml
+      - scripts/hepta_scoped_archive.py
+      - scripts/test_hepta_scoped_archive.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-scoped-archive-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: 4223fc77944e9beb5651df063158b22ae1a4f701
+  BASE_SHA: de0ddaa41bd91c4f46a2f1b6034d25fa84c4469c
+  WORKFLOW_SHA: ${{ github.workflow_sha }}
+  RUSTUP_TOOLCHAIN: 1.96.0
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: never
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  NEXTEST_PROFILE: local
+  RUST_MIN_STACK: "8388608"
+  CODEX_REPO_ROOT: ${{ github.workspace }}/product
+
+jobs:
+  archive:
+    name: Freeze full original scope and build one archive
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    # Explicit new build budget; never claim the old 3600-second run passed.
+    timeout-minutes: 180
+    steps:
+      - name: Check out the exact workflow implementation
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: qualification
+          persist-credentials: false
+      - name: Check out the frozen product in its stable runtime path
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: product
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+          components: rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Prepare the original scoped Linux prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Fetch the exact original comparison base
+        working-directory: product
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/hepta_ci_history.py --commit "$BASE_SHA"
+      - name: Resolve the original checksum-verified V8 pair
+        working-directory: product
+        env:
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Freeze original plan, tools, source and resource inputs
+        run: >-
+          python3 qualification/scripts/hepta_scoped_archive.py prepare
+          --source "$GITHUB_WORKSPACE/product"
+          --output "$RUNNER_TEMP/hepta-scoped-evidence"
+      - name: Upload inputs before native compilation
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-scoped-inputs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-scoped-evidence/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Compile the complete selected graph and retain original runtime helpers
+        run: >-
+          python3 qualification/scripts/hepta_scoped_archive.py archive
+          --source "$GITHUB_WORKSPACE/product"
+          --output "$RUNNER_TEMP/hepta-scoped-evidence"
+          --artifact "$RUNNER_TEMP/hepta-scoped-artifact"
+      - name: Upload bounded archive for four isolated replays
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-scoped-archive-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-scoped-artifact/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+      - name: Retain real build records and the complete test inventory
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-scoped-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-scoped-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+  replay:
+    name: Original local-profile hash shard ${{ matrix.shard }}/4
+    needs: archive
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: qualification
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: product
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+          components: rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Restore the original scoped runtime prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hepta-scoped-archive-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-scoped-artifact
+      - name: Verify archive, list this partition and run every selected ordinary test
+        run: >-
+          python3 qualification/scripts/hepta_scoped_archive.py replay
+          --source "$GITHUB_WORKSPACE/product"
+          --output "$RUNNER_TEMP/hepta-scoped-shard"
+          --artifact "$RUNNER_TEMP/hepta-scoped-artifact"
+          --shard ${{ matrix.shard }}
+      - name: Retain real native terminal record, inventory and JUnit
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: shard-${{ matrix.shard }}
+          path: ${{ runner.temp }}/hepta-scoped-shard/
+          if-no-files-found: error
+          retention-days: 14
+
+  coverage:
+    name: Require complete original scope coverage
+    needs: [archive, replay]
+    if: always() && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: qualification
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hepta-scoped-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-scoped-build
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        if: always()
+        with:
+          pattern: shard-*
+          path: ${{ runner.temp }}/hepta-scoped-shards
+      - name: Require successful jobs and exact disjoint test-identity coverage
+        if: always()
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: >-
+          python3 qualification/scripts/hepta_scoped_archive.py summarize
+          --build "$RUNNER_TEMP/hepta-scoped-build"
+          --shards "$RUNNER_TEMP/hepta-scoped-shards"
+          --output "$RUNNER_TEMP/hepta-scoped-summary"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: hepta-scoped-summary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-scoped-summary/
+          if-no-files-found: error
+          retention-days: 14

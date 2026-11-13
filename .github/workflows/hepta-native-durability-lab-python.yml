@@ -1,0 +1,50 @@
+name: Hepta native durability mechanism lab
+
+on:
+  pull_request:
+    paths:
+      - qualification/native-durability-lab/**
+      - .github/workflows/hepta-native-durability-lab-python.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-durability-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  mechanism-tests:
+    name: Mechanism evidence (${{ github.event_name == 'pull_request' && matrix.source || 'manual-selected-ref' }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, prospective-merge]
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Verify source identity
+        env:
+          EXPECTED_SHA: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          git rev-parse HEAD
+          git rev-parse 'HEAD^{tree}'
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain=v1)"
+
+      - name: Compile and run crash, replay and final-use controls
+        run: |
+          python3 -m compileall -q qualification/native-durability-lab
+          python3 -m unittest discover -s qualification/native-durability-lab -p 'test_*.py' -v
+
+      - name: Record fresh mechanism matrix, not Runtime acceptance
+        run: |
+          python3 qualification/native-durability-lab/durability_lab.py run "$RUNNER_TEMP/native-durability"
+          cat "$RUNNER_TEMP/native-durability/results.json"
