@@ -88,14 +88,12 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             )
             .await?;
         }
-        // Always use one lock order and the original same-job owners. These
-        // async ownership locks serialize work; no Ledger lock crosses I/O.
-        let mut state = self
-            .common
-            .continuation
-            .try_lock()
-            .map_err(|_| Error::QueueFull)?;
-        let mut lane = self.candidate.try_lock().map_err(|_| Error::QueueFull)?;
+        // Always use one admission order and the original same-job owners.
+        // Each lease owns the same boxed state; no slot guard crosses I/O.
+        let mut state_lease = self.common.continuation.try_lease()?;
+        let state = state_lease.value_mut()?;
+        let mut lane_lease = self.candidate.try_lease()?;
+        let lane = lane_lease.value_mut()?;
         if lane.failed {
             return Err(Error::CommitUncertain);
         }
@@ -157,7 +155,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         // The final original owner/Root I/O precedes all fresh window checks.
         let fresh = auth::require_material(&self.common.material, self.common.initial_binding)?;
         auth::require_clock(started_at, fresh)?;
-        auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?;
+        auth::verify_prefix(&self.common.material, snapshot, state, fresh)?;
         let current = state
             .original_training
             .as_ref()

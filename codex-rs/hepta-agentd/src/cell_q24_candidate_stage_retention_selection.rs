@@ -39,7 +39,8 @@ impl Owners {
         {
             return Err(Error::WrongScope);
         }
-        let mut lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut lane_lease = self.retention.try_lease()?;
+        let lane = lane_lease.value_mut()?;
         if lane.failed || action == Action::Execute && lane.selection_requested {
             return Err(Error::CommitUncertain);
         }
@@ -50,9 +51,9 @@ impl Owners {
         lane.ensure_version(self, &before)?;
         if action == Action::Execute {
             lane.selection_requested = true;
-            self.prepare_evaluated_version(&four_cut, &mut lane).await?;
+            self.prepare_evaluated_version(&four_cut, lane).await?;
         } else {
-            self.read_evaluated_version(&mut lane).await?;
+            self.read_evaluated_version(lane).await?;
         }
         // An actual Version publication is required before S can be bound.
         lane.ensure_selector(self, &before)?;

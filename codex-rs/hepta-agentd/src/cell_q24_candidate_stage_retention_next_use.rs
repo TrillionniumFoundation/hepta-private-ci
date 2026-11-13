@@ -38,14 +38,15 @@ impl Owners {
         {
             return Err(Error::WrongScope);
         }
-        let mut lane = self.retention.try_lock().map_err(|_| Error::QueueFull)?;
+        let mut lane_lease = self.retention.try_lease()?;
+        let lane = lane_lease.value_mut()?;
         if lane.failed || action == Action::Execute && lane.completion_requested {
             return Err(Error::CommitUncertain);
         }
         lane.failed = true;
         let before = self.evaluated_predecessors(&four_cut).await?;
         lane.ensure_version(self, &before)?;
-        self.read_evaluated_version(&mut lane).await?;
+        self.read_evaluated_version(lane).await?;
         lane.ensure_selector(self, &before)?;
         // The actual S command read installs the host's immutable evidence pin.
         // This precedes C on fresh and cold routes; a supplied S DTO cannot do it.
@@ -66,7 +67,7 @@ impl Owners {
         let ready = if action == Action::Execute {
             lane.ensure_readiness(self, &before, &selection)?;
             Some(
-                self.await_evaluated_c(supplied, &mut lane, &before, &selection)
+                self.await_evaluated_c(supplied, lane, &before, &selection)
                     .await?,
             )
         } else {

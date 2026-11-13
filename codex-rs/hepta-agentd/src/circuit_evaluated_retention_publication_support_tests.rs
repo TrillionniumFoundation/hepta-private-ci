@@ -50,7 +50,7 @@ impl Peers {
 }
 
 pub(super) struct PublicationFixture {
-    pub(super) host: HostFixture,
+    pub(super) host: Box<HostFixture>,
     trainer: Arc<Trainer>,
     trainer_context: OriginalCellQ24TrainingCommandContextV1,
     pub(super) training: OriginalCellQ24TrainingCommandReceiptV1,
@@ -68,21 +68,22 @@ pub(super) struct PublicationFixture {
 }
 
 impl PublicationFixture {
-    pub(super) async fn ready() -> anyhow::Result<Self> {
+    // Keep the async output and consuming cleanup indirect, including the host.
+    pub(super) async fn ready() -> anyhow::Result<Box<Self>> {
         Box::pin(Self::ready_for_publication(
             PublicationMode::RetainOriginalA,
         ))
         .await
     }
 
-    async fn ready_with_live_artifacts() -> anyhow::Result<Self> {
+    async fn ready_with_live_artifacts() -> anyhow::Result<Box<Self>> {
         Box::pin(Self::ready_for_publication(
             PublicationMode::RetainOriginalAWithLiveArtifacts,
         ))
         .await
     }
 
-    async fn ready_for_publication(publication: PublicationMode) -> anyhow::Result<Self> {
+    async fn ready_for_publication(publication: PublicationMode) -> anyhow::Result<Box<Self>> {
         let mut host = match publication {
             PublicationMode::RetainOriginalA => Box::pin(HostFixture::before_adoption()).await?,
             _ => Box::pin(HostFixture::before_publication(publication)).await?,
@@ -169,7 +170,7 @@ impl PublicationFixture {
         )?;
         assert_eq!(config_c.manifest, config_a.manifest);
         assert_ne!(bundle.digest()?, host.original.candidate.digest()?);
-        Ok(Self {
+        Ok(Box::new(Self {
             host,
             trainer,
             trainer_context,
@@ -185,7 +186,7 @@ impl PublicationFixture {
             original_source,
             completed: Some(completed),
             c: Some(c),
-        })
+        }))
     }
 
     pub(super) fn context(&self) -> anyhow::Result<OriginalCircuitEvaluatedRetentionContextV1> {
@@ -343,10 +344,17 @@ impl PublicationFixture {
         .await
     }
 
-    pub(super) async fn finish(self) -> anyhow::Result<()> {
-        drop(self.trainer);
-        self.host.finish().await?;
-        Ok(())
+    // Keep the cleanup future indirect in every enclosing test state.
+    pub(super) fn finish(
+        self: Box<Self>,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<()>>>> {
+        Box::pin(async move {
+            // Capture the whole fixture until the cleanup future is polled.
+            let fixture = self;
+            drop(fixture.trainer);
+            fixture.host.finish().await?;
+            Ok(())
+        })
     }
 }
 

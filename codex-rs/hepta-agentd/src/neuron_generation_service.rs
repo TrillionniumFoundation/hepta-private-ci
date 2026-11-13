@@ -142,6 +142,16 @@ where
             GenerationCommand::Snapshot(response) => {
                 respond(state, response, self.owner.journal().snapshot().cloned())
             }
+            #[cfg(test)]
+            GenerationCommand::QualificationJournalBytes(response) => {
+                let result = self.owner.qualification_journal_bytes_for_test();
+                respond(state, response, Ok(result))
+            }
+            #[cfg(test)]
+            GenerationCommand::QualificationDurableBytes(response) => {
+                let result = self.owner.qualification_durable_bytes_for_test();
+                respond(state, response, Ok(result))
+            }
             GenerationCommand::ObserveGeneration(response) => {
                 respond(state, response, self.owner.journal().observe_generation())
             }

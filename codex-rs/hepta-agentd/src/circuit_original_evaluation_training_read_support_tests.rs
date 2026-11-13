@@ -32,7 +32,7 @@ enum Control {
 }
 
 struct TrainingFixture {
-    host: HostFixture,
+    host: Box<HostFixture>,
     peer: std::thread::JoinHandle<anyhow::Result<u64>>,
     trace: commands::PanelReadTrace,
 }

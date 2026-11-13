@@ -342,7 +342,19 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
     );
     assert_eq!(worker.calls.load(Ordering::Acquire), 0);
     release.store(true, Ordering::Release);
-    let proposal = terminal(&mut port, &fixture.request);
+    // The injected RPC deadline also applies to read-only reconciliation.
+    // Keep the original bounded wait; only an observed proposal completes it.
+    let mut proposal = None;
+    wait_until(|| match port.read_generation(&fixture.request) {
+        Ok(Some(observed)) => {
+            proposal = Some(observed);
+            true
+        }
+        Ok(None)
+        | Err(CellGenerationErrorV2::Capacity | CellGenerationErrorV2::CommitUncertain) => false,
+        Err(error) => panic!("unexpected readback failure: {error:?}"),
+    });
+    let proposal = checked(proposal.ok_or("terminal proposal"));
     assert_eq!(
         port.execute_generation(&fixture.config.manifest, &fixture.request),
         Ok(proposal)

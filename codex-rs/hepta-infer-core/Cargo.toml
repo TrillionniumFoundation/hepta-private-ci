@@ -10,6 +10,9 @@ name = "codex_hepta_infer_core"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+qualification-file-observation = []
+
 [lints]
 workspace = true
 

@@ -7,6 +7,8 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
+#[cfg(any(test, feature = "qualification-file-observation"))]
+mod qualification_file_observation;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;

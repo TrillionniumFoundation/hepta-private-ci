@@ -333,6 +333,15 @@ impl From<io::Error> for WitnessStoreError {
 /// must authenticate scope/generation and make compare-and-swap durable before
 /// returning success.
 pub trait AnchorWitnessStore {
+    /// Qualification-only observation; implementations without an owned file refuse.
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    fn qualification_file_bytes(&mut self, _maximum_bytes: u64) -> std::io::Result<Vec<u8>> {
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Unsupported,
+            "this owner has no physical file observation",
+        ))
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
 
     fn compare_and_swap(

@@ -47,6 +47,7 @@ use crate::transport::app_server_startup_lock_path;
 use crate::transport::auth::policy_from_settings;
 use crate::transport::prepare_control_socket_path;
 use crate::transport::route_outgoing_envelope;
+use crate::transport::send_remote_control_status_to_initialized_connections;
 use crate::transport::start_control_socket_acceptor;
 use crate::transport::start_inherited_control_socket_acceptor;
 use crate::transport::start_remote_control;
@@ -1439,10 +1440,12 @@ async fn run_main_with_transport_options_inner(
                             continue;
                         }
                         remote_control_status = status.clone();
-                        let notification = ServerNotification::RemoteControlStatusChanged(status);
-                        initialize_notification_sender
-                            .send_server_notification(notification)
-                            .await;
+                        send_remote_control_status_to_initialized_connections(
+                            &connections,
+                            &initialize_notification_sender,
+                            status,
+                        )
+                        .await;
                     }
                     created = thread_created_rx.recv(), if listen_for_threads => {
                         match created {

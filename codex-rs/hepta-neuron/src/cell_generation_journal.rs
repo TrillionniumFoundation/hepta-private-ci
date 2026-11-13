@@ -60,6 +60,21 @@ pub struct CellGenerationJournalV2<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
+    /// Qualification-only physical journal bytes; preserves the lock and cursor.
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    pub fn qualification_file_bytes(&mut self, maximum_bytes: u64) -> std::io::Result<Vec<u8>> {
+        crate::qualification_file_observation::read(&mut self.file, maximum_bytes)
+    }
+
+    /// Qualification-only physical bytes from this journal's actual witness.
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    pub fn qualification_witness_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> std::io::Result<Vec<u8>> {
+        self.witness.qualification_file_bytes(maximum_bytes)
+    }
+
     pub fn open(
         file: File,
         witness: W,

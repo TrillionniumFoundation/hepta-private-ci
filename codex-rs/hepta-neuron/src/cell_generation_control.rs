@@ -25,6 +25,15 @@ use crate::cell_task_cost::*;
 #[path = "cell_generation_control_codec.rs"]
 mod codec;
 
+#[cfg(any(test, feature = "qualification-file-observation"))]
+#[path = "cell_generation_control_file_observation.rs"]
+mod file_observation;
+
+#[cfg(any(test, feature = "qualification-file-observation"))]
+use file_observation::ActorCommand;
+#[cfg(not(any(test, feature = "qualification-file-observation")))]
+type ActorCommand = Command;
+
 use codec::add_cost;
 use codec::control_error;
 use codec::encode;
@@ -64,7 +73,7 @@ pub struct ControlledCellGenerationConfigV2 {
 /// binding and clock epoch, and never recreates a dispatch token.
 pub struct ControlledCellGenerationPortV2 {
     config: Arc<ControlledCellGenerationConfigV2>,
-    commands: Option<mpsc::SyncSender<Command>>,
+    commands: Option<mpsc::SyncSender<ActorCommand>>,
     stopping: Arc<AtomicBool>,
     closed: Arc<AtomicBool>,
     completion: mpsc::Receiver<Result<(), CellGenerationErrorV2>>,
@@ -175,6 +184,8 @@ impl ControlledCellGenerationPortV2 {
             queued_at: Instant::now(),
             reply,
         };
+        #[cfg(any(test, feature = "qualification-file-observation"))]
+        let command = ActorCommand::Operation(Box::new(command));
         self.commands
             .as_ref()
             .ok_or(CellGenerationErrorV2::Unavailable)?
@@ -193,6 +204,11 @@ impl ControlledCellGenerationPortV2 {
 }
 
 impl CellGenerationControlPortV2 for ControlledCellGenerationPortV2 {
+    #[cfg(any(test, feature = "qualification-file-observation"))]
+    fn qualification_file_bytes(&mut self, maximum_bytes: u64) -> std::io::Result<Vec<u8>> {
+        file_observation::read_port(self, maximum_bytes)
+    }
+
     fn execute_generation(
         &mut self,
         manifest: &CellBackendManifestV2,
@@ -254,7 +270,7 @@ struct Actor {
     config: Arc<ControlledCellGenerationConfigV2>,
     worker: Arc<dyn CellGenerationWorkerV2>,
     clock: Clock,
-    commands: mpsc::Receiver<Command>,
+    commands: mpsc::Receiver<ActorCommand>,
     stopping: Arc<AtomicBool>,
     active: Option<Running>,
 }
@@ -278,6 +294,25 @@ impl Actor {
             }
             match self.commands.recv_timeout(Duration::from_millis(5)) {
                 Ok(command) => {
+                    #[cfg(any(test, feature = "qualification-file-observation"))]
+                    let command = match command {
+                        ActorCommand::Operation(command) => *command,
+                        ActorCommand::ObserveFile {
+                            maximum_bytes,
+                            reply,
+                        } => {
+                            let result = if self.stopping.load(Ordering::Acquire) {
+                                Err(std::io::Error::new(
+                                    std::io::ErrorKind::BrokenPipe,
+                                    "control owner is stopping",
+                                ))
+                            } else {
+                                self.control.qualification_file_bytes(maximum_bytes)
+                            };
+                            let _ = reply.try_send(result);
+                            continue;
+                        }
+                    };
                     let result = if self.stopping.load(Ordering::Acquire) {
                         Err(CellGenerationErrorV2::Unavailable)
                     } else {

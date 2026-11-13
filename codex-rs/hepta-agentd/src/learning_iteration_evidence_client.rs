@@ -254,6 +254,46 @@ impl LearningIterationEvidenceClientV1 {
             .transport
             .read(&request)
             .await
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                {
+                    use crate::root_writer_proof::AgentdRootAuthorityError as AuthorityError;
+
+                    let message: &[u8] = match _error {
+                        AuthorityError::Refused => {
+                            b"owner_diag_v1 stage=evidence_client_exchange class=refused\n"
+                        }
+                        AuthorityError::Unavailable => {
+                            b"owner_diag_v1 stage=evidence_client_exchange class=unavailable\n"
+                        }
+                    };
+                    let _ = std::io::Write::write(&mut std::io::stderr().lock(), message);
+                    let receipt_stage: &[u8] = match receipt.observation.stage() {
+                        LearningIterationStageV1::Experience => {
+                            b"owner_diag_v2 stage=evidence_receipt class=experience\n"
+                        }
+                        LearningIterationStageV1::Dataset => {
+                            b"owner_diag_v2 stage=evidence_receipt class=dataset\n"
+                        }
+                        LearningIterationStageV1::Training => {
+                            b"owner_diag_v2 stage=evidence_receipt class=training\n"
+                        }
+                        LearningIterationStageV1::Evaluation => {
+                            b"owner_diag_v2 stage=evidence_receipt class=evaluation\n"
+                        }
+                        LearningIterationStageV1::Proposal => {
+                            b"owner_diag_v2 stage=evidence_receipt class=proposal\n"
+                        }
+                        LearningIterationStageV1::Selection => {
+                            b"owner_diag_v2 stage=evidence_receipt class=selection\n"
+                        }
+                        LearningIterationStageV1::NextUse => {
+                            b"owner_diag_v2 stage=evidence_receipt class=next_use\n"
+                        }
+                    };
+                    let _ = std::io::Write::write(&mut std::io::stderr().lock(), receipt_stage);
+                }
+            })
             .map_err(|_| unavailable())?;
         if response.schema != 1
             || response.operation != request.operation

@@ -222,12 +222,12 @@ pub(super) fn verify(
         || qualification.id()? != bundle.candidate
         || qualification.id()? != bundle.baseline
         || qualification.u8()? != disposition
-        || qualification.ids()? != failed
+        || qualification.ids_u64()? != failed
         || qualification.id()? != bundle.candidate
         || qualification.principal()? != bundle.evaluator
         || qualification.principal()? != bundle.generator
         || qualification.u8()? != 0
-        || qualification.ids()? != bundle.snapshot_ids
+        || qualification.ids_u64()? != bundle.snapshot_ids
         || qualification.u8()? != 0
         || qualification.u8()? != 0
     {

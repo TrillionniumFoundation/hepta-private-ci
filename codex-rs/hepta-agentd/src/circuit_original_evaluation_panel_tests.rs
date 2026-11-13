@@ -74,9 +74,10 @@ async fn completed_member(
 }
 
 impl PanelFixture {
+    // Keep the full panel output out of the parent futures that await it.
     fn completed(
         peer: TrainingPeer,
-    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<Self>>>> {
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<Box<Self>>>>> {
         // Construct the child future before polling it. The old async bridge
         // itself reserved 533,064 stack bytes in the measured debug binary.
         Box::pin(Self::completed_for_publication(
@@ -88,7 +89,7 @@ impl PanelFixture {
     async fn completed_for_publication(
         peer: TrainingPeer,
         publication: PublicationMode,
-    ) -> anyhow::Result<Self> {
+    ) -> anyhow::Result<Box<Self>> {
         let (original, mut primary_b, mut retention_b, registration) =
             Box::pin(preregistered_for_publication(publication)).await?;
         assert_eq!(primary_b.at, retention_b.at);
@@ -120,7 +121,7 @@ impl PanelFixture {
             primary.take_original_member(),
             vec![retention.take_original_member()],
         )?;
-        Ok(Self {
+        Ok(Box::new(Self {
             panel,
             original,
             primary_b,
@@ -128,7 +129,7 @@ impl PanelFixture {
             primary,
             retention,
             at,
-        })
+        }))
     }
 
     fn read(
@@ -158,7 +159,7 @@ impl PanelFixture {
     }
 
     fn finish(
-        self,
+        self: Box<Self>,
     ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<[usize; 2]>>>> {
         Box::pin(async move {
             drop(self.panel);

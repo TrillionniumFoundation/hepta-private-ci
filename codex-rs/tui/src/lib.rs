@@ -3263,7 +3263,7 @@ mod tests {
             .expect("state db startup failure should retain its typed context");
 
         assert_eq!(
-            startup_error.database_path(),
+            startup_error.database_path().canonicalize()?.as_path(),
             logs_db_path.canonicalize()?.as_path()
         );
         assert!(

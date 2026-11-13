@@ -85,6 +85,10 @@ pub(crate) enum GenerationCommand {
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
+    #[cfg(test)]
+    QualificationJournalBytes(Response<std::io::Result<Vec<u8>>>),
+    #[cfg(test)]
+    QualificationDurableBytes(Response<std::io::Result<[Vec<u8>; 3]>>),
     #[cfg(unix)]
     LearningRead {
         request: Box<GenerationLearningReadV1>,
@@ -471,6 +475,10 @@ impl NeuronGenerationRuntimeBootstrapV2 {
         state.attach_neuron_generation(Arc::clone(&self.projection))
     }
 }
+
+#[cfg(test)]
+#[path = "neuron_generation_file_observation_test_support.rs"]
+mod file_observation;
 
 #[cfg(test)]
 #[path = "neuron_generation_runtime_tests.rs"]

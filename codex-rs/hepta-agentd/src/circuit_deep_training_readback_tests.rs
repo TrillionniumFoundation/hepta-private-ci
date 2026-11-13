@@ -299,9 +299,9 @@ async fn original_no_update_readback(readback: OriginalReadbackCase) -> anyhow::
         "same original Experience/Dataset sessions"
     );
     // Each independent case has fourteen real T readbacks: two for S and
-    // six for each of its two C commands. Every T read still brackets native/
-    // Generator CURRENT with two live captures; each capture reads each
-    // original Material peer twice. Bootstrap/fit may add further reads.
+    // six for each of its two C commands. The readonly lane brackets native/
+    // Generator CURRENT with actual Material/evidence reads before and after.
+    // Bootstrap/fit adds reads; retain these independent whole-case count gates.
     assert!(counts[1] >= 56);
     assert!(counts[1..].iter().all(|count| *count < 128));
     eprintln!(

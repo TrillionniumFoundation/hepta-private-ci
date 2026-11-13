@@ -28,7 +28,7 @@ use support::OriginalPublicationReadbackFixture;
 
 #[test]
 fn original_publication_readback_observes_lost_reply_without_republishing() {
-    let fixture = OriginalPublicationReadbackFixture::fresh();
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
     let before = fixture.bytes();
     let original = fixture
         .service
@@ -95,7 +95,7 @@ fn original_publication_readback_cold_reopens_exact_pending_without_completion()
     let mut fixture = OriginalPublicationReadbackFixture::fresh();
     let (request, intent) = fixture.begin_pending();
     let before = fixture.bytes();
-    let fixture = fixture.reopen();
+    let mut fixture = fixture.reopen();
     let read = fixture
         .service
         .read_original_publication_current(&request.operation_id, intent)
@@ -113,7 +113,7 @@ fn original_publication_readback_cold_reopens_exact_pending_without_completion()
 
 #[test]
 fn original_publication_readback_refuses_missing_or_changed_expected_operation() {
-    let fixture = OriginalPublicationReadbackFixture::fresh();
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
     let before = fixture.bytes();
     for (operation, intent) in [
         (fixture.baseline.operation_id.clone(), Digest32::ZERO),
@@ -139,7 +139,7 @@ fn original_publication_readback_refuses_missing_or_changed_expected_operation()
 
 #[test]
 fn original_publication_readback_refuses_actual_checkpoint_or_current_damage() {
-    let fixture = OriginalPublicationReadbackFixture::fresh();
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
     let checkpoint = fixture.checkpoint_file(&fixture.baseline.operation_id, "0");
     let original = fs::read(&checkpoint).fixture("checkpoint before mutation");
     fs::write(&checkpoint, b"actual malformed original checkpoint").fixture("damage checkpoint");
@@ -180,7 +180,7 @@ fn original_publication_readback_refuses_actual_checkpoint_or_current_damage() {
 
 #[test]
 fn original_publication_readback_uses_live_clock_not_an_old_request_timestamp() {
-    let fixture = OriginalPublicationReadbackFixture::expired_current();
+    let mut fixture = OriginalPublicationReadbackFixture::expired_current();
     fixture
         .service
         .current_registry_view(fixture.baseline.now)
@@ -200,7 +200,7 @@ fn original_publication_readback_uses_live_clock_not_an_old_request_timestamp() 
 
 #[test]
 fn original_publication_readback_bounds_the_actual_transaction_scan() {
-    let fixture = OriginalPublicationReadbackFixture::fresh();
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
     let directory = fixture.directory.0.join("transactions");
     // These are real regular files ignored by the legacy receipt decoder. The
     // actual bounded scanner must count them, not only matching checkpoints.

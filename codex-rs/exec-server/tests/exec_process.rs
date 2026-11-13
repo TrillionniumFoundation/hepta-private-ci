@@ -1,5 +1,9 @@
 mod common;
 
+#[cfg(windows)]
+#[path = "exec_process/windows_sandbox_contract.rs"]
+mod windows_sandbox_contract;
+
 use std::collections::HashMap;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
@@ -1178,7 +1182,7 @@ async fn assert_exec_process_write_then_read_without_tty(use_remote: bool) -> Re
     Ok(())
 }
 
-async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
+async fn assert_remote_windows_elevated_sandbox_process_write() -> Result<()> {
     let context = create_process_context(/*use_remote*/ true).await?;
     let workspace = TempDir::new()?;
     let blocked_file = workspace.path().join("blocked.txt");
@@ -1187,7 +1191,9 @@ async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
         SandboxPolicy::new_read_only_policy(),
         cwd.clone(),
     )?;
-    sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    // Explicit Elevated uses the supported broker and its real setup path.
+    // A RestrictedToken request is rejected; it must not fall back here.
+    sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
 
     let session = match context
         .backend
@@ -1637,8 +1643,8 @@ async fn exec_process_write_then_read_without_tty(use_remote: bool) -> Result<()
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[cfg_attr(not(windows), ignore = "Windows-only exec-server sandbox process test")]
 #[serial_test::serial(remote_exec_server)]
-async fn remote_windows_sandbox_process_accepts_process_write() -> Result<()> {
-    assert_remote_windows_sandbox_process_write().await
+async fn remote_windows_elevated_sandbox_process_accepts_process_write() -> Result<()> {
+    assert_remote_windows_elevated_sandbox_process_write().await
 }
 
 #[test_case(false ; "local")]

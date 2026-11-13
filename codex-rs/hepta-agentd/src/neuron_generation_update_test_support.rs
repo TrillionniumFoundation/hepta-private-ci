@@ -337,6 +337,7 @@ impl Fixture {
         })
     }
 
+    #[cfg(target_os = "linux")]
     pub(crate) fn retained_publication_selection(
         &self,
     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {
@@ -344,6 +345,7 @@ impl Fixture {
             .retained_publication_selection(self.live_clock.now_unix_ms()?)
     }
 
+    #[cfg(target_os = "linux")]
     pub(crate) fn retained_artifact_checkpoint(
         &self,
     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {

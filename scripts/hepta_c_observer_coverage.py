@@ -254,6 +254,7 @@ DEEP_ORIGINAL_READBACK_CASES = tuple(
     DEEP_ORIGINAL_READBACK_PREFIX + name
     for name in (
         "q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "q24_deep_original_no_update_selection_c_hot_readback_preserves_sources",
         "q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
     )
 )
@@ -354,7 +355,12 @@ ORIGINAL_EVALUATION_PROVIDER_CASES = tuple(
     for name in (
         "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
         "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
-        "original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+        "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+        "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+        "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+        "original_evaluation_provider_refuses_renewed_original_signatures",
+        "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+        "original_evaluation_provider_zero_support_consumes_holdout_once",
     )
 )
 

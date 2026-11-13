@@ -6,9 +6,12 @@ load(":v13_acceptance.bzl", "v13_acceptance_example")
 
 _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+    "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+    "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
     "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
     "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
     "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+    "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
 

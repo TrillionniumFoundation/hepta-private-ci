@@ -300,7 +300,15 @@ async fn original_evaluation_model_material_pending_cancel_and_withdrawal_never_
             client.read_current().await,
             Err(CommandError::Unavailable)
         ));
-        assert!(close(client, peer).is_err());
+        assert!(
+            close(client, peer)
+                .inspect(|frames| {
+                    eprintln!(
+                        "material {change} unexpectedly closed successfully: {frames} frames"
+                    );
+                })
+                .is_err()
+        );
         assert_eq!(fixture.original_files()?, original_files);
         let (client, peer) = fixture
             .host

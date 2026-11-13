@@ -140,6 +140,13 @@ impl NeuronFeatureWorkerV1 for Worker {
     }
 }
 
+fn control_bytes(port: &mut ControlledNeuronFeaturePortV1<Worker>) -> Vec<u8> {
+    checked(
+        port.owner
+            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
+    )
+}
+
 #[test]
 fn feature_control_exact_readback_reopens_without_work_clock_or_write() {
     let fixture = Fixture::new();
@@ -165,7 +172,7 @@ fn feature_control_exact_readback_reopens_without_work_clock_or_write() {
         Some(receipt.clone())
     );
     assert_eq!(checked(recovered.execute_feature(&request)), receipt);
-    assert_eq!(checked(fs::read(fixture.path())), original_bytes);
+    assert_eq!(control_bytes(&mut recovered), original_bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
 
@@ -209,7 +216,7 @@ fn feature_control_unknown_dispatch_remains_fenced_after_reopen() {
         fresh.execute_feature(&request),
         Err(NeuronModelError::Indeterminate)
     );
-    assert_eq!(checked(fs::read(fixture.path())), pending_bytes);
+    assert_eq!(control_bytes(&mut fresh), pending_bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
 
@@ -306,7 +313,7 @@ fn feature_control_same_operation_changed_source_or_state_never_rebinds() {
         port.execute_feature(&alias),
         Err(NeuronModelError::Indeterminate)
     );
-    assert_eq!(checked(fs::read(fixture.path())), original_bytes);
+    assert_eq!(control_bytes(&mut port), original_bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
 
@@ -368,6 +375,6 @@ fn feature_control_original_cell_path_binds_admission_and_pending_recovery() {
         /*now_micros*/ 200,
     ));
     assert_eq!(reopened.output, original.output);
-    assert_eq!(checked(fs::read(fixture.path())), bytes);
+    assert_eq!(control_bytes(&mut recovered), bytes);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }

@@ -162,6 +162,13 @@ impl TestEnv {
     /// Builds a host-local test environment, optionally using the provided
     /// exec-server URL instead of the normal implicit local executor.
     pub async fn local_with_exec_server_url(exec_server_url: Option<String>) -> Result<Self> {
+        // macOS authorizes stable handles using their physical F_GETPATH path.
+        // Create the fixture under that same parent spelling so its TempDir,
+        // selected cwd, and workspace grant all name the same directory.
+        #[cfg(target_os = "macos")]
+        let local_cwd_temp_dir =
+            Arc::new(tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?);
+        #[cfg(not(target_os = "macos"))]
         let local_cwd_temp_dir = Arc::new(TempDir::new()?);
         let cwd = local_cwd_temp_dir.abs();
         let selection = match exec_server_url {

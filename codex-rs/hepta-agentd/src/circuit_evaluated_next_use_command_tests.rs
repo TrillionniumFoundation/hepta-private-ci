@@ -20,7 +20,7 @@ use std::sync::Arc;
 type NextCommandOwner = OriginalCircuitEvaluatedNextUseCommandOwnerV1<FileAnchorWitnessStore>;
 
 struct ActualNextCommand {
-    common: ActualCommand,
+    common: Box<ActualCommand>,
     material: OriginalCellQ24MaterialReceiptConfigV1,
     dataset: OriginalCellQ24MaterialCommandReceiptV1,
     selection: OriginalCircuitEvaluatedSelectionReceiptV1,
@@ -59,7 +59,7 @@ fn next_owner(
 }
 
 impl ActualNextCommand {
-    async fn ready(mode: OpenReceipt) -> anyhow::Result<Self> {
+    async fn ready(mode: OpenReceipt) -> anyhow::Result<Box<Self>> {
         let common = Box::pin(ActualCommand::ready(OpenReceipt::Fresh)).await?;
         let original_dataset = Box::pin(version_material::original_dataset(&common.f)).await?;
         let material = original_dataset.config;
@@ -125,7 +125,7 @@ impl ActualNextCommand {
             Arc::clone(&common.evaluator),
             selector,
         )?);
-        Ok(Self {
+        Ok(Box::new(Self {
             common,
             material,
             dataset,
@@ -137,10 +137,10 @@ impl ActualNextCommand {
             task_peer,
             files,
             host,
-        })
+        }))
     }
 
-    fn recover_original_owner(self) -> anyhow::Result<Self> {
+    fn recover_original_owner(self: Box<Self>) -> anyhow::Result<Box<Self>> {
         let Self {
             common,
             material,
@@ -153,7 +153,7 @@ impl ActualNextCommand {
             task_peer,
             files,
             host,
-        } = self;
+        } = *self;
         let (live, selector) = next_commands::release_original_read_peers(host)?;
         let owner = next_owner(&files, &common.f, &selection, OpenReceipt::Readback)?;
         let host = Arc::new(owner.into_evaluated_command_owner(
@@ -162,7 +162,7 @@ impl ActualNextCommand {
             Arc::clone(&common.evaluator),
             selector,
         )?);
-        Ok(Self {
+        Ok(Box::new(Self {
             common,
             material,
             dataset,
@@ -174,52 +174,55 @@ impl ActualNextCommand {
             task_peer,
             files,
             host,
-        })
+        }))
     }
 
-    async fn finish(
-        self,
+    fn finish(
+        self: Box<Self>,
         counts: [u64; 2],
         selection_reads: u64,
         next_reads: u64,
         selector_evidence_reads: u64,
-    ) -> anyhow::Result<()> {
-        let Self {
-            common,
-            material: _,
-            dataset: _,
-            selection: _,
-            selector_client,
-            selector_peer,
-            selector_evidence_peer,
-            task_host,
-            task_peer,
-            files,
-            host,
-        } = self;
-        drop(host);
-        assert_eq!(
-            task_peer
-                .join()
-                .expect("same actual five-cut C task peer")?,
-            next_reads
-        );
-        drop(task_host);
-        assert_eq!(
-            selector_evidence_peer
-                .join()
-                .expect("same actual readonly S evidence peer")?,
-            selector_evidence_reads
-        );
-        drop(selector_client);
-        assert_eq!(
-            selector_peer
-                .join()
-                .expect("same original S command peer")?,
-            2
-        );
-        drop(files);
-        common.finish(counts, selection_reads).await
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<()>>>> {
+        Box::pin(async move {
+            let owned = self;
+            let Self {
+                common,
+                material: _,
+                dataset: _,
+                selection: _,
+                selector_client,
+                selector_peer,
+                selector_evidence_peer,
+                task_host,
+                task_peer,
+                files,
+                host,
+            } = *owned;
+            drop(host);
+            assert_eq!(
+                task_peer
+                    .join()
+                    .expect("same actual five-cut C task peer")?,
+                next_reads
+            );
+            drop(task_host);
+            assert_eq!(
+                selector_evidence_peer
+                    .join()
+                    .expect("same actual readonly S evidence peer")?,
+                selector_evidence_reads
+            );
+            drop(selector_client);
+            assert_eq!(
+                selector_peer
+                    .join()
+                    .expect("same original S command peer")?,
+                2
+            );
+            drop(files);
+            common.finish(counts, selection_reads).await
+        })
     }
 }
 
@@ -337,6 +340,33 @@ async fn evaluated_next_use_command_once_reads_originals_and_readonly_evidence()
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> anyhow::Result<()> {
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_ready_enter class=boundary\n",
+        );
+    }
+    #[cfg(test)]
+    {
+        // Observe the future type without constructing or polling that future.
+        // This records a value layout, not construction or poll stack usage.
+        fn future_layout<F: std::future::Future>(_: fn() -> F) -> (usize, usize, usize) {
+            (
+                std::mem::size_of::<F>(),
+                std::mem::align_of::<F>(),
+                std::mem::size_of::<F::Output>(),
+            )
+        }
+        let (future_bytes, future_align, output_bytes) =
+            future_layout(|| ActualNextCommand::ready(OpenReceipt::Fresh));
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr().lock(),
+            format_args!(
+                "owner_layout_v1 site=lost_ack_ready future_bytes={future_bytes} future_align={future_align} output_bytes={output_bytes}\n"
+            ),
+        );
+    }
     let actual = Box::pin(ActualNextCommand::ready(OpenReceipt::Fresh)).await?;
     let empty = actual.files.bytes()?;
     let original_s = actual.common.files.bytes()?;
@@ -344,6 +374,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
     let (client, channel) =
         next_commands::stage_client(&actual.material, &actual.dataset, &actual.selection, false)?;
     let peer = next_commands::lose_ack(Arc::clone(&actual.host), channel);
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_attest_enter class=boundary\n",
+        );
+    }
     assert!(matches!(
         client.attest_completed_task().await,
         Err(NextCommandError::CommitUncertain)
@@ -360,6 +397,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
     let original = peer.join().expect("actual C before lost ACK")?;
     let committed = actual.files.bytes()?;
     assert_ne!(committed, empty);
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_recover_enter class=boundary\n",
+        );
+    }
     let actual = actual.recover_original_owner()?;
     next_commands::refuse_evidence_without_pin(&actual.host)?;
     // Supplying a fresh original S cannot turn a recovered C host into a
@@ -370,6 +414,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
         fresh_reader.attest_completed_task().await,
         Err(NextCommandError::ReadbackRequired)
     ));
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_fresh_readback_enter class=boundary\n",
+        );
+    }
     let read = fresh_reader.readback().await?;
     exact_next_use(&read, &original);
     assert!(matches!(
@@ -391,6 +442,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
         cold.attest_completed_task().await,
         Err(NextCommandError::ReadbackRequired)
     ));
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_cold_readback_enter class=boundary\n",
+        );
+    }
     let read = cold.readback().await?;
     exact_next_use(&read, &original);
     assert!(matches!(
@@ -415,6 +473,13 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
     );
     drop(cold);
     assert_eq!(peer.join().expect("cold original C command peer")?, 1);
+    #[cfg(test)]
+    {
+        let _ = std::io::Write::write(
+            &mut std::io::stderr().lock(),
+            b"owner_diag_v1 stage=lost_ack_finish_enter class=boundary\n",
+        );
+    }
     actual.finish([26, 26], 17, 7, 6).await
 }
 

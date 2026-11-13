@@ -10,6 +10,9 @@ name = "codex_hepta_neuron"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+qualification-file-observation = ["codex-hepta-infer-core/qualification-file-observation"]
+
 [lints]
 workspace = true
 
@@ -20,4 +23,5 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-infer-core = { path = "../hepta-infer-core", features = ["qualification-file-observation"] }
 pretty_assertions = { workspace = true }

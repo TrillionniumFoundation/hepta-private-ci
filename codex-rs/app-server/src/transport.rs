@@ -1,6 +1,9 @@
 use crate::message_processor::ConnectionSessionState;
 use crate::outgoing_message::OutgoingEnvelope;
+use crate::outgoing_message::OutgoingMessageSender;
 use codex_app_server_protocol::ExperimentalApi;
+use codex_app_server_protocol::RemoteControlStatusChangedNotification;
+use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ServerRequest;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -60,6 +63,29 @@ impl ConnectionState {
             outbound_opted_out_notification_methods,
             session: Arc::new(ConnectionSessionState::new()),
         }
+    }
+}
+
+/// Queue a remote-control update only for connections already initialized.
+pub(crate) async fn send_remote_control_status_to_initialized_connections(
+    connections: &HashMap<ConnectionId, ConnectionState>,
+    outgoing: &OutgoingMessageSender,
+    status: RemoteControlStatusChangedNotification,
+) {
+    let notification = ServerNotification::RemoteControlStatusChanged(status);
+    // Snapshot recipients now so a later initialize cannot receive this
+    // update before its response. New connections get the cached status
+    // from their connection-scoped initialize notifications.
+    let mut initialized_connection_ids = Vec::new();
+    for (connection_id, connection_state) in connections {
+        if connection_state.session.initialized() {
+            initialized_connection_ids.push(*connection_id);
+        }
+    }
+    if !initialized_connection_ids.is_empty() {
+        outgoing
+            .send_server_notification_to_connections(&initialized_connection_ids, notification)
+            .await;
     }
 }
 

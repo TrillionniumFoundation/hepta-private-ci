@@ -41,16 +41,19 @@ enum TrainingComposition {
 }
 
 impl HostFixture {
-    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
+    // Return heap ownership so callers and cleanup retain the fixture indirectly.
+    pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Box<Self>> {
         let panel = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
         Self::from_panel(panel, pending_claim)
     }
 
-    pub(super) async fn before_adoption() -> anyhow::Result<Self> {
+    pub(super) async fn before_adoption() -> anyhow::Result<Box<Self>> {
         Box::pin(Self::before_publication(PublicationMode::RetainOriginalA)).await
     }
 
-    pub(super) async fn before_publication(publication: PublicationMode) -> anyhow::Result<Self> {
+    pub(super) async fn before_publication(
+        publication: PublicationMode,
+    ) -> anyhow::Result<Box<Self>> {
         let panel = Box::pin(PanelFixture::completed_for_publication(
             TrainingPeer::Original,
             publication,
@@ -59,15 +62,15 @@ impl HostFixture {
         Self::from_panel(panel, /*pending_claim*/ false)
     }
 
-    fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
+    fn from_panel(panel: Box<PanelFixture>, pending_claim: bool) -> anyhow::Result<Box<Self>> {
         Self::from_panel_with_training(panel, pending_claim, TrainingComposition::Fixture)
     }
 
     fn from_panel_with_training(
-        panel: PanelFixture,
+        panel: Box<PanelFixture>,
         pending_claim: bool,
         training: TrainingComposition,
-    ) -> anyhow::Result<Self> {
+    ) -> anyhow::Result<Box<Self>> {
         let PanelFixture {
             panel,
             original,
@@ -76,7 +79,7 @@ impl HostFixture {
             primary,
             retention,
             at,
-        } = panel;
+        } = *panel;
         let input = &primary.config;
         let config = OriginalCellEvaluationReceiptConfigV1 {
             training: input.training.clone(),
@@ -91,7 +94,7 @@ impl HostFixture {
             },
         };
         let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
-        let mut fixture = Self {
+        let mut fixture = Box::new(Self {
             host: None,
             original,
             primary_b,
@@ -101,7 +104,7 @@ impl HostFixture {
             config,
             at,
             directory,
-        };
+        });
         let (file, witness) = fixture.files(/*create*/ true)?;
         let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
             file,
@@ -199,13 +202,20 @@ impl HostFixture {
         Ok(())
     }
 
-    pub(super) async fn finish(mut self) -> anyhow::Result<[usize; 2]> {
-        drop(self.host.take());
-        let counts = [self.primary.finish()?, self.retention.finish()?];
-        drop(self.primary_b);
-        drop(self.retention_b);
-        self.original.finish().await?;
-        Ok(counts)
+    // Keep the cleanup future indirect in every enclosing test state.
+    pub(super) fn finish(
+        self: Box<Self>,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<[usize; 2]>>>> {
+        Box::pin(async move {
+            // Capture the whole fixture until the cleanup future is polled.
+            let mut fixture = self;
+            drop(fixture.host.take());
+            let counts = [fixture.primary.finish()?, fixture.retention.finish()?];
+            drop(fixture.primary_b);
+            drop(fixture.retention_b);
+            fixture.original.finish().await?;
+            Ok(counts)
+        })
     }
 }
 
