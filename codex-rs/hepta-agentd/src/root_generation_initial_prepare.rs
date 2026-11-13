@@ -19,6 +19,7 @@ use crate::PreparedAgentdGenerationInitialV1;
 use crate::ReadyAgentdGenerationInitialV1;
 use crate::RootGenerationInitialModeV1;
 use crate::RootGenerationJournalInputsV1;
+use crate::neuron_generation_update_live::artifacts::GenerationArtifactOwnerV1;
 
 impl OriginalRootGenerationInitialV1 {
     pub(crate) fn prepare_original_initial(
@@ -34,26 +35,23 @@ impl OriginalRootGenerationInitialV1 {
         let observer = self.require_original_target(&files)?;
         observer.require_original_unwritten().map_err(invalid)?;
         let artifact_owner = authorities.artifacts.clone();
-        let artifacts = artifact_owner.lock_initial()?;
-        artifacts.readback().revalidate_initial_client(
-            &self.client,
-            &mut selected,
-            authorities.now()?,
-        )?;
-        if selected.observation().digest().to_string() != profile.selection {
-            return Err(invalid("initial independent selection differs from Root"));
-        }
-        let target = open_target(files)?;
-        if crate::neuron_generation_initial::validate_initial_target(&selected, &target)?
-            != profile.deployment.target
-        {
-            return Err(invalid("initial original target differs from Root"));
-        }
-        observer.require_original_unwritten().map_err(invalid)?;
-        self.client.prepare_initial_current()?;
-        // CURRENT is already durable. Any later failure is an uncertain
-        // acknowledgement, never permission to initialize or claim again.
-        let completed = (|| {
+        let mut current_prepared = false;
+        let completed = GenerationArtifactOwnerV1::with_initial(&artifact_owner, |artifacts| {
+            artifacts.revalidate_initial_client(&self.client, &mut selected, authorities.now()?)?;
+            if selected.observation().digest().to_string() != profile.selection {
+                return Err(invalid("initial independent selection differs from Root"));
+            }
+            let target = open_target(files)?;
+            if crate::neuron_generation_initial::validate_initial_target(&selected, &target)?
+                != profile.deployment.target
+            {
+                return Err(invalid("initial original target differs from Root"));
+            }
+            observer.require_original_unwritten().map_err(invalid)?;
+            self.client.prepare_initial_current()?;
+            // After this actual ACK, both the action and admission finish are
+            // uncertain on failure; neither may initialize or claim again.
+            current_prepared = true;
             let current = Arc::new(NeuronGenerationCurrentOwnerV1::from_original_root_initial(
                 self.client,
             )?);
@@ -83,7 +81,6 @@ impl OriginalRootGenerationInitialV1 {
                     "actual initial genesis differs from original Root files",
                 ));
             }
-            drop(artifacts);
             Ok(PreparedAgentdGenerationInitialV1::from_parts(
                 current,
                 authorities,
@@ -91,8 +88,12 @@ impl OriginalRootGenerationInitialV1 {
                 journal,
                 selected,
             ))
-        })();
-        completed.map_err(crate::root_generation_initial_client::uncertain_after_prepare)
+        });
+        if current_prepared {
+            completed.map_err(crate::root_generation_initial_client::uncertain_after_prepare)
+        } else {
+            completed
+        }
     }
 
     pub(crate) fn recover_original_initial(

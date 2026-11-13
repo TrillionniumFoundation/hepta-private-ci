@@ -13,6 +13,12 @@ use codex_hepta_learning_artifacts::LearningArtifactReadViewV1;
 use std::sync::Arc;
 use std::sync::Weak;
 
+pub(crate) struct OriginalInitialArtifactOwnerV1 {
+    original: Weak<RootGenerationInitialClient>,
+    admission: super::lane::InitialLaneAdmission,
+    reader: Mutex<OriginalInitialArtifactReadbackV1>,
+}
+
 pub(crate) struct OriginalInitialArtifactReadbackV1 {
     original: Weak<RootGenerationInitialClient>,
     profile: InitialProfile,
@@ -71,12 +77,48 @@ impl RootGenerationInitialClient {
             .require_same_original_session(&root.session)?;
         Ok((
             AgentdGenerationUpdateAuthoritiesV1 {
-                artifacts: GenerationArtifactOwnerV1::RootInitial(Arc::new(Mutex::new(readback))),
+                artifacts: GenerationArtifactOwnerV1::RootInitial(Arc::new(
+                    OriginalInitialArtifactOwnerV1 {
+                        original: Arc::downgrade(self),
+                        admission: super::lane::InitialLaneAdmission::for_artifact()?,
+                        reader: Mutex::new(readback),
+                    },
+                )),
                 final_use: Arc::new(authority.clone()),
                 clock,
             },
             selected,
         ))
+    }
+}
+
+impl OriginalInitialArtifactOwnerV1 {
+    pub(crate) fn with_original<R>(
+        &self,
+        action: impl FnOnce(&OriginalInitialArtifactReadbackV1) -> Result<R, AgentdError>,
+    ) -> Result<R, AgentdError> {
+        let client = self.original.upgrade().ok_or_else(uncertain)?;
+        let end = RootGenerationInitialClient::original_frame_end(&client)?;
+        if client.fenced.load(Ordering::Acquire) {
+            return Err(uncertain());
+        }
+        if let Err(error) =
+            crate::RootGenerationPublicationConnectionV1::require_original_publication_session(
+                &client.connection,
+            )
+        {
+            client.fence();
+            return Err(error);
+        }
+        // This is a separate admission token, never the client's wire token.
+        super::lane::InitialLaneAdmission::with_original_action(
+            &self.admission,
+            &self.reader,
+            &client.fenced,
+            end,
+            |reader| reader.require_original_client(&client),
+            action,
+        )
     }
 }
 

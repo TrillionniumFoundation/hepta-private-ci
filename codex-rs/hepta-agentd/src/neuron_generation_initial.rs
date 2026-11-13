@@ -26,6 +26,7 @@ use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;
 use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
 use crate::neuron_generation_update_live::LiveGenerationCurrent;
+use crate::neuron_generation_update_live::artifacts::GenerationArtifactOwnerV1;
 use crate::neuron_generation_update_live::artifacts::InitialArtifactPublicationV1;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
@@ -120,20 +121,20 @@ impl<W: AnchorWitnessStore> PreparedAgentdGenerationInitialV1<W> {
         signed: &SignedFinalUseGrant,
     ) -> Result<ReadyAgentdGenerationInitialV1<W>, AgentdError> {
         let expected = self.prepared.final_use_binding().clone();
-        let receipt = {
-            let artifacts = self.authorities.artifacts.lock_initial()?;
-            self.current.publish_initial_with_original_artifacts(
-                &self.prepared,
-                &self.journal,
-                &mut self.selected,
-                InitialArtifactPublicationV1 {
-                    artifacts: artifacts.readback(),
-                    authority: &self.authorities.final_use,
-                    signed,
-                    clock: self.authorities.clock.as_ref(),
-                },
-            )?
-        };
+        let receipt =
+            GenerationArtifactOwnerV1::with_initial(&self.authorities.artifacts, |artifacts| {
+                self.current.publish_initial_with_original_artifacts(
+                    &self.prepared,
+                    &self.journal,
+                    &mut self.selected,
+                    InitialArtifactPublicationV1 {
+                        artifacts,
+                        authority: &self.authorities.final_use,
+                        signed,
+                        clock: self.authorities.clock.as_ref(),
+                    },
+                )
+            })?;
         let guard = LiveGenerationCurrent::new_initial(
             self.current,
             self.authorities,
@@ -180,12 +181,9 @@ pub fn recover_agentd_generation_initial_v1<W: AnchorWitnessStore>(
     if !metadata.is_file() || metadata.len() == 0 {
         return Err(invalid("published initial journal is missing"));
     }
-    {
-        let artifacts = authorities.artifacts.lock_initial()?;
-        artifacts
-            .readback()
-            .revalidate_owner(&current, &mut selected, authorities.now()?)?;
-    }
+    GenerationArtifactOwnerV1::with_initial(&authorities.artifacts, |artifacts| {
+        artifacts.revalidate_owner(&current, &mut selected, authorities.now()?)
+    })?;
     let live = LiveGenerationCurrent::new_initial(
         current.clone(),
         authorities,

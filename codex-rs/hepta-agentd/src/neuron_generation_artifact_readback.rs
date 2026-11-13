@@ -3,23 +3,12 @@
 //! authenticated Root Initial client can construct the narrower read branch.
 
 use super::*;
-use std::sync::MutexGuard;
 
 #[derive(Clone)]
 pub(crate) enum GenerationArtifactOwnerV1 {
     Writer(Arc<Mutex<LearningArtifactOwnerService>>),
     #[cfg(target_os = "linux")]
-    RootInitial(
-        Arc<Mutex<crate::root_generation_initial_client::OriginalInitialArtifactReadbackV1>>,
-    ),
-}
-
-pub(crate) enum InitialArtifactGuardV1<'a> {
-    Writer(MutexGuard<'a, LearningArtifactOwnerService>),
-    #[cfg(target_os = "linux")]
-    RootInitial(
-        MutexGuard<'a, crate::root_generation_initial_client::OriginalInitialArtifactReadbackV1>,
-    ),
+    RootInitial(Arc<crate::root_generation_initial_client::OriginalInitialArtifactOwnerV1>),
 }
 
 pub(crate) enum InitialArtifactReadbackV1<'a> {
@@ -46,25 +35,22 @@ impl GenerationArtifactOwnerV1 {
         }
     }
 
-    pub(crate) fn lock_initial(&self) -> Result<InitialArtifactGuardV1<'_>, AgentdError> {
+    pub(crate) fn with_initial<R>(
+        &self,
+        action: impl FnOnce(InitialArtifactReadbackV1<'_>) -> Result<R, AgentdError>,
+    ) -> Result<R, AgentdError> {
         match self {
-            Self::Writer(original) => Ok(InitialArtifactGuardV1::Writer(
-                original.lock().map_err(invalid)?,
-            )),
+            Self::Writer(original) => {
+                let held = original.lock().map_err(invalid)?;
+                action(InitialArtifactReadbackV1::Writer(&held))
+            }
             #[cfg(target_os = "linux")]
-            Self::RootInitial(original) => Ok(InitialArtifactGuardV1::RootInitial(
-                original.try_lock().map_err(invalid)?,
-            )),
-        }
-    }
-}
-
-impl InitialArtifactGuardV1<'_> {
-    pub(crate) fn readback(&self) -> InitialArtifactReadbackV1<'_> {
-        match self {
-            Self::Writer(original) => InitialArtifactReadbackV1::Writer(original),
-            #[cfg(target_os = "linux")]
-            Self::RootInitial(original) => InitialArtifactReadbackV1::RootInitial(original),
+            Self::RootInitial(original) => {
+                crate::root_generation_initial_client::OriginalInitialArtifactOwnerV1::with_original(
+                    original,
+                    |reader| action(InitialArtifactReadbackV1::RootInitial(reader)),
+                )
+            }
         }
     }
 }

@@ -132,7 +132,7 @@ class InitialArtifactReadviewClosureTests(unittest.TestCase):
         for occurrence in (0, 1):
             self.reject_removal("neuron_generation_update_live.rs", "fn check_current(",
                                 "self.current.check_current(binding)", occurrence)
-        for marker in (".lock_initial()", ".revalidate_owner(", ".verify_retained_use("):
+        for marker in ("GenerationArtifactOwnerV1::with_initial(", ".revalidate_owner(", ".verify_retained_use("):
             self.reject_removal("neuron_generation_update_live.rs", "fn check_live(", marker)
 
     def test_publication_keeps_claim_dispatch_genesis_and_original_cas(self):

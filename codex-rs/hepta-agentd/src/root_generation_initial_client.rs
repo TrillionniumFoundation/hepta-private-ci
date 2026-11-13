@@ -28,6 +28,7 @@ mod source_capture;
 
 #[path = "root_generation_initial_artifacts.rs"]
 mod artifacts;
+pub(crate) use artifacts::OriginalInitialArtifactOwnerV1;
 pub(crate) use artifacts::OriginalInitialArtifactReadbackV1;
 
 struct Lane {

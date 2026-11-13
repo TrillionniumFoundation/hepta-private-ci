@@ -225,59 +225,62 @@ impl LiveGenerationCurrent {
     }
 
     fn check_live(&self) -> Result<(), CellGenerationErrorV2> {
-        // Lock order is artifact owner -> selected payload -> FinalUse owner.
-        // The update coordinator temporarily rebinds its terminal old journal
-        // to the concrete Control floor before it holds this artifact lock.
-        let artifacts = self
-            .authorities
-            .artifacts
-            .lock_initial()
-            .inspect_err(|error| {
-                self.trace_initial_failure(
-                    "artifact_owner",
-                    format_args!("class={}", current_error_class(error)),
-                )
-            })
-            .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        let mut selected = self
-            .selected
-            .lock()
-            .inspect_err(|_| {
-                self.trace_initial_failure("selected_lock", format_args!("class=Poisoned"))
-            })
-            .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        artifacts
-            .readback()
-            .revalidate_owner(
-                &self.current,
-                &mut selected,
-                self.authorities
-                    .clock
-                    .now_unix_ms()
-                    .inspect_err(|error| {
-                        self.trace_initial_failure("clock", format_args!("class={error}"))
+        // Lock order remains Artifact owner -> selected payload -> FinalUse.
+        // The synchronous scope finishes its original postcheck and release
+        // before any successful result can leave the Artifact admission.
+        GenerationArtifactOwnerV1::with_initial(&self.authorities.artifacts, |artifacts| {
+            let result = (|| {
+                let mut selected = self
+                    .selected
+                    .lock()
+                    .inspect_err(|_| {
+                        self.trace_initial_failure("selected_lock", format_args!("class=Poisoned"))
                     })
-                    .map_err(|_| CellGenerationErrorV2::Unavailable)?,
+                    .map_err(|_| CellGenerationErrorV2::Unavailable)?;
+                artifacts
+                    .revalidate_owner(
+                        &self.current,
+                        &mut selected,
+                        self.authorities
+                            .clock
+                            .now_unix_ms()
+                            .inspect_err(|error| {
+                                self.trace_initial_failure("clock", format_args!("class={error}"))
+                            })
+                            .map_err(|_| CellGenerationErrorV2::Unavailable)?,
+                    )
+                    .inspect_err(|error| {
+                        self.trace_initial_failure(
+                            "artifact_revalidation",
+                            format_args!("class={}", current_error_class(error)),
+                        )
+                    })
+                    .map_err(|_| CellGenerationErrorV2::Unavailable)?;
+                self.authorities
+                    .final_use
+                    .verify_retained_use(
+                        self.publication.signed_grant(),
+                        &self.expected,
+                        self.publication.witness(),
+                    )
+                    .inspect_err(|error| {
+                        self.trace_initial_failure(
+                            "retained_final_use",
+                            format_args!("class={error}"),
+                        )
+                    })
+                    .map_err(|_| CellGenerationErrorV2::Unavailable)?;
+                Ok(())
+            })();
+            Ok(result)
+        })
+        .inspect_err(|error| {
+            self.trace_initial_failure(
+                "artifact_owner",
+                format_args!("class={}", current_error_class(error)),
             )
-            .inspect_err(|error| {
-                self.trace_initial_failure(
-                    "artifact_revalidation",
-                    format_args!("class={}", current_error_class(error)),
-                )
-            })
-            .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        self.authorities
-            .final_use
-            .verify_retained_use(
-                self.publication.signed_grant(),
-                &self.expected,
-                self.publication.witness(),
-            )
-            .inspect_err(|error| {
-                self.trace_initial_failure("retained_final_use", format_args!("class={error}"))
-            })
-            .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        Ok(())
+        })
+        .map_err(|_| CellGenerationErrorV2::Unavailable)?
     }
 }
 

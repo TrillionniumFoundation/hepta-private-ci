@@ -69,7 +69,7 @@ class InitialLaneAdmissionSourceClosureTests(unittest.TestCase):
         self.assertIsNotNone(data)
         self.assertIsNotNone(permit)
         self.assertLess(data.start(), permit.start(), "unwind must release data before the token")
-        _, _, constructor = self.span(lane_source, "fn new(")
+        _, _, constructor = self.span(lane_source, "fn with_domain(")
         self.assertRegex(constructor, r"crossbeam_channel::bounded\s*\(\s*1\s*\)")
         self.assertNotRegex(code, r"\bpub(?:\s*\([^)]*\))?\s+struct\s+Permit\b")
         for marker in (
@@ -140,7 +140,7 @@ class InitialLaneAdmissionSourceClosureTests(unittest.TestCase):
             body, "recv_deadline(end)", "recv()",
         ))
         # A ready token can be returned even when recv_deadline was already late.
-        self.remove(LANE, "fn acquire<'a, T>(", "require_admission_open(fenced, end)?", 1)
+        self.remove(LANE, "fn acquire<'a, T>(", "require_admission_open(fenced, end, self.domain.deadline)?", 1)
         self.remove(STREAM, "fn exchange_until(", "now >= end")
 
     def test_waiters_recheck_original_session_fence_and_poison(self):
