@@ -79,6 +79,7 @@ impl HistoricalSourceRuntime {
     pub(crate) fn register_original_source_ledger(
         &self,
         context: SourceCaptureContext<'_>,
+        capture_end: Instant,
     ) -> io::Result<()> {
         self.root.require_current()?;
         let mut held = self
@@ -102,6 +103,7 @@ impl HistoricalSourceRuntime {
             context.owner,
             files,
             context.end,
+            capture_end,
         );
         match registered {
             Ok(registered) => {

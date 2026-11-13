@@ -115,7 +115,7 @@ impl InitialEnrollmentContext<'_> {
                 self.trace_phase("enrollment.cell-returned", started, end);
                 self.trace_phase("enrollment.ledger-before", started, end);
                 source
-                    .register_original_source_ledger(context)
+                    .register_original_source_ledger(context, self.end)
                     .map_err(|error| enrollment_error("Ledger baseline", error))?;
                 self.trace_phase("enrollment.ledger-returned", started, end);
             }

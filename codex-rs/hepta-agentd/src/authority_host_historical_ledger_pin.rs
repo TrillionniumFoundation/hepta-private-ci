@@ -57,7 +57,9 @@ pub(crate) struct RegisteredOriginalLedgerCaptureV1 {
     baseline: LedgerRecord,
     config: crate::OriginalCellQ24TaskLedgerConfigV1,
     refusal: RootDataRefusalV1,
-    end: std::time::Instant,
+    // Fixed at the original Root service bind, independently of the earlier
+    // enrollment frame. Capture never starts or renews this interval.
+    capture_end: std::time::Instant,
 }
 
 pub(crate) struct PendingOriginalLedgerCaptureV1<'a> {
@@ -87,7 +89,7 @@ impl RegisteredOriginalLedgerCaptureV1 {
             return action(None);
         };
         RootDataRefusalV1::inspect(&original.refusal, || {
-            if std::time::Instant::now() >= original.end
+            if std::time::Instant::now() >= original.capture_end
                 || original.baseline.phase != LedgerPhase::Enrolled
                 || original
                     .store
@@ -117,7 +119,7 @@ impl RegisteredOriginalLedgerCaptureV1 {
                 .load(&original.owner)
                 .map_err(io::Error::other)?
                 != captured
-                || std::time::Instant::now() >= original.end
+                || std::time::Instant::now() >= original.capture_end
             {
                 return Err(io::Error::other(
                     "original Ledger capture changed after Root context",

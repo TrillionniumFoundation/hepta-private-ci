@@ -12,6 +12,7 @@ impl HostAuthorityService {
         publisher: &OwnedFd,
         files: OriginalLedgerFiles,
         end: std::time::Instant,
+        capture_end: std::time::Instant,
     ) -> io::Result<RegisteredOriginalLedgerCaptureV1> {
         original_root()?;
         let target = &slot.profile.deployment.target;
@@ -22,6 +23,11 @@ impl HostAuthorityService {
             RootDataKind::HistoricalLedger,
             target,
             || {
+                if end > capture_end {
+                    return Err(io::Error::other(
+                        "original Ledger enrollment exceeds its original capture session",
+                    ));
+                }
                 if std::time::Instant::now() >= end {
                     return Err(io::Error::other(
                         "original Ledger enrollment deadline expired",
@@ -134,7 +140,7 @@ impl HostAuthorityService {
             baseline,
             config: original,
             refusal,
-            end,
+            capture_end,
         })
     }
 }

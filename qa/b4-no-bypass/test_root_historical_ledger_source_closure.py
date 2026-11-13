@@ -1,5 +1,8 @@
 """Root four-file custody/cold refusal source checks, not native admission proof."""
 
+from pathlib import Path
+import re
+import tempfile
 import tomllib
 import unittest
 
@@ -16,6 +19,86 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
 
     reject_removal = component.HistoricalLedgerReadonlySourceTests.reject_removal
     check_markers = component.HistoricalLedgerReadonlySourceTests.check_markers
+
+
+    def _deadline_function(self, source, function):
+        code = component.PROOF._strip_cfg_test_items(component.PROOF._strip_rust_non_code(source))
+        self.assertEqual(code.count(function), 1)
+        start = code.index(function)
+        end = component.PROOF._rust_item_end(code, start)
+        self.assertIsNotNone(end)
+        return start, end + 1, code[start:end + 1]
+
+    def _verify_original_deadline_flow(self, root):
+        # These are the actual four functions which carry the bound session end.
+        # Existing authority, physical, phase and ordering checks still run first.
+        functions = (
+            ("authority_host_initial_enrollment_runtime.rs", "fn enroll_original("),
+            ("authority_host_historical_ledger_session.rs", "fn register_original_source_ledger("),
+            ("authority_host_historical_ledger_registration.rs", "fn register_original_initial_ledger("),
+            ("authority_host_historical_ledger_pin.rs", "fn with_original_ledger_capture<T>("),
+        )
+        for filename, function in functions:
+            path = AGENT + filename
+            rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
+            self.assertTrue(rows)
+            component.PROOF._verify_protected_files(root, {"protected_file": rows})
+            _, _, body = self._deadline_function((root / path).read_text(), function)
+            compact = re.sub(r"\s+", "", body)
+            if re.search(r"\b(?:let\s+(?:mut\s+)?|mut\s+|&\s*mut\s+)(?:end|capture_end)\b", body):
+                raise component.PROOF.VerificationFailure("original deadline cannot be rebound or borrowed mutably")
+            if re.search(r"\blet\s*\([^;=]*\b(?:end|capture_end)\b[^;=]*\)\s*=", body):
+                raise component.PROOF.VerificationFailure("original deadline cannot be destructured into a new binding")
+            if re.search(r"(?<![\w.])(?:end|capture_end|self\.end|context\.end|original\.capture_end)(?:=[^=>]|[+*/-]=)", compact):
+                raise component.PROOF.VerificationFailure("original deadline cannot be reassigned")
+            if filename == "authority_host_historical_ledger_pin.rs" and re.search(r"\breturn\s+Ok\(", body):
+                raise component.PROOF.VerificationFailure("capture cannot return success before its original postchecks")
+            if filename in ("authority_host_historical_ledger_registration.rs", "authority_host_historical_ledger_pin.rs"):
+                expected = "end" if filename.endswith("_registration.rs") else "original.capture_end"
+                values = re.findall(r"Instant::now\(\)>=(.*?)(?=\|\||\{|;)", compact)
+                if values != [expected, expected]:
+                    raise component.PROOF.VerificationFailure("both expiry checks must use their unchanged original deadline")
+
+    def _reject_deadline_transform(self, filename, function, transform):
+        paths = (
+            "authority_host_initial_enrollment_runtime.rs",
+            "authority_host_historical_ledger_session.rs",
+            "authority_host_historical_ledger_registration.rs",
+            "authority_host_historical_ledger_pin.rs",
+        )
+        source = (ROOT / (AGENT + filename)).read_text()
+        start, end, _ = self._deadline_function(source, function)
+        changed = transform(source[start:end])
+        self.assertNotEqual(changed, source[start:end])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in paths:
+                target = root / (AGENT + name)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text((ROOT / (AGENT + name)).read_text())
+            self._verify_original_deadline_flow(root)
+            (root / (AGENT + filename)).write_text(source[:start] + changed + source[end:])
+            with self.assertRaises(component.PROOF.VerificationFailure):
+                self._verify_original_deadline_flow(root)
+
+    def _replace_deadline_marker(self, body, old, new, occurrence=0):
+        offset = 0
+        for _ in range(occurrence + 1):
+            offset = body.index(old, offset) + len(old)
+        offset -= len(old)
+        return body[:offset] + new + body[offset + len(old):]
+
+    def _move_deadline_block(self, body, marker, before):
+        code = component.PROOF._strip_rust_non_code(body)
+        self.assertEqual(code.count(marker), 1)
+        start = code.index(marker)
+        end = component.PROOF._rust_item_end(code, start)
+        self.assertIsNotNone(end)
+        block = body[start:end + 1]
+        remainder = body[:start] + body[end + 1:]
+        self.assertEqual(remainder.count(before), 1)
+        offset = remainder.index(before)
+        return remainder[:offset] + block + "\n" + remainder[offset:]
 
     def test_actual_capture_and_complete_task_read_callers_are_fixed(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
@@ -104,8 +187,9 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "RootDataRefusalV1::inspect(&original.refusal, ||", "original.baseline.phase != LedgerPhase::Enrolled",
             "let result = action(Some(&mut pending))?", "let (captured, observation, mut held)",
             "held.require_unchanged(&observation)?", "!= captured"))
-        self.reject_removal(AGENT + "authority_host_historical_ledger_pin.rs", "fn with_original_ledger_capture<T>(",
-                            "Instant::now() >= original.end", 1)
+        for occurrence in (0, 1):
+            self.reject_removal(AGENT + "authority_host_historical_ledger_pin.rs", "fn with_original_ledger_capture<T>(",
+                                "Instant::now() >= original.capture_end", occurrence)
 
     def test_capture_requires_same_original_source_publisher_and_real_signed_facts(self):
         self.check_markers(AGENT + "authority_host_historical_ledger_pin.rs", "fn observe_and_retain_original_ledger(", (
@@ -166,7 +250,7 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
 
     def test_actual_registration_precedes_ack_and_nested_context_keeps_cell(self):
         self.reject_removal(AGENT + "authority_host_initial_enrollment_runtime.rs", "fn enroll_original(",
-                            "source\n                    .register_original_source_ledger(context)")
+                            "source\n                    .register_original_source_ledger(context, self.end)")
         self.check_markers(AGENT + "authority_host_historical_source_data.rs", "fn with_original_capture<T>(", (
             "original.ledger.is_some() && original.cell.is_none()",
             "RegisteredOriginalCellCaptureV1::with_original_cell_capture(",
@@ -220,6 +304,78 @@ class RootHistoricalLedgerSourceTests(unittest.TestCase):
             "STANDARD.encode(&bytes) != self.ledger_image_bytes",
             "let maximum_records = 2", "decode_readonly_ledger_data_v1(&bytes, self.cut_fields()?, maximum_records)",
             "!= Some(self.cut.decision_chain.clone())", "!= Some(self.cut.outcome_chain.clone())"))
+
+
+    def test_capture_deadline_keeps_the_original_session_through_every_holder(self):
+        cases = (
+            ("authority_host_initial_enrollment_runtime.rs", "fn enroll_original(",
+             "register_original_source_ledger(context, self.end)", "register_original_source_ledger(context, end)"),
+            ("authority_host_initial_enrollment_runtime.rs", "fn enroll_original(",
+             "register_original_source_ledger(context, self.end)",
+             "register_original_source_ledger(context, Instant::now() + Duration::from_secs(300))"),
+            ("authority_host_historical_ledger_session.rs", "fn register_original_source_ledger(",
+             "context.end,\n            capture_end,", "capture_end,\n            context.end,"),
+            ("authority_host_historical_ledger_session.rs", "fn register_original_source_ledger(",
+             "context.end,\n            capture_end,", "context.end,\n            context.end,"),
+            ("authority_host_historical_ledger_session.rs", "fn register_original_source_ledger(",
+             "context.end,\n            capture_end,", "context.end,"),
+            ("authority_host_historical_ledger_registration.rs", "fn register_original_initial_ledger(",
+             "refusal,\n            capture_end,", "refusal,\n            capture_end: end,"),
+            ("authority_host_historical_ledger_registration.rs", "fn register_original_initial_ledger(",
+             "refusal,\n            capture_end,",
+             "refusal,\n            capture_end: std::time::Instant::now() + std::time::Duration::from_secs(300),"),
+            ("authority_host_historical_ledger_session.rs", "fn register_original_source_ledger(",
+             "self.root.require_current()?;", "self.root.require_current()?;\nlet capture_end = Instant::now() + std::time::Duration::from_secs(300);"),
+            ("authority_host_historical_ledger_registration.rs", "fn register_original_initial_ledger(",
+             "original_root()?;", "original_root()?;\nlet capture_end = capture_end.checked_add(std::time::Duration::from_secs(1)).unwrap();"),
+        )
+        for filename, function, old, new in cases:
+            with self.subTest(file=filename, old=old, replacement=new):
+                self._reject_deadline_transform(filename, function,
+                    lambda body, old=old, new=new: self._replace_deadline_marker(body, old, new))
+
+    def test_registration_frame_checks_and_session_bound_remain_inside_the_arm(self):
+        filename = "authority_host_historical_ledger_registration.rs"
+        function = "fn register_original_initial_ledger("
+        for occurrence in (0, 1):
+            with self.subTest(frame_check=occurrence):
+                self._reject_deadline_transform(filename, function,
+                    lambda body, occurrence=occurrence: self._replace_deadline_marker(
+                        body, "Instant::now() >= end", "Instant::now() >= capture_end", occurrence))
+        for replacement in ("if end < capture_end {", "if false && end > capture_end {", "if false {"):
+            with self.subTest(bound=replacement):
+                self._reject_deadline_transform(filename, function,
+                    lambda body, replacement=replacement: self._replace_deadline_marker(
+                        body, "if end > capture_end {", replacement))
+        self._reject_deadline_transform(filename, function,
+            lambda body: self._move_deadline_block(body, "if end > capture_end {",
+                                                  "let (refusal, ()) = RootDataRefusalV1::create_fresh("))
+
+    def test_capture_expiry_cannot_be_renewed_or_moved_ahead_of_physical_postchecks(self):
+        filename = "authority_host_historical_ledger_pin.rs"
+        function = "fn with_original_ledger_capture<T>("
+        for occurrence in (0, 1):
+            for replacement in (
+                "Instant::now() >= original.capture_end + std::time::Duration::from_secs(300)",
+                "Instant::now() >= std::time::Instant::now() + std::time::Duration::from_secs(300)",
+            ):
+                with self.subTest(check=occurrence, replacement=replacement):
+                    self._reject_deadline_transform(filename, function,
+                        lambda body, occurrence=occurrence, replacement=replacement: self._replace_deadline_marker(
+                            body, "Instant::now() >= original.capture_end", replacement, occurrence))
+        for before in ("let result = action(Some(&mut pending))?;",
+                       "held.require_unchanged(&observation)?;"):
+            with self.subTest(postcheck_moved_before=before):
+                self._reject_deadline_transform(filename, function,
+                    lambda body, before=before: self._replace_deadline_marker(
+                        self._replace_deadline_marker(body,
+                            "|| std::time::Instant::now() >= original.capture_end", ""),
+                        before,
+                        'if std::time::Instant::now() >= original.capture_end { return Err(io::Error::other("expired")); }\n' + before))
+        self._reject_deadline_transform(filename, function,
+            lambda body: self._replace_deadline_marker(
+                body, "held.require_unchanged(&observation)?;",
+                "return Ok(result);\nheld.require_unchanged(&observation)?;"))
 
 
 if __name__ == "__main__":
