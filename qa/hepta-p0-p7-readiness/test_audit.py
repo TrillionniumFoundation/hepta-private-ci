@@ -1,9 +1,13 @@
 """Synthetic mechanism tests. No fixture is a real Hepta qualification result."""
 import copy
 import json
+import os
+import stat
 import tempfile
 from pathlib import Path
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from audit import AuditError, REPO, SCHEMA, STAGES, WORKFLOW_PATHS, audit, read_json, validate_plan
 
@@ -261,6 +265,78 @@ class AdmissionTests(unittest.TestCase):
                 with self.subTest(value=value):
                     with self.assertRaises(AuditError):
                         read_json(p)
+
+
+    def test_source_closure_detected_on_second_read(self):
+        plan, db = fixtures()
+        class Closing(MockGitHub):
+            def __init__(self, data):
+                super().__init__(data)
+                self.n = 0
+            def get(self, path):
+                result = super().get(path)
+                if path == f"/repos/{REPO}/pulls/101":
+                    self.n += 1
+                    if self.n == 2:
+                        result["state"] = "closed"
+                return result
+        result = audit(plan, Closing(db).get)
+        self.assertEqual(result["ci_preflight_count"], 7)
+        self.assertEqual(result["stages"][0]["ci_preflight"], "BLOCKED")
+        self.assertIn("not open during audit", " ".join(result["stages"][0]["ci_blockers"]))
+        self.assertFalse(result["all_blockers_closed"])
+        self.assertFalse(result["model_promotion_authorized"])
+
+    def test_json_byte_limit_applies_to_the_opened_file(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            p = Path(dirname) / "plan.json"
+            value = b'{"ok":true}'
+            p.write_bytes(value + b" " * (256_000 - len(value)))
+            self.assertEqual(read_json(p), {"ok": True})
+            p.write_bytes(p.read_bytes() + b" ")
+            with self.assertRaisesRegex(AuditError, "exceeds 256000"):
+                read_json(p)
+
+            # Simulate growth after the descriptor's size check, with ordinary
+            # file bytes and a spy that forbids an unbounded underlying read.
+            read_sizes = []
+            real_fdopen = os.fdopen
+            def tracked_fdopen(*args, **kwargs):
+                stream = real_fdopen(*args, **kwargs)
+                original_read = stream.read
+                def bounded_read(size=-1):
+                    self.assertGreater(size, 0)
+                    self.assertLessEqual(size, 256_001)
+                    read_sizes.append(size)
+                    return original_read(size)
+                stream.read = bounded_read
+                return stream
+            small = SimpleNamespace(st_mode=stat.S_IFREG, st_size=0)
+            with patch("audit.os.fstat", return_value=small), \
+                    patch("audit.os.fdopen", side_effect=tracked_fdopen):
+                with self.assertRaisesRegex(AuditError, "exceeds 256000"):
+                    read_json(p)
+            self.assertTrue(read_sizes)
+            self.assertLessEqual(sum(read_sizes), 256_001)
+
+    def test_nonregular_opened_file_is_rejected_before_read(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            p = Path(dirname) / "plan.json"
+            p.write_bytes(b"{}")
+            special = SimpleNamespace(st_mode=stat.S_IFIFO, st_size=0)
+            with patch("audit.os.fstat", return_value=special), \
+                    patch("audit.os.fdopen") as opened:
+                with self.assertRaisesRegex(AuditError, "regular file"):
+                    read_json(p)
+                opened.assert_not_called()
+
+    def test_recursive_json_failure_is_an_audit_error(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            p = Path(dirname) / "plan.json"
+            p.write_bytes(b"{}")
+            with patch("audit.json.loads", side_effect=RecursionError("fixture")):
+                with self.assertRaisesRegex(AuditError, "invalid JSON"):
+                    read_json(p)
 
 
 if __name__ == "__main__":

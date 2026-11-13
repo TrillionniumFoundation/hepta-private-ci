@@ -5,13 +5,12 @@ successful on the *same pinned commit* as the owning PR and every explicitly
 required native job must actually have executed successfully. Even eight clean
 CI results do not authorize model or runtime promotion.
 """
-from __future__ import annotations
-
 import argparse
 import json
 import os
 from pathlib import Path
 import re
+import stat
 import sys
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
@@ -58,15 +57,28 @@ def _pairs_unique(pairs: list[tuple[str, Any]]) -> dict:
 
 
 def read_json(path: str | Path) -> dict:
-    f = Path(path)
-    if f.stat().st_size > 256_000:
+    # Check and bound the opened file, including growth after fstat.
+    # Nonblocking open lets POSIX special files be rejected before any read.
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NONBLOCK", 0)
+    fd = os.open(path, flags)
+    try:
+        opened = os.fstat(fd)
+        if not stat.S_ISREG(opened.st_mode):
+            raise AuditError("JSON input must be a regular file")
+        if opened.st_size > 256_000:
+            raise AuditError("JSON input exceeds 256000 bytes")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            blob = stream.read(256_001)
+    finally:
+        os.close(fd)
+    if len(blob) > 256_000:
         raise AuditError("JSON input exceeds 256000 bytes")
     try:
-        raw = json.loads(f.read_text(encoding="utf-8"),
+        raw = json.loads(blob.decode("utf-8"),
                          object_pairs_hook=_pairs_unique,
                          parse_constant=lambda x: (_ for _ in ()).throw(
                              AuditError(f"noncanonical JSON constant: {x}")))
-    except (UnicodeError, json.JSONDecodeError) as exc:
+    except (UnicodeError, json.JSONDecodeError, RecursionError) as exc:
         raise AuditError(f"invalid JSON: {exc}") from exc
     if not isinstance(raw, dict):
         raise AuditError("root must be a JSON object")
@@ -212,6 +224,8 @@ def check_stage(name: str, spec: dict, get: Callable[[str], dict]) -> dict:
         pr_after = get(f"{prefix}/pulls/{pr_number}")
         if pr_after.get("head", {}).get("sha") != sha:
             reasons.append("PR head changed during audit")
+        if pr_after.get("state") != "open":
+            reasons.append("source PR is not open during audit; reassess merge source")
     except (AuditError, TypeError, AttributeError, KeyError, ValueError) as exc:
         reasons.append(f"unverifiable GitHub record: {type(exc).__name__}: {exc}")
 
