@@ -347,6 +347,26 @@ async fn evaluated_next_use_command_lost_ack_recovers_only_exact_readback() -> a
             b"owner_diag_v1 stage=lost_ack_ready_enter class=boundary\n",
         );
     }
+    #[cfg(test)]
+    {
+        // Observe the future type without constructing or polling that future.
+        // This records a value layout, not construction or poll stack usage.
+        fn future_layout<F: std::future::Future>(_: fn() -> F) -> (usize, usize, usize) {
+            (
+                std::mem::size_of::<F>(),
+                std::mem::align_of::<F>(),
+                std::mem::size_of::<F::Output>(),
+            )
+        }
+        let (future_bytes, future_align, output_bytes) =
+            future_layout(|| ActualNextCommand::ready(OpenReceipt::Fresh));
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr().lock(),
+            format_args!(
+                "owner_layout_v1 site=lost_ack_ready future_bytes={future_bytes} future_align={future_align} output_bytes={output_bytes}\n"
+            ),
+        );
+    }
     let actual = Box::pin(ActualNextCommand::ready(OpenReceipt::Fresh)).await?;
     let empty = actual.files.bytes()?;
     let original_s = actual.common.files.bytes()?;
