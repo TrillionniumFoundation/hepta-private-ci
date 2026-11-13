@@ -614,7 +614,10 @@ async fn standalone_image_edit_requires_authorized_attached_image_access() -> Re
     })
     .await?;
     match outcome {
-        ImageEditOutcome::Completed { request: edit_request, .. } => {
+        ImageEditOutcome::Completed {
+            request: edit_request,
+            ..
+        } => {
             assert_eq!(edit_request["prompt"], "add a red hat");
             assert_eq!(edit_request["images"][0]["image_url"], TINY_PNG_DATA_URL);
         }
@@ -864,11 +867,16 @@ async fn run_image_edit_test(
                         anyhow::bail!("unexpected image-edit approval request: {request:?}");
                     }
                     codex_app_server_protocol::JSONRPCMessage::Notification(notification)
-                        if matches!(notification.method.as_str(), "item/started" | "item/completed") =>
+                        if matches!(
+                            notification.method.as_str(),
+                            "item/started" | "item/completed"
+                        ) =>
                     {
                         let params = notification.params.expect("item notification params");
                         assert_ne!(
-                            params["item"]["type"].as_str().expect("item notification type"),
+                            params["item"]["type"]
+                                .as_str()
+                                .expect("item notification type"),
                             "imageGeneration",
                             "unauthorized referenced-image read must precede backend execution"
                         );
@@ -876,11 +884,12 @@ async fn run_image_edit_test(
                     codex_app_server_protocol::JSONRPCMessage::Notification(notification)
                         if notification.method == "turn/completed" =>
                     {
-                        return Ok::<codex_app_server_protocol::TurnCompletedNotification, anyhow::Error>(
-                            serde_json::from_value(
-                                notification.params.expect("turn/completed params"),
-                            )?,
-                        );
+                        return Ok::<
+                            codex_app_server_protocol::TurnCompletedNotification,
+                            anyhow::Error,
+                        >(serde_json::from_value(
+                            notification.params.expect("turn/completed params"),
+                        )?);
                     }
                     _ => {}
                 }
@@ -898,17 +907,18 @@ async fn run_image_edit_test(
             .function_call_output_text(call_id)
             .context("image edit refusal should be visible to the model")?;
         assert!(output.contains("unable to read referenced image at"));
-        assert!(
-            output.contains(
-                &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
-            )
-        );
+        assert!(output.contains(
+            &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
+        ));
         let requests = server
             .received_requests()
             .await
             .context("failed to fetch received requests")?;
         assert_eq!(
-            requests.iter().filter(|request| request.url.path() == "/api/codex/images/edits").count(),
+            requests
+                .iter()
+                .filter(|request| request.url.path() == "/api/codex/images/edits")
+                .count(),
             0
         );
         let referenced_path = arguments["referenced_image_paths"][0]

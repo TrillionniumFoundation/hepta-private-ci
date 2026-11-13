@@ -341,9 +341,9 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     reopened.publish_result(&identity, &record("A"), &recovered)?;
     assert_eq!(recovered_calls.load(Ordering::SeqCst), 0);
     assert_eq!(
-        observers.each_ref().map(|file| {
-            crate::test_support::read_file_bytes(file).expect("same files")
-        }),
+        observers
+            .each_ref()
+            .map(|file| { crate::test_support::read_file_bytes(file).expect("same files") }),
         original_files
     );
     let next = reopened.build(&identity, &record("C"))?;
@@ -431,7 +431,10 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         Err(Error::ReconciliationRequired)
     );
     assert!(owner.read_publication(&identity, &original).is_err());
-    assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, before);
+    assert_eq!(
+        crate::test_support::read_file_bytes(&source_observer)?,
+        before
+    );
     let input = owner.resolve(
         &request,
         &dispatch,
@@ -471,7 +474,10 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         )?,
         input
     );
-    assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, retained);
+    assert_eq!(
+        crate::test_support::read_file_bytes(&source_observer)?,
+        retained
+    );
     drop(owner);
     drop(source_observer);
     let mut substituted = sources.clone();
@@ -708,7 +714,10 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
             &registry()?,
             sources.clone(),
         )?;
-        assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, unchanged);
+        assert_eq!(
+            crate::test_support::read_file_bytes(&source_observer)?,
+            unchanged
+        );
         let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
         let recovered_calls = Arc::clone(&model.calls);
         let mut driver = CircuitTaskDriverV1 {
@@ -759,7 +768,10 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
             usize::from(fail_sequence == 5)
         );
         if fail_sequence != 5 {
-            assert_eq!(crate::test_support::read_file_bytes(&source_observer)?, unchanged);
+            assert_eq!(
+                crate::test_support::read_file_bytes(&source_observer)?,
+                unchanged
+            );
         }
         drop(driver);
         drop(reopened);

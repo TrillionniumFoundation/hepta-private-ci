@@ -294,7 +294,10 @@ impl LedgerFixture {
                     .open(directory.path().join(name)),
             );
         }
-        Self { observers: Mutex::new(BTreeMap::new()), directory }
+        Self {
+            observers: Mutex::new(BTreeMap::new()),
+            directory,
+        }
     }
 
     fn file(&self, name: &str) -> File {
@@ -304,8 +307,7 @@ impl LedgerFixture {
                 .write(true)
                 .open(self.directory.path().join(name)),
         );
-        let _ = checked(self.observers.lock())
-            .insert(name.to_owned(), checked(file.try_clone()));
+        let _ = checked(self.observers.lock()).insert(name.to_owned(), checked(file.try_clone()));
         file
     }
 

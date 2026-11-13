@@ -11,10 +11,10 @@ use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
 use super::spawn_windows_sandbox_session_legacy;
 use crate::WindowsSandboxCancellationToken;
-use crate::legacy_admission_tests::assert_unavailable;
 use crate::ipc_framed::Message;
 use crate::ipc_framed::decode_bytes;
 use crate::ipc_framed::read_frame;
+use crate::legacy_admission_tests::assert_unavailable;
 use crate::run_windows_sandbox_capture;
 use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::models::PermissionProfile;
@@ -95,13 +95,23 @@ fn workspace_roots_for(root: &Path) -> Vec<AbsolutePathBuf> {
 }
 
 fn assert_legacy_refusal_left_home_empty(codex_home: &Path) {
-    for name in ["descendant-started", "release-descendant", "descendant-survived"] {
+    for name in [
+        "descendant-started",
+        "release-descendant",
+        "descendant-survived",
+    ] {
         assert!(
-            !codex_home.join(name).try_exists().expect("inspect legacy marker"),
+            !codex_home
+                .join(name)
+                .try_exists()
+                .expect("inspect legacy marker"),
             "legacy refusal must not create a descendant marker"
         );
     }
-    assert_eq!(fs::read_dir(codex_home).expect("read legacy home").count(), 0);
+    assert_eq!(
+        fs::read_dir(codex_home).expect("read legacy home").count(),
+        0
+    );
 }
 
 fn wait_for_frame_count(frames_path: &Path, expected_frames: usize) -> Vec<Message> {
@@ -201,7 +211,10 @@ fn restricted_token_rejects_managed_network_before_spawn() {
         .expect_err("legacy admission must refuse before managed-network backend selection");
 
         assert_unavailable::<()>(Err(error));
-        assert_eq!(fs::read_dir(codex_home.path()).expect("read home").count(), 0);
+        assert_eq!(
+            fs::read_dir(codex_home.path()).expect("read home").count(),
+            0
+        );
     });
 }
 
@@ -233,7 +246,10 @@ fn legacy_non_tty_cmd_refuses_before_child_launch() {
         )
         .await;
         assert_unavailable(result);
-        assert_eq!(fs::read_dir(codex_home.path()).expect("read home").count(), 0);
+        assert_eq!(
+            fs::read_dir(codex_home.path()).expect("read home").count(),
+            0
+        );
     });
 }
 
@@ -315,7 +331,10 @@ fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
         .await
         .expect_err("legacy admission must refuse before deny-read override handling");
         assert_unavailable::<()>(Err(err));
-        assert_eq!(fs::read_dir(codex_home.path()).expect("read home").count(), 0);
+        assert_eq!(
+            fs::read_dir(codex_home.path()).expect("read home").count(),
+            0
+        );
     });
 }
 
@@ -542,7 +561,13 @@ fn legacy_workspace_request_refuses_before_file_or_directory_changes() {
         let tmp_root = test_root.path().join("tmp");
         let outside_root = test_root.path().join("outside");
         let protected_git_dir = workspace.join(".git");
-        for directory in [&workspace, &temp_root, &tmp_root, &outside_root, &protected_git_dir] {
+        for directory in [
+            &workspace,
+            &temp_root,
+            &tmp_root,
+            &outside_root,
+            &protected_git_dir,
+        ] {
             fs::create_dir_all(directory).expect("create owned fixture directory");
             fs::write(directory.join("kept.txt"), "unchanged").expect("seed owned fixture file");
         }
@@ -572,14 +597,23 @@ fn legacy_workspace_request_refuses_before_file_or_directory_changes() {
         )
         .await;
         assert_unavailable(result);
-        for directory in [&workspace, &temp_root, &tmp_root, &outside_root, &protected_git_dir] {
+        for directory in [
+            &workspace,
+            &temp_root,
+            &tmp_root,
+            &outside_root,
+            &protected_git_dir,
+        ] {
             assert!(directory.is_dir());
             assert_eq!(
                 fs::read_to_string(directory.join("kept.txt")).expect("read owned fixture file"),
                 "unchanged"
             );
         }
-        assert_eq!(fs::read_dir(codex_home.path()).expect("read home").count(), 0);
+        assert_eq!(
+            fs::read_dir(codex_home.path()).expect("read home").count(),
+            0
+        );
     });
 }
 

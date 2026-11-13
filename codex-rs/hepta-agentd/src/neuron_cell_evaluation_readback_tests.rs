@@ -440,11 +440,7 @@ fn stale_cell_owner_cannot_read_completed_signed_execution() {
     let holdout_file = file(&test.fixture.directory.path().join("holdout"));
     test.fixture.holdout_observer = checked(holdout_file.try_clone());
     let store = SharedHoldout(Arc::new(Mutex::new(checked(
-        LockedFileFinalHoldoutCasStoreV1::recover(
-            holdout_file,
-            digest("binding"),
-            Some(anchor),
-        ),
+        LockedFileFinalHoldoutCasStoreV1::recover(holdout_file, digest("binding"), Some(anchor)),
     ))));
     let owner = checked(FencedFinalHoldoutOwnerV1::recover(
         store.clone(),

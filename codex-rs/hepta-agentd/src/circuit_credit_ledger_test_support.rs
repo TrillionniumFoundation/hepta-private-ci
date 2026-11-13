@@ -96,7 +96,10 @@ impl LedgerFixture {
         };
         let ledger_file = file("ledger");
         let witness_file = file("witness");
-        let observers = [checked(ledger_file.try_clone()), checked(witness_file.try_clone())];
+        let observers = [
+            checked(ledger_file.try_clone()),
+            checked(witness_file.try_clone()),
+        ];
         let ledger = checked(DurableLedger::create(
             ledger_file,
             d(domain),
@@ -156,13 +159,17 @@ impl LedgerFixture {
             &directory_handle,
             &directory_handle,
         ));
-        Self { writer, observers, _directory: directory }
+        Self {
+            writer,
+            observers,
+            _directory: directory,
+        }
     }
 
     pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        self.observers.each_ref().map(|file| {
-            checked(crate::test_support::read_file_bytes(file))
-        })
+        self.observers
+            .each_ref()
+            .map(|file| checked(crate::test_support::read_file_bytes(file)))
     }
 }
 

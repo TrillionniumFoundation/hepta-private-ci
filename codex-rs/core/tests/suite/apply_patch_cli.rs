@@ -1215,7 +1215,9 @@ async fn apply_patch_cli_preserves_existing_hard_link_outside_workspace() -> Res
     if cfg!(windows) {
         #[cfg(windows)]
         assert!(
-            out.contains(&codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()),
+            out.contains(
+                &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
+            ),
             "legacy Windows sandbox admission must refuse before filesystem access; tool output: {out}"
         );
         assert_eq!(

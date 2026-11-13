@@ -88,8 +88,7 @@ fn workspace_token_refusal_leaves_existing_files_unchanged() -> Result<()> {
     let capability = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     assert_unavailable(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])
-            .map(OwnedToken)
+        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()]).map(OwnedToken)
     });
     assert_eq!(std::fs::read_to_string(&existing)?, "original");
     assert_eq!(std::fs::read_dir(fixture.path())?.count(), 1);

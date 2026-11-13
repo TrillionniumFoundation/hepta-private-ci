@@ -156,8 +156,8 @@ fn original_holdout_physical_length_changes_never_repair_or_clear_refusal() {
         let (_temp, mut observation, original) = populated();
         let mut store = original.into_store();
         assert!(store.load(digest("binding")).is_ok());
-        let saved = read_held_bytes(&mut observation)
-            .unwrap_or_else(|error| panic!("read bytes: {error}"));
+        let saved =
+            read_held_bytes(&mut observation).unwrap_or_else(|error| panic!("read bytes: {error}"));
         let mut changed = saved.clone();
         if truncate {
             changed.truncate(changed.len() - 1);

@@ -163,10 +163,7 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
     );
     assert_eq!(replay.closure_digest, recovered.closure_digest);
     assert_eq!(ledger_fixture.bytes(), after);
-    assert_eq!(
-        fixture.bytes("generation-journal"),
-        generation_after
-    );
+    assert_eq!(fixture.bytes("generation-journal"), generation_after);
     assert_eq!(control.calls.load(Ordering::SeqCst), 1);
     tasks.shutdown().await;
 }

@@ -76,7 +76,10 @@ impl OriginalCase {
 
     fn provider(&mut self, mode: ReleaseMode) -> OriginalProvider {
         OriginalProvider {
-            observation: self.observation.try_clone().expect("observe original holdout"),
+            observation: self
+                .observation
+                .try_clone()
+                .expect("observe original holdout"),
             plan: self.frozen.frozen_plan.clone(),
             inputs: self.fixture.provider.inputs.take(),
             mode,

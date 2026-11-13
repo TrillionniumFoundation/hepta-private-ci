@@ -187,14 +187,18 @@ async fn normal_review_drain_waits_for_only_its_finish_owner() {
 
     let mut drain = Box::pin(interrupt_and_drain_turn(&review_session, "current-turn"));
     assert!(futures::poll!(drain.as_mut()).is_pending());
-    let submission = rx_sub.try_recv().expect("the original interrupt was submitted");
+    let submission = rx_sub
+        .try_recv()
+        .expect("the original interrupt was submitted");
     assert!(matches!(submission.op, Op::Interrupt));
     assert!(review_session.io.rx_event.try_recv().is_err());
     assert!(review_session.session.has_pending_task_terminalization());
     assert!(!completion.is_complete());
 
     retire_finish(&review_session, &identity, &completion);
-    drain.await.expect("normal drain completes after its exact owner retires");
+    drain
+        .await
+        .expect("normal drain completes after its exact owner retires");
     assert!(!unrelated_completion.is_complete());
     assert!(review_session.session.has_pending_task_terminalization());
     assert!(rx_sub.try_recv().is_err());
@@ -209,7 +213,9 @@ async fn normal_review_drain_finish_wait_does_not_restart_the_drain_budget() {
     let started = tokio::time::Instant::now();
     let mut drain = Box::pin(interrupt_and_drain_turn(&review_session, "current-turn"));
     assert!(futures::poll!(drain.as_mut()).is_pending());
-    let submission = rx_sub.try_recv().expect("the original interrupt was submitted");
+    let submission = rx_sub
+        .try_recv()
+        .expect("the original interrupt was submitted");
     assert!(matches!(submission.op, Op::Interrupt));
 
     let remaining = Duration::from_secs(1);
@@ -223,12 +229,17 @@ async fn normal_review_drain_finish_wait_does_not_restart_the_drain_budget() {
     assert!(review_session.session.has_pending_task_terminalization());
     tokio::time::advance(remaining).await;
 
-    let error = drain.await.expect_err("the original total drain budget must expire");
+    let error = drain
+        .await
+        .expect_err("the original total drain budget must expire");
     assert_eq!(
         error.to_string(),
         "timed out draining guardian review session after interrupt"
     );
-    assert_eq!(tokio::time::Instant::now() - started, GUARDIAN_INTERRUPT_DRAIN_TIMEOUT);
+    assert_eq!(
+        tokio::time::Instant::now() - started,
+        GUARDIAN_INTERRUPT_DRAIN_TIMEOUT
+    );
     assert!(rx_sub.try_recv().is_err());
     assert!(review_session.session.has_pending_task_terminalization());
     assert!(!completion.is_complete());

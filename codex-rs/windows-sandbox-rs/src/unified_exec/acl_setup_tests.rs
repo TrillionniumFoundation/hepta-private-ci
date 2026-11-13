@@ -382,7 +382,9 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
             }
             Err(error) => Err(error),
         };
-        fixture.assert_rejected(result.expect_err("legacy admission must refuse before ACL setup or session spawn"));
+        fixture.assert_rejected(
+            result.expect_err("legacy admission must refuse before ACL setup or session spawn"),
+        );
     });
 }
 

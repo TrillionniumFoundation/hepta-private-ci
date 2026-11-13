@@ -4551,7 +4551,10 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
                         );
                     }
                     JSONRPCMessage::Notification(notification)
-                        if matches!(notification.method.as_str(), "item/started" | "item/completed") =>
+                        if matches!(
+                            notification.method.as_str(),
+                            "item/started" | "item/completed"
+                        ) =>
                     {
                         let params = notification.params.expect("item notification params");
                         assert_ne!(
@@ -4578,12 +4581,14 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
         assert_eq!(completed.turn.id, turn_2.id);
         assert_eq!(completed.turn.status, TurnStatus::Completed);
 
-        let requests = server.received_requests().await.expect("read model requests");
+        let requests = server
+            .received_requests()
+            .await
+            .expect("read model requests");
         let model_requests: Vec<_> = requests
             .iter()
             .filter(|request| {
-                request.method.as_str() == "POST"
-                    && request.url.path().ends_with("/responses")
+                request.method.as_str() == "POST" && request.url.path().ends_with("/responses")
             })
             .collect();
         assert_eq!(model_requests.len(), 4);
@@ -4613,7 +4618,8 @@ async fn turn_start_file_change_approval_accept_for_session_persists_v2() -> Res
     {
         let started_file_change_2 = timeout(DEFAULT_READ_TIMEOUT, async {
             loop {
-                let started: ItemStartedNotification = mcp.read_notification("item/started").await?;
+                let started: ItemStartedNotification =
+                    mcp.read_notification("item/started").await?;
                 if let ThreadItem::FileChange { .. } = started.item {
                     return Ok::<ThreadItem, anyhow::Error>(started.item);
                 }

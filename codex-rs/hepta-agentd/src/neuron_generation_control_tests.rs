@@ -426,10 +426,7 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
             .await
             .is_err()
     );
-    assert_eq!(
-        fixture.bytes("generation-journal"),
-        before
-    );
+    assert_eq!(fixture.bytes("generation-journal"), before);
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     serving.finish().await
 }

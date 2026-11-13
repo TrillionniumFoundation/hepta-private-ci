@@ -548,7 +548,12 @@ mod tests {
         );
         crate::legacy_admission_tests::assert_unavailable(result);
         assert!(env_map.is_empty());
-        assert_eq!(std::fs::read_dir(codex_home.path()).expect("read home").count(), 0);
+        assert_eq!(
+            std::fs::read_dir(codex_home.path())
+                .expect("read home")
+                .count(),
+            0
+        );
     }
 
     #[test]

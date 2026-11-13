@@ -35,9 +35,15 @@ fn legacy_workspace_capability_request_refuses_before_native_deletion() {
         )
         .await;
         assert_unavailable(result);
-        assert_eq!(fs::read_to_string(&outside_file).expect("read outside fixture"), "unchanged");
+        assert_eq!(
+            fs::read_to_string(&outside_file).expect("read outside fixture"),
+            "unchanged"
+        );
         assert!(outside.is_dir());
         assert_eq!(fs::read_dir(&workspace).expect("read workspace").count(), 0);
-        assert_eq!(fs::read_dir(codex_home.path()).expect("read home").count(), 0);
+        assert_eq!(
+            fs::read_dir(codex_home.path()).expect("read home").count(),
+            0
+        );
     });
 }
