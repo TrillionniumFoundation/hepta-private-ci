@@ -2558,6 +2558,7 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     .expect("remote control should start");
     let mut status_rx = remote_handle.status_receiver();
 
+    eprintln!("waiting for initial remote-control token refresh request");
     let refresh_request = accept_http_request(&listener).await;
     assert_eq!(
         refresh_request.request_line,
@@ -2573,6 +2574,7 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     )
     .await;
 
+    eprintln!("waiting for initial remote-control websocket upgrade request");
     let websocket_request = accept_http_request(&listener).await;
     assert_eq!(
         websocket_request.request_line,
