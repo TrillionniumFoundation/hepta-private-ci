@@ -1,0 +1,84 @@
+{
+  "cancellation": "Dropping the original caller marks its loan inactive. Extra pending work remains until the actual synchronous Root operation returns and its same authenticated Terminal report is accepted. Lost report leaves an Unknown pending blocker; process/outer task termination is not claimed joined.",
+  "completion": "Root never accepts a raw completion ACK or result payload as publisher authority. The daemon fixed loan encodes from the original private receipt; Root matches the actual Source request/input and original Cell decision before and after its original durable Source retain.",
+  "counts": {
+    "existing": 12,
+    "new_mechanism_tests": 0,
+    "new_production": 16,
+    "paths": 28
+  },
+  "executed": {
+    "fmt": false,
+    "h": false,
+    "qa": false,
+    "real_task_chain": false,
+    "rust": false,
+    "source_git": false
+  },
+  "format": "hepta-e2-fixed-root-task-lanes-local-review-v1",
+  "identity_status": "All new identities locally computed only; running b608 and H controls untouched.",
+  "public_entries": [
+    "AgentdConfig::with_original_root_circuit_task",
+    "PreparedRootHostCircuitTaskV1::serve_original_root_circuit_task"
+  ],
+  "registration_obligations": {
+    "existing_driver_generic_and_runtime_slot_changes_require_exact_protection_refresh": true,
+    "new_caller_edges_require_full_collector": true,
+    "new_files": [
+      "codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_cell_remote.rs",
+      "codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_cell_port.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_data.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_root_lane.rs",
+      "codex-rs/hepta-agentd/src/circuit_task_source_remote.rs",
+      "codex-rs/hepta-agentd/src/config_original_root_task.rs"
+    ],
+    "new_public_methods": 2,
+    "no_ignore_rule_or_existing_forbidden_rule_changed": true,
+    "old_source_cell_driver_body_proofs_retained": true
+  },
+  "remaining": [
+    "No CLI/launcher ordinary deployment hook is included in this frozen layer yet; trusted stream handoff and exact caller registration remain a following layer.",
+    "No new mechanism test has been executed or included in this source layer; the existing driver test only receives required generic/import compatibility edits.",
+    "A dedicated non-Root Material Source readonly loan is still needed. Root-local Source custody does not bypass original same-UID command-channel rejection.",
+    "Actual three-UID task/learning chain, process cold recovery, model availability and independently authorized outcomes remain unobserved.",
+    "A timeout or response delivered before a subsequent check fails remains Unknown; this layer makes no rollback or NotApplied assertion."
+  ],
+  "roles": {
+    "daemon": [
+      "original AgentdConfig and identity",
+      "original AgentdState and signed RunStart journal path",
+      "original AutomationStore and task driver transactions",
+      "actual non-Clone admission and committed receipt",
+      "same bootstrap and invocation required by original V3 learning enrollment"
+    ],
+    "root": [
+      "actual original Host session and protected generation operation",
+      "same original PublishedTask/Cell/Source custody",
+      "unique original Cell writer/inference pump",
+      "same-Arc Source publication and retirement"
+    ]
+  },
+  "status": "PREPARED_UNEXECUTED_IPC_IMPLEMENTATION",
+  "transport": {
+    "absolute_end": "Root original Host end, daemon fixed construction end; aliases share the same Budget Arc. Original channel deadline remains additional.",
+    "aggregate_requests_across_both_lanes_per_process": 128,
+    "credentials": "Actual HAP SO_PEERCRED + both pidfds; registered non-Root process at Root and UID0 Root at daemon; no UID exemption.",
+    "errors": "A failed/late/uncertain exchange removes its channel; no reconnect, queue-backed success or Execute retry.",
+    "lifetime_ceiling_seconds": 300,
+    "max_frame_bytes": 65536,
+    "protocol": "HCRTLOA1",
+    "purpose": "Fixed task lane and fixed reverse loan lane; exact source binding, nonzero session nonce and monotonically checked sequence.",
+    "request_timeout_millis": 500,
+    "streams": 2
+  }
+}

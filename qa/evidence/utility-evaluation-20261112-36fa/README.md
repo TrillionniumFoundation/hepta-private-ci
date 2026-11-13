@@ -1,3 +1,67 @@
+# Current checkpoint: complete history readback, source execution Unknown
+
+Cutoff: 2026-11-13 14:56:57 UTC. This is an evidence and source-review checkpoint. **qualification=false; real qualified A→B→C→daemon/Root cold-recovery chains=0.** An engineering approval, source commit, transport success, static byte review or mechanism test cannot substitute for actual task utility or runtime owner authorization.
+
+## What changed at this cutoff
+
+- The history staging process actually completed successfully (job `1a1d52e0d88-392-784`, exit 0). Root independently reconstructed **61 complete files / 8,301,563 bytes**, including all 55 original historical records, from the original reads. The 17 writes, 83 part-read responses (including the retained helper failure and its same-version continuation), 177 fixed-file read responses, actual request, approved payload and normal-completion evidence are retained.
+- The complete set of **755 raw original files / 38,963,673 bytes** is closed in a bounded archive: exact index `c83d5ac314bbbb9191277779f013ab9adee95fca`, manifest `081b148d08c5fb104eb0bb2a15cf5687b343915f`, 73 encoded parts. Root performed actual Git full GET on all 73 parts and three metadata files, bounded-decoded the complete archive, and independently replayed the 457 used inputs. No original file was repaired, renamed into an old path, or replaced.
+- A separately approved exact source-only request for **b6084394 / tree 8ebb37e** was submitted once. Its original start response was MCP timeout `-32603`, with no job id. One approved fixed RESULT-path read reported the path unavailable. A later bounded metadata lookup used two calls in one snapshot: first incomplete/pending with zero rows, then `durable inventory source entry bound exceeded`. **Admission, execution and source-gate results remain Unknown.** These observations do not establish NotApplied, non-execution, source preservation, pass or failure. No further H action is authorized by this checkpoint.
+- IPC and Root late-enrollment source proposals are frozen as reviewable exact before/after packets. They remain unformatted, uncompiled and unrun. The complete source gates, original native 14-phase qualification, actual authorized task chain and real process cold recovery are not established.
+
+## Source identities remain separate
+
+| Object | Exact identity | Meaning |
+| --- | --- | --- |
+| Draft PR #6203 source | `cc57c7198db6293ccca562253c42fffbe2a04633` | Existing source head unchanged |
+| Source-only gate request target | `b6084394a4a38ab495c16eaba09e879f04a96f8e` / `8ebb37e523ad3932a58cf016af0a9f4e0eeb6638` | Exact submitted request; execution Unknown |
+| E1 separate review branch | `99fada80470f175ba14004ea9fcb006853c7d98f` / `3778225f2d49dcd4729d05c02ae9805b43df87d8` | 19-path source candidate only; no qualification |
+| E2/E3 composed preview | review `6685e7b5fe7ff2c52f50e9ce936967702838b195` | 53 changed paths: E1 + E2 factory/refusal + IPC28 + first E3 layer; local reproducible composition, not a source commit |
+
+The 53-path preview does not include the later LanePurpose correction, E3 late-enrollment layer, ordinary handoff work, Material Source loan or final registrations. No source branch was moved for those proposals in this checkpoint.
+
+## Source-only Unknown evidence
+
+- Exact Root approval: `9a48727adf7f73ee6adf8d45b567db3000a83c5f`; actual seven-field request: `eb4658e231aac54f226a78585d647e2bab8aa6e1`.
+- Original timeout: `dd0593e577a8b755b17f5ea95678565d24b543e2`; fixed-path read response: `b06188a8ce025e0273715edae112492433e8c064`.
+- Frozen first observation window: [placement](final-source-qualification-b608-v2-unknown-window-v1/PLACEMENT.json), [Unknown review](final-source-qualification-b608-v2-unknown-window-v1/UNKNOWN_EXECUTION_REVIEW.json).
+- Bounded lookup approval: `8b874c4621289f9ad037581ed0ef00bf74ad63f7`; complete raw responses [page 1](source-unknown-metadata-lookup-v1/PAGE_01.SDK.original.json) and [page 2](source-unknown-metadata-lookup-v1/PAGE_02.SDK.original.json). Neither contains a job row; the second refuses the inventory.
+- [Root independent reconciliation review](source-unknown-reconciliation-root-v1/ROOT_UNKNOWN_RECONCILIATION_REVIEW.json), `d335a0798d576539470bcd4b8063f09fa626239b`, confirms exact cursor continuity, one snapshot, two calls, no matching identity, no gate conclusion, and complete Git readback of the original window and lookup records.
+- [Placement scope clarification](source-unknown-reconciliation-root-v1/PLACEMENT_SCOPE_CLARIFICATION.json): “no source/ref change” means no separate mutation action was dispatched by the executor in that frozen window. It is not a physical before/after preservation finding.
+- Original response timing is not synthesized. Preserved pre-dispatch intent and file observation times are bounds, not independently measured server admission or execution times.
+
+The earlier `65a` attempt remains its original failed contract. Its missing historical path and unavailable initial baseline are not repaired or promoted by the successful history transport or by the new Unknown request. Earlier historical partial reviews remain exact snapshots of their original cutoff.
+
+## Complete history closure
+
+[Root replay](root-history-stage-complete-review-v1/ROOT_COMPLETE_READBACK_REVIEW.json) is identified by `b0434543015a01fac8d60267981f08af8160be50`. [Archive/replay closure](root-history-stage-complete-review-v1/ROOT_ARCHIVE_AND_REPLAY_CLOSURE.json) is identified by `93ec29d7f8ed089e419aa68c82db628b369cebd8`. The archive manifest and parts are under [history-stage-complete-raw-archive-v3](history-stage-complete-raw-archive-v3/). Exact individual-file blob identities inside the index are content identities; individual original files were not all published as separate Git objects. Their complete bytes are retained in the verified bounded archive.
+
+Binary read responses directly bind version strings and bytes, not an independently exposed nine-field stat/UID observation. Ownership checks belong to the exact approved stage program and its actual normal completion. Availability at these observations does not prove perpetual availability, model legality, original owner authority or actual adoption.
+
+## Frozen product layers
+
+| Layer | Packet / review | Static scope and remaining limit |
+| --- | --- | --- |
+| E2 IPC28 | `06dafdbdeb53eb5ccf6480993596bbb4d939f203` | Two fixed Task/Loan streams; actual admission, Trace and private Receipt stay at daemon; original Root Cell/Source custody stays Root |
+| IPC independent audit | `cd6a2798e03b023583b33da35e9b5dbad6f65b15` | Full before/after and original Driver body review; no remaining identified static owner relaxation in this scope, no runtime result |
+| LanePurpose correction | `69d6d5eda401ff59f7e89b1e659f77a431274248` | Three-file explicit private enum replaces a new positional bool; fixed wire/purpose set and budgets unchanged |
+| E3 first Root CLI | `0dc5e98ff38ed0c4c4defe277d21a5cb90bae37b` | Actual original trust/model/issuer/registration construction path; first seven paths |
+| E3 late enrollment | `388bfb3f3ab70e5f39d847c26d2d48daa2c7ead1` | 20 paths, sealed two-right handoff, original listener directory, daemon connects after actual UID drop; five unrun framing/deadline tests |
+
+Root independently verified the first E3 layer's exact b608 dependencies and mount inverses. The later E3 layer's independent semantic review and final registration work are in progress at this cutoff. The original refusal paths and UID/capability/owner checks remain requirements. An inherited stream established while Root cannot be relabeled as a daemon peer.
+
+IPC cancellation retains pending work until the same actual Root operation returns an authenticated terminal response. Dropping an outer await is not proof of joined work; a missing terminal response remains Unknown. No reconnect, synthetic receipt or exported cloneable admission substitutes for the original operation.
+
+## Required end-to-end result
+
+A real authorized A must enter through the original signed ordinary ingress and original Training owner; independent B must provide complete outcome, cost, provenance and independence evidence; original owners must decide Adopt or complete NoUpdate; a new C must actually use the adopted version or retained parent; daemon and Root must then actually restart and recover the same durable records. Same-process reopen, a constructor test or a source packet is not this chain.
+
+External objective, prediction, behavior, critic, independent outcome and public reward contract remain separate. Missing evidence stays Unknown. Complete NoUpdate remains a legitimate paid-service outcome under the frozen contract. Deterministic fraud requires a reproducible fact and the original authorized challenge/disposition path. Privacy, authorization and must-pass failures cannot be offset by average quality gains.
+
+---
+
+# Historical checkpoint content retained verbatim below
+
 # Current checkpoint: E1 source candidate and successful history-stage process
 
 As of 2026-11-13 14:05:54 UTC, real qualified task chains remain **0**, with **qualification=false**.

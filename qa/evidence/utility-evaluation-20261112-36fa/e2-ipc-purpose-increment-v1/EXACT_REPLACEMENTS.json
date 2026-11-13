@@ -1,0 +1,65 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs",
+    "replacements": [
+      {
+        "after": "#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub(super) enum LanePurpose { Task, Loan }\n\n/// Created only by the fixed daemon/Root factories from two actual peer-pinned",
+        "before": "/// Created only by the fixed daemon/Root factories from two actual peer-pinned"
+      },
+      {
+        "after": "    purpose: LanePurpose,",
+        "before": "    task_lane: bool,"
+      },
+      {
+        "after": "        purpose: LanePurpose,",
+        "before": "        task_lane: bool,"
+      },
+      {
+        "after": "            purpose, budget })",
+        "before": "            task_lane, budget })"
+      },
+      {
+        "after": "if frame.operation.task_lane() != (self.purpose == LanePurpose::Task) || frame.loan == 0 {",
+        "before": "if frame.operation.task_lane() != self.task_lane || frame.loan == 0 {"
+      },
+      {
+        "after": "if loan == 0 || operation.task_lane() != (self.purpose == LanePurpose::Task) {",
+        "before": "if loan == 0 || operation.task_lane() != self.task_lane {"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_client.rs",
+    "replacements": [
+      {
+        "after": "use super::wire::{Budget, Frame, Lane, LanePurpose, Operation, FRAME_LIMIT, TIMEOUT};",
+        "before": "use super::wire::{Budget, Frame, Lane, Operation, FRAME_LIMIT, TIMEOUT};"
+      },
+      {
+        "after": "inputs.session_nonce, LanePurpose::Task, Arc::clone(&budget)",
+        "before": "inputs.session_nonce, true, Arc::clone(&budget)"
+      },
+      {
+        "after": "inputs.session_nonce, LanePurpose::Loan, budget",
+        "before": "inputs.session_nonce, false, budget"
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_remote_service.rs",
+    "replacements": [
+      {
+        "after": "use super::wire::{Budget, Frame, Lane, LanePurpose, Operation};",
+        "before": "use super::wire::{Budget, Frame, Lane, Operation};"
+      },
+      {
+        "after": "streams.nonce, LanePurpose::Task, Arc::clone(&budget)",
+        "before": "streams.nonce, true, Arc::clone(&budget)"
+      },
+      {
+        "after": "streams.nonce, LanePurpose::Loan, budget",
+        "before": "streams.nonce, false, budget"
+      }
+    ]
+  }
+]

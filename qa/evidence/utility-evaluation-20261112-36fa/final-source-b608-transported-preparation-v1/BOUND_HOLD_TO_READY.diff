@@ -1,0 +1,28 @@
+--- actual-bound/HOLD
++++ execution-candidate
+@@ -408,7 +408,7 @@
+   "records_parent": "/home/qian-qi/hepta-utility-36fa-evidence",
+   "repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+   "reviewed_formatter_changed_paths": [],
+-  "root_execution_approved": false,
++  "root_execution_approved": true,
+   "root_parent": "/run/hepta-utility-36fa-final-b608-v2",
+   "run_identity": "hepta-utility-36fa-final-b608-v2",
+   "runtime_guard": {
+@@ -562,12 +562,12 @@
+   ],
+   "source_gates_config_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/SOURCE_GATES_CONFIG.json",
+   "source_gates_config_pin": {
+-    "bytes": 843,
+-    "git_blob": "acfa7c86f4202d6e7f15399514dc739f4bc33f82",
+-    "sha256": "fddbf0087814c873cf0d23c9e1419a8856c50cd4578d5f6d52c7a80edbad4acc"
++    "bytes": 831,
++    "git_blob": "01aa39eaf0334341b2d7944d3457ac09d1577f00",
++    "sha256": "679eedbc1835bdaf55c5dca76dcb48ee320f3c88340d07fef657ebd70d43f1cb"
+   },
+   "source_gates_handoff_records": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/source-handoff",
+-  "state": "HOLD_ROOT_EXACT_SOURCE_REVIEW_REQUIRED",
++  "state": "READY_FOR_FINAL_SOURCE_QUALIFICATION",
+   "target": "/data/hepta-utility-36fa-final-native-target-v1",
+   "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+ }

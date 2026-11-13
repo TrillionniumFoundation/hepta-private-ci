@@ -1,0 +1,131 @@
+{
+  "call_count": 2,
+  "continuation_exactly_matches_returned_cursor": true,
+  "created_at": "2026-11-13T14:44:43.932023+00:00",
+  "execution_status": "Unknown",
+  "format": "hepta-bounded-source-lookup-observation-review-v1",
+  "inventory_complete": false,
+  "matching_projection": {
+    "bytes": 1260,
+    "git_blob": "3a4dc80fdd33a7cc491b1530a88c174160f0f590",
+    "name": "MATCHING_ROW_PROJECTION.json",
+    "sha256": "e3c73397f838635f514a0a1c201893096405c915dfee13c3d2b158ef2a348bbe"
+  },
+  "metadata_sdk_policy": "Raw SDKs remain local only; not published. This review and the empty matching projection contain no unrelated job rows. Root reviews any later publication.",
+  "no_refresh_no_further_page_no_start_no_status_or_logs": true,
+  "original_files": [
+    {
+      "bytes": 3447,
+      "git_blob": "8b874c4621289f9ad037581ed0ef00bf74ad63f7",
+      "name": "ROOT_LOOKUP_APPROVAL.original.json",
+      "sha256": "18ae7fc1b3077852ad0e5125f804060bbfd08e0b748a8289c1afec460caf869f"
+    },
+    {
+      "bytes": 3783,
+      "git_blob": "83c739193b929dde8ad796343b9efbf6abe3a88e",
+      "name": "ROOT_LOOKUP_APPROVAL.GET.original.json",
+      "sha256": "e701a72160fac35ddd60cd16cef0ac67da6b20180ef53d244690fa683d5f2a99"
+    },
+    {
+      "bytes": 39,
+      "git_blob": "c63eccc11cce2d73f52667f06492a769dc49d521",
+      "name": "PAGE_01.REQUEST.original.json",
+      "sha256": "6c753e05db0b9e1990e564126a98df78465faa14bf6f9bcddc724a96c1012e56"
+    },
+    {
+      "bytes": 169,
+      "git_blob": "3f2d0734b398fee1192a856700662843ded5222f",
+      "name": "PAGE_01.INTENT.json",
+      "sha256": "64ceb5753751b4436980aad29557872137559d3bddb410243f55825b71d90075"
+    },
+    {
+      "bytes": 583,
+      "git_blob": "286d8f26879953074ebd7e1f59f19251a2e8b466",
+      "name": "PAGE_01.SDK.original.json",
+      "sha256": "6c397e298145c75a39606bbba8e4545c140da257e7a356d4586242c3d3c61e8a"
+    },
+    {
+      "bytes": 390,
+      "git_blob": "6e34a17ad2ce57217e64c4c79b8fd6a25858a2bc",
+      "name": "PAGE_01.RETURN_OBSERVATION.json",
+      "sha256": "c879bed68f16a3627036a1b8a47ca307b41321ec8b2e21af2286c497fa770835"
+    },
+    {
+      "bytes": 129,
+      "git_blob": "b3556a7eff9f5df84b3a9cab7e9505d7fae7b84e",
+      "name": "PAGE_02.REQUEST.original.json",
+      "sha256": "3338b48cbeb3f5f3b10e78455cee3f778b44a304b387e904c18cb675efacd6df"
+    },
+    {
+      "bytes": 265,
+      "git_blob": "839a04190c7df59f838fb9773120a12017db7717",
+      "name": "PAGE_02.INTENT.json",
+      "sha256": "4f6544203cd0b5e4f99bc6e0aad618d276b71e0bc72b727e61098b8687dc0921"
+    },
+    {
+      "bytes": 205,
+      "git_blob": "4f2a9ef3f341953d34a60513a20878c23cceabd5",
+      "name": "PAGE_02.SDK.original.json",
+      "sha256": "16fd653f942e3425253e5b4be8af9b79954ccce2cc8f8d786dc0f738683cdde6"
+    },
+    {
+      "bytes": 390,
+      "git_blob": "ebed8b752d4311584affa65ca576e0ab52822d6c",
+      "name": "PAGE_02.RETURN_OBSERVATION.json",
+      "sha256": "d6efb0afc8f7a7fceaf33a2aa4c093c4f0ecbb8051ec9710f7544125ed6a3b72"
+    }
+  ],
+  "qualification": false,
+  "returned_job_row_count": 0,
+  "same_host_and_limit": true,
+  "snapshot_count": 1,
+  "stop_reason": "First continuation error: durable inventory source entry bound exceeded",
+  "timing_observations": [
+    {
+      "intent": {
+        "called_after": "2026-11-13T14:43:02.889Z",
+        "page": 1,
+        "request": {
+          "host": "desktop",
+          "limit": 64
+        },
+        "source_snapshot": "first_and_only_snapshot"
+      },
+      "page": 1,
+      "return": {
+        "raw_sdk": {
+          "bytes": 583,
+          "git_blob": "286d8f26879953074ebd7e1f59f19251a2e8b466",
+          "name": "PAGE_01.SDK.original.json",
+          "path": "/tmp/hepta-36fa-final-source-qualification-b608-v2-runtime-v1/metadata-lookup-v1/PAGE_01.SDK.original.json",
+          "sha256": "6c397e298145c75a39606bbba8e4545c140da257e7a356d4586242c3d3c61e8a"
+        },
+        "returned_at": "2026-11-13T14:43:06.111Z"
+      }
+    },
+    {
+      "intent": {
+        "called_after": "2026-11-13T14:43:37.136Z",
+        "page": 2,
+        "request": {
+          "cursor": "pending:6ef45a011c5e89abe702c23a917587be487fcc8d987ab218b0ae1611c2cc15fc:0",
+          "host": "desktop",
+          "limit": 64
+        },
+        "source_snapshot": "continuation_of_page01_only"
+      },
+      "page": 2,
+      "return": {
+        "raw_sdk": {
+          "bytes": 205,
+          "git_blob": "4f2a9ef3f341953d34a60513a20878c23cceabd5",
+          "name": "PAGE_02.SDK.original.json",
+          "path": "/tmp/hepta-36fa-final-source-qualification-b608-v2-runtime-v1/metadata-lookup-v1/PAGE_02.SDK.original.json",
+          "sha256": "16fd653f942e3425253e5b4be8af9b79954ccce2cc8f8d786dc0f738683cdde6"
+        },
+        "returned_at": "2026-11-13T14:43:39.119Z"
+      }
+    }
+  ],
+  "validation": "Pure Python parsing of preserved original SDK bytes; no H calls or JavaScript native integer parsing"
+}

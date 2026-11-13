@@ -1,0 +1,212 @@
+{
+  "format": "hepta-root-b608-transported-source-only-exact-engineering-approval-v2",
+  "decided_at": "2026-11-13 14:32:32 UTC",
+  "decision": "APPROVED_ONE_EXACT_SOURCE_REQUEST",
+  "authorized_executor": "/root/native_ci_audit",
+  "authority_scope": "Engineering execution under the user request 全量冲. This is not any Hepta Model/Selector/Version/FinalUse/task/evaluation authority and does not prove learning utility.",
+  "exact_request": {
+    "git_blob": "eb4658e231aac54f226a78585d647e2bab8aa6e1",
+    "bytes": 280984,
+    "sha256": "3245e534618d004ba767b5b2ec5483194bcc5453fe6531ef8aff7ee393fb8214"
+  },
+  "exact_request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "exact_bootstrap": {
+    "bytes": 6302,
+    "git_blob": "9111aa1eecd218ebe61fde21012a404279ffe431",
+    "sha256": "54fc271addb569b85d4095e506d5d0784ff79b2849febf84a2553b4c28d39aef"
+  },
+  "exact_stdin": {
+    "bytes": 274305,
+    "git_blob": "7b92437a4ee8316725b2bf73b0f88503329c157c",
+    "sha256": "d24d24d4ad65e4c7631d13b85cd188dd5df81d4ab9b601b7e7baf21ef73b2c98"
+  },
+  "eight_inputs": {
+    "APPROVED_QUALIFICATION_INPUT.json": {
+      "bytes": 25913,
+      "git_blob": "dca6d215f11d36bc6588a8db6ebdc8f8bbf1de06",
+      "sha256": "0bc4ff6abcdd371395034f20817e6f118e8e191dfb6c928cd490ddd2bb36836d"
+    },
+    "PLAN.original.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "SOURCE_GATES_CONFIG.json": {
+      "bytes": 831,
+      "git_blob": "01aa39eaf0334341b2d7944d3457ac09d1577f00",
+      "sha256": "679eedbc1835bdaf55c5dca76dcb48ee320f3c88340d07fef657ebd70d43f1cb"
+    },
+    "TRANSPORT_SUPERVISOR.original.json": {
+      "bytes": 950,
+      "git_blob": "af805a3230601013eb94afd5e40e9ea3e83c61d4",
+      "sha256": "4cb0bd6d2286ff49130f1504d3f4e2868abeab961a84038d095dddc3e6e87190"
+    },
+    "native-driver.original.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native-wrapper.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "qualification-admission.py": {
+      "bytes": 111588,
+      "git_blob": "fd67cb043f7b6cb8cf042104ac202cb5f0842196",
+      "sha256": "15d28bcd74c93ea3e2e6f9ea58bf95baca81c65ab75e4b3539c5a6e9e788ba5d"
+    },
+    "source-gates-wrapper.py": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  },
+  "host": "desktop",
+  "cwd": "/home/qian-qi",
+  "executable": "/usr/bin/python3",
+  "args_prefix": [
+    "-B",
+    "-c"
+  ],
+  "idempotency_key": "hepta-utility-36fa-final-source-gates-b608-v2",
+  "env_field_absent": true,
+  "budgets_seconds": {
+    "outer": 7200,
+    "admission": 600,
+    "source_closure": 600,
+    "self_test": 300,
+    "verify": 4800,
+    "final_records": 300
+  },
+  "canonical_precondition": {
+    "job_id": "1a1d4cbd33e-392-5a9",
+    "source": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+    "parents": [
+      "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+    ],
+    "complete_files": 15243,
+    "root_actual_closure": {
+      "bytes": 22549,
+      "git_blob": "9144fb5ba97d90393446cd1f919d480c27ca6dbc",
+      "sha256": "76f8eb7724b9b5ab234aca0991cf8aaf14b1f269b5fe11d3cb0d63f04c4cbc8a"
+    },
+    "index_metadata_peer": "e8c87c9ef2dfb09f1db40533b675b4032c852f9d"
+  },
+  "exact_reviews": {
+    "root": {
+      "git_blob": "d34399bf4b57af7ad63e75c3f7be6d5142c0ba27",
+      "bytes": 5848,
+      "sha256": "df6b364955d0a0703e2d6a7dfdcb3f10405c2d2ee2ecf69c797432a5c884a4e7"
+    },
+    "original_admission_transport_review": "98822a54916bd7e24764d45e88c0cb90742ef4db",
+    "independent_missing_baseline_review": "7dccd7414f5dcce595a7f5ad3056bb3e6e349756",
+    "actual_producer_consumer": {
+      "git_blob": "dd9811dabe4f1a5ae82e5990d48fb1e452c41c6d",
+      "bytes": 77564,
+      "sha256": "140633febe8dc3bbf90f1a3a025ebe3f2163e06eb50563c8efbf0c50f0fc8eb3"
+    },
+    "live_guards_and_slot": {
+      "git_blob": "0c816bc0ad17e024bd65ee4befdd73a0c1e582d8",
+      "bytes": 11337,
+      "sha256": "4ff2a9e3297d71b0a0bc4b5dd1942fa888e05ad615cb9b1a501067cb4de6539d"
+    },
+    "frozen_launch_manifest": {
+      "git_blob": "f74cc6d78fd00acc8d40b0123d481989f9214d0c",
+      "bytes": 5329,
+      "sha256": "9de5cc97b659b7fa416c9420202c3e8f28154030451306ba7f20ae19d78ee79e"
+    }
+  },
+  "paths": {
+    "control": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2",
+    "source_repository": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+    "fresh_source_clone": "/home/qian-qi/hepta-utility-36fa-source-gates-b608-v2",
+    "source_handoff": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/source-handoff",
+    "source_records": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/source-gates-records",
+    "historical_transport": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1"
+  },
+  "permitted_action": "Dispatch exactly the complete frozen eb4658 request once after completing the already frozen source-preparation archive. The exact 9111 bootstrap stages eight pinned inputs in its one fresh v2 control directory and executes the byte-unchanged source-only wrapper 8607. Its fd67 live admission and original 5118 main own all source-gate commands and failure policy. No second Root permission is needed after this specified archival precondition is met.",
+  "permitted_observations": "Reconcile the same original request, key and returned job. Retrieve its original admission, authoritative terminal/status, complete stdout/stderr, staging records and all original source-handoff/source-gate/admission/phase/final-source artifacts needed to close the run, with fixed versions and complete byte/hash checks. Large original records may use their original bounded representations with exact provenance.",
+  "required_live_guards": [
+    "original UID1000/real-owned-parent/fresh-control-directory/O_EXCL/O_NOFOLLOW/stable-nine-field record readback",
+    "original environment and process checks",
+    "original SOURCE_COORDINATION SH lock identity",
+    "complete current source and Git state, full uid/gid-bearing canonical metadata and all actual index stat checks",
+    "unchanged source driver clone/freeze/full inventories/three gates/final record and failure policy",
+    "all 55 fixed transported historical originals and complete actual stage receipt/supervisor binding, without treating them as current live source/Git/environment observations"
+  ],
+  "failure_rule": "Unknown admission or terminal must be reconciled under this same unchanged request/job/key/path/version. Do not dispatch a replacement main, choose another identity, repair old paths/workspace/index/refs, weaken guards, change budgets/filters/retries, install dependencies, or fabricate outcomes. Retain all primary and secondary errors and partial records. fd67 preserves actual after observations and routes missing initial baseline to Unknown; proven source differences remain SourceChanged and existing failures stay failed.",
+  "original_policy_retained": "The original source driver may perform its original independent self-test after a failed closure only as its unchanged policy permits; its overall failed/unknown outcome remains failed/unknown. No new recovery branch is authorized.",
+  "native_fourteen_phase_dispatch_authorized": false,
+  "source_branch_or_evidence_ref_update_authorized_by_this_record": false,
+  "source_repository_physical_edits_authorized": false,
+  "merge_deploy_activation_authorized": false,
+  "source_result": null,
+  "native_result": null,
+  "qualification": false,
+  "real_authorized_learning_chains": 0,
+  "evidence_publication_note": "The exact request and all substantive prerequisite closures are actual Git objects with Root complete GET. The immutable complete historical archive contains every original SDK byte, including the retained 255 read failure and same-version recovery. A subsequent evidence-branch checkpoint preserves these objects; it is not runtime evidence or utility qualification.",
+  "prior_consumed_source": {
+    "approval": "dd6e9874f5322e87862e2cefd87331a9ca2e64f2",
+    "request": {
+      "bytes": 246727,
+      "git_blob": "465e0eaa1f387ad6bb167a4931328e199a5bf793",
+      "sha256": "1737f34278a277d0d3003efdf6a9539e11e63d40326544542d81da024947aa16"
+    },
+    "job_id": "1a1d4f0c3d4-392-65a",
+    "state": "failed",
+    "exit_code": 1,
+    "main_entered": false,
+    "failure_preserved": true,
+    "approval_not_reused": true
+  },
+  "history_transport_precondition": {
+    "job_id": "1a1d52e0d88-392-784",
+    "normal": "succeeded",
+    "exit_code": 0,
+    "stage_only": true,
+    "complete_Root_archive_and_replay": {
+      "git_blob": "93ec29d7f8ed089e419aa68c82db628b369cebd8",
+      "bytes": 2487,
+      "sha256": "29e40cec13722b20c70b7a02e7dd4e708cc51e2839eea78c1b5b3b7de34fed14"
+    },
+    "complete_Root_native_readback": {
+      "git_blob": "b0434543015a01fac8d60267981f08af8160be50",
+      "bytes": 143675,
+      "sha256": "7eb7c173caf531be536982961967dbcfae843044ef642a22d462c08c5eb32c28"
+    },
+    "full_Git_GET_index": {
+      "git_blob": "81f8b7942d91d45801b45d163ce708ecfd80d879",
+      "bytes": 19959,
+      "sha256": "5bca3b55570e3f5b7d9eb84115acde3a7e219d6ba37f3ddea23306af9a23bbb1"
+    },
+    "original_archive_manifest": {
+      "git_blob": "081b148d08c5fb104eb0bb2a15cf5687b343915f",
+      "bytes": 41712,
+      "sha256": "bfca402209679630257f4399722b17e8cd9ab82272b304b941caa7c5379967c2"
+    },
+    "fixed_files": 61,
+    "fixed_file_bytes": 8301563,
+    "historical_originals": 55,
+    "raw_observation_files": 755,
+    "raw_observation_bytes": 38963673,
+    "all_73_archive_parts_full_GET_verified": true,
+    "current_source_or_environment_observation_inferred": false
+  },
+  "staging_slot_change": {
+    "added_actual_stage_supervisor": "TRANSPORT_SUPERVISOR.original.json",
+    "canonical_receipt_still_required": "canonical.supervisor remains a fixed original in the complete 55-role history map; no canonical content or guard removed",
+    "removed_staging_copy": "CANONICAL_SUPERVISOR.original.json"
+  },
+  "frozen_product_scope": "Exact b608/8ebb only. E1 99fada and all E2/E3 source proposals are outside this execution request.",
+  "live_execution_not_yet_observed": true
+}

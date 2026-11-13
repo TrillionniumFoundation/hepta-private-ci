@@ -1,0 +1,101 @@
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs
+@@ -96,6 +96,9 @@
+     pub(super) body: Vec<u8>,
+ }
+ 
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(super) enum LanePurpose { Task, Loan }
++
+ /// Created only by the fixed daemon/Root factories from two actual peer-pinned
+ /// channels. A failed exchange permanently removes this lane's channel.
+ pub(super) struct Lane {
+@@ -103,7 +106,7 @@
+     binding: Digest32,
+     session: [u8; 16],
+     sequence: u64,
+-    task_lane: bool,
++    purpose: LanePurpose,
+     budget: Arc<Budget>,
+ }
+ 
+@@ -112,7 +115,7 @@
+         channel: HostAuthorityPeerChannel,
+         binding: Digest32,
+         session: [u8; 16],
+-        task_lane: bool,
++        purpose: LanePurpose,
+         budget: Arc<Budget>,
+     ) -> Result<Self, Error> {
+         if binding.is_zero() || session == [0; 16] {
+@@ -120,7 +123,7 @@
+         }
+         channel.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
+         Ok(Self { channel: Some(channel), binding, session, sequence: 1,
+-            task_lane, budget })
++            purpose, budget })
+     }
+ 
+     pub(super) fn call(&mut self, frame: Frame) -> Result<Vec<u8>, Error> {
+@@ -174,7 +177,7 @@
+     }
+ 
+     fn encode(&self, frame: &Frame) -> Result<Vec<u8>, Error> {
+-        if frame.operation.task_lane() != self.task_lane || frame.loan == 0 {
++        if frame.operation.task_lane() != (self.purpose == LanePurpose::Task) || frame.loan == 0 {
+             return Err(Error::InvalidBinding);
+         }
+         let mut bytes = b"HCRTLOA1".to_vec();
+@@ -198,7 +201,7 @@
+         }
+         let loan = reader.u64()?;
+         let operation = Operation::from_byte(reader.take::<1>()?[0])?;
+-        if loan == 0 || operation.task_lane() != self.task_lane {
++        if loan == 0 || operation.task_lane() != (self.purpose == LanePurpose::Task) {
+             return Err(Error::InvalidBinding);
+         }
+         Ok(Frame { operation, loan, body: reader.remaining().to_vec() })
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs
+@@ -28,7 +28,7 @@
+ use super::data;
+ use super::loan::DaemonLoans;
+ use super::loan::OriginalRecordLoan;
+-use super::wire::{Budget, Frame, Lane, Operation, FRAME_LIMIT, TIMEOUT};
++use super::wire::{Budget, Frame, Lane, LanePurpose, Operation, FRAME_LIMIT, TIMEOUT};
+ use crate::{AgentdIdentity, CircuitCellErrorV1, CircuitCellExecutionV1, CircuitCellRegistryV1,
+     CircuitCellTimeV1, CircuitTaskRequestV1, CircuitTaskSourceInputV1};
+ use crate::circuit_task::source::remote_source;
+@@ -92,8 +92,8 @@
+             inputs.original_root_loan_pidfd).map_err(|_| Error::Unavailable)?;
+         let client = Self { identity: identity.clone(), fence: inputs.fence,
+             registry: inputs.registry, source: inputs.source,
+-            task: Mutex::new(Lane::new(task, binding, inputs.session_nonce, true, Arc::clone(&budget))?),
+-            reverse: Mutex::new(Some(Lane::new(reverse, binding, inputs.session_nonce, false, budget)?)),
++            task: Mutex::new(Lane::new(task, binding, inputs.session_nonce, LanePurpose::Task, Arc::clone(&budget))?),
++            reverse: Mutex::new(Some(Lane::new(reverse, binding, inputs.session_nonce, LanePurpose::Loan, budget)?)),
+             loans: DaemonLoans::new(pending), resolved: Mutex::new(None), stop_reverse };
+         Ok((Arc::new(client), inputs.queue_capacity))
+     }
+--- a/codex-rs/hepta-agentd/src/circuit_task_remote_service.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_service.rs
+@@ -11,7 +11,7 @@
+ use super::Error;
+ use super::admission::ReverseClient;
+ use super::data;
+-use super::wire::{Budget, Frame, Lane, Operation};
++use super::wire::{Budget, Frame, Lane, LanePurpose, Operation};
+ use crate::{AgentdIdentity, CircuitTaskInputModeV1, CircuitTaskSourceReadbackV1,
+     DurableCircuitTaskSourceV1, PreparedRootHostCircuitTaskV1};
+ use crate::circuit_task::root_lane::OriginalRootCellPump;
+@@ -65,8 +65,8 @@
+     require_root_current(root)?;
+     let binding = original.source.original_remote_binding()?;
+     let budget = Budget::new(streams.end)?;
+-    let mut task = Lane::new(streams.task, binding, streams.nonce, true, Arc::clone(&budget))?;
+-    let reverse = ReverseClient::new(Lane::new(streams.reverse, binding, streams.nonce, false, budget)?, binding);
++    let mut task = Lane::new(streams.task, binding, streams.nonce, LanePurpose::Task, Arc::clone(&budget))?;
++    let reverse = ReverseClient::new(Lane::new(streams.reverse, binding, streams.nonce, LanePurpose::Loan, budget)?, binding);
+     let mut retained: Option<OriginalRecord> = None;
+     let mut count = 0_u64;
+     while task.serve_one(|frame| {

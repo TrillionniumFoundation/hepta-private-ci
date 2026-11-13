@@ -1,0 +1,88 @@
+{
+  "format": "hepta-evidence-publication-post-4ada511-closure-v1",
+  "observed_at": "2026-11-13 14:16:40 UTC",
+  "parent_commit": "c3eb33b7f60c3b9ea2ed3724f585d30b20ff8f9e",
+  "evidence_commit": "4ada511b1a79417bee29eddc4f67d769ca1354d6",
+  "evidence_branch": "codex/utility-eval-evidence-20261112-36fa",
+  "expected_old_CAS_and_full_ref_GET_verified": true,
+  "recursive_verification": {
+    "format": "hepta-post-c3eb-evidence-recursive-proof-v1",
+    "parent": "c3eb33b7f60c3b9ea2ed3724f585d30b20ff8f9e",
+    "root_tree": "7ecab4543912f050627d4aaa6523a06206e37e37",
+    "leaf": "e6a8f99ab07f7612cc43d52c17bd07f8361b06f9",
+    "files": 7970,
+    "tree_nodes": 1010,
+    "recursive_entries": 8979,
+    "truncated": false,
+    "prior_non_readme_preserved": 7785,
+    "added_non_readme": 184,
+    "recursive_raw": {
+      "bytes": 2711268,
+      "sha256": "6313c3ab626e98f93b62f656ea7d2ee23a62e69dbc099031762d3f7162f8b024"
+    },
+    "qualification": false
+  },
+  "wrapper_maps_and_typed_tree_hashes_verified": [
+    {
+      "path": "qa_evidence",
+      "tree": "65d282de7a209cccf10c137b208f0045a83ce3da",
+      "entries": 3
+    },
+    {
+      "path": "qa",
+      "tree": "835f1559242ded4307210f197dde0af61f7e6335",
+      "entries": 5
+    },
+    {
+      "path": "root",
+      "tree": "7ecab4543912f050627d4aaa6523a06206e37e37",
+      "entries": 56
+    }
+  ],
+  "commit_GET": {
+    "git_blob": "bebda775e9ebc2aaf621dfc7dca212fad3de39b2",
+    "bytes": 2035,
+    "sha256": "ca77e154c955f76cb38f0f806c70a5929a7bf344ccdf2e274a0e19a0563e4059"
+  },
+  "ref_GET": {
+    "git_blob": "e12976e0878e4d08c9c9dc91e5e147c687542a55",
+    "bytes": 502,
+    "sha256": "660149d8880bc380347bbfb379f2c3908b9de554a1d856ffed6c92865dbaacaa"
+  },
+  "PR": {
+    "number": 6203,
+    "state": "open",
+    "draft": true,
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "exact_body": {
+      "git_blob": "40d0f1099f7aa923c9fe59b5cc5da715879565bf",
+      "bytes": 6723,
+      "sha256": "b6608c03b096966e1745476491f53ec5668a3da051a2918226310c5f240c7bb0"
+    },
+    "full_GET": {
+      "git_blob": "e6789597def9fbbe007d9997129edbad1e11076a",
+      "bytes": 25440,
+      "sha256": "fcf37435c99a8da1071bae2d24e7214c5b3ea2c7c7c92fe1cef0349097c18cea"
+    },
+    "exact_body_equal": true
+  },
+  "E1": {
+    "review_branch": "codex/utility-root-assembly-proposal-20261113-36fa",
+    "commit": "99fada80470f175ba14004ea9fcb006853c7d98f",
+    "tree": "3778225f2d49dcd4729d05c02ae9805b43df87d8",
+    "source_H_dispatched": false,
+    "original_PR_head_moved": false
+  },
+  "historical_cutoff": "Published README/PR record the stage-core cutoff before complete61 proof. A later full readback report does not rewrite this historical record.",
+  "transport_at_publication": {
+    "job_id": "1a1d52e0d88-392-784",
+    "terminal": "succeeded",
+    "exit_code": 0,
+    "stage_only": true,
+    "Root_full_61_replay_complete_at_cutoff": false
+  },
+  "source_and_native_qualification": false,
+  "real_qualified_task_chains": 0,
+  "source_execution_newly_authorized": false,
+  "no_merge_deployment_or_activation": true
+}

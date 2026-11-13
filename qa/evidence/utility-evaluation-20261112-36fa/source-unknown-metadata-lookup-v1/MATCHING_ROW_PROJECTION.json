@@ -1,0 +1,34 @@
+{
+  "accepted": null,
+  "approval": {
+    "bytes": 3447,
+    "git_blob": "8b874c4621289f9ad037581ed0ef00bf74ad63f7",
+    "sha256": "18ae7fc1b3077852ad0e5125f804060bbfd08e0b748a8289c1afec460caf869f"
+  },
+  "does_not_prove_request_absent_or_not_applied": true,
+  "execution_status": "Unknown",
+  "format": "hepta-exact-original-key-matching-row-projection-v1",
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-final-source-gates-b608-v2",
+  "job_id": null,
+  "matching_row_observed": false,
+  "matching_rows": [],
+  "no_credentials_in_projection": true,
+  "no_unrelated_job_contents": true,
+  "raw_sdk_provenance": [
+    {
+      "bytes": 583,
+      "git_blob": "286d8f26879953074ebd7e1f59f19251a2e8b466",
+      "name": "PAGE_01.SDK.original.json",
+      "sha256": "6c397e298145c75a39606bbba8e4545c140da257e7a356d4586242c3d3c61e8a"
+    },
+    {
+      "bytes": 205,
+      "git_blob": "4f2a9ef3f341953d34a60513a20878c23cceabd5",
+      "name": "PAGE_02.SDK.original.json",
+      "sha256": "16fd653f942e3425253e5b4be8af9b79954ccce2cc8f8d786dc0f738683cdde6"
+    }
+  ],
+  "reason": "The first response contained no rows and a validation-pending cursor. The only continuation refused with durable inventory source entry bound exceeded.",
+  "reused": null
+}

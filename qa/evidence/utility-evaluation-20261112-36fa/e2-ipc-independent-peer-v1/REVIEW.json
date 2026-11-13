@@ -1,0 +1,106 @@
+{
+  "format": "hepta-e2-fixed-ipc-independent-peer-v1",
+  "decision": "No concrete static owner-authority blocker found in the fixed IPC source plus the exact private LanePurpose successor. This is not compilation, runtime validation, ordinary deployment completion, or qualification.",
+  "source_layers": [
+    {
+      "directory": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-layer-v1",
+      "packet_git_blob": "06dafdbdeb53eb5ccf6480993596bbb4d939f203",
+      "bytes": 467432,
+      "sha256": "58ceae69a092b65f1364c7ad44a6a86a12685dfaae963e091da6d416c0e5b8c6",
+      "paths": 28,
+      "new_production_paths": 16,
+      "modified_paths": 12,
+      "new_tests": 0,
+      "verification": "Independent complete local before/after/packet reads and all three byte identities; Root reported the frozen packet actual Git full GET. This peer does not relabel local reads as another Git read."
+    },
+    {
+      "directory": "/tmp/hepta-36fa-root-product-e2-proposal-v1/ipc-purpose-increment-v1",
+      "packet_git_blob": "69d6d5eda401ff59f7e89b1e659f77a431274248",
+      "bytes": 59653,
+      "sha256": "9e65625ba2b2a499ed1a09a40660c5d06e30240902f78ccb4b1249e8586222eb",
+      "paths": 3,
+      "verification": "Independent local whole-file inverse to the three exact IPC postimages. Computed source identity; no source Git creation by this peer."
+    }
+  ],
+  "findings": [
+    {
+      "id": "I01",
+      "topic": "Preservation of the original task driver and local Cell",
+      "evidence": ["circuit_task_driver.rs a8a9dbdcfc48eac538cbc5ceddc2f56dfc437a4a -> 90075e64c2df933be2f3bcbdb64cc5bf68f32d2b", "circuit_task_cell_port.rs 365aca5e09fd5a9ab7a55c8db405425ddc9e14c0", "circuit_cell.rs 3b4ca45c53d2633bf96d2c1b0fca3ed1ae30c114 -> f6c8214d9f5e065d8869195c83e50ec721cf9965"],
+      "conclusion": "All original Driver methods and trailing helpers are byte-identical. Only its private Cell type/bounds change to a sealed two-implementation interface. The local implementation delegates the same original registry, lookup and execute. The original Cell file changes by a Linux module mount only. Old driver tests inverse exactly after two explicit imports and the generic alias change; no old assertion or method is removed."
+    },
+    {
+      "id": "I02",
+      "topic": "One actual factory writer and same Source custody",
+      "evidence": ["circuit_task_root_lane.rs 10915b8deac0fb34dfc210645cf5d2af53db4e18", "circuit_task_runtime.rs b8adbd07f42827bcb733d4061c72c6a57be3d662", "circuit_q24_task_root_lane.rs 8640ba89b7c0cb00b4442ffc7e787f2548570432", "neuron_generation_initial_root_task_channel.rs 38d3dfc7ce99e4f36bdb7369d877a14c98be4ddf"],
+      "conclusion": "The local runtime loop and Root pump consume the same Arc<Mutex<Option<OriginalOwners>>>. Taking either empties that slot. The private sealed factory cannot clone or replace the Cell writer. The Q24 runtime supplies its original invocation/readback Arcs, and Root custody requires Arc::ptr_eq for its Source readback before serving. Root's service consumes the lane once while retaining original task/Source/drain custody. No daemon AutomationStore or Config is moved to Root. The new source factory constructor remains crate-private and has one fixed production caller in this layer; protecting this exact call graph remains a registration obligation."
+    },
+    {
+      "id": "I03",
+      "topic": "Actual signed RunStart and daemon-local original admission",
+      "evidence": ["state_circuit_task.rs b568139b1bcd674b2ba2715176bf693842a26a3e", "state.rs 8de64259fdf7a5d8cdfcee41f7a92bd859f2c2173 require_current_run_start", "circuit_task_remote_loan.rs 50bad41eda015595c7a69f8498cb2e1a38fd95b4", "circuit_task_remote_admission.rs 97fc6d4a1e3f43239035f7b4d6b5f4538d3bbf13"],
+      "conclusion": "The only ingress addition retains a private record loan before the original provider.build; inverse removal restores the whole original signed-ingress, completion and outbox file. DaemonLoans attaches the actual AgentdState via Weak and uses its original readiness/generation/fence/signature/trust authentication. The loan mutex is released around that authentication, then the exact retained id/record/caller state is checked again. Actual CircuitComputationAdmissionV2 remains in daemon memory. AdmissionData is bounded observational data, while OriginalRemoteAdmission is private, non-Clone, and obtainable only after same reverse-lane OpenAdmission. It cannot become the original token."
+    },
+    {
+      "id": "I04",
+      "topic": "Remote Cell execution does not bypass original pipeline checks",
+      "evidence": ["circuit_cell_remote.rs 7da8c7b20bba82b648eec3420733f49997561501", "circuit_cell.rs original execute", "circuit_task_remote_client.rs 093e06a4b0265e80edc430c7f781d7297dbb62b3"],
+      "conclusion": "After removing the named live-loan observations and the string projection required by the private metadata type, the complete remote Cell pipeline is byte-identical to the original execute body. It retains registry binding, full request digest, owner/definition, observed time, min lease/run deadline, readonly recovery, original inference/commit, and original finish validation. Its clock samples visit the same actual loan, permanently fence that call on failure, and use MAX rather than reviving authority. The daemon separately binds the actual admission to resolved dispatch/input and checks currentness around execution. Data decoded as CellDecisionReceiptV1 has fixed DENY_ALL and must roundtrip the original full decision encoding; no admission, committed trace, private receipt or Source publication is decoded from it."
+    },
+    {
+      "id": "I05",
+      "topic": "Completion provenance and actual Source publication",
+      "evidence": ["circuit_task_remote_invocation.rs 1d9fdaffad6bbac309ae41e38dcba5c2c0289377", "circuit_task_remote_loan.rs retain_completion/respond", "circuit_task_source_remote.rs 53bd7258db38d8c58048bd1e8851b1b767bf7122", "circuit_task_source_codec.rs 59b25f0c4e38b192e8357e86ad06564ac3da7342 result/require_decision/publication", "circuit_task_remote_service.rs 5c6fa72067237e67f9081c0bee0f1106973f5127"],
+      "conclusion": "The original driver constructs the real private Receipt only from its AutomationStore trace and actual Cell decisions. Completion lending first calls original codec::result and retains that actual Receipt, request, definition and saved input. Reverse ReadCompletion runs that same validator again. Root receives only a private purpose-bound completion observation; it checks the exact record, Source binding and saved input, and revisits the current record before consuming it. Source retain is preceded by its original request/input/active checks and full same-Cell decision/output comparison. The service rereads the actual Cell after retain and requires the original Source publication to match that decision. The raw publication parser alone is not being used as provenance."
+    },
+    {
+      "id": "I06",
+      "topic": "Two fixed authenticated lanes and bounded commands",
+      "evidence": ["authority_host_session_generation_task_service.rs 2e25a721708049f2f6c90e86959868f6c631b6ff", "circuit_task_remote_client.rs", "circuit_task_remote_wire.rs 25045c0ee71e4ba624e58b8b3e870f12eff12645", "authority_host_peer.rs 36e4524baea04320b7610325579f0ff206690fab actual full GET"],
+      "conclusion": "Root checks the original registered non-Root uid/pid and uses duplicates of its actual preheld peer pidfd; daemon requires non-Root actual uid/euid and a UID0 Root peer with two held pidfds. The unchanged HAP constructor enforces actual SO_PEERCRED and owner lifetime. Full original Source configuration binding, nonzero session nonce, exact monotonic sequence, nonzero loan id and closed operation direction are checked on each frame. Both lanes in each process share one 128-request Budget Arc. HAP's original 500ms whole-exchange bound remains additional to the new budget checks, and the original absolute Root end caps success. The daemon relative construction does not make its Instant numerically identical to Root's end; no such claim is made. Original idle receive waits for owner end, not a renewed request budget. No reconnect or frame retry is added."
+    },
+    {
+      "id": "I07",
+      "topic": "Currentness around actual side effects",
+      "evidence": ["circuit_task_remote_service.rs serve/handle", "circuit_task_source_remote.rs require_original_remote_binding/publish_original_remote_completion", "circuit_task_remote_loan.rs respond"],
+      "conclusion": "Every Root task handler checks actual Published generation and original Source current binding before and after handling. Actual record authentication occurs on the reverse lane around each handler and each admission clock boundary. Full Source/current checks remain around durable result retain. These are bounded pre/post observations, not an atomic lock spanning processes and external I/O; a durable effect followed by a failed check is Unknown and is not rolled back or reported NotApplied."
+    },
+    {
+      "id": "I08",
+      "topic": "Cancel, ACK loss, pending and readback",
+      "evidence": ["circuit_task_remote_loan.rs OriginalRecordLoan::drop/retain_admission/terminal", "circuit_task_remote_service.rs Execute", "circuit_task_remote_wire.rs Lane::call/serve_one", "state_circuit_task.rs original CommitUncertain branch"],
+      "conclusion": "Dropping the caller marks its exact record inactive without releasing pending remote work. Opening an admission is once-only. Only the same pinned Root operation's authenticated Terminal releases its extra RemoteWork guard, and Terminal is attempted after the real synchronous operation returns, including its error return. Losing the terminal exchange leaves the blocker Unknown. Any failed/late lane exchange takes away that channel permanently. Original recovery remains readback of the same request/record; a closed lane cannot turn it into fresh Execute, reconnect or another operation. Cancellation/ACK-loss mechanism tests are not present in this frozen layer, so the behavior is a source finding, not an observed runtime result."
+    },
+    {
+      "id": "I09",
+      "topic": "Worker ownership and limits of cleanup evidence",
+      "evidence": ["circuit_task_remote_runtime.rs ac301f06b99fc271a9ac7c88374c7cd0787a1480", "circuit_task_remote_client.rs run_reverse/stop_reverse", "circuit_task_runtime.rs original run"],
+      "conclusion": "The new reverse worker owns its original lane and actual DaemonLoans. The runtime's ordered return path shuts down the private termination-only duplicate socket, then joins the worker and preserves its error when cancellation did not request shutdown. The unchanged original outer run keeps its blocking worker and cancellation drop guard. Dropping/aborting an outer await is not evidence that the blocking work or reverse thread has joined; loss, panic or shutdown before normal cleanup must remain Unknown. No timeout, OS process termination or successful cancellation cleanup was executed by this review."
+    },
+    {
+      "id": "I10",
+      "topic": "Concrete review correction and frozen successor",
+      "evidence": ["AGENTS.md faa57cc0db48123e1011f1eb47692cd3bbbcfc3a positional argument rule", "ipc-purpose-increment-v1 packet 69d6d5eda401ff59f7e89b1e659f77a431274248"],
+      "conclusion": "This peer identified the new Lane::new positional bool as an avoidable ambiguous purpose API. The author froze a separate three-file successor with private LanePurpose::{Task,Loan}. Independent inverse checks restore all three original IPC files exactly, including four call sites and both direction comparisons; no wire value, budget, deadline or owner flow changes. The original 06daf packet is retained unchanged."
+    },
+    {
+      "id": "I11",
+      "topic": "Ordinary integration and validation still outstanding",
+      "evidence": ["ipc-layer-v1 REVIEW.json remaining", "config_original_root_task.rs aee9324f0a451842d5e6f761964ac5bc9d954e20"],
+      "conclusion": "The new Config factory preserves the original no-profile/execution-profile/with-bootstrap guards and installs both bootstrap and invocation required by V3 late enrollment. This packet itself has no CLI/production-launcher handoff. It does not prove the original five host lanes are served in the same actual Root session. A separate non-Root Material Source readonly loan is still absent; original f42 same-UID rejection stays in force. Registration/protected-body refresh, exact collector resolution, compilation, formatting, actual peer cancellation/expiry/128-bound tests and the ordinary cross-UID chain remain outstanding."
+    }
+  ],
+  "verification": {
+    "python_stdlib_byte_and_identity_checks_only": true,
+    "project_code_imported_or_executed": false,
+    "rust_compile": false,
+    "formatter": false,
+    "tests": false,
+    "qa_or_collector": false,
+    "h": false,
+    "source_git_or_refs_written": false,
+    "new_runtime_success_claim": false,
+    "source_file_changes_by_reviewer": false
+  },
+  "report_storage": "Reviewer files are local computed artifacts. Root owns any later Git publication and source composition."
+}

@@ -1,0 +1,290 @@
+{
+  "format": "hepta-local-source-manifest-v1",
+  "payloads": [
+    {
+      "bytes": 426837,
+      "git_blob": "388bfb3f3ab70e5f39d847c26d2d48daa2c7ead1",
+      "path": "SOURCE_PACKET.json",
+      "sha256": "461a98580f070c8d1a355704732ef0a961249cc019d6c0143d46d04b8cf16933"
+    },
+    {
+      "bytes": 54727,
+      "git_blob": "be8898cf566e38e1e37f038ed810e0a54cc4ba6c",
+      "path": "SOURCE_DELTA.patch",
+      "sha256": "ad67a8f79f519ec6195a4302e776281661758d1b7024a100ebb12318f54454b6"
+    },
+    {
+      "bytes": 58974,
+      "git_blob": "5e0a07ab8616d4077703da7dfaae0e02682e6abf",
+      "path": "EXACT_SOURCE_SPLICES.json",
+      "sha256": "a545e8d34a2aef3fd694b38e5278ec6779deb6721c9319fcd8ce608bb1e9b096"
+    },
+    {
+      "bytes": 13978,
+      "git_blob": "85665314e6330196b2181dae2b7742e7c5e9d417",
+      "path": "SOURCE_REFERENCES.json",
+      "sha256": "01876407d27fdc5cdff1dd72e525335fedd4db5a17a71d03bba4699741bdf158"
+    },
+    {
+      "bytes": 1924,
+      "git_blob": "b241b19e48a83ab898ecf0ccbdf6c0774db65795",
+      "path": "STATIC_BYTE_REVIEW.json",
+      "sha256": "936ae656d224871a95beb848df601fbc150f43b70ed866788774984f8a206b1c"
+    },
+    {
+      "bytes": 8445,
+      "git_blob": "7accf4f751eab186097f0e95f9a6e5a625755631",
+      "path": "README.md",
+      "sha256": "9d182d84011e3b98eea02e2f411fd819bfdfa132374796c22e982bc9253ff4f5"
+    },
+    {
+      "bytes": 6441,
+      "git_blob": "d6636fc3215957f0737af79f8c2ac60a5fbc6d57",
+      "path": "freeze_layer.py",
+      "sha256": "502d4a36f19172964084ddd6455edca4aca7d16169fa9cbd985319e5c2b4377d"
+    }
+  ],
+  "sources": [
+    {
+      "after": {
+        "bytes": 7122,
+        "git_blob": "329de5de23da714d7fbeb4a6f4dff3296d3cdced",
+        "sha256": "11b150698df9b78e3b088e66a117f1242c636d4a083c3918e22b709c5c0a6259"
+      },
+      "before": {
+        "bytes": 7048,
+        "git_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+        "sha256": "8d55a7e5dbb51f26b51cc2c4d2c2c77cf6208bf61613019e21fb4e479acc82ee"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "provenance": "actual b608 inventory and full original body"
+    },
+    {
+      "after": {
+        "bytes": 8605,
+        "git_blob": "f4e3d8619f0d369d693a690afdaa9676d61aaa08",
+        "sha256": "fce1c945c548f1651e0ebfc5f9a20f682c008c2883e89e46f20e45dfe5699a34"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 4491,
+        "git_blob": "9967f902e6527823eb478fc972046612ae8e19d1",
+        "sha256": "da35e6364e0bf0b7c23870224f7cd5e9a07cc47cbf1d6f5e5275058bf0c8cafa"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 4518,
+        "git_blob": "6549521642a0989f351591d2b10f91c85e168cf2",
+        "sha256": "a27ce568d2a3e73fd9c3a73c44be7ccdffa2bacc2ecb7b4c302bb863223cb529"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 2309,
+        "git_blob": "0a783de800e172185fa8b4d2c64be96f8d309e07",
+        "sha256": "cc4d676c1a0188bfbab8083de72372eaea07858be961940bb5db8eddcfadd5a6"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 6155,
+        "git_blob": "4d2ccdc0e20944d75b1d1de6751ec9a852b65c36",
+        "sha256": "8338f70c61ba3d0fef9e6e42d616791a3d81dc37286bbf8186ffe49389dfedf3"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 797,
+        "git_blob": "d87c755bbde7e0a96ffb9c3abf2a159deee454a4",
+        "sha256": "077eb07a3345562f70580932bc47395cddbff90097962225d5b35f7c6dbdcff3"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 5687,
+        "git_blob": "e3a9b5cff03c79fd53be781d34b109a719824a4f",
+        "sha256": "7145bfebd876cf03ea349014e3e52c616f32bf42f24827114cfb3bbbe3896136"
+      },
+      "before": {
+        "bytes": 5298,
+        "git_blob": "bfec72b7a3366cc9cded94e7e9961921922c8d12",
+        "sha256": "dc9011bd441be7459e368f0e4739357490eea497b480ecba1a4c6a1698abfcbc"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs",
+      "provenance": "exact root-service-layer-v1 after"
+    },
+    {
+      "after": {
+        "bytes": 11696,
+        "git_blob": "ee8000d9e727420ef2e662f755a76aee1924813f",
+        "sha256": "c94cf992e29eb2fb458fe252db61bfa1a26d66ce49304f42f26d8d812d1e5083"
+      },
+      "before": {
+        "bytes": 11105,
+        "git_blob": "0656f538ff206a1bde4b02363bb2f09b6717cb02",
+        "sha256": "cbdc808cc43b01812a67c2b588946f32069fd3225da0c3b81ef4e841535c039e"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs",
+      "provenance": "exact root-service-layer-v1 after"
+    },
+    {
+      "after": {
+        "bytes": 2998,
+        "git_blob": "f70dbb2633afa2ce2ff10bbf5227e0199d855a95",
+        "sha256": "048b76f8da77f7e5b8e3e89cf8b9977b6ba3bde75cb52d5acfcbff4b21e0104b"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_listener.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 5933,
+        "git_blob": "382545203959f626ecb6db6f1ace8f029b6157d2",
+        "sha256": "30b7447392ba93537ca951a547065dc25d1355d733a9a9fb8b4b08ca1412c2fd"
+      },
+      "before": {
+        "bytes": 5154,
+        "git_blob": "beaed17ac89f25fae4c93c988a478d9f8923c824",
+        "sha256": "c3008a33c74bba91e86b698cecfc08442f15dead50010a7b94ef0841584f2e88"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs",
+      "provenance": "exact root-service-layer-v1 after"
+    },
+    {
+      "after": {
+        "bytes": 20606,
+        "git_blob": "eca594091f2cec791823927413326de0b7ea5bab",
+        "sha256": "290bcee25bbcc89a4a3b183d1f0d6a009fb0446f66017348eefd95fef5050a9d"
+      },
+      "before": {
+        "bytes": 20258,
+        "git_blob": "3daf01cca84cee32742ab63d6328a8c9792b2963",
+        "sha256": "4d86762f9e8d624830a27cb49a0c64325629fa8d887de6506785f2072c4d8171"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "provenance": "exact root-service-layer-v1 after"
+    },
+    {
+      "after": {
+        "bytes": 14374,
+        "git_blob": "b18250b0b559b3540479d4a19717fcc34c2dab37",
+        "sha256": "e8be9fb1474294be2a41f9260796b8de1474fc5956d7044ee65cd9626fd882f6"
+      },
+      "before": {
+        "bytes": 13764,
+        "git_blob": "7dac9227f6bdb1edb66762b8a004c408f46841dd",
+        "sha256": "7a8d54eb452b080738b3add3310da643d36f0b04cd6d1cdd303f11c00481ec8a"
+      },
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "provenance": "exact root-service-layer-v1 after"
+    },
+    {
+      "after": {
+        "bytes": 73097,
+        "git_blob": "c3673add1112472e6f8949c3d0c5502d87254408",
+        "sha256": "e03309dcaa0c53d1faf92bb2749f19ca6d042c2d48b28189178e426cd0c3c561"
+      },
+      "before": {
+        "bytes": 72679,
+        "git_blob": "d304e4919f6d40aac479374fd4857caa2b388eca",
+        "sha256": "c5e19f94499558bc69d7f62b2874d28a4810d59b9f94f8b86fe46967749f7f15"
+      },
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "provenance": "exact root-service-layer-v1 after"
+    },
+    {
+      "after": {
+        "bytes": 19432,
+        "git_blob": "f29e59294cd29d1d65cef57e9fc3d036ce172c9e",
+        "sha256": "c3d0cdc497d60897a5f84acafbc7d3605b5d9838fa8505c15d607c0ddb72b79c"
+      },
+      "before": {
+        "bytes": 18594,
+        "git_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+        "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097"
+      },
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "provenance": "actual b608 inventory and full original body"
+    },
+    {
+      "after": {
+        "bytes": 16728,
+        "git_blob": "4c9e7fc3cff82305c4b6efb557a08a780816567f",
+        "sha256": "bf0fa5c09ff44581d3ba10a5e0d57ca2f94895c721d0883a2a687f0345076f87"
+      },
+      "before": {
+        "bytes": 16134,
+        "git_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+        "sha256": "2f756431d4f8749930a6cfc7c1c1647f7131770d785bc1b1986774954e44659e"
+      },
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "provenance": "actual b608 inventory and full original body"
+    },
+    {
+      "after": {
+        "bytes": 2261,
+        "git_blob": "63d22a2370d87c3a85fb66eea7ffeaae7f389d62",
+        "sha256": "e6cba8e0930cbcbb3812f8b3173fdb831a012122352b385062bb064fa59da6cc"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/production_resident_enrollment.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 9907,
+        "git_blob": "73b1994e922166f73274d98f21b68f60188ce29e",
+        "sha256": "badb77553e324e498be6ef541574bd5dfb1d542d6cebbbb07a39b597f3a34f37"
+      },
+      "before": {
+        "bytes": 9613,
+        "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+        "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "provenance": "actual b608 inventory and full original body"
+    },
+    {
+      "after": {
+        "bytes": 3977,
+        "git_blob": "f21b1acc16bdd39fdcef0631d912b15023ec671f",
+        "sha256": "0acbafc24343285a4b32eff8bf7f96f7838849904b16d678c5748e9effc548e0"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs",
+      "provenance": "new local proposal source"
+    },
+    {
+      "after": {
+        "bytes": 3161,
+        "git_blob": "407d194c80f2fd23343edf848d5fa5581f5235a3",
+        "sha256": "cfcde7bc7c479b782aa81b013a628fd0120d9675495e640b301a5247054d1755"
+      },
+      "before": null,
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs",
+      "provenance": "new local proposal source"
+    }
+  ],
+  "state": "computed_local_only_no_source_git_publication"
+}

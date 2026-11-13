@@ -1,0 +1,306 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+    "before": {
+      "bytes": 5159,
+      "sha256": "320bad8e06995b93a7fbef76215f86900019afc566c9cf68650a46a7cc6af5b6",
+      "git_blob": "adb6faefaead13bee99f4a5186114484fea09083"
+    },
+    "after": {
+      "bytes": 5612,
+      "sha256": "331206d0a7bd3ee822a03a7c7fd4701aeb2e938e29eab34978d584b1bb31b4cb",
+      "git_blob": "105a9d873b7d03387a311dd471da58854d2132f5"
+    },
+    "replacements": [
+      {
+        "before": "#[path = \"circuit_task_driver.rs\"]\nmod driver;",
+        "after": "#[path = \"circuit_task_cell_port.rs\"]\nmod cell_port;\n#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_remote.rs\"]\npub(crate) mod remote;\n#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_root_lane.rs\"]\nmod root_lane;\n#[cfg(target_os = \"linux\")]\npub use remote::OriginalRootCircuitTaskDaemonInputsV1;\n#[cfg(target_os = \"linux\")]\npub(crate) use remote::OriginalRootTaskLane;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::original_remote_channel;\n#[path = \"circuit_task_driver.rs\"]\nmod driver;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+    "before": {
+      "bytes": 16039,
+      "sha256": "d5fee13397caa51a0f112962c46ad2a39426ac81c1fe65b70c7cee5e32edc232",
+      "git_blob": "68cf423686f24d192d015b0c06e86eea530dfc81"
+    },
+    "after": {
+      "bytes": 16139,
+      "sha256": "a248eb5f9a5d4ffe5ea9e2c73c6ca95af1b6f6d8698eb20b24b5338ae8291599",
+      "git_blob": "4091836886e118a9f94413b55e06881df3d3c608"
+    },
+    "replacements": [
+      {
+        "before": "#[path = \"circuit_task_source_codec.rs\"]\nmod codec;",
+        "after": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_source_remote.rs\"]\npub(crate) mod remote_source;\n#[path = \"circuit_task_source_codec.rs\"]\nmod codec;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+    "before": {
+      "bytes": 13379,
+      "sha256": "c968c13d73c116175143d616cd47b6e8d1ab1030bb0192c76bfd08a5e2288339",
+      "git_blob": "3b4ca45c53d2633bf96d2c1b0fca3ed1ae30c114"
+    },
+    "after": {
+      "bytes": 13463,
+      "sha256": "08d13892425abdd4fb9c7f170aaaa857a8c57a8e61c16bad1c6248f4508a3049",
+      "git_blob": "f6c8214d9f5e065d8869195c83e50ec721cf9965"
+    },
+    "replacements": [
+      {
+        "before": "#[path = \"circuit_cell_batch.rs\"]\nmod batch;",
+        "after": "#[path = \"circuit_cell_batch.rs\"]\nmod batch;\n#[cfg(target_os = \"linux\")]\n#[path = \"circuit_cell_remote.rs\"]\nmod original_remote;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_driver.rs",
+    "before": {
+      "bytes": 13982,
+      "sha256": "424b7b5710b41e1c460c5d2f45277e97a939954c9a01feb455405e90939cc8cd",
+      "git_blob": "a8a9dbdcfc48eac538cbc5ceddc2f56dfc437a4a"
+    },
+    "after": {
+      "bytes": 13631,
+      "sha256": "b96884e676a82ef8a4e8cf083374aa63753709d6bc362a8afecda867906d327d",
+      "git_blob": "90075e64c2df933be2f3bcbdb64cc5bf68f32d2b"
+    },
+    "replacements": [
+      {
+        "before": "use codex_hepta_neuron::CellInferenceReadbackPortV1;\nuse codex_hepta_neuron::CellInputEncoderV1;\nuse codex_hepta_neuron::CellStateOwnerV1;\n",
+        "after": ""
+      },
+      {
+        "before": "use codex_hepta_neuron::NeuronInferenceControlPort;\n",
+        "after": ""
+      },
+      {
+        "before": "use crate::AgentdCircuitCellOwnerV1;\n",
+        "after": "use super::cell_port::OriginalCellPort;\n"
+      },
+      {
+        "before": "pub(super) struct CircuitTaskDriverV1<O, P, E, I> {",
+        "after": "pub(super) struct CircuitTaskDriverV1<C, I> {"
+      },
+      {
+        "before": "    pub(super) cells: AgentdCircuitCellOwnerV1<O, P, E>,",
+        "after": "    pub(super) cells: C,"
+      },
+      {
+        "before": "impl<O, P, E, I> CircuitTaskDriverV1<O, P, E, I>\nwhere\n    O: CellStateOwnerV1 + Send,\n    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1 + Send,\n    E: CellInputEncoderV1 + Send,",
+        "after": "impl<C, I> CircuitTaskDriverV1<C, I>\nwhere\n    C: OriginalCellPort,"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs",
+    "before": {
+      "bytes": 12953,
+      "sha256": "adb8d66bcc29087329a557158698757d7c850cdc558bfc3d931a1e295d71f324",
+      "git_blob": "ca30daa0e41273b0664bb7f7f756b98c63519f1f"
+    },
+    "after": {
+      "bytes": 13058,
+      "sha256": "a7608a69de35f044918a9d5a8ee2c55eeff14c96a23bb46a87ba82a05c59ec47",
+      "git_blob": "9a84dfc40fe8b3e98033ad8551bd4bb16b1e442d"
+    },
+    "replacements": [
+      {
+        "before": "use codex_hepta_neuron::CellPartitionOwnerV1;",
+        "after": "use codex_hepta_neuron::CellPartitionOwnerV1;\nuse codex_hepta_neuron::CellStateOwnerV1;"
+      },
+      {
+        "before": "use crate::CircuitCellBindingV1;",
+        "after": "use crate::AgentdCircuitCellOwnerV1;\nuse crate::CircuitCellBindingV1;"
+      },
+      {
+        "before": "type Driver = CircuitTaskDriverV1<CellPartitionOwnerV1, Model, Encoder, Inputs>;",
+        "after": "type Driver = CircuitTaskDriverV1<AgentdCircuitCellOwnerV1<CellPartitionOwnerV1, Model, Encoder>, Inputs>;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+    "before": {
+      "bytes": 9595,
+      "sha256": "df7608161b61ae3c610ff23721761f05d4f338fe5cd3f4146bac221d3ba6b58e",
+      "git_blob": "b2255aca51d8262e2cf10131e6496947578cd7d9"
+    },
+    "after": {
+      "bytes": 11449,
+      "sha256": "7660817414a0bb6bb9055bda2f317a51e9a9a11a19580160095f927ff27a964b",
+      "git_blob": "b8adbd07f42827bcb733d4061c72c6a57be3d662"
+    },
+    "replacements": [
+      {
+        "before": "struct PendingWork(Arc<AtomicUsize>);",
+        "after": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_task_remote_runtime.rs\"]\nmod original_remote;\n#[cfg(target_os = \"linux\")]\npub(crate) use original_remote::channel as original_remote_channel;\n\nstruct PendingWork(Arc<AtomicUsize>);"
+      },
+      {
+        "before": "    pending: Arc<AtomicUsize>,\n}",
+        "after": "    pending: Arc<AtomicUsize>,\n    #[cfg(target_os = \"linux\")]\n    original_remote: Option<Arc<super::remote::DaemonClient>>,\n}"
+      },
+      {
+        "before": "impl CircuitTaskHandleV1 {",
+        "after": "impl CircuitTaskHandleV1 {\n    #[cfg(target_os = \"linux\")]\n    pub(crate) fn retain_original_remote_record(&self, record: &RunStartRecordV1)\n        -> Result<Option<super::remote::OriginalRecordLoan>, AgentdError>\n    {\n        self.original_remote.as_ref().map(|client| client.begin_original_record(record))\n            .transpose().map_err(|error| AgentdError::Protocol(format!(\"original Root RunStart loan: {error}\")))\n    }\n"
+      },
+      {
+        "before": "    owner: OwnerLoop,\n}",
+        "after": "    owner: OwnerLoop,\n    #[cfg(target_os = \"linux\")]\n    original_root: Option<Box<dyn super::root_lane::OriginalRootLaneFactory>>,\n}"
+      },
+      {
+        "before": "    mut clock: C,\n",
+        "after": "    clock: C,\n"
+      },
+      {
+        "before": "    let (sender, mut receiver) = mpsc::channel::<Command>(capacity);",
+        "after": "    #[cfg(target_os = \"linux\")]\n    let original_owners = Arc::new(std::sync::Mutex::new(Some(super::root_lane::OriginalOwners {\n        cells, inputs, clock,\n    })));\n    #[cfg(not(target_os = \"linux\"))]\n    let mut clock = clock;\n    let (sender, mut receiver) = mpsc::channel::<Command>(capacity);"
+      },
+      {
+        "before": "        pending: Arc::new(AtomicUsize::new(0)),\n",
+        "after": "        pending: Arc::new(AtomicUsize::new(0)),\n        #[cfg(target_os = \"linux\")]\n        original_remote: None,\n"
+      },
+      {
+        "before": "        handle: handle.clone(),\n        owner:",
+        "after": "        handle: handle.clone(),\n        #[cfg(target_os = \"linux\")]\n        original_root: Some(super::root_lane::retain(Arc::clone(&original_owners))),\n        owner:"
+      },
+      {
+        "before": "            Box::pin(async move {\n                let mut driver",
+        "after": "            Box::pin(async move {\n                #[cfg(target_os = \"linux\")]\n                let super::root_lane::OriginalOwners { cells, inputs, mut clock } =\n                    original_owners.try_lock()\n                        .map_err(|_| AgentdError::Protocol(\"original Cell factory is unavailable\".into()))?\n                        .take().ok_or_else(|| AgentdError::Protocol(\"original Cell factory was consumed\".into()))?;\n                let mut driver"
+      },
+      {
+        "before": "impl CircuitTaskRuntimeBootstrapV1 {",
+        "after": "impl CircuitTaskRuntimeBootstrapV1 {\n    #[cfg(target_os = \"linux\")]\n    pub(crate) fn take_original_root_lane(&mut self)\n        -> Result<Box<dyn super::root_lane::OriginalRootCellPump>, Error>\n    {\n        self.original_root.take().ok_or(Error::Unavailable)?.take()\n    }\n"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+    "before": {
+      "bytes": 9070,
+      "sha256": "7a83409184049573fed417e4d400f1c6a71b15f699bb5068bcc133b4a4aee466",
+      "git_blob": "453f78e8db84caa0ba20a9a5cc50ccf47e3b5c71"
+    },
+    "after": {
+      "bytes": 9191,
+      "sha256": "717dee96ad8d67ece958794ec481982be4920013911d3b4926bcd8850ad755de",
+      "git_blob": "b568139b1bcd674b2ba2715176bf693842a26a3e"
+    },
+    "replacements": [
+      {
+        "before": "        let request = provider.build(self.identity(), record)?;",
+        "after": "        #[cfg(target_os = \"linux\")]\n        let _original_remote_record = handle.retain_original_remote_record(record)?;\n        let request = provider.build(self.identity(), record)?;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+    "before": {
+      "bytes": 3366,
+      "sha256": "a50914c8572bfbabbf652505b8dc586b30054e9d0e8690c2e9d3e77098209895",
+      "git_blob": "2c2869dcfa739364ce50ab22c13cd079cedfc0e1"
+    },
+    "after": {
+      "bytes": 3455,
+      "sha256": "64d067a56107d27634a7adc0d56c63ada6a48f9d89809795495a14887325b78f",
+      "git_blob": "65b62607bd6c1a91d033d530cf5906d133693b33"
+    },
+    "replacements": [
+      {
+        "before": "use std::sync::Arc;",
+        "after": "#[cfg(target_os = \"linux\")]\n#[path = \"config_original_root_task.rs\"]\nmod original_root;\n\nuse std::sync::Arc;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+    "before": {
+      "bytes": 7595,
+      "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78",
+      "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a"
+    },
+    "after": {
+      "bytes": 7690,
+      "sha256": "6f5c68430bca1ce23c858aa9184ec88a3f0e9dcbd1667c659c2cc99385b0861c",
+      "git_blob": "90962d888c43b96e4a8e6bd44b9b3b73b52eff4c"
+    },
+    "replacements": [
+      {
+        "before": "use std::fs::File;",
+        "after": "#[cfg(target_os = \"linux\")]\n#[path = \"circuit_q24_task_root_lane.rs\"]\nmod original_root_lane;\n\nuse std::fs::File;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs",
+    "before": {
+      "bytes": 5523,
+      "sha256": "455e014e69b6fb052a0f89befd9658b7d3420abe89c1ecfd704d11136944bd18",
+      "git_blob": "0973fe68bf70859d1a76d9bb867c5af81160898a"
+    },
+    "after": {
+      "bytes": 5608,
+      "sha256": "a4163266fb6ce15d7137581fac99dd78471007aa25d1f71e33238523a340d78a",
+      "git_blob": "00d9f5b09196d7f23f5975a0f75b789d97a6d4dc"
+    },
+    "replacements": [
+      {
+        "before": "use codex_hepta_neuron::AnchorWitnessStore;",
+        "after": "#[path = \"authority_host_session_generation_task_service.rs\"]\nmod original_service;\n\nuse codex_hepta_neuron::AnchorWitnessStore;"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs",
+    "before": {
+      "bytes": 3164,
+      "sha256": "dd3bcb258c7107b107376163b97266f46fb34d36f679ab0263a6f5830855b3cf",
+      "git_blob": "949a4ce929c50c96083517a67bfd27f9ff184816"
+    },
+    "after": {
+      "bytes": 3680,
+      "sha256": "c1f1a4d456b5e0409c4d6dd05c25adbfed51ecc437d44d1de6fde6ce095fb94a",
+      "git_blob": "38d3dfc7ce99e4f36bdb7369d877a14c98be4ddf"
+    },
+    "replacements": [
+      {
+        "before": "use codex_hepta_neuron::AnchorWitnessStore;",
+        "after": "use std::sync::Arc;\nuse crate::AgentdError;\nuse crate::CircuitTaskSourceReadbackV1;\nuse codex_hepta_neuron::AnchorWitnessStore;\n\nimpl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW> {\n    pub(crate) fn require_original_source(&self, source: &Arc<CircuitTaskSourceReadbackV1<SW>>)\n        -> Result<(), AgentdError>\n    {\n        require_root()?;\n        if !Arc::ptr_eq(&self.source, source) {\n            return Err(invalid(\"Root task service differs from the original Source Arc\"));\n        }\n        Ok(())\n    }\n}\n"
+      }
+    ],
+    "exact_inverse": true
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/lib.rs",
+    "before": {
+      "bytes": 72869,
+      "sha256": "0bf6976a203f66fd62d1a842385644f258337c1eb4410eddc79878cff201c433",
+      "git_blob": "6997b47d345dcaaae83b555b94148a657f286975"
+    },
+    "after": {
+      "bytes": 72958,
+      "sha256": "ec60bfe7752e73c369882857c8c3d9e974b44acea5238527946c0d10d039e7c3",
+      "git_blob": "bc3c04ccbbe034b538e4eb857aa8ef986ba88edf"
+    },
+    "replacements": [
+      {
+        "before": "pub use circuit_task::CircuitTaskHandleV1;",
+        "after": "#[cfg(target_os = \"linux\")]\npub use circuit_task::OriginalRootCircuitTaskDaemonInputsV1;\npub use circuit_task::CircuitTaskHandleV1;"
+      }
+    ],
+    "exact_inverse": true
+  }
+]

@@ -1,0 +1,315 @@
+{
+  "admission_299c_to_selected_fd67": {
+    "all_other_constructor_acquire_before_stage_transport_guards_byte_unchanged": true,
+    "changed": [
+      "Admission.finish"
+    ],
+    "missing_baseline_route": "Future absent initial Git/physical baseline is InitialBaselineUnavailable; actual after evidence retained first. No retrospective change to 65a.",
+    "new_exception_is_not_SourceChanged": true,
+    "original_finish_nonblank_lines_all_preserved_in_order": true,
+    "qualified_definitions": 51,
+    "unchanged": 50
+  },
+  "all_five_bootstrap_definitions_byte_unchanged": true,
+  "bootstrap_pre_execution_checks_unchanged": [
+    "UID1000",
+    "real non-symlink parents",
+    "owned evidence parent",
+    "absent private control directory",
+    "eight exact base64 payload identities",
+    "O_EXCL and O_NOFOLLOW writes",
+    "0600 owner regular single-link records",
+    "full readback and fstat/lstat stability",
+    "directory fsync"
+  ],
+  "candidate_request": {
+    "bytes": 280984,
+    "git_blob": "eb4658e231aac54f226a78585d647e2bab8aa6e1",
+    "sha256": "3245e534618d004ba767b5b2ec5483194bcc5453fe6531ef8aff7ee393fb8214"
+  },
+  "current_live_source_git_environment_and_lock_config": [
+    {
+      "canonical_value_pin": {
+        "bytes": 43,
+        "git_blob": "8f236a9ab3761f74e34ab10ba921ec446b6e100d",
+        "sha256": "54c2348feeff4442e6125d557d9bc4e8446c6a26db6282d43a675cc6622def9f"
+      },
+      "field": "source",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 43,
+        "git_blob": "6e6f83546fff415b7f1222e95655f71627f0bb07",
+        "sha256": "5fc14c44b276de899d0d6068cdc6e42b741abe41bf5dc8adb4edaf39a7a1867c"
+      },
+      "field": "tree",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 49,
+        "git_blob": "eff1c91647697ceb22fb25e032fa520680cea3b7",
+        "sha256": "8674272215c98c5e2c7ea02e4199214fd89e7536c6fbe4696f47a199b0ac5eba"
+      },
+      "field": "parents",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 73,
+        "git_blob": "bfde13e971d344bcc86b9d42ef924c44543944fc",
+        "sha256": "84c18e99abea321fc1cd3dc3b1034031ecd57dcf14dae23b6d2e2bf80277e39d"
+      },
+      "field": "repo",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 50,
+        "git_blob": "b07c2109804d7a417ebaf7e2d4f511714a76d664",
+        "sha256": "758645d0b3c00ec037557cf180de5dc6ad44942b7fe89b4cd19628beadd021bc"
+      },
+      "field": "target",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 526,
+        "git_blob": "d25cede23331207a3fe585f6306c0b28f87c2bfc",
+        "sha256": "5b259b16daafddf296b259174b5d7da7b5ebbc93dda225c62a3bdd1d9d0be89a"
+      },
+      "field": "current_final_git_state",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 159,
+        "git_blob": "34694b3cf0c7e66f6d882eea2f0e783eefa9a7cb",
+        "sha256": "4c8a8b2f6260d835326a2d387aada83191e5618ce64b37e77f4193912f754123"
+      },
+      "field": "canonical_complete_git_metadata",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 161,
+        "git_blob": "902fe520bf5376173d350a42a13a631bab057f37",
+        "sha256": "d9bb0ec8584db55eacb9a149bb30bf2e02ce3370992ab1ccd327d24847a75ad8"
+      },
+      "field": "canonical_original_index",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 161,
+        "git_blob": "f572e5fa66cc95a38b926f32d1a2076d3074741c",
+        "sha256": "46995f4b9a922298793bfd75b135d734a7dd0cf9d86dc5492ed1c27034113aed"
+      },
+      "field": "full_physical_inventory",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 161,
+        "git_blob": "4e18c0552f10f7ab149f750ca46d719dc68a6e7a",
+        "sha256": "241aecb6370b3f49bbb65f9ac68b69bd8f254c7d4571159f8e6a0ddcc36fe5b2"
+      },
+      "field": "full_native_inventory",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 67,
+        "git_blob": "4dbbd321a3f952095326ca32c7576d508ba07ca5",
+        "sha256": "a1a2bdd42a30aaea0a5cf0d03e257b12a23a31de9b7f770d8d89ce9a42972417"
+      },
+      "field": "expected_inventory_sha256",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 6,
+        "git_blob": "9380ce690386336b46965e3c2a7bcaa4e6c1691a",
+        "sha256": "009962a95f0333e99ca63cbb9f0fde24529d9f6b7d18d1e55e545cb05ad19c58"
+      },
+      "field": "expected_file_count",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 192,
+        "git_blob": "3cefeb7d3023daa9cf18152c3cabc9968a22b52e",
+        "sha256": "5800d7e6181aacef1b0233714937c24bcb40195ba54d276e4a001207d57f4a35"
+      },
+      "field": "coordination_lock",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 5742,
+        "git_blob": "69230278fe24312789d222f8f6c15b8c2bafd51b",
+        "sha256": "5fb4d600c85c6a9ae17b72693c5d43a178370d6d47620c07c763671ccba67946"
+      },
+      "field": "runtime_guard",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 83,
+        "git_blob": "384c93a86217e370dc376e454109695cf779f13f",
+        "sha256": "846221bfdf41c47272ee2ba265444fe70e376f71e1380dee45611543926cb9ad"
+      },
+      "field": "maintenance_guard_path",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 93,
+        "git_blob": "5766188d9e858c91c014613bd389141cb8118eb9",
+        "sha256": "35bcff71cdcbb72ad67c74c7b05d6bf4b7446631beb1dd4c996057bac7f889d6"
+      },
+      "field": "inventory_driver_path",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 55,
+        "git_blob": "1ff3d246bd7b826b4c1fb33331b766ee5157063a",
+        "sha256": "a5104199dd333c4e873d0aa11efc5e93636cf5437e3c9890fb9697aadd2bc609"
+      },
+      "field": "historical_source_repo",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 122,
+        "git_blob": "0f54862778a56b217b994bf6fba05a44674882ec",
+        "sha256": "6cbe6a0da4c3ae4df865f06c3a5b61014ea68dc6d1d1a1776da0d57563377ccd"
+      },
+      "field": "historical_runtime_guard_path",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 159,
+        "git_blob": "116459cbfeccdfa8256c2a5c8b946e68bbab92c6",
+        "sha256": "b162249fb74a5b3f3891f1261184f0c47a63d92c6c2e7466b814318c8fe16b03"
+      },
+      "field": "historical_runtime_guard_pin",
+      "value_unchanged": true
+    },
+    {
+      "canonical_value_pin": {
+        "bytes": 518,
+        "git_blob": "c165aeb2b0d80cb23d0b99d2a5446c78bd5f3990",
+        "sha256": "9679250628a331ec2bd4c1cf0ea2e63ff4a2d9cae0c2774e5bc118639adab0f5"
+      },
+      "field": "source_control_pin_overrides",
+      "value_unchanged": true
+    }
+  ],
+  "eight_input_slot_adaptation": {
+    "after": [
+      "qualification-admission.py",
+      "source-gates-wrapper.py",
+      "native-wrapper.py",
+      "native-driver.original.py",
+      "PLAN.original.json",
+      "APPROVED_QUALIFICATION_INPUT.json",
+      "SOURCE_GATES_CONFIG.json",
+      "TRANSPORT_SUPERVISOR.original.json"
+    ],
+    "before": [
+      "qualification-admission.py",
+      "source-gates-wrapper.py",
+      "native-wrapper.py",
+      "native-driver.original.py",
+      "PLAN.original.json",
+      "APPROVED_QUALIFICATION_INPUT.json",
+      "SOURCE_GATES_CONFIG.json",
+      "CANONICAL_SUPERVISOR.original.json"
+    ],
+    "canonical_original_still_exactly_required_by_55_role_mapping": {
+      "original_consumers": [
+        "cfg.canonical_alignment.supervisor"
+      ],
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1/CANONICAL_SUPERVISOR.original.json",
+      "original_path_evidence": "actual_complete_binary_read",
+      "pin": {
+        "bytes": 950,
+        "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+        "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+      },
+      "producer_job_id": "1a1d4cbd33e-392-5a9",
+      "role": "canonical.supervisor",
+      "transport_path": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-transported-originals-v1/originals/canonical.supervisor.original"
+    },
+    "canonical_supervisor_removed_only_from_bootstrap_duplication": true,
+    "new_stage_supervisor": {
+      "bytes": 950,
+      "git_blob": "af805a3230601013eb94afd5e40e9ea3e83c61d4",
+      "sha256": "4cb0bd6d2286ff49130f1504d3f4e2868abeab961a84038d095dddc3e6e87190"
+    },
+    "new_stage_supervisor_path_not_yet_staged": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v2/TRANSPORT_SUPERVISOR.original.json"
+  },
+  "four_original_full_controls_unchanged": {
+    "PLAN.original.json": {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    "native-driver.original.py": {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    "native-wrapper.py": {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    "source-gates-wrapper.py": {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    }
+  },
+  "initial_reviewer_failure_preserved": {
+    "reason": "Reviewer used the shorthand method name acquire; actual unchanged method is acquire_and_validate. Full 51-definition comparison had already identified only finish as changed. No production bytes changed.",
+    "script": "prove_guard_scope.py",
+    "sdk": "GUARD_PROOF_ATTEMPT_01.original.json"
+  },
+  "native_driver_retained_only_for_future_separate_approval": {
+    "outer": 45000,
+    "phases": 14,
+    "root_parents": 48
+  },
+  "new_h_calls": 0,
+  "no_automatic_retry_budget_override_environment_override_or_new_fallback": true,
+  "old_request": {
+    "bytes": 246727,
+    "git_blob": "465e0eaa1f387ad6bb167a4931328e199a5bf793",
+    "sha256": "1737f34278a277d0d3003efdf6a9539e11e63d40326544542d81da024947aa16"
+  },
+  "original_native_wrapper_failure_routes_preserved_by_full_bytes": true,
+  "original_source_wrapper_failure_routes_preserved_by_full_bytes": true,
+  "pre_and_post_live_checks_are_future_required_original_execution_not_this_pure_proof": true,
+  "qualification": false,
+  "root_exact_source_execution_approval_still_required": true,
+  "schema": "hepta-b608-transport-source-guard-and-slot-static-proof-v1",
+  "script": {
+    "bytes": 8905,
+    "git_blob": "a339ee26b2401ccb08dc0408176aebdd48301306",
+    "sha256": "66c3e4e073ff66adeb6f784aa1238e0321a958b334afeaba50fc10759c899696"
+  },
+  "source_budgets": {
+    "admission": 600,
+    "final": 300,
+    "outer": 7200,
+    "self-test": 300,
+    "source-closure": 600,
+    "verify": 4800
+  },
+  "source_exec_outside_staging_try_byte_unchanged": true
+}

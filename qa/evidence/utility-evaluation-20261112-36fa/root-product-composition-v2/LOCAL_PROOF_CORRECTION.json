@@ -1,0 +1,9 @@
+{
+  "format": "hepta-local-composition-proof-correction-v1",
+  "cause": "Reverse substring matching cannot uniquely locate empty or repeated after strings; no source before/after mismatch was established.",
+  "change": "Save exact unique before-splice offsets, then undo in reverse order at those same restored offsets.",
+  "first_script_preserved": true,
+  "originals_changed": false,
+  "H_calls": 0,
+  "assembled_source_files_written_before_failure": 0
+}

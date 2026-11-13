@@ -1,0 +1,807 @@
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_cli.rs
+@@ -0,0 +1,115 @@
++//! Fixed candidate-service command for the original Root authority executable.
++
++use std::collections::BTreeMap;
++use std::collections::BTreeSet;
++use std::ffi::OsStr;
++use std::ffi::OsString;
++use std::fs::File;
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixStream;
++use std::path::PathBuf;
++
++use codex_hepta_agentd::CellQ24ModelFilesV1;
++use codex_hepta_agentd::RootResidentCandidateProcessInputsV3;
++use tokio_util::sync::CancellationToken;
++
++pub(super) enum Command {
++    Fresh,
++    Recover,
++}
++
++pub(super) fn run(
++    mut options: BTreeMap<OsString, OsString>,
++    command: Command,
++) -> Result<(), Box<dyn std::error::Error>> {
++    let mut take = |key: &str| {
++        options
++            .remove(OsStr::new(key))
++            .ok_or("missing required resident option")
++    };
++    let config = PathBuf::from(take("--config")?);
++    let deployment = PathBuf::from(take("--resident-deployment")?);
++    let trust = PathBuf::from(take("--learning-trust")?);
++    let handoff = take("--candidate-stage-handoff-fd")?;
++    let consumer = take("--resident-consumer-fd")?;
++    let consumer_pidfd = take("--resident-consumer-pidfd")?;
++    let base = take("--baseline-base-fd")?;
++    let encoder = take("--baseline-encoder-fd")?;
++    let heads = take("--baseline-heads-fd")?;
++    let readback = match command {
++        Command::Fresh => None,
++        Command::Recover => Some(PathBuf::from(take("--resident-readback")?)),
++    };
++    let organ = options.remove(OsStr::new("--baseline-organ-fd"));
++    let cell = options.remove(OsStr::new("--baseline-cell-fd"));
++    if !options.is_empty() {
++        return Err("unknown resident option or fresh/readback purpose mismatch".into());
++    }
++    // Adopt every inherited numeric slot before a file open, clone or runtime
++    // can reuse a missing number. The original parser retains sole ownership.
++    let mut claimed = BTreeSet::new();
++    let handoff = super::inherited_descriptor(&handoff, &mut claimed)?;
++    let consumer = super::inherited_descriptor(&consumer, &mut claimed)?;
++    let consumer_pidfd = super::inherited_descriptor(&consumer_pidfd, &mut claimed)?;
++    let base = super::inherited_descriptor(&base, &mut claimed)?;
++    let encoder = super::inherited_descriptor(&encoder, &mut claimed)?;
++    let heads = super::inherited_descriptor(&heads, &mut claimed)?;
++    let organ = organ
++        .as_deref()
++        .map(|fd| super::inherited_descriptor(fd, &mut claimed))
++        .transpose()?;
++    let cell = cell
++        .as_deref()
++        .map(|fd| super::inherited_descriptor(fd, &mut claimed))
++        .transpose()?;
++    let original = RootResidentCandidateProcessInputsV3 {
++        stage_handoff: UnixDatagram::from(handoff),
++        consumer_stream: UnixStream::from(consumer),
++        original_consumer_pidfd: consumer_pidfd,
++        baseline_files: CellQ24ModelFilesV1 {
++            base: File::from(base),
++            organ_adapter: organ.map(File::from),
++            cell_adapter: cell.map(File::from),
++            encoder: File::from(encoder),
++            heads: File::from(heads),
++        },
++    };
++    let runtime = tokio::runtime::Builder::new_current_thread()
++        .enable_all()
++        .build()?;
++    runtime.block_on(async move {
++        let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
++        let cancellation = CancellationToken::new();
++        let service = match readback {
++            Some(readback) => codex_hepta_agentd::recover_host_resident_candidate_v3(
++                &config,
++                &deployment,
++                &trust,
++                original,
++                &readback,
++            )?,
++            None => codex_hepta_agentd::prepare_host_resident_candidate_v3(
++                &config,
++                &deployment,
++                &trust,
++                original,
++            )?,
++        };
++        let work = service.run(cancellation.clone());
++        tokio::pin!(work);
++        tokio::select! {
++            result = &mut work => result?,
++            signal = tokio::signal::ctrl_c() => {
++                cancellation.cancel();
++                let result = work.await;
++                signal?;
++                result?;
++            }
++            _ = terminate.recv() => {
++                cancellation.cancel();
++                work.await?;
++            }
++        }
++        Ok::<(), Box<dyn std::error::Error>>(())
++    })
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_launch.rs
+@@ -0,0 +1,157 @@
++//! Normal Root service entry for the original V3 candidate continuation.
++//! Configuration describes original inputs; it cannot construct a role owner.
++
++use std::io;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixDatagram;
++use std::os::unix::net::UnixStream;
++use std::path::Path;
++use std::sync::Arc;
++
++use codex_hepta_contracts::SignedFinalUseGrant;
++use codex_hepta_contracts::authority_lease::AuthorityLease;
++use serde::Deserialize;
++
++use crate::CellQ24ModelFilesV1;
++use crate::LoadedCellQ24ModelV1;
++use crate::RootResidentCandidateServiceV1;
++use crate::RootResidentLearningConsumerV3;
++use crate::RootResidentLearningReadbackAuthorizationV3;
++use crate::RootResidentLearningRegistrationV3;
++use crate::authority_host_config::read_root_json;
++
++#[path = "authority_host_resident_launch_inputs.rs"]
++mod inputs;
++#[path = "authority_host_resident_trust_file.rs"]
++mod trust;
++
++/// Each descriptor is inherited from the actual Root supervisor and consumed
++/// once. The ten role streams remain in the separate original SCM_RIGHTS
++/// handoff, with the original recipient/pidfd/purpose/deadline checks.
++pub struct RootResidentCandidateProcessInputsV3 {
++    pub stage_handoff: UnixDatagram,
++    pub consumer_stream: UnixStream,
++    pub original_consumer_pidfd: OwnedFd,
++    pub baseline_files: CellQ24ModelFilesV1,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct ReadbackFile {
++    schema_version: u32,
++    purpose: String,
++    intent: SignedFinalUseGrant,
++    lease: AuthorityLease,
++}
++
++enum Purpose<'a> {
++    Fresh,
++    Readback(&'a Path),
++}
++
++/// Call inside the resident Tokio runtime, after the original ordinary A has
++/// completed and its exact initial request and independent B plan are known.
++/// No error promises that a successfully registered Root record was unwritten;
++/// uncertainty requires the separate original readback authorization.
++pub fn prepare_host_resident_candidate_v3(
++    config_file: &Path,
++    deployment_file: &Path,
++    trusted_evidence_file: &Path,
++    original: RootResidentCandidateProcessInputsV3,
++) -> io::Result<RootResidentCandidateServiceV1> {
++    prepare(
++        config_file,
++        deployment_file,
++        trusted_evidence_file,
++        original,
++        Purpose::Fresh,
++    )
++}
++
++/// Open-only recovery consumes the same original deployment and a distinct
++/// current readback grant/lease. Neither file can promote recovered custody to
++/// fresh execution or recreate a role channel.
++pub fn recover_host_resident_candidate_v3(
++    config_file: &Path,
++    deployment_file: &Path,
++    trusted_evidence_file: &Path,
++    original: RootResidentCandidateProcessInputsV3,
++    readback_file: &Path,
++) -> io::Result<RootResidentCandidateServiceV1> {
++    prepare(
++        config_file,
++        deployment_file,
++        trusted_evidence_file,
++        original,
++        Purpose::Readback(readback_file),
++    )
++}
++
++fn prepare(
++    config_file: &Path,
++    deployment_file: &Path,
++    trusted_evidence_file: &Path,
++    original: RootResidentCandidateProcessInputsV3,
++    purpose: Purpose<'_>,
++) -> io::Result<RootResidentCandidateServiceV1> {
++    // SAFETY: geteuid has no pointer or ownership precondition.
++    if unsafe { libc::geteuid() } != 0 {
++        return Err(io::Error::other("original Root resident process required"));
++    }
++    let trust = trust::OriginalHostTrust::read(trusted_evidence_file)?;
++    let RootResidentCandidateProcessInputsV3 {
++        stage_handoff,
++        consumer_stream,
++        original_consumer_pidfd,
++        baseline_files,
++    } = original;
++    let baseline = Arc::new(
++        LoadedCellQ24ModelV1::open_files(baseline_files).map_err(io::Error::other)?,
++    );
++    let deployment = inputs::OriginalDeployment::read(deployment_file, &trust, baseline)?;
++    let readback = match purpose {
++        Purpose::Fresh => None,
++        Purpose::Readback(path) => {
++            let value: ReadbackFile = read_root_json(path)?;
++            if value.schema_version != 3
++                || value.purpose != "hepta.host-resident-learning.readback-deployment.v3"
++            {
++                return Err(io::Error::other("original resident readback profile differs"));
++            }
++            Some(RootResidentLearningReadbackAuthorizationV3::from_original_root(
++                &deployment.profile,
++                value.intent,
++                value.lease,
++            )?)
++        }
++    };
++    let handoff = crate::receive_root_candidate_stage_handoff(
++        stage_handoff,
++        &deployment.profile,
++        deployment.handoff_timeout,
++    )
++    .map_err(io::Error::other)?;
++    let registration = match readback {
++        Some(authorization) => super::recover_host_resident_learning_v3(
++            config_file,
++            deployment.profile,
++            authorization,
++        )?,
++        None => super::register_host_resident_learning_v3(config_file, deployment.profile)?,
++    };
++    let (peer, uid, timeout, lifetime) = deployment.consumer.into_peer();
++    RootResidentLearningRegistrationV3::into_candidate_service(
++        registration,
++        deployment.inputs,
++        handoff,
++        RootResidentLearningConsumerV3 {
++            stream: consumer_stream,
++            peer,
++            uid,
++            original_consumer_pidfd,
++            timeout,
++            lifetime,
++        },
++    )
++    .map_err(io::Error::other)
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs
+@@ -0,0 +1,314 @@
++//! Bounded Root deployment data for an already completed ordinary A.
++//! No task result, trust key set, role endpoint or private signer is decoded.
++
++use std::io;
++use std::path::Path;
++use std::sync::Arc;
++use std::time::Duration;
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++use base64::Engine;
++use base64::engine::general_purpose::STANDARD_NO_PAD;
++use codex_hepta_contracts::SignedFinalUseGrant;
++use codex_hepta_contracts::authority_lease::AuthorityLease;
++use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
++use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
++use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
++use codex_hepta_learning_ledger::DatasetFreezePlanV2;
++use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
++use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++
++use super::trust::OriginalHostTrust;
++use super::trust::digest;
++use crate::AgentdRootAuthorityPeer;
++use crate::CellQ24DatasetRuleV1;
++use crate::CellQ24PrivateHeadV1;
++use crate::LoadedCellQ24ModelV1;
++use crate::OriginalCellEvaluationPanelRegistrationV1;
++use crate::OriginalCellEvaluationPanelTaskV1;
++use crate::OriginalCellQ24MaterialReceiptConfigV1;
++use crate::RootResidentCandidateInputsV1;
++use crate::RootResidentLearningProfileV3;
++use crate::authority_host_config::read_root_json;
++use crate::learning_iteration_checkpoint::decode_original_owner_snapshot_v1;
++use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
++
++const PURPOSE: &str = "hepta.host-resident-learning.candidate-deployment.v3";
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct DeploymentFile {
++    schema_version: u32,
++    purpose: String,
++    initial_snapshot: String,
++    scope: Scope,
++    head: Head,
++    unit_profile_digest: String,
++    freeze_plan: FreezePlan,
++    freeze_evidence: FreezeEvidence,
++    original_freeze_payload: String,
++    maximum_signature_lifetime_seconds: u64,
++    panel: Panel,
++    original_intent: SignedFinalUseGrant,
++    original_lease: AuthorityLease,
++    consumer: Consumer,
++    handoff_timeout_ms: u64,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Scope {
++    update_scope: UpdateScope,
++    update_rule: String,
++    binding: String,
++}
++
++#[derive(Deserialize)]
++#[serde(rename_all = "snake_case")]
++enum UpdateScope {
++    Cell,
++    Organ,
++}
++
++#[derive(Deserialize)]
++#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
++enum Head {
++    Drive { index: u16 },
++    Prediction { index: u16 },
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct FreezePlan {
++    snapshot_id: String,
++    objective_digest: String,
++    inclusion_policy_digest: String,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct FreezeEvidence {
++    evidence_id: String,
++    principal_id: String,
++    role: String,
++    trust_digest: String,
++    scope_digest: String,
++    objective_digest: String,
++    authority_epoch: u64,
++    issued_at: u64,
++    expires_at: u64,
++    payload_digest: String,
++    signature: String,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Panel {
++    primary: PanelTask,
++    retention: Vec<PanelTask>,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct PanelTask {
++    plan_id: String,
++    task_digest: String,
++    cohort_rule_digest: String,
++}
++
++impl PanelTask {
++    fn original(self) -> io::Result<OriginalCellEvaluationPanelTaskV1> {
++        Ok(OriginalCellEvaluationPanelTaskV1 {
++            plan_id: StableId::new(self.plan_id).map_err(io::Error::other)?,
++            task_digest: digest(&self.task_digest)?,
++            cohort_rule_digest: digest(&self.cohort_rule_digest)?,
++        })
++    }
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Consumer {
++    pub(super) uid: u32,
++    pid: u32,
++    boot_id: String,
++    process_start_ticks: u64,
++    timeout_ms: u64,
++    lifetime_ms: u64,
++}
++
++impl Consumer {
++    pub(super) fn into_peer(self) -> (AgentdRootAuthorityPeer, u32, Duration, Duration) {
++        (
++            AgentdRootAuthorityPeer {
++                pid: self.pid,
++                boot_id: self.boot_id,
++                process_start_ticks: self.process_start_ticks,
++            },
++            self.uid,
++            Duration::from_millis(self.timeout_ms),
++            Duration::from_millis(self.lifetime_ms),
++        )
++    }
++}
++
++pub(super) struct OriginalDeployment {
++    pub(super) profile: RootResidentLearningProfileV3,
++    pub(super) inputs: RootResidentCandidateInputsV1,
++    pub(super) consumer: Consumer,
++    pub(super) handoff_timeout: Duration,
++}
++
++impl OriginalDeployment {
++    pub(super) fn read(
++        path: &Path,
++        trust: &OriginalHostTrust,
++        baseline: Arc<LoadedCellQ24ModelV1>,
++    ) -> io::Result<Self> {
++        let value: DeploymentFile = read_root_json(path)?;
++        if value.schema_version != 3
++            || value.purpose != PURPOSE
++            || !(1..=30_000).contains(&value.handoff_timeout_ms)
++            || value.consumer.uid == 0
++            || value.consumer.pid == 0
++            || value.consumer.process_start_ticks == 0
++            || value.consumer.boot_id.is_empty()
++            || !(1..=30_000).contains(&value.consumer.timeout_ms)
++            || !(1..=300_000).contains(&value.consumer.lifetime_ms)
++            || value.panel.retention.is_empty()
++            || value.panel.retention.len() > 16
++        {
++            return Err(io::Error::other("original resident deployment profile differs"));
++        }
++        let raw = decode(&value.initial_snapshot, 8_192)?;
++        let initial = decode_original_owner_snapshot_v1(&raw).map_err(io::Error::other)?;
++        let empty = LearningIterationCoordinatorV1::new(
++            initial.request.clone(),
++            initial.owners.clone(),
++        )
++        .map_err(io::Error::other)?;
++        if empty.snapshot() != &initial
++            || encode_original_owner_snapshot_v1(&initial).map_err(io::Error::other)? != raw
++        {
++            return Err(io::Error::other("exact original empty stage cut is required"));
++        }
++        let scope = FrozenLearningScopeV2::freeze(
++            &initial.request,
++            &initial.owners,
++            match value.scope.update_scope {
++                UpdateScope::Cell => LearningUpdateScopeV2::Cell,
++                UpdateScope::Organ => LearningUpdateScopeV2::Organ,
++            },
++            digest(&value.scope.update_rule)?,
++        )
++        .map_err(io::Error::other)?;
++        if scope.binding() != digest(&value.scope.binding)? {
++            return Err(io::Error::other("original frozen scope binding differs"));
++        }
++        let protocol = OriginalCellEvaluationPanelRegistrationV1::new(
++            value.panel.primary.original()?,
++            value
++                .panel
++                .retention
++                .into_iter()
++                .map(PanelTask::original)
++                .collect::<io::Result<_>>()?,
++        )
++        .map_err(io::Error::other)?;
++        if initial.request.evaluation_profile != protocol.evaluation_profile()
++            || baseline.components() != &initial.request.selected_bundle.components
++        {
++            return Err(io::Error::other("original pre-training panel or loaded baseline differs"));
++        }
++        let at = SystemTime::now()
++            .duration_since(UNIX_EPOCH)
++            .map_err(io::Error::other)?
++            .as_secs();
++        let freeze = value.freeze_evidence.original()?;
++        let payload = decode(&value.original_freeze_payload, 65_536)?;
++        trust
++            .verifier
++            .verify(LearningEvidenceRoleV1::Evaluator, &freeze, &payload, at)
++            .map_err(io::Error::other)?;
++        let material = OriginalCellQ24MaterialReceiptConfigV1 {
++            experience_signer: trust.observer(&initial.owners.experience, at)?,
++            dataset_signer: trust.observer(&initial.owners.dataset, at)?,
++            initial,
++            scope,
++            rule: CellQ24DatasetRuleV1 {
++                head: match value.head {
++                    Head::Drive { index } => CellQ24PrivateHeadV1::Drive { index },
++                    Head::Prediction { index } => CellQ24PrivateHeadV1::Prediction { index },
++                },
++                unit_profile_digest: digest(&value.unit_profile_digest)?,
++            },
++            freeze_plan: DatasetFreezePlanV2 {
++                snapshot_id: StableId::new(value.freeze_plan.snapshot_id)
++                    .map_err(io::Error::other)?,
++                objective_digest: digest(&value.freeze_plan.objective_digest)?,
++                inclusion_policy_digest: digest(&value.freeze_plan.inclusion_policy_digest)?,
++            },
++            freeze_evidence: freeze,
++            verifier: trust.verifier.clone(),
++            maximum_signature_lifetime_seconds: value.maximum_signature_lifetime_seconds,
++        };
++        OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)
++            .map_err(io::Error::other)?;
++        let profile = RootResidentLearningProfileV3::new(
++            material.initial.clone(),
++            material.scope.clone(),
++            &trust.verifier,
++            value.original_intent,
++            value.original_lease,
++        )?;
++        Ok(Self {
++            profile,
++            inputs: RootResidentCandidateInputsV1 {
++                material,
++                protocol,
++                baseline,
++                verifier: trust.verifier.clone(),
++            },
++            consumer: value.consumer,
++            handoff_timeout: Duration::from_millis(value.handoff_timeout_ms),
++        })
++    }
++}
++
++impl FreezeEvidence {
++    fn original(self) -> io::Result<SignedLearningEvidenceV1> {
++        if self.role != "evaluator" {
++            return Err(io::Error::other("fixed original freeze evaluator purpose required"));
++        }
++        let signature = decode(&self.signature, 64)?
++            .try_into()
++            .map_err(|_| io::Error::other("complete original freeze signature required"))?;
++        Ok(SignedLearningEvidenceV1 {
++            evidence_id: StableId::new(self.evidence_id).map_err(io::Error::other)?,
++            principal_id: StableId::new(self.principal_id).map_err(io::Error::other)?,
++            role: LearningEvidenceRoleV1::Evaluator,
++            trust_digest: digest(&self.trust_digest)?,
++            scope_digest: digest(&self.scope_digest)?,
++            objective_digest: digest(&self.objective_digest)?,
++            authority_epoch: self.authority_epoch,
++            issued_at: self.issued_at,
++            expires_at: self.expires_at,
++            payload_digest: digest(&self.payload_digest)?,
++            signature,
++        })
++    }
++}
++
++fn decode(value: &str, limit: usize) -> io::Result<Vec<u8>> {
++    if value.is_empty() || value.len() > limit.div_ceil(3) * 4 {
++        return Err(io::Error::other("original resident input exceeds its codec bound"));
++    }
++    let bytes = STANDARD_NO_PAD.decode(value).map_err(io::Error::other)?;
++    if bytes.len() > limit || STANDARD_NO_PAD.encode(&bytes) != value {
++        return Err(io::Error::other("noncanonical original resident input bytes"));
++    }
++    Ok(bytes)
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs
+@@ -0,0 +1,150 @@
++//! Root-owned learning trust, read separately from deployment and role packets.
++//! This file carries already enrolled public credentials, never signing keys.
++
++use std::io;
++use std::path::Path;
++
++use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
++use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
++use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
++use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
++use codex_hepta_learning_ledger::TrustedLearningSignerV1;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++use serde::Deserialize;
++
++use crate::authority_host_config::read_root_json;
++
++const PURPOSE: &str = "hepta.host-resident-learning.trusted-evidence.v3";
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct TrustFile {
++    schema_version: u32,
++    purpose: String,
++    scope_digest: String,
++    objective_digest: String,
++    authority_epoch: u64,
++    signers: Vec<Signer>,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Signer {
++    principal: Principal,
++    controller_id: String,
++    verifying_key: [u8; 32],
++    roles: Vec<Role>,
++    revoked_at: Option<u64>,
++}
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Principal {
++    principal_id: String,
++    credential_chain_digest: String,
++    signing_key_digest: String,
++    scope_digest: String,
++    authority_epoch: u64,
++    authenticated_at: u64,
++    expires_at: u64,
++}
++
++#[derive(Deserialize)]
++#[serde(rename_all = "snake_case")]
++enum Role {
++    Generator,
++    Observer,
++    Evaluator,
++    CreditAllocator,
++    UnlearningAuthority,
++    Selector,
++}
++
++impl From<Role> for LearningEvidenceRoleV1 {
++    fn from(value: Role) -> Self {
++        match value {
++            Role::Generator => Self::Generator,
++            Role::Observer => Self::Observer,
++            Role::Evaluator => Self::Evaluator,
++            Role::CreditAllocator => Self::CreditAllocator,
++            Role::UnlearningAuthority => Self::UnlearningAuthority,
++            Role::Selector => Self::Selector,
++        }
++    }
++}
++
++/// Only the independent Root0600 file can construct this local input. Neither
++/// a deployment packet nor a received channel selects a trust file or key set.
++pub(super) struct OriginalHostTrust {
++    pub(super) verifier: LearningEvidenceVerifierV1,
++    signers: Vec<TrustedLearningSignerV1>,
++}
++
++impl OriginalHostTrust {
++    pub(super) fn read(path: &Path) -> io::Result<Self> {
++        let value: TrustFile = read_root_json(path)?;
++        if value.schema_version != 3
++            || value.purpose != PURPOSE
++            || value.signers.is_empty()
++            || value.signers.len() > 64
++        {
++            return Err(io::Error::other("original host learning trust profile differs"));
++        }
++        let signers = value
++            .signers
++            .into_iter()
++            .map(|signer| {
++                let principal = signer.principal;
++                Ok(TrustedLearningSignerV1 {
++                    principal: AuthenticatedPrincipalV1 {
++                        principal_id: StableId::new(principal.principal_id)
++                            .map_err(io::Error::other)?,
++                        credential_chain_digest: digest(&principal.credential_chain_digest)?,
++                        signing_key_digest: digest(&principal.signing_key_digest)?,
++                        scope_digest: digest(&principal.scope_digest)?,
++                        authority_epoch: principal.authority_epoch,
++                        authenticated_at: principal.authenticated_at,
++                        expires_at: principal.expires_at,
++                    },
++                    controller_id: StableId::new(signer.controller_id).map_err(io::Error::other)?,
++                    verifying_key: signer.verifying_key,
++                    roles: signer.roles.into_iter().map(Into::into).collect(),
++                    revoked_at: signer.revoked_at,
++                })
++            })
++            .collect::<io::Result<Vec<_>>>()?;
++        let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
++            scope_digest: digest(&value.scope_digest)?,
++            objective_digest: digest(&value.objective_digest)?,
++            authority_epoch: value.authority_epoch,
++            signers: signers.clone(),
++        })
++        .map_err(io::Error::other)?;
++        Ok(Self { verifier, signers })
++    }
++
++    pub(super) fn observer(
++        &self,
++        original_actor: &StableId,
++        now: u64,
++    ) -> io::Result<TrustedLearningSignerV1> {
++        let signer = self
++            .signers
++            .iter()
++            .find(|signer| &signer.principal.principal_id == original_actor)
++            .ok_or_else(|| io::Error::other("original Material actor is not enrolled"))?;
++        self.verifier
++            .require_signer_binding(LearningEvidenceRoleV1::Observer, signer, now)
++            .map_err(io::Error::other)?;
++        Ok(signer.clone())
++    }
++}
++
++pub(super) fn digest(value: &str) -> io::Result<Digest32> {
++    let digest = value.parse::<Digest32>().map_err(io::Error::other)?;
++    if digest.to_string() != value {
++        return Err(io::Error::other("noncanonical original digest"));
++    }
++    Ok(digest)
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_runtime.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_runtime.rs
+@@ -51,6 +51,12 @@
+ mod resident_registration;
+ pub use resident_registration::recover_host_resident_learning_v3;
+ pub use resident_registration::register_host_resident_learning_v3;
++
++#[path = "authority_host_resident_launch.rs"]
++mod resident_launch;
++pub use resident_launch::RootResidentCandidateProcessInputsV3;
++pub use resident_launch::prepare_host_resident_candidate_v3;
++pub use resident_launch::recover_host_resident_candidate_v3;
+ 
+ #[path = "authority_host_issuer_renewal.rs"]
+ mod issuer_renewal;
+--- a/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs
++++ b/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs
+@@ -1,4 +1,8 @@
+ //! Explicit Root administration, fresh publication and open-only session entry.
++
++#[cfg(target_os = "linux")]
++#[path = "../authority_host_resident_cli.rs"]
++mod resident_cli;
+ 
+ #[cfg(target_os = "linux")]
+ fn main() -> Result<(), Box<dyn std::error::Error>> {
+@@ -22,6 +26,17 @@
+                 return Err("duplicate option".into());
+             }
+         }
++    }
++    if command == "serve-resident-learning" || command == "recover-resident-learning" {
++        if pidfd_stdin {
++            return Err("resident service requires its named original consumer pidfd".into());
++        }
++        let purpose = if command == "serve-resident-learning" {
++            resident_cli::Command::Fresh
++        } else {
++            resident_cli::Command::Recover
++        };
++        return resident_cli::run(options, purpose);
+     }
+     let mut take = |key: &str| {
+         options
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -150,6 +150,12 @@
+ pub use authority_host_runtime::PreparedHostAuthoritySession;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::RootNotesPolicyPredecessor;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::RootResidentCandidateProcessInputsV3;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::prepare_host_resident_candidate_v3;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::recover_host_resident_candidate_v3;
+ #[cfg(target_os = "linux")]
+ pub use authority_host_runtime::commit_host_issuer_lease_renewal;
+ #[cfg(target_os = "linux")]

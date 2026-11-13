@@ -1,0 +1,88 @@
+{
+  "actual_cli_commands": [
+    "serve-resident-learning",
+    "recover-resident-learning"
+  ],
+  "existing_insertion_only": 3,
+  "important_remaining": [
+    "no daemon late-enrollment transport yet",
+    "no actual owner host deployment or independent B fixture assumed",
+    "actual Root Source to nonRoot Material readonly loan needs separate E2-owned source seam",
+    "new tests and registry not yet prepared",
+    "new Rust has not been parsed/compiled by Rust tools"
+  ],
+  "limits_unchanged": [
+    "original root0600 reader 65536",
+    "snapshot 8192",
+    "model original parse bounds",
+    "64 signer max",
+    "16 retention max",
+    "30s handoff/command",
+    "300s lifetime",
+    "completion readiness 500ms",
+    "all original per-owner permits and 128 counters",
+    "original f42 sameUID/samePID refusal"
+  ],
+  "new_production_modules": 4,
+  "notes": [
+    "This first layer is a concrete Root CLI entry using existing owners, not full E3 completion.",
+    "No immutable library-wide rule or original runtime body changed.",
+    "FrozenScope/Material/signature acceptance is not proof of a current source/ledger effect; original owners still read and validate them."
+  ],
+  "original_file_exact_reverse": [
+    {
+      "after": {
+        "bytes": 20258,
+        "git_blob": "3daf01cca84cee32742ab63d6328a8c9792b2963",
+        "sha256": "4d86762f9e8d624830a27cb49a0c64325629fa8d887de6506785f2072c4d8171"
+      },
+      "before": {
+        "bytes": 20005,
+        "git_blob": "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+        "sha256": "97ceda651034181eda5e4c4951f5cf9ba567d6caeaa1b877937330d21bcb95ae"
+      },
+      "inverse_exact": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+    },
+    {
+      "after": {
+        "bytes": 13764,
+        "git_blob": "7dac9227f6bdb1edb66762b8a004c408f46841dd",
+        "sha256": "7a8d54eb452b080738b3add3310da643d36f0b04cd6d1cdd303f11c00481ec8a"
+      },
+      "before": {
+        "bytes": 13220,
+        "git_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+        "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446"
+      },
+      "inverse_exact": true,
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "after": {
+        "bytes": 72679,
+        "git_blob": "d304e4919f6d40aac479374fd4857caa2b388eca",
+        "sha256": "c5e19f94499558bc69d7f62b2874d28a4810d59b9f94f8b86fe46967749f7f15"
+      },
+      "before": {
+        "bytes": 72389,
+        "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+        "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+      },
+      "inverse_exact": true,
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    }
+  ],
+  "scope": {
+    "H": 0,
+    "formatter": 0,
+    "original_QA": 0,
+    "original_collector": 0,
+    "rust_compile": 0,
+    "source_git_writes": 0,
+    "source_ref_changes": 0,
+    "tests": 0
+  },
+  "source_paths": 7,
+  "status": "LOCAL_SOURCE_PROPOSAL_NOT_EXECUTED"
+}

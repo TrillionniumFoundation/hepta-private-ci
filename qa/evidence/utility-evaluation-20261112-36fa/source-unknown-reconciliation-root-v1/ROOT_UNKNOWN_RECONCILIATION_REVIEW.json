@@ -1,0 +1,130 @@
+{
+  "actual_job_id": null,
+  "all_h_stopped": true,
+  "approval": {
+    "bytes": 10788,
+    "git_blob": "9a48727adf7f73ee6adf8d45b567db3000a83c5f",
+    "sha256": "4ba2d95d6e859298b3d611f3aa21cf511884d012f1dfaea12f5488373abcb87e"
+  },
+  "created_at": "2026-11-13T14:53:43.028494+00:00",
+  "execution_status": "Unknown",
+  "explicit_idempotency_key_match": false,
+  "format": "hepta-root-source-unknown-reconciliation-review-v1",
+  "lookup_approval": {
+    "bytes": 3447,
+    "git_blob": "8b874c4621289f9ad037581ed0ef00bf74ad63f7",
+    "sha256": "18ae7fc1b3077852ad0e5125f804060bbfd08e0b748a8289c1afec460caf869f"
+  },
+  "lookup_files": [
+    {
+      "bytes": 4915,
+      "git_blob": "7deb9c0a41f96890976c9e89e99374da3933732b",
+      "name": "LOOKUP_OBSERVATION_REVIEW.json",
+      "sha256": "7e8770ef2589bbe7e226883441e34d0a1383b2ef4ff9a01dc23986d01dc78be2"
+    },
+    {
+      "bytes": 1260,
+      "git_blob": "3a4dc80fdd33a7cc491b1530a88c174160f0f590",
+      "name": "MATCHING_ROW_PROJECTION.json",
+      "sha256": "e3c73397f838635f514a0a1c201893096405c915dfee13c3d2b158ef2a348bbe"
+    },
+    {
+      "bytes": 169,
+      "git_blob": "3f2d0734b398fee1192a856700662843ded5222f",
+      "name": "PAGE_01.INTENT.json",
+      "sha256": "64ceb5753751b4436980aad29557872137559d3bddb410243f55825b71d90075"
+    },
+    {
+      "bytes": 39,
+      "git_blob": "c63eccc11cce2d73f52667f06492a769dc49d521",
+      "name": "PAGE_01.REQUEST.original.json",
+      "sha256": "6c753e05db0b9e1990e564126a98df78465faa14bf6f9bcddc724a96c1012e56"
+    },
+    {
+      "bytes": 390,
+      "git_blob": "6e34a17ad2ce57217e64c4c79b8fd6a25858a2bc",
+      "name": "PAGE_01.RETURN_OBSERVATION.json",
+      "sha256": "c879bed68f16a3627036a1b8a47ca307b41321ec8b2e21af2286c497fa770835"
+    },
+    {
+      "bytes": 583,
+      "git_blob": "286d8f26879953074ebd7e1f59f19251a2e8b466",
+      "name": "PAGE_01.SDK.original.json",
+      "sha256": "6c397e298145c75a39606bbba8e4545c140da257e7a356d4586242c3d3c61e8a"
+    },
+    {
+      "bytes": 265,
+      "git_blob": "839a04190c7df59f838fb9773120a12017db7717",
+      "name": "PAGE_02.INTENT.json",
+      "sha256": "4f6544203cd0b5e4f99bc6e0aad618d276b71e0bc72b727e61098b8687dc0921"
+    },
+    {
+      "bytes": 129,
+      "git_blob": "b3556a7eff9f5df84b3a9cab7e9505d7fae7b84e",
+      "name": "PAGE_02.REQUEST.original.json",
+      "sha256": "3338b48cbeb3f5f3b10e78455cee3f778b44a304b387e904c18cb675efacd6df"
+    },
+    {
+      "bytes": 390,
+      "git_blob": "ebed8b752d4311584affa65ca576e0ab52822d6c",
+      "name": "PAGE_02.RETURN_OBSERVATION.json",
+      "sha256": "d6efb0afc8f7a7fceaf33a2aa4c093c4f0ecbb8051ec9710f7544125ed6a3b72"
+    },
+    {
+      "bytes": 205,
+      "git_blob": "4f2a9ef3f341953d34a60513a20878c23cceabd5",
+      "name": "PAGE_02.SDK.original.json",
+      "sha256": "16fd653f942e3425253e5b4be8af9b79954ccce2cc8f8d786dc0f738683cdde6"
+    },
+    {
+      "bytes": 3783,
+      "git_blob": "83c739193b929dde8ad796343b9efbf6abe3a88e",
+      "name": "ROOT_LOOKUP_APPROVAL.GET.original.json",
+      "sha256": "e701a72160fac35ddd60cd16cef0ac67da6b20180ef53d244690fa683d5f2a99"
+    },
+    {
+      "bytes": 3447,
+      "git_blob": "8b874c4621289f9ad037581ed0ef00bf74ad63f7",
+      "name": "ROOT_LOOKUP_APPROVAL.original.json",
+      "sha256": "18ae7fc1b3077852ad0e5125f804060bbfd08e0b748a8289c1afec460caf869f"
+    },
+    {
+      "bytes": 4280,
+      "git_blob": "078afb14405f7e1ae8711bccd34fb25f20e90039",
+      "name": "verify_lookup_observation.py",
+      "sha256": "3d66518aa3f5ba35e5e8c42f482964c22530c2776d7dbd1247fefb7a65a2ad11"
+    }
+  ],
+  "lookup_root_full_get_verified": 13,
+  "metadata_calls": 2,
+  "native_review_local_only_text_preserved_as_historical_cutoff": true,
+  "no_authorized_retry_refresh_or_other_job_probe": true,
+  "observations": [
+    "The first metadata response was pending, incomplete and non-authoritative, with no job rows.",
+    "The second request used only the exact returned cursor in the same snapshot. Its response was an explicit inventory entry-bound refusal.",
+    "Both complete raw metadata SDKs contain no unrelated job row or credential; their original bytes are archived unchanged.",
+    "The source timeout and one unavailable fixed RESULT path do not establish admission, no admission, execution, non-execution, or a gate result."
+  ],
+  "qualification": false,
+  "returned_job_rows": 0,
+  "review_execution": "Pure local parsing with Python exact integers; no H or project code execution.",
+  "scope_clarification": {
+    "bytes": 710,
+    "git_blob": "a13ea10f4d3477da36e583c8b01058bb05f31689",
+    "sha256": "5f0131459c8b40520f53be7188805b5e5a9dadc14be195602ce989294d91643f"
+  },
+  "snapshot_count": 1,
+  "source_gate_execution_status": "Unknown",
+  "source_preservation_claim": false,
+  "source_request": {
+    "bytes": 280984,
+    "git_blob": "eb4658e231aac54f226a78585d647e2bab8aa6e1",
+    "sha256": "3245e534618d004ba767b5b2ec5483194bcc5453fe6531ef8aff7ee393fb8214"
+  },
+  "unknown_window_placement": {
+    "bytes": 8002,
+    "git_blob": "80f5109e1a0ec7b70206bfee75c596d7df8ba768",
+    "sha256": "e450af94d00e662ea4919523d1cb4de9de3528289a288381e6ea6567d7905cab"
+  },
+  "unknown_window_root_full_get_verified": 16
+}

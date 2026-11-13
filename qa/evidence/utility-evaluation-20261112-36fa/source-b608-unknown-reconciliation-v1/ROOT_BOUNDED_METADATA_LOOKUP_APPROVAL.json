@@ -1,0 +1,49 @@
+{
+  "format": "hepta-root-bounded-original-request-metadata-lookup-v1",
+  "decided_at": "2026-11-13 14:41:36 UTC",
+  "decision": "APPROVED_BOUNDED_READ_ONLY_ORIGINAL_KEY_LOOKUP",
+  "executor": "/root/native_ci_audit",
+  "basis": "User-authorized engineering work. Locate the single already submitted original request after its MCP admission response timed out. This does not alter its one-dispatch rule or grant any Hepta runtime authority.",
+  "original_execution_approval": "9a48727adf7f73ee6adf8d45b567db3000a83c5f",
+  "original_request": {
+    "git_blob": "eb4658e231aac54f226a78585d647e2bab8aa6e1",
+    "bytes": 280984,
+    "sha256": "3245e534618d004ba767b5b2ec5483194bcc5453fe6531ef8aff7ee393fb8214"
+  },
+  "exact_host": "desktop",
+  "exact_idempotency_key": "hepta-utility-36fa-final-source-gates-b608-v2",
+  "observed_admission_timeout": {
+    "git_blob": "dd0593e577a8b755b17f5ea95678565d24b543e2",
+    "bytes": 219,
+    "sha256": "4e2076130a9560658ced741a0e6eb0377bc6220b7db383924c467a202d2e7866"
+  },
+  "observed_fixed_path_unavailable": {
+    "git_blob": "b06188a8ce025e0273715edae112492433e8c064",
+    "bytes": 308,
+    "sha256": "3b0db42ad0c6d3d7828fce354f0f7d32bda7f1dfd23fc04c45983987e516ff2d"
+  },
+  "allowed_tool": "h_process_list_page",
+  "first_request": {
+    "host": "desktop",
+    "limit": 64
+  },
+  "continuation_rule": "Use only next_cursor returned from this one metadata snapshot, same host and limit. Maximum eight total calls and 512 metadata identities, with the tool's independent 64 KiB per-response bound. Stop at the first exact original key match, null cursor, no key field, refusal, error, invalidated snapshot, or budget exhaustion. No fresh-snapshot retry.",
+  "purpose": "Read the locally persisted controller metadata index only to locate this exact already submitted key. Do not fetch status, logs, artifacts, or process information for unrelated identities.",
+  "matching_rule": "Require an unambiguous row explicitly carrying the exact key and configured host. Do not infer an identity from newest timestamp, executable, nearby numeric ID, or missing output path. Compare every exposed original-request field with the frozen request. Conflicting or duplicate matches remain Unknown.",
+  "on_match": "Only after one exact explicit match, the original approval permits authoritative process_status and same-original-job reconciliation/readback. Index metadata alone is never authoritative runtime status or task success.",
+  "on_no_match": "Absence from one observed controller snapshot, incomplete inventory, unsupported key fields, or lookup failure leave the submitted execution Unknown. They do not prove NotApplied or authorize a new start.",
+  "evidence": "Preserve each raw SDK response locally without parsing native integers through JavaScript. Produce a separately labeled exact matching-row projection and provenance pins. Do not publish unrelated job contents or credentials; Root reviews any retained metadata artifact before repository publication.",
+  "prohibited": [
+    "h_process_start or any second executable dispatch",
+    "unbounded process_list",
+    "other-host queries",
+    "status or logs for unrelated jobs",
+    "new diagnostic processes",
+    "foreign process termination",
+    "repair or creation of output paths",
+    "source/index/ref/tool/environment changes",
+    "any expanded execution or test budget"
+  ],
+  "qualification": false,
+  "real_qualified_task_chains": 0
+}

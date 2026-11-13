@@ -1,0 +1,7 @@
+{
+  "chunk_id": "c58f32",
+  "wall_time_seconds": 0.356413262,
+  "exit_code": 1,
+  "original_token_count": 235,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-final-source-b608-transported-preparation-v1/verify_actual_stage_binding_v2.py\", line 130, in <module>\n    reject('missing actual stage result binding',lambda c,m:c['history_transport'].__setitem__('staging_result',None))\n  File \"/tmp/hepta-36fa-final-source-b608-transported-preparation-v1/verify_actual_stage_binding_v2.py\", line 119, in reject\n    try:run_case(cfg,values)\n        ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-final-source-b608-transported-preparation-v1/verify_actual_stage_binding_v2.py\", line 99, in run_case\n    namespace['_require_transport_bindings'](stub.cfg)\n  File \"<selected-original-pure-predicates>\", line 1474, in _require_transport_bindings\n  File \"<selected-original-pure-predicates>\", line 541, in exact_pin\n  File \"<selected-original-pure-predicates>\", line 518, in check\nRuntimeError: actual complete transport staging_result remains required\n"
+}

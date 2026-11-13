@@ -1,0 +1,22 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+    "anchor": "pub use resident_registration::register_host_resident_learning_v3;\n",
+    "insert_after": "\n#[path = \"authority_host_resident_launch.rs\"]\nmod resident_launch;\npub use resident_launch::RootResidentCandidateProcessInputsV3;\npub use resident_launch::prepare_host_resident_candidate_v3;\npub use resident_launch::recover_host_resident_candidate_v3;\n"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/lib.rs",
+    "anchor": "pub use authority_host_runtime::RootNotesPolicyPredecessor;\n",
+    "insert_after": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootResidentCandidateProcessInputsV3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::prepare_host_resident_candidate_v3;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::recover_host_resident_candidate_v3;\n"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+    "anchor": "//! Explicit Root administration, fresh publication and open-only session entry.\n",
+    "insert_after": "\n#[cfg(target_os = \"linux\")]\n#[path = \"../authority_host_resident_cli.rs\"]\nmod resident_cli;\n"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+    "anchor": "    let mut take = |key: &str| {\n",
+    "insert_before": "    if command == \"serve-resident-learning\" || command == \"recover-resident-learning\" {\n        if pidfd_stdin {\n            return Err(\"resident service requires its named original consumer pidfd\".into());\n        }\n        let purpose = if command == \"serve-resident-learning\" {\n            resident_cli::Command::Fresh\n        } else {\n            resident_cli::Command::Recover\n        };\n        return resident_cli::run(options, purpose);\n    }\n"
+  }
+]

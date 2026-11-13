@@ -1,0 +1,136 @@
+{
+  "H_calls": 0,
+  "actual_IPC_layer_composed": false,
+  "files": [
+    {
+      "after": {
+        "bytes": 4377,
+        "git_blob": "bb1285e584a756337a7f9ebc81649b981fbeaff6",
+        "sha256": "d8a31e6f723e041831be1be184d74db224c3fa8f02247434d6eb07871f4f73a1"
+      },
+      "new": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_cli.rs"
+    },
+    {
+      "after": {
+        "bytes": 5298,
+        "git_blob": "bfec72b7a3366cc9cded94e7e9961921922c8d12",
+        "sha256": "dc9011bd441be7459e368f0e4739357490eea497b480ecba1a4c6a1698abfcbc"
+      },
+      "new": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch.rs"
+    },
+    {
+      "after": {
+        "bytes": 11105,
+        "git_blob": "0656f538ff206a1bde4b02363bb2f09b6717cb02",
+        "sha256": "cbdc808cc43b01812a67c2b588946f32069fd3225da0c3b81ef4e841535c039e"
+      },
+      "new": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs"
+    },
+    {
+      "after": {
+        "bytes": 5154,
+        "git_blob": "beaed17ac89f25fae4c93c988a478d9f8923c824",
+        "sha256": "c3008a33c74bba91e86b698cecfc08442f15dead50010a7b94ef0841584f2e88"
+      },
+      "new": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs"
+    },
+    {
+      "before_b608": {
+        "bytes": 20005,
+        "git_blob": "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+        "sha256": "97ceda651034181eda5e4c4951f5cf9ba567d6caeaa1b877937330d21bcb95ae"
+      },
+      "composition_after": {
+        "bytes": 20417,
+        "git_blob": "c3060aa6689987c9f72e1c618eb7456456c2ef7f",
+        "sha256": "d10061f26ca1bdf16e6cbc05b14ba3e2d9928e5ce04db8b41e2cecf163d99cd6"
+      },
+      "composition_base": "E1-99fada+E2-factory-62ad5a5",
+      "composition_before": {
+        "bytes": 20164,
+        "git_blob": "01eab9d99ce36ead9904e5061576c64b0fc88321",
+        "sha256": "fff7573a8512112c785328059f125d63f2cd80c2a9ab6082f82344db4ba4e5a6"
+      },
+      "composition_inverse_exact": true,
+      "insertion_only_inverse_exact": true,
+      "new": false,
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "proposal_after": {
+        "bytes": 20258,
+        "git_blob": "3daf01cca84cee32742ab63d6328a8c9792b2963",
+        "sha256": "4d86762f9e8d624830a27cb49a0c64325629fa8d887de6506785f2072c4d8171"
+      }
+    },
+    {
+      "before_b608": {
+        "bytes": 13220,
+        "git_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+        "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446"
+      },
+      "composition_after": {
+        "bytes": 13764,
+        "git_blob": "7dac9227f6bdb1edb66762b8a004c408f46841dd",
+        "sha256": "7a8d54eb452b080738b3add3310da643d36f0b04cd6d1cdd303f11c00481ec8a"
+      },
+      "composition_base": "b608",
+      "composition_before": {
+        "bytes": 13220,
+        "git_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+        "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446"
+      },
+      "composition_inverse_exact": true,
+      "insertion_only_inverse_exact": true,
+      "new": false,
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "proposal_after": {
+        "bytes": 13764,
+        "git_blob": "7dac9227f6bdb1edb66762b8a004c408f46841dd",
+        "sha256": "7a8d54eb452b080738b3add3310da643d36f0b04cd6d1cdd303f11c00481ec8a"
+      }
+    },
+    {
+      "before_b608": {
+        "bytes": 72389,
+        "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+        "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+      },
+      "composition_after": {
+        "bytes": 73159,
+        "git_blob": "7f121c46679bb5ba080f90677b768db3a1836d1f",
+        "sha256": "2867bb7ab1d30b05c60f19ecbfffd3c5aed7f29f5f712697919d6e80070d5908"
+      },
+      "composition_base": "E1-99fada+E2-factory-62ad5a5",
+      "composition_before": {
+        "bytes": 72869,
+        "git_blob": "6997b47d345dcaaae83b555b94148a657f286975",
+        "sha256": "0bf6976a203f66fd62d1a842385644f258337c1eb4410eddc79878cff201c433"
+      },
+      "composition_inverse_exact": true,
+      "insertion_only_inverse_exact": true,
+      "new": false,
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "proposal_after": {
+        "bytes": 72679,
+        "git_blob": "d304e4919f6d40aac479374fd4857caa2b388eca",
+        "sha256": "c5e19f94499558bc69d7f62b2874d28a4810d59b9f94f8b86fe46967749f7f15"
+      }
+    }
+  ],
+  "format": "hepta-e3-root-cli-independent-byte-composition-review-v1",
+  "formatter_compiler_or_project_tests_run": false,
+  "modified_original_files": 3,
+  "mounts": 4,
+  "new_production_modules": 4,
+  "packet": {
+    "bytes": 249900,
+    "git_blob": "0dc5e98ff38ed0c4c4defe277d21a5cb90bae37b",
+    "sha256": "b2f1b2aa681cea702b14ebb7ec0095d93b4896969013ca9280247dde4d306d4c"
+  },
+  "qualification": false,
+  "reference_files_bound_to_exact_b608_graph": 43,
+  "source_written": false
+}

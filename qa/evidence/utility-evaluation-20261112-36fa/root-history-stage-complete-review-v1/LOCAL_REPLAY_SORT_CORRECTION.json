@@ -1,0 +1,16 @@
+{
+  "format": "hepta-root-local-replay-sort-correction-v1",
+  "first_script": {
+    "bytes": 13493,
+    "sha256": "c1149b38039f706983676c2093c4a89341bd69fcf67b2f9759b032a21bf219f2"
+  },
+  "cause": "Lexical filename sort incorrectly places seven-digit byte offsets before some six-digit offsets; no original-byte or version mismatch was established.",
+  "change": "Sort the fixed original SDK filenames by their exact decimal offset before coverage comparison.",
+  "native_calls": 0,
+  "originals_modified": false,
+  "first_script_preserved": true,
+  "new_script": {
+    "bytes": 13559,
+    "sha256": "bab070b8a8025bcd0c0bfdf1ee0136deeb58f5ec24af0962a234f6a636c00127"
+  }
+}

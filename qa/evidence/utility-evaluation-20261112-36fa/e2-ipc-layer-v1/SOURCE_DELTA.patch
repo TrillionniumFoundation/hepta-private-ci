@@ -1,0 +1,2405 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_root_task.rs
+@@ -1,5 +1,8 @@
+ //! The original Root host retains its one actual task factory and retirement
+ //! custody. Config, daemon state and AutomationStore are not created or moved.
++
++#[path = "authority_host_session_generation_task_service.rs"]
++mod original_service;
+ 
+ use codex_hepta_neuron::AnchorWitnessStore;
+ 
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_session_generation_task_service.rs
+@@ -0,0 +1,63 @@
++//! A real Root process serves only the already registered daemon's fixed Cell
++//! and Source lanes. Config, AgentdState, SQL writer and private receipts stay
++//! in that daemon. No thread is used as a replacement for process credentials.
++
++use std::os::unix::net::UnixStream;
++use std::sync::Arc;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_contracts::HostAuthorityPeerPolicy;
++use codex_hepta_contracts::HostIssuerPeer;
++use codex_hepta_neuron::AnchorWitnessStore;
++
++use super::PreparedRootHostCircuitTaskV1;
++use crate::{AgentdError, CircuitTaskSourceReadbackV1, OriginalRootCircuitTaskCustodyV1};
++use crate::circuit_task::remote::OriginalRootTaskStreams;
++
++impl<SW, CW> PreparedRootHostCircuitTaskV1<SW, CW>
++where SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,
++{
++    /// Consume this runtime's one actual factory lane. Both streams must have
++    /// been connected by the registered non-Root process; their two pidfds are
++    /// duplicates of this session's same pre-held process handle. The nonce
++    /// separates the fixed lanes and grants no task, model or effect authority.
++    ///
++    /// This synchronous scope owns the actual work until it returns. A caller
++    /// cancelling its await cannot release these owners. Any error is Unknown;
++    /// this value retains only its original readback/drain custody, never a new
++    /// lane, a new operation or an automatic Create/Execute retry.
++    pub fn serve_original_root_circuit_task(&mut self, task: UnixStream, loan: UnixStream,
++        session_nonce: [u8; 16]) -> Result<u64, AgentdError>
++    {
++        self.read_original_root_task_generation()?;
++        let identity = self.session.registration.registered_identity.identity()?;
++        if self.session.config.peer_uid == 0 || self.session.registration.peer_pid == std::process::id()
++            || session_nonce == [0; 16]
++        { return Err(AgentdError::Invalid("original Root task peer or session differs".into())); }
++        let lifetime = self.end.checked_duration_since(Instant::now())
++            .filter(|value| !value.is_zero() && *value <= Duration::from_secs(300))
++            .ok_or_else(|| AgentdError::Invalid("original Root task scope expired".into()))?;
++        let policy = HostAuthorityPeerPolicy {
++            peer: HostIssuerPeer { uid: self.session.config.peer_uid, pid: self.session.registration.peer_pid },
++            timeout: Duration::from_millis(self.session.config.timeout_ms.min(500)), lifetime,
++            request_bound: 65_536, response_bound: 65_536,
++        };
++        let task = HostAuthorityPeerChannel::from_stream(task, policy, self.session.owner_pidfd.try_clone()?)
++            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
++        let loan = HostAuthorityPeerChannel::from_stream(loan, policy, self.session.owner_pidfd.try_clone()?)
++            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
++        let lane = self.runtime.take_original_root_lane()?;
++        crate::circuit_task::remote::serve(self, &identity, lane,
++            OriginalRootTaskStreams::new(task, loan, session_nonce, self.end))
++            .map_err(|error| AgentdError::Protocol(format!("original Root task service: {error}")))
++    }
++
++    pub(crate) fn require_original_root_task_source(&self,
++        source: &Arc<CircuitTaskSourceReadbackV1<SW>>) -> Result<(), AgentdError>
++    {
++        self.read_original_root_task_generation()?;
++        OriginalRootCircuitTaskCustodyV1::require_original_source(&self.custody, source)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_cell.rs
++++ b/codex-rs/hepta-agentd/src/circuit_cell.rs
+@@ -4,6 +4,9 @@
+ 
+ #[path = "circuit_cell_batch.rs"]
+ mod batch;
++#[cfg(target_os = "linux")]
++#[path = "circuit_cell_remote.rs"]
++mod original_remote;
+ 
+ use std::cell::Cell;
+ use std::error::Error;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_cell_remote.rs
+@@ -0,0 +1,161 @@
++//! Root's original Cell pipeline with one private remote admission loan.
++//! The daemon retains the actual non-Clone admission; this method cannot be
++//! called with a dispatch DTO or a deserialized AutomationStore capability.
++
++use super::*;
++use crate::circuit_task::remote::OriginalRemoteAdmission;
++
++impl<O, P, E> AgentdCircuitCellOwnerV1<O, P, E>
++where
++    O: CellStateOwnerV1,
++    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,
++    E: CellInputEncoderV1,
++{
++    pub(crate) fn execute_original_remote(
++        &mut self,
++        admission: OriginalRemoteAdmission,
++        input: CellStepInputV1,
++        mut clock: impl FnMut() -> CircuitCellTimeV1,
++    ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {
++        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;
++        let original_clock = &mut clock;
++        let loan_failed = Cell::new(false);
++        let mut clock = || {
++            if !loan_failed.get() {
++                if let Ok(now_ms) = admission.require_current() {
++                    let sampled = original_clock();
++                    return CircuitCellTimeV1 {
++                        circuit_millis: sampled.circuit_millis.max(now_ms),
++                        cell_micros: sampled.cell_micros,
++                    };
++                }
++                loan_failed.set(true);
++            }
++            CircuitCellTimeV1 { circuit_millis: u64::MAX, cell_micros: u64::MAX }
++        };
++        let dispatch = admission.dispatch();
++        let binding = self.registry.bind_input(dispatch, &input)?;
++        let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, &input)?;
++        if admission.owner_agent_id() != input.scope.agent_id.as_str()
++            || admission.definition_digest() != self.registry.definition_digest()
++            || admission
++                .execution_request_digest()
++                .is_none_or(|digest| digest.as_str() != request_digest.to_string())
++        {
++            return Err(CircuitCellErrorV1::ScopeMismatch);
++        }
++        let time = clock();
++        if time.circuit_millis < admission.observed_at_ms() {
++            return Err(CircuitCellErrorV1::ReconciliationRequired);
++        }
++        let admission_deadline = admission
++            .lease_expires_at_ms()
++            .min(admission.run_deadline_ms());
++        let read_only =
++            admission.reconciliation_only() || time.circuit_millis >= admission_deadline;
++        let committed =
++            match self
++                .state_owner
++                .lookup(&input.scope, &input.operation_id, request_digest)
++            {
++                Ok(receipt) => receipt,
++                Err(CellExecutionError::InferencePending) => None,
++                Err(error) => return Err(error.into()),
++            };
++        let mut last_time = time;
++        let decision = if let Some(receipt) = committed {
++            receipt
++        } else {
++            let pending = self.state_owner.pending_inference(&input.scope)?;
++            let inferred = if pending.is_some() {
++                recover_cell_inference(
++                    &binding.cell,
++                    &self.state_owner,
++                    &self.encoder,
++                    input.clone(),
++                    &mut self.inference_control,
++                    time.cell_micros,
++                )?
++            } else {
++                if read_only {
++                    return Err(CircuitCellErrorV1::ReconciliationRequired);
++                }
++                match enter_cell_step(
++                    &binding.cell,
++                    &self.state_owner,
++                    &self.encoder,
++                    input.clone(),
++                    time.cell_micros,
++                )? {
++                    CellStepEntryV1::Ready(prepared) => {
++                        let sampled = Cell::new(time);
++                        // The inference entry samples immediately after durable
++                        // admission. Use that same live sample for the Circuit
++                        // guard so its queue measurement ends at this boundary.
++                        let mut dispatch_clock = || sampled.get();
++                        let mut guarded = GuardedCellDispatchV1::new(
++                            &mut self.inference_control,
++                            &mut dispatch_clock,
++                            time,
++                            admission_deadline,
++                            input.deadline_micros,
++                        );
++                        let mut invalid_clock = false;
++                        let inferred = infer_cell_with_clock(
++                            *prepared,
++                            &mut self.state_owner,
++                            &mut guarded,
++                            || {
++                                let before = sampled.get();
++                                let now = clock();
++                                if now.circuit_millis < before.circuit_millis
++                                    || now.cell_micros < before.cell_micros
++                                    || now.circuit_millis >= admission_deadline
++                                {
++                                    invalid_clock = true;
++                                    return u64::MAX;
++                                }
++                                sampled.set(now);
++                                now.cell_micros
++                            },
++                        );
++                        if invalid_clock {
++                            return Err(CircuitCellErrorV1::ReconciliationRequired);
++                        }
++                        let inferred = inferred?;
++                        last_time = guarded
++                            .observed_at()
++                            .ok_or(CircuitCellErrorV1::ReconciliationRequired)?;
++                        inferred
++                    }
++                    CellStepEntryV1::Replayed(receipt) => {
++                        if loan_failed.get() {
++                            return Err(CircuitCellErrorV1::ReconciliationRequired);
++                        }
++                        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;
++                        return finish(binding, dispatch, &input, *receipt);
++                    }
++                }
++            };
++            let decided_at = clock();
++            if decided_at.circuit_millis < last_time.circuit_millis
++                || decided_at.cell_micros < last_time.cell_micros
++            {
++                return Err(CircuitCellErrorV1::ReconciliationRequired);
++            }
++            let proposal = decide_cell(inferred, decided_at.cell_micros)?;
++            let committed_at = clock();
++            if committed_at.circuit_millis < decided_at.circuit_millis
++                || committed_at.cell_micros < decided_at.cell_micros
++            {
++                return Err(CircuitCellErrorV1::ReconciliationRequired);
++            }
++            commit_cell_step(&mut self.state_owner, proposal, committed_at.cell_micros)?
++        };
++        if loan_failed.get() {
++            return Err(CircuitCellErrorV1::ReconciliationRequired);
++        }
++        admission.require_current().map_err(|_| CircuitCellErrorV1::ReconciliationRequired)?;
++        finish(binding, dispatch, &input, decision)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs
++++ b/codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs
+@@ -2,6 +2,10 @@
+ //! Every file, witness, model, route and CURRENT capability comes from the
+ //! original host. This module creates no issuer, grant, selection or input.
+ //! A different session/task uses a separately published original task binding.
++
++#[cfg(target_os = "linux")]
++#[path = "circuit_q24_task_root_lane.rs"]
++mod original_root_lane;
+ 
+ use std::fs::File;
+ use std::sync::Arc;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_q24_task_root_lane.rs
+@@ -0,0 +1,19 @@
++//! Only the original Q24 factory runtime can consume this Root lane. The
++//! original Cell writer stays in its one-shot bootstrap slot, and the same
++//! invocation/readback Arcs accompany it without exposing a writer getter.
++
++use super::*;
++
++impl<SW, CW> CircuitQ24TaskRuntimeV1<SW, CW>
++where SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,
++{
++    pub(crate) fn take_original_root_lane(&mut self)
++        -> Result<crate::circuit_task::OriginalRootTaskLane<SW>, AgentdError>
++    {
++        let pump = self.bootstrap.take_original_root_lane()
++            .map_err(|error| AgentdError::Protocol(format!("original Root Cell lane: {error}")))?;
++        Ok(crate::circuit_task::OriginalRootTaskLane::from_original_factory(
++            pump, Arc::clone(&self.invocation), Arc::clone(&self.source),
++        ))
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task.rs
+@@ -19,6 +19,20 @@
+ #[cfg(test)]
+ #[path = "cell_q24_dataset_source_test_support.rs"]
+ pub(crate) mod cell_q24_dataset_source_test_support;
++#[path = "circuit_task_cell_port.rs"]
++mod cell_port;
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_remote.rs"]
++pub(crate) mod remote;
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_root_lane.rs"]
++mod root_lane;
++#[cfg(target_os = "linux")]
++pub use remote::OriginalRootCircuitTaskDaemonInputsV1;
++#[cfg(target_os = "linux")]
++pub(crate) use remote::OriginalRootTaskLane;
++#[cfg(target_os = "linux")]
++pub(crate) use runtime::original_remote_channel;
+ #[path = "circuit_task_driver.rs"]
+ mod driver;
+ #[path = "circuit_task_runtime.rs"]
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_cell_port.rs
+@@ -0,0 +1,77 @@
++//! The existing driver has exactly two internal Cell paths. The local path
++//! forwards to its original owner; the remote path retains the same admission
++//! in the daemon and visits the fixed Root Cell lane. External implementations
++//! cannot enter this trait or substitute a completed-task provider.
++
++use codex_hepta_automation::CircuitComputationAdmissionV2;
++use codex_hepta_neuron::CellDecisionReceiptV1;
++use codex_hepta_neuron::CellExecutionError;
++use codex_hepta_neuron::CellInferenceReadbackPortV1;
++use codex_hepta_neuron::CellInputEncoderV1;
++use codex_hepta_neuron::CellScopeV1;
++use codex_hepta_neuron::CellStateOwnerV1;
++use codex_hepta_neuron::CellStepInputV1;
++use codex_hepta_neuron::NeuronInferenceControlPort;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++
++use crate::AgentdCircuitCellOwnerV1;
++use crate::CircuitCellErrorV1;
++use crate::CircuitCellExecutionV1;
++use crate::CircuitCellRegistryV1;
++use crate::CircuitCellTimeV1;
++
++mod sealed {
++    pub trait OriginalCellPath {}
++}
++
++/// Only this module implements the sealed supertrait for the original native
++/// Cell owner and the purpose-fixed daemon client. Its clock remains the
++/// existing driver's repeated signed-RunStart/currentness observation.
++pub(super) trait OriginalCellPort: sealed::OriginalCellPath + Send {
++    fn registry(&self) -> &CircuitCellRegistryV1;
++    fn state_owner(&self) -> &Self { self }
++    fn lookup(&self, scope: &CellScopeV1, operation: &StableId, request: Digest32)
++        -> Result<Option<CellDecisionReceiptV1>, CellExecutionError>;
++    fn execute(&mut self, admission: CircuitComputationAdmissionV2, input: CellStepInputV1,
++        clock: impl FnMut() -> CircuitCellTimeV1) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1>;
++}
++
++impl<O, P, E> sealed::OriginalCellPath for AgentdCircuitCellOwnerV1<O, P, E> {}
++
++impl<O, P, E> OriginalCellPort for AgentdCircuitCellOwnerV1<O, P, E>
++where
++    O: CellStateOwnerV1 + Send,
++    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1 + Send,
++    E: CellInputEncoderV1 + Send,
++{
++    fn registry(&self) -> &CircuitCellRegistryV1 { AgentdCircuitCellOwnerV1::registry(self) }
++    fn lookup(&self, scope: &CellScopeV1, operation: &StableId, request: Digest32)
++        -> Result<Option<CellDecisionReceiptV1>, CellExecutionError>
++    { AgentdCircuitCellOwnerV1::state_owner(self).lookup(scope, operation, request) }
++    fn execute(&mut self, admission: CircuitComputationAdmissionV2, input: CellStepInputV1,
++        clock: impl FnMut() -> CircuitCellTimeV1) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1>
++    { AgentdCircuitCellOwnerV1::execute(self, admission, input, clock) }
++}
++
++#[cfg(target_os = "linux")]
++impl sealed::OriginalCellPath for super::remote::DaemonCellPort {}
++
++#[cfg(target_os = "linux")]
++impl OriginalCellPort for super::remote::DaemonCellPort {
++    fn registry(&self) -> &CircuitCellRegistryV1 { self.original_registry() }
++    fn lookup(&self, scope: &CellScopeV1, operation: &StableId, request: Digest32)
++        -> Result<Option<CellDecisionReceiptV1>, CellExecutionError>
++    { self.original_lookup(scope, operation, request) }
++    fn execute(&mut self, admission: CircuitComputationAdmissionV2, input: CellStepInputV1,
++        mut clock: impl FnMut() -> CircuitCellTimeV1) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1>
++    {
++        let before = clock();
++        let result = self.original_execute(admission, input, before);
++        let after = clock();
++        if after.circuit_millis < before.circuit_millis || after.cell_micros < before.cell_micros
++            || after.circuit_millis == u64::MAX || after.cell_micros == u64::MAX
++        { return Err(CircuitCellErrorV1::ReconciliationRequired); }
++        result
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task_driver.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_driver.rs
+@@ -13,11 +13,7 @@
+ use codex_hepta_automation::TaskFlowError;
+ use codex_hepta_automation::TaskFlowFence;
+ use codex_hepta_contracts::Sha256Digest;
+-use codex_hepta_neuron::CellInferenceReadbackPortV1;
+-use codex_hepta_neuron::CellInputEncoderV1;
+-use codex_hepta_neuron::CellStateOwnerV1;
+ use codex_hepta_neuron::CellStepInputV1;
+-use codex_hepta_neuron::NeuronInferenceControlPort;
+ use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
+ 
+ use super::CircuitTaskErrorV1 as Error;
+@@ -26,24 +22,22 @@
+ use super::CircuitTaskModeV1;
+ use super::CircuitTaskReceiptV1;
+ use super::CircuitTaskRequestV1;
+-use crate::AgentdCircuitCellOwnerV1;
++use super::cell_port::OriginalCellPort;
+ use crate::CircuitCellErrorV1;
+ use crate::CircuitCellExecutionV1;
+ use crate::CircuitCellTimeV1;
+ use crate::circuit_cell::finish;
+ 
+-pub(super) struct CircuitTaskDriverV1<O, P, E, I> {
++pub(super) struct CircuitTaskDriverV1<C, I> {
+     pub(super) store: AutomationStore,
+     pub(super) fence: TaskFlowFence,
+-    pub(super) cells: AgentdCircuitCellOwnerV1<O, P, E>,
++    pub(super) cells: C,
+     pub(super) inputs: I,
+ }
+ 
+-impl<O, P, E, I> CircuitTaskDriverV1<O, P, E, I>
++impl<C, I> CircuitTaskDriverV1<C, I>
+ where
+-    O: CellStateOwnerV1 + Send,
+-    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1 + Send,
+-    E: CellInputEncoderV1 + Send,
++    C: OriginalCellPort,
+     I: CircuitTaskInputProviderV1,
+ {
+     pub(super) async fn execute(
+--- a/codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs
+@@ -15,10 +15,12 @@
+ use codex_hepta_automation::CircuitStopReasonV2;
+ use codex_hepta_contracts::AgentId;
+ use codex_hepta_neuron::CellPartitionOwnerV1;
++use codex_hepta_neuron::CellStateOwnerV1;
+ use codex_hepta_paths::HeptaFleetRoot;
+ use pretty_assertions::assert_eq;
+ 
+ use super::*;
++use crate::AgentdCircuitCellOwnerV1;
+ use crate::CircuitCellBindingV1;
+ use crate::CircuitCellRegistryV1;
+ use crate::circuit_cell::tests::configuration;
+@@ -57,7 +59,7 @@
+     }
+ }
+ 
+-type Driver = CircuitTaskDriverV1<CellPartitionOwnerV1, Model, Encoder, Inputs>;
++type Driver = CircuitTaskDriverV1<AgentdCircuitCellOwnerV1<CellPartitionOwnerV1, Model, Encoder>, Inputs>;
+ 
+ async fn fixture(
+     definition: BoundedCircuitDefinitionV2,
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote.rs
+@@ -0,0 +1,29 @@
++//! Fixed Root Cell/Source lanes for the original daemon task driver. The
++//! daemon keeps its only AutomationStore, RunStart ingress and opaque receipts.
++
++use super::CircuitTaskErrorV1 as Error;
++
++#[path = "circuit_task_remote_wire.rs"]
++mod wire;
++#[path = "circuit_task_remote_data.rs"]
++mod data;
++#[path = "circuit_task_remote_admission.rs"]
++mod admission;
++#[path = "circuit_task_remote_loan.rs"]
++mod loan;
++#[path = "circuit_task_remote_client.rs"]
++mod client;
++#[path = "circuit_task_remote_invocation.rs"]
++mod invocation;
++#[path = "circuit_task_remote_service.rs"]
++mod service;
++
++pub(crate) use admission::OriginalRemoteAdmission;
++pub(crate) use admission::OriginalRemoteCompletion;
++pub(crate) use client::DaemonCellPort;
++pub(crate) use client::DaemonClient;
++pub use client::OriginalRootCircuitTaskDaemonInputsV1;
++pub(crate) use loan::OriginalRecordLoan;
++pub(crate) use service::OriginalRootTaskStreams;
++pub(crate) use service::OriginalRootTaskLane;
++pub(crate) use service::serve;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_admission.rs
+@@ -0,0 +1,207 @@
++//! Private observations of a live daemon loan. These values are deliberately
++//! not CircuitComputationAdmissionV2 and cannot be converted into that token.
++
++use std::sync::Arc;
++use std::sync::Mutex;
++
++use codex_hepta_automation::CircuitComputationAdmissionV2;
++use codex_hepta_automation::CircuitDispatchV2;
++use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_types::Digest32;
++
++use super::Error;
++use super::data;
++use super::wire::Frame;
++use super::wire::Lane;
++use super::wire::Operation;
++use super::wire::Reader;
++use super::wire::blob;
++
++pub(super) struct AdmissionData {
++    dispatch: CircuitDispatchV2,
++    owner: String,
++    definition: Sha256Digest,
++    request: Option<Sha256Digest>,
++    revision: u64,
++    observed: u64,
++    lease_end: u64,
++    run_end: u64,
++    reconciliation: bool,
++}
++
++impl AdmissionData {
++    pub(super) fn from_original(original: &CircuitComputationAdmissionV2) -> Self {
++        Self { dispatch: original.dispatch().clone(), owner: original.owner_agent_id().to_string(),
++            definition: original.definition_digest().clone(), request: original.execution_request_digest().cloned(),
++            revision: original.observed_revision(), observed: original.observed_at_ms(),
++            lease_end: original.lease_expires_at_ms(), run_end: original.run_deadline_ms(),
++            reconciliation: original.reconciliation_only() }
++    }
++
++    pub(super) fn encode(&self) -> Result<Vec<u8>, Error> {
++        let mut bytes = b"HCRTADM1".to_vec();
++        blob(&mut bytes, &data::encode_dispatch(&self.dispatch)?)?;
++        blob(&mut bytes, self.owner.as_bytes())?;
++        blob(&mut bytes, self.definition.as_str().as_bytes())?;
++        blob(&mut bytes, self.request.as_ref().map_or(b"".as_slice(), |d| d.as_str().as_bytes()))?;
++        for number in [self.revision, self.observed, self.lease_end, self.run_end] {
++            bytes.extend_from_slice(&number.to_be_bytes());
++        }
++        bytes.push(u8::from(self.reconciliation));
++        super::wire::bounded(&bytes)?;
++        Ok(bytes)
++    }
++
++    fn decode(bytes: &[u8]) -> Result<Self, Error> {
++        let mut r = Reader::new(bytes, b"HCRTADM1")?;
++        let dispatch = data::dispatch(r.blob()?)?;
++        let owner = std::str::from_utf8(r.blob()?).map_err(|_| Error::InvalidBinding)?.to_owned();
++        if owner.is_empty() || owner.len() > 128 || owner.chars().any(char::is_control) {
++            return Err(Error::InvalidBinding);
++        }
++        let definition = sha(r.blob()?)?;
++        let request = match r.blob()? { [] => None, value => Some(sha(value)?) };
++        let value = Self { dispatch, owner, definition, request, revision: r.u64()?,
++            observed: r.u64()?, lease_end: r.u64()?, run_end: r.u64()?,
++            reconciliation: match r.take::<1>()? { [0] => false, [1] => true,
++                _ => return Err(Error::InvalidBinding) } };
++        r.end()?;
++        if value.encode()? != bytes { return Err(Error::InvalidBinding); }
++        Ok(value)
++    }
++}
++
++/// Only the Root task service constructs this channel wrapper, after checking
++/// its original registered non-Root peer on both fixed streams.
++pub(super) struct ReverseClient {
++    lane: Arc<Mutex<Lane>>,
++    binding: Digest32,
++}
++
++impl ReverseClient {
++    pub(super) fn new(lane: Lane, binding: Digest32) -> Self {
++        Self { lane: Arc::new(Mutex::new(lane)), binding }
++    }
++
++    pub(super) fn check_record(&self, id: u64, record: &[u8]) -> Result<u64, Error> {
++        check_record(&self.lane, id, record)
++    }
++
++    pub(super) fn open_admission(
++        &self, id: u64, record_id: u64, record: &[u8],
++    ) -> Result<OriginalRemoteAdmission, Error> {
++        let bytes = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::OpenAdmission, loan: id, body: Vec::new(),
++        })?;
++        let mut r = Reader::new(&bytes, b"HCRTCHK1")?;
++        if r.u64()? != record_id { return Err(Error::InvalidBinding); }
++        let now = r.u64()?;
++        if r.blob()? != record { return Err(Error::InvalidBinding); }
++        let encoded = r.blob()?.to_vec();
++        r.end()?;
++        let data = AdmissionData::decode(&encoded)?;
++        if now < data.observed { return Err(Error::ReconciliationRequired); }
++        Ok(OriginalRemoteAdmission { lane: Arc::clone(&self.lane), id, record_id,
++            record: record.to_vec(), encoded, data })
++    }
++
++    pub(super) fn completion(
++        &self, id: u64, record_id: u64, record: &[u8], saved_input: &[u8],
++    ) -> Result<OriginalRemoteCompletion, Error> {
++        let bytes = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::ReadCompletion, loan: id, body: Vec::new(),
++        })?;
++        let mut r = Reader::new(&bytes, b"HCRTCHK1")?;
++        if r.u64()? != record_id { return Err(Error::InvalidBinding); }
++        r.u64()?;
++        if r.blob()? != record || r.blob()? != saved_input { return Err(Error::InvalidBinding); }
++        let payload = r.blob()?.to_vec();
++        r.end()?;
++        self.check_record(record_id, record)?;
++        Ok(OriginalRemoteCompletion { lane: Arc::clone(&self.lane), binding: self.binding,
++            record_id, record: record.to_vec(), saved_input: saved_input.to_vec(), payload })
++    }
++
++    pub(super) fn terminal(&self, id: u64, record_id: u64) -> Result<(), Error> {
++        let reply = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::Terminal, loan: id, body: record_id.to_be_bytes().to_vec(),
++        })?;
++        if reply != b"HCRTEND1" { return Err(Error::InvalidBinding); }
++        Ok(())
++    }
++}
++
++/// A private live handle into one original admission held in the daemon.
++/// There is no public constructor, Clone, Deserialize or conversion to the
++/// original admission type. Every clock boundary revisits the same loan.
++pub(crate) struct OriginalRemoteAdmission {
++    lane: Arc<Mutex<Lane>>,
++    id: u64,
++    record_id: u64,
++    record: Vec<u8>,
++    encoded: Vec<u8>,
++    data: AdmissionData,
++}
++
++impl OriginalRemoteAdmission {
++    pub(crate) fn dispatch(&self) -> &CircuitDispatchV2 { &self.data.dispatch }
++    pub(crate) fn owner_agent_id(&self) -> &str { &self.data.owner }
++    pub(crate) fn definition_digest(&self) -> &Sha256Digest { &self.data.definition }
++    pub(crate) fn execution_request_digest(&self) -> Option<&Sha256Digest> { self.data.request.as_ref() }
++    pub(crate) fn observed_at_ms(&self) -> u64 { self.data.observed }
++    pub(crate) fn lease_expires_at_ms(&self) -> u64 { self.data.lease_end }
++    pub(crate) fn run_deadline_ms(&self) -> u64 { self.data.run_end }
++    pub(crate) fn reconciliation_only(&self) -> bool { self.data.reconciliation }
++
++    pub(crate) fn require_current(&self) -> Result<u64, Error> {
++        let bytes = self.lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::CheckAdmission, loan: self.id, body: Vec::new(),
++        })?;
++        let mut r = Reader::new(&bytes, b"HCRTCHK1")?;
++        if r.u64()? != self.record_id { return Err(Error::InvalidBinding); }
++        let now = r.u64()?;
++        if r.blob()? != self.record || r.blob()? != self.encoded { return Err(Error::InvalidBinding); }
++        r.end()?;
++        Ok(now)
++    }
++}
++
++/// Authenticated completion data from the fixed daemon loan. It still cannot
++/// construct CircuitTaskReceiptV1; only the original Root Source may consume it.
++pub(crate) struct OriginalRemoteCompletion {
++    lane: Arc<Mutex<Lane>>,
++    binding: Digest32,
++    record_id: u64,
++    record: Vec<u8>,
++    saved_input: Vec<u8>,
++    payload: Vec<u8>,
++}
++
++impl OriginalRemoteCompletion {
++    pub(crate) fn into_original_payload(
++        self, binding: Digest32, record: &[u8], saved_input: &[u8],
++    ) -> Result<Vec<u8>, Error> {
++        if self.binding != binding || self.record != record || self.saved_input != saved_input {
++            return Err(Error::InvalidBinding);
++        }
++        check_record(&self.lane, self.record_id, &self.record)?;
++        Ok(self.payload)
++    }
++}
++
++fn check_record(lane: &Mutex<Lane>, id: u64, record: &[u8]) -> Result<u64, Error> {
++    let bytes = lane.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++        operation: Operation::CheckRecord, loan: id, body: record.to_vec(),
++    })?;
++    let mut r = Reader::new(&bytes, b"HCRTCHK1")?;
++    if r.u64()? != id { return Err(Error::InvalidBinding); }
++    let now = r.u64()?;
++    if r.blob()? != record { return Err(Error::InvalidBinding); }
++    r.end()?;
++    Ok(now)
++}
++
++fn sha(bytes: &[u8]) -> Result<Sha256Digest, Error> {
++    Sha256Digest::parse(std::str::from_utf8(bytes).map_err(|_| Error::InvalidBinding)?)
++        .map_err(|_| Error::InvalidBinding)
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_client.rs
+@@ -0,0 +1,208 @@
++//! Daemon endpoint construction and actual Cell data transport. The original
++//! non-Clone admission is retained locally before its fixed Root loan is used.
++
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::sync::atomic::AtomicUsize;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_automation::CircuitComputationAdmissionV2;
++use codex_hepta_automation::CircuitDispatchV2;
++use codex_hepta_automation::TaskFlowFence;
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_contracts::HostAuthorityPeerPolicy;
++use codex_hepta_contracts::HostIssuerPeer;
++use codex_hepta_learning_ledger::RunStartRecordV1;
++use codex_hepta_neuron::CellDecisionReceiptV1;
++use codex_hepta_neuron::CellExecutionError;
++use codex_hepta_neuron::CellScopeV1;
++use codex_hepta_neuron::CellStepInputV1;
++use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++
++use super::Error;
++use super::data;
++use super::loan::DaemonLoans;
++use super::loan::OriginalRecordLoan;
++use super::wire::{Budget, Frame, Lane, Operation, FRAME_LIMIT, TIMEOUT};
++use crate::{AgentdIdentity, CircuitCellErrorV1, CircuitCellExecutionV1, CircuitCellRegistryV1,
++    CircuitCellTimeV1, CircuitTaskRequestV1, CircuitTaskSourceInputV1};
++use crate::circuit_task::source::remote_source;
++
++/// Explicit transport and immutable expected data from the original trusted
++/// launcher. These data grant nothing: both real streams must match the pinned
++/// Root process, and that service must possess the original task/Cell/Source.
++pub struct OriginalRootCircuitTaskDaemonInputsV1 {
++    pub fence: TaskFlowFence,
++    pub registry: CircuitCellRegistryV1,
++    pub source: CircuitTaskSourceInputV1,
++    pub task_stream: UnixStream,
++    pub loan_stream: UnixStream,
++    pub original_root: HostIssuerPeer,
++    pub original_root_task_pidfd: OwnedFd,
++    pub original_root_loan_pidfd: OwnedFd,
++    pub session_nonce: [u8; 16],
++    pub lifetime: Duration,
++    pub queue_capacity: usize,
++}
++
++pub(crate) struct DaemonClient {
++    pub(super) identity: AgentdIdentity,
++    pub(super) fence: TaskFlowFence,
++    pub(super) registry: CircuitCellRegistryV1,
++    pub(super) source: CircuitTaskSourceInputV1,
++    pub(super) task: Mutex<Lane>,
++    pub(super) loans: Arc<DaemonLoans>,
++    pub(super) resolved: Mutex<Option<ResolvedInput>>,
++    reverse: Mutex<Option<Lane>>,
++    stop_reverse: UnixStream,
++}
++
++pub(super) struct ResolvedInput {
++    pub(super) request: CircuitTaskRequestV1,
++    pub(super) dispatch: CircuitDispatchV2,
++    pub(super) input: CellStepInputV1,
++    pub(super) encoded: Vec<u8>,
++}
++
++impl DaemonClient {
++    pub(crate) fn new(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1,
++        pending: Arc<AtomicUsize>) -> Result<(Arc<Self>, usize), Error>
++    {
++        if rustix::process::getuid().as_raw() == 0 || rustix::process::geteuid().as_raw() == 0
++            || inputs.original_root.uid != 0 || inputs.original_root.pid == std::process::id()
++            || inputs.lifetime.is_zero() || inputs.lifetime > Duration::from_secs(300)
++            || !(1..=64).contains(&inputs.queue_capacity)
++            || inputs.fence.owner_agent_id != identity.agent_id
++            || identity.spawn_generation.checked_add(1) != Some(inputs.fence.generation)
++        { return Err(Error::InvalidBinding); }
++        let binding = remote_source::original_binding(identity, &inputs.fence, &inputs.registry, &inputs.source)?;
++        let end = Instant::now() + inputs.lifetime;
++        let budget = Budget::new(end)?;
++        let policy = HostAuthorityPeerPolicy { peer: inputs.original_root, timeout: TIMEOUT,
++            lifetime: inputs.lifetime, request_bound: FRAME_LIMIT, response_bound: FRAME_LIMIT };
++        let stop_reverse = inputs.loan_stream.try_clone().map_err(|_| Error::Unavailable)?;
++        let task = HostAuthorityPeerChannel::from_stream(inputs.task_stream, policy,
++            inputs.original_root_task_pidfd).map_err(|_| Error::Unavailable)?;
++        let reverse = HostAuthorityPeerChannel::from_stream(inputs.loan_stream, policy,
++            inputs.original_root_loan_pidfd).map_err(|_| Error::Unavailable)?;
++        let client = Self { identity: identity.clone(), fence: inputs.fence,
++            registry: inputs.registry, source: inputs.source,
++            task: Mutex::new(Lane::new(task, binding, inputs.session_nonce, true, Arc::clone(&budget))?),
++            reverse: Mutex::new(Some(Lane::new(reverse, binding, inputs.session_nonce, false, budget)?)),
++            loans: DaemonLoans::new(pending), resolved: Mutex::new(None), stop_reverse };
++        Ok((Arc::new(client), inputs.queue_capacity))
++    }
++
++    pub(crate) fn begin_original_record(self: &Arc<Self>, record: &RunStartRecordV1)
++        -> Result<OriginalRecordLoan, Error>
++    {
++        let request = remote_source::expected_request(&self.source, self.fence.generation, record)?;
++        self.loans.begin_record(record, remote_source::encode_record(&request, record)?)
++    }
++
++    pub(crate) fn run_reverse(self: &Arc<Self>, state: &Arc<crate::AgentdState>,
++        cancellation: tokio_util::sync::CancellationToken)
++        -> Result<(std::thread::JoinHandle<Result<(), Error>>,
++            tokio::sync::oneshot::Receiver<Result<(), Error>>), Error>
++    {
++        self.loans.attach(state, cancellation)?;
++        let mut reverse = self.reverse.try_lock().map_err(|_| Error::Unavailable)?
++            .take().ok_or(Error::Unavailable)?;
++        let loans = Arc::clone(&self.loans);
++        let (terminal, receive) = tokio::sync::oneshot::channel();
++        let worker = std::thread::Builder::new().name("original-root-task-loans".into())
++            .spawn(move || {
++                let result: Result<(), Error> =
++                    (|| { while reverse.serve_one(|frame| loans.respond(frame))? {} Ok(()) })();
++                let _ = terminal.send(result.clone());
++                result
++            }).map_err(|_| Error::Unavailable)?;
++        Ok((worker, receive))
++    }
++
++    pub(crate) fn stop_reverse(&self) {
++        // This duplicate descriptor is termination-only. It is never exposed,
++        // used to send a frame, reconnected or turned into another channel.
++        let _ = self.stop_reverse.shutdown(std::net::Shutdown::Both);
++    }
++
++    pub(crate) fn sample_original_clock(&self) -> Result<CircuitCellTimeV1, Error> {
++        let (id, _) = self.loans.current_record()?;
++        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::Clock, loan: id, body: Vec::new(),
++        })?;
++        if bytes.len() != 16 { return Err(Error::InvalidBinding); }
++        Ok(CircuitCellTimeV1 {
++            circuit_millis: u64::from_be_bytes(bytes[..8].try_into().map_err(|_| Error::InvalidBinding)?),
++            cell_micros: u64::from_be_bytes(bytes[8..].try_into().map_err(|_| Error::InvalidBinding)?),
++        })
++    }
++
++    pub(super) fn original_execution(&self, admission: CircuitComputationAdmissionV2,
++        input: CellStepInputV1, before: CircuitCellTimeV1) -> Result<CircuitCellExecutionV1, Error>
++    {
++        if before.circuit_millis == u64::MAX || before.cell_micros == u64::MAX {
++            return Err(Error::Unavailable);
++        }
++        let dispatch = admission.dispatch().clone();
++        let (record_id, _) = self.loans.current_record()?;
++        {
++            let resolved = self.resolved.try_lock().map_err(|_| Error::Unavailable)?;
++            let resolved = resolved.as_ref().ok_or(Error::ReconciliationRequired)?;
++            if resolved.dispatch != dispatch || resolved.input != input { return Err(Error::InvalidBinding); }
++        }
++        let binding = self.registry.bind_input(&dispatch, &input)?;
++        let digest = canonical_cell_step_request_digest_v1(&binding.cell, &input).map_err(CircuitCellErrorV1::from)?;
++        if admission.owner_agent_id().as_str() != input.scope.agent_id.as_str()
++            || admission.definition_digest() != self.registry.definition_digest()
++            || admission.execution_request_digest().is_none_or(|value| value.as_str() != digest.to_string())
++        { return Err(Error::InvalidBinding); }
++        let id = self.loans.retain_admission(admission)?;
++        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::Execute, loan: id, body: record_id.to_be_bytes().to_vec(),
++        })?;
++        let decision = data::decision(&bytes)?;
++        crate::circuit_cell::finish(binding, &dispatch, &input, decision).map_err(Error::from)
++    }
++
++    fn lookup_original(&self, scope: &CellScopeV1, operation: &StableId, digest: Digest32)
++        -> Result<CellDecisionReceiptV1, Error>
++    {
++        let (record_id, _) = self.loans.current_record()?;
++        let (dispatch, input) = {
++            let resolved = self.resolved.try_lock().map_err(|_| Error::Unavailable)?;
++            let value = resolved.as_ref().ok_or(Error::ReconciliationRequired)?;
++            if &value.input.scope != scope || &value.input.operation_id != operation {
++                return Err(Error::InvalidBinding);
++            }
++            (value.dispatch.clone(), value.input.clone())
++        };
++        let binding = self.registry.bind_input(&dispatch, &input)?;
++        if canonical_cell_step_request_digest_v1(&binding.cell, &input).map_err(CircuitCellErrorV1::from)? != digest {
++            return Err(Error::InvalidBinding);
++        }
++        let bytes = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::Decision, loan: record_id, body: data::encode_dispatch(&dispatch)?,
++        })?;
++        let execution = crate::circuit_cell::finish(binding, &dispatch, &input, data::decision(&bytes)?)?;
++        Ok(execution.decision)
++    }
++}
++
++pub(crate) struct DaemonCellPort(pub(super) Arc<DaemonClient>);
++
++impl DaemonCellPort {
++    pub(crate) fn new(client: Arc<DaemonClient>) -> Self { Self(client) }
++    pub(crate) fn original_registry(&self) -> &CircuitCellRegistryV1 { &self.0.registry }
++    pub(crate) fn original_lookup(&self, scope: &CellScopeV1, operation: &StableId, request: Digest32)
++        -> Result<Option<CellDecisionReceiptV1>, CellExecutionError>
++    { self.0.lookup_original(scope, operation, request).map(Some).map_err(|_| CellExecutionError::InferencePending) }
++    pub(crate) fn original_execute(&self, admission: CircuitComputationAdmissionV2,
++        input: CellStepInputV1, before: CircuitCellTimeV1) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1>
++    { self.0.original_execution(admission, input, before).map_err(|_| CircuitCellErrorV1::ReconciliationRequired) }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_data.rs
+@@ -0,0 +1,154 @@
++//! Canonical data for the fixed task lane. None of these decoders constructs
++//! an AutomationStore admission, a committed trace or a task receipt.
++
++use std::sync::Arc;
++
++use codex_hepta_automation::CircuitDispatchV2;
++use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_neuron::CellDecisionReceiptV1;
++use codex_hepta_neuron::CellExecutionCostV1;
++use codex_hepta_neuron::CellPolicyEntryV1;
++use codex_hepta_neuron::CellRepresentationV1;
++use codex_hepta_neuron::CellScopeV1;
++use codex_hepta_types::AuthorityPosture;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++
++use super::Error;
++use super::wire::Reader;
++use super::wire::blob;
++use super::wire::bounded;
++
++#[derive(serde::Deserialize)]
++#[serde(deny_unknown_fields)]
++struct DispatchData {
++    run_id: String,
++    activation_id: u64,
++    program_id: String,
++    node_id: String,
++    round: u32,
++    input_digest: Sha256Digest,
++    input_schema: Sha256Digest,
++    output_schema: Sha256Digest,
++    scope_digest: Sha256Digest,
++    parameter_bundle_digest: Sha256Digest,
++    route_policy_digest: Sha256Digest,
++    max_work: u64,
++    candidate_edges: Vec<String>,
++    invocation_digest: Sha256Digest,
++}
++
++pub(super) fn dispatch(bytes: &[u8]) -> Result<CircuitDispatchV2, Error> {
++    bounded(bytes)?;
++    let data: DispatchData = serde_json::from_slice(bytes).map_err(|_| Error::InvalidBinding)?;
++    if data.candidate_edges.len() > 256 {
++        return Err(Error::InvalidBinding);
++    }
++    for text in [&data.run_id, &data.program_id, &data.node_id]
++        .into_iter().chain(&data.candidate_edges)
++    {
++        if text.is_empty() || text.len() > 128 || text.chars().any(char::is_control) {
++            return Err(Error::InvalidBinding);
++        }
++    }
++    let value = CircuitDispatchV2 {
++        run_id: data.run_id, activation_id: data.activation_id,
++        program_id: data.program_id, node_id: data.node_id, round: data.round,
++        input_digest: data.input_digest, input_schema: data.input_schema,
++        output_schema: data.output_schema, scope_digest: data.scope_digest,
++        parameter_bundle_digest: data.parameter_bundle_digest,
++        route_policy_digest: data.route_policy_digest, max_work: data.max_work,
++        candidate_edges: data.candidate_edges, invocation_digest: data.invocation_digest,
++    };
++    if encode_dispatch(&value)? != bytes { return Err(Error::InvalidBinding); }
++    Ok(value)
++}
++
++pub(super) fn encode_dispatch(value: &CircuitDispatchV2) -> Result<Vec<u8>, Error> {
++    let bytes = serde_json::to_vec(value).map_err(|_| Error::InvalidBinding)?;
++    bounded(&bytes)?;
++    Ok(bytes)
++}
++
++pub(super) fn encode_decision(value: &CellDecisionReceiptV1) -> Result<Vec<u8>, Error> {
++    value.representation.validate().map_err(crate::CircuitCellErrorV1::from)?;
++    let canonical = crate::circuit_cell_output::encode_receipt(value)?;
++    let representation = serde_json::to_vec(&(
++        &value.representation.drive_q24, &value.representation.prediction_q24,
++    )).map_err(|_| Error::InvalidBinding)?;
++    let mut bytes = b"HCRTDEC1".to_vec();
++    blob(&mut bytes, &canonical)?;
++    blob(&mut bytes, &representation)?;
++    Ok(bytes)
++}
++
++/// Decode advisory data only, then require the original complete canonical
++/// receipt encoding. Its authority is fixed DENY_ALL. Only the actual Cell
++/// owner or its pinned readback lane can establish where these data came from.
++pub(super) fn decision(bytes: &[u8]) -> Result<CellDecisionReceiptV1, Error> {
++    let mut outer = Reader::new(bytes, b"HCRTDEC1")?;
++    let encoded = outer.blob()?;
++    let representation = outer.blob()?;
++    outer.end()?;
++    let mut r = Reader::new(encoded, b"hepta.circuit.committed-cell-decision.v1\0")?;
++    let operation_id = id(&mut r)?;
++    let agent_id = id(&mut r)?;
++    let cell_id = id(&mut r)?;
++    let run_id = id(&mut r)?;
++    let selected_candidate = id(&mut r)?;
++    let operation_digest = digest(&mut r)?;
++    let semantic_request_digest = digest(&mut r)?;
++    let principal_digest = digest(&mut r)?;
++    let bundle_digest = digest(&mut r)?;
++    let source_frontier = digest(&mut r)?;
++    let checkpoint_before = digest(&mut r)?;
++    let checkpoint_after = digest(&mut r)?;
++    let model_output_digest = digest(&mut r)?;
++    let confidence_ppm = u32::from_be_bytes(r.take()?);
++    let ood_ppm = u32::from_be_bytes(r.take()?);
++    let deadline_exceeded = boolean(&mut r)?;
++    let cost = CellExecutionCostV1 {
++        model_latency_micros: r.u64()?, queue_age_micros: r.u64()?,
++        resident_bytes: r.u64()?, transient_allocation_bytes: r.u64()?,
++        checkpoint_bytes: r.u64()?,
++        consumed_input_bytes: usize::try_from(r.u64()?).map_err(|_| Error::InvalidBinding)?,
++        truncated_input_bytes: usize::try_from(r.u64()?).map_err(|_| Error::InvalidBinding)?,
++    };
++    let count = u32::from_be_bytes(r.take()?);
++    if !(1..=256).contains(&count) { return Err(Error::InvalidBinding); }
++    let mut policy = Vec::new();
++    for _ in 0..count {
++        policy.push(CellPolicyEntryV1 {
++            candidate_id: id(&mut r)?, allowed: boolean(&mut r)?,
++            probability_ppm: u32::from_be_bytes(r.take()?),
++        });
++    }
++    if r.take::<1>()? != [0] { return Err(Error::InvalidBinding); }
++    r.end()?;
++    let (drive_q24, prediction_q24): (Vec<i64>, Vec<i64>) =
++        serde_json::from_slice(representation).map_err(|_| Error::InvalidBinding)?;
++    let value = CellDecisionReceiptV1 {
++        operation_id, operation_digest, semantic_request_digest,
++        scope: CellScopeV1 { agent_id, cell_id, run_id, principal_digest },
++        bundle_digest, source_frontier, checkpoint_before, checkpoint_after,
++        model_output_digest, representation: Arc::new(CellRepresentationV1 {
++            drive_q24, prediction_q24,
++        }), policy, selected_candidate, confidence_ppm, ood_ppm,
++        deadline_exceeded, cost, authority: AuthorityPosture::DENY_ALL,
++    };
++    if encode_decision(&value)? != bytes { return Err(Error::InvalidBinding); }
++    Ok(value)
++}
++
++fn id(reader: &mut Reader<'_>) -> Result<StableId, Error> {
++    StableId::new(std::str::from_utf8(reader.blob()?).map_err(|_| Error::InvalidBinding)?)
++        .map_err(|_| Error::InvalidBinding)
++}
++fn digest(reader: &mut Reader<'_>) -> Result<Digest32, Error> {
++    Ok(Digest32::from_array(reader.take()?))
++}
++fn boolean(reader: &mut Reader<'_>) -> Result<bool, Error> {
++    match reader.take::<1>()? {
++        [0] => Ok(false), [1] => Ok(true), _ => Err(Error::InvalidBinding),
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_invocation.rs
+@@ -0,0 +1,102 @@
++//! Preserve the original invocation and input-provider interfaces in Agentd.
++//! Only the fixed client is installed; its record loan originates in the
++//! existing signed RunStart entry, and completion receives its real receipt.
++
++use std::collections::BTreeMap;
++use std::sync::Arc;
++
++use codex_hepta_automation::CircuitDispatchV2;
++use codex_hepta_learning_ledger::RunStartRecordV1;
++use codex_hepta_neuron::CellStepInputV1;
++
++use super::Error;
++use super::client::DaemonClient;
++use super::client::ResolvedInput;
++use super::data;
++use super::wire::{Frame, Operation};
++use crate::{AgentdCircuitTaskInvocationProviderV1, AgentdError, AgentdIdentity,
++    CircuitCellExecutionV1, CircuitTaskInputModeV1, CircuitTaskInputProviderV1,
++    CircuitTaskReceiptV1, CircuitTaskRequestV1};
++use crate::circuit_task::source::remote_source;
++
++impl AgentdCircuitTaskInvocationProviderV1 for DaemonClient {
++    fn build(&self, identity: &AgentdIdentity, record: &RunStartRecordV1)
++        -> Result<CircuitTaskRequestV1, AgentdError>
++    {
++        (|| {
++            if identity != &self.identity { return Err(Error::InvalidBinding); }
++            let (id, encoded) = self.loans.record(record)?;
++            let request = remote_source::expected_request(&self.source, self.fence.generation, record)?;
++            if remote_source::encode_record(&request, record)? != encoded {
++                return Err(Error::InvalidBinding);
++            }
++            let response = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++                operation: Operation::Build, loan: id, body: encoded.clone(),
++            })?;
++            if response != encoded { return Err(Error::InvalidBinding); }
++            Ok(request)
++        })().map_err(agent_error)
++    }
++
++    fn publish_result(&self, identity: &AgentdIdentity, record: &RunStartRecordV1,
++        receipt: &CircuitTaskReceiptV1) -> Result<(), AgentdError>
++    {
++        (|| {
++            if identity != &self.identity { return Err(Error::InvalidBinding); }
++            let (record_id, _) = self.loans.record(record)?;
++            let request = remote_source::expected_request(&self.source, self.fence.generation, record)?;
++            let saved_input = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++                operation: Operation::SavedInput, loan: record_id, body: Vec::new(),
++            })?;
++            {
++                let resolved = self.resolved.try_lock().map_err(|_| Error::Unavailable)?;
++                let resolved = resolved.as_ref().ok_or(Error::ReconciliationRequired)?;
++                if resolved.request != request || resolved.encoded != saved_input {
++                    return Err(Error::InvalidBinding);
++                }
++            }
++            let id = self.loans.retain_completion(request, self.registry.definition().clone(),
++                saved_input, receipt)?;
++            let response = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++                operation: Operation::Publish, loan: id, body: record_id.to_be_bytes().to_vec(),
++            })?;
++            if response != b"HCRTPUB1" { return Err(Error::InvalidBinding); }
++            Ok(())
++        })().map_err(agent_error)
++    }
++}
++
++impl CircuitTaskInputProviderV1 for Arc<DaemonClient> {
++    fn resolve(&mut self, request: &CircuitTaskRequestV1, dispatch: &CircuitDispatchV2,
++        completed: &BTreeMap<u64, CircuitCellExecutionV1>, mode: CircuitTaskInputModeV1)
++        -> Result<CellStepInputV1, Error>
++    {
++        // This is the original one-root-Cell Source restriction, not a second
++        // graph driver or a protocol that can supply arbitrary completed steps.
++        if !completed.is_empty() { return Err(Error::InvalidBinding); }
++        let (id, encoded_record) = self.loans.current_record()?;
++        let record = remote_source::decode_record(&encoded_record)?;
++        if remote_source::expected_request(&self.source, self.fence.generation, &record)? != *request {
++            return Err(Error::InvalidBinding);
++        }
++        let mut bytes = vec![match mode { CircuitTaskInputModeV1::Prepare => 0,
++            CircuitTaskInputModeV1::Readback => 1 }];
++        bytes.extend_from_slice(&data::encode_dispatch(dispatch)?);
++        let encoded = self.task.try_lock().map_err(|_| Error::Unavailable)?.call(Frame {
++            operation: Operation::Resolve, loan: id, body: bytes,
++        })?;
++        let input = remote_source::decode_original_input(&encoded)?;
++        if remote_source::encode_original_input(dispatch, &input)? != encoded {
++            return Err(Error::InvalidBinding);
++        }
++        self.registry.bind_input(dispatch, &input)?;
++        *self.resolved.try_lock().map_err(|_| Error::Unavailable)? = Some(ResolvedInput {
++            request: request.clone(), dispatch: dispatch.clone(), input: input.clone(), encoded,
++        });
++        Ok(input)
++    }
++}
++
++fn agent_error(error: Error) -> AgentdError {
++    AgentdError::Protocol(format!("original Root task: {error}"))
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_loan.rs
+@@ -0,0 +1,244 @@
++//! Daemon-local custody. The original signed ingress, admission token and task
++//! receipt remain here. The reverse channel can observe only this fixed loan.
++
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::sync::OnceLock;
++use std::sync::Weak;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++
++use codex_hepta_automation::CircuitComputationAdmissionV2;
++use codex_hepta_learning_ledger::RunStartRecordV1;
++
++use super::Error;
++use super::admission::AdmissionData;
++use super::wire::Frame;
++use super::wire::Operation;
++use super::wire::blob;
++use crate::AgentdState;
++use crate::CircuitTaskReceiptV1;
++use crate::circuit_task::source::remote_source;
++
++pub(super) struct DaemonLoans {
++    state: OnceLock<Weak<AgentdState>>,
++    cancellation: OnceLock<tokio_util::sync::CancellationToken>,
++    pending: Arc<AtomicUsize>,
++    inner: Mutex<LoanState>,
++}
++
++struct LoanState {
++    next: u64,
++    record: Option<RecordLoan>,
++    admission: Option<AdmissionLoan>,
++    completion: Option<CompletionLoan>,
++}
++
++struct RecordLoan {
++    id: u64,
++    record: RunStartRecordV1,
++    encoded: Vec<u8>,
++    caller_present: bool,
++}
++
++struct AdmissionLoan {
++    record_id: u64,
++    id: u64,
++    original: CircuitComputationAdmissionV2,
++    opened: bool,
++    pending: Option<RemoteWork>,
++}
++
++struct CompletionLoan {
++    record_id: u64,
++    id: u64,
++    original: CircuitTaskReceiptV1,
++    request: crate::CircuitTaskRequestV1,
++    definition: codex_hepta_automation::BoundedCircuitDefinitionV2,
++    saved_input: Vec<u8>,
++}
++
++struct RemoteWork(Arc<AtomicUsize>);
++impl Drop for RemoteWork {
++    fn drop(&mut self) { self.0.fetch_sub(1, Ordering::AcqRel); }
++}
++
++/// Issued only by the crate-private signed RunStart entry, before invoking the
++/// provider. Dropping the caller fences authority but does not release pending
++/// Root work. Only its same terminal report releases that extra pending guard.
++pub(crate) struct OriginalRecordLoan {
++    shared: Arc<DaemonLoans>,
++    id: u64,
++}
++
++impl Drop for OriginalRecordLoan {
++    fn drop(&mut self) {
++        if let Ok(mut state) = self.shared.inner.lock() {
++            if let Some(record) = &mut state.record {
++                if record.id == self.id { record.caller_present = false; }
++            }
++        }
++    }
++}
++
++impl DaemonLoans {
++    pub(super) fn new(pending: Arc<AtomicUsize>) -> Arc<Self> {
++        Arc::new(Self {
++            state: OnceLock::new(), cancellation: OnceLock::new(), pending,
++            inner: Mutex::new(LoanState { next: 1, record: None, admission: None, completion: None }),
++        })
++    }
++
++    pub(super) fn attach(&self, state: &Arc<AgentdState>,
++        cancellation: tokio_util::sync::CancellationToken) -> Result<(), Error>
++    {
++        self.cancellation.set(cancellation).map_err(|_| Error::InvalidBinding)?;
++        self.state.set(Arc::downgrade(state)).map_err(|_| Error::InvalidBinding)
++    }
++
++    pub(super) fn begin_record(
++        self: &Arc<Self>, record: &RunStartRecordV1, encoded: Vec<u8>,
++    ) -> Result<OriginalRecordLoan, Error> {
++        self.current_state()?.require_current_run_start(record).map_err(|_| Error::Unavailable)?;
++        let mut state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        if state.record.as_ref().is_some_and(|old| old.caller_present || old.record != *record)
++            || state.admission.as_ref().is_some_and(|old| old.pending.is_some())
++        { return Err(Error::Unavailable); }
++        let id = allocate(&mut state)?;
++        state.record = Some(RecordLoan { id, record: record.clone(), encoded, caller_present: true });
++        state.admission = None;
++        state.completion = None;
++        Ok(OriginalRecordLoan { shared: Arc::clone(self), id })
++    }
++
++    pub(super) fn record(&self, original: &RunStartRecordV1) -> Result<(u64, Vec<u8>), Error> {
++        let state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        let record = state.record.as_ref().ok_or(Error::Unavailable)?;
++        if !record.caller_present || record.record != *original { return Err(Error::Unavailable); }
++        Ok((record.id, record.encoded.clone()))
++    }
++
++    pub(super) fn current_record(&self) -> Result<(u64, Vec<u8>), Error> {
++        let state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        let record = state.record.as_ref().ok_or(Error::Unavailable)?;
++        if !record.caller_present { return Err(Error::Unavailable); }
++        Ok((record.id, record.encoded.clone()))
++    }
++
++    pub(super) fn retain_admission(&self, original: CircuitComputationAdmissionV2) -> Result<u64, Error> {
++        let mut state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        let record = state.record.as_ref().ok_or(Error::Unavailable)?;
++        if !record.caller_present
++            || record.record.snapshot.run_id.as_str() != original.dispatch().run_id
++            || state.admission.as_ref().is_some_and(|old| old.pending.is_some())
++        { return Err(Error::Unavailable); }
++        let record_id = record.id;
++        let id = allocate(&mut state)?;
++        self.pending.fetch_add(1, Ordering::AcqRel);
++        state.admission = Some(AdmissionLoan { record_id, id, original, opened: false,
++            pending: Some(RemoteWork(Arc::clone(&self.pending))) });
++        Ok(id)
++    }
++
++    pub(super) fn retain_completion(
++        &self, request: crate::CircuitTaskRequestV1,
++        definition: codex_hepta_automation::BoundedCircuitDefinitionV2,
++        saved_input: Vec<u8>, original: &CircuitTaskReceiptV1,
++    ) -> Result<u64, Error> {
++        // Validate the real receipt before making any completion loan visible.
++        remote_source::original_completion_bytes(&definition, &request, &saved_input, original)?;
++        let mut state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        let record = state.record.as_ref().ok_or(Error::Unavailable)?;
++        if !record.caller_present || record.record.snapshot.run_id.as_str() != request.start.run_id {
++            return Err(Error::Unavailable);
++        }
++        let record_id = record.id;
++        let id = allocate(&mut state)?;
++        state.completion = Some(CompletionLoan { record_id, id, original: original.clone(),
++            request, definition, saved_input });
++        Ok(id)
++    }
++
++    /// This fixed handler has no supplied authorization callback. Authentication
++    /// always calls the attached original AgentdState on the retained record.
++    pub(super) fn respond(&self, frame: Frame) -> Result<Vec<u8>, Error> {
++        if frame.operation == Operation::Terminal { return self.terminal(frame); }
++        let (record_id, original, encoded) = {
++            let state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++            let record = state.record.as_ref().ok_or(Error::Unavailable)?;
++            if !record.caller_present { return Err(Error::Unavailable); }
++            (record.id, record.record.clone(), record.encoded.clone())
++        };
++        // No loan mutex is held across Fleet/AuthBus/readiness file I/O.
++        let now = self.current_state()?.require_current_run_start(&original)
++            .map_err(|_| Error::Unavailable)?;
++        let mut state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        let record = state.record.as_ref().ok_or(Error::Unavailable)?;
++        if record.id != record_id || !record.caller_present || record.record != original {
++            return Err(Error::Unavailable);
++        }
++        let mut bytes = b"HCRTCHK1".to_vec();
++        bytes.extend_from_slice(&record_id.to_be_bytes());
++        bytes.extend_from_slice(&now.to_be_bytes());
++        blob(&mut bytes, &encoded)?;
++        match frame.operation {
++            Operation::CheckRecord if frame.loan == record_id && frame.body == encoded => {}
++            Operation::OpenAdmission | Operation::CheckAdmission => {
++                let admission = state.admission.as_mut().ok_or(Error::Unavailable)?;
++                if admission.record_id != record_id || admission.id != frame.loan
++                    || admission.pending.is_none() || !frame.body.is_empty()
++                { return Err(Error::Unavailable); }
++                match frame.operation {
++                    Operation::OpenAdmission if !admission.opened => admission.opened = true,
++                    Operation::CheckAdmission if admission.opened => {}
++                    _ => return Err(Error::Unavailable),
++                }
++                blob(&mut bytes, &AdmissionData::from_original(&admission.original).encode()?)?;
++            }
++            Operation::ReadCompletion => {
++                let completion = state.completion.as_ref().ok_or(Error::Unavailable)?;
++                if completion.record_id != record_id || completion.id != frame.loan
++                    || !frame.body.is_empty()
++                { return Err(Error::Unavailable); }
++                let payload = remote_source::original_completion_bytes(&completion.definition,
++                    &completion.request, &completion.saved_input, &completion.original)?;
++                blob(&mut bytes, &completion.saved_input)?;
++                blob(&mut bytes, &payload)?;
++            }
++            _ => return Err(Error::InvalidBinding),
++        }
++        drop(state);
++        self.current_state()?.require_current_run_start(&original).map_err(|_| Error::Unavailable)?;
++        let state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        if state.record.as_ref().is_none_or(|record| record.id != record_id || !record.caller_present) {
++            return Err(Error::Unavailable);
++        }
++        Ok(bytes)
++    }
++
++    fn terminal(&self, frame: Frame) -> Result<Vec<u8>, Error> {
++        let mut state = self.inner.try_lock().map_err(|_| Error::Unavailable)?;
++        let record_id = state.record.as_ref().ok_or(Error::Unavailable)?.id;
++        let admission = state.admission.as_mut().ok_or(Error::Unavailable)?;
++        if admission.id != frame.loan || admission.record_id != record_id
++            || frame.body != record_id.to_be_bytes() || !admission.opened
++        { return Err(Error::InvalidBinding); }
++        // This releases only work reported terminal by the pinned Root pump.
++        // It grants no admission, completion or permission to advance the run.
++        drop(admission.pending.take());
++        Ok(b"HCRTEND1".to_vec())
++    }
++
++    fn current_state(&self) -> Result<Arc<AgentdState>, Error> {
++        if self.cancellation.get().is_none_or(|token| token.is_cancelled()) {
++            return Err(Error::Unavailable);
++        }
++        self.state.get().and_then(Weak::upgrade).ok_or(Error::Unavailable)
++    }
++}
++
++fn allocate(state: &mut LoanState) -> Result<u64, Error> {
++    let id = state.next;
++    state.next = id.checked_add(1).ok_or(Error::Unavailable)?;
++    Ok(id)
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_runtime.rs
+@@ -0,0 +1,72 @@
++//! Install the fixed remote Cell path in the original daemon lane. The same
++//! AgentdState supplies the original AutomationStore and signed RunStart checks;
++//! there is no alternate SQL owner, task journal or raw submission API.
++
++use super::*;
++use crate::circuit_task::remote::{DaemonCellPort, DaemonClient, OriginalRootCircuitTaskDaemonInputsV1};
++
++pub(crate) fn channel(identity: &AgentdIdentity, inputs: OriginalRootCircuitTaskDaemonInputsV1)
++    -> Result<(CircuitTaskRuntimeBootstrapV1, Arc<DaemonClient>), AgentdError>
++{
++    TaskFlowFence::new(inputs.fence.owner_agent_id.clone(), &inputs.fence.owner_id,
++        inputs.fence.owner_epoch, inputs.fence.generation, &inputs.fence.fencing_token)
++        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
++    let pending = Arc::new(AtomicUsize::new(0));
++    let fence = inputs.fence.clone();
++    let (client, capacity) = DaemonClient::new(identity, inputs, Arc::clone(&pending)).map_err(agent_error)?;
++    let (sender, mut receiver) = mpsc::channel::<Command>(capacity);
++    let handle = CircuitTaskHandleV1 { sender, generation: fence.generation, pending,
++        original_remote: Some(Arc::clone(&client)) };
++    let original = Arc::clone(&client);
++    let bootstrap = CircuitTaskRuntimeBootstrapV1 {
++        identity: identity.clone(), handle, original_root: None,
++        owner: Box::new(move |store, state, cancellation| Box::pin(async move {
++            let (reverse, mut reverse_terminal) = original.run_reverse(&state, cancellation.clone())
++                .map_err(agent_error)?;
++            let result = async {
++                let mut driver = CircuitTaskDriverV1 {
++                    store, fence, cells: DaemonCellPort::new(Arc::clone(&original)),
++                    inputs: Arc::clone(&original),
++                };
++                loop {
++                    let command = tokio::select! {
++                        _ = cancellation.cancelled() => return Ok(()),
++                        stopped = &mut reverse_terminal => {
++                            let detail = match stopped { Ok(Ok(())) => "Root loan stream closed".to_owned(),
++                                Ok(Err(error)) => error.to_string(), Err(error) => error.to_string() };
++                            return Err(AgentdError::Protocol(format!("original Root loan ended: {detail}")));
++                        }
++                        command = receiver.recv() => command,
++                    };
++                    let Some(command) = command else {
++                        cancellation.cancelled().await;
++                        return Ok(());
++                    };
++                    if command.response.is_closed() { continue; }
++                    let Command { request, record, mode, response, _pending } = command;
++                    let result = match request.validate_record(&record, driver.fence.generation) {
++                        Err(error) => Err(error),
++                        Ok(()) => driver.execute(&request, mode, || {
++                            if cancellation.is_cancelled() { return Err(Error::Unavailable); }
++                            let now_ms = state.require_current_run_start(&record).map_err(|_| Error::Unavailable)?;
++                            let sampled = original.sample_original_clock()?;
++                            Ok(CircuitCellTimeV1 { circuit_millis: sampled.circuit_millis.max(now_ms),
++                                cell_micros: sampled.cell_micros })
++                        }).await,
++                    };
++                    let _ = response.send(result);
++                    drop(_pending);
++                }
++            }.await;
++            original.stop_reverse();
++            let joined = reverse.join().map_err(|_| AgentdError::Protocol("original Root loan worker panicked".into()))?;
++            if !cancellation.is_cancelled() { joined.map_err(agent_error)?; }
++            result
++        })),
++    };
++    Ok((bootstrap, client))
++}
++
++fn agent_error(error: Error) -> AgentdError {
++    AgentdError::Protocol(format!("original Root task runtime: {error}"))
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_service.rs
+@@ -0,0 +1,177 @@
++//! The Root process pumps its original Cell and Source. It never opens the
++//! daemon AutomationStore or reconstructs its admissions, traces or receipts.
++
++use std::sync::Arc;
++use std::time::Instant;
++
++use codex_hepta_automation::CircuitDispatchV2;
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_neuron::AnchorWitnessStore;
++
++use super::Error;
++use super::admission::ReverseClient;
++use super::data;
++use super::wire::{Budget, Frame, Lane, Operation};
++use crate::{AgentdIdentity, CircuitTaskInputModeV1, CircuitTaskSourceReadbackV1,
++    DurableCircuitTaskSourceV1, PreparedRootHostCircuitTaskV1};
++use crate::circuit_task::root_lane::OriginalRootCellPump;
++use crate::circuit_task::source::remote_source;
++
++pub(crate) struct OriginalRootTaskStreams {
++    task: HostAuthorityPeerChannel,
++    reverse: HostAuthorityPeerChannel,
++    nonce: [u8; 16],
++    end: Instant,
++}
++
++impl OriginalRootTaskStreams {
++    pub(crate) fn new(task: HostAuthorityPeerChannel, reverse: HostAuthorityPeerChannel,
++        nonce: [u8; 16], end: Instant) -> Self
++    { Self { task, reverse, nonce, end } }
++}
++
++/// The Q24 factory alone fills these private fields from its same bootstrap,
++/// invocation and readback. Consuming it cannot install a replacement writer.
++pub(crate) struct OriginalRootTaskLane<SW: AnchorWitnessStore> {
++    pump: Box<dyn OriginalRootCellPump>,
++    source: Arc<DurableCircuitTaskSourceV1<SW>>,
++    readback: Arc<CircuitTaskSourceReadbackV1<SW>>,
++}
++
++impl<SW: AnchorWitnessStore> OriginalRootTaskLane<SW> {
++    pub(crate) fn from_original_factory(pump: Box<dyn OriginalRootCellPump>,
++        source: Arc<DurableCircuitTaskSourceV1<SW>>, readback: Arc<CircuitTaskSourceReadbackV1<SW>>)
++        -> Self
++    { Self { pump, source, readback } }
++}
++
++struct OriginalRecord {
++    id: u64,
++    encoded: Vec<u8>,
++    dispatch: Option<CircuitDispatchV2>,
++}
++
++pub(crate) fn serve<SW, CW>(
++    root: &PreparedRootHostCircuitTaskV1<SW, CW>,
++    identity: &AgentdIdentity,
++    mut original: OriginalRootTaskLane<SW>,
++    streams: OriginalRootTaskStreams,
++) -> Result<u64, Error>
++where
++    SW: AnchorWitnessStore + Send + 'static,
++    CW: AnchorWitnessStore + Send + 'static,
++{
++    root.require_original_root_task_source(&original.readback).map_err(|_| Error::Unavailable)?;
++    require_root_current(root)?;
++    let binding = original.source.original_remote_binding()?;
++    let budget = Budget::new(streams.end)?;
++    let mut task = Lane::new(streams.task, binding, streams.nonce, true, Arc::clone(&budget))?;
++    let reverse = ReverseClient::new(Lane::new(streams.reverse, binding, streams.nonce, false, budget)?, binding);
++    let mut retained: Option<OriginalRecord> = None;
++    let mut count = 0_u64;
++    while task.serve_one(|frame| {
++        require_root_current(root)?;
++        original.source.require_original_remote_binding(binding)?;
++        let response = handle(identity, &mut original, &reverse, &mut retained, frame)?;
++        original.source.require_original_remote_binding(binding)?;
++        require_root_current(root)?;
++        Ok(response)
++    })? {
++        count = count.checked_add(1).ok_or(Error::Unavailable)?;
++    }
++    require_root_current(root)?;
++    Ok(count)
++}
++
++fn handle<SW: AnchorWitnessStore + Send>(identity: &AgentdIdentity,
++    original: &mut OriginalRootTaskLane<SW>, reverse: &ReverseClient,
++    retained: &mut Option<OriginalRecord>, frame: Frame) -> Result<Vec<u8>, Error>
++{
++    if frame.operation == Operation::Build {
++        reverse.check_record(frame.loan, &frame.body)?;
++        if retained.as_ref().is_some_and(|record| record.encoded != frame.body) {
++            return Err(Error::InvalidBinding);
++        }
++        original.source.original_remote_request(identity, &frame.body)?;
++        reverse.check_record(frame.loan, &frame.body)?;
++        *retained = Some(OriginalRecord { id: frame.loan, encoded: frame.body.clone(), dispatch: None });
++        return Ok(frame.body);
++    }
++    let record = retained.as_mut().ok_or(Error::ReconciliationRequired)?;
++    reverse.check_record(record.id, &record.encoded)?;
++    let response = match frame.operation {
++        Operation::Clock if frame.loan == record.id && frame.body.is_empty() => {
++            let clock = original.pump.clock();
++            let mut bytes = clock.circuit_millis.to_be_bytes().to_vec();
++            bytes.extend_from_slice(&clock.cell_micros.to_be_bytes());
++            bytes
++        }
++        Operation::Resolve if frame.loan == record.id => {
++            let (mode, bytes) = frame.body.split_first().ok_or(Error::InvalidBinding)?;
++            let mode = match mode { 0 => CircuitTaskInputModeV1::Prepare,
++                1 => CircuitTaskInputModeV1::Readback, _ => return Err(Error::InvalidBinding) };
++            let dispatch = data::dispatch(bytes)?;
++            let saved = original.source.original_remote_resolve(identity, &record.encoded, &dispatch, mode)?;
++            record.dispatch = Some(dispatch);
++            saved
++        }
++        Operation::Execute if frame.body == record.id.to_be_bytes() => {
++            let saved = original.source.original_remote_saved_input(identity, &record.encoded)?;
++            let input = remote_source::decode_original_input(&saved)?;
++            let admission = reverse.open_admission(frame.loan, record.id, &record.encoded)?;
++            let result = (|| {
++                if record.dispatch.as_ref() != Some(admission.dispatch())
++                    || remote_source::encode_original_input(admission.dispatch(), &input)? != saved
++                { return Err(Error::InvalidBinding); }
++                original.pump.execute(admission, input)
++            })();
++            // The actual synchronous operation has returned. Terminal reporting
++            // is attempted even on failure, before any response can be sent.
++            let terminal = reverse.terminal(frame.loan, record.id);
++            let execution = result?;
++            terminal?;
++            data::encode_decision(&execution.decision)?
++        }
++        Operation::Decision if frame.loan == record.id => {
++            let dispatch = data::dispatch(&frame.body)?;
++            let saved = original.source.original_remote_saved_input(identity, &record.encoded)?;
++            let input = remote_source::decode_original_input(&saved)?;
++            if record.dispatch.as_ref() != Some(&dispatch)
++                || remote_source::encode_original_input(&dispatch, &input)? != saved
++            { return Err(Error::InvalidBinding); }
++            data::encode_decision(&original.pump.read(&dispatch, &input)?.decision)?
++        }
++        Operation::SavedInput if frame.loan == record.id && frame.body.is_empty() => {
++            original.source.original_remote_saved_input(identity, &record.encoded)?
++        }
++        Operation::Publish if frame.body == record.id.to_be_bytes() => {
++            let dispatch = record.dispatch.as_ref().ok_or(Error::ReconciliationRequired)?;
++            let saved = original.source.original_remote_saved_input(identity, &record.encoded)?;
++            let input = remote_source::decode_original_input(&saved)?;
++            if remote_source::encode_original_input(dispatch, &input)? != saved {
++                return Err(Error::InvalidBinding);
++            }
++            let execution = original.pump.read(dispatch, &input)?;
++            let completion = reverse.completion(frame.loan, record.id, &record.encoded, &saved)?;
++            original.source.publish_original_remote_completion(identity, &record.encoded, completion, &execution)?;
++            let again = original.pump.read(dispatch, &input)?;
++            if execution != again { return Err(Error::InvalidBinding); }
++            let record_data = remote_source::decode_record(&record.encoded)?;
++            let publication = original.source.read_publication(identity, &record_data)?;
++            publication.require_decision(&again.decision)?;
++            b"HCRTPUB1".to_vec()
++        }
++        _ => return Err(Error::InvalidBinding),
++    };
++    reverse.check_record(record.id, &record.encoded)?;
++    Ok(response)
++}
++
++fn require_root_current<SW, CW>(root: &PreparedRootHostCircuitTaskV1<SW, CW>) -> Result<(), Error>
++where SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static,
++{
++    if !matches!(root.read_original_root_task_generation().map_err(|_| Error::Unavailable)?,
++        crate::neuron_generation_current::NeuronGenerationInitialReadbackV1::Published(_))
++    { return Err(Error::Unavailable); }
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_remote_wire.rs
+@@ -0,0 +1,252 @@
++//! Fixed two-lane task framing. Wire data never constructs an AutomationStore
++//! admission, committed trace or private Circuit task receipt.
++
++use std::sync::Arc;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::Ordering;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_contracts::HostAuthorityPeerChannel;
++use codex_hepta_contracts::HostIssuerTransportError;
++use codex_hepta_types::Digest32;
++
++use super::Error;
++
++pub(super) const FRAME_LIMIT: usize = 65_536;
++pub(super) const REQUEST_LIMIT: u64 = 128;
++pub(super) const TIMEOUT: Duration = Duration::from_millis(500);
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(super) enum Operation {
++    Build = 1,
++    Resolve = 2,
++    Execute = 3,
++    Decision = 4,
++    SavedInput = 5,
++    Publish = 6,
++    CheckRecord = 7,
++    CheckAdmission = 8,
++    ReadCompletion = 9,
++    Terminal = 10,
++    OpenAdmission = 11,
++    Clock = 12,
++}
++
++impl Operation {
++    fn from_byte(value: u8) -> Result<Self, Error> {
++        match value {
++            1 => Ok(Self::Build),
++            2 => Ok(Self::Resolve),
++            3 => Ok(Self::Execute),
++            4 => Ok(Self::Decision),
++            5 => Ok(Self::SavedInput),
++            6 => Ok(Self::Publish),
++            7 => Ok(Self::CheckRecord),
++            8 => Ok(Self::CheckAdmission),
++            9 => Ok(Self::ReadCompletion),
++            10 => Ok(Self::Terminal),
++            11 => Ok(Self::OpenAdmission),
++            12 => Ok(Self::Clock),
++            _ => Err(Error::InvalidBinding),
++        }
++    }
++
++    fn task_lane(self) -> bool {
++        matches!(self, Self::Build | Self::Resolve | Self::Execute |
++            Self::Decision | Self::SavedInput | Self::Publish | Self::Clock)
++    }
++}
++
++/// Both channels spend this one counter and absolute end in each process.
++/// Cloning the budget cannot allocate requests or restart an operation clock.
++pub(super) struct Budget {
++    used: AtomicU64,
++    end: Instant,
++}
++
++impl Budget {
++    pub(super) fn new(end: Instant) -> Result<Arc<Self>, Error> {
++        if Instant::now() >= end {
++            return Err(Error::DeadlineExceeded);
++        }
++        Ok(Arc::new(Self { used: AtomicU64::new(0), end }))
++    }
++
++    pub(super) fn before(&self, deadline: Instant) -> Result<(), Error> {
++        if Instant::now() >= deadline.min(self.end) {
++            return Err(Error::DeadlineExceeded);
++        }
++        Ok(())
++    }
++
++    fn begin(&self) -> Result<Instant, Error> {
++        let deadline = (Instant::now() + TIMEOUT).min(self.end);
++        self.before(deadline)?;
++        self.used.fetch_update(Ordering::AcqRel, Ordering::Acquire, |used| {
++            (used < REQUEST_LIMIT).then(|| used + 1)
++        }).map_err(|_| Error::Unavailable)?;
++        Ok(deadline)
++    }
++}
++
++pub(super) struct Frame {
++    pub(super) operation: Operation,
++    pub(super) loan: u64,
++    pub(super) body: Vec<u8>,
++}
++
++/// Created only by the fixed daemon/Root factories from two actual peer-pinned
++/// channels. A failed exchange permanently removes this lane's channel.
++pub(super) struct Lane {
++    channel: Option<HostAuthorityPeerChannel>,
++    binding: Digest32,
++    session: [u8; 16],
++    sequence: u64,
++    task_lane: bool,
++    budget: Arc<Budget>,
++}
++
++impl Lane {
++    pub(super) fn new(
++        channel: HostAuthorityPeerChannel,
++        binding: Digest32,
++        session: [u8; 16],
++        task_lane: bool,
++        budget: Arc<Budget>,
++    ) -> Result<Self, Error> {
++        if binding.is_zero() || session == [0; 16] {
++            return Err(Error::InvalidBinding);
++        }
++        channel.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
++        Ok(Self { channel: Some(channel), binding, session, sequence: 1,
++            task_lane, budget })
++    }
++
++    pub(super) fn call(&mut self, frame: Frame) -> Result<Vec<u8>, Error> {
++        let mut channel = self.channel.take().ok_or(Error::Unavailable)?;
++        let deadline = self.budget.begin()?;
++        let request = self.encode(&frame)?;
++        self.budget.before(deadline)?;
++        let response = channel.request(&request).map_err(|_| Error::CommitUncertain)?;
++        self.budget.before(deadline)?;
++        let received = self.decode(&response)?;
++        if received.operation != frame.operation || received.loan != frame.loan {
++            return Err(Error::InvalidBinding);
++        }
++        channel.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
++        self.budget.before(deadline)?;
++        self.sequence = self.sequence.checked_add(1).ok_or(Error::Unavailable)?;
++        self.channel = Some(channel);
++        Ok(received.body)
++    }
++
++    pub(super) fn serve_one(
++        &mut self,
++        handle: impl FnOnce(Frame) -> Result<Vec<u8>, Error>,
++    ) -> Result<bool, Error> {
++        let mut channel = self.channel.take().ok_or(Error::Unavailable)?;
++        let mut observed_deadline = None;
++        let result = channel.exchange(|bytes| {
++            let deadline = self.budget.begin().map_err(transport_error)?;
++            observed_deadline = Some(deadline);
++            let frame = self.decode(bytes).map_err(transport_error)?;
++            let operation = frame.operation;
++            let loan = frame.loan;
++            self.budget.before(deadline).map_err(transport_error)?;
++            let body = handle(frame).map_err(transport_error)?;
++            self.budget.before(deadline).map_err(transport_error)?;
++            let encoded = self.encode(&Frame { operation, loan, body })
++                .map_err(transport_error)?;
++            self.budget.before(deadline).map_err(transport_error)?;
++            Ok(encoded)
++        }).map_err(|_| Error::CommitUncertain)?;
++        if result {
++            // The original write can itself consume the remaining time. A
++            // delivered late response is Unknown and never restores this lane.
++            self.budget.before(observed_deadline.ok_or(Error::Unavailable)?)?;
++            channel.check_peer_lifetime().map_err(|_| Error::Unavailable)?;
++            self.budget.before(observed_deadline.ok_or(Error::Unavailable)?)?;
++            self.sequence = self.sequence.checked_add(1).ok_or(Error::Unavailable)?;
++            self.channel = Some(channel);
++        }
++        Ok(result)
++    }
++
++    fn encode(&self, frame: &Frame) -> Result<Vec<u8>, Error> {
++        if frame.operation.task_lane() != self.task_lane || frame.loan == 0 {
++            return Err(Error::InvalidBinding);
++        }
++        let mut bytes = b"HCRTLOA1".to_vec();
++        bytes.extend_from_slice(self.binding.as_array());
++        bytes.extend_from_slice(&self.session);
++        bytes.extend_from_slice(&self.sequence.to_be_bytes());
++        bytes.extend_from_slice(&frame.loan.to_be_bytes());
++        bytes.push(frame.operation as u8);
++        bytes.extend_from_slice(&frame.body);
++        bounded(&bytes)?;
++        Ok(bytes)
++    }
++
++    fn decode(&self, bytes: &[u8]) -> Result<Frame, Error> {
++        let mut reader = Reader::new(bytes, b"HCRTLOA1")?;
++        if reader.take::<32>()? != *self.binding.as_array()
++            || reader.take::<16>()? != self.session
++            || reader.u64()? != self.sequence
++        {
++            return Err(Error::InvalidBinding);
++        }
++        let loan = reader.u64()?;
++        let operation = Operation::from_byte(reader.take::<1>()?[0])?;
++        if loan == 0 || operation.task_lane() != self.task_lane {
++            return Err(Error::InvalidBinding);
++        }
++        Ok(Frame { operation, loan, body: reader.remaining().to_vec() })
++    }
++}
++
++pub(super) fn bounded(bytes: &[u8]) -> Result<(), Error> {
++    if bytes.is_empty() || bytes.len() > FRAME_LIMIT {
++        return Err(Error::InvalidBinding);
++    }
++    Ok(())
++}
++
++pub(super) fn blob(bytes: &mut Vec<u8>, value: &[u8]) -> Result<(), Error> {
++    let length = u32::try_from(value.len()).map_err(|_| Error::InvalidBinding)?;
++    bytes.extend_from_slice(&length.to_be_bytes());
++    bytes.extend_from_slice(value);
++    bounded(bytes)
++}
++
++pub(super) struct Reader<'a>(&'a [u8]);
++
++impl<'a> Reader<'a> {
++    pub(super) fn new(bytes: &'a [u8], domain: &[u8]) -> Result<Self, Error> {
++        bounded(bytes)?;
++        Ok(Self(bytes.strip_prefix(domain).ok_or(Error::InvalidBinding)?))
++    }
++    pub(super) fn take<const N: usize>(&mut self) -> Result<[u8; N], Error> {
++        let (value, rest) = self.0.split_at_checked(N).ok_or(Error::InvalidBinding)?;
++        self.0 = rest;
++        value.try_into().map_err(|_| Error::InvalidBinding)
++    }
++    pub(super) fn u64(&mut self) -> Result<u64, Error> {
++        Ok(u64::from_be_bytes(self.take()?))
++    }
++    pub(super) fn blob(&mut self) -> Result<&'a [u8], Error> {
++        let size = u32::from_be_bytes(self.take()?) as usize;
++        let (value, rest) = self.0.split_at_checked(size).ok_or(Error::InvalidBinding)?;
++        self.0 = rest;
++        Ok(value)
++    }
++    fn remaining(self) -> &'a [u8] { self.0 }
++    pub(super) fn end(self) -> Result<(), Error> {
++        if !self.0.is_empty() { return Err(Error::InvalidBinding); }
++        Ok(())
++    }
++}
++
++fn transport_error(_: Error) -> HostIssuerTransportError {
++    HostIssuerTransportError::Unavailable
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_root_lane.rs
+@@ -0,0 +1,107 @@
++//! Consuming erasure of the original factory's Cell resources. The ordinary
++//! local loop and the Root pump take the same one-shot slot; neither can clone
++//! a writer or install a second Cell. No external callback constructs this lane.
++
++use std::sync::Arc;
++use std::sync::Mutex;
++
++use codex_hepta_automation::CircuitDispatchV2;
++use codex_hepta_neuron::CellInferenceReadbackPortV1;
++use codex_hepta_neuron::CellInputEncoderV1;
++use codex_hepta_neuron::CellStateOwnerV1;
++use codex_hepta_neuron::CellStepInputV1;
++use codex_hepta_neuron::NeuronInferenceControlPort;
++use codex_hepta_neuron::canonical_cell_step_request_digest_v1;
++
++use super::CircuitTaskErrorV1 as Error;
++use super::CircuitTaskInputProviderV1;
++use super::remote::OriginalRemoteAdmission;
++use crate::AgentdCircuitCellOwnerV1;
++use crate::CircuitCellErrorV1;
++use crate::CircuitCellExecutionV1;
++use crate::CircuitCellTimeV1;
++
++pub(super) struct OriginalOwners<O, P, E, I, C> {
++    pub(super) cells: AgentdCircuitCellOwnerV1<O, P, E>,
++    pub(super) inputs: I,
++    pub(super) clock: C,
++}
++
++mod sealed {
++    pub trait OriginalPump {}
++    pub trait OriginalFactory {}
++}
++
++/// Erasure only of the concrete original Q24 factory owners. This trait is
++/// crate-internal and implemented only below; the Root service has no callback
++/// or public constructor for injecting a substituted Cell pump.
++pub(crate) trait OriginalRootCellPump: sealed::OriginalPump + Send {
++    fn clock(&mut self) -> CircuitCellTimeV1;
++    fn execute(&mut self, admission: OriginalRemoteAdmission, input: CellStepInputV1)
++        -> Result<CircuitCellExecutionV1, Error>;
++    fn read(&mut self, dispatch: &CircuitDispatchV2, input: &CellStepInputV1)
++        -> Result<CircuitCellExecutionV1, Error>;
++}
++
++/// Consuming erasure of the same private factory slot. Only OriginalFactory
++/// below implements it; callers cannot provide a replacement writer factory.
++pub(super) trait OriginalRootLaneFactory: sealed::OriginalFactory + Send {
++    fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error>;
++}
++
++struct OriginalFactory<O, P, E, I, C>(Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>);
++struct OriginalPump<O, P, E, C> { cells: AgentdCircuitCellOwnerV1<O, P, E>, clock: C }
++
++impl<O, P, E, I, C> sealed::OriginalFactory for OriginalFactory<O, P, E, I, C> {}
++impl<O, P, E, C> sealed::OriginalPump for OriginalPump<O, P, E, C> {}
++
++pub(super) fn retain<O, P, E, I, C>(
++    owners: Arc<Mutex<Option<OriginalOwners<O, P, E, I, C>>>>,
++) -> Box<dyn OriginalRootLaneFactory>
++where
++    O: CellStateOwnerV1 + Send + 'static,
++    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1 + Send + 'static,
++    E: CellInputEncoderV1 + Send + 'static,
++    I: CircuitTaskInputProviderV1 + 'static,
++    C: FnMut() -> CircuitCellTimeV1 + Send + 'static,
++{ Box::new(OriginalFactory(owners)) }
++
++impl<O, P, E, I, C> OriginalRootLaneFactory for OriginalFactory<O, P, E, I, C>
++where
++    O: CellStateOwnerV1 + Send + 'static,
++    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1 + Send + 'static,
++    E: CellInputEncoderV1 + Send + 'static,
++    I: CircuitTaskInputProviderV1 + 'static,
++    C: FnMut() -> CircuitCellTimeV1 + Send + 'static,
++{
++    fn take(self: Box<Self>) -> Result<Box<dyn OriginalRootCellPump>, Error> {
++        let owners = self.0.try_lock().map_err(|_| Error::Unavailable)?
++            .take().ok_or(Error::Unavailable)?;
++        Ok(Box::new(OriginalPump { cells: owners.cells, clock: owners.clock }))
++    }
++}
++
++impl<O, P, E, C> OriginalRootCellPump for OriginalPump<O, P, E, C>
++where
++    O: CellStateOwnerV1 + Send,
++    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1 + Send,
++    E: CellInputEncoderV1 + Send,
++    C: FnMut() -> CircuitCellTimeV1 + Send,
++{
++    fn clock(&mut self) -> CircuitCellTimeV1 { (self.clock)() }
++
++    fn execute(&mut self, admission: OriginalRemoteAdmission, input: CellStepInputV1)
++        -> Result<CircuitCellExecutionV1, Error>
++    { self.cells.execute_original_remote(admission, input, &mut self.clock).map_err(Error::from) }
++
++    fn read(&mut self, dispatch: &CircuitDispatchV2, input: &CellStepInputV1)
++        -> Result<CircuitCellExecutionV1, Error>
++    {
++        let binding = self.cells.registry().bind_input(dispatch, input)?;
++        let digest = canonical_cell_step_request_digest_v1(&binding.cell, input)
++            .map_err(CircuitCellErrorV1::from)?;
++        let decision = self.cells.state_owner().lookup(&input.scope, &input.operation_id, digest)
++            .map_err(CircuitCellErrorV1::from)?.ok_or(Error::ReconciliationRequired)?;
++        crate::circuit_cell::finish(binding, dispatch, input, decision).map_err(Error::from)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/circuit_task_runtime.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_runtime.rs
+@@ -30,6 +30,12 @@
+ use crate::AgentdState;
+ use crate::CircuitCellTimeV1;
+ 
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_remote_runtime.rs"]
++mod original_remote;
++#[cfg(target_os = "linux")]
++pub(crate) use original_remote::channel as original_remote_channel;
++
+ struct PendingWork(Arc<AtomicUsize>);
+ 
+ impl Drop for PendingWork {
+@@ -53,9 +59,19 @@
+     sender: mpsc::Sender<Command>,
+     generation: u64,
+     pending: Arc<AtomicUsize>,
++    #[cfg(target_os = "linux")]
++    original_remote: Option<Arc<super::remote::DaemonClient>>,
+ }
+ 
+ impl CircuitTaskHandleV1 {
++    #[cfg(target_os = "linux")]
++    pub(crate) fn retain_original_remote_record(&self, record: &RunStartRecordV1)
++        -> Result<Option<super::remote::OriginalRecordLoan>, AgentdError>
++    {
++        self.original_remote.as_ref().map(|client| client.begin_original_record(record))
++            .transpose().map_err(|error| AgentdError::Protocol(format!("original Root RunStart loan: {error}")))
++    }
++
+     /// Queue and active lane work, including work whose caller lost its ACK.
+     /// Durable unresolved Circuit runs are additional AutomationStore blockers.
+     pub fn pending_count(&self) -> usize {
+@@ -114,6 +130,8 @@
+     identity: AgentdIdentity,
+     handle: CircuitTaskHandleV1,
+     owner: OwnerLoop,
++    #[cfg(target_os = "linux")]
++    original_root: Option<Box<dyn super::root_lane::OriginalRootLaneFactory>>,
+ }
+ 
+ /// Uses Agentd's original AutomationStore at startup. The injected clock keeps
+@@ -124,7 +142,7 @@
+     fence: TaskFlowFence,
+     cells: AgentdCircuitCellOwnerV1<O, P, E>,
+     inputs: I,
+-    mut clock: C,
++    clock: C,
+     capacity: usize,
+ ) -> Result<(CircuitTaskHandleV1, CircuitTaskRuntimeBootstrapV1), AgentdError>
+ where
+@@ -154,17 +172,32 @@
+             "Circuit task owner requires exact process scope and a 1..64 queue".into(),
+         ));
+     }
++    #[cfg(target_os = "linux")]
++    let original_owners = Arc::new(std::sync::Mutex::new(Some(super::root_lane::OriginalOwners {
++        cells, inputs, clock,
++    })));
++    #[cfg(not(target_os = "linux"))]
++    let mut clock = clock;
+     let (sender, mut receiver) = mpsc::channel::<Command>(capacity);
+     let handle = CircuitTaskHandleV1 {
+         sender,
+         generation: fence.generation,
+         pending: Arc::new(AtomicUsize::new(0)),
++        #[cfg(target_os = "linux")]
++        original_remote: None,
+     };
+     let bootstrap = CircuitTaskRuntimeBootstrapV1 {
+         identity: identity.clone(),
+         handle: handle.clone(),
++        #[cfg(target_os = "linux")]
++        original_root: Some(super::root_lane::retain(Arc::clone(&original_owners))),
+         owner: Box::new(move |store, state, cancellation| {
+             Box::pin(async move {
++                #[cfg(target_os = "linux")]
++                let super::root_lane::OriginalOwners { cells, inputs, mut clock } =
++                    original_owners.try_lock()
++                        .map_err(|_| AgentdError::Protocol("original Cell factory is unavailable".into()))?
++                        .take().ok_or_else(|| AgentdError::Protocol("original Cell factory was consumed".into()))?;
+                 let mut driver = CircuitTaskDriverV1 {
+                     store,
+                     fence,
+@@ -222,6 +255,13 @@
+ }
+ 
+ impl CircuitTaskRuntimeBootstrapV1 {
++    #[cfg(target_os = "linux")]
++    pub(crate) fn take_original_root_lane(&mut self)
++        -> Result<Box<dyn super::root_lane::OriginalRootCellPump>, Error>
++    {
++        self.original_root.take().ok_or(Error::Unavailable)?.take()
++    }
++
+     pub(crate) fn handle(&self) -> CircuitTaskHandleV1 {
+         self.handle.clone()
+     }
+--- a/codex-rs/hepta-agentd/src/circuit_task_source.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_source.rs
+@@ -43,6 +43,9 @@
+ use crate::circuit_cell_operation_id_v1;
+ use crate::circuit_cell_scope_digest_v1;
+ 
++#[cfg(target_os = "linux")]
++#[path = "circuit_task_source_remote.rs"]
++pub(crate) mod remote_source;
+ #[path = "circuit_task_source_codec.rs"]
+ mod codec;
+ #[path = "circuit_task_source_journal.rs"]
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/circuit_task_source_remote.rs
+@@ -0,0 +1,169 @@
++//! Private Source operations for the two fixed task lanes. The daemon encodes
++//! completion only while holding its original receipt. The Root accepts it
++//! only through that live loan and its same actual Source and Cell readback.
++
++use super::*;
++use crate::circuit_task::remote::OriginalRemoteCompletion;
++
++pub(crate) fn original_binding(
++    identity: &AgentdIdentity,
++    fence: &TaskFlowFence,
++    registry: &CircuitCellRegistryV1,
++    source: &CircuitTaskSourceInputV1,
++) -> Result<Digest32, Error> {
++    let (_, binding) = codec::configuration(identity, fence, registry, vec![source.clone()])?;
++    Ok(binding)
++}
++
++/// This is a data projection, not a Source or RunStart owner. Only the daemon's
++/// existing signed-ingress loan may use it to contact the original Root Source.
++pub(crate) fn expected_request(
++    source: &CircuitTaskSourceInputV1,
++    generation: u64,
++    record: &RunStartRecordV1,
++) -> Result<CircuitTaskRequestV1, Error> {
++    if source.scope.run_id != record.snapshot.run_id { return Err(Error::InvalidBinding); }
++    let created_at_ms = record.admission.observed_at_unix_micros / 1_000;
++    let deadline_ms = (record.admission.deadline_unix_micros / 1_000)
++        .min(record.authentication.expires_at_ms);
++    let request = CircuitTaskRequestV1 {
++        start: CircuitStartV2 {
++            run_id: record.snapshot.run_id.to_string(),
++            scope_digest: circuit_cell_scope_digest_v1(&source.scope)?,
++            input_digest: Sha256Digest::for_bytes(&source.observation),
++            created_at_ms, lease_duration_ms: source.lease_duration_ms,
++        }, objective_digest: source.objective_digest, deadline_ms,
++    };
++    request.validate_record(record, generation)?;
++    if source.deadline_micros.checked_sub(source.monotonic_micros)
++        .is_none_or(|duration| duration > deadline_ms.saturating_sub(created_at_ms).saturating_mul(1_000))
++    { return Err(Error::InvalidBinding); }
++    Ok(request)
++}
++
++pub(crate) fn encode_record(
++    request: &CircuitTaskRequestV1, record: &RunStartRecordV1,
++) -> Result<Vec<u8>, Error> { codec::request(request, record) }
++
++pub(crate) fn decode_record(bytes: &[u8]) -> Result<RunStartRecordV1, Error> {
++    codec::original_record(bytes)
++}
++
++pub(crate) fn decode_original_input(bytes: &[u8]) -> Result<CellStepInputV1, Error> {
++    codec::decode_input(bytes)
++}
++
++pub(crate) fn encode_original_input(
++    dispatch: &CircuitDispatchV2, input: &CellStepInputV1,
++) -> Result<Vec<u8>, Error> { codec::dispatch_input(dispatch, input) }
++
++/// The argument is the actual daemon receipt returned by the unchanged driver.
++/// No wire decoder calls this function or constructs its receipt argument.
++pub(crate) fn original_completion_bytes(
++    definition: &BoundedCircuitDefinitionV2,
++    request: &CircuitTaskRequestV1,
++    saved_input: &[u8],
++    receipt: &CircuitTaskReceiptV1,
++) -> Result<Vec<u8>, Error> {
++    let input = codec::decode_input(saved_input)?;
++    codec::result(definition, request, saved_input, &input, receipt)
++}
++
++impl<W: AnchorWitnessStore + Send> DurableCircuitTaskSourceV1<W> {
++    pub(crate) fn original_remote_binding(&self) -> Result<Digest32, Error> {
++        let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
++        owner.require_current()?;
++        Ok(owner.binding)
++    }
++
++    pub(crate) fn require_original_remote_binding(&self, binding: Digest32) -> Result<(), Error> {
++        let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
++        owner.require_current()?;
++        if owner.binding != binding { return Err(Error::InvalidBinding); }
++        owner.require_current()
++    }
++
++    pub(crate) fn original_remote_request(
++        &self, identity: &AgentdIdentity, encoded_record: &[u8],
++    ) -> Result<CircuitTaskRequestV1, Error> {
++        let record = codec::original_record(encoded_record)?;
++        let request = {
++            let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
++            let request = owner.request(identity, &record)?;
++            if codec::request(&request, &record)? != encoded_record {
++                return Err(Error::InvalidBinding);
++            }
++            request
++        };
++        let actual = AgentdCircuitTaskInvocationProviderV1::build(self, identity, &record)
++            .map_err(|_| Error::CommitUncertain)?;
++        if actual != request { return Err(Error::InvalidBinding); }
++        Ok(actual)
++    }
++
++    pub(crate) fn original_remote_saved_input(
++        &self, identity: &AgentdIdentity, encoded_record: &[u8],
++    ) -> Result<Vec<u8>, Error> {
++        let record = codec::original_record(encoded_record)?;
++        let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
++        let request = owner.request(identity, &record)?;
++        if codec::request(&request, &record)? != encoded_record {
++            return Err(Error::InvalidBinding);
++        }
++        owner.require_bytes("request", &request.start.run_id, encoded_record)?;
++        let bytes = owner.read("input", &request.start.run_id)?;
++        let input = codec::decode_input(&bytes)?;
++        let source = owner.sources.get(&request.start.run_id).ok_or(Error::InvalidBinding)?;
++        if input != source.input(input.operation_id.clone()) { return Err(Error::InvalidBinding); }
++        owner.require_active(&request.start.run_id)?;
++        Ok(bytes)
++    }
++
++    pub(crate) fn original_remote_resolve(
++        &self, identity: &AgentdIdentity, encoded_record: &[u8],
++        dispatch: &CircuitDispatchV2, mode: CircuitTaskInputModeV1,
++    ) -> Result<Vec<u8>, Error> {
++        let record = codec::original_record(encoded_record)?;
++        let request = {
++            let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
++            let request = owner.request(identity, &record)?;
++            if codec::request(&request, &record)? != encoded_record { return Err(Error::InvalidBinding); }
++            owner.require_bytes("request", &request.start.run_id, encoded_record)?;
++            request
++        };
++        let mut original = self.clone();
++        let input = CircuitTaskInputProviderV1::resolve(&mut original, &request, dispatch,
++            &BTreeMap::new(), mode)?;
++        codec::dispatch_input(dispatch, &input)
++    }
++
++    /// No raw-result overload exists. This token can only be returned by the
++    /// reverse lane reading the daemon's retained, actual private receipt. A
++    /// local Cell decision alone and a completion ACK alone are insufficient.
++    pub(crate) fn publish_original_remote_completion(
++        &self,
++        identity: &AgentdIdentity,
++        encoded_record: &[u8],
++        completion: OriginalRemoteCompletion,
++        execution: &CircuitCellExecutionV1,
++    ) -> Result<(), Error> {
++        let record = codec::original_record(encoded_record)?;
++        let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
++        let request = owner.request(identity, &record)?;
++        if codec::request(&request, &record)? != encoded_record {
++            return Err(Error::InvalidBinding);
++        }
++        owner.require_bytes("request", &request.start.run_id, encoded_record)?;
++        let saved = owner.read("input", &request.start.run_id)?;
++        let payload = completion.into_original_payload(owner.binding, encoded_record, &saved)?;
++        let input = codec::decode_input(&saved)?;
++        let source = owner.sources.get(&request.start.run_id).ok_or(Error::InvalidBinding)?;
++        if input != source.input(input.operation_id.clone()) { return Err(Error::InvalidBinding); }
++        codec::require_decision(&payload, &execution.decision)?;
++        let (_, output) = codec::publication(&payload, &saved)?;
++        if output != execution.output { return Err(Error::InvalidBinding); }
++        owner.require_active(&request.start.run_id)?;
++        owner.retain("result", &request.start.run_id, &payload, CircuitTaskInputModeV1::Prepare)?;
++        owner.require_active(&request.start.run_id)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/config_circuit_task.rs
++++ b/codex-rs/hepta-agentd/src/config_circuit_task.rs
+@@ -1,4 +1,8 @@
+ //! Explicit ordinary-task Circuit profile, paired with its sole Cell owner.
++
++#[cfg(target_os = "linux")]
++#[path = "config_original_root_task.rs"]
++mod original_root;
+ 
+ use std::sync::Arc;
+ 
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/config_original_root_task.rs
+@@ -0,0 +1,18 @@
++//! The ordinary Config remains in the non-Root daemon. Install the fixed
++//! remote Cell bootstrap and invocation through all original profile guards.
++
++use super::AgentdConfig;
++use crate::{AgentdError, OriginalRootCircuitTaskDaemonInputsV1};
++
++impl AgentdConfig {
++    pub fn with_original_root_circuit_task(self, inputs: OriginalRootCircuitTaskDaemonInputsV1)
++        -> Result<Self, AgentdError>
++    {
++        self.require_no_circuit_task_profile()?;
++        self.require_circuit_task_execution_profile()?;
++        let (bootstrap, invocation) = crate::circuit_task::original_remote_channel(
++            self.identity(), inputs,
++        )?;
++        self.with_circuit_task_bootstrap(bootstrap, invocation)
++    }
++}
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -958,6 +958,8 @@
+ pub use circuit_learning_delivery::deliver_circuit_learning_v1;
+ pub use circuit_learning_delivery::reconcile_circuit_learning_v1;
+ pub use circuit_task::CircuitTaskErrorV1;
++#[cfg(target_os = "linux")]
++pub use circuit_task::OriginalRootCircuitTaskDaemonInputsV1;
+ pub use circuit_task::CircuitTaskHandleV1;
+ pub use circuit_task::CircuitTaskInputModeV1;
+ pub use circuit_task::CircuitTaskInputProviderV1;
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task_channel.rs
+@@ -1,7 +1,23 @@
+ //! Root keeps the original factory's one task/Cell/Source without consuming
+ //! the daemon Config. This internal constructor is not a cross-process lane.
+ 
++use std::sync::Arc;
++use crate::AgentdError;
++use crate::CircuitTaskSourceReadbackV1;
+ use codex_hepta_neuron::AnchorWitnessStore;
++
++impl<SW: AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW> {
++    pub(crate) fn require_original_source(&self, source: &Arc<CircuitTaskSourceReadbackV1<SW>>)
++        -> Result<(), AgentdError>
++    {
++        require_root()?;
++        if !Arc::ptr_eq(&self.source, source) {
++            return Err(invalid("Root task service differs from the original Source Arc"));
++        }
++        Ok(())
++    }
++}
++
+ 
+ use super::InitialPhase;
+ use super::OriginalRootCircuitTaskCustodyV1;
+--- a/codex-rs/hepta-agentd/src/state_circuit_task.rs
++++ b/codex-rs/hepta-agentd/src/state_circuit_task.rs
+@@ -175,6 +175,8 @@
+             self.circuit_task_admissions.fetch_add(1, Ordering::AcqRel);
+             AdmittedTask(Arc::clone(&self.circuit_task_admissions))
+         };
++        #[cfg(target_os = "linux")]
++        let _original_remote_record = handle.retain_original_remote_record(record)?;
+         let request = provider.build(self.identity(), record)?;
+         request
+             .validate_record(record, record.snapshot.generation)

@@ -1,0 +1,129 @@
+{
+  "actual_bound_changes": [
+    {
+      "after": 111588,
+      "before": 111119,
+      "path": [
+        "admission_pin",
+        "bytes"
+      ]
+    },
+    {
+      "after": "fd67cb043f7b6cb8cf042104ac202cb5f0842196",
+      "before": "299c3d79987abcde03e83c271bee91c568e0a5ab",
+      "path": [
+        "admission_pin",
+        "git_blob"
+      ]
+    },
+    {
+      "after": "15d28bcd74c93ea3e2e6f9ea58bf95baca81c65ab75e4b3539c5a6e9e788ba5d",
+      "before": "122029fdd68782f6feac73265d95f56319285a61c3b885636b26ee8ef9ba3767",
+      "path": [
+        "admission_pin",
+        "sha256"
+      ]
+    },
+    {
+      "after": "1a1d52e0d88-392-784",
+      "before": null,
+      "path": [
+        "history_transport",
+        "staging_job_id"
+      ]
+    },
+    {
+      "after": {
+        "bytes": 150166,
+        "git_blob": "f8efb445171e1eb74dc289cd5c15ab89f8940e4f",
+        "sha256": "d8c222937adb01eb371695641e3a4219e0b8eebd7a9300f0afe618d4c620f657"
+      },
+      "before": null,
+      "path": [
+        "history_transport",
+        "staging_payload"
+      ]
+    },
+    {
+      "after": {
+        "bytes": 26573,
+        "git_blob": "17d4ea78bc34facc9129c6a634fe750105d75bc4",
+        "sha256": "0a6d1f4cfacbba484ab99eb1f70632d146a96d652030cf2f89d923b8d0286b54"
+      },
+      "before": null,
+      "path": [
+        "history_transport",
+        "staging_result"
+      ]
+    },
+    {
+      "after": {
+        "bytes": 950,
+        "git_blob": "af805a3230601013eb94afd5e40e9ea3e83c61d4",
+        "sha256": "4cb0bd6d2286ff49130f1504d3f4e2868abeab961a84038d095dddc3e6e87190"
+      },
+      "before": null,
+      "path": [
+        "history_transport",
+        "staging_supervisor"
+      ]
+    }
+  ],
+  "admission_selected_by_root": "fd67 InitialBaselineUnavailable successor; original299c and65a unchanged",
+  "historical_json_modified": false,
+  "new_stage_bindings_only_after_complete_actual_61_readback": true,
+  "not_an_execution_approval": true,
+  "old_hold_restored_byte_exact": true,
+  "ready_qualification_changes": [
+    {
+      "after": true,
+      "before": false,
+      "path": [
+        "root_execution_approved"
+      ]
+    },
+    {
+      "after": 831,
+      "before": 843,
+      "path": [
+        "source_gates_config_pin",
+        "bytes"
+      ]
+    },
+    {
+      "after": "01aa39eaf0334341b2d7944d3457ac09d1577f00",
+      "before": "acfa7c86f4202d6e7f15399514dc739f4bc33f82",
+      "path": [
+        "source_gates_config_pin",
+        "git_blob"
+      ]
+    },
+    {
+      "after": "679eedbc1835bdaf55c5dca76dcb48ee320f3c88340d07fef657ebd70d43f1cb",
+      "before": "fddbf0087814c873cf0d23c9e1419a8856c50cd4578d5f6d52c7a80edbad4acc",
+      "path": [
+        "source_gates_config_pin",
+        "sha256"
+      ]
+    },
+    {
+      "after": "READY_FOR_FINAL_SOURCE_QUALIFICATION",
+      "before": "HOLD_ROOT_EXACT_SOURCE_REVIEW_REQUIRED",
+      "path": [
+        "state"
+      ]
+    }
+  ],
+  "ready_source_changes": [
+    {
+      "after": "READY_FOR_EXACT_SOURCE_RUN",
+      "before": "HOLD_ROOT_EXACT_SOURCE_REVIEW_REQUIRED",
+      "path": [
+        "state"
+      ]
+    }
+  ],
+  "ready_to_bound_hold_byte_exact": true,
+  "schema": "hepta-transport-actual-binding-and-permission-delta-v1",
+  "source_ready_to_hold_byte_exact": true
+}

@@ -1,0 +1,33 @@
+{
+  "actual_job_id": null,
+  "approval": {
+    "bytes": 10788,
+    "git_blob": "9a48727adf7f73ee6adf8d45b567db3000a83c5f",
+    "sha256": "4ba2d95d6e859298b3d611f3aa21cf511884d012f1dfaea12f5488373abcb87e"
+  },
+  "env_absent": true,
+  "field_names": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "format": "hepta-exact-source-dispatch-intent-v1",
+  "host": "desktop",
+  "key": "hepta-utility-36fa-final-source-gates-b608-v2",
+  "native_main_authorized": false,
+  "observed_cloud_time": "2026-11-13T14:34:22.915237+00:00",
+  "outer_budget_seconds": 7200,
+  "phase": "intent_recorded_before_unique_tool_call",
+  "prior_65a_failure_preserved": true,
+  "request": {
+    "bytes": 280984,
+    "git_blob": "eb4658e231aac54f226a78585d647e2bab8aa6e1",
+    "sha256": "3245e534618d004ba767b5b2ec5483194bcc5453fe6531ef8aff7ee393fb8214"
+  },
+  "request_variant_or_repeated_main": false,
+  "source_only": true
+}

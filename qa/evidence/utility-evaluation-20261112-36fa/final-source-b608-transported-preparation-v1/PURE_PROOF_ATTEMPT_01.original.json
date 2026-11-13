@@ -1,0 +1,7 @@
+{
+  "chunk_id": "1e50a4",
+  "wall_time_seconds": 0.210720687,
+  "exit_code": 1,
+  "original_token_count": 136,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-final-source-b608-transported-preparation-v1/verify_actual_stage_binding.py\", line 109, in <module>\n    positive=run_case(hold,memory)\n             ^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-final-source-b608-transported-preparation-v1/verify_actual_stage_binding.py\", line 94, in run_case\n    namespace['_require_complete_bindings'](stub.cfg)\n  File \"<selected-original-pure-predicates>\", line 953, in _require_complete_bindings\nNameError: name 'CANONICAL_CONTROL' is not defined\n"
+}

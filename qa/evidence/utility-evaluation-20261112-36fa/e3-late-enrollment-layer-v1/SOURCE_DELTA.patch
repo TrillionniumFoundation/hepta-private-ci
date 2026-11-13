@@ -1,0 +1,1249 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_listeners.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_listeners.rs
+@@ -191,3 +191,6 @@
+ #[cfg(test)]
+ #[path = "authority_host_listeners_tests.rs"]
+ mod tests;
++
++#[path = "authority_host_resident_listener.rs"]
++pub(super) mod resident;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment.rs
+@@ -0,0 +1,169 @@
++//! Root's once-only late enrollment and original candidate service composition.
++
++use super::*;
++use std::time::Duration;
++use crate::HostAuthorityServiceConfig;
++use crate::authority_host_runtime::listeners::resident::ResidentListener;
++use crate::authority_host_runtime::listeners::resident::ResidentSocketGuard;
++
++#[path = "authority_host_resident_enrollment_wire.rs"]
++mod wire;
++#[path = "authority_host_resident_enrollment_connect.rs"]
++mod connect;
++pub(crate) use connect::connect_original_resident_enrollment;
++
++/// No stream created before the daemon's credential drop is accepted here.
++/// Root creates one protected listener; the actual daemon connects after A.
++pub struct RootResidentCandidateEnrollmentInputsV3 {
++    pub stage_handoff: UnixDatagram,
++    pub enrollment_handoff: UnixDatagram,
++    pub original_root_pidfd: OwnedFd,
++    pub original_consumer_pidfd: OwnedFd,
++    pub baseline_files: CellQ24ModelFilesV1,
++}
++
++pub async fn prepare_host_resident_candidate_enrollment_v3(
++    config_file: &Path,
++    deployment_file: &Path,
++    trusted_evidence_file: &Path,
++    original: RootResidentCandidateEnrollmentInputsV3,
++) -> io::Result<RootResidentCandidateEnrollmentServiceV3> {
++    prepare_enrollment(config_file, deployment_file, trusted_evidence_file, original, Purpose::Fresh).await
++}
++
++pub async fn recover_host_resident_candidate_enrollment_v3(
++    config_file: &Path,
++    deployment_file: &Path,
++    trusted_evidence_file: &Path,
++    original: RootResidentCandidateEnrollmentInputsV3,
++    readback_file: &Path,
++) -> io::Result<RootResidentCandidateEnrollmentServiceV3> {
++    prepare_enrollment(config_file, deployment_file, trusted_evidence_file, original, Purpose::Readback(readback_file)).await
++}
++
++async fn prepare_enrollment(
++    config_file: &Path,
++    deployment_file: &Path,
++    trusted_evidence_file: &Path,
++    original: RootResidentCandidateEnrollmentInputsV3,
++    purpose: Purpose<'_>,
++) -> io::Result<RootResidentCandidateEnrollmentServiceV3> {
++    // SAFETY: both calls inspect only actual current credentials.
++    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
++        return Err(io::Error::other("original Root resident process required"));
++    }
++    let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
++    config.required_bind.verify()?;
++    let trust = trust::OriginalHostTrust::read(trusted_evidence_file)?;
++    let RootResidentCandidateEnrollmentInputsV3 {
++        stage_handoff, enrollment_handoff, original_root_pidfd,
++        original_consumer_pidfd, baseline_files,
++    } = original;
++    let baseline = Arc::new(LoadedCellQ24ModelV1::open_files(baseline_files).map_err(io::Error::other)?);
++    let inputs::OriginalDeployment { profile, inputs, consumer, handoff_timeout, enrollment_profile } =
++        inputs::OriginalDeployment::read(deployment_file, &trust, baseline)?;
++    let (peer, uid, timeout, lifetime) = consumer.into_peer();
++    if uid != config.peer_uid || matches!(config.peer_gid, 0 | u32::MAX) {
++        return Err(io::Error::other("resident recipient differs from original host config"));
++    }
++    let recipient = wire::Process::from_peer(&peer);
++    recipient.require_original()?;
++    crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, config.peer_gid)?;
++    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)
++        .map_err(io::Error::other)?;
++    let now = wire::now_ns()?;
++    let connect_before_ns = now.checked_add(u64::try_from(handoff_timeout.as_nanos()).map_err(io::Error::other)?)
++        .ok_or_else(|| io::Error::other("resident handoff deadline overflow"))?;
++    let session_end_ns = now.checked_add(u64::try_from(lifetime.as_nanos()).map_err(io::Error::other)?)
++        .ok_or_else(|| io::Error::other("resident session deadline overflow"))?;
++    let connect_end = wire::absolute(connect_before_ns, Duration::from_secs(30))?;
++    let session_end = wire::absolute(session_end_ns, Duration::from_secs(300))?;
++    let (authorization, readback) = match purpose {
++        Purpose::Fresh => (wire::Authorization::Fresh, None),
++        Purpose::Readback(path) => {
++            let value: ReadbackFile = read_root_json(path)?;
++            if value.schema_version != 3
++                || value.purpose != "hepta.host-resident-learning.readback-deployment.v3"
++            { return Err(io::Error::other("resident readback purpose differs")); }
++            let authorization = wire::Authorization::Readback { intent: value.intent.clone(), lease: value.lease.clone() };
++            let original = RootResidentLearningReadbackAuthorizationV3::from_original_root(&profile, value.intent, value.lease)?;
++            (authorization, Some(original))
++        }
++    };
++    let handoff = crate::receive_root_candidate_stage_handoff(stage_handoff, &profile, wire::remaining(connect_end)?)
++        .map_err(io::Error::other)?;
++    // After this call fails or its ACK is uncertain, only explicit readback of
++    // the same operation is legal. No listener/send failure restores freshness.
++    let binding = profile.binding();
++    // Use the same concrete config already checked for recipient and listener
++    // custody. Reuse the original open-only issuer factory without a second
++    // path read that could select a different Root configuration.
++    let super::super::OriginalHostIssuerCustodyV3 { issuer, leases, root, .. } =
++        super::super::open_original_issuer_custody(&config)?;
++    let registration = match readback {
++        Some(readback) => RootResidentLearningRegistrationV3::recover_original_root(
++            root, issuer, Arc::new(leases), profile, readback,
++        )?,
++        None => RootResidentLearningRegistrationV3::register_original_root(
++            root, issuer, Arc::new(leases), profile,
++        )?,
++    };
++    wire::remaining(connect_end)?;
++    let listener = ResidentListener::bind_original(&config, binding)?;
++    let (path, device, inode) = listener.original_node();
++    let packet = wire::Packet {
++        schema_version: 3, purpose: wire::PURPOSE.into(), root: wire::Process::current()?,
++        consumer: recipient, consumer_uid: uid, consumer_gid: config.peer_gid,
++        profile: enrollment_profile,
++        trusted_evidence: String::from_utf8(trust.encoded).map_err(io::Error::other)?,
++        socket: path.clone(), socket_device: device, socket_inode: inode,
++        connect_before_ns, session_end_ns,
++        command_timeout_ms: u64::try_from(timeout.as_millis()).map_err(io::Error::other)?,
++        authorization,
++    };
++    let sealed = wire::seal(&packet)?;
++    crate::root_production_handoff::send_original_resident_enrollment(
++        enrollment_handoff, &sealed, &original_root_pidfd, wire::remaining(connect_end)?,
++    ).map_err(io::Error::other)?;
++    let (stream, socket_guard) = listener.accept_original(connect_end).await?;
++    packet.consumer.require_original()?;
++    crate::authority_host_runtime::verify_process_credentials(peer.pid, uid, config.peer_gid)?;
++    crate::root_production_handoff::require_original_resident_process_pin(&original_consumer_pidfd, peer.pid)
++        .map_err(io::Error::other)?;
++    wire::remaining(connect_end)?;
++    let service = RootResidentLearningRegistrationV3::into_candidate_service(
++        registration, inputs, handoff,
++        RootResidentLearningConsumerV3 {
++            stream, peer, uid, original_consumer_pidfd,
++            timeout, lifetime: wire::remaining(session_end)?,
++        },
++    ).map_err(io::Error::other)?;
++    wire::remaining(connect_end)?;
++    Ok(RootResidentCandidateEnrollmentServiceV3 { service, socket_guard, session_end })
++}
++
++/// Retains the exact Root socket node through the original service lifetime.
++/// The underlying continuation, cancellation and terminal join remain original.
++pub struct RootResidentCandidateEnrollmentServiceV3 {
++    service: RootResidentCandidateServiceV1,
++    socket_guard: ResidentSocketGuard,
++    session_end: std::time::Instant,
++}
++
++impl RootResidentCandidateEnrollmentServiceV3 {
++    pub async fn run(self, cancellation: tokio_util::sync::CancellationToken) -> Result<(), crate::AgentdError> {
++        let Self { service, socket_guard, session_end } = self;
++        let bounded = cancellation.child_token();
++        let work = service.run(bounded.clone());
++        tokio::pin!(work);
++        let result = tokio::select! {
++            result = &mut work => result,
++            _ = tokio::time::sleep_until(tokio::time::Instant::from_std(session_end)) => {
++                bounded.cancel();
++                work.await
++            }
++        };
++        drop(socket_guard);
++        result
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_cli.rs
+@@ -0,0 +1,87 @@
++//! Normal late candidate entry, using a Root listener after daemon UID drop.
++
++use std::collections::{BTreeMap, BTreeSet};
++use std::ffi::{OsStr, OsString};
++use std::fs::File;
++use std::os::unix::net::UnixDatagram;
++use std::path::PathBuf;
++use codex_hepta_agentd::{CellQ24ModelFilesV1, RootResidentCandidateEnrollmentInputsV3};
++use tokio_util::sync::CancellationToken;
++
++pub(super) enum Command { Fresh, Recover }
++
++pub(super) fn run(mut options: BTreeMap<OsString, OsString>, command: Command) -> Result<(), Box<dyn std::error::Error>> {
++    let mut take = |key: &str| options.remove(OsStr::new(key)).ok_or("missing required resident enrollment option");
++    let config = PathBuf::from(take("--config")?);
++    let deployment = PathBuf::from(take("--resident-deployment")?);
++    let trust = PathBuf::from(take("--learning-trust")?);
++    let stages = take("--candidate-stage-handoff-fd")?;
++    let enrollment = take("--resident-enrollment-handoff-fd")?;
++    let root_pidfd = take("--resident-root-pidfd")?;
++    let consumer_pidfd = take("--resident-consumer-pidfd")?;
++    let base = take("--baseline-base-fd")?;
++    let encoder = take("--baseline-encoder-fd")?;
++    let heads = take("--baseline-heads-fd")?;
++    let readback = match command {
++        Command::Fresh => None,
++        Command::Recover => Some(PathBuf::from(take("--resident-readback")?)),
++    };
++    let organ = options.remove(OsStr::new("--baseline-organ-fd"));
++    let cell = options.remove(OsStr::new("--baseline-cell-fd"));
++    if !options.is_empty() { return Err("unknown resident enrollment option".into()); }
++    let mut claimed = BTreeSet::new();
++    let stages = super::inherited_descriptor(&stages, &mut claimed)?;
++    let enrollment = super::inherited_descriptor(&enrollment, &mut claimed)?;
++    let root_pidfd = super::inherited_descriptor(&root_pidfd, &mut claimed)?;
++    let consumer_pidfd = super::inherited_descriptor(&consumer_pidfd, &mut claimed)?;
++    let base = super::inherited_descriptor(&base, &mut claimed)?;
++    let encoder = super::inherited_descriptor(&encoder, &mut claimed)?;
++    let heads = super::inherited_descriptor(&heads, &mut claimed)?;
++    let organ = organ.as_deref().map(|fd| super::inherited_descriptor(fd, &mut claimed)).transpose()?;
++    let cell = cell.as_deref().map(|fd| super::inherited_descriptor(fd, &mut claimed)).transpose()?;
++    let original = RootResidentCandidateEnrollmentInputsV3 {
++        stage_handoff: UnixDatagram::from(stages),
++        enrollment_handoff: UnixDatagram::from(enrollment),
++        original_root_pidfd: root_pidfd,
++        original_consumer_pidfd: consumer_pidfd,
++        baseline_files: CellQ24ModelFilesV1 {
++            base: File::from(base), organ_adapter: organ.map(File::from), cell_adapter: cell.map(File::from),
++            encoder: File::from(encoder), heads: File::from(heads),
++        },
++    };
++    tokio::runtime::Builder::new_current_thread().enable_all().build()?.block_on(async move {
++        let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
++        let prepare = async move {
++            match readback {
++                Some(readback) => codex_hepta_agentd::recover_host_resident_candidate_enrollment_v3(
++                    &config, &deployment, &trust, original, &readback,
++                ).await,
++                None => codex_hepta_agentd::prepare_host_resident_candidate_enrollment_v3(
++                    &config, &deployment, &trust, original,
++                ).await,
++            }
++        };
++        tokio::pin!(prepare);
++        let service = tokio::select! {
++            result = &mut prepare => result?,
++            signal = tokio::signal::ctrl_c() => {
++                signal?;
++                return Err("resident enrollment preparation interrupted; same-operation readback required".into());
++            }
++            _ = terminate.recv() => {
++                return Err("resident enrollment preparation interrupted; same-operation readback required".into());
++            }
++        };
++        let cancellation = CancellationToken::new();
++        let work = service.run(cancellation.clone());
++        tokio::pin!(work);
++        tokio::select! {
++            result = &mut work => result?,
++            signal = tokio::signal::ctrl_c() => {
++                cancellation.cancel(); let result = work.await; signal?; result?;
++            }
++            _ = terminate.recv() => { cancellation.cancel(); work.await?; }
++        }
++        Ok::<(), Box<dyn std::error::Error>>(())
++    })
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_connect.rs
+@@ -0,0 +1,77 @@
++//! Daemon-side reconstruction only after the original Root handoff is pinned.
++
++use super::wire;
++use std::fs::File;
++use std::io;
++use std::os::fd::OwnedFd;
++use std::os::unix::fs::{FileTypeExt, MetadataExt};
++use std::time::{Duration, Instant};
++use crate::{AgentdIdentity, AgentdRootResidentLearningClientV3, RootResidentLearningReadbackAuthorizationV3};
++
++pub(crate) async fn connect_original_resident_enrollment(
++    bootstrap: File,
++    held_root_pidfd: OwnedFd,
++    root_pid: u32,
++    identity: &AgentdIdentity,
++    idle_end: Instant,
++) -> io::Result<AgentdRootResidentLearningClientV3> {
++    let packet = wire::read(bootstrap)?;
++    // SAFETY: these calls only inspect the actual final daemon credentials.
++    let (uid, gid) = unsafe { (libc::geteuid(), libc::getegid()) };
++    if packet.schema_version != 3 || packet.purpose != wire::PURPOSE
++        || uid == 0 || gid == 0 || packet.consumer_uid != uid || packet.consumer_gid != gid
++        || packet.consumer.pid != std::process::id() || packet.root.pid != root_pid
++        || packet.root.pid == std::process::id() || !(1..=30_000).contains(&packet.command_timeout_ms)
++    { return Err(io::Error::other("resident sealed purpose or recipient differs")); }
++    packet.consumer.require_original()?;
++    packet.root.require_original()?;
++    crate::authority_host_runtime::verify_process_credentials(std::process::id(), uid, gid)?;
++    let connect_end = wire::absolute(packet.connect_before_ns, Duration::from_secs(30))?.min(idle_end);
++    let session_end = wire::absolute(packet.session_end_ns, Duration::from_secs(300))?.min(idle_end);
++    let trust = super::super::trust::OriginalHostTrust::from_root_enrollment(packet.trusted_evidence.as_bytes())?;
++    let profile = packet.profile.original(&trust.verifier)?;
++    if profile.initial().request.agent_id.as_str() != identity.agent_id.as_str()
++        || packet.socket.file_name().and_then(|name| name.to_str())
++            != Some(format!("lr3-{}.sock", &profile.binding().to_string()[..32]).as_str())
++    { return Err(io::Error::other("resident profile or fixed socket purpose differs")); }
++    validate_socket(&packet.socket, gid, packet.socket_device, packet.socket_inode)?;
++    crate::root_observation_stream::check_lifetime(&held_root_pidfd).map_err(io::Error::other)?;
++    let connect_timeout = wire::remaining(connect_end)?.min(Duration::from_millis(500));
++    // Exactly one connection, after the original credential drop. Unknown
++    // connect/handshake outcomes do not obtain a replacement socket or nonce.
++    let stream = tokio::time::timeout(connect_timeout, tokio::net::UnixStream::connect(&packet.socket))
++        .await.map_err(|_| io::Error::other("resident connect deadline elapsed"))??;
++    validate_socket(&packet.socket, gid, packet.socket_device, packet.socket_inode)?;
++    packet.consumer.require_original()?;
++    packet.root.require_original()?;
++    wire::remaining(connect_end)?;
++    let root_pin = held_root_pidfd.try_clone()?;
++    let timeout = Duration::from_millis(packet.command_timeout_ms);
++    let client = match packet.authorization {
++        wire::Authorization::Fresh => AgentdRootResidentLearningClientV3::from_original_root_stream(
++            stream.into_std()?, packet.root.into_peer(), held_root_pidfd,
++            profile, trust.verifier, timeout, wire::remaining(session_end)?,
++        ),
++        wire::Authorization::Readback { intent, lease } => {
++            let authorization = RootResidentLearningReadbackAuthorizationV3::from_original_root(&profile, intent, lease)?;
++            AgentdRootResidentLearningClientV3::recover_original_root_stream(
++                stream.into_std()?, packet.root.into_peer(), held_root_pidfd,
++                profile, authorization, trust.verifier, None, timeout, wire::remaining(session_end)?,
++            )
++        }
++    }.map_err(io::Error::other)?;
++    crate::root_observation_stream::check_lifetime(&root_pin).map_err(io::Error::other)?;
++    wire::remaining(connect_end)?;
++    wire::remaining(session_end)?;
++    Ok(client)
++}
++
++fn validate_socket(path: &std::path::PathBuf, gid: u32, device: u64, inode: u64) -> io::Result<()> {
++    crate::authority_host_runtime::validate_lane_paths(&[path], gid)?;
++    let node = std::fs::symlink_metadata(path)?;
++    if !node.file_type().is_socket() || node.uid() != 0 || node.gid() != gid
++        || node.nlink() != 1 || node.mode() & 0o7777 != 0o660
++        || (node.dev(), node.ino()) != (device, inode)
++    { return Err(io::Error::other("original Root resident socket changed")); }
++    Ok(())
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_profile.rs
+@@ -0,0 +1,57 @@
++//! Data copied from the exact already validated Root deployment, without owners.
++
++use super::*;
++use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
++use codex_hepta_types::Digest32;
++
++#[derive(Deserialize, Serialize)]
++#[serde(deny_unknown_fields)]
++pub(in super::super) struct EnrollmentProfile {
++    initial_snapshot: String,
++    scope: Scope,
++    original_intent: SignedFinalUseGrant,
++    original_lease: AuthorityLease,
++    binding: String,
++}
++
++impl EnrollmentProfile {
++    pub(super) fn capture(
++        original: (String, Scope, SignedFinalUseGrant, AuthorityLease),
++        binding: Digest32,
++    ) -> Self {
++        let (initial_snapshot, scope, original_intent, original_lease) = original;
++        Self { initial_snapshot, scope, original_intent, original_lease, binding: binding.to_string() }
++    }
++
++    /// Called only after Root pair, sealed descriptor and recipient validation.
++    /// Rebuilding public profile data does not authenticate any stage result.
++    pub(in super::super) fn original(
++        self,
++        verifier: &LearningEvidenceVerifierV1,
++    ) -> io::Result<RootResidentLearningProfileV3> {
++        let raw = decode(&self.initial_snapshot, 8_192)?;
++        let initial = decode_original_owner_snapshot_v1(&raw).map_err(io::Error::other)?;
++        if encode_original_owner_snapshot_v1(&initial).map_err(io::Error::other)? != raw {
++            return Err(io::Error::other("noncanonical resident initial cut"));
++        }
++        let scope = FrozenLearningScopeV2::freeze(
++            &initial.request,
++            &initial.owners,
++            match self.scope.update_scope {
++                UpdateScope::Cell => LearningUpdateScopeV2::Cell,
++                UpdateScope::Organ => LearningUpdateScopeV2::Organ,
++            },
++            digest(&self.scope.update_rule)?,
++        ).map_err(io::Error::other)?;
++        if scope.binding() != digest(&self.scope.binding)? {
++            return Err(io::Error::other("resident frozen scope differs"));
++        }
++        let profile = RootResidentLearningProfileV3::new(
++            initial, scope, verifier, self.original_intent, self.original_lease,
++        )?;
++        if profile.binding() != digest(&self.binding)? {
++            return Err(io::Error::other("resident full profile differs"));
++        }
++        Ok(profile)
++    }
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire.rs
+@@ -0,0 +1,154 @@
++//! Private sealed V3 enrollment description. Data cannot construct role owners.
++
++use std::fs::File;
++use std::io::{self, Read, Seek, Write};
++use std::path::PathBuf;
++use std::time::{Duration, Instant};
++use serde::{Deserialize, Serialize};
++
++use super::super::inputs::EnrollmentProfile;
++use crate::AgentdRootAuthorityPeer;
++
++pub(super) const PURPOSE: &str = "hepta.original-root-resident-enrollment.v3";
++
++#[derive(Deserialize, Serialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Packet {
++    pub(super) schema_version: u32,
++    pub(super) purpose: String,
++    pub(super) root: Process,
++    pub(super) consumer: Process,
++    pub(super) consumer_uid: u32,
++    pub(super) consumer_gid: u32,
++    pub(super) profile: EnrollmentProfile,
++    pub(super) trusted_evidence: String,
++    pub(super) socket: PathBuf,
++    pub(super) socket_device: u64,
++    pub(super) socket_inode: u64,
++    pub(super) connect_before_ns: u64,
++    pub(super) session_end_ns: u64,
++    pub(super) command_timeout_ms: u64,
++    pub(super) authorization: Authorization,
++}
++
++#[derive(Deserialize, Serialize)]
++#[serde(tag = "purpose", rename_all = "snake_case", deny_unknown_fields)]
++pub(super) enum Authorization {
++    Fresh,
++    Readback {
++        intent: codex_hepta_contracts::SignedFinalUseGrant,
++        lease: codex_hepta_contracts::authority_lease::AuthorityLease,
++    },
++}
++
++#[derive(Deserialize, Serialize)]
++#[serde(deny_unknown_fields)]
++pub(super) struct Process {
++    pub(super) pid: u32,
++    pub(super) boot_id: String,
++    pub(super) process_start_ticks: u64,
++}
++
++impl Process {
++    pub(super) fn current() -> io::Result<Self> {
++        let pid = std::process::id();
++        let boot_id = text("/proc/sys/kernel/random/boot_id", 128)?.trim().to_string();
++        Ok(Self { pid, boot_id, process_start_ticks: start(pid)? })
++    }
++
++    pub(super) fn from_peer(peer: &AgentdRootAuthorityPeer) -> Self {
++        Self { pid: peer.pid, boot_id: peer.boot_id.clone(), process_start_ticks: peer.process_start_ticks }
++    }
++
++    pub(super) fn require_original(&self) -> io::Result<()> {
++        if self.pid == 0 || self.pid > i32::MAX as u32 || self.process_start_ticks == 0
++            || self.boot_id.is_empty() || self.boot_id.len() > 128
++            || text("/proc/sys/kernel/random/boot_id", 128)?.trim() != self.boot_id
++            || start(self.pid)? != self.process_start_ticks
++        {
++            return Err(io::Error::other("original resident process identity differs"));
++        }
++        Ok(())
++    }
++
++    pub(super) fn into_peer(self) -> AgentdRootAuthorityPeer {
++        AgentdRootAuthorityPeer { pid: self.pid, boot_id: self.boot_id, process_start_ticks: self.process_start_ticks }
++    }
++}
++
++fn text(path: &str, bound: u64) -> io::Result<String> {
++    let mut text = String::new();
++    File::open(path)?.take(bound + 1).read_to_string(&mut text)?;
++    if text.len() as u64 > bound { return Err(io::Error::other("resident identity bound exceeded")); }
++    Ok(text)
++}
++
++fn start(pid: u32) -> io::Result<u64> {
++    text(&format!("/proc/{pid}/stat"), 8192)?.rsplit_once(") ")
++        .and_then(|(_, fields)| fields.split_whitespace().nth(19))
++        .and_then(|value| value.parse().ok())
++        .ok_or_else(|| io::Error::other("original process start missing"))
++}
++
++pub(super) fn now_ns() -> io::Result<u64> {
++    let mut now = libc::timespec { tv_sec: 0, tv_nsec: 0 };
++    // SAFETY: clock_gettime receives one initialized writable timespec.
++    if unsafe { libc::clock_gettime(libc::CLOCK_MONOTONIC, &mut now) } != 0 {
++        return Err(io::Error::last_os_error());
++    }
++    u64::try_from(now.tv_sec).ok()
++        .and_then(|seconds| seconds.checked_mul(1_000_000_000))
++        .and_then(|seconds| u64::try_from(now.tv_nsec).ok().filter(|n| *n < 1_000_000_000)
++            .and_then(|nanos| seconds.checked_add(nanos)))
++        .ok_or_else(|| io::Error::other("invalid original monotonic clock"))
++}
++
++pub(super) fn absolute(end_ns: u64, maximum: Duration) -> io::Result<Instant> {
++    // Sample Instant first so translating an external absolute clock cannot
++    // extend its remaining budget by the time spent reading CLOCK_MONOTONIC.
++    let instant = Instant::now();
++    let remaining = end_ns.checked_sub(now_ns()?).filter(|n| *n != 0)
++        .map(Duration::from_nanos).filter(|n| *n <= maximum)
++        .ok_or_else(|| io::Error::other("resident absolute deadline differs"))?;
++    instant.checked_add(remaining).ok_or_else(|| io::Error::other("resident deadline overflow"))
++}
++
++pub(super) fn remaining(end: Instant) -> io::Result<Duration> {
++    end.checked_duration_since(Instant::now()).filter(|n| !n.is_zero())
++        .ok_or_else(|| io::Error::other("resident original deadline elapsed"))
++}
++
++pub(super) fn seal(packet: &Packet) -> io::Result<File> {
++    let mut writer = Bounded(Vec::new());
++    serde_json::to_writer(&mut writer, packet).map_err(io::Error::other)?;
++    crate::authority_host_bootstrap_seal::seal_bytes(&writer.0)
++}
++
++pub(super) fn read(mut file: File) -> io::Result<Packet> {
++    let size = file.metadata()?.len();
++    if size == 0 || size > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 {
++        return Err(io::Error::other("resident sealed descriptor bound exceeded"));
++    }
++    crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;
++    file.rewind()?;
++    let mut raw = Vec::new();
++    Read::by_ref(&mut file).take(crate::HOST_AUTHORITY_BOOTSTRAP_BOUND as u64 + 1).read_to_end(&mut raw)?;
++    crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;
++    if raw.len() as u64 != size { return Err(io::Error::other("resident sealed bytes changed")); }
++    serde_json::from_slice(&raw).map_err(io::Error::other)
++}
++
++struct Bounded(Vec<u8>);
++impl Write for Bounded {
++    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
++        if bytes.len() > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND.saturating_sub(self.0.len()) {
++            return Err(io::Error::other("resident sealed descriptor bound exceeded"));
++        }
++        self.0.extend_from_slice(bytes); Ok(bytes.len())
++    }
++    fn flush(&mut self) -> io::Result<()> { Ok(()) }
++}
++
++#[cfg(test)]
++#[path = "authority_host_resident_enrollment_wire_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs
+@@ -0,0 +1,20 @@
++use super::*;
++
++#[test]
++fn translated_monotonic_deadline_never_renews_the_original_window() -> io::Result<()> {
++    let before = Instant::now();
++    let end = now_ns()?.checked_add(1_000_000_000).ok_or_else(|| io::Error::other("test clock overflow"))?;
++    let converted = absolute(end, Duration::from_secs(30))?;
++    assert!(converted > before);
++    assert!(converted <= Instant::now() + Duration::from_secs(1));
++    assert!(remaining(converted)? <= Duration::from_secs(1));
++    Ok(())
++}
++
++#[test]
++fn expired_and_overlong_original_windows_are_refused_without_waiting() -> io::Result<()> {
++    assert!(absolute(0, Duration::from_secs(30)).is_err());
++    assert!(absolute(now_ns()?, Duration::from_secs(30)).is_err());
++    assert!(absolute(u64::MAX, Duration::from_secs(300)).is_err());
++    Ok(())
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_launch.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_launch.rs
+@@ -155,3 +155,11 @@
+     )
+     .map_err(io::Error::other)
+ }
++
++#[path = "authority_host_resident_enrollment.rs"]
++mod enrollment;
++pub use enrollment::RootResidentCandidateEnrollmentInputsV3;
++pub use enrollment::RootResidentCandidateEnrollmentServiceV3;
++pub use enrollment::prepare_host_resident_candidate_enrollment_v3;
++pub use enrollment::recover_host_resident_candidate_enrollment_v3;
++pub(crate) use enrollment::connect_original_resident_enrollment;
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_launch_inputs.rs
+@@ -20,6 +20,7 @@
+ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+ use codex_hepta_types::StableId;
+ use serde::Deserialize;
++use serde::Serialize;
+ 
+ use super::trust::OriginalHostTrust;
+ use super::trust::digest;
+@@ -58,7 +59,7 @@
+     handoff_timeout_ms: u64,
+ }
+ 
+-#[derive(Deserialize)]
++#[derive(Clone, Deserialize, Serialize)]
+ #[serde(deny_unknown_fields)]
+ struct Scope {
+     update_scope: UpdateScope,
+@@ -66,7 +67,7 @@
+     binding: String,
+ }
+ 
+-#[derive(Deserialize)]
++#[derive(Clone, Copy, Deserialize, Serialize)]
+ #[serde(rename_all = "snake_case")]
+ enum UpdateScope {
+     Cell,
+@@ -160,6 +161,7 @@
+     pub(super) inputs: RootResidentCandidateInputsV1,
+     pub(super) consumer: Consumer,
+     pub(super) handoff_timeout: Duration,
++    pub(super) enrollment_profile: EnrollmentProfile,
+ }
+ 
+ impl OriginalDeployment {
+@@ -257,6 +259,12 @@
+         };
+         OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)
+             .map_err(io::Error::other)?;
++        let original_handoff = (
++            value.initial_snapshot.clone(),
++            value.scope.clone(),
++            value.original_intent.clone(),
++            value.original_lease.clone(),
++        );
+         let profile = RootResidentLearningProfileV3::new(
+             material.initial.clone(),
+             material.scope.clone(),
+@@ -264,8 +272,10 @@
+             value.original_intent,
+             value.original_lease,
+         )?;
++        let enrollment_profile = EnrollmentProfile::capture(original_handoff, profile.binding());
+         Ok(Self {
+             profile,
++            enrollment_profile,
+             inputs: RootResidentCandidateInputsV1 {
+                 material,
+                 protocol,
+@@ -312,3 +322,7 @@
+     }
+     Ok(bytes)
+ }
++
++#[path = "authority_host_resident_enrollment_profile.rs"]
++mod enrollment_profile;
++pub(super) use enrollment_profile::EnrollmentProfile;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_listener.rs
+@@ -0,0 +1,68 @@
++//! One fixed resident socket under the original Root-controlled runtime parent.
++
++use super::*;
++use codex_hepta_types::Digest32;
++use std::path::PathBuf;
++
++pub(crate) struct ResidentSocketGuard { _guard: SocketGuard }
++
++pub(crate) struct ResidentListener {
++    listener: tokio::net::UnixListener,
++    guard: ResidentSocketGuard,
++    path: PathBuf,
++    device: u64,
++    inode: u64,
++}
++
++impl ResidentListener {
++    pub(crate) fn bind_original(
++        config: &HostAuthorityServiceConfig,
++        profile: Digest32,
++    ) -> io::Result<Self> {
++        // SAFETY: these calls only inspect current credentials.
++        if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
++            return Err(io::Error::other("resident listener requires original Root"));
++        }
++        let parent = config.sockets.observation.parent()
++            .ok_or_else(|| io::Error::other("missing original runtime parent"))?;
++        let path = parent.join(format!("lr3-{}.sock", &profile.to_string()[..32]));
++        validate_lane_paths(&[&path], config.peer_gid)?;
++        // UnixListener::bind is create-only. Never unlink an occupied name.
++        let listener = UnixListener::bind(&path)?;
++        let created = std::fs::symlink_metadata(&path)?;
++        let guard = SocketGuard(vec![(path.clone(), created.dev(), created.ino())]);
++        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o660))?;
++        let node = std::fs::symlink_metadata(&path)?;
++        if node.uid() != 0 || node.gid() != config.peer_gid
++            || node.nlink() != 1 || node.mode() & 0o7777 != 0o660
++            || (node.dev(), node.ino()) != (created.dev(), created.ino())
++        {
++            return Err(io::Error::other("original resident socket custody differs"));
++        }
++        validate_lane_paths(&[&path], config.peer_gid)?;
++        listener.set_nonblocking(true)?;
++        Ok(Self {
++            listener: tokio::net::UnixListener::from_std(listener)?,
++            guard: ResidentSocketGuard { _guard: guard }, path, device: node.dev(), inode: node.ino(),
++        })
++    }
++
++    pub(crate) fn original_node(&self) -> (&PathBuf, u64, u64) {
++        (&self.path, self.device, self.inode)
++    }
++
++    /// Consume one connection or fail. There is no accept retry after refusal.
++    pub(crate) async fn accept_original(self, end: Instant) -> io::Result<(std::os::unix::net::UnixStream, ResidentSocketGuard)> {
++        if Instant::now() >= end {
++            return Err(io::Error::other("resident handoff deadline elapsed"));
++        }
++        let (stream, _) = tokio::time::timeout_at(
++            tokio::time::Instant::from_std(end), self.listener.accept(),
++        ).await.map_err(|_| io::Error::other("resident accept deadline elapsed"))??;
++        if Instant::now() >= end {
++            return Err(io::Error::other("resident accept completed after deadline"));
++        }
++        Ok((stream.into_std()?, self.guard))
++        // Keep exact pathname custody until the original service finishes.
++    }
++}
+--- a/codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_resident_trust_file.rs
+@@ -12,12 +12,13 @@
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::StableId;
+ use serde::Deserialize;
++use serde::Serialize;
+ 
+ use crate::authority_host_config::read_root_json;
+ 
+ const PURPOSE: &str = "hepta.host-resident-learning.trusted-evidence.v3";
+ 
+-#[derive(Deserialize)]
++#[derive(Deserialize, Serialize)]
+ #[serde(deny_unknown_fields)]
+ struct TrustFile {
+     schema_version: u32,
+@@ -28,7 +29,7 @@
+     signers: Vec<Signer>,
+ }
+ 
+-#[derive(Deserialize)]
++#[derive(Deserialize, Serialize)]
+ #[serde(deny_unknown_fields)]
+ struct Signer {
+     principal: Principal,
+@@ -38,7 +39,7 @@
+     revoked_at: Option<u64>,
+ }
+ 
+-#[derive(Deserialize)]
++#[derive(Deserialize, Serialize)]
+ #[serde(deny_unknown_fields)]
+ struct Principal {
+     principal_id: String,
+@@ -50,7 +51,7 @@
+     expires_at: u64,
+ }
+ 
+-#[derive(Deserialize)]
++#[derive(Deserialize, Serialize)]
+ #[serde(rename_all = "snake_case")]
+ enum Role {
+     Generator,
+@@ -74,16 +75,31 @@
+     }
+ }
+ 
+-/// Only the independent Root0600 file can construct this local input. Neither
+-/// a deployment packet nor a received channel selects a trust file or key set.
++/// Root loads this from its independent Root0600 operational trust file. The
++/// daemon may reconstruct the same public data only after the private sealed
++/// Root enrollment path authenticates its producer and exact recipient.
+ pub(super) struct OriginalHostTrust {
+     pub(super) verifier: LearningEvidenceVerifierV1,
+     signers: Vec<TrustedLearningSignerV1>,
++    pub(super) encoded: Vec<u8>,
+ }
+ 
+ impl OriginalHostTrust {
+     pub(super) fn read(path: &Path) -> io::Result<Self> {
+         let value: TrustFile = read_root_json(path)?;
++        Self::from_value(value)
++    }
++
++    // Only the private authenticated Root-enrollment receiver calls this.
++    pub(super) fn from_root_enrollment(bytes: &[u8]) -> io::Result<Self> {
++        if bytes.is_empty() || bytes.len() > crate::HOST_AUTHORITY_BOOTSTRAP_BOUND {
++            return Err(io::Error::other("original trust exceeds sealed descriptor bound"));
++        }
++        Self::from_value(serde_json::from_slice(bytes).map_err(io::Error::other)?)
++    }
++
++    fn from_value(value: TrustFile) -> io::Result<Self> {
++        let encoded = serde_json::to_vec(&value).map_err(io::Error::other)?;
+         if value.schema_version != 3
+             || value.purpose != PURPOSE
+             || value.signers.is_empty()
+@@ -121,7 +137,7 @@
+             signers: signers.clone(),
+         })
+         .map_err(io::Error::other)?;
+-        Ok(Self { verifier, signers })
++        Ok(Self { verifier, signers, encoded })
+     }
+ 
+     pub(super) fn observer(
+--- a/codex-rs/hepta-agentd/src/authority_host_runtime.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_runtime.rs
+@@ -555,3 +555,9 @@
+     }
+     Ok(())
+ }
++
++pub use resident_launch::RootResidentCandidateEnrollmentInputsV3;
++pub use resident_launch::RootResidentCandidateEnrollmentServiceV3;
++pub use resident_launch::prepare_host_resident_candidate_enrollment_v3;
++pub use resident_launch::recover_host_resident_candidate_enrollment_v3;
++pub(crate) use resident_launch::connect_original_resident_enrollment;
+--- a/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs
++++ b/codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs
+@@ -3,6 +3,9 @@
+ #[cfg(target_os = "linux")]
+ #[path = "../authority_host_resident_cli.rs"]
+ mod resident_cli;
++#[cfg(target_os = "linux")]
++#[path = "../authority_host_resident_enrollment_cli.rs"]
++mod resident_enrollment_cli;
+ 
+ #[cfg(target_os = "linux")]
+ fn main() -> Result<(), Box<dyn std::error::Error>> {
+@@ -26,6 +29,17 @@
+                 return Err("duplicate option".into());
+             }
+         }
++    }
++    if command == "serve-resident-learning-late" || command == "recover-resident-learning-late" {
++        if pidfd_stdin {
++            return Err("late resident service requires its named original pidfds".into());
++        }
++        let purpose = if command == "serve-resident-learning-late" {
++            resident_enrollment_cli::Command::Fresh
++        } else {
++            resident_enrollment_cli::Command::Recover
++        };
++        return resident_enrollment_cli::run(options, purpose);
+     }
+     if command == "serve-resident-learning" || command == "recover-resident-learning" {
+         if pidfd_stdin {
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -1546,3 +1546,12 @@
+ pub use artifact_original_head::OriginalArtifactRegistrySourceClientV1;
+ #[cfg(target_os = "linux")]
+ pub use artifact_original_head::OriginalArtifactRegistrySourceOwnerV1;
++
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::RootResidentCandidateEnrollmentInputsV3;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::RootResidentCandidateEnrollmentServiceV3;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::prepare_host_resident_candidate_enrollment_v3;
++#[cfg(target_os = "linux")]
++pub use authority_host_runtime::recover_host_resident_candidate_enrollment_v3;
+--- a/codex-rs/hepta-agentd/src/production_launcher.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher.rs
+@@ -24,6 +24,9 @@
+ 
+ #[path = "production_launcher_inputs.rs"]
+ mod inputs;
++
++#[path = "production_resident_enrollment.rs"]
++mod resident_enrollment;
+ 
+ use inputs::LaunchInputs;
+ use inputs::NotesUiInputs;
+@@ -67,6 +70,8 @@
+     primary: PrimaryInputs,
+     notes: Option<UnixDatagram>,
+     notes_ui: Option<NotesUiInputs>,
++    resident_handoff: Option<UnixDatagram>,
++    resident_end: Option<Instant>,
+ }
+ 
+ impl AgentdProductionStartup {
+@@ -84,6 +89,7 @@
+                 let LaunchInputs {
+                     handoff,
+                     learning_handoff,
++                    resident_handoff,
+                     uid,
+                     gid,
+                     control,
+@@ -115,6 +121,8 @@
+                     primary,
+                     notes,
+                     notes_ui,
++                    resident_handoff,
++                    resident_end: None,
+                 };
+                 Startup::Root(Box::new(RootStartup {
+                     config,
+@@ -156,9 +164,10 @@
+                     app_server,
+                     lifetime,
+                     deadline,
+-                    inputs,
++                    mut inputs,
+                 } = *root;
+                 let session_end = Instant::now() + lifetime;
++                inputs.resident_end = inputs.resident_handoff.as_ref().map(|_| session_end);
+                 let root = crate::receive_root_production_inputs(
+                     bootstrap,
+                     root_pidfd,
+@@ -209,6 +218,8 @@
+             primary,
+             notes,
+             notes_ui,
++            resident_handoff,
++            resident_end,
+         } = self.inputs;
+         let mut mcp: Option<codex_app_server::ConfiguredMcpRuntime> = None;
+         let mut android_device: Option<Arc<crate::AgentdAndroidTextDevice>> = None;
+@@ -426,7 +437,14 @@
+             if let Some(deadline) = android_deadline {
+                 remaining(deadline)?;
+             }
+-            let result = crate::run(config, arg0_paths).await;
++            let result = match (resident_handoff, resident_end) {
++                (None, None) => crate::run(config, arg0_paths).await,
++                (Some(socket), Some(end)) => resident_enrollment::run_original(
++                    config, arg0_paths,
++                    resident_enrollment::PendingResidentEnrollment { socket, end },
++                ).await,
++                _ => Err(AgentdError::Invalid("resident original session boundary missing".into())),
++            };
+             // Keep the authenticated Root feed and original checkpoint/grant
+             // handles alive until all original runtime workers have stopped.
+             drop((attachment, desktop_attachment));
+--- a/codex-rs/hepta-agentd/src/production_launcher_inputs.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_inputs.rs
+@@ -15,10 +15,11 @@
+ use crate::AgentdError;
+ use crate::calculator_deadline::Deadline;
+ 
+-const FLAGS: [&str; 19] = [
++const FLAGS: [&str; 20] = [
+     "--root-production-profile",
+     "--root-production-handoff-fd",
+     "--root-learning-handoff-fd",
++    "--root-resident-learning-handoff-fd",
+     "--root-production-uid",
+     "--root-production-gid",
+     "--root-production-control-fd",
+@@ -47,6 +48,7 @@
+ pub(super) struct LaunchInputs {
+     pub(super) handoff: UnixDatagram,
+     pub(super) learning_handoff: Option<UnixDatagram>,
++    pub(super) resident_handoff: Option<UnixDatagram>,
+     pub(super) uid: u32,
+     pub(super) gid: u32,
+     pub(super) control: OwnedFd,
+@@ -148,6 +150,13 @@
+         .remove("--root-learning-handoff-fd")
+         .map(descriptor_number)
+         .transpose()?;
++    let resident_handoff = selected
++        .remove("--root-resident-learning-handoff-fd")
++        .map(descriptor_number)
++        .transpose()?;
++    if resident_handoff.is_some() && learning_handoff.is_some() {
++        return Err(invalid("resident V3 and original V1 learning handoffs are exclusive"));
++    }
+     let notes = selected
+         .remove("--notes-production-handoff-fd")
+         .map(descriptor_number)
+@@ -225,6 +234,7 @@
+     let numbers = [
+         Some(handoff),
+         learning_handoff,
++        resident_handoff,
+         Some(control),
+         Some(app_server),
+         payload,
+@@ -262,6 +272,10 @@
+         .map(take_descriptor)
+         .transpose()?
+         .map(UnixDatagram::from);
++    let resident_handoff = resident_handoff
++        .map(take_descriptor)
++        .transpose()?
++        .map(UnixDatagram::from);
+     let control = take_descriptor(control)?;
+     let app_server = take_descriptor(app_server)?;
+     let primary = match profile {
+@@ -305,6 +319,7 @@
+         Some(LaunchInputs {
+             handoff,
+             learning_handoff,
++            resident_handoff,
+             uid,
+             gid,
+             control,
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/production_resident_enrollment.rs
+@@ -0,0 +1,57 @@
++//! A single late handoff joins the existing delivery actor, never another loop.
++
++use std::os::unix::net::UnixDatagram;
++use std::time::Instant;
++use codex_arg0::Arg0DispatchPaths;
++use crate::{AgentdConfig, AgentdError};
++
++pub(super) struct PendingResidentEnrollment {
++    pub(super) socket: UnixDatagram,
++    pub(super) end: Instant,
++}
++
++pub(super) async fn run_original(
++    config: AgentdConfig,
++    arg0_paths: Arg0DispatchPaths,
++    pending: PendingResidentEnrollment,
++) -> Result<(), AgentdError> {
++    let identity = config.identity().clone();
++    // The old exclusive Config guard still requires the actual Circuit
++    // bootstrap/invocation, Objective profile and AuthBus trust before opt-in.
++    let (config, enrollment) = config.with_root_resident_learning_enrollment()?;
++    let original = crate::run(config, arg0_paths);
++    tokio::pin!(original);
++    let receive = crate::root_production_handoff::receive_original_resident_enrollment(
++        pending.socket, &identity, pending.end,
++    );
++    tokio::pin!(receive);
++    let root = tokio::select! {
++        result = &mut original => return result,
++        result = &mut receive => result,
++    };
++    let joined = match root {
++        Err(error) => Err(error),
++        Ok(root) => {
++            // This ACK confirms only the original local outbox/source join.
++            // Root's actual Admit remains solely in the original delivery code.
++            let join = enrollment.enroll_original_root(root);
++            tokio::pin!(join);
++            tokio::select! {
++                result = &mut original => {
++                    result?;
++                    return Err(AgentdError::Protocol(
++                        "resident local enrollment ACK unknown at daemon shutdown".into(),
++                    ));
++                }
++                result = &mut join => result.map_err(|error| AgentdError::Protocol(error.to_string())),
++            }
++        }
++    };
++    if let Err(error) = &joined {
++        tracing::error!(error = %error, "original resident enrollment refused; no retry or replacement claim");
++    }
++    // Never drop the ordinary daemon future to hide an enrollment failure.
++    // Its existing cancellation, worker cleanup and writer shutdown must finish.
++    original.await?;
++    joined
++}
+--- a/codex-rs/hepta-agentd/src/root_production_handoff.rs
++++ b/codex-rs/hepta-agentd/src/root_production_handoff.rs
+@@ -257,3 +257,9 @@
+ #[cfg(test)]
+ #[path = "root_production_handoff_tests.rs"]
+ mod tests;
++
++#[path = "root_resident_enrollment_handoff.rs"]
++mod resident_enrollment;
++pub(crate) use resident_enrollment::receive_original_resident_enrollment;
++pub(crate) use resident_enrollment::send_original_resident_enrollment;
++pub(crate) use resident_enrollment::require_original_resident_process_pin;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_resident_enrollment_handoff.rs
+@@ -0,0 +1,78 @@
++//! One late V3 Root packet, separate from both original V1 handoffs.
++
++use super::*;
++use std::time::Instant;
++
++const FRAME_V3: &[u8] = b"HEPTA_ROOT_RESIDENT_ENROLLMENT_V3";
++
++pub(crate) fn send_original_resident_enrollment(
++    socket: UnixDatagram,
++    bootstrap: &File,
++    root_pidfd: &OwnedFd,
++    timeout: Duration,
++) -> Result<(), AgentdError> {
++    // SAFETY: both calls only inspect the current kernel credentials.
++    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
++        return Err(refused("resident enrollment requires original Root"));
++    }
++    let peer = root_pair(&socket, timeout)?;
++    if peer.pid as u32 != std::process::id() {
++        return Err(refused("resident enrollment pair belongs to another Root"));
++    }
++    validate_bootstrap(bootstrap)?;
++    require_root_pin(root_pidfd, std::process::id())?;
++    send_packet(&socket, FRAME_V3, &[bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()], timeout)
++}
++
++pub(crate) async fn receive_original_resident_enrollment(
++    socket: UnixDatagram,
++    identity: &crate::AgentdIdentity,
++    idle_end: Instant,
++) -> Result<crate::AgentdRootResidentLearningClientV3, AgentdError> {
++    // Idle waiting is bounded by the already running original Root session.
++    // The packet carries its own shorter absolute 30-second handoff deadline.
++    let peer = root_pair(&socket, Duration::from_secs(30))?;
++    if Instant::now() >= idle_end { return Err(refused("resident enrollment expired")); }
++    socket.set_nonblocking(true)?;
++    let socket = tokio::net::UnixDatagram::from_std(socket)?;
++    tokio::time::timeout_at(tokio::time::Instant::from_std(idle_end), socket.readable())
++        .await.map_err(|_| refused("resident enrollment expired"))??;
++    let (bootstrap, pidfd) = receive_once(socket.as_raw_fd())?;
++    validate_bootstrap(&bootstrap)?;
++    require_root_pin(&pidfd, peer.pid as u32)?;
++    if Instant::now() >= idle_end { return Err(refused("resident enrollment expired")); }
++    crate::authority_host_runtime::connect_original_resident_enrollment(
++        bootstrap, pidfd, peer.pid as u32, identity, idle_end,
++    ).await.map_err(|error| AgentdError::Protocol(error.to_string()))
++}
++
++fn receive_once(socket: std::os::fd::RawFd) -> Result<(File, OwnedFd), AgentdError> {
++    let mut bytes = [0_u8; FRAME_V3.len() + 1];
++    let mut control = [0_usize; 32];
++    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: bytes.len() };
++    // SAFETY: all pointer fields below name bounded buffers retained here.
++    let mut message: libc::msghdr = unsafe { mem::zeroed() };
++    message.msg_iov = &mut vector; message.msg_iovlen = 1;
++    message.msg_control = control.as_mut_ptr().cast(); message.msg_controllen = mem::size_of_val(&control);
++    // SAFETY: recvmsg writes only these live buffers and owns received rights
++    // with CLOEXEC. A stale readiness indication fails, without another recv.
++    let length = unsafe { libc::recvmsg(socket, &mut message, libc::MSG_CMSG_CLOEXEC | libc::MSG_DONTWAIT) };
++    if length < 0 { return Err(io::Error::last_os_error().into()); }
++    // SAFETY: the original parser consumes only this completed bounded buffer.
++    let (mut rights, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
++    if !valid || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
++        || rights.len() != 2 || length as usize != FRAME_V3.len()
++        || &bytes[..FRAME_V3.len()] != FRAME_V3
++    { return Err(refused("resident enrollment requires exact purpose and two rights")); }
++    let pidfd = rights.pop().ok_or_else(|| refused("resident Root pidfd absent"))?;
++    let bootstrap = rights.pop().ok_or_else(|| refused("resident sealed input absent"))?;
++    Ok((File::from(bootstrap), pidfd))
++}
++
++pub(crate) fn require_original_resident_process_pin(pidfd: &OwnedFd, pid: u32) -> Result<(), AgentdError> {
++    require_root_pin(pidfd, pid)
++}
++
++#[cfg(test)]
++#[path = "root_resident_enrollment_handoff_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs
+@@ -0,0 +1,66 @@
++//! Actual FD framing mechanisms, not a fabricated Root enrollment receipt.
++
++use super::*;
++use std::io::{Read, Seek};
++use std::os::fd::FromRawFd;
++
++fn root_pin() -> Result<OwnedFd, Box<dyn std::error::Error>> {
++    // SAFETY: test opens only its current process, with zero flags.
++    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
++    if raw < 0 { return Err(io::Error::last_os_error().into()); }
++    // SAFETY: exactly the newly returned descriptor is adopted once.
++    Ok(unsafe { OwnedFd::from_raw_fd(raw as i32) })
++}
++
++fn require_root() -> Result<(), Box<dyn std::error::Error>> {
++    // SAFETY: only actual credential reads.
++    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {
++        return Err("this original Root FD mechanism requires UID0".into());
++    }
++    Ok(())
++}
++
++#[test]
++#[ignore = "requires actual original Root credentials and Linux pidfd"]
++fn exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd() -> Result<(), Box<dyn std::error::Error>> {
++    require_root()?;
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let bytes = b"framing-only: no profile, owner or successful protocol response";
++    let sealed = crate::authority_host_bootstrap_seal::seal_bytes(bytes)?;
++    let pidfd = root_pin()?;
++    send_original_resident_enrollment(sender, &sealed, &pidfd, Duration::from_millis(100))?;
++    let (mut received, pin) = receive_once(receiver.as_raw_fd())?;
++    validate_bootstrap(&received)?;
++    require_original_resident_process_pin(&pin, std::process::id())?;
++    received.rewind()?;
++    let mut actual = Vec::new(); received.read_to_end(&mut actual)?;
++    assert_eq!(actual, bytes);
++    Ok(())
++}
++
++#[test]
++#[ignore = "requires actual original Root credentials and Linux pidfd"]
++fn v1_marker_cannot_enter_the_v3_resident_handoff() -> Result<(), Box<dyn std::error::Error>> {
++    require_root()?;
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let sealed = crate::authority_host_bootstrap_seal::seal_bytes(b"original sealed framing input")?;
++    let pidfd = root_pin()?;
++    send_packet(&sender, b"HEPTA_ROOT_LEARNING_INPUTS_V1", &[sealed.as_raw_fd(), pidfd.as_raw_fd()], Duration::from_millis(100))?;
++    let result = receive_once(receiver.as_raw_fd());
++    assert!(matches!(result, Err(AgentdError::Protocol(message)) if message.contains("exact purpose and two rights")));
++    Ok(())
++}
++
++#[test]
++#[ignore = "requires actual original Root credentials and Linux pidfd"]
++fn sealed_file_alias_cannot_replace_the_original_root_pidfd() -> Result<(), Box<dyn std::error::Error>> {
++    require_root()?;
++    let (sender, receiver) = UnixDatagram::pair()?;
++    let sealed = crate::authority_host_bootstrap_seal::seal_bytes(b"original sealed framing input")?;
++    send_packet(&sender, FRAME_V3, &[sealed.as_raw_fd(), sealed.as_raw_fd()], Duration::from_millis(100))?;
++    let (received, not_pidfd) = receive_once(receiver.as_raw_fd())?;
++    validate_bootstrap(&received)?;
++    let result = require_original_resident_process_pin(&not_pidfd, std::process::id());
++    assert!(matches!(result, Err(AgentdError::Protocol(message)) if message.contains("pidfd")));
++    Ok(())
++}

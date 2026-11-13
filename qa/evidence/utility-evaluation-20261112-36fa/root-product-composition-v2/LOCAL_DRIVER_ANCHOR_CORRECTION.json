@@ -1,0 +1,9 @@
+{
+  "format": "hepta-local-driver-anchor-correction-v1",
+  "cause": "Reviewer guessed a constructor marker. The original driver begins with pub(super) async fn execute; no source mismatch was established.",
+  "change": "Use the observed original execute signature to compare the entire unchanged method/helper suffix.",
+  "originals_changed": false,
+  "H_calls": 0,
+  "assembled_source_files_written_before_failure": 0,
+  "first_two_scripts_preserved": true
+}

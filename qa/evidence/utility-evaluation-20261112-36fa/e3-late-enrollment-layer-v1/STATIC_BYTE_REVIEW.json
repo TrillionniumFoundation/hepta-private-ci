@@ -1,0 +1,54 @@
+{
+  "all_forward_and_inverse_equal": true,
+  "all_new_files_under_500_lines": true,
+  "all_preimages_exact": true,
+  "ignored_root_methods": 3,
+  "modified_existing": 10,
+  "new_production": 8,
+  "new_test_methods": [
+    {
+      "method": "translated_monotonic_deadline_never_renews_the_original_window",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs"
+    },
+    {
+      "method": "expired_and_overlong_original_windows_are_refused_without_waiting",
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_enrollment_wire_tests.rs"
+    },
+    {
+      "method": "exact_v3_framing_preserves_original_sealed_bytes_and_root_pidfd",
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs"
+    },
+    {
+      "method": "v1_marker_cannot_enter_the_v3_resident_handoff",
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs"
+    },
+    {
+      "method": "sealed_file_alias_cannot_replace_the_original_root_pidfd",
+      "path": "codex-rs/hepta-agentd/src/root_resident_enrollment_handoff_tests.rs"
+    }
+  ],
+  "new_tests_files": 2,
+  "no_end_to_end_claim": true,
+  "no_formatter": true,
+  "no_h": true,
+  "no_qa_or_collector_execution": true,
+  "no_refs": true,
+  "no_rust_execution": true,
+  "no_source_git_creation": true,
+  "ordinary_methods": 2,
+  "original_core_paths_not_changed": [
+    "config_resident_learning.rs",
+    "resident_learning_delivery.rs",
+    "authority_host_learning_resident_transport.rs",
+    "learning_owner_command_channel.rs",
+    "authority_host_learning_candidate_service.rs"
+  ],
+  "paths": 20,
+  "required_integration": [
+    "E2 task install before V3 opt-in",
+    "real non-Root Material Source loan",
+    "CALLERS/protected/Root-inventory/allowlist registration",
+    "actual Rust and original source/native gates"
+  ],
+  "state": "LOCAL_PROPOSAL_UNFORMATTED_UNCOMPILED_UNEXECUTED"
+}
